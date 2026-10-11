@@ -42,6 +42,26 @@ static func line_path(grid: GridModel, origin: Vector2i, dir: Vector2i, max_rang
 	return path
 
 
+## Whether an affected actor standing on `tile` would be reached, given the
+## caster's position and facing. Used by enemy AI with *perceived* positions.
+static func reaches_tile(ctx: CombatContext, caster: Actor, ability: AbilityDef, tile: Vector2i) -> bool:
+	match ability.shape:
+		AbilityDef.Shape.FRONT:
+			for k in range(maxi(ability.min_range, 1), ability.max_range + 1):
+				if caster.tile() + caster.facing * k == tile:
+					var dh := absi(ctx.grid.height_at(tile) - ctx.grid.height_at(caster.tile()))
+					return ability.max_height_difference < 0 or dh <= ability.max_height_difference
+			return false
+		AbilityDef.Shape.LINE:
+			return line_path(ctx.grid, caster.tile(), caster.facing, ability.max_range,
+					ctx.rules.los_height_tolerance).has(tile)
+	var dist := GridModel.distance(caster.tile(), tile)
+	if dist < ability.min_range or dist > ability.max_range:
+		return false
+	return not ability.requires_line_of_sight or dist <= 1 \
+			or LineOfSight.has_los(ctx.grid, caster.tile(), tile, ctx.rules.los_height_tolerance)
+
+
 ## Whether `target` stands where `ability` would reach it right now, given the
 ## caster's position and facing. For TARGETED abilities: range and line of sight.
 static func in_reach(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor) -> bool:

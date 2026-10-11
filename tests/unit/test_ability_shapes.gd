@@ -166,3 +166,73 @@ func test_wolf_turns_toward_the_hero_and_bites() -> void:
 	world.step()
 	assert_eq(wolf.facing, Vector2i.LEFT, "turned toward the hero")
 	assert_lt(hero.hp, hero.stats.hp, "and bit")
+
+
+# --- Enemy speed and reaction delay ------------------------------------------------
+
+func _bite_wolf(reaction: float) -> AbilityDef:
+	var bite := _ability(&"bite", AbilityDef.Shape.FRONT, 1, 25)
+	bite.cooldown_seconds = 2.0
+	wolf.def.abilities = [bite]
+	wolf.def.aggro_radius = 3
+	wolf.def.stats.accuracy = 100
+	wolf.def.reaction_seconds = reaction
+	return bite
+
+
+func test_enemy_combat_step_overrides_speed() -> void:
+	wolf.def.combat_step_seconds = 0.8
+	assert_eq(wolf.combat_step_cooldown(rules, 0.0), 0.8)
+	assert_almost_eq(hero.combat_step_cooldown(rules, 0.0), rules.combat_step_base_seconds, 0.001)
+	wolf.def.combat_step_seconds = 0.0
+	assert_almost_eq(wolf.combat_step_cooldown(rules, 0.0), rules.combat_step_base_seconds, 0.001,
+			"0 falls back to the Speed formula")
+
+
+func test_wolf_chases_faster_than_a_hero_walks_in_combat() -> void:
+	_bite_wolf(0.0)
+	wolf.def.combat_step_seconds = 0.8
+	wolf.move.place(Vector2i(8, 5))
+	wolf2.move.place(Vector2i(0, 0))
+	hero.move.place(Vector2i(5, 5)) # 3 tiles away
+	world.step() # aggro, and the first step right away
+	world.advance(0.85) # second step 0.8 s later; a hero would need 1.5 s per tile
+	assert_eq(GridModel.distance(wolf.tile(), hero.tile()), 1)
+
+
+func test_perceived_position_lags_by_the_reaction_delay() -> void:
+	world.advance(1.0)
+	var old := hero.tile()
+	hero.move.place(old + Vector2i.DOWN)
+	world.step()
+	assert_eq(world.perceived_tile(hero, 0.3), old, "still seen at the old tile")
+	assert_eq(world.perceived_tile(hero, 0.0), old + Vector2i.DOWN)
+	world.advance(0.35)
+	assert_eq(world.perceived_tile(hero, 0.3), old + Vector2i.DOWN, "caught up")
+
+
+func test_sidestepping_just_before_a_bite_makes_it_whiff() -> void:
+	var bite := _bite_wolf(0.3)
+	wolf2.move.place(Vector2i(0, 0))
+	hero.move.place(Vector2i(4, 5)) # adjacent, left of the wolf at (5,5)
+	wolf.threat.add(hero.id, 1.0)
+	wolf.state = Enemy.State.COMBAT
+	wolf.cooldowns.trigger(bite, world.now, 0.0) # bite ready in 2 s
+	world.advance(1.9)
+	hero.move.place(Vector2i(4, 8)) # steps out of the way 0.1 s before the bite
+	var events := world.advance(0.2)
+	assert_has(_types(events), "whiff", "bit where the hero used to be")
+	assert_eq(hero.hp, hero.stats.hp)
+
+
+func test_without_reaction_delay_the_same_sidestep_is_too_late() -> void:
+	var bite := _bite_wolf(0.0)
+	wolf2.move.place(Vector2i(0, 0))
+	hero.move.place(Vector2i(4, 5))
+	wolf.threat.add(hero.id, 1.0)
+	wolf.state = Enemy.State.COMBAT
+	wolf.cooldowns.trigger(bite, world.now, 0.0)
+	world.advance(1.9)
+	hero.move.place(Vector2i(4, 8))
+	var events := world.advance(0.2)
+	assert_does_not_have(_types(events), "whiff", "it saw the move and didn't bite empty air")

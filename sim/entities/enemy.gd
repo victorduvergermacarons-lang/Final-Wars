@@ -23,6 +23,12 @@ func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.Z
 	move.place(p_spawn)
 
 
+func combat_step_cooldown(rules: CombatRules, now: float) -> float:
+	if def.combat_step_seconds > 0.0:
+		return def.combat_step_seconds
+	return super(rules, now)
+
+
 ## Keeps the threat table so WorldSim can split XP; WorldSim clears it after.
 func die() -> void:
 	super()

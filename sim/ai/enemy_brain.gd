@@ -6,6 +6,9 @@ extends RefCounted
 ## toward it on the step cooldown → (threat table empty, or pulled past the
 ## leash radius) → EVADING: heal to full, untargetable, walk home → IDLE.
 ## DEAD → respawn at the spawn point when the timer is up.
+##
+## Enemies see heroes where they were `def.reaction_seconds` ago (aggro, chasing,
+## turning and aiming), so a hero who steps aside just in time makes a bite whiff.
 
 
 static func update(world: WorldSim, enemy: Enemy) -> void:
@@ -35,10 +38,11 @@ static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Hero:
 	for hero in world.heroes():
 		if not hero.alive:
 			continue
-		var dist := GridModel.distance(enemy.tile(), hero.tile())
+		var seen := world.perceived_tile(hero, enemy.def.reaction_seconds)
+		var dist := GridModel.distance(enemy.tile(), seen)
 		if dist > enemy.def.aggro_radius:
 			continue
-		if not LineOfSight.has_los(world.grid, enemy.tile(), hero.tile(), world.rules.los_height_tolerance):
+		if not LineOfSight.has_los(world.grid, enemy.tile(), seen, world.rules.los_height_tolerance):
 			continue
 		if best == null or dist < best_dist:
 			best = hero
@@ -56,13 +60,14 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 		enemy.threat.remove(enemy.threat.top())
 		return
 
-	# Face the target when it's next to us (turning is free), then attack with the
-	# first ability that is ready and would actually reach it.
-	if GridModel.distance(enemy.tile(), target.tile()) == 1:
-		enemy.face(target.tile() - enemy.tile())
+	# Act on where the target seems to be. Face it when it seems adjacent (turning
+	# is free), then use the first ready ability that would reach that tile.
+	var seen := world.perceived_tile(target, enemy.def.reaction_seconds)
+	if GridModel.distance(enemy.tile(), seen) == 1:
+		enemy.face(seen - enemy.tile())
 	var in_reach := false
 	for ability in enemy.def.abilities:
-		if not AbilityShapes.in_reach(world.ctx, enemy, ability, target):
+		if not AbilityShapes.reaches_tile(world.ctx, enemy, ability, seen):
 			continue
 		in_reach = true
 		if AbilityResolver.validate(world.ctx, enemy, ability, target) == AbilityResolver.Result.OK:
@@ -73,7 +78,7 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 
 	if not enemy.move.can_start_step(true, enemy.cooldowns, world.now):
 		return
-	var path := Pathfinder.find_path(world.grid, enemy.tile(), target.tile(),
+	var path := Pathfinder.find_path(world.grid, enemy.tile(), seen,
 			StatCalc.jump_levels(enemy.current_stats(world.now)), world.occupied_tiles(enemy))
 	if path.size() > 2:
 		world.try_step(enemy, path[1])

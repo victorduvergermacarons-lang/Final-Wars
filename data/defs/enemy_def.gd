@@ -11,5 +11,10 @@ extends Resource
 @export var aggro_radius: int = 4
 ## Distance from its spawn point at which it gives up and walks home.
 @export var leash_radius: int = 10
+## Seconds per tile while in combat. 0 = use the Speed stat like heroes do.
+@export var combat_step_seconds: float = 0.0
+## How far behind reality this enemy perceives heroes' positions (seconds), for
+## aggro, chasing and aiming. Lets a hero sidestep an attack. 0 = no delay.
+@export var reaction_seconds: float = 0.0
 @export var xp_reward: int = 10
 @export var respawn_seconds: float = 30.0

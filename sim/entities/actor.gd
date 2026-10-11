@@ -63,6 +63,11 @@ func front_tile() -> Vector2i:
 	return tile() + facing
 
 
+## Seconds before the next step while in combat.
+func combat_step_cooldown(rules: CombatRules, now: float) -> float:
+	return StatCalc.combat_step_cooldown(current_stats(now).speed, rules)
+
+
 func in_combat(now: float) -> bool:
 	return alive and now < combat_until
 

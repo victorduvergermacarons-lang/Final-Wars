@@ -219,7 +219,12 @@ docs/            how-to docs (building, testing, local multiplayer)
     - Aggro: an idle enemy aggros on the nearest living hero within its aggro radius
       and in line of sight. Damage also pulls it. No group/social aggro.
     - In combat the enemy attacks the top of its threat table whenever an ability is
-      ready and in range; otherwise it paths toward the target on its step cooldown.
+      ready and in reach; otherwise it paths toward the target on its step cooldown.
+      It turns to face a target next to it (free) before a FRONT attack.
+    - Per enemy type: `combat_step_seconds` (Wolf 0.8 s/tile, faster than heroes'
+      1.5 s, so heroes can't outrun an aggroed Wolf) and `reaction_seconds` (Wolf
+      0.3 s): the enemy sees heroes where they were that long ago — for aggro,
+      chasing, turning and aiming — so a well-timed sidestep makes a bite whiff.
     - Leash: past its leash radius from spawn, or with an empty threat table, the
       enemy evades: clears threat, heals to full, is untargetable, walks home.
     - Combat ends 5 s after no fighting enemy lists the hero.
@@ -282,6 +287,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Wolf: 0.8 s/tile in combat, 0.3 s reaction delay | Rule 12. Part 3 of the combat revision. |
 | 2026-10-11 | Directional abilities: FRONT (Strike, Bite), LINE projectile (Fireball, 10 tiles/s); Heal/Resurrect stay targeted | Rule 8. Part 2 of the combat revision. |
 | 2026-10-11 | Combat step 1.5 s/tile (floor 0.5 s), walking 0.2 s/tile; facing + tap-to-turn | Rules 4 and 13. Part 1 of the post-M1 combat revision (facing, directional abilities, faster wolves, reaction delay). |
 | 2026-10-11 | Milestone 1 build order complete | Multiplayer testing doc: docs/local-multiplayer-testing.md. |

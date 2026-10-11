@@ -26,6 +26,9 @@ var _enemies := {} # id -> Enemy
 var _intents: Array = [] # [hero_id, intent]
 var _projectiles: Array[Projectile] = []
 var _next_projectile_id := 1
+## Recent hero positions, for enemies' reaction delay: hero id -> [[time, tile], ...].
+var _history := {}
+const HISTORY_SECONDS := 2.0
 var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
 var _events: Array[Dictionary] = []
 
@@ -65,6 +68,7 @@ func remove_hero(id: int) -> void:
 		enemy.threat.remove(id)
 	_heroes.erase(id)
 	_acks.erase(id)
+	_history.erase(id)
 	ctx.actors.erase(id)
 
 
@@ -112,7 +116,32 @@ func step() -> Array[Dictionary]:
 	_regen()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
+	_record_history()
 	return _events
+
+
+## Where `actor` stood `delay` seconds ago (its current tile if no older record).
+func perceived_tile(actor: Actor, delay: float) -> Vector2i:
+	if delay <= 0.0 or not _history.has(actor.id):
+		return actor.tile()
+	var when := now - delay
+	var best := actor.tile()
+	var entries: Array = _history[actor.id]
+	for i in range(entries.size() - 1, -1, -1):
+		best = entries[i][1]
+		if entries[i][0] <= when + Cooldowns.EPSILON:
+			break
+	return best
+
+
+func _record_history() -> void:
+	for hero in heroes():
+		if not _history.has(hero.id):
+			_history[hero.id] = []
+		var entries: Array = _history[hero.id]
+		entries.append([now, hero.tile()])
+		while not entries.is_empty() and entries[0][0] < now - HISTORY_SECONDS:
+			entries.pop_front()
 
 
 ## Runs ticks until `seconds` of sim time have passed. Returns all events.
@@ -152,7 +181,7 @@ func try_step(actor: Actor, to: Vector2i) -> String:
 	actor.face(to - from)
 	actor.move.begin(to, now, rules.walk_tile_seconds)
 	if in_combat:
-		actor.cooldowns.trigger_step(now, StatCalc.combat_step_cooldown(actor.current_stats(now).speed, rules))
+		actor.cooldowns.trigger_step(now, actor.combat_step_cooldown(rules, now))
 	return ""
 
 
