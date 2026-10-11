@@ -5,8 +5,8 @@
 This file is the living design doc. Keep it current as decisions are made.
 
 **Status:** Milestone 1 complete and playtested, including the post-M1 combat revision
-(facing, directional abilities, faster enemies, reaction delay). Milestone 2 is being
-planned. For the numbers the game actually uses today, see **Gameplay as built** below;
+(facing, directional abilities, faster enemies, reaction delay). Milestone 2 is in progress
+(plan and decisions below). For the numbers the game actually uses today, see **Gameplay as built** below;
 the brief sections keep the original wording.
 
 ## Working agreements
@@ -408,9 +408,63 @@ crafting, final art, and sound. Don't make choices that block these.
 
 When finished: a playtest checklist covering every feature, written for a non-programmer.
 
+### Milestone 2 build order (approved 2026-10-11)
+A. Items & inventory: 1 item model (9 slots, two-handed, rarity, stacks) · 2 bag ·
+   3 inventory UI + tooltips/compare · 4 character sheet.
+B. Saving & sessions: 5 character saves + character select + autosave · 6 join with your
+   hero, 4 players, join in progress (spawn in town), private per-player state, host
+   world save.
+C. World: 7 multiple zones with exit tiles + per-zone replication · 8 town hub, NPCs,
+   talking, dialogue box.
+D. Economy: 9 gold, loot tables, personal loot, kill credit · 10 vendor + potions.
+E. Combat content: 11 new ability mechanics · 12 new items · 13 enemy levels + 3 enemy
+   types · 14 roaming elite.
+F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 17 sample
+   quests + host world events · 18 polish, docs, playtest checklist.
+
+### Milestone 2 decisions (approved 2026-10-11)
+1. **Zones:** town and Greenfields are separate zones joined by exit tiles; each client
+   only receives its own zone. Town ≈ 18×18 west of Greenfields with vendor, two quest
+   givers and the graveyard. Graveyards: town + far side of Greenfields (the Greenfields
+   spawn graveyard is removed). Release goes to the nearest one in your zone.
+2. **Party:** all connected players are one party (max 4). Kill participants = heroes on
+   the enemy's threat table at its death.
+3. **Rarity** is fixed per item design (no random rolls). Colors: Common white,
+   Uncommon green, Rare blue, Epic purple.
+4. **Bag:** 20 slots; potions and quest items stack to 20. Equipping a two-handed weapon
+   moves the off-hand item to the bag (refused if full). Gear changes only out of combat.
+5. **Loot:** auto-loot personal drops into the bag with a message; if the bag is full,
+   leftovers wait in a loot window on the corpse for 60 s. Quest items drop only for
+   players on the quest and take bag slots.
+6. **AP from kills:** each enemy gives a small AP reward per kill (e.g. Wolf 2) to the
+   abilities taught by the participant's equipped items, in addition to level-up AP.
+7. **XP vs level:** enemies 3+ levels below give reduced XP (down to 20%); higher-level
+   enemies up to +50%.
+8. **Vendor:** sells at 25% of price. Stock: Minor Health Potion (40% max HP), Minor Mana
+   Potion (40% max Mana), 2–3 Common items. Potions: usable in combat, off the GCD,
+   30 s cooldown shared by all potions.
+9. **New items (8 new, 12 total):** Iron Helm (Head, C) → Taunt · Greataxe (2H, U) →
+   Cleave (front tile + both side tiles) · Hunting Bow (2H, C) → Aimed Shot (7-tile
+   physical projectile) · Ranger's Gloves (Hands, R) → Pinning Shot (projectile, target's
+   speed halved 4 s) · Frostweave Robe (Chest, U) → Frost Nova (damage + root all
+   adjacent enemies 2 s) · Acolyte's Leggings (Legs, U) → Renew (heal over time) · Swift
+   Boots (Feet, C) → Dash (move 2 tiles forward instantly, 15 s) · Grizzlehide Mantle
+   (Chest, Epic, elite drop) → Rallying Roar (allies within 3 tiles +20% attack for 120 s).
+10. **Flanking:** FRONT attacks from the target's side deal +25% damage; from directly
+    behind +50% and they can't miss. Applies to heroes and enemies.
+11. **Enemies (levels 2–4, own areas):** Bandit Brute (2.0 s/tile, slow heavy hits) ·
+    Goblin Shaman (casts line bolts, steps back when a hero is within 2 tiles) ·
+    Skirmisher (0.6 s/tile, moves to your side or back before attacking).
+    **Elite "Old Grizzlehide":** level 5 bear on a patrol loop, ~6× Wolf HP, Cleave +
+    Charge, respawn 5 min, drops the Epic mantle and Rares.
+12. **Saving:** plain-data JSON per character in the user folder; several characters per
+    computer. The host validates a joining hero's data (known ids, sane values) but
+    otherwise trusts it.
+
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Milestone 2 plan and decisions approved | Flanking +25% side / +50% behind (user change); Rallying Roar lasts 120 s (user change); all other proposed defaults accepted. |
 | 2026-10-11 | Milestone 1 playtested; design doc brought up to date; Milestone 2 brief recorded | Added "Gameplay as built" reference. M2 plan pending approval. |
 | 2026-10-11 | Combat revision complete; no retuning needed | Balance targets (rule 16) still met with facing, directional abilities, faster wolves and reaction delay. |
 | 2026-10-11 | Wolf: 0.8 s/tile in combat, 0.3 s reaction delay | Rule 12. Part 3 of the combat revision. |
