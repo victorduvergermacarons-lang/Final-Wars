@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_5weaa"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_v4xro"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_nf2h5"]
+
+[sub_resource type="Resource" id="Resource_fe7vn"]
+script = ExtResource("2_v4xro")
+
+[sub_resource type="Resource" id="Resource_kjwm4"]
+script = ExtResource("1_5weaa")
+base_amount = 8.0
+scaling = Array[ExtResource("2_v4xro")]([SubResource("Resource_fe7vn")])
+
+[resource]
+script = ExtResource("3_nf2h5")
+id = &"strike"
+display_name = "Strike"
+description = "A quick sword blow."
+effects = Array[ExtResource("1_5weaa")]([SubResource("Resource_kjwm4")])
+ap_to_master = 20

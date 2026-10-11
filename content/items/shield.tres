@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_ocxbd"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_ridx4"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_5icf3"]
+[ext_resource type="Resource" path="res://content/abilities/block.tres" id="4_dl15q"]
+
+[sub_resource type="Resource" id="Resource_10sm4"]
+script = ExtResource("1_ocxbd")
+hp = 12.0
+phys_def = 3.0
+
+[sub_resource type="Resource" id="Resource_me4q2"]
+script = ExtResource("1_ocxbd")
+hp = 30.0
+phys_def = 30.0
+
+[resource]
+script = ExtResource("2_ridx4")
+id = &"shield"
+display_name = "Shield"
+slot = 1
+stats = SubResource("Resource_me4q2")
+growth = SubResource("Resource_10sm4")
+teaches = Array[ExtResource("3_5icf3")]([ExtResource("4_dl15q")])

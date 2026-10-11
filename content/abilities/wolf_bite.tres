@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_0k60o"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_w3uaw"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_1wx37"]
+
+[sub_resource type="Resource" id="Resource_c6vb8"]
+script = ExtResource("2_w3uaw")
+
+[sub_resource type="Resource" id="Resource_flud3"]
+script = ExtResource("1_0k60o")
+base_amount = 6.0
+scaling = Array[ExtResource("2_w3uaw")]([SubResource("Resource_c6vb8")])
+
+[resource]
+script = ExtResource("3_1wx37")
+id = &"wolf_bite"
+display_name = "Bite"
+cooldown_seconds = 2.0
+effects = Array[ExtResource("1_0k60o")]([SubResource("Resource_flud3")])

@@ -1,0 +1,62 @@
+class_name Actor
+extends RefCounted
+## Common state for anything that fights: heroes and enemies.
+## `stats` are the effective stats before buffs (base + growth + gear for heroes);
+## whoever owns the actor keeps them up to date.
+
+enum Team {
+	HEROES,
+	ENEMIES,
+}
+
+var id: int = 0
+var team: Team = Team.HEROES
+var display_name: String = ""
+var stats: StatBlock = StatBlock.new()
+var hp: float = 0.0
+var mana: float = 0.0
+var alive: bool = true
+var move := MoveState.new()
+var cooldowns := Cooldowns.new()
+var buffs := ActiveBuffs.new()
+## Enemies only: who they want to hit. Null for heroes.
+var threat: ThreatTable
+## Sim time until which this actor counts as in combat (refreshed by WorldSim).
+var combat_until: float = -1.0
+## Leashing enemies can't be targeted by hostile abilities.
+var evading: bool = false
+
+
+func _init(p_id: int = 0, p_team: Team = Team.HEROES, p_stats: StatBlock = null) -> void:
+	id = p_id
+	team = p_team
+	if p_stats != null:
+		stats = p_stats
+	hp = stats.hp
+	mana = stats.mana
+	if team == Team.ENEMIES:
+		threat = ThreatTable.new()
+
+
+func tile() -> Vector2i:
+	return move.to_tile
+
+
+## Stats with active buffs applied.
+func current_stats(now: float) -> StatBlock:
+	return buffs.modify(stats, now)
+
+
+func in_combat(now: float) -> bool:
+	return alive and now < combat_until
+
+
+func is_hostile_to(other: Actor) -> bool:
+	return team != other.team
+
+
+func die() -> void:
+	alive = false
+	hp = 0.0
+	combat_until = -1.0
+	buffs.clear()

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_s2thl"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_m7tx0"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_xxegw"]
+[ext_resource type="Resource" path="res://content/abilities/fireball.tres" id="4_4n1s6"]
+
+[sub_resource type="Resource" id="Resource_if1w3"]
+script = ExtResource("1_s2thl")
+mana = 8.0
+mag_atk = 4.0
+
+[sub_resource type="Resource" id="Resource_pwqta"]
+script = ExtResource("1_s2thl")
+mana = 30.0
+mag_atk = 14.0
+
+[resource]
+script = ExtResource("2_m7tx0")
+id = &"staff"
+display_name = "Staff"
+stats = SubResource("Resource_pwqta")
+growth = SubResource("Resource_if1w3")
+teaches = Array[ExtResource("3_xxegw")]([ExtResource("4_4n1s6")])

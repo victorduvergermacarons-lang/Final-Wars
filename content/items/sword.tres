@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_7oumm"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_c8ag5"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_uynvv"]
+[ext_resource type="Resource" path="res://content/abilities/strike.tres" id="4_81fyi"]
+
+[sub_resource type="Resource" id="Resource_qowd7"]
+script = ExtResource("1_7oumm")
+hp = 10.0
+phys_atk = 4.0
+
+[sub_resource type="Resource" id="Resource_s3hcn"]
+script = ExtResource("1_7oumm")
+phys_atk = 12.0
+accuracy = 5.0
+
+[resource]
+script = ExtResource("2_c8ag5")
+id = &"sword"
+display_name = "Sword"
+stats = SubResource("Resource_s3hcn")
+growth = SubResource("Resource_qowd7")
+teaches = Array[ExtResource("3_uynvv")]([ExtResource("4_81fyi")])
