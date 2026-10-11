@@ -16,8 +16,8 @@ func before_each() -> void:
 	strike = F.ability(&"strike", 30)
 	heal = F.ability(&"heal", 20)
 	rez = F.ability(&"resurrect", 40)
-	sword = F.item(&"sword", EquipSlot.Id.MAIN_HAND, {}, {}, [strike])
-	charm = F.item(&"charm", EquipSlot.Id.ACCESSORY, {}, {}, [heal, rez])
+	sword = F.item(&"sword", EquipSlot.Type.MAIN_HAND, {}, {}, [strike])
+	charm = F.item(&"charm", EquipSlot.Type.ACCESSORY, {}, {}, [heal, rez])
 
 
 func test_level_up_awards_ap_to_equipped_abilities() -> void:
@@ -74,6 +74,6 @@ func test_ap_progress_survives_swapping_items() -> void:
 
 func test_abilities_without_threshold_are_never_mastered() -> void:
 	var claw := F.ability(&"claw", 0)
-	var h := F.hero_with([F.item(&"claws", EquipSlot.Id.MAIN_HAND, {}, {}, [claw])])
+	var h := F.hero_with([F.item(&"claws", EquipSlot.Type.MAIN_HAND, {}, {}, [claw])])
 	assert_eq(ApMastery.award(h, 100).size(), 0)
 	assert_false(h.is_mastered(&"claw"))

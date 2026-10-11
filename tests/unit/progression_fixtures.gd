@@ -10,7 +10,7 @@ static func ability(id: StringName, ap_to_master: int) -> AbilityDef:
 	return a
 
 
-static func item(id: StringName, slot: EquipSlot.Id, stats: Dictionary, growth: Dictionary,
+static func item(id: StringName, slot: EquipSlot.Type, stats: Dictionary, growth: Dictionary,
 		teaches: Array[AbilityDef] = []) -> ItemDef:
 	var i := ItemDef.new()
 	i.id = id

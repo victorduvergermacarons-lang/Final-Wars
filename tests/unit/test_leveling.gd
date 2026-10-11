@@ -8,7 +8,7 @@ var hero: Hero
 
 func before_each() -> void:
 	rules = CombatRules.new()
-	hero = F.hero_with([F.item(&"sword", EquipSlot.Id.MAIN_HAND, {}, {Stat.Id.HP: 20})])
+	hero = F.hero_with([F.item(&"sword", EquipSlot.Type.MAIN_HAND, {}, {Stat.Id.HP: 20})])
 
 
 func _types(events: Array) -> Array:

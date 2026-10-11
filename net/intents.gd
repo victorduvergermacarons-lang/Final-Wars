@@ -40,6 +40,10 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(item) != TYPE_STRING and typeof(item) != TYPE_STRING_NAME:
 				return {}
 			out.item = StringName(item)
+			if raw.has("slot"):
+				if typeof(raw.slot) != TYPE_INT:
+					return {}
+				out.slot = raw.slot
 		"unequip":
 			if typeof(raw.get("slot")) != TYPE_INT:
 				return {}

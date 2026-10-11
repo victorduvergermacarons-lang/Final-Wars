@@ -30,7 +30,7 @@ func _ability(id: StringName, target: AbilityDef.TargetType, effect: AbilityEffe
 	return ab
 
 
-func _item(id: StringName, slot: EquipSlot.Id, teaches: Array[AbilityDef]) -> ItemDef:
+func _item(id: StringName, slot: EquipSlot.Type, teaches: Array[AbilityDef]) -> ItemDef:
 	var i := ItemDef.new()
 	i.id = id
 	i.slot = slot
@@ -76,9 +76,9 @@ func before_each() -> void:
 	var heal := _ability(&"heal", AbilityDef.TargetType.ALLY, _effect(AbilityEffect.Kind.HEAL, 30), 4, 0.0, 5.0)
 	var rez := _ability(&"resurrect", AbilityDef.TargetType.DEAD_ALLY,
 			_effect(AbilityEffect.Kind.RESURRECT, 0), 4, 0.0, 10.0)
-	var sword := _item(&"sword", EquipSlot.Id.MAIN_HAND, [strike])
-	var charm := _item(&"charm", EquipSlot.Id.ACCESSORY, [heal, rez])
-	var staff := _item(&"staff", EquipSlot.Id.MAIN_HAND, [])
+	var sword := _item(&"sword", EquipSlot.Type.MAIN_HAND, [strike])
+	var charm := _item(&"charm", EquipSlot.Type.ACCESSORY, [heal, rez])
+	var staff := _item(&"staff", EquipSlot.Type.MAIN_HAND, [])
 	hero_def = HeroDef.new()
 	hero_def.base_stats = StatBlock.make({Stat.Id.HP: 100, Stat.Id.MANA: 50,
 			Stat.Id.PHYS_ATK: 20, Stat.Id.ACCURACY: 100, Stat.Id.JUMP: 2})

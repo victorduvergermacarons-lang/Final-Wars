@@ -10,9 +10,9 @@ var shield: ItemDef
 
 func before_each() -> void:
 	strike = F.ability(&"strike", 30)
-	sword = F.item(&"sword", EquipSlot.Id.MAIN_HAND, {Stat.Id.PHYS_ATK: 12, Stat.Id.HP: 20}, {}, [strike])
-	staff = F.item(&"staff", EquipSlot.Id.MAIN_HAND, {Stat.Id.MAG_ATK: 15}, {}, [F.ability(&"fireball", 30)])
-	shield = F.item(&"shield", EquipSlot.Id.OFF_HAND, {Stat.Id.PHYS_DEF: 20}, {}, [F.ability(&"block", 30)])
+	sword = F.item(&"sword", EquipSlot.Type.MAIN_HAND, {Stat.Id.PHYS_ATK: 12, Stat.Id.HP: 20}, {}, [strike])
+	staff = F.item(&"staff", EquipSlot.Type.MAIN_HAND, {Stat.Id.MAG_ATK: 15}, {}, [F.ability(&"fireball", 30)])
+	shield = F.item(&"shield", EquipSlot.Type.OFF_HAND, {Stat.Id.PHYS_DEF: 20}, {}, [F.ability(&"block", 30)])
 
 
 func test_equipped_items_add_their_stats() -> void:

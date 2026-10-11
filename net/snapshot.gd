@@ -16,8 +16,9 @@ static func capture(world: WorldSim) -> Dictionary:
 		d.xp = hero.xp
 		d.inv = hero.inventory.map(func(i): return i.id)
 		var eq := {}
-		for item in hero.equipped_items():
-			eq[int(item.slot)] = item.id
+		var equipment := hero.equipment()
+		for slot in equipment:
+			eq[int(slot)] = equipment[slot].id
 		d.eq = eq
 		d.ap = hero.ap.duplicate()
 		d.mastered = hero.mastered.keys()

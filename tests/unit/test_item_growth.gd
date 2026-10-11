@@ -10,8 +10,8 @@ var charm: ItemDef
 func before_each() -> void:
 	rules = CombatRules.new()
 	rules.growth_fraction = 0.5
-	sword = F.item(&"sword", EquipSlot.Id.MAIN_HAND, {}, {Stat.Id.PHYS_ATK: 4, Stat.Id.HP: 10})
-	charm = F.item(&"charm", EquipSlot.Id.ACCESSORY, {}, {Stat.Id.MAG_ATK: 2, Stat.Id.HP: 6})
+	sword = F.item(&"sword", EquipSlot.Type.MAIN_HAND, {}, {Stat.Id.PHYS_ATK: 4, Stat.Id.HP: 10})
+	charm = F.item(&"charm", EquipSlot.Type.ACCESSORY, {}, {Stat.Id.MAG_ATK: 2, Stat.Id.HP: 6})
 
 
 func test_gain_is_fraction_of_every_equipped_items_growth() -> void:

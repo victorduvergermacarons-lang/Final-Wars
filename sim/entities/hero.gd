@@ -42,11 +42,54 @@ static func from_def(p_id: int, def: HeroDef) -> Hero:
 	return h
 
 
-## Equips an owned item into its slot, replacing whatever was there.
-func equip(item: ItemDef) -> bool:
-	if item == null or not inventory.has(item):
+## Which position `item` would go in: `requested` if allowed, otherwise the first
+## free allowed position, otherwise the first allowed one. -1 if it can't be equipped.
+func resolve_slot(item: ItemDef, requested: int = -1) -> int:
+	if item == null:
+		return -1
+	var allowed := EquipSlot.slots_for(item.slot)
+	if allowed.is_empty():
+		return -1
+	if requested >= 0:
+		return requested if allowed.has(requested) else -1
+	for s in allowed:
+		if not _equipped.has(s):
+			return s
+	return allowed[0]
+
+
+## Items that equipping `item` (into `requested`) would take off: whatever is in
+## that position, plus the other hand when two-handed weapons are involved.
+func displaced_by(item: ItemDef, requested: int = -1) -> Array[ItemDef]:
+	var out: Array[ItemDef] = []
+	var s := resolve_slot(item, requested)
+	if s < 0:
+		return out
+	if _equipped.has(s) and _equipped[s] != item:
+		out.append(_equipped[s])
+	if item.is_two_handed() and _equipped.has(EquipSlot.Id.OFF_HAND):
+		out.append(_equipped[EquipSlot.Id.OFF_HAND])
+	if s == EquipSlot.Id.OFF_HAND and _equipped.has(EquipSlot.Id.MAIN_HAND) \
+			and _equipped[EquipSlot.Id.MAIN_HAND].is_two_handed():
+		out.append(_equipped[EquipSlot.Id.MAIN_HAND])
+	return out
+
+
+## Equips an owned item, taking off whatever it displaces. Returns false if the
+## item can't go there or the hero doesn't own another free copy of it.
+func equip(item: ItemDef, requested: int = -1) -> bool:
+	var s := resolve_slot(item, requested)
+	if s < 0 or not inventory.has(item):
 		return false
-	_equipped[item.slot] = item
+	if _equipped.get(s) == item:
+		return true
+	var owned := inventory.count(item)
+	var worn := _equipped.values().count(item)
+	if worn >= owned:
+		return false
+	for d in displaced_by(item, s):
+		_equipped.erase(_equipped.find_key(d))
+	_equipped[s] = item
 	refresh_stats()
 	return true
 
@@ -73,6 +116,11 @@ func equipped_items() -> Array[ItemDef]:
 		if _equipped.has(slot):
 			out.append(_equipped[slot])
 	return out
+
+
+## Position -> item for everything equipped.
+func equipment() -> Dictionary:
+	return _equipped.duplicate()
 
 
 ## Abilities taught by equipped items, each once, in slot order.

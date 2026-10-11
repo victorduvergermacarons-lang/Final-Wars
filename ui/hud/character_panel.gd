@@ -3,7 +3,6 @@ extends PanelContainer
 ## Equipment (one dropdown per slot), stats and ability progress. Gear changes
 ## are sent as intents; the host refuses them in combat.
 
-const SLOT_NAMES := ["Main Hand", "Off Hand", "Accessory", "Body"]
 const STAT_NAMES := ["HP", "Mana", "Physical Attack", "Magic Attack", "Physical Defense",
 	"Magic Defense", "Crit Rate %", "Crit Damage %", "Speed", "Accuracy", "Evasion", "Jump"]
 
@@ -25,7 +24,7 @@ func _init(p_hud: Hud) -> void:
 	for slot in EquipSlot.COUNT:
 		var row := HBoxContainer.new()
 		var label := Label.new()
-		label.text = SLOT_NAMES[slot]
+		label.text = EquipSlot.NAMES[slot]
 		label.custom_minimum_size = Vector2(100, 0)
 		row.add_child(label)
 		var picker := OptionButton.new()
@@ -81,7 +80,7 @@ func _refresh_pickers(hero: Hero) -> void:
 		var ids: Array = [&""]
 		picker.add_item("(none)")
 		for item in hero.inventory:
-			if item.slot == slot:
+			if EquipSlot.slots_for(item.slot).has(slot) and not ids.has(item.id):
 				picker.add_item(item.display_name)
 				ids.append(item.id)
 		_picker_items[slot] = ids
@@ -94,5 +93,5 @@ func _on_pick(index: int, slot: int) -> void:
 	if id == &"":
 		hud.session.send_intent({"type": "unequip", "slot": slot})
 	else:
-		hud.session.send_intent({"type": "equip", "item": id})
+		hud.session.send_intent({"type": "equip", "item": id, "slot": slot})
 	_shown_key = "" # re-sync with what the host actually does

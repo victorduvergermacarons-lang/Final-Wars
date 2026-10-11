@@ -24,6 +24,7 @@ func _ability(id: StringName, shape: AbilityDef.Shape, max_range: int, base: flo
 func _hero_with(abilities: Array[AbilityDef]) -> Hero:
 	var item := ItemDef.new()
 	item.id = &"kit"
+	item.slot = EquipSlot.Type.MAIN_HAND
 	item.teaches = abilities
 	var def := HeroDef.new()
 	def.base_stats = StatBlock.make({Stat.Id.HP: 100, Stat.Id.ACCURACY: 100, Stat.Id.JUMP: 2})

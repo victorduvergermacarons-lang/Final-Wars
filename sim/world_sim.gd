@@ -7,7 +7,7 @@ extends RefCounted
 ##   {"type": "face", "dir": Vector2i}        (turn in place; free)
 ##   {"type": "cast", "ability": StringName, "target": int}   (target -1 = none/self)
 ##   {"type": "release"}
-##   {"type": "equip", "item": StringName}
+##   {"type": "equip", "item": StringName, "slot": EquipSlot.Id (optional)}
 ##   {"type": "unequip", "slot": EquipSlot.Id}
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
@@ -294,7 +294,7 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 		"release":
 			reason = _intent_release(hero)
 		"equip":
-			reason = _intent_equip(hero, intent.get("item", &""))
+			reason = _intent_equip(hero, intent.get("item", &""), intent.get("slot", -1))
 		"unequip":
 			reason = _intent_unequip(hero, intent.get("slot", -1))
 		_:
@@ -363,14 +363,15 @@ func _intent_release(hero: Hero) -> String:
 	return ""
 
 
-func _intent_equip(hero: Hero, item_id: StringName) -> String:
+func _intent_equip(hero: Hero, item_id: StringName, slot: int = -1) -> String:
 	if not hero.alive:
 		return "dead"
 	if hero.in_combat(now):
 		return "in_combat"
 	for item in hero.inventory:
 		if item.id == item_id:
-			hero.equip(item)
+			if not hero.equip(item, slot):
+				return "cannot_equip"
 			emit({"type": "equip", "target": hero.id, "item": item.id})
 			return ""
 	return "unknown_item"
