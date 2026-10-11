@@ -49,20 +49,25 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(6)
 	assert_eq(whiffs.size(), 1, "Strike went out and hit nothing")
 
-	# Equip the Staff from the character panel (out of combat): Fireball appears on the bar.
+	# Equip the Staff from the inventory window (out of combat): Fireball appears on the bar.
+	hud._toggle(hud.inventory_window)
 	hud._toggle(hud._character)
 	hud._toggle(hud._spellbook)
 	await wait_process_frames(2)
-	var picker: OptionButton = hud._character._pickers[EquipSlot.Id.MAIN_HAND]
-	var staff_index: int = hud._character._picker_items[EquipSlot.Id.MAIN_HAND].find(&"staff")
-	assert_gt(staff_index, 0)
-	picker.select(staff_index)
-	picker.item_selected.emit(staff_index)
+	var staff_index := hero.bag.index_of(ContentDB.items[&"staff"])
+	assert_gt(staff_index, -1)
+	var main_hand: ItemSlotView = null
+	for v in hud.inventory_window.find_children("*", "ItemSlotView", true, false):
+		if v.kind == ItemSlotView.Kind.EQUIP and v.index == EquipSlot.Id.MAIN_HAND:
+			main_hand = v
+	main_hand._drop_data(Vector2.ZERO, {"item_from": ItemSlotView.Kind.BAG, "index": staff_index})
 	await wait_physics_frames(6)
 	await wait_process_frames(2)
 	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"staff")
+	assert_eq(hero.bag.count_of(ContentDB.items[&"sword"]), 1, "the sword went to the bag")
 	assert_true(game.client.action_bar.slots.has(&"fireball"))
 	assert_true(game.client.action_bar.slots.has(&"strike"), "Strike's slot stays (dimmed)")
+	assert_not_null(main_hand._make_custom_tooltip(""), "tooltip builds")
 
 	# The layout was saved to the settings file.
 	var reloaded := ActionBarModel.new()

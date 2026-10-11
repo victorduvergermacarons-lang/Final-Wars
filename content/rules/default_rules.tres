@@ -35,3 +35,4 @@ out_of_combat_mana_regen_percent = 2.0
 in_combat_hp_regen_percent = 0.0
 in_combat_mana_regen_percent = 0.5
 release_fraction = 0.5
+vendor_sell_fraction = 0.25

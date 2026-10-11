@@ -30,6 +30,7 @@ var hovered_slot := -1
 var _root: Control
 var _party: VBoxContainer
 var _party_frames := {} # hero id -> UnitFrame
+var inventory_window: InventoryWindow
 var _spellbook: SpellbookPanel
 var _character: CharacterPanel
 var _death: PanelContainer
@@ -80,6 +81,7 @@ func _build() -> void:
 	bottom.add_child(buttons)
 	buttons.add_child(_small_button("Spellbook (P)", func(): _toggle(_spellbook)))
 	buttons.add_child(_small_button("Character (C)", func(): _toggle(_character)))
+	buttons.add_child(_small_button("Inventory (B)", func(): _toggle(inventory_window)))
 	_bind_button = _small_button("Keybinds", func(): _set_bind_mode(not bind_mode))
 	buttons.add_child(_bind_button)
 	var bar := HBoxContainer.new()
@@ -97,6 +99,9 @@ func _build() -> void:
 	_character = CharacterPanel.new(self)
 	_character.visible = false
 	right.add_child(_character)
+	inventory_window = InventoryWindow.new(self)
+	inventory_window.visible = false
+	right.add_child(inventory_window)
 	_spellbook = SpellbookPanel.new(self)
 	_spellbook.visible = false
 	right.add_child(_spellbook)
@@ -180,6 +185,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle(_spellbook)
 	elif event.is_action_pressed(&"toggle_character"):
 		_toggle(_character)
+	elif event.is_action_pressed(&"toggle_inventory"):
+		_toggle(inventory_window)
 
 
 ## Keybind mode grabs key presses before anything else sees them.

@@ -21,6 +21,7 @@ const OTHER := {
 	&"release": [KEY_R],
 	&"toggle_spellbook": [KEY_P],
 	&"toggle_character": [KEY_C],
+	&"toggle_inventory": [KEY_B],
 }
 
 

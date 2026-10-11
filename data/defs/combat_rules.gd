@@ -93,3 +93,7 @@ enum GrowthLimit {
 @export var ap_per_level: int = 10
 ## Refill HP and Mana to full on level-up.
 @export var refill_on_level_up: bool = true
+
+@export_group("Economy")
+## Vendors pay this fraction of an item's price when you sell it.
+@export var vendor_sell_fraction: float = 0.25
