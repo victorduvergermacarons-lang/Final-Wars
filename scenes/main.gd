@@ -34,6 +34,7 @@ func _new_game() -> Game:
 	_game = Game.new()
 	_game.name = "Game"
 	_game.store = _store
+	_game.world_store = WorldStore.new()
 	add_child(_game)
 	_game.ended.connect(_end_game)
 	return _game

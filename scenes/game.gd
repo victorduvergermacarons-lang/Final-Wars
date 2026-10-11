@@ -12,6 +12,8 @@ var client := ClientState.new()
 var settings_path := SettingsStore.DEFAULT_PATH
 ## Where the local character is saved; null disables saving (tests).
 var store: CharacterStore = null
+## Where the host keeps world state (one-time events); null disables it (tests).
+var world_store: WorldStore = null
 
 const AUTOSAVE_SECONDS := 60.0
 var _since_save := 0.0
@@ -24,6 +26,7 @@ func start_solo(character: Dictionary) -> void:
 	add_child(local)
 	local.start(_zone(), ContentDB.rules, character, randi())
 	session = local
+	_load_world()
 	_build_client(_zone())
 
 
@@ -36,6 +39,7 @@ func start_host(character: Dictionary, port: int) -> Error:
 	if err != OK:
 		return err
 	session = host
+	_load_world()
 	_build_client(_zone())
 	client.say("Hosting on port %d. Waiting for friends to join…" % port)
 	return OK
@@ -47,7 +51,7 @@ func start_join(character: Dictionary, address: String, port: int) -> Error:
 	var joiner := ClientSession.new()
 	joiner.name = "Session"
 	add_child(joiner)
-	var err := joiner.connect_to(address, port, str(character.get("name", "Adventurer")))
+	var err := joiner.connect_to(address, port, character)
 	if err != OK:
 		return err
 	session = joiner
@@ -56,14 +60,17 @@ func start_join(character: Dictionary, address: String, port: int) -> Error:
 	return OK
 
 
-## Saves the local hero to this computer. Joined clients don't save yet (their
-## gold and quests aren't replicated until milestone 2 step 6).
+## Saves the local hero to this computer (joined players save from their copy of
+## the host's state, which includes their private data). The host/solo player also
+## saves the world's one-time events.
 func save_now() -> void:
-	if store == null or session == null or session is ClientSession:
+	if session == null:
 		return
 	var hero: Hero = session.local_hero()
-	if hero != null:
+	if store != null and hero != null:
 		store.save(CharacterData.capture(hero))
+	if world_store != null and not (session is ClientSession):
+		world_store.save(session.world.world_flags)
 
 
 func _process(delta: float) -> void:
@@ -71,6 +78,11 @@ func _process(delta: float) -> void:
 	if _since_save >= AUTOSAVE_SECONDS:
 		_since_save = 0.0
 		save_now()
+
+
+func _load_world() -> void:
+	if world_store != null:
+		session.world.world_flags = world_store.load_flags()
 
 
 func _zone() -> ZoneDef:

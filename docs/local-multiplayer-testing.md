@@ -9,7 +9,7 @@ Godot can launch several copies of the game with one press of **F5**.
 
 1. Open the project in Godot 4.7.
 2. Menu **Debug → Customize Run Instances…**
-3. Tick **Enable Multiple Instances** and set the count to **2**.
+3. Tick **Enable Multiple Instances** and set the count to **2** (up to 4).
 4. In the instance list, give each instance its **launch arguments**:
 
    | Instance | Arguments |
@@ -69,9 +69,11 @@ corrected by the host); abilities take effect once the host confirms them.
 GODOT=/path/to/godot tests/net/run_net_check.sh
 ```
 
-Starts a headless host and a headless client on localhost, makes the client
-walk four tiles and cast, and checks both sides agree. Prints
-`Network check passed.` on success; logs go to `/tmp/netcheck_*.log`.
+Starts a headless host and three headless clients on localhost (set `PLAYERS=2`
+for fewer). Each client joins with its own character, walks four tiles, casts and
+saves its hero; the host checks every guest arrived and that each hero leaves the
+world cleanly when its player disconnects. Prints `Network check passed.` on
+success; logs go to `/tmp/netcheck/`.
 
 ## Troubleshooting
 
@@ -79,7 +81,7 @@ walk four tiles and cast, and checks both sides agree. Prints
 |---------|--------------------|
 | "Could not host on port 7777" | Another program (or another host instance) uses the port. Pick another port on both sides. |
 | Joiner stays on "Connecting…", then "Could not connect" | Wrong IP, host not running, firewall blocking UDP 7777, or (internet) no port forward. |
-| "The game is full." | Milestone 1 allows 2 players (`Net.MAX_PLAYERS`). |
+| "The game is full." / can't connect to a full game | Up to 4 players (`Net.MAX_PLAYERS`). |
 | "The host is using a zone this game doesn't have" | The two copies are different builds. Both players need the same version. |
 | Two windows but keys move nothing | Click the window you want to control first. |
 | Action bar keys changed unexpectedly | Both instances share `user://settings.cfg`; rebinding in one affects the other next launch. |

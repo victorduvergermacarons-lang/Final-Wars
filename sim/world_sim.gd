@@ -27,6 +27,9 @@ var _next_id := 1
 var _heroes := {} # id -> Hero
 var _enemies := {} # id -> Enemy
 var _intents: Array = [] # [hero_id, intent]
+## One-time world events that have happened (e.g. a quest that changes the world).
+## Saved by the host. Keys are event ids, values are true or small plain data.
+var world_flags := {}
 var _projectiles: Array[Projectile] = []
 var _next_projectile_id := 1
 ## Recent hero positions, for enemies' reaction delay: hero id -> [[time, tile], ...].

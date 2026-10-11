@@ -315,7 +315,11 @@ docs/            how-to docs (building, testing, local multiplayer)
       acknowledged intent sequence numbers. Abilities are not predicted.
     - Client disconnect → hero removed (enemies drop it from threat). Host
       disconnect → clients return to the menu with a message.
-    - `Net.MAX_PLAYERS` = 2 for M1; nothing else assumes 2.
+    - `Net.MAX_PLAYERS` = 4 (M2). Joining sends your saved character; the host
+      validates it (`CharacterData.restore`). Each client gets its own snapshot:
+      other heroes' bag, gold, AP, XP and quests are never sent.
+    - The host (or solo player) saves world state (one-time events) to
+      `user://world.json`; each player saves their own character.
 15. **HUD** (approved 2026-10-11):
     - One action bar of 10 slots on 1–9, 0. Cooldown sweep + seconds, GCD sweep.
       Tint: blue = not enough mana, red = out of range / no valid target, dark =

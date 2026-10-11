@@ -1,30 +1,38 @@
 class_name Snapshot
 extends RefCounted
-## Full world state as plain data, sent from the host to clients every tick.
+## World state as plain data, sent from the host to each client every tick.
 ## Content (items, abilities, enemy types, buffs) is referenced by id only.
+## Each client gets its own copy: other heroes' bags, gold, AP and quests stay
+## private; only the viewer's own hero carries a "private" block.
 
 const KIND_HERO := 0
 const KIND_ENEMY := 1
 
 
-static func capture(world: WorldSim) -> Dictionary:
+static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 	var actors: Array = []
 	for hero in world.heroes():
 		var d := _actor(hero)
 		d.kind = KIND_HERO
 		d.level = hero.level
-		d.xp = hero.xp
-		d.bag = hero.bag.to_array()
-		d.base = hero.base_stats.to_dict()
-		d.growth = hero.growth.to_dict()
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:
 			eq[int(slot)] = equipment[slot].id
 		d.eq = eq
-		d.ap = hero.ap.duplicate()
-		d.mastered = hero.mastered.keys()
-		d.ack = world.intent_ack(hero.id)
+		if hero.id == viewer_id:
+			d.private = {
+				"xp": hero.xp,
+				"gold": hero.gold,
+				"bag": hero.bag.to_array(),
+				"base": hero.base_stats.to_dict(),
+				"growth": hero.growth.to_dict(),
+				"ap": hero.ap.duplicate(),
+				"mastered": hero.mastered.keys(),
+				"quests": hero.quest_state,
+				"def": hero.def_id,
+				"ack": world.intent_ack(hero.id),
+			}
 		actors.append(d)
 	for enemy in world.enemies():
 		var d := _actor(enemy)

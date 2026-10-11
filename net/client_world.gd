@@ -155,24 +155,30 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 
 func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
-	h.xp = d.xp
-	h.bag = Bag.from_array(d.bag, content.items)
-	h.base_stats = StatBlock.from_dict(d.get("base", {}))
-	h.growth = StatBlock.from_dict(d.get("growth", {}))
 	var eq := {}
 	for slot in d.eq:
 		var item: ItemDef = content.items.get(StringName(d.eq[slot]))
 		if item != null:
 			eq[int(slot)] = item
 	h.set_equipped_raw(eq)
+	if not d.has("private"):
+		return
+	var p: Dictionary = d.private
+	h.xp = p.xp
+	h.gold = p.gold
+	h.def_id = StringName(p.get("def", "adventurer"))
+	h.bag = Bag.from_array(p.bag, content.items)
+	h.base_stats = StatBlock.from_dict(p.base)
+	h.growth = StatBlock.from_dict(p.growth)
 	h.ap = {}
-	for id in d.ap:
-		h.ap[StringName(id)] = int(d.ap[id])
+	for id in p.ap:
+		h.ap[StringName(id)] = int(p.ap[id])
 	h.mastered = {}
-	for id in d.mastered:
+	for id in p.mastered:
 		var ability: AbilityDef = content.abilities.get(StringName(id))
 		if ability != null:
 			h.mastered[StringName(id)] = ability
+	h.quest_state = p.quests
 
 
 ## Host state, then re-apply steps the host hasn't processed yet. If the
@@ -181,7 +187,7 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 func _apply_local_hero(h: Hero, d: Dictionary) -> void:
 	var shown := h.move
 	_apply_actor(h, d)
-	var ack: int = d.ack
+	var ack: int = d.private.ack if d.has("private") else 0
 	_pending = _pending.filter(func(p): return p.seq > ack)
 	for p in _pending:
 		if not h.alive:

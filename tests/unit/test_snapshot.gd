@@ -29,7 +29,7 @@ func before_each() -> void:
 
 
 func _sync() -> void:
-	mirror.apply_snapshot(Snapshot.capture(world))
+	mirror.apply_snapshot(Snapshot.capture(world, hero.id))
 
 
 func test_snapshot_rebuilds_every_actor() -> void:
@@ -66,7 +66,7 @@ func test_snapshot_carries_progress_cooldowns_and_buffs() -> void:
 
 func test_snapshot_survives_variant_encoding() -> void:
 	# What actually crosses the wire: encode/decode like an RPC would.
-	var bytes := var_to_bytes(Snapshot.capture(world))
+	var bytes := var_to_bytes(Snapshot.capture(world, hero.id))
 	mirror.apply_snapshot(bytes_to_var(bytes))
 	assert_eq(mirror.local_hero().tile(), hero.tile())
 
@@ -152,3 +152,19 @@ func test_facing_is_replicated_and_predicted() -> void:
 	_sync()
 	assert_eq(mirror.local_hero().facing, Vector2i.RIGHT)
 	assert_eq(mirror.pending_step_count(), 0)
+
+
+func test_other_heroes_private_data_is_not_sent() -> void:
+	other.gold = 500
+	other.bag.add(db.items[&"staff"])
+	var snap := Snapshot.capture(world, hero.id)
+	for d in snap.actors:
+		if d.id == other.id:
+			assert_false(d.has("private"), "no bag, gold, AP or quests for other players")
+			assert_true(d.has("eq"), "equipment and level stay visible")
+		elif d.id == hero.id:
+			assert_true(d.has("private"))
+	hero.gold = 42
+	_sync()
+	assert_eq(mirror.local_hero().gold, 42)
+	assert_eq(mirror.get_actor(other.id).gold, 0, "never received")

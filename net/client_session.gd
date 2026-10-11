@@ -14,13 +14,13 @@ const MAX_EXTRAPOLATION := 0.25
 
 var mirror: ClientWorld
 var local_hero_id: int = -1
-var player_name := "Player"
+var character: Dictionary = {}
 var _snapshot_received_at := 0.0
 var _connected := false
 
 
-func connect_to(address: String, port: int, p_name: String) -> Error:
-	player_name = p_name
+func connect_to(address: String, port: int, p_character: Dictionary) -> Error:
+	character = p_character
 	var err: Error = Net.join(address, port)
 	if err != OK:
 		return err
@@ -38,7 +38,7 @@ func _exit_tree() -> void:
 
 func _on_connected() -> void:
 	_connected = true
-	Net.send_join(player_name)
+	Net.send_join(character)
 
 
 func on_welcome(hero_id: int, zone_id: StringName) -> void:
