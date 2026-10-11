@@ -8,13 +8,12 @@ var player_name := "Host"
 var _heroes_by_peer := {} # peer id -> hero id
 
 
-func start_hosting(zone: ZoneDef, rules: CombatRules, hero_def: HeroDef, port: int, p_name: String) -> Error:
+func start_hosting(zone: ZoneDef, rules: CombatRules, character: Dictionary, port: int) -> Error:
 	var err: Error = Net.host(port)
 	if err != OK:
 		return err
-	start(zone, rules, hero_def, randi())
-	player_name = p_name
-	local_hero().display_name = p_name
+	start(zone, rules, character, randi())
+	player_name = local_hero().display_name
 	_heroes_by_peer[1] = local_hero_id
 	Net.handler = self
 	Net.peer_left.connect(_on_peer_left)

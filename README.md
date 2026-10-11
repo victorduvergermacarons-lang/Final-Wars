@@ -11,8 +11,12 @@ Open the folder in the Godot editor and press **F5**. The main menu offers
 **Play Solo**, **Host Game** (default port 7777) and **Join Game** (host's IP + port).
 To play over the internet, the host must forward UDP port 7777 on their router.
 
+Pick or create a **character** in the main menu first. Characters save on your
+computer (Godot's user folder, `characters/`) every 60 seconds, when you return to
+the menu and when you quit, so you keep your level, gear, AP and mastered abilities.
+
 Command-line shortcuts: `--solo`, `--host`, `--join=ADDRESS`, optionally
-`--port=N` and `--name=NAME`. To test co-op on one machine (two instances from
+`--port=N` and `--name=NAME` (loads that character, creating it if needed). To test co-op on one machine (two instances from
 the editor), over LAN or over the internet, see
 [docs/local-multiplayer-testing.md](docs/local-multiplayer-testing.md).
 

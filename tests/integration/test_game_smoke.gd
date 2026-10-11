@@ -17,7 +17,7 @@ func test_solo_game_runs_with_hud() -> void:
 	var game := Game.new()
 	game.settings_path = SETTINGS
 	add_child(game)
-	game.start_solo("Tester")
+	game.start_solo(CharacterData.new_character("Tester", ContentDB.heroes[&"adventurer"]))
 	var session: LocalSession = game.session
 	var hero := session.local_hero()
 	var input: PlayerInput = game.get_node("PlayerInput")
@@ -67,12 +67,20 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_eq(hero.bag.count_of(ContentDB.items[&"sword"]), 1, "the sword went to the bag")
 	assert_true(game.client.action_bar.slots.has(&"fireball"))
 	assert_true(game.client.action_bar.slots.has(&"strike"), "Strike's slot stays (dimmed)")
-	assert_not_null(main_hand._make_custom_tooltip(""), "tooltip builds")
+	var tooltip = main_hand._make_custom_tooltip("")
+	assert_not_null(tooltip, "tooltip builds")
+	tooltip.free()
 
 	# The layout was saved to the settings file.
 	var reloaded := ActionBarModel.new()
 	SettingsStore.load_action_bar(reloaded, SETTINGS)
 	assert_eq(reloaded.slots, game.client.action_bar.slots)
+
+	# Saving writes the hero's progress to the store.
+	game.store = CharacterStore.new("user://test_smoke_characters")
+	game.save_now()
+	assert_eq(game.store.load_character("Tester").equipped["5"], "staff")
+	game.store.delete("Tester")
 
 	game.free()
 	await wait_process_frames(1)

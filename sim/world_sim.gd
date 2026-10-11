@@ -51,11 +51,22 @@ func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0) -> void:
 
 func add_hero(def: HeroDef) -> Hero:
 	var hero := Hero.from_def(_take_id(), def)
+	_place_new_hero(hero)
+	return hero
+
+
+func _place_new_hero(hero: Hero) -> void:
 	var spawns := zone.hero_spawns
 	var want := spawns[_heroes.size() % spawns.size()] if not spawns.is_empty() else Vector2i.ZERO
 	hero.move.place(find_free_tile_near(want))
 	_heroes[hero.id] = hero
 	ctx.add_actor(hero)
+
+
+## Brings a saved character into the world (see CharacterData), at a hero spawn.
+func add_saved_hero(data: Dictionary, content) -> Hero:
+	var hero := CharacterData.restore(_take_id(), data, content)
+	_place_new_hero(hero)
 	return hero
 
 

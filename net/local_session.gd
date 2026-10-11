@@ -11,9 +11,10 @@ var local_hero_id: int = -1
 var _accumulator := 0.0
 
 
-func start(zone: ZoneDef, rules: CombatRules, hero_def: HeroDef, rng_seed: int = 0) -> void:
+## Starts the world with the local player's saved character (CharacterData).
+func start(zone: ZoneDef, rules: CombatRules, character: Dictionary, rng_seed: int = 0) -> void:
 	world = WorldSim.new(zone, rules, rng_seed)
-	local_hero_id = world.add_hero(hero_def).id
+	local_hero_id = world.add_saved_hero(character, ContentDB).id
 
 
 func send_intent(intent: Dictionary) -> void:

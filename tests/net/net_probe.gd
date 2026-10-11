@@ -27,7 +27,7 @@ func _finish(ok: bool, msg: String) -> void:
 func _run_host(port: int) -> void:
 	var game := Game.new()
 	add_child(game)
-	if game.start_host("Host", port) != OK:
+	if game.start_host(CharacterData.new_character("Host", ContentDB.heroes[&"adventurer"]), port) != OK:
 		_finish(false, "host: could not listen on %d" % port)
 		return
 	var world: WorldSim = game.session.world
@@ -61,7 +61,7 @@ func _run_host(port: int) -> void:
 func _run_join(port: int) -> void:
 	var game := Game.new()
 	add_child(game)
-	if game.start_join("Guest", "127.0.0.1", port) != OK:
+	if game.start_join(CharacterData.new_character("Guest", ContentDB.heroes[&"adventurer"]), "127.0.0.1", port) != OK:
 		_finish(false, "join: could not start client")
 		return
 	var session: ClientSession = game.session

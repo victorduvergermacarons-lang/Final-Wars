@@ -3,7 +3,12 @@ extends Actor
 ## A player hero: level, XP, gear, permanent item growth, AP and mastered abilities.
 ## Call refresh_stats() after anything that changes base, growth or gear.
 
+## Which HeroDef this hero was made from (for saves).
+var def_id: StringName = &"adventurer"
 var level: int = 1
+var gold: int = 0
+## Per-quest progress, saved with the character (filled in by the quest system).
+var quest_state := {}
 var xp: float = 0.0
 var base_stats: StatBlock = StatBlock.new()
 ## Permanent stats gained from item growth on level-ups.
@@ -33,6 +38,7 @@ func _init(p_id: int = 0, p_base: StatBlock = null) -> void:
 
 static func from_def(p_id: int, def: HeroDef) -> Hero:
 	var h := Hero.new(p_id, def.base_stats.copy())
+	h.def_id = def.id
 	h.display_name = def.display_name
 	var to_bag := def.starting_items.duplicate()
 	for item in def.starting_equipment:
