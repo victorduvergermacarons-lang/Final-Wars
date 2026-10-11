@@ -154,8 +154,10 @@ docs/            how-to docs (building, testing, local multiplayer)
 1. **Directions:** 4 grid directions, no diagonals.
 2. **Occupancy:** one actor per tile, allies included; no swapping in M1.
 3. **Height:** one height per tile (no bridges/overhangs yet; would need a layered grid).
-4. **Speed:** shortens the in-combat step cooldown, down to a floor. Out of combat,
-   everyone walks at a fixed pace.
+4. **Speed:** shortens the in-combat step cooldown, down to a floor. Out of combat
+   there is no step cooldown at all: heroes walk tile to tile at a fixed walking speed
+   (`walk_tile_seconds`), and the next step starts as soon as the previous one arrives.
+   The host only rejects steps that start before the current walk has arrived.
 5. **Combat membership:** each enemy keeps a WoW-style threat table. Damage and healing
    add threat; taunt forces you to the top. A hero is in combat while any enemy lists
    them. Healing/buffing a hero in combat puts you on that enemy's table too. Combat
@@ -182,6 +184,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | No step cooldown out of combat | Only the walk animation time limits steps out of combat. In combat: arrival + step cooldown. |
 | 2026-10-11 | Holy Charm teaches two abilities: Heal and Resurrect | Items can teach several abilities (`ItemDef.teaches` is a list). |
 | 2026-10-11 | Shield ability is Block | Temporary buff that doubles Physical Defense. Duration/cooldown tuned in content. |
 | 2026-10-11 | Staff is one-handed | Sword or Staff can be paired with the Shield. |

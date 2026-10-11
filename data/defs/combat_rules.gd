@@ -4,8 +4,10 @@ extends Resource
 ## Later steps add combat math, growth, XP, regen and respawn settings here.
 
 @export_group("Movement")
-## Time per tile when walking out of combat (same for everyone).
-@export var walk_step_seconds: float = 0.25
+## Time to walk across one tile (the travel animation), same for everyone.
+## Out of combat this is the only limit on stepping: there is no step cooldown,
+## the next step can start the moment the previous one arrives.
+@export var walk_tile_seconds: float = 0.25
 ## In-combat step cooldown at 0 Speed.
 @export var combat_step_base_seconds: float = 0.6
 ## Speed can never push the in-combat step cooldown below this.
