@@ -43,7 +43,10 @@ func load_character(char_name: String, by_file: bool = false) -> Dictionary:
 	var path := dir.path_join(char_name + ".json") if by_file else _path(char_name)
 	if not FileAccess.file_exists(path):
 		return {}
-	var parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var json := JSON.new()
+	if json.parse(FileAccess.get_file_as_string(path)) != OK:
+		return {}
+	var parsed = json.data
 	return parsed if typeof(parsed) == TYPE_DICTIONARY else {}
 
 

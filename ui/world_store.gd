@@ -14,7 +14,10 @@ func _init(p_path: String = DEFAULT_PATH) -> void:
 func load_flags() -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return {}
-	var parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var json := JSON.new()
+	if json.parse(FileAccess.get_file_as_string(path)) != OK:
+		return {}
+	var parsed = json.data
 	if typeof(parsed) != TYPE_DICTIONARY or typeof(parsed.get("flags")) != TYPE_DICTIONARY:
 		return {}
 	return parsed.flags

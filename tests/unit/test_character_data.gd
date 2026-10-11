@@ -103,3 +103,12 @@ func test_store_saves_lists_and_loads() -> void:
 	store.delete("Bob the Brave")
 	assert_false(store.exists("Bob the Brave"))
 	assert_eq(store.load_character("Nobody"), {})
+
+
+func test_corrupt_save_file_loads_as_missing() -> void:
+	var store := CharacterStore.new(DIR)
+	var f := FileAccess.open(DIR.path_join("broken.json"), FileAccess.WRITE)
+	f.store_string("{oops")
+	f.close()
+	assert_eq(store.load_character("broken"), {})
+	assert_false(store.list().has("broken"))
