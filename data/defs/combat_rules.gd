@@ -1,5 +1,11 @@
 class_name CombatRules
 extends Resource
+
+enum GrowthLimit {
+	NONE, ## Full growth every level.
+	CAP, ## Total growth per stat stops at growth_cap.
+	DIMINISHING, ## Each level's gain × half_point / (half_point + growth so far).
+}
 ## Global tunable constants. One instance lives in content/rules/.
 ## Later steps add combat math, growth, XP, regen and respawn settings here.
 
@@ -53,3 +59,20 @@ extends Resource
 @export_group("Death")
 ## HP and Mana fraction restored by a resurrection.
 @export var resurrect_fraction: float = 0.3
+
+@export_group("Progression")
+## XP needed to go from level L to L+1 = this × L.
+@export var xp_per_level_factor: float = 100.0
+## Highest reachable level. 0 = no cap.
+@export var max_level: int = 0
+## Fraction of each equipped item's per-level growth gained on level-up.
+@export var growth_fraction: float = 0.5
+@export var growth_limit: GrowthLimit = GrowthLimit.NONE
+## CAP mode: maximum total growth per stat (0 = that stat is uncapped).
+@export var growth_cap: StatBlock = StatBlock.new()
+## DIMINISHING mode: growth at which gains are halved, per stat (0 = no falloff).
+@export var growth_half_point: StatBlock = StatBlock.new()
+## AP given on level-up to every ability taught by an equipped item.
+@export var ap_per_level: int = 10
+## Refill HP and Mana to full on level-up.
+@export var refill_on_level_up: bool = true

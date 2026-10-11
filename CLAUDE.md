@@ -184,8 +184,18 @@ docs/            how-to docs (building, testing, local multiplayer)
    Abilities taught: Sword → Strike; Staff → Fireball; Shield → Block (temporary buff
    that doubles Physical Defense); Holy Charm → Heal **and** Resurrect (two abilities,
    so items may teach more than one).
-9. **XP/AP:** each kill's XP is split evenly among heroes on the enemy's threat table.
-   Each level-up gives a fixed AP amount to every ability taught by an equipped item.
+9. **XP/AP/progression** (constants in `CombatRules`):
+   - Each kill's XP is split evenly among heroes on the enemy's threat table.
+     Each enemy type sets its XP reward.
+   - XP to go from level L to L+1 = 100 × L. Extra XP carries over. No level cap
+     (`max_level` = 0).
+   - Level-up: gain 50% of every equipped item's per-level growth, permanently.
+     Growth limit modes CAP (per-stat maximum) and DIMINISHING (gain ×
+     half_point / (half_point + growth so far)) exist but are off by default.
+   - Level-up gives 10 AP to every unmastered ability taught by an equipped item;
+     each ability sets its own AP threshold (`ap_to_master`). AP progress is kept
+     when the item is unequipped.
+   - Level-up refills HP and Mana to full.
 10. **Regen & respawn:** slow HP/Mana regen out of combat, small Mana regen in combat.
     Release → nearest graveyard at 50% HP. Resurrect → 30% HP. Enemies respawn on a
     timer. All configurable.
@@ -194,6 +204,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Step 6 progression numbers approved; level-up refills HP/Mana | See rule 9. |
 | 2026-10-11 | Step 5 combat numbers approved | See rule 7. |
 | 2026-10-11 | No step cooldown out of combat | Only the walk animation time limits steps out of combat. In combat: arrival + step cooldown. |
 | 2026-10-11 | Holy Charm teaches two abilities: Heal and Resurrect | Items can teach several abilities (`ItemDef.teaches` is a list). |
