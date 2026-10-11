@@ -30,6 +30,7 @@ the editor), over LAN or over the internet, see
 | P | Spellbook: drag abilities onto the action bar; right-click a slot to clear it |
 | B | Inventory: equipment + bag. Drag to equip/move, right-click equip/unequip, shift+click split, ctrl+right-click destroy. Hover for tooltips with comparison |
 | C | Character sheet: level, XP, stats (base / growth / gear / buffs), mastered and in-progress abilities |
+| E / right-click an NPC | Talk to a townsperson next to you (within 2 tiles) |
 | R | Release when dead |
 | Mouse wheel | Zoom |
 

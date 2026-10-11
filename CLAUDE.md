@@ -461,15 +461,15 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     Skirmisher (0.6 s/tile, moves to your side or back before attacking).
     **Elite "Old Grizzlehide":** level 5 bear on a patrol loop, ~6× Wolf HP, Cleave +
     Charge, respawn 5 min, drops the Epic mantle and Rares.
+12. **Saving:** plain-data JSON per character in the user folder; several characters per
+    computer. The host validates a joining hero's data (known ids, sane values) but
+    otherwise trusts it.
 13. **Zones (as built in step 7):** `World` holds one `WorldSim` per zone, stepped on a
     shared clock with shared actor ids. Exit tiles (`ZoneDef.exits`) move a hero when
     they arrive on one; exits don't work while you're in combat. Each client only gets
     its own zone's snapshot and events and rebuilds its map when it changes zone.
     Town "Millbrook" (18×18) is the start/join zone; its east edge leads to
     Greenfields' west edge.
-12. **Saving:** plain-data JSON per character in the user folder; several characters per
-    computer. The host validates a joining hero's data (known ids, sane values) but
-    otherwise trusts it.
 
 ## Decisions log
 | Date | Decision | Notes |

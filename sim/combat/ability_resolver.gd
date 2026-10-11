@@ -110,9 +110,9 @@ static func _is_valid_target(caster: Actor, ability: AbilityDef, target: Actor) 
 		AbilityDef.TargetType.ENEMY:
 			return target.alive and caster.is_hostile_to(target) and not target.evading
 		AbilityDef.TargetType.ALLY:
-			return target.alive and not caster.is_hostile_to(target)
+			return target.alive and caster.is_ally_of(target)
 		AbilityDef.TargetType.DEAD_ALLY:
-			return not target.alive and not caster.is_hostile_to(target)
+			return not target.alive and caster.is_ally_of(target)
 	return false
 
 

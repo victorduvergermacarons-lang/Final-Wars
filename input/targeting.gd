@@ -16,10 +16,10 @@ static func pick(hero: Hero, ability: AbilityDef, target: Actor) -> Dictionary:
 				return {"target": -1, "error": "No enemy targeted"}
 			return {"target": target.id, "error": ""}
 		AbilityDef.TargetType.ALLY:
-			var friendly := target != null and not hero.is_hostile_to(target) and target.alive
+			var friendly := target != null and hero.is_ally_of(target) and target.alive
 			return {"target": target.id if friendly else hero.id, "error": ""}
 		AbilityDef.TargetType.DEAD_ALLY:
-			if target == null or hero.is_hostile_to(target) or target.alive:
+			if target == null or not hero.is_ally_of(target) or target.alive:
 				return {"target": -1, "error": "Target a fallen ally"}
 			return {"target": target.id, "error": ""}
 	return {"target": -1, "error": "Invalid target"}

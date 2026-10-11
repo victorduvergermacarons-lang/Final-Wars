@@ -158,6 +158,15 @@ func _draw_actor(a: Actor) -> void:
 			var outline := Color(1, 0.25, 0.2) if a.in_combat(now) else Color(0.05, 0.05, 0.1)
 			draw_arc(body, 11, 0, TAU, 24, outline, 2.0)
 		_draw_label(body + Vector2(0, -22), "%s  Lv%d" % [a.display_name, (a as Hero).level], Color.WHITE)
+	elif a is Npc:
+		var npc := a as Npc
+		draw_rect(Rect2(body - Vector2(9, 11), Vector2(18, 22)), npc.def.color)
+		draw_rect(Rect2(body - Vector2(9, 11), Vector2(18, 22)), Color(0.1, 0.08, 0.02), false, 2.0)
+		_draw_label(body + Vector2(0, -22), npc.display_name, Color(1, 0.95, 0.7))
+		var marker: String = client.npc_markers.get(npc.def.id, "") if client != null else ""
+		if marker != "":
+			_draw_label(body + Vector2(0, -38), marker, Color(1, 0.85, 0.1))
+		return
 	else:
 		if not a.alive:
 			return

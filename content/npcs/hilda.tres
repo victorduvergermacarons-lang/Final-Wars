@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NpcDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/npc_def.gd" id="1_s7o53"]
+
+[resource]
+script = ExtResource("1_s7o53")
+id = &"hilda"
+display_name = "Hilda the Trader"
+greeting = "Welcome to Millbrook, traveler! I buy what you find out there and sell what you'll need to stay alive."
+color = Color(0.95, 0.75, 0.3, 1)

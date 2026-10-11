@@ -7,6 +7,7 @@ extends RefCounted
 ##   {"type": "face", "dir": Vector2i}        (turn in place; free)
 ##   {"type": "cast", "ability": StringName, "target": int}   (target -1 = none/self)
 ##   {"type": "release"}
+##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles)
 ##   {"type": "equip", "bag_index": int, "slot": EquipSlot.Id (optional)}
 ##   {"type": "unequip", "slot": EquipSlot.Id}   (into the bag)
 ##   {"type": "move_item", "from": int, "to": int}   (bag slots: swap or merge)
@@ -26,6 +27,7 @@ var now: float = 0.0
 var ids: IdSource
 var _heroes := {} # id -> Hero
 var _enemies := {} # id -> Enemy
+var _npcs := {} # id -> Npc
 var _intents: Array = [] # [hero_id, intent]
 ## One-time world events that have happened (e.g. a quest that changes the world).
 ## Saved by the host. Keys are event ids, values are true or small plain data.
@@ -50,6 +52,11 @@ func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSo
 	ctx = CombatContext.new(grid, rules, rng)
 	for spawn in zone.enemy_spawns:
 		add_enemy(spawn.enemy, spawn.tile)
+	for spawn in zone.npcs:
+		var npc := Npc.new(_take_id(), spawn.npc, spawn.tile)
+		npc.face(spawn.facing)
+		_npcs[npc.id] = npc
+		ctx.add_actor(npc)
 
 
 # --- Actors -----------------------------------------------------------------
@@ -128,6 +135,13 @@ func heroes() -> Array[Hero]:
 	var out: Array[Hero] = []
 	for id in _sorted(_heroes):
 		out.append(_heroes[id])
+	return out
+
+
+func npcs() -> Array[Npc]:
+	var out: Array[Npc] = []
+	for id in _sorted(_npcs):
+		out.append(_npcs[id])
 	return out
 
 
@@ -341,6 +355,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1))
 		"release":
 			reason = _intent_release(hero)
+		"talk":
+			reason = _intent_talk(hero, intent.get("npc", -1))
 		"equip":
 			reason = _intent_equip(hero, intent.get("bag_index", -1), intent.get("slot", -1))
 		"unequip":
@@ -399,6 +415,21 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int) -> String:
 	var result := cast(hero, ability, get_actor(target_id))
 	if result != AbilityResolver.Result.OK:
 		return AbilityResolver.Result.keys()[result].to_lower()
+	return ""
+
+
+const TALK_RANGE := 2
+
+
+func _intent_talk(hero: Hero, npc_id: int) -> String:
+	if not hero.alive:
+		return "dead"
+	var npc: Npc = _npcs.get(npc_id)
+	if npc == null:
+		return "no_npc"
+	if GridModel.distance(hero.tile(), npc.tile()) > TALK_RANGE:
+		return "too_far"
+	emit({"type": "dialogue", "target": hero.id, "npc": npc.id, "def": npc.def.id})
 	return ""
 
 

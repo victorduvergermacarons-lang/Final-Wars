@@ -94,6 +94,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		client.target_id = -1
 	elif event.is_action_pressed(&"release"):
 		session.send_intent({"type": "release"})
+	elif event.is_action_pressed(&"interact"):
+		talk_to_nearest()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		var picked: Actor = view.actor_at(view.get_global_mouse_position())
+		if picked is Npc:
+			session.send_intent({"type": "talk", "npc": picked.id})
 	else:
 		for i in ActionBarModel.SLOT_COUNT:
 			if event.is_action_pressed(InputActions.slot_action(i), false, true):
@@ -124,6 +130,29 @@ func use_ability(ability: AbilityDef) -> void:
 		client.error(picked.error)
 		return
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target})
+
+
+## E: talk to the NPC in front of you, or the nearest one within reach.
+func talk_to_nearest() -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return
+	var best: Actor = null
+	for a in session.actors():
+		if not (a is Npc):
+			continue
+		var d := GridModel.distance(hero.tile(), a.tile())
+		if d > WorldSim.TALK_RANGE:
+			continue
+		if a.tile() == hero.front_tile():
+			best = a
+			break
+		if best == null or d < GridModel.distance(hero.tile(), best.tile()):
+			best = a
+	if best == null:
+		client.error("There's no one to talk to here")
+		return
+	session.send_intent({"type": "talk", "npc": best.id})
 
 
 func _target_next_enemy() -> void:

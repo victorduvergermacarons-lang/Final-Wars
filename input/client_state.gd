@@ -4,6 +4,8 @@ extends RefCounted
 
 var target_id: int = -1
 var action_bar := ActionBarModel.new()
+## Overhead marker per NPC def id ("!" quest available, "?" turn-in ready). Set by the quest UI.
+var npc_markers := {}
 ## Short-lived error shown mid-screen ("Out of range"), with the time it appeared.
 var error_text := ""
 var error_at := -100.0

@@ -129,6 +129,9 @@ func apply_snapshot(snap: Dictionary) -> void:
 func _create(d: Dictionary) -> Actor:
 	if d.kind == Snapshot.KIND_HERO:
 		return Hero.new(d.id)
+	if d.kind == Snapshot.KIND_NPC:
+		var npc_def: NpcDef = content.npcs.get(StringName(d.def))
+		return Npc.new(d.id, npc_def) if npc_def != null else null
 	var def: EnemyDef = content.enemies.get(StringName(d.def))
 	if def == null:
 		push_warning("Unknown enemy type %s" % d.def)

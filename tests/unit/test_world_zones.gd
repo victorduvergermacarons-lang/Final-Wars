@@ -86,7 +86,9 @@ func test_events_carry_their_zone() -> void:
 func test_snapshot_only_contains_the_viewers_zone() -> void:
 	var snap := Snapshot.capture(world.zone_of(hero.id), hero.id)
 	assert_eq(snap.zone, &"town")
-	assert_eq(snap.actors.size(), 1, "no wolves from Greenfields in the town snapshot")
+	assert_eq(snap.actors.filter(func(d): return d.kind == Snapshot.KIND_ENEMY).size(), 0,
+			"no wolves from Greenfields in the town snapshot")
+	assert_eq(snap.actors.filter(func(d): return d.kind == Snapshot.KIND_HERO).size(), 1)
 
 
 func test_release_uses_a_graveyard_in_the_same_zone() -> void:

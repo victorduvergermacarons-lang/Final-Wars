@@ -7,6 +7,7 @@ extends RefCounted
 
 const KIND_HERO := 0
 const KIND_ENEMY := 1
+const KIND_NPC := 2
 
 
 static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
@@ -40,6 +41,11 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		d.def = enemy.def.id
 		d.state = int(enemy.state)
 		d.spawn = enemy.spawn_tile
+		actors.append(d)
+	for npc in world.npcs():
+		var d := _actor(npc)
+		d.kind = KIND_NPC
+		d.def = npc.def.id
 		actors.append(d)
 	var projectiles: Array = world.projectiles().map(func(p): return p.to_dict())
 	return {"tick": world.tick_count, "now": world.now, "zone": world.zone.id, "actors": actors,

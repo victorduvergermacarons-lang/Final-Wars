@@ -11,7 +11,7 @@ static func affects(caster: Actor, ability: AbilityDef, actor: Actor) -> bool:
 	if ability.target == AbilityDef.TargetType.ENEMY:
 		return caster.is_hostile_to(actor) and not actor.evading
 	if ability.target == AbilityDef.TargetType.ALLY:
-		return not caster.is_hostile_to(actor)
+		return caster.is_ally_of(actor)
 	return false
 
 

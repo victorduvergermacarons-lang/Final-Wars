@@ -17,6 +17,8 @@ const REASONS := {
 	"caster_dead": "You are dead",
 	"bag_full": "Your bag is full",
 	"cannot_equip": "You can't equip that there",
+	"too_far": "You're too far away",
+	"no_npc": "There's no one to talk to here",
 }
 
 var session
@@ -31,6 +33,7 @@ var _root: Control
 var _party: VBoxContainer
 var _party_frames := {} # hero id -> UnitFrame
 var inventory_window: InventoryWindow
+var dialogue: DialogueBox
 var _spellbook: SpellbookPanel
 var _character: CharacterSheet
 var _death: PanelContainer
@@ -121,6 +124,12 @@ func _build() -> void:
 	death_box.add_child(wait_label)
 	_death.visible = false
 	_root.add_child(_death)
+	dialogue = DialogueBox.new(self)
+	dialogue.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	dialogue.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	dialogue.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	dialogue.position.y -= 130
+	_root.add_child(dialogue)
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -160,7 +169,7 @@ func _process(_delta: float) -> void:
 	var lines: PackedStringArray = client.messages.duplicate()
 	if bind_mode:
 		lines.append("KEYBIND MODE: hover a slot and press a key. Esc or the Keybinds button to finish.")
-	lines.append("WASD move · click/Tab target · Esc clear target · R release · wheel zoom")
+	lines.append("WASD move · E talk · click/Tab target · Esc clear target · R release · wheel zoom")
 	_log.text = "\n".join(lines)
 
 
@@ -240,6 +249,10 @@ func _on_events(events: Array) -> void:
 				client.say("You return at the graveyard.")
 			"resurrect":
 				client.say("You have been resurrected.")
+			"dialogue":
+				var npc: Actor = session.get_actor(e.npc)
+				if npc is Npc:
+					dialogue.open(npc)
 
 
 func _small_button(text: String, on_press: Callable) -> Button:

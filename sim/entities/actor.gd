@@ -7,6 +7,7 @@ extends RefCounted
 enum Team {
 	HEROES,
 	ENEMIES,
+	NEUTRAL, ## NPCs: nobody's friend or foe.
 }
 
 var id: int = 0
@@ -73,7 +74,12 @@ func in_combat(now: float) -> bool:
 
 
 func is_hostile_to(other: Actor) -> bool:
-	return team != other.team
+	return team != other.team and team != Team.NEUTRAL and other.team != Team.NEUTRAL
+
+
+## Same side (heroes with heroes, enemies with enemies); neutral is no one's ally.
+func is_ally_of(other: Actor) -> bool:
+	return team == other.team and team != Team.NEUTRAL
 
 
 func die() -> void:

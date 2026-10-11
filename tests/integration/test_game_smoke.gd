@@ -76,6 +76,18 @@ func test_solo_game_runs_with_hud() -> void:
 	SettingsStore.load_action_bar(reloaded, SETTINGS)
 	assert_eq(reloaded.slots, game.client.action_bar.slots)
 
+	# Talking to Hilda opens the dialogue box; walking away closes it.
+	hero.move.place(Vector2i(7, 7))
+	hero.face(Vector2i.UP)
+	input.talk_to_nearest()
+	await wait_physics_frames(6)
+	await wait_process_frames(1)
+	assert_true(hud.dialogue.visible, "dialogue opened")
+	assert_eq(hud.dialogue.current_npc().def.id, &"hilda")
+	hero.move.place(Vector2i(14, 16))
+	await wait_process_frames(2)
+	assert_false(hud.dialogue.visible, "closed after walking away")
+
 	# Leaving town through the east exit switches the map.
 	var old_view := game.get_node("WorldView")
 	hero.move.place(Vector2i(16, 9))

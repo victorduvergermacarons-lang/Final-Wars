@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="NpcDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/npc_def.gd" id="1_fkq63"]
+
+[resource]
+script = ExtResource("1_fkq63")
+id = &"maren"
+display_name = "Old Maren"
+greeting = "Mind the old graveyard, child. The dead rest easy here — it's the living out east who worry me."
+color = Color(0.85, 0.6, 0.95, 1)
