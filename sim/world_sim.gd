@@ -24,6 +24,8 @@ var _next_id := 1
 var _heroes := {} # id -> Hero
 var _enemies := {} # id -> Enemy
 var _intents: Array = [] # [hero_id, intent]
+var _projectiles: Array[Projectile] = []
+var _next_projectile_id := 1
 var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
 var _events: Array[Dictionary] = []
 
@@ -105,6 +107,7 @@ func step() -> Array[Dictionary]:
 		_take_pending_step(hero)
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
+	_update_projectiles()
 	_update_combat_state()
 	_regen()
 	for id in _sorted(ctx.actors):
@@ -156,11 +159,56 @@ func try_step(actor: Actor, to: Vector2i) -> String:
 ## Resolves an ability and processes any deaths it caused.
 func cast(caster: Actor, ability: AbilityDef, target: Actor) -> AbilityResolver.Result:
 	var out := AbilityResolver.cast(ctx, caster, ability, target)
-	for event in out.events:
+	_emit_resolved(out.events)
+	if out.projectile != null:
+		var p: Projectile = out.projectile
+		p.id = _next_projectile_id
+		_next_projectile_id += 1
+		_projectiles.append(p)
+		emit({"type": "projectile", "projectile": p.to_dict()})
+	return out.result
+
+
+## Projectiles currently in flight.
+func projectiles() -> Array[Projectile]:
+	return _projectiles
+
+
+## Emits resolution events and handles any deaths among them.
+func _emit_resolved(events: Array) -> void:
+	for event in events:
 		emit(event)
 		if event.type == "death":
 			_on_death(get_actor(event.target))
-	return out.result
+
+
+## Moves every projectile along its path; the first affected actor on a tile it
+## reaches takes the hit. Spent or blocked projectiles disappear.
+func _update_projectiles() -> void:
+	var flying: Array[Projectile] = []
+	for p in _projectiles:
+		var caster := get_actor(p.caster_id)
+		if caster == null:
+			continue
+		var hit: Actor = null
+		var reached := p.tile_index_at(now)
+		for i in range(maxi(p.checked, 0), reached + 1):
+			hit = AbilityShapes.actor_at(ctx, p.path[i], caster, p.ability)
+			if hit != null:
+				reached = i
+				break
+		p.checked = maxi(reached, p.checked)
+		if hit != null:
+			var events: Array[Dictionary] = []
+			AbilityResolver.apply_effects(ctx, caster, p.ability, hit, events)
+			emit({"type": "projectile_end", "id": p.id, "tile": hit.tile(), "target": hit.id})
+			_emit_resolved(events)
+		elif p.is_spent(now):
+			var end_tile := p.path[p.path.size() - 1] if not p.path.is_empty() else p.origin
+			emit({"type": "projectile_end", "id": p.id, "tile": end_tile, "target": -1})
+		else:
+			flying.append(p)
+	_projectiles = flying
 
 
 func is_occupied(tile: Vector2i, ignore: Actor = null) -> bool:

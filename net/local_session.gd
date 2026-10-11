@@ -74,6 +74,11 @@ func actors() -> Array[Actor]:
 	return out
 
 
+## Projectiles in flight as plain data (Projectile.to_dict).
+func projectiles() -> Array:
+	return world.projectiles().map(func(p): return p.to_dict())
+
+
 func get_actor(id: int) -> Actor:
 	return world.get_actor(id)
 

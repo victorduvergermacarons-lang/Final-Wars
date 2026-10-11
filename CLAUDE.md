@@ -185,6 +185,15 @@ docs/            how-to docs (building, testing, local multiplayer)
    Abilities taught: Sword → Strike; Staff → Fireball; Shield → Block (temporary buff
    that doubles Physical Defense, off the GCD); Holy Charm → Heal **and** Resurrect (two abilities,
    so items may teach more than one).
+   **Ability shapes** (`AbilityDef.shape`):
+   - FRONT: hits whoever stands on the tile(s) straight ahead; an empty tile whiffs
+     (still costs mana/GCD/cooldown). Strike and Wolf Bite: 1 tile, only targets within
+     2 height levels.
+   - LINE: a projectile flying straight ahead up to its range at the caster's height,
+     stopping at the first enemy or at terrain more than the LOS tolerance above it;
+     passes through allies (no friendly fire). Fireball: 5 tiles at 10 tiles/s.
+   - TARGETED: on the chosen target, with range and line of sight (Heal, Resurrect;
+     Block targets self).
 9. **XP/AP/progression** (constants in `CombatRules`):
    - Each kill's XP is split evenly among heroes on the enemy's threat table.
      Each enemy type sets its XP reward.
@@ -224,8 +233,10 @@ docs/            how-to docs (building, testing, local multiplayer)
       turns you. Pokémon-style: from a standstill, tapping a direction you don't face
       only turns you; holding it (> 0.12 s) walks. Turning is free and instant, in
       combat too.
-    - WoW-style targeting: click an actor, Tab cycles nearby enemies, Esc clears.
-      Self abilities ignore the target; ally abilities fall back to self.
+    - WoW-style targeting (click an actor, Tab cycles nearby enemies, Esc clears) is
+      used by TARGETED abilities; ally abilities fall back to self. FRONT/LINE
+      abilities aim where you face; their action bar slot is red when nothing would
+      be hit.
     - Placeholder art: height-tinted tiles, blue water, grey rocks, heroes as
       circles, enemies as red diamonds, floating combat text.
     - Test zone "Greenfields" (30×30): hill, height-4 plateau reached by a ramp,
@@ -271,6 +282,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Directional abilities: FRONT (Strike, Bite), LINE projectile (Fireball, 10 tiles/s); Heal/Resurrect stay targeted | Rule 8. Part 2 of the combat revision. |
 | 2026-10-11 | Combat step 1.5 s/tile (floor 0.5 s), walking 0.2 s/tile; facing + tap-to-turn | Rules 4 and 13. Part 1 of the post-M1 combat revision (facing, directional abilities, faster wolves, reaction delay). |
 | 2026-10-11 | Milestone 1 build order complete | Multiplayer testing doc: docs/local-multiplayer-testing.md. |
 | 2026-10-11 | Block is off the GCD | Chosen over a stronger multiplier or flat reduction. |

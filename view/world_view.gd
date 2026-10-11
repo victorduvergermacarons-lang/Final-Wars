@@ -105,6 +105,7 @@ func _draw() -> void:
 			_draw_tile(grid, p)
 		for a in actors_by_depth.get(d, []):
 			_draw_actor(a)
+	_draw_projectiles(grid)
 	_draw_float_texts()
 
 
@@ -169,6 +170,17 @@ func _draw_actor(a: Actor) -> void:
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))
 
 
+## Fireballs: a glowing ball moving along its path at the origin's height.
+func _draw_projectiles(grid: GridModel) -> void:
+	var t: float = session.render_time()
+	for p in session.projectiles():
+		var dist := clampf((t - p.start) * p.speed, 0.0, p.length + 0.5)
+		var pos := Vector2(p.origin) + Vector2(p.dir) * dist
+		var screen := Iso.to_screen(pos, grid.height_at(p.origin)) + Vector2(0, -16)
+		draw_circle(screen, 8, Color(1, 0.45, 0.1, 0.5))
+		draw_circle(screen, 5, Color(1, 0.85, 0.3))
+
+
 ## A small arrow on the ground pointing the way the actor faces.
 func _draw_facing(feet: Vector2, facing: Vector2i, color: Color) -> void:
 	var d := Iso.to_screen(Vector2(facing), 0.0).normalized()
@@ -217,6 +229,8 @@ func _on_events(events: Array) -> void:
 				_float(e.target, ("+%d!" if e.crit else "+%d") % e.amount, Color(0.4, 1, 0.4), t)
 			"miss":
 				_float(e.target, "Miss", Color(0.8, 0.8, 0.8), t)
+			"whiff":
+				_float(e.source, "Whiff", Color(0.75, 0.75, 0.75), t)
 			"level_up":
 				_float(e.target, "Level %d!" % e.level, Color(1, 0.9, 0.3), t)
 			"mastered":

@@ -18,3 +18,5 @@ id = &"wolf_bite"
 display_name = "Bite"
 cooldown_seconds = 2.0
 effects = Array[ExtResource("1_0k60o")]([SubResource("Resource_flud3")])
+shape = 1
+max_height_difference = 2

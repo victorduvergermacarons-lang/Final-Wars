@@ -56,15 +56,19 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 		enemy.threat.remove(enemy.threat.top())
 		return
 
-	var in_range := false
+	# Face the target when it's next to us (turning is free), then attack with the
+	# first ability that is ready and would actually reach it.
+	if GridModel.distance(enemy.tile(), target.tile()) == 1:
+		enemy.face(target.tile() - enemy.tile())
+	var in_reach := false
 	for ability in enemy.def.abilities:
-		var result := AbilityResolver.validate(world.ctx, enemy, ability, target)
-		if result == AbilityResolver.Result.OK:
+		if not AbilityShapes.in_reach(world.ctx, enemy, ability, target):
+			continue
+		in_reach = true
+		if AbilityResolver.validate(world.ctx, enemy, ability, target) == AbilityResolver.Result.OK:
 			world.cast(enemy, ability, target)
 			return
-		if result != AbilityResolver.Result.OUT_OF_RANGE and result != AbilityResolver.Result.NO_LINE_OF_SIGHT:
-			in_range = true
-	if in_range:
+	if in_reach:
 		return # waiting for a cooldown
 
 	if not enemy.move.can_start_step(true, enemy.cooldowns, world.now):

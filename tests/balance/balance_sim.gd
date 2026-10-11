@@ -1,8 +1,8 @@
 class_name BalanceSim
 extends RefCounted
 ## Scripted fights on the real WorldSim with shipped content, for tuning.
-## A bot hero uses abilities in priority order on the nearest wolf, heals itself
-## below a threshold if it can, and never moves (wolves come to it).
+## A bot hero turns toward the nearest wolf, uses abilities in priority order,
+## heals below a threshold if it can, and never moves (wolves come to it).
 
 ## Runs one fight and returns {"seconds", "hp_lost_pct" (worst hero), "won", "mana_left_pct"}.
 ## `loadouts`: per hero, item ids to equip. `rotation`: ability ids in priority order.
@@ -58,6 +58,10 @@ static func fight(content, loadouts: Array, rotation: Array, wolves: int, seed: 
 			for e in alive_wolves:
 				if GridModel.distance(h.tile(), e.tile()) < GridModel.distance(h.tile(), target.tile()):
 					target = e
+			var delta: Vector2i = target.tile() - h.tile()
+			var face := Vector2i(signi(delta.x), 0) if absi(delta.x) >= absi(delta.y) else Vector2i(0, signi(delta.y))
+			if face != Vector2i.ZERO and face != h.facing:
+				world.submit(h.id, {"type": "face", "dir": face})
 			var hurt := heroes.filter(func(x): return x.alive and x.hp < x.stats.hp * heal_below)
 			if not hurt.is_empty() and h.find_ability(&"heal") != null:
 				world.submit(h.id, {"type": "cast", "ability": &"heal", "target": hurt[0].id})

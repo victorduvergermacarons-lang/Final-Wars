@@ -38,9 +38,16 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(6)
 	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "heal went through the action bar")
 
-	# Strike with no enemy targeted shows an error instead of sending.
+	# Strike needs no target: it hits the tile in front (here: nobody, so it whiffs).
+	var whiffs := []
+	session.events_received.connect(func(events):
+		for e in events:
+			if e.type == "whiff":
+				whiffs.append(e))
+	await wait_physics_frames(70) # let the 1 s GCD from Heal run out (60 physics frames per second)
 	input.use_slot(0)
-	assert_eq(game.client.error_text, "No enemy targeted")
+	await wait_physics_frames(6)
+	assert_eq(whiffs.size(), 1, "Strike went out and hit nothing")
 
 	# Equip the Staff from the character panel (out of combat): Fireball appears on the bar.
 	hud._toggle(hud._character)

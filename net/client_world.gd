@@ -20,6 +20,8 @@ var tick: int = 0
 var local_hero_id: int = -1
 
 var _actors := {} # id -> Actor
+## Projectiles in flight, as plain data from the host (see Projectile.to_dict).
+var projectiles: Array = []
 var _pending: Array = [] # unacknowledged local intents: {seq, kind: "step"|"face", ...}
 var _next_seq := 1
 
@@ -99,6 +101,7 @@ func _step_is_legal(hero: Hero, to: Vector2i, t: float) -> bool:
 func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
+	projectiles = snap.get("projectiles", [])
 	var seen := {}
 	for d in snap.actors:
 		var id: int = d.id

@@ -6,6 +6,8 @@ extends RefCounted
 
 ## Returns {"target": actor id or -1, "error": "" or a message for the player}.
 static func pick(hero: Hero, ability: AbilityDef, target: Actor) -> Dictionary:
+	if ability.shape != AbilityDef.Shape.TARGETED:
+		return {"target": -1, "error": ""} # aimed by facing
 	match ability.target:
 		AbilityDef.TargetType.SELF:
 			return {"target": hero.id, "error": ""}
@@ -36,8 +38,10 @@ enum Usability {
 
 ## Client-side preview of whether pressing the ability would work, for slot tinting.
 ## Uses the same validation as the host on the client's copy of the world.
+## `actors` (all actors in the world) is needed for FRONT/LINE abilities: red
+## means nothing would be hit where the hero is facing.
 static func usability(hero: Hero, ability: AbilityDef, target: Actor, grid: GridModel,
-		rules: CombatRules, now: float) -> Usability:
+		rules: CombatRules, now: float, actors: Array = []) -> Usability:
 	if not hero.alive:
 		return Usability.DEAD
 	if hero.find_ability(ability.id) == null:
@@ -47,6 +51,8 @@ static func usability(hero: Hero, ability: AbilityDef, target: Actor, grid: Grid
 		return Usability.NO_TARGET
 	var ctx := CombatContext.new(grid, rules, null)
 	ctx.now = now
+	if ability.shape != AbilityDef.Shape.TARGETED:
+		return _shape_usability(ctx, hero, ability, actors)
 	var chosen: Actor = hero if picked.target == hero.id else target
 	match AbilityResolver.validate(ctx, hero, ability, chosen):
 		AbilityResolver.Result.OK:
@@ -59,3 +65,16 @@ static func usability(hero: Hero, ability: AbilityDef, target: Actor, grid: Grid
 			return Usability.OUT_OF_RANGE
 		_:
 			return Usability.NO_TARGET
+
+
+static func _shape_usability(ctx: CombatContext, hero: Hero, ability: AbilityDef, actors: Array) -> Usability:
+	for a in actors:
+		ctx.add_actor(a)
+	match AbilityResolver.validate(ctx, hero, ability, null):
+		AbilityResolver.Result.ON_COOLDOWN:
+			return Usability.COOLDOWN
+		AbilityResolver.Result.NOT_ENOUGH_MANA:
+			return Usability.NO_MANA
+	var victim := AbilityShapes.front_victim(ctx, hero, ability) if ability.shape == AbilityDef.Shape.FRONT \
+			else AbilityShapes.line_first_victim(ctx, hero, ability)
+	return Usability.READY if victim != null else Usability.OUT_OF_RANGE

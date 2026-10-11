@@ -51,7 +51,7 @@ func _draw() -> void:
 	var usable := Targeting.Usability.UNAVAILABLE
 	if ability != null and hero != null:
 		usable = Targeting.usability(hero, ability, hud.session.get_actor(hud.client.target_id),
-				hud.session.grid(), hud.session.rules(), now)
+				hud.session.grid(), hud.session.rules(), now, hud.session.actors())
 	draw_rect(rect, TINTS[usable] if ability != null else Color(0.1, 0.1, 0.12, 0.8))
 	var hovered := hud.bind_mode and hud.hovered_slot == index
 	draw_rect(rect, Color(1, 0.85, 0.2) if hovered else Color(0.5, 0.5, 0.55), false, 2.0 if hovered else 1.0)
@@ -93,8 +93,14 @@ static func _tooltip(a: AbilityDef) -> String:
 	var facts: PackedStringArray = []
 	if a.mana_cost > 0:
 		facts.append("%d mana" % a.mana_cost)
-	if a.max_range > 0:
-		facts.append("range %d" % a.max_range)
+	match a.shape:
+		AbilityDef.Shape.FRONT:
+			facts.append("hits the tile in front" if a.max_range == 1 else "hits %d tiles ahead" % a.max_range)
+		AbilityDef.Shape.LINE:
+			facts.append("flies %d tiles ahead, stops at the first enemy" % a.max_range)
+		_:
+			if a.max_range > 0:
+				facts.append("range %d" % a.max_range)
 	if a.cooldown_seconds > 0:
 		facts.append("%ss cooldown" % a.cooldown_seconds)
 	if not facts.is_empty():

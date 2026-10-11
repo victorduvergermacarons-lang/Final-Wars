@@ -4,7 +4,9 @@ extends RefCounted
 ## actually knows the ability (equipped item or mastered) is checked by the
 ## caller. Results are returned as plain-data events for replication and UI.
 ##
-## Event types: cast, miss, damage, heal, taunt, buff, resurrect, death.
+## Event types: cast, miss, whiff, damage, heal, taunt, buff, resurrect, death.
+## LINE abilities with a projectile speed don't hit here: cast() returns the
+## Projectile for WorldSim to fly, and WorldSim calls apply_effects() on impact.
 
 enum Result {
 	OK,
@@ -20,6 +22,8 @@ enum Result {
 static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor) -> Result:
 	if not caster.alive:
 		return Result.CASTER_DEAD
+	if ability.shape != AbilityDef.Shape.TARGETED:
+		return _check_cost(ctx, caster, ability) # aimed by facing: no target to check
 	if ability.target == AbilityDef.TargetType.SELF:
 		target = caster
 	if not _is_valid_target(caster, ability, target):
@@ -31,6 +35,10 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 		if ability.requires_line_of_sight and dist > 1 \
 				and not LineOfSight.has_los(ctx.grid, caster.tile(), target.tile(), ctx.rules.los_height_tolerance):
 			return Result.NO_LINE_OF_SIGHT
+	return _check_cost(ctx, caster, ability)
+
+
+static func _check_cost(ctx: CombatContext, caster: Actor, ability: AbilityDef) -> Result:
 	if caster.mana + Cooldowns.EPSILON < ability.mana_cost:
 		return Result.NOT_ENOUGH_MANA
 	if not caster.cooldowns.can_use(ability, ctx.now):
@@ -39,22 +47,58 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 
 
 ## Validates, then spends mana, starts cooldowns and applies every effect.
-## Returns {"result": Result, "events": Array[Dictionary]}.
+## Returns {"result": Result, "events": Array[Dictionary], "projectile": Projectile or null}.
 static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor) -> Dictionary:
 	var result := validate(ctx, caster, ability, target)
 	if result != Result.OK:
-		return {"result": result, "events": []}
-	if ability.target == AbilityDef.TargetType.SELF:
-		target = caster
-
+		return {"result": result, "events": [], "projectile": null}
 	caster.mana -= ability.mana_cost
 	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds)
-	var events: Array[Dictionary] = [
-		{"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id},
-	]
+	var events: Array[Dictionary] = []
+	var projectile: Projectile = null
+	match ability.shape:
+		AbilityDef.Shape.TARGETED:
+			if ability.target == AbilityDef.TargetType.SELF:
+				target = caster
+			events.append({"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id})
+			apply_effects(ctx, caster, ability, target, events)
+		AbilityDef.Shape.FRONT:
+			var victim := AbilityShapes.front_victim(ctx, caster, ability)
+			events.append({"type": "cast", "source": caster.id, "target": victim.id if victim else -1,
+					"ability": ability.id})
+			if victim != null:
+				apply_effects(ctx, caster, ability, victim, events)
+			else:
+				events.append({"type": "whiff", "source": caster.id, "ability": ability.id,
+						"tile": caster.front_tile()})
+		AbilityDef.Shape.LINE:
+			events.append({"type": "cast", "source": caster.id, "target": -1, "ability": ability.id})
+			if ability.projectile_speed > 0.0:
+				projectile = Projectile.new()
+				projectile.caster_id = caster.id
+				projectile.ability = ability
+				projectile.origin = caster.tile()
+				projectile.dir = caster.facing
+				projectile.path = AbilityShapes.line_path(ctx.grid, caster.tile(), caster.facing,
+						ability.max_range, ctx.rules.los_height_tolerance)
+				projectile.start_time = ctx.now
+				projectile.speed = ability.projectile_speed
+			else:
+				var victim := AbilityShapes.line_first_victim(ctx, caster, ability)
+				if victim != null:
+					apply_effects(ctx, caster, ability, victim, events)
+				else:
+					events.append({"type": "whiff", "source": caster.id, "ability": ability.id,
+							"tile": caster.front_tile()})
+	return {"result": Result.OK, "events": events, "projectile": projectile}
+
+
+## Applies every effect of `ability` from `caster` to `target` (also used for
+## projectile impacts).
+static func apply_effects(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor,
+		events: Array[Dictionary]) -> void:
 	for effect in ability.effects:
 		_apply_effect(ctx, caster, ability, target, effect, events)
-	return {"result": Result.OK, "events": events}
 
 
 static func _is_valid_target(caster: Actor, ability: AbilityDef, target: Actor) -> bool:

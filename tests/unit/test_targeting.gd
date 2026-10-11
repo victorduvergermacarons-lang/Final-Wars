@@ -34,9 +34,8 @@ func _a(id: StringName) -> AbilityDef:
 
 
 func test_pick_targets() -> void:
-	assert_eq(Targeting.pick(hero, _a(&"strike"), wolf).target, wolf.id)
-	assert_eq(Targeting.pick(hero, _a(&"strike"), null).error, "No enemy targeted")
-	assert_eq(Targeting.pick(hero, _a(&"strike"), ally).error, "No enemy targeted")
+	assert_eq(Targeting.pick(hero, _a(&"strike"), wolf), {"target": -1, "error": ""}, "aimed by facing")
+	assert_eq(Targeting.pick(hero, _a(&"strike"), null), {"target": -1, "error": ""})
 	assert_eq(Targeting.pick(hero, _a(&"heal"), ally).target, ally.id)
 	assert_eq(Targeting.pick(hero, _a(&"heal"), wolf).target, hero.id, "heal falls back to self")
 	assert_eq(Targeting.pick(hero, _a(&"block"), wolf).target, hero.id, "self ability")
@@ -47,10 +46,12 @@ func test_pick_targets() -> void:
 
 func test_usability_states() -> void:
 	var U := Targeting.Usability
-	assert_eq(Targeting.usability(hero, _a(&"strike"), wolf, grid, rules, 0.0), U.READY)
-	assert_eq(Targeting.usability(hero, _a(&"strike"), null, grid, rules, 0.0), U.NO_TARGET)
+	var all := [hero, ally, wolf]
+	hero.face(Vector2i.RIGHT) # wolf is at (3,2), right of the hero
+	assert_eq(Targeting.usability(hero, _a(&"strike"), null, grid, rules, 0.0, all), U.READY, "wolf in front")
+	hero.face(Vector2i.UP)
+	assert_eq(Targeting.usability(hero, _a(&"strike"), null, grid, rules, 0.0, all), U.OUT_OF_RANGE, "facing away")
 	wolf.move.place(Vector2i(8, 8))
-	assert_eq(Targeting.usability(hero, _a(&"strike"), wolf, grid, rules, 0.0), U.OUT_OF_RANGE)
 	assert_eq(Targeting.usability(hero, _a(&"fireball"), wolf, grid, rules, 0.0), U.UNAVAILABLE, "staff not equipped")
 	hero.mana = 0
 	assert_eq(Targeting.usability(hero, _a(&"heal"), null, grid, rules, 0.0), U.NO_MANA)

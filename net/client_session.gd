@@ -107,6 +107,10 @@ func actors() -> Array[Actor]:
 	return mirror.actors()
 
 
+func projectiles() -> Array:
+	return mirror.projectiles
+
+
 func get_actor(id: int) -> Actor:
 	return mirror.get_actor(id)
 
