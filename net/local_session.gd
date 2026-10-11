@@ -17,7 +17,14 @@ func start(zone: ZoneDef, rules: CombatRules, hero_def: HeroDef, rng_seed: int =
 
 
 func send_intent(intent: Dictionary) -> void:
-	world.submit(local_hero_id, intent)
+	receive_intent(local_hero_id, intent)
+
+
+## Every intent, local or remote, enters the world here: sanitized, then queued.
+func receive_intent(hero_id: int, raw: Variant) -> void:
+	var intent := Intents.sanitize(raw)
+	if not intent.is_empty():
+		world.submit(hero_id, intent)
 
 
 func _physics_process(delta: float) -> void:
@@ -28,8 +35,14 @@ func _physics_process(delta: float) -> void:
 	while _accumulator >= tick:
 		_accumulator -= tick
 		var events := world.step()
+		_on_tick(events)
 		if not events.is_empty():
 			events_received.emit(events)
+
+
+## Called after every sim tick (the host broadcasts state here).
+func _on_tick(_events: Array) -> void:
+	pass
 
 
 # --- Read-only view of the world for view/input/UI --------------------------------

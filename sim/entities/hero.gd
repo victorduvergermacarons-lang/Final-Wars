@@ -51,6 +51,12 @@ func equip(item: ItemDef) -> bool:
 	return true
 
 
+## Replaces all equipment as-is (no ownership check, no stat refresh). For
+## client mirrors that receive their stats from the host.
+func set_equipped_raw(by_slot: Dictionary) -> void:
+	_equipped = by_slot.duplicate()
+
+
 func unequip(slot: EquipSlot.Id) -> void:
 	_equipped.erase(slot)
 	refresh_stats()

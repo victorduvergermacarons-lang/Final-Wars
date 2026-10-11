@@ -69,6 +69,10 @@ func _process(_delta: float) -> void:
 func _on_events(events: Array) -> void:
 	var me: int = session.local_hero_id
 	for e in events:
+		if e.type == "joined":
+			client.say("%s joined the game." % e.name)
+		elif e.type == "left":
+			client.say("%s left the game." % e.name)
 		if e.get("target", -2) != me:
 			continue
 		match e.type:

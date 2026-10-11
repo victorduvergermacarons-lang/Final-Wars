@@ -9,6 +9,7 @@ const DIRS := {
 	"enemies": "res://content/enemies",
 	"heroes": "res://content/heroes",
 	"zones": "res://content/zones",
+	"buffs": "res://content/buffs",
 }
 
 var rules: CombatRules
@@ -17,6 +18,7 @@ var items := {} # id -> ItemDef
 var enemies := {} # id -> EnemyDef
 var heroes := {} # id -> HeroDef
 var zones := {} # id -> ZoneDef
+var buffs := {} # id -> BuffDef
 
 
 func _init() -> void:
@@ -30,6 +32,7 @@ func reload() -> void:
 	enemies = _load_dir(DIRS.enemies)
 	heroes = _load_dir(DIRS.heroes)
 	zones = _load_dir(DIRS.zones)
+	buffs = _load_dir(DIRS.buffs)
 
 
 ## Every problem found in the loaded content; empty when all is valid.

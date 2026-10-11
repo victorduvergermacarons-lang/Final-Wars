@@ -225,10 +225,22 @@ docs/            how-to docs (building, testing, local multiplayer)
       circles, enemies as red diamonds, floating combat text.
     - Test zone "Greenfields" (30×30): hill, height-4 plateau reached by a ramp,
       river with two bridges, two graveyards, five Wolves.
+14. **Networking** (approved 2026-10-11):
+    - Main menu: name, Play Solo, Host (port 7777), Join (address + port).
+    - The host plays too; its intents go through the same `receive_intent()` +
+      `Intents.sanitize()` path as remote players.
+    - Host → clients every tick: full snapshot (deflate-compressed, ~0.6 KB) plus
+      the event stream. Content is referenced by id, never sent.
+    - Client-side prediction for the local hero's steps; host corrects via
+      acknowledged intent sequence numbers. Abilities are not predicted.
+    - Client disconnect → hero removed (enemies drop it from threat). Host
+      disconnect → clients return to the menu with a message.
+    - `Net.MAX_PLAYERS` = 2 for M1; nothing else assumes 2.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Step 9 networking approved, with client-side movement prediction | See rule 14. |
 | 2026-10-11 | Step 8 view/controls/zone approved | See rule 13. Enemy type: Wolf. |
 | 2026-10-11 | Step 7 world/AI rules approved | See rules 10 and 12. No hero auto-attack. |
 | 2026-10-11 | Step 6 progression numbers approved; level-up refills HP/Mana | See rule 9. |

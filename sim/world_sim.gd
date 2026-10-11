@@ -23,6 +23,7 @@ var _next_id := 1
 var _heroes := {} # id -> Hero
 var _enemies := {} # id -> Enemy
 var _intents: Array = [] # [hero_id, intent]
+var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
 var _events: Array[Dictionary] = []
 
 
@@ -60,6 +61,7 @@ func remove_hero(id: int) -> void:
 	for enemy in enemies():
 		enemy.threat.remove(id)
 	_heroes.erase(id)
+	_acks.erase(id)
 	ctx.actors.erase(id)
 
 
@@ -116,6 +118,11 @@ func advance(seconds: float) -> Array[Dictionary]:
 	for i in ticks:
 		all.append_array(step())
 	return all
+
+
+## Sequence number of the last intent processed for this hero (0 if none).
+func intent_ack(hero_id: int) -> int:
+	return _acks.get(hero_id, 0)
 
 
 func emit(event: Dictionary) -> void:
@@ -195,6 +202,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 	var kind: String = intent.get("type", "")
 	if hero == null:
 		return
+	if intent.has("seq"):
+		_acks[hero_id] = maxi(_acks.get(hero_id, 0), int(intent.seq))
 	var reason := ""
 	match kind:
 		"step":

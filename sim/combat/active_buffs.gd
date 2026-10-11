@@ -10,6 +10,11 @@ func apply(buff: BuffDef, now: float) -> void:
 	_active[buff.id] = {"def": buff, "expires": now + buff.duration_seconds}
 
 
+## Restores a buff with a known expiry time (client mirrors).
+func set_expiry(buff: BuffDef, expires: float) -> void:
+	_active[buff.id] = {"def": buff, "expires": expires}
+
+
 func remove(id: StringName) -> void:
 	_active.erase(id)
 

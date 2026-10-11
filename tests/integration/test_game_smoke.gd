@@ -6,7 +6,7 @@ extends GutTest
 func test_solo_game_runs_and_responds_to_intents() -> void:
 	var game := Game.new()
 	add_child(game)
-	game.start_solo()
+	game.start_solo("Tester")
 	var session: LocalSession = game.session
 	var hero := session.local_hero()
 	var start := hero.tile()
