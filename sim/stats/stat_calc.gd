@@ -31,6 +31,12 @@ static func combat_step_cooldown(speed: float, rules: CombatRules) -> float:
 	return maxf(cd, rules.combat_step_min_seconds)
 
 
+## Time before the next step: a fixed walking pace out of combat,
+## the Speed-based step cooldown in combat.
+static func step_seconds(in_combat: bool, speed: float, rules: CombatRules) -> float:
+	return combat_step_cooldown(speed, rules) if in_combat else rules.walk_step_seconds
+
+
 ## Height levels climbable in one step.
 static func jump_levels(stats: StatBlock) -> int:
 	return maxi(floori(stats.jump), 0)

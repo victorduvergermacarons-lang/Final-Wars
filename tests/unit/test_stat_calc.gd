@@ -68,3 +68,9 @@ func test_step_cooldown_ignores_negative_speed() -> void:
 func test_jump_levels_floors_and_clamps() -> void:
 	assert_eq(StatCalc.jump_levels(StatBlock.make({Stat.Id.JUMP: 2.9})), 2)
 	assert_eq(StatCalc.jump_levels(StatBlock.make({Stat.Id.JUMP: -1})), 0)
+
+
+func test_step_seconds_uses_walk_pace_out_of_combat() -> void:
+	rules.walk_step_seconds = 0.25
+	assert_eq(StatCalc.step_seconds(false, 1000.0, rules), 0.25, "speed ignored out of combat")
+	assert_almost_eq(StatCalc.step_seconds(true, 50.0, rules), 0.4, 0.0001)
