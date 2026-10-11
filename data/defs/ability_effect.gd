@@ -10,6 +10,8 @@ enum Kind {
 	RESURRECT,
 	BUFF, ## Applies `buff` to the target.
 	RESTORE_MANA, ## Like HEAL, for Mana.
+	HEAL_OVER_TIME, ## Applies `buff` and heals (base + scaling) in total over its duration.
+	DASH, ## Moves the caster forward up to base_amount tiles instantly.
 }
 
 enum DamageType {

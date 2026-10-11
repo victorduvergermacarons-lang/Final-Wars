@@ -75,6 +75,12 @@ static func _shape_usability(ctx: CombatContext, hero: Hero, ability: AbilityDef
 			return Usability.COOLDOWN
 		AbilityResolver.Result.NOT_ENOUGH_MANA:
 			return Usability.NO_MANA
-	var victim := AbilityShapes.front_victim(ctx, hero, ability) if ability.shape == AbilityDef.Shape.FRONT \
-			else AbilityShapes.line_first_victim(ctx, hero, ability)
-	return Usability.READY if victim != null else Usability.OUT_OF_RANGE
+	var hits := false
+	match ability.shape:
+		AbilityDef.Shape.FRONT:
+			hits = AbilityShapes.front_victim(ctx, hero, ability) != null
+		AbilityDef.Shape.LINE:
+			hits = AbilityShapes.line_first_victim(ctx, hero, ability) != null
+		_:
+			hits = not AbilityShapes.area_victims(ctx, hero, ability).is_empty()
+	return Usability.READY if hits else Usability.OUT_OF_RANGE

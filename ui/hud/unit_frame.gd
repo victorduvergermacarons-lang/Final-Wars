@@ -46,6 +46,12 @@ func _draw() -> void:
 	_bar(Rect2(6, 20, w, 12), a.hp, stats.hp, Color(0.2, 0.75, 0.3))
 	if stats.mana > 0:
 		_bar(Rect2(6, 34, w, 8), a.mana, stats.mana, Color(0.25, 0.45, 0.95))
+	var effects: PackedStringArray = []
+	for b in a.buffs.summary(now):
+		var def: BuffDef = ContentDB.buffs.get(StringName(b[0]))
+		effects.append(def.display_name if def != null and def.display_name != "" else String(b[0]))
+	if not effects.is_empty():
+		_text(" · ".join(effects), Vector2(size.x * 0.45, 14), 10, Color(0.75, 0.85, 1))
 	if show_xp and a is Hero:
 		var h := a as Hero
 		_bar(Rect2(6, 46, w, 6), h.xp, Leveling.xp_to_next(h.level, hud.session.rules()), Color(0.75, 0.5, 0.95), false)

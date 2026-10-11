@@ -233,7 +233,13 @@ func _on_events(events: Array) -> void:
 	for e in events:
 		match e.type:
 			"damage":
-				_float(e.target, ("%d!" if e.crit else "%d") % e.amount, Color(1, 0.35, 0.3), t)
+				var flank: String = e.get("flank", "")
+				var text: String = ("%d!" if e.crit else "%d") % e.amount
+				if flank == "behind":
+					text = "Backstab " + text
+				elif flank == "side":
+					text = "Flank " + text
+				_float(e.target, text, Color(1, 0.35, 0.3), t)
 			"heal":
 				_float(e.target, ("+%d!" if e.crit else "+%d") % e.amount, Color(0.4, 1, 0.4), t)
 			"mana":

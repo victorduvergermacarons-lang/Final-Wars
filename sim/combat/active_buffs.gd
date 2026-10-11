@@ -2,17 +2,19 @@ class_name ActiveBuffs
 extends RefCounted
 ## Buffs currently on one actor, with their expiry on the sim clock.
 
-var _active := {} # StringName -> {"def": BuffDef, "expires": float}
+var _active := {} # StringName -> {"def", "expires", "heal_per_tick", "next_tick", "source"}
 
 
-## Applies or refreshes `buff`.
-func apply(buff: BuffDef, now: float) -> void:
-	_active[buff.id] = {"def": buff, "expires": now + buff.duration_seconds}
+## Applies or refreshes `buff`. Heal-over-time buffs pass the healing per tick and
+## who cast it.
+func apply(buff: BuffDef, now: float, heal_per_tick: float = 0.0, source: int = -1) -> void:
+	_active[buff.id] = {"def": buff, "expires": now + buff.duration_seconds,
+			"heal_per_tick": heal_per_tick, "next_tick": now + buff.tick_seconds, "source": source}
 
 
 ## Restores a buff with a known expiry time (client mirrors).
 func set_expiry(buff: BuffDef, expires: float) -> void:
-	_active[buff.id] = {"def": buff, "expires": expires}
+	_active[buff.id] = {"def": buff, "expires": expires, "heal_per_tick": 0.0, "next_tick": INF, "source": -1}
 
 
 func remove(id: StringName) -> void:
@@ -62,3 +64,40 @@ func to_dict() -> Dictionary:
 	for id in _active:
 		d[id] = _active[id].expires
 	return d
+
+
+## Product of active step-cooldown multipliers (slows).
+func step_multiplier(now: float) -> float:
+	var m := 1.0
+	for id in _active:
+		if has(id, now):
+			m *= _active[id].def.step_cooldown_multiplier
+	return m
+
+
+func is_rooted(now: float) -> bool:
+	for id in _active:
+		if has(id, now) and _active[id].def.roots:
+			return true
+	return false
+
+
+## Heal-over-time ticks that are due: [{"buff", "amount", "source"}]. Advances them.
+func due_heals(now: float) -> Array:
+	var out: Array = []
+	for id in _active:
+		var b: Dictionary = _active[id]
+		while b.heal_per_tick > 0.0 and b.next_tick <= now + Cooldowns.EPSILON \
+				and b.next_tick <= b.expires + Cooldowns.EPSILON:
+			out.append({"buff": id, "amount": b.heal_per_tick, "source": b.source})
+			b.next_tick += b.def.tick_seconds
+	return out
+
+
+## Active buff ids with whether each is a debuff, for frames: [[id, is_debuff, remaining]].
+func summary(now: float) -> Array:
+	var out: Array = []
+	for id in _active:
+		if has(id, now):
+			out.append([id, _active[id].def.is_debuff, _active[id].expires - now])
+	return out

@@ -28,6 +28,45 @@ static func front_victim(ctx: CombatContext, caster: Actor, ability: AbilityDef)
 	return null
 
 
+## Tiles an ARC ability covers: the tile in front and the two beside it.
+static func arc_tiles(caster: Actor) -> Array[Vector2i]:
+	var f := caster.front_tile()
+	var side := Vector2i(caster.facing.y, -caster.facing.x)
+	return [f, f + side, f - side]
+
+
+## Tiles an AROUND ability covers: everything within `radius` of `center`.
+static func around_tiles(center: Vector2i, radius: int) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for dy in range(-radius, radius + 1):
+		for dx in range(-radius, radius + 1):
+			if absi(dx) + absi(dy) <= radius:
+				out.append(center + Vector2i(dx, dy))
+	return out
+
+
+## Everyone an ARC or AROUND ability would affect, in id order.
+static func area_victims(ctx: CombatContext, caster: Actor, ability: AbilityDef) -> Array[Actor]:
+	var tiles: Array[Vector2i] = arc_tiles(caster) if ability.shape == AbilityDef.Shape.ARC \
+			else around_tiles(caster.tile(), ability.max_range)
+	var out: Array[Actor] = []
+	var ids := ctx.actors.keys()
+	ids.sort()
+	for id in ids:
+		var a: Actor = ctx.actors[id]
+		if not tiles.has(a.tile()):
+			continue
+		var hits := affects(caster, ability, a) or (a == caster and a.alive \
+				and ability.target == AbilityDef.TargetType.ALLY and ability.shape == AbilityDef.Shape.AROUND)
+		if not hits:
+			continue
+		if ability.max_height_difference >= 0 \
+				and absi(ctx.grid.height_at(a.tile()) - ctx.grid.height_at(caster.tile())) > ability.max_height_difference:
+			continue
+		out.append(a)
+	return out
+
+
 ## Tiles a projectile from `origin` flying along `dir` passes through, nearest
 ## first, up to `max_range`. It flies at the origin's height and stops before a
 ## tile that rises more than `tolerance` levels above that (or leaves the map).
@@ -46,6 +85,10 @@ static func line_path(grid: GridModel, origin: Vector2i, dir: Vector2i, max_rang
 ## caster's position and facing. Used by enemy AI with *perceived* positions.
 static func reaches_tile(ctx: CombatContext, caster: Actor, ability: AbilityDef, tile: Vector2i) -> bool:
 	match ability.shape:
+		AbilityDef.Shape.ARC:
+			return arc_tiles(caster).has(tile)
+		AbilityDef.Shape.AROUND:
+			return GridModel.distance(caster.tile(), tile) <= ability.max_range
 		AbilityDef.Shape.FRONT:
 			for k in range(maxi(ability.min_range, 1), ability.max_range + 1):
 				if caster.tile() + caster.facing * k == tile:
@@ -70,6 +113,8 @@ static func in_reach(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			return front_victim(ctx, caster, ability) == target
 		AbilityDef.Shape.LINE:
 			return line_first_victim(ctx, caster, ability) == target
+		AbilityDef.Shape.ARC, AbilityDef.Shape.AROUND:
+			return area_victims(ctx, caster, ability).has(target)
 	var r := AbilityResolver.validate(ctx, caster, ability, target)
 	return r != AbilityResolver.Result.OUT_OF_RANGE and r != AbilityResolver.Result.NO_LINE_OF_SIGHT \
 			and r != AbilityResolver.Result.INVALID_TARGET

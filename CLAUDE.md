@@ -464,6 +464,13 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 12. **Saving:** plain-data JSON per character in the user folder; several characters per
     computer. The host validates a joining hero's data (known ids, sane values) but
     otherwise trusts it.
+14. **Ability mechanics (as built in step 11):** shapes ARC (front tile + both sides)
+    and AROUND (all tiles within range; ally versions include the caster); buffs can
+    slow (multiply the step cooldown) or root (no stepping, abilities still allowed);
+    HEAL_OVER_TIME heals its total in 1 s ticks over the buff's duration; DASH moves
+    the caster forward, stopping at walls, actors and climbs over its Jump; cooldown
+    groups share one cooldown (potions); a debuff on an enemy pulls it onto the
+    caster. Flanking applies to melee (FRONT/ARC) only; projectiles never flank.
 13. **Zones (as built in step 7):** `World` holds one `WorldSim` per zone, stepped on a
     shared clock with shared actor ids. Exit tiles (`ZoneDef.exits`) move a hero when
     they arrive on one; exits don't work while you're in combat. Each client only gets

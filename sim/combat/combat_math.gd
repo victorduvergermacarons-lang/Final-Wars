@@ -44,3 +44,26 @@ static func high_ground_multiplier(height_advantage: int, ranged: bool, rules: C
 static func final_damage(raw: float, defense: float, k: float, rules: CombatRules) -> float:
 	var dmg := roundf(raw * (1.0 - mitigation(defense, k)))
 	return maxf(dmg, rules.min_damage)
+
+
+enum Flank { FRONT, SIDE, BEHIND }
+
+
+## Where an attacker on `attacker_tile` stands relative to a target facing
+## `target_facing`: in front (or further away), at its side, or directly behind.
+static func flank(attacker_tile: Vector2i, target_tile: Vector2i, target_facing: Vector2i) -> Flank:
+	var rel := attacker_tile - target_tile
+	if rel == -target_facing:
+		return Flank.BEHIND
+	if GridModel.distance(attacker_tile, target_tile) == 1 and rel != target_facing:
+		return Flank.SIDE
+	return Flank.FRONT
+
+
+static func flank_multiplier(f: Flank, rules: CombatRules) -> float:
+	match f:
+		Flank.SIDE:
+			return 1.0 + rules.flank_side_bonus_percent / 100.0
+		Flank.BEHIND:
+			return 1.0 + rules.flank_behind_bonus_percent / 100.0
+	return 1.0

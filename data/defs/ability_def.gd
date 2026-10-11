@@ -9,12 +9,17 @@ extends Resource
 ##   (Strike, Bite). Empty tiles: it whiffs.
 ## - LINE: a projectile flying straight ahead up to max_range tiles; it stops at
 ##   the first actor it affects or at terrain too high to pass (Fireball).
-## For FRONT and LINE, `target` says who is affected (ENEMY = hostile actors).
+## - ARC: the tile in front plus the tiles on either side of it (Cleave).
+## - AROUND: every tile within max_range of the caster (Frost Nova, Rallying Roar);
+##   for ALLY abilities this includes the caster.
+## For FRONT, LINE, ARC and AROUND, `target` says who is affected (ENEMY or ALLY).
 
 enum Shape {
 	TARGETED,
 	FRONT,
 	LINE,
+	ARC,
+	AROUND,
 }
 
 enum TargetType {
@@ -62,8 +67,8 @@ func validate() -> PackedStringArray:
 		errors.append("%s: no effects" % id)
 	if shape != Shape.TARGETED and target != TargetType.ENEMY and target != TargetType.ALLY:
 		errors.append("%s: FRONT/LINE abilities must affect ENEMY or ALLY" % id)
-	if shape == Shape.FRONT and max_range < 1:
-		errors.append("%s: FRONT needs max_range >= 1" % id)
+	if (shape == Shape.FRONT or shape == Shape.AROUND) and max_range < 1:
+		errors.append("%s: FRONT/AROUND need max_range >= 1" % id)
 	if ap_to_master < 0:
 		errors.append("%s: negative ap_to_master" % id)
 	return errors
@@ -72,3 +77,8 @@ func validate() -> PackedStringArray:
 ## The key its cooldown is tracked under: the group if it has one, else its id.
 func cooldown_key() -> StringName:
 	return cooldown_group if cooldown_group != &"" else id
+
+
+## Melee shapes get flanking bonuses.
+func is_melee() -> bool:
+	return shape == Shape.FRONT or shape == Shape.ARC

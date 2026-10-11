@@ -3,7 +3,7 @@ extends RefCounted
 ## The authoritative game world. Runs on the host only, on a fixed tick.
 ##
 ## Input: intents from players, as plain Dictionaries, via submit():
-##   {"type": "step", "to": Vector2i}         (also turns the hero that way)
+##   {"type": "step", "to": Vector2i}         (also turns the hero that way; not while rooted)
 ##   {"type": "face", "dir": Vector2i}        (turn in place; free)
 ##   {"type": "cast", "ability": StringName, "target": int}   (target -1 = none/self)
 ##   {"type": "release"}
@@ -182,6 +182,7 @@ func step() -> Array[Dictionary]:
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
 	_update_projectiles()
+	_tick_heals_over_time()
 	_update_combat_state()
 	_expire_loot()
 	_regen()
@@ -246,13 +247,15 @@ func try_step(actor: Actor, to: Vector2i) -> String:
 		return "blocked"
 	if is_occupied(to, actor):
 		return "occupied"
+	if actor.buffs.is_rooted(now):
+		return "rooted"
 	var in_combat := actor.in_combat(now)
 	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
 		return "not_ready"
 	actor.face(to - from)
 	actor.move.begin(to, now, rules.walk_tile_seconds)
 	if in_combat:
-		actor.cooldowns.trigger_step(now, actor.combat_step_cooldown(rules, now))
+		actor.cooldowns.trigger_step(now, actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now))
 	return ""
 
 
@@ -584,6 +587,19 @@ func _on_death(actor: Actor) -> void:
 				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h))
 		enemy.threat.clear()
 		enemy.respawn_at = now + enemy.def.respawn_seconds
+
+
+func _tick_heals_over_time() -> void:
+	for id in _sorted(ctx.actors):
+		var a: Actor = ctx.actors[id]
+		if not a.alive:
+			continue
+		for tick in a.buffs.due_heals(now):
+			var max_hp := a.current_stats(now).hp
+			var healed := clampf(roundf(tick.amount), 0.0, maxf(max_hp - a.hp, 0.0))
+			a.hp += healed
+			emit({"type": "heal", "source": tick.source, "target": a.id, "ability": tick.buff,
+					"amount": healed, "crit": false})
 
 
 ## Gold and items straight into the hero's bag; what doesn't fit waits 60 s.

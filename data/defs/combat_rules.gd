@@ -97,3 +97,10 @@ enum GrowthLimit {
 @export_group("Economy")
 ## Vendors pay this fraction of an item's price when you sell it.
 @export var vendor_sell_fraction: float = 0.25
+
+@export_group("Flanking")
+## Melee (FRONT/ARC) damage bonus when hitting a target from its side / from behind.
+@export var flank_side_bonus_percent: float = 25.0
+@export var flank_behind_bonus_percent: float = 50.0
+## Melee attacks from directly behind can't miss.
+@export var behind_never_misses: bool = true

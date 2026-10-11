@@ -4,7 +4,7 @@ extends RefCounted
 ## actually knows the ability (equipped item or mastered) is checked by the
 ## caller. Results are returned as plain-data events for replication and UI.
 ##
-## Event types: cast, miss, whiff, damage, heal, taunt, buff, resurrect, death.
+## Event types: cast, miss, whiff, damage, heal, mana, taunt, buff, resurrect, dash, death.
 ## LINE abilities with a projectile speed don't hit here: cast() returns the
 ## Projectile for WorldSim to fly, and WorldSim calls apply_effects() on impact.
 
@@ -90,6 +90,14 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 				else:
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id,
 							"tile": caster.front_tile()})
+		AbilityDef.Shape.ARC, AbilityDef.Shape.AROUND:
+			var victims := AbilityShapes.area_victims(ctx, caster, ability)
+			events.append({"type": "cast", "source": caster.id, "target": -1, "ability": ability.id})
+			for v in victims:
+				apply_effects(ctx, caster, ability, v, events)
+			if victims.is_empty():
+				events.append({"type": "whiff", "source": caster.id, "ability": ability.id,
+						"tile": caster.front_tile()})
 	return {"result": Result.OK, "events": events, "projectile": projectile}
 
 
@@ -125,10 +133,15 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not target.alive:
 				return
 			var target_stats := target.current_stats(ctx.now)
-			if ctx.rng.randf() >= CombatMath.hit_chance(caster_stats.accuracy, target_stats.evasion, rules):
+			var flank := CombatMath.Flank.FRONT
+			if ability.is_melee():
+				flank = CombatMath.flank(caster.tile(), target.tile(), target.facing)
+			var sure_hit := flank == CombatMath.Flank.BEHIND and rules.behind_never_misses
+			if not sure_hit and ctx.rng.randf() >= CombatMath.hit_chance(caster_stats.accuracy, target_stats.evasion, rules):
 				events.append({"type": "miss", "source": caster.id, "target": target.id, "ability": ability.id})
 				return
 			var raw := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats)
+			raw *= CombatMath.flank_multiplier(flank, rules)
 			raw *= CombatMath.high_ground_multiplier(
 					ctx.grid.height_advantage(caster.tile(), target.tile()), ability.ranged, rules)
 			var crit := _roll_crit(ctx, effect, caster_stats)
@@ -138,7 +151,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var dmg := minf(CombatMath.final_damage(raw, def.x, def.y, rules), target.hp)
 			target.hp -= dmg
 			events.append({"type": "damage", "source": caster.id, "target": target.id,
-					"ability": ability.id, "amount": dmg, "crit": crit})
+					"ability": ability.id, "amount": dmg, "crit": crit,
+					"flank": ["", "side", "behind"][flank]})
 			if target.threat != null:
 				target.threat.add(caster.id, dmg * effect.threat_multiplier)
 			if target.hp <= 0.0:
@@ -191,7 +205,46 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			target.buffs.apply(effect.buff, ctx.now)
 			events.append({"type": "buff", "source": caster.id, "target": target.id,
 					"ability": ability.id, "buff": effect.buff.id})
-			_share_support_threat(ctx, caster, target, 0.0)
+			if caster.is_hostile_to(target):
+				if target.threat != null:
+					target.threat.add(caster.id, 0.0) # a debuff pulls the enemy onto you
+			else:
+				_share_support_threat(ctx, caster, target, 0.0)
+
+		AbilityEffect.Kind.HEAL_OVER_TIME:
+			if effect.buff == null or not target.alive:
+				return
+			var total := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats)
+			var ticks := maxf(floorf(effect.buff.duration_seconds / maxf(effect.buff.tick_seconds, 0.05)), 1.0)
+			target.buffs.apply(effect.buff, ctx.now, total / ticks, caster.id)
+			events.append({"type": "buff", "source": caster.id, "target": target.id,
+					"ability": ability.id, "buff": effect.buff.id})
+			_share_support_threat(ctx, caster, target, total * rules.heal_threat_multiplier * effect.threat_multiplier)
+
+		AbilityEffect.Kind.DASH:
+			if not caster.alive:
+				return
+			var from := caster.tile()
+			var to := from
+			var jump := StatCalc.jump_levels(caster_stats)
+			for k in int(effect.base_amount):
+				var next := to + caster.facing
+				if not ctx.grid.can_step(to, next, jump) or _occupied(ctx, next, caster):
+					break
+				to = next
+			if to != from:
+				caster.move.place(from)
+				caster.move.begin(to, ctx.now, 0.12)
+			events.append({"type": "dash", "source": caster.id, "target": caster.id,
+					"ability": ability.id, "from": from, "to": to})
+
+
+static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool:
+	for id in ctx.actors:
+		var a: Actor = ctx.actors[id]
+		if a != ignore and a.alive and a.tile() == tile:
+			return true
+	return false
 
 
 static func _roll_crit(ctx: CombatContext, effect: AbilityEffect, caster_stats: StatBlock) -> bool:
