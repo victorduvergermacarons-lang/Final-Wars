@@ -30,10 +30,12 @@ func test_items_share_ability_resources() -> void:
 	assert_same(db.items[&"sword"].teaches[0], db.abilities[&"strike"])
 
 
-func test_block_doubles_physical_defense() -> void:
-	var buff: BuffDef = db.abilities[&"block"].effects[0].buff
+func test_block_doubles_physical_defense_off_the_gcd() -> void:
+	var block: AbilityDef = db.abilities[&"block"]
+	var buff: BuffDef = block.effects[0].buff
 	assert_eq(buff.modifiers[0].stat, Stat.Id.PHYS_DEF)
 	assert_eq(buff.modifiers[0].multiplier, 2.0)
+	assert_false(block.on_gcd, "Block neither waits for nor triggers the GCD")
 
 
 func test_zone_is_30_by_30_with_heights_and_wolves() -> void:

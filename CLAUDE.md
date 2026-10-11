@@ -182,7 +182,7 @@ docs/            how-to docs (building, testing, local multiplayer)
    Staff (main hand, one-handed), Shield (off hand), Holy Charm (accessory). Every hero starts with
    all four available to equip.
    Abilities taught: Sword → Strike; Staff → Fireball; Shield → Block (temporary buff
-   that doubles Physical Defense); Holy Charm → Heal **and** Resurrect (two abilities,
+   that doubles Physical Defense, off the GCD); Holy Charm → Heal **and** Resurrect (two abilities,
    so items may teach more than one).
 9. **XP/AP/progression** (constants in `CombatRules`):
    - Each kill's XP is split evenly among heroes on the enemy's threat table.
@@ -260,11 +260,13 @@ docs/            how-to docs (building, testing, local multiplayer)
     - Leveling: level 2 after 2 Wolves, level 3 after 6. Starter abilities master
       at 20 AP (2 level-ups), Resurrect at 30 AP.
     - Block cuts Wolf bites by ~22% at level 1 (D/(D+K) can never halve damage by
-      doubling D; its share grows with Physical Defense).
+      doubling D; its share grows with Physical Defense). Block is off the GCD, so
+      using it costs no attack time.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Block is off the GCD | Chosen over a stronger multiplier or flat reduction. |
 | 2026-10-11 | Step 11 balance targets approved and tuned | See rule 16. Block's effect is weaker than "half" under the approved formula; flagged to the user. |
 | 2026-10-11 | Step 10 HUD approved; bar layout + keybinds saved to user://settings.cfg | See rule 15. |
 | 2026-10-11 | Step 9 networking approved, with client-side movement prediction | See rule 14. |
