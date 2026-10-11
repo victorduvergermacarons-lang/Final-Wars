@@ -273,8 +273,9 @@ docs/            how-to docs (building, testing, local multiplayer)
     - Errors shown mid-screen in red for 2 s; message log bottom-left.
 16. **Milestone-1 balance targets** (approved 2026-10-11; enforced by
     `tests/balance/test_balance.gd`, numbers via `tests/balance/balance_report.tscn`):
-    - Sword hero solo vs 1 Wolf: ~8 s, ~50% HP lost. 2 Wolves solo without healing
-      is usually lethal; a pair handles 2 Wolves.
+    - Sword hero solo vs 1 Wolf: ~8 s, ~50% HP lost (measured after the combat
+      revision: 8.5 s, 57%, standing still without dodging). 2 Wolves solo without
+      healing is usually lethal; a pair handles 2 Wolves.
     - Fireball hits ~2× Strike but one Wolf costs ~60% of a staff hero's mana.
     - Wolf: 230 HP, 50 XP, respawn 30 s. Fireball: 25 + 1.2×MagAtk, 15 mana, 2.5 s cd.
       Shield: +30 Physical Defense.
@@ -287,6 +288,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Combat revision complete; no retuning needed | Balance targets (rule 16) still met with facing, directional abilities, faster wolves and reaction delay. |
 | 2026-10-11 | Wolf: 0.8 s/tile in combat, 0.3 s reaction delay | Rule 12. Part 3 of the combat revision. |
 | 2026-10-11 | Directional abilities: FRONT (Strike, Bite), LINE projectile (Fireball, 10 tiles/s); Heal/Resurrect stay targeted | Rule 8. Part 2 of the combat revision. |
 | 2026-10-11 | Combat step 1.5 s/tile (floor 0.5 s), walking 0.2 s/tile; facing + tap-to-turn | Rules 4 and 13. Part 1 of the post-M1 combat revision (facing, directional abilities, faster wolves, reaction delay). |

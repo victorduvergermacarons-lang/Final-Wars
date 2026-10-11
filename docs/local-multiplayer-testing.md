@@ -31,8 +31,10 @@ before moving its hero.
 
 ### Things worth trying with two instances
 
-- Walk Bob next to a Wolf so it aggros, then have Alice click Bob's party frame
-  and press Heal: Alice joins the fight (red outline = in combat).
+- Walk Bob next to a Wolf so it aggros, face it (tap the direction) and Strike;
+  have Alice click Bob's party frame and press Heal: Alice joins the fight (red
+  outline = in combat). Or have Alice line up with the Wolf and throw Fireballs.
+- Sidestep just before a Wolf bites: it bites where you were (0.3 s reaction).
 - Let one hero die: the other can target the body and cast **Resurrect**, or the
   dead player presses **Release** to respawn at the nearest graveyard.
 - Pull a Wolf far from its spawn: it evades (heals, untargetable) and walks home.

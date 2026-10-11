@@ -18,8 +18,9 @@ the editor), over LAN or over the internet, see
 
 | Input | Action |
 |-------|--------|
-| W A S D / arrows | Move (W = up-right, D = down-right, S = down-left, A = up-left) |
-| Left click | Target an enemy or ally (also: click a party/target frame) |
+| W A S D / arrows | Move (W = up-right, D = down-right, S = down-left, A = up-left). Tap a new direction to turn in place; hold to walk |
+| Strike / Fireball | Aimed where you face: Strike hits the tile in front, Fireball flies straight ahead and stops at the first enemy |
+| Left click | Target an ally or enemy for Heal / Resurrect (also: click a party/target frame) |
 | Tab / Esc | Next enemy / clear target |
 | 1–9, 0 | Action bar slots (rebind with the **Keybinds** button: hover a slot, press a key) |
 | P | Spellbook: drag abilities onto the action bar; right-click a slot to clear it |
