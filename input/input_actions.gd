@@ -19,17 +19,38 @@ const OTHER := {
 	&"target_next": [KEY_TAB],
 	&"target_clear": [KEY_ESCAPE],
 	&"release": [KEY_R],
-	&"ability_1": [KEY_1],
-	&"ability_2": [KEY_2],
-	&"ability_3": [KEY_3],
-	&"ability_4": [KEY_4],
-	&"ability_5": [KEY_5],
-	# Temporary until the equip panel (step 10).
-	&"debug_equip_sword": [KEY_F1],
-	&"debug_equip_staff": [KEY_F2],
-	&"debug_equip_shield": [KEY_F3],
-	&"debug_equip_charm": [KEY_F4],
+	&"toggle_spellbook": [KEY_P],
+	&"toggle_character": [KEY_C],
 }
+
+
+## Keys that can't be bound to action bar slots.
+static func is_reserved_key(key: int) -> bool:
+	if key == KEY_NONE or key == KEY_ESCAPE:
+		return true
+	for table in [MOVE, OTHER]:
+		for action in table:
+			if table[action].has(key):
+				return true
+	return false
+
+
+## Action name for action bar slot i (0-based).
+static func slot_action(i: int) -> StringName:
+	return StringName("action_slot_%d" % (i + 1))
+
+
+## Points the action_slot_N actions at the action bar's current keys.
+static func apply_action_bar_keys(bar: ActionBarModel) -> void:
+	for i in ActionBarModel.SLOT_COUNT:
+		var action := slot_action(i)
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+		InputMap.action_erase_events(action)
+		if bar.keys[i] != KEY_NONE:
+			var ev := InputEventKey.new()
+			ev.physical_keycode = bar.keys[i]
+			InputMap.action_add_event(action, ev)
 
 
 static func ensure_registered() -> void:

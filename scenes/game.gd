@@ -8,6 +8,8 @@ signal ended(reason: String)
 
 var session
 var client := ClientState.new()
+## Where the action bar layout/keybinds are saved (tests point this elsewhere).
+var settings_path := SettingsStore.DEFAULT_PATH
 
 
 func start_solo(player_name: String) -> void:
@@ -67,7 +69,7 @@ func _build_client(zone: ZoneDef) -> void:
 	input.name = "PlayerInput"
 	add_child(input)
 	input.setup(session, client, view)
-	var hud := DebugHud.new()
-	hud.name = "DebugHud"
+	var hud := Hud.new()
+	hud.name = "Hud"
 	add_child(hud)
-	hud.setup(session, client)
+	hud.setup(session, client, input, settings_path)

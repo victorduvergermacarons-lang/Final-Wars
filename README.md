@@ -17,12 +17,15 @@ optionally `--port=N` and `--name=NAME`.
 | Input | Action |
 |-------|--------|
 | W A S D / arrows | Move (W = up-right, D = down-right, S = down-left, A = up-left) |
-| Left click | Target an enemy or ally |
+| Left click | Target an enemy or ally (also: click a party/target frame) |
 | Tab / Esc | Next enemy / clear target |
-| 1–5 | Use your abilities in order (temporary until the action bar) |
-| F1–F4 | Equip or unequip Sword / Staff / Shield / Holy Charm (temporary) |
+| 1–9, 0 | Action bar slots (rebind with the **Keybinds** button: hover a slot, press a key) |
+| P | Spellbook: drag abilities onto the action bar; right-click a slot to clear it |
+| C | Character panel: equip items, see stats and AP progress (out of combat) |
 | R | Release when dead |
 | Mouse wheel | Zoom |
+
+Your action bar layout and keybinds are saved in `user://settings.cfg`.
 
 ## Run the tests
 Tests use [GUT](https://github.com/bitwes/Gut) 9.7.1, vendored in `addons/gut`.

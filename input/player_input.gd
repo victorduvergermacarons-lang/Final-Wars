@@ -73,49 +73,35 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"release"):
 		session.send_intent({"type": "release"})
 	else:
-		for i in 5:
-			if event.is_action_pressed(StringName("ability_%d" % (i + 1))):
-				use_ability_slot(i)
-				return
-		var equips := {&"debug_equip_sword": &"sword", &"debug_equip_staff": &"staff",
-				&"debug_equip_shield": &"shield", &"debug_equip_charm": &"holy_charm"}
-		for action in equips:
-			if event.is_action_pressed(action):
-				_toggle_item(equips[action])
+		for i in ActionBarModel.SLOT_COUNT:
+			if event.is_action_pressed(InputActions.slot_action(i), false, true):
+				use_slot(i)
+				get_viewport().set_input_as_handled()
 				return
 
 
-## Uses the hero's i-th available ability on a sensible target (WoW-like):
-## self abilities ignore the target; ally abilities fall back to self.
-func use_ability_slot(i: int) -> void:
-	var hero: Hero = session.local_hero()
-	var abilities := hero.available_abilities()
-	if i >= abilities.size():
+## Fires whatever ability is in action bar slot i.
+func use_slot(i: int) -> void:
+	var id := client.action_bar.slots[i]
+	if id == &"":
 		return
-	use_ability(abilities[i])
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return
+	var ability := hero.find_ability(id)
+	if ability == null:
+		client.error("You can't use that right now")
+		return
+	use_ability(ability)
 
 
 func use_ability(ability: AbilityDef) -> void:
 	var hero: Hero = session.local_hero()
-	var target: Actor = session.get_actor(client.target_id)
-	var target_id := -1
-	match ability.target:
-		AbilityDef.TargetType.SELF:
-			target_id = hero.id
-		AbilityDef.TargetType.ENEMY:
-			if target == null or not hero.is_hostile_to(target):
-				client.say("No enemy targeted")
-				return
-			target_id = target.id
-		AbilityDef.TargetType.ALLY:
-			var friendly := target != null and not hero.is_hostile_to(target) and target.alive
-			target_id = target.id if friendly else hero.id
-		AbilityDef.TargetType.DEAD_ALLY:
-			if target == null or hero.is_hostile_to(target) or target.alive:
-				client.say("Target a fallen ally")
-				return
-			target_id = target.id
-	session.send_intent({"type": "cast", "ability": ability.id, "target": target_id})
+	var picked := Targeting.pick(hero, ability, session.get_actor(client.target_id))
+	if picked.error != "":
+		client.error(picked.error)
+		return
+	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target})
 
 
 func _target_next_enemy() -> void:
@@ -135,14 +121,3 @@ func _target_next_enemy() -> void:
 	var ids: Array = candidates.map(func(a): return a.id)
 	var i := ids.find(client.target_id)
 	client.target_id = ids[(i + 1) % ids.size()]
-
-
-func _toggle_item(item_id: StringName) -> void:
-	var hero: Hero = session.local_hero()
-	for item in hero.inventory:
-		if item.id == item_id:
-			if hero.equipped_in(item.slot) == item:
-				session.send_intent({"type": "unequip", "slot": item.slot})
-			else:
-				session.send_intent({"type": "equip", "item": item_id})
-			return

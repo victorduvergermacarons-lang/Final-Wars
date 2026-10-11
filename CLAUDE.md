@@ -236,10 +236,25 @@ docs/            how-to docs (building, testing, local multiplayer)
     - Client disconnect → hero removed (enemies drop it from threat). Host
       disconnect → clients return to the menu with a message.
     - `Net.MAX_PLAYERS` = 2 for M1; nothing else assumes 2.
+15. **HUD** (approved 2026-10-11):
+    - One action bar of 10 slots on 1–9, 0. Cooldown sweep + seconds, GCD sweep.
+      Tint: blue = not enough mana, red = out of range / no valid target, dark =
+      not usable right now (item unequipped and not mastered; the slot stays).
+    - Spellbook (P): drag abilities onto slots; drag between slots to swap;
+      right-click clears. Newly available abilities auto-fill the first empty slot,
+      once per ability.
+    - Keybind mode: hover a slot and press a key; movement/target/panel keys are
+      reserved. Layout and keybinds are saved to `user://settings.cfg` (client
+      preference, not game progress).
+    - Unit frames: player (with XP), target, party members (click to target).
+    - Character panel (C): one dropdown per equipment slot, stats, AP progress.
+    - Death: centered "Release to graveyard" button (R also works).
+    - Errors shown mid-screen in red for 2 s; message log bottom-left.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Step 10 HUD approved; bar layout + keybinds saved to user://settings.cfg | See rule 15. |
 | 2026-10-11 | Step 9 networking approved, with client-side movement prediction | See rule 14. |
 | 2026-10-11 | Step 8 view/controls/zone approved | See rule 13. Enemy type: Wolf. |
 | 2026-10-11 | Step 7 world/AI rules approved | See rules 10 and 12. No hero auto-attack. |
