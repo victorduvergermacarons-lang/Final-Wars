@@ -4,6 +4,11 @@
 
 This file is the living design doc. Keep it current as decisions are made.
 
+**Status:** Milestone 1 complete and playtested, including the post-M1 combat revision
+(facing, directional abilities, faster enemies, reaction delay). Milestone 2 is being
+planned. For the numbers the game actually uses today, see **Gameplay as built** below;
+the brief sections keep the original wording.
+
 ## Working agreements
 - Propose structure/architecture changes and wait for approval before implementing them.
 - Work in small steps; commit after each one.
@@ -86,6 +91,60 @@ Crit Damage, Speed, Accuracy, Evasion, Jump.
 Quests, story, dungeons, save/load, inventory UI beyond basic equipping, matchmaking,
 final art, sound, and more than 2 players. Don't build these yet, but don't make
 choices that block them.
+
+## Gameplay as built (end of Milestone 1, after playtest)
+
+Quick reference of the values in the shipped content and `content/rules/default_rules.tres`.
+Tune them there; update this table when they change.
+
+### Changes from the original brief
+- **Combat steps are slow, not short:** 1.5 s per tile at 0 Speed (floor 0.5 s). Out of
+  combat there is no step cooldown; walking takes 0.2 s per tile.
+- **Facing:** every actor faces a direction. Tap a direction to turn in place, hold to walk.
+- **Directional combat:** melee hits the tile in front; Fireball is a projectile flying
+  straight ahead. Click-targeting remains only for Heal and Resurrect.
+- **Enemies outpace heroes in combat** (Wolf 0.8 s/tile) and react 0.3 s late, so
+  sidestepping an attack works.
+- **Shield teaches Block** (not Taunt); **Holy Charm teaches two abilities** (Heal and
+  Resurrect).
+- **Block** doubles Physical Defense for 6 s, off the GCD; under the D/(D+100) formula
+  that is ~22% less damage at level 1, not half.
+- **Level-up refills HP and Mana.** No hero auto-attack.
+
+### Timing
+| What | Value |
+|------|-------|
+| Sim tick | 20 Hz (0.05 s) |
+| Walk (out of combat) | 0.2 s per tile, no step cooldown |
+| Hero step in combat | 1.5 s × 100 / (100 + Speed), min 0.5 s |
+| GCD | 1.0 s |
+| Leave combat | 5 s after no enemy lists you |
+| Tap-to-turn threshold | 0.12 s |
+
+### Abilities
+| Ability | From | Shape | Effect | Cost / cooldown | AP to master |
+|---------|------|-------|--------|-----------------|--------------|
+| Strike | Sword | Front, 1 tile, ±2 height | 8 + 1.0×PhysAtk physical | GCD only | 20 |
+| Fireball | Staff | Line, 5 tiles, 10 tiles/s, ranged | 25 + 1.2×MagAtk magical | 15 mana, 2.5 s | 20 |
+| Block | Shield | Self buff | Physical Defense ×2 for 6 s | 20 s, off GCD | 20 |
+| Heal | Holy Charm | Targeted ally, range 4 | 20 + 1.0×MagAtk heal | 15 mana | 20 |
+| Resurrect | Holy Charm | Targeted dead ally, range 3 | Revive at 30% HP/Mana | 30 mana, 30 s | 30 |
+| Bite (Wolf) | — | Front, 1 tile, ±2 height | 6 + 1.0×PhysAtk physical | 2 s | — |
+
+### Heroes, items, enemies
+| Thing | Stats | Per-level growth |
+|-------|-------|------------------|
+| Adventurer (base) | HP 120, Mana 60, PhysAtk 10, MagAtk 10, PhysDef 10, MagDef 10, Crit 5%, Jump 2 | — |
+| Sword (main hand) | PhysAtk +12, Accuracy +5 | PhysAtk 4, HP 10 |
+| Staff (main hand, one-handed) | MagAtk +14, Mana +30 | MagAtk 4, Mana 8 |
+| Shield (off hand) | PhysDef +30, HP +30 | PhysDef 3, HP 12 |
+| Holy Charm (accessory) | MagAtk +6, Mana +20, MagDef +5 | MagAtk 2, Mana 6, MagDef 2 |
+| Wolf | HP 230, PhysAtk 12, PhysDef 5, Evasion 5, Jump 1; aggro 4, leash 10; 50 XP; respawn 30 s; 0.8 s/tile; 0.3 s reaction | — |
+
+Growth: 50% of each equipped item's growth per level. XP to next level: 100 × level.
+AP: 10 per level-up to each ability taught by an equipped item.
+Regen: 2%/s HP and Mana out of combat; 0.5%/s Mana in combat. Release: 50% HP/Mana at
+the nearest graveyard.
 
 ## Architecture (approved 2026-10-11)
 
@@ -285,9 +344,74 @@ docs/            how-to docs (building, testing, local multiplayer)
       doubling D; its share grows with Physical Defense). Block is off the GCD, so
       using it costs no attack time.
 
+## Milestone 2: the core RPG loop (brief, 2026-10-11)
+
+### Up to 4 players
+- Support 4 players per session. Players can join a session already in progress and
+  spawn in town.
+- Handle disconnects: a disconnected player's hero leaves the world cleanly. If the host
+  disconnects, clients return to the main menu with a clear message.
+
+### Equipment and inventory
+- Equipment slots: Head, Chest, Legs, Feet, Hands, Main Hand, Off Hand, 2 Accessories.
+  Two-handed weapons occupy both hand slots.
+- Bag inventory with limited slots.
+- Item rarity tiers: Common, Uncommon, Rare, Epic. Higher rarity means better stats,
+  stronger per-level growth, and better abilities. Show rarity by name color.
+- Item tooltips show stats, per-level growth, the ability taught, and AP progress toward
+  mastering it. When hovering an unequipped item, compare it to what's currently equipped
+  (green/red stat differences).
+- Character sheet: level, XP, all stats (with gear bonus vs permanent growth shown
+  separately), and a list of mastered and in-progress abilities.
+- Action bar: drag mastered abilities onto it; keybinds can be changed.
+
+### Loot and gold
+- Enemies drop gold and items from data-driven loot tables.
+- Personal loot: each player in the combat zone gets their own drops, so there's no loot
+  competition. Kills inside a shared combat zone give XP, AP, and quest credit to every
+  participating player.
+- Town vendor: sell items for gold, buy a few basic items and consumables
+  (health and mana potions on a shared potion cooldown).
+
+### Content
+- Add a small town hub connected to the existing zone. It includes a vendor, quest
+  givers, and the respawn graveyard.
+- 10–12 items covering emerging archetypes: tank, melee damage, ranged physical, caster,
+  and healer. Each teaches a distinct ability.
+- 3 enemy types with distinct AI, plus enemy levels:
+  - melee brute: slow steps, hits hard
+  - ranged caster: keeps distance, retreats when approached
+  - fast skirmisher: short step cooldown, flanks
+- One elite enemy that roams the zone and needs teamwork to beat.
+
+### Quest system foundation
+- Data-driven quests defined as Resources, with types: kill X, collect Y (drops), talk
+  to NPC, and reach a location.
+- Quests support prerequisites, so we can build chains later for the main story.
+- NPC quest givers show a marker for available quests and turn-ins. Include a simple
+  dialogue box.
+- Quest log UI and a small on-screen tracker. Shared progress: party members on the same
+  quest progress together.
+- Rewards: XP, gold, and optionally a choice of one item from a list.
+- Create 4–5 sample quests, including a short 3-quest chain.
+
+### Saving
+- Each player's character (level, stats, permanent growth, inventory, equipment,
+  mastered abilities, AP, quest progress, gold) saves on their own computer, so they can
+  bring the same hero into anyone's session.
+- The host saves world state (completed one-time events, etc.).
+- Autosave at regular intervals and on quit.
+
+### Out of scope for Milestone 2
+Dungeons, bosses with special mechanics, main story content, difficulty scaling,
+crafting, final art, and sound. Don't make choices that block these.
+
+When finished: a playtest checklist covering every feature, written for a non-programmer.
+
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Milestone 1 playtested; design doc brought up to date; Milestone 2 brief recorded | Added "Gameplay as built" reference. M2 plan pending approval. |
 | 2026-10-11 | Combat revision complete; no retuning needed | Balance targets (rule 16) still met with facing, directional abilities, faster wolves and reaction delay. |
 | 2026-10-11 | Wolf: 0.8 s/tile in combat, 0.3 s reaction delay | Rule 12. Part 3 of the combat revision. |
 | 2026-10-11 | Directional abilities: FRONT (Strike, Bite), LINE projectile (Fireball, 10 tiles/s); Heal/Resurrect stay targeted | Rule 8. Part 2 of the combat revision. |
