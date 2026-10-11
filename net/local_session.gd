@@ -101,6 +101,11 @@ func projectiles() -> Array:
 	return zone_sim().projectiles().map(func(p): return p.to_dict())
 
 
+## Loot waiting for the local hero (didn't fit in the bag).
+func pending_loot() -> Array:
+	return zone_sim().pending_loot_for(local_hero_id)
+
+
 ## Actors in the local hero's zone only.
 func get_actor(id: int) -> Actor:
 	return zone_sim().get_actor(id)

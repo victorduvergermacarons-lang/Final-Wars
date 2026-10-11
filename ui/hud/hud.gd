@@ -19,6 +19,7 @@ const REASONS := {
 	"cannot_equip": "You can't equip that there",
 	"too_far": "You're too far away",
 	"no_npc": "There's no one to talk to here",
+	"no_loot": "That loot is gone",
 }
 
 var session
@@ -34,6 +35,7 @@ var _party: VBoxContainer
 var _party_frames := {} # hero id -> UnitFrame
 var inventory_window: InventoryWindow
 var dialogue: DialogueBox
+var loot_window: LootWindow
 var _spellbook: SpellbookPanel
 var _character: CharacterSheet
 var _death: PanelContainer
@@ -105,6 +107,8 @@ func _build() -> void:
 	inventory_window = InventoryWindow.new(self)
 	inventory_window.visible = false
 	right.add_child(inventory_window)
+	loot_window = LootWindow.new(self)
+	right.add_child(loot_window)
 	_spellbook = SpellbookPanel.new(self)
 	_spellbook.visible = false
 	right.add_child(_spellbook)
@@ -249,6 +253,16 @@ func _on_events(events: Array) -> void:
 				client.say("You return at the graveyard.")
 			"resurrect":
 				client.say("You have been resurrected.")
+			"loot":
+				var parts: PackedStringArray = []
+				if e.gold > 0:
+					parts.append("%d gold" % e.gold)
+				for pair in e.items:
+					var item: ItemDef = ContentDB.items.get(StringName(str(pair[0])))
+					parts.append((item.display_name if item else str(pair[0])) + (" ×%d" % pair[1] if pair[1] > 1 else ""))
+				client.say("You loot " + ", ".join(parts) + ".")
+				if e.left >= 0:
+					client.error("Your bag is full — the rest waits 60 s in the loot window")
 			"dialogue":
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:

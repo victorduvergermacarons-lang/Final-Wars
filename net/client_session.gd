@@ -126,6 +126,11 @@ func actors() -> Array[Actor]:
 	return mirror.actors()
 
 
+func pending_loot() -> Array:
+	var hero := local_hero()
+	return hero.pending_loot if hero != null else []
+
+
 func projectiles() -> Array:
 	return mirror.projectiles
 

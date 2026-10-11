@@ -8,6 +8,7 @@ extends RefCounted
 ##   {"type": "cast", "ability": StringName, "target": int}   (target -1 = none/self)
 ##   {"type": "release"}
 ##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles)
+##   {"type": "take_loot", "loot": int}      (loot that didn't fit in the bag)
 ##   {"type": "equip", "bag_index": int, "slot": EquipSlot.Id (optional)}
 ##   {"type": "unequip", "slot": EquipSlot.Id}   (into the bag)
 ##   {"type": "move_item", "from": int, "to": int}   (bag slots: swap or merge)
@@ -33,6 +34,10 @@ var _intents: Array = [] # [hero_id, intent]
 ## Saved by the host. Keys are event ids, values are true or small plain data.
 var world_flags := {}
 var _projectiles: Array[Projectile] = []
+## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
+var _pending_loot: Array = []
+var _next_loot_id := 1
+const LOOT_WAIT_SECONDS := 60.0
 var _next_projectile_id := 1
 ## Recent hero positions, for enemies' reaction delay: hero id -> [[time, tile], ...].
 var _history := {}
@@ -175,6 +180,7 @@ func step() -> Array[Dictionary]:
 		EnemyBrain.update(self, enemy)
 	_update_projectiles()
 	_update_combat_state()
+	_expire_loot()
 	_regen()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
@@ -357,6 +363,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_release(hero)
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
+		"take_loot":
+			reason = _intent_take_loot(hero, intent.get("loot", -1))
 		"equip":
 			reason = _intent_equip(hero, intent.get("bag_index", -1), intent.get("slot", -1))
 		"unequip":
@@ -495,10 +503,64 @@ func _on_death(actor: Actor) -> void:
 		if not earners.is_empty():
 			var share := float(enemy.def.xp_reward) / earners.size()
 			for h in earners:
+				emit({"type": "kill", "target": h.id, "enemy": enemy.def.id})
 				for e in Leveling.add_xp(h, share, rules):
 					emit(e)
+				for e in ApMastery.award(h, enemy.def.ap_reward):
+					emit(e)
+				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h))
 		enemy.threat.clear()
 		enemy.respawn_at = now + enemy.def.respawn_seconds
+
+
+## Gold and items straight into the hero's bag; what doesn't fit waits 60 s.
+func _give_loot(hero: Hero, roll: Dictionary) -> void:
+	if roll.gold <= 0 and roll.items.is_empty():
+		return
+	hero.gold = mini(hero.gold + roll.gold, CharacterData.MAX_GOLD)
+	var leftover: Array = []
+	for pair in roll.items:
+		var left := hero.bag.add(pair[0], pair[1])
+		if left > 0:
+			leftover.append([pair[0], left])
+	var loot_id := -1
+	if not leftover.is_empty():
+		loot_id = _next_loot_id
+		_next_loot_id += 1
+		_pending_loot.append({"id": loot_id, "hero": hero.id, "items": leftover,
+				"expires": now + LOOT_WAIT_SECONDS})
+	emit({"type": "loot", "target": hero.id, "gold": roll.gold,
+			"items": Loot.items_to_array(roll.items), "left": loot_id})
+
+
+## Waiting loot for one hero, as plain data: [{"id", "items": [[id, n]], "expires"}].
+func pending_loot_for(hero_id: int) -> Array:
+	var out: Array = []
+	for p in _pending_loot:
+		if p.hero == hero_id:
+			out.append({"id": p.id, "items": Loot.items_to_array(p.items), "expires": p.expires})
+	return out
+
+
+func _intent_take_loot(hero: Hero, loot_id: int) -> String:
+	for p in _pending_loot:
+		if p.id != loot_id or p.hero != hero.id:
+			continue
+		var still: Array = []
+		for pair in p.items:
+			var left := hero.bag.add(pair[0], pair[1])
+			if left > 0:
+				still.append([pair[0], left])
+		p.items = still
+		if still.is_empty():
+			_pending_loot.erase(p)
+			return ""
+		return "bag_full"
+	return "no_loot"
+
+
+func _expire_loot() -> void:
+	_pending_loot = _pending_loot.filter(func(p): return p.expires > now)
 
 
 ## Everyone on a fighting enemy's threat table (and the enemy) is in combat.

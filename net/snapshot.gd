@@ -31,6 +31,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 				"ap": hero.ap.duplicate(),
 				"mastered": hero.mastered.keys(),
 				"quests": hero.quest_state,
+				"loot": world.pending_loot_for(hero.id),
 				"def": hero.def_id,
 				"ack": world.intent_ack(hero.id),
 			}

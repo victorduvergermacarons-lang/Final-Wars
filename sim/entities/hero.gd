@@ -9,6 +9,8 @@ var level: int = 1
 var gold: int = 0
 ## Per-quest progress, saved with the character (filled in by the quest system).
 var quest_state := {}
+## Client copy of loot waiting for this hero (filled from the host's snapshot).
+var pending_loot: Array = []
 var xp: float = 0.0
 var base_stats: StatBlock = StatBlock.new()
 ## Permanent stats gained from item growth on level-ups.

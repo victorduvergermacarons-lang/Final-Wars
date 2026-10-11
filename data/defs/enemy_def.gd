@@ -17,4 +17,8 @@ extends Resource
 ## aggro, chasing and aiming. Lets a hero sidestep an attack. 0 = no delay.
 @export var reaction_seconds: float = 0.0
 @export var xp_reward: int = 10
+## AP given per kill to each participant's equipped-item abilities.
+@export var ap_reward: int = 0
+## Personal loot each participant rolls.
+@export var loot: LootTable
 @export var respawn_seconds: float = 30.0

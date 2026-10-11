@@ -187,6 +187,7 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 		if ability != null:
 			h.mastered[StringName(id)] = ability
 	h.quest_state = p.quests
+	h.pending_loot = p.get("loot", [])
 
 
 ## Host state, then re-apply steps the host hasn't processed yet. If the
