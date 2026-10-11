@@ -33,7 +33,7 @@ static func fight(content, loadouts: Array, rotation: Array, wolves: int, seed: 
 		for slot in EquipSlot.COUNT:
 			h.unequip(slot)
 		for id in items:
-			h.equip(content.items[id])
+			h.wear(content.items[id])
 		h.hp = h.stats.hp
 		h.mana = h.stats.mana
 		heroes.append(h)

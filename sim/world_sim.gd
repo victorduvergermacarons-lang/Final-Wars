@@ -7,8 +7,11 @@ extends RefCounted
 ##   {"type": "face", "dir": Vector2i}        (turn in place; free)
 ##   {"type": "cast", "ability": StringName, "target": int}   (target -1 = none/self)
 ##   {"type": "release"}
-##   {"type": "equip", "item": StringName, "slot": EquipSlot.Id (optional)}
-##   {"type": "unequip", "slot": EquipSlot.Id}
+##   {"type": "equip", "bag_index": int, "slot": EquipSlot.Id (optional)}
+##   {"type": "unequip", "slot": EquipSlot.Id}   (into the bag)
+##   {"type": "move_item", "from": int, "to": int}   (bag slots: swap or merge)
+##   {"type": "split_item", "index": int, "count": int}
+##   {"type": "destroy_item", "index": int}
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -294,9 +297,21 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 		"release":
 			reason = _intent_release(hero)
 		"equip":
-			reason = _intent_equip(hero, intent.get("item", &""), intent.get("slot", -1))
+			reason = _intent_equip(hero, intent.get("bag_index", -1), intent.get("slot", -1))
 		"unequip":
 			reason = _intent_unequip(hero, intent.get("slot", -1))
+		"move_item":
+			reason = "" if hero.bag.move(intent.get("from", -1), intent.get("to", -1)) else "cannot_move"
+		"split_item":
+			reason = "" if hero.bag.split(intent.get("index", -1), intent.get("count", 0)) else "cannot_split"
+		"destroy_item":
+			var index: int = intent.get("index", -1)
+			var item := hero.bag.item_at(index)
+			if item == null:
+				reason = "empty"
+			else:
+				var n := hero.bag.remove_at(index, hero.bag.count_at(index))
+				emit({"type": "destroy_item", "target": hero.id, "item": item.id, "count": n})
 		_:
 			reason = "unknown_intent"
 	if reason != "":
@@ -363,18 +378,16 @@ func _intent_release(hero: Hero) -> String:
 	return ""
 
 
-func _intent_equip(hero: Hero, item_id: StringName, slot: int = -1) -> String:
+func _intent_equip(hero: Hero, bag_index: int, slot: int = -1) -> String:
 	if not hero.alive:
 		return "dead"
 	if hero.in_combat(now):
 		return "in_combat"
-	for item in hero.inventory:
-		if item.id == item_id:
-			if not hero.equip(item, slot):
-				return "cannot_equip"
-			emit({"type": "equip", "target": hero.id, "item": item.id})
-			return ""
-	return "unknown_item"
+	var item := hero.bag.item_at(bag_index)
+	var reason := hero.equip_from_bag(bag_index, slot)
+	if reason == "":
+		emit({"type": "equip", "target": hero.id, "item": item.id})
+	return reason
 
 
 func _intent_unequip(hero: Hero, slot: int) -> String:
@@ -384,9 +397,10 @@ func _intent_unequip(hero: Hero, slot: int) -> String:
 		return "in_combat"
 	if slot < 0 or slot >= EquipSlot.COUNT:
 		return "bad_slot"
-	hero.unequip(slot as EquipSlot.Id)
-	emit({"type": "unequip", "target": hero.id, "slot": slot})
-	return ""
+	var reason := hero.unequip_to_bag(slot)
+	if reason == "":
+		emit({"type": "unequip", "target": hero.id, "slot": slot})
+	return reason
 
 
 # --- Rules applied every tick -----------------------------------------------

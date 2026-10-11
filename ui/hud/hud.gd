@@ -15,6 +15,8 @@ const REASONS := {
 	"occupied": "Someone is in the way",
 	"unknown_ability": "You can't use that right now",
 	"caster_dead": "You are dead",
+	"bag_full": "Your bag is full",
+	"cannot_equip": "You can't equip that there",
 }
 
 var session

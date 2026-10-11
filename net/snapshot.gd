@@ -14,7 +14,7 @@ static func capture(world: WorldSim) -> Dictionary:
 		d.kind = KIND_HERO
 		d.level = hero.level
 		d.xp = hero.xp
-		d.inv = hero.inventory.map(func(i): return i.id)
+		d.bag = hero.bag.to_array()
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:

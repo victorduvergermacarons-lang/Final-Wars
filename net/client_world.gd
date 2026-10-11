@@ -156,12 +156,7 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
 	h.xp = d.xp
-	var inv: Array[ItemDef] = []
-	for id in d.inv:
-		var item: ItemDef = content.items.get(StringName(id))
-		if item != null:
-			inv.append(item)
-	h.inventory = inv
+	h.bag = Bag.from_array(d.bag, content.items)
 	var eq := {}
 	for slot in d.eq:
 		var item: ItemDef = content.items.get(StringName(d.eq[slot]))

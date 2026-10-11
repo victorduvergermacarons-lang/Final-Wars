@@ -40,7 +40,7 @@ func test_two_wolves_are_fine_for_a_pair() -> void:
 func test_fireball_out_damages_strike_but_costs_mana() -> void:
 	var staff_hero := Hero.from_def(1, db.heroes[&"adventurer"])
 	staff_hero.unequip(EquipSlot.Id.MAIN_HAND)
-	staff_hero.equip(db.items[&"staff"])
+	staff_hero.wear(db.items[&"staff"])
 	var sword_hero := Hero.from_def(2, db.heroes[&"adventurer"])
 	var fireball: AbilityDef = db.abilities[&"fireball"]
 	var strike: AbilityDef = db.abilities[&"strike"]
@@ -54,8 +54,7 @@ func test_fireball_out_damages_strike_but_costs_mana() -> void:
 
 func test_block_cuts_wolf_bites_by_at_least_a_fifth() -> void:
 	var tank := Hero.from_def(1, db.heroes[&"adventurer"])
-	tank.inventory.append(db.items[&"shield"])
-	tank.equip(db.items[&"shield"])
+	tank.wear(db.items[&"shield"])
 	var bite: AbilityDef = db.abilities[&"wolf_bite"]
 	var raw := StatCalc.scaled_amount(bite.effects[0].base_amount, bite.effects[0].scaling, db.enemies[&"wolf"].stats)
 	var k: float = db.rules.physical_defense_k

@@ -58,9 +58,8 @@ func test_level_up_growth_is_permanent_after_unequip() -> void:
 
 func test_only_items_equipped_at_level_up_count() -> void:
 	var h := F.hero_with([sword])
-	h.inventory.append(charm)
 	Leveling.level_up(h, rules)
-	h.equip(charm)
+	h.wear(charm)
 	Leveling.level_up(h, rules)
 	assert_eq(h.growth.phys_atk, 4.0, "sword grew twice")
 	assert_eq(h.growth.mag_atk, 1.0, "charm grew once")

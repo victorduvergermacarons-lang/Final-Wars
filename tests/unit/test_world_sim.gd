@@ -199,12 +199,12 @@ func test_healer_joins_combat_by_healing() -> void:
 
 
 func test_equipping_is_blocked_in_combat() -> void:
-	world.submit(a.id, {"type": "equip", "item": &"staff"})
+	world.submit(a.id, {"type": "equip", "bag_index": a.bag.index_of(hero_def.starting_items[2])})
 	world.step()
 	assert_eq(a.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"staff", "allowed out of combat")
 	_place(b, Vector2i(7, 1))
 	world.step()
-	world.submit(b.id, {"type": "equip", "item": &"staff"})
+	world.submit(b.id, {"type": "equip", "bag_index": b.bag.index_of(hero_def.starting_items[2])})
 	assert_eq(_rejections(world.step()), ["in_combat"])
 
 
@@ -399,3 +399,28 @@ func test_turning_is_free_in_combat() -> void:
 func test_bad_face_direction_is_rejected() -> void:
 	world.submit(a.id, {"type": "face", "dir": Vector2i(1, 1)})
 	assert_eq(_rejections(world.step()), ["bad_direction"])
+
+
+# --- Bag intents ---------------------------------------------------------------------
+
+func test_bag_intents_move_split_destroy() -> void:
+	var staff_index := a.bag.index_of(hero_def.starting_items[2])
+	world.submit(a.id, {"type": "move_item", "from": staff_index, "to": 10})
+	world.step()
+	assert_eq(a.bag.item_at(10), hero_def.starting_items[2])
+	world.submit(a.id, {"type": "destroy_item", "index": 10})
+	assert_has(_types(world.step()), "destroy_item")
+	assert_null(a.bag.item_at(10))
+	world.submit(a.id, {"type": "split_item", "index": 10, "count": 1})
+	assert_eq(_rejections(world.step()), ["cannot_split"])
+
+
+func test_unequip_into_bag_and_back() -> void:
+	world.submit(a.id, {"type": "unequip", "slot": EquipSlot.Id.MAIN_HAND})
+	world.step()
+	assert_null(a.equipped_in(EquipSlot.Id.MAIN_HAND))
+	var sword_index := a.bag.index_of(hero_def.starting_items[0])
+	assert_gt(sword_index, -1)
+	world.submit(a.id, {"type": "equip", "bag_index": sword_index})
+	world.step()
+	assert_eq(a.equipped_in(EquipSlot.Id.MAIN_HAND), hero_def.starting_items[0])

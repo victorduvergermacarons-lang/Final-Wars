@@ -8,8 +8,8 @@ var xp: float = 0.0
 var base_stats: StatBlock = StatBlock.new()
 ## Permanent stats gained from item growth on level-ups.
 var growth: StatBlock = StatBlock.new()
-## Items the hero owns.
-var inventory: Array[ItemDef] = []
+## Items carried but not equipped.
+var bag := Bag.new()
 var _equipped := {} # EquipSlot.Id -> ItemDef
 ## Ability id -> AP earned so far.
 var ap := {}
@@ -34,9 +34,12 @@ func _init(p_id: int = 0, p_base: StatBlock = null) -> void:
 static func from_def(p_id: int, def: HeroDef) -> Hero:
 	var h := Hero.new(p_id, def.base_stats.copy())
 	h.display_name = def.display_name
-	h.inventory = def.starting_items.duplicate()
+	var to_bag := def.starting_items.duplicate()
 	for item in def.starting_equipment:
-		h.equip(item)
+		h.wear(item)
+		to_bag.erase(item)
+	for item in to_bag:
+		h.bag.add(item)
 	h.hp = h.stats.hp
 	h.mana = h.stats.mana
 	return h
@@ -75,17 +78,11 @@ func displaced_by(item: ItemDef, requested: int = -1) -> Array[ItemDef]:
 	return out
 
 
-## Equips an owned item, taking off whatever it displaces. Returns false if the
-## item can't go there or the hero doesn't own another free copy of it.
-func equip(item: ItemDef, requested: int = -1) -> bool:
+## Puts `item` on directly (no bag involved); whatever it displaces is simply
+## removed. For starting gear, tests and tools. Returns false if it can't go there.
+func wear(item: ItemDef, requested: int = -1) -> bool:
 	var s := resolve_slot(item, requested)
-	if s < 0 or not inventory.has(item):
-		return false
-	if _equipped.get(s) == item:
-		return true
-	var owned := inventory.count(item)
-	var worn := _equipped.values().count(item)
-	if worn >= owned:
+	if s < 0:
 		return false
 	for d in displaced_by(item, s):
 		_equipped.erase(_equipped.find_key(d))
@@ -94,12 +91,45 @@ func equip(item: ItemDef, requested: int = -1) -> bool:
 	return true
 
 
+## Equips the item in bag slot `index`; displaced items go into the bag.
+## Returns "" or a reason: empty, cannot_equip, bag_full.
+func equip_from_bag(index: int, requested: int = -1) -> String:
+	var item := bag.item_at(index)
+	if item == null:
+		return "empty"
+	var s := resolve_slot(item, requested)
+	if s < 0:
+		return "cannot_equip"
+	var displaced := displaced_by(item, s)
+	# The equipped item frees its bag slot; every displaced item needs one.
+	if displaced.size() > bag.free_slots() + 1:
+		return "bag_full"
+	bag.remove_at(index, 1)
+	wear(item, s)
+	for d in displaced:
+		bag.add(d)
+	return ""
+
+
+## Moves the item in position `slot` into the bag. Returns "" or empty/bag_full.
+func unequip_to_bag(slot: int) -> String:
+	var item: ItemDef = _equipped.get(slot)
+	if item == null:
+		return "empty"
+	if bag.free_slots() == 0:
+		return "bag_full"
+	unequip(slot)
+	bag.add(item)
+	return ""
+
+
 ## Replaces all equipment as-is (no ownership check, no stat refresh). For
 ## client mirrors that receive their stats from the host.
 func set_equipped_raw(by_slot: Dictionary) -> void:
 	_equipped = by_slot.duplicate()
 
 
+## Takes off whatever is in `slot` (the item is not kept anywhere).
 func unequip(slot: EquipSlot.Id) -> void:
 	_equipped.erase(slot)
 	refresh_stats()

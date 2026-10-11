@@ -48,8 +48,8 @@ func test_snapshot_rebuilds_every_actor() -> void:
 func test_snapshot_carries_progress_cooldowns_and_buffs() -> void:
 	hero.ap[&"strike"] = 20
 	hero.mastered[&"heal"] = db.abilities[&"heal"]
-	hero.inventory.append(db.items[&"shield"])
-	world.submit(hero.id, {"type": "equip", "item": &"shield"})
+	hero.bag.add(db.items[&"shield"])
+	world.submit(hero.id, {"type": "equip", "bag_index": hero.bag.index_of(db.items[&"shield"])})
 	world.step()
 	world.submit(hero.id, {"type": "cast", "ability": &"block", "target": hero.id})
 	world.step()

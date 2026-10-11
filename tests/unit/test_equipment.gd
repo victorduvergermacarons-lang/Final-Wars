@@ -25,8 +25,13 @@ func before_each() -> void:
 
 func _hero(items: Array[ItemDef]) -> Hero:
 	var h := Hero.new(1, StatBlock.make({Stat.Id.HP: 100}))
-	h.inventory = items.duplicate()
+	for i in items:
+		h.bag.add(i)
 	return h
+
+
+func _equip(h: Hero, item: ItemDef, slot: int = -1) -> String:
+	return h.equip_from_bag(h.bag.index_of(item), slot)
 
 
 func test_there_are_nine_positions() -> void:
@@ -37,9 +42,9 @@ func test_there_are_nine_positions() -> void:
 
 func test_each_armor_piece_goes_in_its_own_position() -> void:
 	var h := _hero([helm, sword, shield])
-	assert_true(h.equip(helm))
-	assert_true(h.equip(sword))
-	assert_true(h.equip(shield))
+	assert_eq(_equip(h, helm), "")
+	assert_eq(_equip(h, sword), "")
+	assert_eq(_equip(h, shield), "")
 	assert_eq(h.equipped_in(EquipSlot.Id.HEAD), helm)
 	assert_eq(h.stats.hp, 115.0)
 	assert_eq(h.equipped_items().size(), 3)
@@ -47,44 +52,55 @@ func test_each_armor_piece_goes_in_its_own_position() -> void:
 
 func test_accessories_fill_both_positions() -> void:
 	var h := _hero([ring, amulet])
-	h.equip(ring)
-	h.equip(amulet)
+	_equip(h, ring)
+	_equip(h, amulet)
 	assert_eq(h.equipped_in(EquipSlot.Id.ACCESSORY_1), ring)
 	assert_eq(h.equipped_in(EquipSlot.Id.ACCESSORY_2), amulet)
 
 
 func test_wearing_the_same_accessory_twice_needs_two_copies() -> void:
 	var h := _hero([ring])
-	assert_true(h.equip(ring, EquipSlot.Id.ACCESSORY_1))
-	assert_false(h.equip(ring, EquipSlot.Id.ACCESSORY_2), "only one owned")
-	h.inventory.append(ring)
-	assert_true(h.equip(ring, EquipSlot.Id.ACCESSORY_2))
+	assert_eq(_equip(h, ring, EquipSlot.Id.ACCESSORY_1), "")
+	assert_eq(_equip(h, ring, EquipSlot.Id.ACCESSORY_2), "empty", "the only copy is already worn")
+	h.bag.add(ring)
+	assert_eq(_equip(h, ring, EquipSlot.Id.ACCESSORY_2), "")
 	assert_eq(h.stats.crit_rate, 4.0)
 
 
 func test_wrong_position_is_refused() -> void:
 	var h := _hero([helm, ring, potion])
-	assert_false(h.equip(helm, EquipSlot.Id.CHEST))
-	assert_false(h.equip(ring, EquipSlot.Id.MAIN_HAND))
-	assert_false(h.equip(potion), "potions aren't equippable")
+	assert_eq(_equip(h, helm, EquipSlot.Id.CHEST), "cannot_equip")
+	assert_eq(_equip(h, ring, EquipSlot.Id.MAIN_HAND), "cannot_equip")
+	assert_eq(_equip(h, potion), "cannot_equip", "potions aren't equippable")
 
 
 func test_two_hander_takes_both_hands() -> void:
 	var h := _hero([sword, shield, greataxe])
-	h.equip(sword)
-	h.equip(shield)
+	_equip(h, sword)
+	_equip(h, shield)
 	assert_eq(h.displaced_by(greataxe), [sword, shield] as Array[ItemDef])
-	assert_true(h.equip(greataxe))
+	assert_eq(_equip(h, greataxe), "")
 	assert_eq(h.equipped_in(EquipSlot.Id.MAIN_HAND), greataxe)
 	assert_null(h.equipped_in(EquipSlot.Id.OFF_HAND))
 	assert_eq(h.stats.phys_atk, 25.0)
+	assert_eq(h.bag.count_of(sword) + h.bag.count_of(shield), 2, "both went into the bag")
+
+
+func test_two_hander_is_refused_if_the_bag_cant_take_both_hands() -> void:
+	var h := _hero([sword, shield, greataxe])
+	_equip(h, sword)
+	_equip(h, shield)
+	var junk := F.item(&"junk", EquipSlot.Type.NONE, {}, {})
+	h.bag.add(junk, h.bag.free_slots()) # bag now full apart from the greataxe's slot
+	assert_eq(_equip(h, greataxe), "bag_full", "sword + shield need 2 slots, only 1 frees up")
+	assert_eq(h.equipped_in(EquipSlot.Id.MAIN_HAND), sword)
 
 
 func test_off_hand_replaces_a_two_hander() -> void:
 	var h := _hero([shield, greataxe])
-	h.equip(greataxe)
+	_equip(h, greataxe)
 	assert_eq(h.displaced_by(shield), [greataxe] as Array[ItemDef])
-	assert_true(h.equip(shield))
+	assert_eq(_equip(h, shield), "")
 	assert_null(h.equipped_in(EquipSlot.Id.MAIN_HAND))
 
 

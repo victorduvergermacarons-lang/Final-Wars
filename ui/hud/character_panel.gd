@@ -53,7 +53,11 @@ func _process(_delta: float) -> void:
 	lines.append("")
 	lines.append("Ability progress:")
 	var ids := {}
-	for item in hero.inventory:
+	var carried: Array[ItemDef] = hero.equipped_items()
+	for i in hero.bag.size():
+		if hero.bag.item_at(i) != null:
+			carried.append(hero.bag.item_at(i))
+	for item in carried:
 		for a in item.teaches:
 			ids[a.id] = a
 	for id in ids:
@@ -64,9 +68,7 @@ func _process(_delta: float) -> void:
 
 
 func _refresh_pickers(hero: Hero) -> void:
-	var parts: PackedStringArray = []
-	for item in hero.inventory:
-		parts.append(String(item.id))
+	var parts: PackedStringArray = [str(hero.bag.to_array())]
 	for slot in EquipSlot.COUNT:
 		var e := hero.equipped_in(slot)
 		parts.append(String(e.id) if e != null else "-")
@@ -79,19 +81,30 @@ func _refresh_pickers(hero: Hero) -> void:
 		picker.clear()
 		var ids: Array = [&""]
 		picker.add_item("(none)")
-		for item in hero.inventory:
-			if EquipSlot.slots_for(item.slot).has(slot) and not ids.has(item.id):
+		var equipped := hero.equipped_in(slot)
+		if equipped != null:
+			picker.add_item(equipped.display_name)
+			ids.append(equipped.id)
+		for i in hero.bag.size():
+			var item := hero.bag.item_at(i)
+			if item != null and EquipSlot.slots_for(item.slot).has(slot) and not ids.has(item.id):
 				picker.add_item(item.display_name)
 				ids.append(item.id)
 		_picker_items[slot] = ids
-		var equipped := hero.equipped_in(slot)
-		picker.select(ids.find(equipped.id) if equipped != null else 0)
+		picker.select(1 if equipped != null else 0)
 
 
 func _on_pick(index: int, slot: int) -> void:
 	var id: StringName = _picker_items[slot][index]
+	var hero: Hero = hud.session.local_hero()
 	if id == &"":
 		hud.session.send_intent({"type": "unequip", "slot": slot})
 	else:
-		hud.session.send_intent({"type": "equip", "item": id, "slot": slot})
+		var bag_index := -1
+		for i in hero.bag.size():
+			if hero.bag.item_at(i) != null and hero.bag.item_at(i).id == id:
+				bag_index = i
+				break
+		if bag_index >= 0:
+			hud.session.send_intent({"type": "equip", "bag_index": bag_index, "slot": slot})
 	_shown_key = "" # re-sync with what the host actually does

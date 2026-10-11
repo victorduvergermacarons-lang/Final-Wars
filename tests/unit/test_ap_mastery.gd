@@ -28,7 +28,6 @@ func test_level_up_awards_ap_to_equipped_abilities() -> void:
 
 func test_unequipped_items_earn_nothing() -> void:
 	var h := F.hero_with([sword])
-	h.inventory.append(charm)
 	Leveling.level_up(h, rules)
 	assert_false(h.ap.has(&"heal"))
 
@@ -67,7 +66,7 @@ func test_ap_progress_survives_swapping_items() -> void:
 	Leveling.level_up(h, rules)
 	h.unequip(EquipSlot.Id.MAIN_HAND)
 	Leveling.level_up(h, rules)
-	h.equip(sword)
+	h.wear(sword)
 	Leveling.level_up(h, rules)
 	assert_eq(h.ap[&"strike"], 20)
 

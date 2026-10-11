@@ -36,18 +36,35 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"release":
 			pass
 		"equip":
-			var item = raw.get("item")
-			if typeof(item) != TYPE_STRING and typeof(item) != TYPE_STRING_NAME:
+			if not _ints(raw, out, ["bag_index"], ["slot"]):
 				return {}
-			out.item = StringName(item)
-			if raw.has("slot"):
-				if typeof(raw.slot) != TYPE_INT:
-					return {}
-				out.slot = raw.slot
 		"unequip":
-			if typeof(raw.get("slot")) != TYPE_INT:
+			if not _ints(raw, out, ["slot"]):
 				return {}
-			out.slot = raw.slot
+		"move_item":
+			if not _ints(raw, out, ["from", "to"]):
+				return {}
+		"split_item":
+			if not _ints(raw, out, ["index", "count"]):
+				return {}
+		"destroy_item":
+			if not _ints(raw, out, ["index"]):
+				return {}
 		_:
 			return {}
 	return out
+
+
+## Copies required (and optional, if present) integer fields; false if any is
+## missing or not an int.
+static func _ints(raw: Dictionary, out: Dictionary, required: Array, optional: Array = []) -> bool:
+	for key in required:
+		if typeof(raw.get(key)) != TYPE_INT:
+			return false
+		out[key] = raw[key]
+	for key in optional:
+		if raw.has(key):
+			if typeof(raw[key]) != TYPE_INT:
+				return false
+			out[key] = raw[key]
+	return true
