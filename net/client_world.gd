@@ -157,6 +157,8 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
 	h.xp = d.xp
 	h.bag = Bag.from_array(d.bag, content.items)
+	h.base_stats = StatBlock.from_dict(d.get("base", {}))
+	h.growth = StatBlock.from_dict(d.get("growth", {}))
 	var eq := {}
 	for slot in d.eq:
 		var item: ItemDef = content.items.get(StringName(d.eq[slot]))

@@ -24,7 +24,8 @@ the editor), over LAN or over the internet, see
 | Tab / Esc | Next enemy / clear target |
 | 1–9, 0 | Action bar slots (rebind with the **Keybinds** button: hover a slot, press a key) |
 | P | Spellbook: drag abilities onto the action bar; right-click a slot to clear it |
-| C | Character panel: equip items, see stats and AP progress (out of combat) |
+| B | Inventory: equipment + bag. Drag to equip/move, right-click equip/unequip, shift+click split, ctrl+right-click destroy. Hover for tooltips with comparison |
+| C | Character sheet: level, XP, stats (base / growth / gear / buffs), mastered and in-progress abilities |
 | R | Release when dead |
 | Mouse wheel | Zoom |
 

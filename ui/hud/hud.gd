@@ -32,7 +32,7 @@ var _party: VBoxContainer
 var _party_frames := {} # hero id -> UnitFrame
 var inventory_window: InventoryWindow
 var _spellbook: SpellbookPanel
-var _character: CharacterPanel
+var _character: CharacterSheet
 var _death: PanelContainer
 var _bind_button: Button
 var _error: Label
@@ -96,7 +96,7 @@ func _build() -> void:
 	right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	right.position = Vector2(-10, 10)
 	_root.add_child(right)
-	_character = CharacterPanel.new(self)
+	_character = CharacterSheet.new(self)
 	_character.visible = false
 	right.add_child(_character)
 	inventory_window = InventoryWindow.new(self)

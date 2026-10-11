@@ -39,6 +39,8 @@ func test_snapshot_rebuilds_every_actor() -> void:
 	assert_eq(h.display_name, "Ann")
 	assert_eq(h.tile(), hero.tile())
 	assert_true(h.stats.equals(hero.stats))
+	assert_true(h.base_stats.equals(hero.base_stats))
+	assert_true(h.growth.equals(hero.growth))
 	assert_eq(h.available_abilities().map(func(a): return a.id), [&"strike", &"heal", &"resurrect"])
 	var wolf := mirror.get_actor(world.enemies()[0].id) as Enemy
 	assert_eq(wolf.def.id, &"wolf")
