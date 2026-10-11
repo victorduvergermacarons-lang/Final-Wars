@@ -9,11 +9,15 @@ const RESEND_SECONDS := 0.15
 ## buffered on the host and movement doesn't stutter.
 const BUFFER_AT_PROGRESS := 0.6
 const TAB_RANGE := 12
+## A press shorter than this (from a standstill, facing elsewhere) only turns.
+const TURN_HOLD_SECONDS := 0.12
 
 var session
 var client: ClientState
 var view: WorldView
 
+var _held := Vector2i.ZERO
+var _walk_after := 0.0
 var _sent_from := Vector2i(-999, -999)
 var _sent_at := -999.0
 
@@ -29,12 +33,15 @@ func _physics_process(_delta: float) -> void:
 		return
 	var hero: Hero = session.local_hero()
 	if hero == null or not hero.alive:
+		_held = Vector2i.ZERO
 		return
 	var dir := _held_direction()
-	if dir == Vector2i.ZERO:
+	var t: float = session.render_time()
+	if dir != _held:
+		_on_direction_changed(hero, dir, t)
+	if dir == Vector2i.ZERO or t < _walk_after:
 		return
 	var now: float = session.now()
-	var t: float = session.render_time()
 	var m := hero.move
 	var next := hero.tile() + dir
 	if m.is_moving(t):
@@ -45,6 +52,21 @@ func _physics_process(_delta: float) -> void:
 		return
 	if _sent_from != hero.tile() or t - _sent_at >= RESEND_SECONDS:
 		_send_step(hero.tile(), next, t)
+
+
+## Pokémon-style: from a standstill, pressing a direction you aren't facing only
+## turns you; keep holding it to start walking. Already facing it, or switching
+## direction while walking, walks right away (a step turns you anyway).
+func _on_direction_changed(hero: Hero, dir: Vector2i, t: float) -> void:
+	var was_holding := _held != Vector2i.ZERO
+	_held = dir
+	if dir == Vector2i.ZERO:
+		return
+	if not was_holding and hero.facing != dir:
+		session.send_intent({"type": "face", "dir": dir})
+		_walk_after = t + TURN_HOLD_SECONDS
+	else:
+		_walk_after = t
 
 
 func _send_step(from: Vector2i, to: Vector2i, t: float) -> void:

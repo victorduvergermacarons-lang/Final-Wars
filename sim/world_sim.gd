@@ -3,7 +3,8 @@ extends RefCounted
 ## The authoritative game world. Runs on the host only, on a fixed tick.
 ##
 ## Input: intents from players, as plain Dictionaries, via submit():
-##   {"type": "step", "to": Vector2i}
+##   {"type": "step", "to": Vector2i}         (also turns the hero that way)
+##   {"type": "face", "dir": Vector2i}        (turn in place; free)
 ##   {"type": "cast", "ability": StringName, "target": int}   (target -1 = none/self)
 ##   {"type": "release"}
 ##   {"type": "equip", "item": StringName}
@@ -145,6 +146,7 @@ func try_step(actor: Actor, to: Vector2i) -> String:
 	var in_combat := actor.in_combat(now)
 	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
 		return "not_ready"
+	actor.face(to - from)
 	actor.move.begin(to, now, rules.walk_tile_seconds)
 	if in_combat:
 		actor.cooldowns.trigger_step(now, StatCalc.combat_step_cooldown(actor.current_stats(now).speed, rules))
@@ -208,6 +210,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 	match kind:
 		"step":
 			reason = _intent_step(hero, intent.get("to", hero.tile()))
+		"face":
+			reason = _intent_face(hero, intent.get("dir", Vector2i.ZERO))
 		"cast":
 			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1))
 		"release":
@@ -230,6 +234,13 @@ func _intent_step(hero: Hero, to: Vector2i) -> String:
 		hero.pending_step = to
 		return ""
 	return try_step(hero, to)
+
+
+## Turning is free and instant, in and out of combat.
+func _intent_face(hero: Hero, dir: Vector2i) -> String:
+	if not hero.alive:
+		return "dead"
+	return "" if hero.face(dir) else "bad_direction"
 
 
 func _take_pending_step(hero: Hero) -> void:

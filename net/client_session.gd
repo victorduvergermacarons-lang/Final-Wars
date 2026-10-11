@@ -80,6 +80,8 @@ func send_intent(intent: Dictionary) -> void:
 	intent.seq = seq
 	if intent.get("type") == "step":
 		mirror.predict_step(seq, intent.to, render_time())
+	elif intent.get("type") == "face":
+		mirror.predict_face(seq, intent.dir)
 	Net.send_intent(intent)
 
 

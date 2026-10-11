@@ -180,8 +180,9 @@ func test_step_cooldown_applies_in_combat() -> void:
 	world.step()
 	world.advance(rules.walk_tile_seconds)
 	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
-	assert_eq(_rejections(world.step()), ["not_ready"], "arrived, but 0.6s step cooldown running")
-	world.advance(0.4)
+	assert_eq(_rejections(world.step()), ["not_ready"], "arrived, but the combat step cooldown is running")
+	var cd := StatCalc.combat_step_cooldown(a.current_stats(world.now).speed, rules)
+	world.advance(cd - rules.walk_tile_seconds - 2 * rules.tick_seconds)
 	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
 	assert_eq(_rejections(world.step()), [])
 
@@ -369,3 +370,32 @@ func test_same_seed_and_intents_give_same_result() -> void:
 			world.step()
 		results.append([a.hp, b.mana, enemy.hp, enemy.tile(), enemy.threat.top()])
 	assert_eq(results[0], results[1])
+
+
+# --- Facing ----------------------------------------------------------------------
+
+func test_steps_turn_the_hero_and_face_turns_in_place() -> void:
+	world.submit(a.id, {"type": "step", "to": a.tile() + Vector2i.RIGHT})
+	world.step()
+	assert_eq(a.facing, Vector2i.RIGHT)
+	world.advance(1.0)
+	var tile := a.tile()
+	world.submit(a.id, {"type": "face", "dir": Vector2i.UP})
+	world.step()
+	assert_eq(a.facing, Vector2i.UP)
+	assert_eq(a.tile(), tile, "turning doesn't move")
+
+
+func test_turning_is_free_in_combat() -> void:
+	_place(a, Vector2i(6, 1))
+	world.step()
+	world.submit(a.id, {"type": "step", "to": Vector2i(6, 2)})
+	world.step()
+	world.submit(a.id, {"type": "face", "dir": Vector2i.LEFT})
+	assert_eq(_rejections(world.step()), [], "no step cooldown for turning")
+	assert_eq(a.facing, Vector2i.LEFT)
+
+
+func test_bad_face_direction_is_rejected() -> void:
+	world.submit(a.id, {"type": "face", "dir": Vector2i(1, 1)})
+	assert_eq(_rejections(world.step()), ["bad_direction"])

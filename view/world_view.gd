@@ -145,6 +145,8 @@ func _draw_actor(a: Actor) -> void:
 		_draw_ellipse(feet, 20, 9, Color(1, 0.9, 0.2), 2.0)
 	var body := feet + Vector2(0, -14)
 	var alpha := 0.45 if a.evading else 1.0
+	if a.alive:
+		_draw_facing(feet, a.facing, Color(1, 1, 1, 0.85 * alpha))
 	if a is Hero:
 		var color: Color = HERO_COLORS[(a.id - 1) % HERO_COLORS.size()]
 		if not a.alive:
@@ -165,6 +167,13 @@ func _draw_actor(a: Actor) -> void:
 	if a.alive:
 		var max_hp := a.current_stats(now).hp
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))
+
+
+## A small arrow on the ground pointing the way the actor faces.
+func _draw_facing(feet: Vector2, facing: Vector2i, color: Color) -> void:
+	var d := Iso.to_screen(Vector2(facing), 0.0).normalized()
+	var side := Vector2(-d.y, d.x)
+	draw_colored_polygon(PackedVector2Array([feet + d * 22, feet + d * 12 + side * 6, feet + d * 12 - side * 6]), color)
 
 
 func _draw_bar(pos: Vector2, width: float, fraction: float, color: Color) -> void:

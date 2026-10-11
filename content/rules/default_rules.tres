@@ -4,9 +4,9 @@
 
 [resource]
 script = ExtResource("1_rules")
-walk_tile_seconds = 0.25
-combat_step_base_seconds = 0.6
-combat_step_min_seconds = 0.3
+walk_tile_seconds = 0.2
+combat_step_base_seconds = 1.5
+combat_step_min_seconds = 0.5
 speed_half_point = 100.0
 gcd_seconds = 1.0
 los_height_tolerance = 1.0

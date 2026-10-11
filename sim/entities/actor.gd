@@ -17,6 +17,9 @@ var hp: float = 0.0
 var mana: float = 0.0
 var alive: bool = true
 var move := MoveState.new()
+## Which way the actor faces: one of GridModel.DIRECTIONS. Steps turn the actor;
+## FRONT and LINE abilities aim this way.
+var facing := Vector2i.DOWN
 var cooldowns := Cooldowns.new()
 var buffs := ActiveBuffs.new()
 ## Enemies only: who they want to hit. Null for heroes.
@@ -45,6 +48,19 @@ func tile() -> Vector2i:
 ## Stats with active buffs applied.
 func current_stats(now: float) -> StatBlock:
 	return buffs.modify(stats, now)
+
+
+## Turns to face `dir` if it is one of the four grid directions.
+func face(dir: Vector2i) -> bool:
+	if not GridModel.DIRECTIONS.has(dir):
+		return false
+	facing = dir
+	return true
+
+
+## The tile directly in front of the actor.
+func front_tile() -> Vector2i:
+	return tile() + facing
 
 
 func in_combat(now: float) -> bool:

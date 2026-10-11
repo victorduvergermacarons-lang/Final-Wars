@@ -21,6 +21,10 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(raw.get("to")) != TYPE_VECTOR2I:
 				return {}
 			out.to = raw.to
+		"face":
+			if typeof(raw.get("dir")) != TYPE_VECTOR2I:
+				return {}
+			out.dir = raw.dir
 		"cast":
 			var ability = raw.get("ability")
 			if typeof(ability) != TYPE_STRING and typeof(ability) != TYPE_STRING_NAME:

@@ -154,10 +154,11 @@ docs/            how-to docs (building, testing, local multiplayer)
 1. **Directions:** 4 grid directions, no diagonals.
 2. **Occupancy:** one actor per tile, allies included; no swapping in M1.
 3. **Height:** one height per tile (no bridges/overhangs yet; would need a layered grid).
-4. **Speed:** shortens the in-combat step cooldown, down to a floor. Out of combat
-   there is no step cooldown at all: heroes walk tile to tile at a fixed walking speed
-   (`walk_tile_seconds`), and the next step starts as soon as the previous one arrives.
-   The host only rejects steps that start before the current walk has arrived.
+4. **Speed:** shortens the in-combat step cooldown (1.5 s per tile at 0 Speed, never
+   below 0.5 s). Out of combat there is no step cooldown at all: heroes walk tile to
+   tile at a fixed walking speed (`walk_tile_seconds` = 0.2 s), and the next step
+   starts as soon as the previous one arrives. The host only rejects steps that start
+   before the current walk has arrived.
 5. **Combat membership:** each enemy keeps a WoW-style threat table. Damage and healing
    add threat; taunt forces you to the top. A hero is in combat while any enemy lists
    them. Healing/buffing a hero in combat puts you on that enemy's table too. Combat
@@ -219,6 +220,10 @@ docs/            how-to docs (building, testing, local multiplayer)
       mouse-wheel zoom.
     - W/↑ = grid up (screen up-right), D/→ = right (down-right), S/↓ = down
       (down-left), A/← = left (up-left), like FFTA.
+    - Every actor faces one of the four directions (arrow on the ground). Stepping
+      turns you. Pokémon-style: from a standstill, tapping a direction you don't face
+      only turns you; holding it (> 0.12 s) walks. Turning is free and instant, in
+      combat too.
     - WoW-style targeting: click an actor, Tab cycles nearby enemies, Esc clears.
       Self abilities ignore the target; ally abilities fall back to self.
     - Placeholder art: height-tinted tiles, blue water, grey rocks, heroes as
@@ -266,6 +271,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Combat step 1.5 s/tile (floor 0.5 s), walking 0.2 s/tile; facing + tap-to-turn | Rules 4 and 13. Part 1 of the post-M1 combat revision (facing, directional abilities, faster wolves, reaction delay). |
 | 2026-10-11 | Milestone 1 build order complete | Multiplayer testing doc: docs/local-multiplayer-testing.md. |
 | 2026-10-11 | Block is off the GCD | Chosen over a stronger multiplier or flat reduction. |
 | 2026-10-11 | Step 11 balance targets approved and tuned | See rule 16. Block's effect is weaker than "half" under the approved formula; flagged to the user. |

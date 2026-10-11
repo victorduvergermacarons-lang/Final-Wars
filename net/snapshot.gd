@@ -44,6 +44,7 @@ static func _actor(a: Actor) -> Dictionary:
 		"combat_until": a.combat_until,
 		"stats": a.stats.to_dict(),
 		"move": a.move.to_dict(),
+		"facing": a.facing,
 		"cd": a.cooldowns.to_dict(),
 		"buffs": a.buffs.to_dict(),
 	}

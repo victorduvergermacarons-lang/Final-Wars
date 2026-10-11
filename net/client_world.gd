@@ -20,7 +20,7 @@ var tick: int = 0
 var local_hero_id: int = -1
 
 var _actors := {} # id -> Actor
-var _pending: Array = [] # {seq, to, start}
+var _pending: Array = [] # unacknowledged local intents: {seq, kind: "step"|"face", ...}
 var _next_seq := 1
 
 
@@ -55,19 +55,29 @@ func take_seq() -> int:
 
 
 func pending_step_count() -> int:
-	return _pending.size()
+	return _pending.filter(func(p): return p.kind == "step").size()
+
+
+## Turns the local hero right away (turning is always legal while alive).
+func predict_face(seq: int, dir: Vector2i) -> bool:
+	var hero := local_hero()
+	if hero == null or not hero.alive or not hero.face(dir):
+		return false
+	_pending.append({"seq": seq, "kind": "face", "dir": dir})
+	return true
 
 
 ## Applies a step locally right away if the mirror says it's legal.
 ## `t` is the client's estimate of the host clock. Returns true if predicted.
 func predict_step(seq: int, to: Vector2i, t: float) -> bool:
 	var hero := local_hero()
-	if hero == null or not hero.alive or _pending.size() >= MAX_PENDING_STEPS:
+	if hero == null or not hero.alive or pending_step_count() >= MAX_PENDING_STEPS:
 		return false
 	if not _step_is_legal(hero, to, t):
 		return false
 	var start := maxf(t, hero.move.start_time + hero.move.duration)
-	_pending.append({"seq": seq, "to": to, "start": start})
+	_pending.append({"seq": seq, "kind": "step", "to": to, "start": start})
+	hero.face(to - hero.tile())
 	hero.move.begin(to, start, rules.walk_tile_seconds)
 	return true
 
@@ -127,6 +137,7 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	a.evading = d.evading
 	a.combat_until = d.combat_until
 	a.move = MoveState.from_dict(d.move)
+	a.facing = d.get("facing", Vector2i.DOWN)
 	a.cooldowns = Cooldowns.from_dict(d.cd)
 	a.buffs.clear()
 	for id in d.buffs:
@@ -173,7 +184,12 @@ func _apply_local_hero(h: Hero, d: Dictionary) -> void:
 	var ack: int = d.ack
 	_pending = _pending.filter(func(p): return p.seq > ack)
 	for p in _pending:
-		if h.alive and GridModel.distance(h.tile(), p.to) == 1:
+		if not h.alive:
+			break
+		if p.kind == "face":
+			h.face(p.dir)
+		elif GridModel.distance(h.tile(), p.to) == 1:
+			h.face(p.to - h.tile())
 			h.move.begin(p.to, maxf(p.start, h.move.start_time + h.move.duration), rules.walk_tile_seconds)
 	if h.move.from_tile == shown.from_tile and h.move.to_tile == shown.to_tile:
 		h.move.start_time = shown.start_time

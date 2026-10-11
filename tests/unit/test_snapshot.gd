@@ -135,3 +135,18 @@ func test_prediction_queue_is_bounded() -> void:
 	assert_true(mirror.predict_step(1, p + Vector2i.UP, mirror.now))
 	assert_true(mirror.predict_step(2, p + Vector2i.UP * 2, mirror.now))
 	assert_false(mirror.predict_step(3, p + Vector2i.UP * 3, mirror.now))
+
+
+func test_facing_is_replicated_and_predicted() -> void:
+	hero.face(Vector2i.LEFT)
+	_sync()
+	assert_eq(mirror.local_hero().facing, Vector2i.LEFT)
+	var seq := mirror.take_seq()
+	mirror.predict_face(seq, Vector2i.RIGHT)
+	_sync() # host hasn't processed it yet
+	assert_eq(mirror.local_hero().facing, Vector2i.RIGHT, "prediction survives the snapshot")
+	world.submit(hero.id, {"type": "face", "dir": Vector2i.RIGHT, "seq": seq})
+	world.step()
+	_sync()
+	assert_eq(mirror.local_hero().facing, Vector2i.RIGHT)
+	assert_eq(mirror.pending_step_count(), 0)
