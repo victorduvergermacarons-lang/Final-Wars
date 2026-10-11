@@ -1,8 +1,11 @@
 extends Node2D
 ## Entry scene: shows the main menu and starts/ends games.
 ##
-## Command-line shortcuts (handy with Debug > Customize Run Instances), passed
-## after "--":  --solo | --host | --join=ADDRESS   [--port=N] [--name=NAME]
+## Command-line shortcuts (handy with Debug > Customize Run Instances):
+##   --solo | --host | --join=ADDRESS   [--port=N] [--name=NAME]
+## Accepted with or without a "--" separator before them.
+
+const FLAGS := ["solo", "host", "join", "port", "name"]
 
 var _menu: MainMenu
 var _game: Game
@@ -11,7 +14,7 @@ var _game: Game
 func _ready() -> void:
 	$Title.queue_free()
 	_show_menu("")
-	_auto_start(OS.get_cmdline_user_args())
+	_auto_start(OS.get_cmdline_args() + OS.get_cmdline_user_args())
 
 
 func _show_menu(status: String) -> void:
@@ -60,8 +63,11 @@ func _on_join(player_name: String, address: String, port: int) -> void:
 func _auto_start(args: PackedStringArray) -> void:
 	var opts := {}
 	for a in args:
+		if not a.begins_with("--"):
+			continue
 		var parts := a.trim_prefix("--").split("=", true, 1)
-		opts[parts[0]] = parts[1] if parts.size() > 1 else ""
+		if parts[0] in FLAGS:
+			opts[parts[0]] = parts[1] if parts.size() > 1 else ""
 	var player_name: String = opts.get("name", "Adventurer")
 	var port := int(opts.get("port", Net.DEFAULT_PORT))
 	if opts.has("solo"):

@@ -266,6 +266,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Milestone 1 build order complete | Multiplayer testing doc: docs/local-multiplayer-testing.md. |
 | 2026-10-11 | Block is off the GCD | Chosen over a stronger multiplier or flat reduction. |
 | 2026-10-11 | Step 11 balance targets approved and tuned | See rule 16. Block's effect is weaker than "half" under the approved formula; flagged to the user. |
 | 2026-10-11 | Step 10 HUD approved; bar layout + keybinds saved to user://settings.cfg | See rule 15. |

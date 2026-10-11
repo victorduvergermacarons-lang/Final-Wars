@@ -11,8 +11,10 @@ Open the folder in the Godot editor and press **F5**. The main menu offers
 **Play Solo**, **Host Game** (default port 7777) and **Join Game** (host's IP + port).
 To play over the internet, the host must forward UDP port 7777 on their router.
 
-Command-line shortcuts (after `--`): `--solo`, `--host`, `--join=ADDRESS`,
-optionally `--port=N` and `--name=NAME`.
+Command-line shortcuts: `--solo`, `--host`, `--join=ADDRESS`, optionally
+`--port=N` and `--name=NAME`. To test co-op on one machine (two instances from
+the editor), over LAN or over the internet, see
+[docs/local-multiplayer-testing.md](docs/local-multiplayer-testing.md).
 
 | Input | Action |
 |-------|--------|
