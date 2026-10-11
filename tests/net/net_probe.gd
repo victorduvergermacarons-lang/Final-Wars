@@ -42,7 +42,8 @@ func _run_host(port: int, players: int) -> void:
 	if game.start_host(_character("Host"), port) != OK:
 		_finish(false, "host: could not listen on %d" % port)
 		return
-	var world: WorldSim = game.session.world
+	var world: World = game.session.world
+	game.session.local_hero().move.place(Vector2i(14, 16)) # out of the guests' way
 	if not await _wait_until(func(): return world.heroes().size() == players):
 		_finish(false, "host: only %d of %d players joined" % [world.heroes().size(), players])
 		return
@@ -50,10 +51,18 @@ func _run_host(port: int, players: int) -> void:
 	for h in world.heroes().slice(1):
 		starts[h.id] = h.tile()
 	var casts := {}
+	var zone_hops := {}
 	game.session.events_received.connect(func(events):
 		for e in events:
 			if e.type == "cast":
 				casts[e.source] = true)
+	# The host only hears its own zone's events, so watch the world for zone moves.
+	var watch := func():
+		for id in starts:
+			var sim: WorldSim = world.zone_of(id)
+			if sim != null and sim.zone.id == &"greenfields":
+				zone_hops[id] = true
+	get_tree().process_frame.connect(watch)
 	var all_done := func():
 		for id in starts:
 			var h: Actor = world.get_actor(id)
@@ -71,7 +80,10 @@ func _run_host(port: int, players: int) -> void:
 	if not stuck.is_empty():
 		_finish(false, "host: an enemy still lists a departed hero")
 		return
-	_finish(true, "host: %d guests joined, walked, cast and left cleanly" % (players - 1))
+	if not zone_hops.has(starts.keys()[0]):
+		_finish(false, "host: Guest1 never reached Greenfields")
+		return
+	_finish(true, "host: %d guests joined in town, walked, cast, one went to Greenfields, all left cleanly" % (players - 1))
 
 
 func _run_join(port: int, players: int, index: int) -> void:
@@ -120,6 +132,30 @@ func _run_join(port: int, players: int, index: int) -> void:
 		if other is Hero and other.id != hero.id and not other.bag.slots.all(func(s): return s == null):
 			_finish(false, "%s: received another player's bag" % me)
 			return
+	if index == 1:
+		# Walk out of town through the east exit: the client must switch maps.
+		var switched := [false]
+		session.zone_changed.connect(func(_z): switched[0] = true)
+		var toward_exit := func():
+			if switched[0]:
+				return true
+			var t := session.render_time()
+			if not hero.move.is_moving(t):
+				var path := Pathfinder.find_path(session.grid(), hero.tile(), Vector2i(17, 9), 2,
+						{}, -1, 5000)
+				if path.size() >= 2:
+					session.send_intent({"type": "step", "to": path[1]})
+			return false
+		if not await _wait_until(toward_exit):
+			_finish(false, "%s: never left town (at %s)" % [me, hero.tile()])
+			return
+		await get_tree().create_timer(0.5).timeout
+		hero = session.local_hero()
+		var wolves := session.actors().filter(func(a): return a is Enemy).size()
+		if session.zone().id != &"greenfields" or wolves == 0 or hero == null:
+			_finish(false, "%s: after the exit: zone %s, %d wolves" % [me, session.zone().id, wolves])
+			return
+		await get_tree().create_timer(0.5).timeout
 	game.save_now()
 	var saved := game.store.load_character(me)
 	if saved.get("name") != me or saved.get("bag", []).is_empty():

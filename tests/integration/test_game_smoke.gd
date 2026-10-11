@@ -76,6 +76,17 @@ func test_solo_game_runs_with_hud() -> void:
 	SettingsStore.load_action_bar(reloaded, SETTINGS)
 	assert_eq(reloaded.slots, game.client.action_bar.slots)
 
+	# Leaving town through the east exit switches the map.
+	var old_view := game.get_node("WorldView")
+	hero.move.place(Vector2i(16, 9))
+	session.send_intent({"type": "step", "to": Vector2i(17, 9)})
+	await wait_physics_frames(30)
+	assert_eq(session.zone().id, &"greenfields")
+	var new_view := game.get_node_or_null("WorldView")
+	assert_not_null(new_view)
+	assert_ne(new_view, old_view, "the view was rebuilt for the new zone")
+	assert_eq(session.actors().filter(func(a): return a is Enemy).size(), 5, "now seeing Greenfields' wolves")
+
 	# Saving writes the hero's progress to the store.
 	game.store = CharacterStore.new("user://test_smoke_characters")
 	game.save_now()

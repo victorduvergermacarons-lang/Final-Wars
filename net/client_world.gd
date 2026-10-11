@@ -50,6 +50,11 @@ func local_hero() -> Hero:
 	return _actors.get(local_hero_id) as Hero
 
 
+## Keeps intent numbering going after switching to a new zone's mirror.
+func continue_sequence_from(other: ClientWorld) -> void:
+	_next_seq = other._next_seq
+
+
 func take_seq() -> int:
 	var s := _next_seq
 	_next_seq += 1

@@ -15,6 +15,7 @@ extends Resource
 @export var graveyards: Array[Vector2i] = []
 @export var hero_spawns: Array[Vector2i] = []
 @export var enemy_spawns: Array[EnemySpawn] = []
+@export var exits: Array[ZoneExit] = []
 
 const HEIGHT_CHARS := "0123456789abcdefghijklmnopqrstuvwxyz"
 
@@ -52,6 +53,11 @@ func validate() -> PackedStringArray:
 	for p in graveyards + hero_spawns:
 		if p.x < 0 or p.y < 0 or p.x >= w or p.y >= height_rows.size():
 			errors.append("%s: point %s out of bounds" % [id, p])
+	for e in exits:
+		if e == null or e.to_zone == &"":
+			errors.append("%s: exit without a destination" % id)
+		elif e.tile.x < 0 or e.tile.y < 0 or e.tile.x >= w or e.tile.y >= height_rows.size():
+			errors.append("%s: exit %s out of bounds" % [id, e.tile])
 	for spawn in enemy_spawns:
 		if spawn == null or spawn.enemy == null:
 			errors.append("%s: enemy spawn without an enemy" % id)

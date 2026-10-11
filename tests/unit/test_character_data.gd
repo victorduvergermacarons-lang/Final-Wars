@@ -98,7 +98,7 @@ func test_store_saves_lists_and_loads() -> void:
 	store.save(CharacterData.new_character("Bob the Brave", db.heroes[&"adventurer"]))
 	assert_eq(store.list(), PackedStringArray(["Ayla", "Bob the Brave"]))
 	assert_true(store.exists("Bob the Brave"))
-	assert_eq(store.load_character("Ayla").level, 4)
+	assert_eq(int(store.load_character("Ayla").level), 4, "JSON numbers load as floats")
 	assert_eq(CharacterStore.slug("Bob the Brave!"), "bob_the_brave")
 	store.delete("Bob the Brave")
 	assert_false(store.exists("Bob the Brave"))

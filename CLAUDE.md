@@ -461,6 +461,12 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     Skirmisher (0.6 s/tile, moves to your side or back before attacking).
     **Elite "Old Grizzlehide":** level 5 bear on a patrol loop, ~6× Wolf HP, Cleave +
     Charge, respawn 5 min, drops the Epic mantle and Rares.
+13. **Zones (as built in step 7):** `World` holds one `WorldSim` per zone, stepped on a
+    shared clock with shared actor ids. Exit tiles (`ZoneDef.exits`) move a hero when
+    they arrive on one; exits don't work while you're in combat. Each client only gets
+    its own zone's snapshot and events and rebuilds its map when it changes zone.
+    Town "Millbrook" (18×18) is the start/join zone; its east edge leads to
+    Greenfields' west edge.
 12. **Saving:** plain-data JSON per character in the user folder; several characters per
     computer. The host validates a joining hero's data (known ids, sane values) but
     otherwise trusts it.
@@ -468,6 +474,7 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Zone exits are blocked while in combat | Implementation choice in M2 step 7 (prevents escaping fights by zoning); easy to change in `World._handle_exits`. |
 | 2026-10-11 | Milestone 2 plan and decisions approved | Flanking +25% side / +50% behind (user change); Rallying Roar lasts 120 s (user change); all other proposed defaults accepted. |
 | 2026-10-11 | Milestone 1 playtested; design doc brought up to date; Milestone 2 brief recorded | Added "Gameplay as built" reference. M2 plan pending approval. |
 | 2026-10-11 | Combat revision complete; no retuning needed | Balance targets (rule 16) still met with facing, directional abilities, faster wolves and reaction delay. |

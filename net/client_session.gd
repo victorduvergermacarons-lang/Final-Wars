@@ -4,10 +4,16 @@ extends Node
 ## snapshots, predicting the local hero's steps. Same read API as LocalSession.
 
 signal events_received(events: Array)
+## The local hero moved to another zone; the view should switch maps.
+signal zone_changed(zone: ZoneDef)
 ## The host accepted us; the world can be shown.
 signal welcomed
 ## Connection ended (failed, refused or host gone), with a reason for the player.
 signal ended(reason: String)
+
+func zone() -> ZoneDef:
+	return mirror.zone
+
 
 ## Never extrapolate drawing further than this past the last snapshot.
 const MAX_EXTRAPOLATION := 0.25
@@ -61,6 +67,19 @@ func on_snapshot(snap: Dictionary) -> void:
 	var first := mirror.tick == 0
 	if snap.tick <= mirror.tick:
 		return
+	var snap_zone := StringName(str(snap.get("zone", mirror.zone.id)))
+	if snap_zone != mirror.zone.id:
+		var zone: ZoneDef = ContentDB.zones.get(snap_zone)
+		if zone == null:
+			ended.emit("The host moved you to a zone this game doesn't have (%s)." % snap_zone)
+			return
+		var next := ClientWorld.new(zone, ContentDB.rules, ContentDB)
+		next.local_hero_id = local_hero_id
+		next.continue_sequence_from(mirror)
+		next.tick = mirror.tick
+		mirror = next
+		if not first:
+			zone_changed.emit(zone)
 	mirror.apply_snapshot(snap)
 	_snapshot_received_at = _clock()
 	if first:

@@ -24,6 +24,8 @@ func before_each() -> void:
 	hero = world.add_hero(db.heroes[&"adventurer"])
 	hero.display_name = "Ann"
 	other = world.add_hero(db.heroes[&"adventurer"])
+	hero.move.place(Vector2i(10, 20)) # open meadow, room to walk up
+	other.move.place(Vector2i(15, 20))
 	mirror = ClientWorld.new(zone, db.rules, db)
 	mirror.local_hero_id = hero.id
 

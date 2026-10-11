@@ -24,10 +24,10 @@ func start_solo(character: Dictionary) -> void:
 	var local := LocalSession.new()
 	local.name = "Session"
 	add_child(local)
-	local.start(_zone(), ContentDB.rules, character, randi())
+	local.start(_zones(), START_ZONE, ContentDB.rules, character, randi())
 	session = local
 	_load_world()
-	_build_client(_zone())
+	_build_client(local.zone())
 
 
 func start_host(character: Dictionary, port: int) -> Error:
@@ -35,12 +35,12 @@ func start_host(character: Dictionary, port: int) -> Error:
 	var host := ServerSession.new()
 	host.name = "Session"
 	add_child(host)
-	var err := host.start_hosting(_zone(), ContentDB.rules, character, port)
+	var err := host.start_hosting(_zones(), START_ZONE, ContentDB.rules, character, port)
 	if err != OK:
 		return err
 	session = host
 	_load_world()
-	_build_client(_zone())
+	_build_client(host.zone())
 	client.say("Hosting on port %d. Waiting for friends to join…" % port)
 	return OK
 
@@ -85,8 +85,12 @@ func _load_world() -> void:
 		session.world.world_flags = world_store.load_flags()
 
 
-func _zone() -> ZoneDef:
-	return ContentDB.zones[&"greenfields"]
+## Every zone in the game; players start (and join) in town.
+const START_ZONE := &"town"
+
+
+func _zones() -> Array:
+	return ContentDB.zones.values()
 
 
 func _hero_def() -> HeroDef:
@@ -94,10 +98,8 @@ func _hero_def() -> HeroDef:
 
 
 func _build_client(zone: ZoneDef) -> void:
-	var view := WorldView.new()
-	view.name = "WorldView"
-	add_child(view)
-	view.setup(session, client, zone)
+	var view := _make_view(zone)
+	session.zone_changed.connect(_on_zone_changed)
 	var input := PlayerInput.new()
 	input.name = "PlayerInput"
 	add_child(input)
@@ -106,3 +108,26 @@ func _build_client(zone: ZoneDef) -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.setup(session, client, input, settings_path)
+
+
+func _make_view(zone: ZoneDef) -> WorldView:
+	var view := WorldView.new()
+	view.name = "WorldView"
+	add_child(view)
+	move_child(view, 0) # draw the world under the HUD
+	view.setup(session, client, zone)
+	return view
+
+
+## New map: rebuild the view for it and drop a target that stayed behind.
+func _on_zone_changed(zone: ZoneDef) -> void:
+	var old: WorldView = get_node_or_null("WorldView")
+	if old != null:
+		old.name = "OldWorldView"
+		old.queue_free()
+	var view := _make_view(zone)
+	var input: PlayerInput = get_node_or_null("PlayerInput")
+	if input != null:
+		input.view = view
+	client.target_id = -1
+	client.say("You enter %s." % zone.display_name)

@@ -23,7 +23,7 @@ var tick_count: int = 0
 ## Sim clock in seconds. Derived from the tick count so it never drifts.
 var now: float = 0.0
 
-var _next_id := 1
+var ids: IdSource
 var _heroes := {} # id -> Hero
 var _enemies := {} # id -> Enemy
 var _intents: Array = [] # [hero_id, intent]
@@ -39,7 +39,9 @@ var _acks := {} # hero id -> last processed intent "seq" (for client-side predic
 var _events: Array[Dictionary] = []
 
 
-func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0) -> void:
+## `p_ids` is shared between the zones of a World; a lone zone makes its own.
+func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSource = null) -> void:
+	ids = p_ids if p_ids != null else IdSource.new()
 	zone = p_zone
 	rules = p_rules
 	grid = GridModel.from_zone(zone)
@@ -71,6 +73,35 @@ func add_saved_hero(data: Dictionary, content) -> Hero:
 	var hero := CharacterData.restore(_take_id(), data, content)
 	_place_new_hero(hero)
 	return hero
+
+
+## Takes a hero out of this zone (for moving it to another zone). Enemies forget
+## it and it leaves combat; the Hero object itself is kept intact.
+func transfer_out(hero_id: int) -> Hero:
+	var hero: Hero = _heroes.get(hero_id)
+	if hero == null:
+		return null
+	remove_hero(hero_id)
+	hero.pending_step = null
+	hero.combat_until = -1.0
+	return hero
+
+
+## Brings a hero in from another zone, at the free tile nearest `tile`.
+func transfer_in(hero: Hero, tile: Vector2i, ack: int = 0) -> void:
+	hero.move.place(find_free_tile_near(tile))
+	_heroes[hero.id] = hero
+	ctx.add_actor(hero)
+	if ack > 0:
+		_acks[hero.id] = ack
+
+
+## The exit on `tile`, or null.
+func exit_at(tile: Vector2i) -> ZoneExit:
+	for e in zone.exits:
+		if e.tile == tile:
+			return e
+	return null
 
 
 func add_enemy(def: EnemyDef, tile: Vector2i) -> Enemy:
@@ -467,9 +498,7 @@ func _regen() -> void:
 
 
 func _take_id() -> int:
-	var id := _next_id
-	_next_id += 1
-	return id
+	return ids.next()
 
 
 static func _sorted(d: Dictionary) -> Array:

@@ -99,8 +99,8 @@ func send_snapshot(peer_id: int, snap: Dictionary) -> void:
 	_s2c_snapshot.rpc_id(peer_id, raw.size(), raw.compress(FileAccess.COMPRESSION_DEFLATE))
 
 
-func broadcast_events(events: Array) -> void:
-	_s2c_events.rpc(events)
+func send_events(peer_id: int, events: Array) -> void:
+	_s2c_events.rpc_id(peer_id, events)
 
 
 @rpc("authority", "call_remote", "reliable")

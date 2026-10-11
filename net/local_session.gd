@@ -5,16 +5,32 @@ extends Node
 ## view, input and HUD never know which one they're talking to.
 
 signal events_received(events: Array)
+## The local hero moved to another zone; the view should switch maps.
+signal zone_changed(zone: ZoneDef)
 
-var world: WorldSim
+var world: World
 var local_hero_id: int = -1
 var _accumulator := 0.0
 
 
-## Starts the world with the local player's saved character (CharacterData).
-func start(zone: ZoneDef, rules: CombatRules, character: Dictionary, rng_seed: int = 0) -> void:
-	world = WorldSim.new(zone, rules, rng_seed)
+var _zone_id: StringName = &""
+
+
+## Starts the world (all zones) with the local player's saved character.
+func start(zones: Array, start_zone: StringName, rules: CombatRules, character: Dictionary, rng_seed: int = 0) -> void:
+	world = World.new(zones, rules, rng_seed, start_zone)
 	local_hero_id = world.add_saved_hero(character, ContentDB).id
+	_zone_id = zone().id
+
+
+## The zone the local hero is in.
+func zone_sim() -> WorldSim:
+	var sim := world.zone_of(local_hero_id)
+	return sim if sim != null else world.zone(world.start_zone)
+
+
+func zone() -> ZoneDef:
+	return zone_sim().zone
 
 
 func send_intent(intent: Dictionary) -> void:
@@ -37,8 +53,12 @@ func _physics_process(delta: float) -> void:
 		_accumulator -= tick
 		var events := world.step()
 		_on_tick(events)
-		if not events.is_empty():
-			events_received.emit(events)
+		if zone().id != _zone_id:
+			_zone_id = zone().id
+			zone_changed.emit(zone())
+		var mine := events.filter(func(e): return e.get("zone", _zone_id) == _zone_id)
+		if not mine.is_empty():
+			events_received.emit(mine)
 
 
 ## Called after every sim tick (the host broadcasts state here).
@@ -49,7 +69,7 @@ func _on_tick(_events: Array) -> void:
 # --- Read-only view of the world for view/input/UI --------------------------------
 
 func grid() -> GridModel:
-	return world.grid
+	return zone_sim().grid
 
 
 func rules() -> CombatRules:
@@ -68,21 +88,23 @@ func render_time() -> float:
 
 func actors() -> Array[Actor]:
 	var out: Array[Actor] = []
-	var ids := world.ctx.actors.keys()
+	var actors_by_id: Dictionary = zone_sim().ctx.actors
+	var ids := actors_by_id.keys()
 	ids.sort()
 	for id in ids:
-		out.append(world.ctx.actors[id])
+		out.append(actors_by_id[id])
 	return out
 
 
 ## Projectiles in flight as plain data (Projectile.to_dict).
 func projectiles() -> Array:
-	return world.projectiles().map(func(p): return p.to_dict())
+	return zone_sim().projectiles().map(func(p): return p.to_dict())
 
 
+## Actors in the local hero's zone only.
 func get_actor(id: int) -> Actor:
-	return world.get_actor(id)
+	return zone_sim().get_actor(id)
 
 
 func local_hero() -> Hero:
-	return world.get_actor(local_hero_id) as Hero
+	return zone_sim().get_actor(local_hero_id) as Hero
