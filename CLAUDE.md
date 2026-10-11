@@ -169,6 +169,9 @@ docs/            how-to docs (building, testing, local multiplayer)
 8. **Equipment slots:** Main Hand, Off Hand, Accessory, Body. M1: Sword (main hand),
    Staff (main hand, one-handed), Shield (off hand), Holy Charm (accessory). Every hero starts with
    all four available to equip.
+   Abilities taught: Sword → Strike; Staff → Fireball; Shield → Block (temporary buff
+   that doubles Physical Defense); Holy Charm → Heal **and** Resurrect (two abilities,
+   so items may teach more than one).
 9. **XP/AP:** each kill's XP is split evenly among heroes on the enemy's threat table.
    Each level-up gives a fixed AP amount to every ability taught by an equipped item.
 10. **Regen & respawn:** slow HP/Mana regen out of combat, small Mana regen in combat.
@@ -179,6 +182,8 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Holy Charm teaches two abilities: Heal and Resurrect | Items can teach several abilities (`ItemDef.teaches` is a list). |
+| 2026-10-11 | Shield ability is Block | Temporary buff that doubles Physical Defense. Duration/cooldown tuned in content. |
 | 2026-10-11 | Staff is one-handed | Sword or Staff can be paired with the Shield. |
 | 2026-10-11 | Architecture + 11 rule defaults approved | See sections above. Godot pinned to 4.7.2-stable, GUT 9.7.1. |
 | 2026-10-11 | Repo is Final-Wars | Design doc moved here from the Middleware repo. |

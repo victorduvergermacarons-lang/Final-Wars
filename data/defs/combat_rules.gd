@@ -15,3 +15,8 @@ extends Resource
 
 @export_group("Abilities")
 @export var gcd_seconds: float = 1.0
+
+@export_group("Line of sight")
+## An obstacle blocks only if it rises more than this many levels above the
+## sight line (roughly: how tall actors are).
+@export var los_height_tolerance: float = 1.0
