@@ -38,6 +38,12 @@ GODOT=/path/to/godot ./run_tests.sh  # if godot isn't on PATH
 
 You can also run them from the editor's **GUT** bottom panel.
 
+Balance report (scripted fights on the real simulation with shipped content):
+
+```bash
+godot --headless --path . tests/balance/balance_report.tscn
+```
+
 Network check (two headless Godot processes, host + client on localhost):
 
 ```bash

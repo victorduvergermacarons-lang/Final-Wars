@@ -23,4 +23,4 @@ target = 2
 max_range = 4
 mana_cost = 15.0
 effects = Array[ExtResource("1_8lc1v")]([SubResource("Resource_32er5")])
-ap_to_master = 30
+ap_to_master = 20

@@ -13,7 +13,7 @@ phys_def = 3.0
 [sub_resource type="Resource" id="Resource_me4q2"]
 script = ExtResource("1_ocxbd")
 hp = 30.0
-phys_def = 15.0
+phys_def = 30.0
 
 [resource]
 script = ExtResource("2_ridx4")

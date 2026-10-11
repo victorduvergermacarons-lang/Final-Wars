@@ -19,4 +19,4 @@ target = 0
 max_range = 0
 cooldown_seconds = 20.0
 effects = Array[ExtResource("1_y3qwe")]([SubResource("Resource_off5y")])
-ap_to_master = 30
+ap_to_master = 20

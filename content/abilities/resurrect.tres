@@ -18,4 +18,4 @@ max_range = 3
 mana_cost = 30.0
 cooldown_seconds = 30.0
 effects = Array[ExtResource("1_fuaku")]([SubResource("Resource_mnmbk")])
-ap_to_master = 40
+ap_to_master = 30

@@ -250,10 +250,22 @@ docs/            how-to docs (building, testing, local multiplayer)
     - Character panel (C): one dropdown per equipment slot, stats, AP progress.
     - Death: centered "Release to graveyard" button (R also works).
     - Errors shown mid-screen in red for 2 s; message log bottom-left.
+16. **Milestone-1 balance targets** (approved 2026-10-11; enforced by
+    `tests/balance/test_balance.gd`, numbers via `tests/balance/balance_report.tscn`):
+    - Sword hero solo vs 1 Wolf: ~8 s, ~50% HP lost. 2 Wolves solo without healing
+      is usually lethal; a pair handles 2 Wolves.
+    - Fireball hits ~2× Strike but one Wolf costs ~60% of a staff hero's mana.
+    - Wolf: 230 HP, 50 XP, respawn 30 s. Fireball: 25 + 1.2×MagAtk, 15 mana, 2.5 s cd.
+      Shield: +30 Physical Defense.
+    - Leveling: level 2 after 2 Wolves, level 3 after 6. Starter abilities master
+      at 20 AP (2 level-ups), Resurrect at 30 AP.
+    - Block cuts Wolf bites by ~22% at level 1 (D/(D+K) can never halve damage by
+      doubling D; its share grows with Physical Defense).
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Step 11 balance targets approved and tuned | See rule 16. Block's effect is weaker than "half" under the approved formula; flagged to the user. |
 | 2026-10-11 | Step 10 HUD approved; bar layout + keybinds saved to user://settings.cfg | See rule 15. |
 | 2026-10-11 | Step 9 networking approved, with client-side movement prediction | See rule 14. |
 | 2026-10-11 | Step 8 view/controls/zone approved | See rule 13. Enemy type: Wolf. |

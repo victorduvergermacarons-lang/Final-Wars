@@ -18,4 +18,4 @@ id = &"strike"
 display_name = "Strike"
 description = "A quick sword blow."
 effects = Array[ExtResource("1_5weaa")]([SubResource("Resource_kjwm4")])
-ap_to_master = 30
+ap_to_master = 20
