@@ -9,6 +9,10 @@ enum GrowthLimit {
 ## Global tunable constants. One instance lives in content/rules/.
 ## Later steps add combat math, growth, XP, regen and respawn settings here.
 
+@export_group("Simulation")
+## Fixed sim step (20 Hz).
+@export var tick_seconds: float = 0.05
+
 @export_group("Movement")
 ## Time to walk across one tile (the travel animation), same for everyone.
 ## Out of combat this is the only limit on stepping: there is no step cooldown,
@@ -56,7 +60,20 @@ enum GrowthLimit {
 ## Taunt sets the caster's threat to the current top threat plus this percent.
 @export var taunt_lead_percent: float = 10.0
 
+@export_group("Combat state")
+## Seconds after no enemy lists a hero before they leave combat.
+@export var combat_exit_seconds: float = 5.0
+
+@export_group("Regen")
+## Percent of max per second.
+@export var out_of_combat_hp_regen_percent: float = 2.0
+@export var out_of_combat_mana_regen_percent: float = 2.0
+@export var in_combat_hp_regen_percent: float = 0.0
+@export var in_combat_mana_regen_percent: float = 0.5
+
 @export_group("Death")
+## HP and Mana fraction a released hero respawns with at the graveyard.
+@export var release_fraction: float = 0.5
 ## HP and Mana fraction restored by a resurrection.
 @export var resurrect_fraction: float = 0.3
 

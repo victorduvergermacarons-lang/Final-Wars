@@ -15,6 +15,11 @@ var _equipped := {} # EquipSlot.Id -> ItemDef
 var ap := {}
 ## Ability id -> AbilityDef, usable forever.
 var mastered := {}
+## Where the hero died (picks the graveyard on release).
+var death_tile := Vector2i.ZERO
+## One buffered step, taken as soon as the current walk arrives, so holding a
+## direction stays smooth despite network latency.
+var pending_step: Variant = null # Vector2i or null
 
 
 func _init(p_id: int = 0, p_base: StatBlock = null) -> void:
@@ -95,6 +100,12 @@ func find_ability(id: StringName) -> AbilityDef:
 		if a.id == id:
 			return a
 	return null
+
+
+func die() -> void:
+	death_tile = tile()
+	pending_step = null
+	super()
 
 
 func is_mastered(id: StringName) -> bool:

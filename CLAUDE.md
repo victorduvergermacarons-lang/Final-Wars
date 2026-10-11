@@ -196,14 +196,29 @@ docs/            how-to docs (building, testing, local multiplayer)
      each ability sets its own AP threshold (`ap_to_master`). AP progress is kept
      when the item is unequipped.
    - Level-up refills HP and Mana to full.
-10. **Regen & respawn:** slow HP/Mana regen out of combat, small Mana regen in combat.
-    Release → nearest graveyard at 50% HP. Resurrect → 30% HP. Enemies respawn on a
-    timer. All configurable.
+10. **Regen & respawn:** out of combat 2% max HP and 2% max Mana per second; in
+    combat 0.5% max Mana per second, no HP regen. Release (any time, no auto-release)
+    → graveyard nearest the death spot, or the nearest free tile to it, at 50% HP and
+    Mana. Resurrect → 30% HP and Mana, in place. Dead heroes don't block tiles.
+    Enemies respawn at their spawn tile at full HP after their timer, waiting if the
+    tile is occupied. All configurable.
 11. **Party:** in M1 all connected players are one party. Real party system later.
+12. **World sim & enemy AI** (approved 2026-10-11):
+    - Fixed 20 Hz tick on the host.
+    - Gear can only be changed out of combat.
+    - Aggro: an idle enemy aggros on the nearest living hero within its aggro radius
+      and in line of sight. Damage also pulls it. No group/social aggro.
+    - In combat the enemy attacks the top of its threat table whenever an ability is
+      ready and in range; otherwise it paths toward the target on its step cooldown.
+    - Leash: past its leash radius from spawn, or with an empty threat table, the
+      enemy evades: clears threat, heals to full, is untargetable, walks home.
+    - Combat ends 5 s after no fighting enemy lists the hero.
+    - Heroes have no auto-attack; they only use action-bar abilities.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Step 7 world/AI rules approved | See rules 10 and 12. No hero auto-attack. |
 | 2026-10-11 | Step 6 progression numbers approved; level-up refills HP/Mana | See rule 9. |
 | 2026-10-11 | Step 5 combat numbers approved | See rule 7. |
 | 2026-10-11 | No step cooldown out of combat | Only the walk animation time limits steps out of combat. In combat: arrival + step cooldown. |

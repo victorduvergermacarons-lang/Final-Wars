@@ -14,6 +14,7 @@ extends Resource
 ## Where released heroes respawn (nearest one wins).
 @export var graveyards: Array[Vector2i] = []
 @export var hero_spawns: Array[Vector2i] = []
+@export var enemy_spawns: Array[EnemySpawn] = []
 
 const HEIGHT_CHARS := "0123456789abcdefghijklmnopqrstuvwxyz"
 
@@ -51,4 +52,9 @@ func validate() -> PackedStringArray:
 	for p in graveyards + hero_spawns:
 		if p.x < 0 or p.y < 0 or p.x >= w or p.y >= height_rows.size():
 			errors.append("%s: point %s out of bounds" % [id, p])
+	for spawn in enemy_spawns:
+		if spawn == null or spawn.enemy == null:
+			errors.append("%s: enemy spawn without an enemy" % id)
+		elif spawn.tile.x < 0 or spawn.tile.y < 0 or spawn.tile.x >= w or spawn.tile.y >= height_rows.size():
+			errors.append("%s: enemy spawn %s out of bounds" % [id, spawn.tile])
 	return errors
