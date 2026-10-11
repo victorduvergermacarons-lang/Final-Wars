@@ -165,9 +165,19 @@ docs/            how-to docs (building, testing, local multiplayer)
 6. **Line of sight:** blocked if an intermediate tile rises above the line between the
    attacker's and target's heights (configurable tolerance). High-ground bonus is
    +X% per height level of advantage, X in `CombatRules`.
-7. **Combat math:** hit chance = clamp(base + Accuracy − Evasion); mitigation =
-   Def / (Def + K); crit chance = Crit Rate, crit multiplier = Crit Damage. All
-   constants in `CombatRules`.
+7. **Combat math** (all constants in `CombatRules`):
+   - Hit % = 95 + (Accuracy − Evasion) × 1, clamped to 50–100. Heals, buffs, taunts
+     and resurrects always land.
+   - Mitigation = Def / (Def + 100), physical or magical per effect. Hits deal ≥ 1.
+   - Crit chance = Crit Rate %. Crit multiplier = 1 + (50 + Crit Damage) / 100.
+     Heals can crit.
+   - Ranged abilities: +10% damage per height level above the target; no penalty
+     from below.
+   - Mana is spent up front; a miss still costs mana and starts cooldowns.
+   - Threat: damage → threat equal to damage dealt. Healing → effective healing × 0.5,
+     split evenly across the enemies fighting the healed target (puts the healer on
+     their tables). Taunt → top threat + 10%.
+   - Resurrect restores 30% HP and 30% Mana.
 8. **Equipment slots:** Main Hand, Off Hand, Accessory, Body. M1: Sword (main hand),
    Staff (main hand, one-handed), Shield (off hand), Holy Charm (accessory). Every hero starts with
    all four available to equip.
@@ -184,6 +194,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Step 5 combat numbers approved | See rule 7. |
 | 2026-10-11 | No step cooldown out of combat | Only the walk animation time limits steps out of combat. In combat: arrival + step cooldown. |
 | 2026-10-11 | Holy Charm teaches two abilities: Heal and Resurrect | Items can teach several abilities (`ItemDef.teaches` is a list). |
 | 2026-10-11 | Shield ability is Block | Temporary buff that doubles Physical Defense. Duration/cooldown tuned in content. |

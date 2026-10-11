@@ -8,6 +8,7 @@ enum Kind {
 	HEAL,
 	TAUNT,
 	RESURRECT,
+	BUFF, ## Applies `buff` to the target.
 }
 
 enum DamageType {
@@ -21,5 +22,7 @@ enum DamageType {
 @export var base_amount: float = 0.0
 @export var scaling: Array[AbilityScaling] = []
 @export var can_crit: bool = true
+## Used when kind is BUFF.
+@export var buff: BuffDef
 ## Multiplies the threat this effect generates (damage/heal amount × multiplier).
 @export var threat_multiplier: float = 1.0
