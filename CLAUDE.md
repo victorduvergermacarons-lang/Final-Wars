@@ -167,7 +167,7 @@ docs/            how-to docs (building, testing, local multiplayer)
    Def / (Def + K); crit chance = Crit Rate, crit multiplier = Crit Damage. All
    constants in `CombatRules`.
 8. **Equipment slots:** Main Hand, Off Hand, Accessory, Body. M1: Sword (main hand),
-   Staff (main hand), Shield (off hand), Holy Charm (accessory). Every hero starts with
+   Staff (main hand, one-handed), Shield (off hand), Holy Charm (accessory). Every hero starts with
    all four available to equip.
 9. **XP/AP:** each kill's XP is split evenly among heroes on the enemy's threat table.
    Each level-up gives a fixed AP amount to every ability taught by an equipped item.
@@ -179,6 +179,7 @@ docs/            how-to docs (building, testing, local multiplayer)
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
-| 2026-10-11 | Architecture + 11 rule defaults approved | See sections above. Godot pinned to 4.7.2-stable, GUT 9.7.1. Open: is the Staff two-handed (blocks the Shield)? |
+| 2026-10-11 | Staff is one-handed | Sword or Staff can be paired with the Shield. |
+| 2026-10-11 | Architecture + 11 rule defaults approved | See sections above. Godot pinned to 4.7.2-stable, GUT 9.7.1. |
 | 2026-10-11 | Repo is Final-Wars | Design doc moved here from the Middleware repo. |
 | 2026-10-11 | Brief saved as CLAUDE.md | Restored a garbled line in "Movement and combat" to "The rest of the world keeps running normally." |

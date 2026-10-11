@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CombatRules" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/combat_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+walk_step_seconds = 0.25
+combat_step_base_seconds = 0.6
+combat_step_min_seconds = 0.3
+speed_half_point = 100.0
+gcd_seconds = 1.0
