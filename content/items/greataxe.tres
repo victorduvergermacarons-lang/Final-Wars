@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_s2yne"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_najfa"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_mxw3q"]
+[ext_resource type="Resource" path="res://content/abilities/cleave.tres" id="4_xk54p"]
+
+[sub_resource type="Resource" id="Resource_tg75j"]
+script = ExtResource("1_s2yne")
+hp = 6.0
+phys_atk = 6.0
+
+[sub_resource type="Resource" id="Resource_eh685"]
+script = ExtResource("1_s2yne")
+phys_atk = 22.0
+crit_rate = 3.0
+
+[resource]
+script = ExtResource("2_najfa")
+id = &"greataxe"
+display_name = "Greataxe"
+slot = 8
+rarity = 1
+price = 80
+stats = SubResource("Resource_eh685")
+growth = SubResource("Resource_tg75j")
+teaches = Array[ExtResource("3_mxw3q")]([ExtResource("4_xk54p")])

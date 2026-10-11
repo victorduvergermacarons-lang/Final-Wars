@@ -4,6 +4,9 @@
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_4etgy"]
 [ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="3_pv0t8"]
 [ext_resource type="Resource" path="res://content/items/minor_mana_potion.tres" id="4_g0v7s"]
+[ext_resource type="Resource" path="res://content/items/iron_helm.tres" id="5_il6yv"]
+[ext_resource type="Resource" path="res://content/items/hunting_bow.tres" id="6_x6shx"]
+[ext_resource type="Resource" path="res://content/items/swift_boots.tres" id="7_8k1tp"]
 
 [resource]
 script = ExtResource("1_s7o53")
@@ -11,4 +14,4 @@ id = &"hilda"
 display_name = "Hilda the Trader"
 greeting = "Welcome to Millbrook, traveler! I buy what you find out there and sell what you'll need to stay alive."
 color = Color(0.95, 0.75, 0.3, 1)
-sells = Array[ExtResource("2_4etgy")]([ExtResource("3_pv0t8"), ExtResource("4_g0v7s")])
+sells = Array[ExtResource("2_4etgy")]([ExtResource("3_pv0t8"), ExtResource("4_g0v7s"), ExtResource("5_il6yv"), ExtResource("6_x6shx"), ExtResource("7_8k1tp")])

@@ -146,6 +146,21 @@ AP: 10 per level-up to each ability taught by an equipped item.
 Regen: 2%/s HP and Mana out of combat; 0.5%/s Mana in combat. Release: 50% HP/Mana at
 the nearest graveyard.
 
+### Milestone 2 items (step 12)
+| Item | Slot | Rarity | Key stats | Teaches | AP |
+|------|------|--------|-----------|---------|----|
+| Iron Helm | Head | Common | PhysDef +12, HP +25 | Taunt (targeted, range 3, 8 s) | 20 |
+| Hunting Bow | Two-Hand | Common | PhysAtk +14, Acc +8 | Aimed Shot (line 7, 14 tiles/s, 12 + 1.0×PhysAtk, 1.5 s) | 20 |
+| Swift Boots | Feet | Common | Speed +15, Eva +3 | Dash (2 tiles, 15 s, off GCD) | 20 |
+| Greataxe | Two-Hand | Uncommon | PhysAtk +22, Crit +3 | Cleave (arc, 6 + 0.9×PhysAtk, no cooldown) | 30 |
+| Frostweave Robe | Chest | Uncommon | MagAtk +10, Mana +25, MagDef +8 | Frost Nova (around 1, 10 + 0.6×MagAtk, root 2 s, 20 mana, 15 s) | 30 |
+| Acolyte's Leggings | Legs | Uncommon | MagAtk +6, HP +20, Mana +15 | Renew (30 + 1.0×MagAtk over 9 s, 15 mana, 6 s) | 30 |
+| Ranger's Gloves | Hands | Rare | PhysAtk +6, Eva +5, Speed +10 | Pinning Shot (line 6, slow ×2 for 4 s, 10 mana, 10 s) | 40 |
+| Grizzlehide Mantle | Chest | Epic | HP +60, PhysAtk +10, PhysDef +20, MagDef +10 | Rallying Roar (allies within 3: +20% attack 120 s) | 50 |
+
+Sources: Hilda sells the Commons and potions; Wolves drop the Uncommons (2% each);
+Ranger's Gloves and the Mantle come from the new enemies and the elite.
+
 ## Architecture (approved 2026-10-11)
 
 **Engine:** Godot 4.7.x (pinned to 4.7.2-stable), GDScript, GL Compatibility renderer.
@@ -464,6 +479,12 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 12. **Saving:** plain-data JSON per character in the user folder; several characters per
     computer. The host validates a joining hero's data (known ids, sane values) but
     otherwise trusts it.
+13. **Zones (as built in step 7):** `World` holds one `WorldSim` per zone, stepped on a
+    shared clock with shared actor ids. Exit tiles (`ZoneDef.exits`) move a hero when
+    they arrive on one; exits don't work while you're in combat. Each client only gets
+    its own zone's snapshot and events and rebuilds its map when it changes zone.
+    Town "Millbrook" (18×18) is the start/join zone; its east edge leads to
+    Greenfields' west edge.
 14. **Ability mechanics (as built in step 11):** shapes ARC (front tile + both sides)
     and AROUND (all tiles within range; ally versions include the caster); buffs can
     slow (multiply the step cooldown) or root (no stepping, abilities still allowed);
@@ -471,12 +492,6 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     the caster forward, stopping at walls, actors and climbs over its Jump; cooldown
     groups share one cooldown (potions); a debuff on an enemy pulls it onto the
     caster. Flanking applies to melee (FRONT/ARC) only; projectiles never flank.
-13. **Zones (as built in step 7):** `World` holds one `WorldSim` per zone, stepped on a
-    shared clock with shared actor ids. Exit tiles (`ZoneDef.exits`) move a hero when
-    they arrive on one; exits don't work while you're in combat. Each client only gets
-    its own zone's snapshot and events and rebuilds its map when it changes zone.
-    Town "Millbrook" (18×18) is the start/join zone; its east edge leads to
-    Greenfields' west edge.
 
 ## Decisions log
 | Date | Decision | Notes |

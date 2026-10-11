@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_modifier.gd" id="1_l8hf3"]
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="2_0g7ep"]
+
+[resource]
+script = ExtResource("2_0g7ep")
+id = &"pinned"
+display_name = "Pinned"
+duration_seconds = 4.0
+is_debuff = true

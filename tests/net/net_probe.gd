@@ -44,18 +44,19 @@ func _run_host(port: int, players: int) -> void:
 		return
 	var world: World = game.session.world
 	game.session.local_hero().move.place(Vector2i(14, 16)) # out of the guests' way
-	if not await _wait_until(func(): return world.heroes().size() == players):
-		_finish(false, "host: only %d of %d players joined" % [world.heroes().size(), players])
-		return
-	var starts := {}
-	for h in world.heroes().slice(1):
-		starts[h.id] = h.tile()
+	# Listen from the start: a quick guest may cast before the others have joined.
 	var casts := {}
 	var zone_hops := {}
 	game.session.events_received.connect(func(events):
 		for e in events:
 			if e.type == "cast":
 				casts[e.source] = true)
+	if not await _wait_until(func(): return world.heroes().size() == players):
+		_finish(false, "host: only %d of %d players joined" % [world.heroes().size(), players])
+		return
+	var starts := {}
+	for h in world.heroes().slice(1):
+		starts[h.id] = h.tile()
 	# The host only hears its own zone's events, so watch the world for zone moves.
 	var watch := func():
 		for id in starts:

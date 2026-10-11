@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_idqsc"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_41sae"]
+[ext_resource type="Resource" path="res://content/buffs/pinned.tres" id="3_4yxgy"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_ppd6u"]
+
+[sub_resource type="Resource" id="Resource_i0ksk"]
+script = ExtResource("2_41sae")
+coefficient = 0.6
+
+[sub_resource type="Resource" id="Resource_pd0jx"]
+script = ExtResource("1_idqsc")
+base_amount = 8.0
+scaling = Array[ExtResource("2_41sae")]([SubResource("Resource_i0ksk")])
+
+[sub_resource type="Resource" id="Resource_baujl"]
+script = ExtResource("1_idqsc")
+kind = 4
+buff = ExtResource("3_4yxgy")
+
+[resource]
+script = ExtResource("4_ppd6u")
+id = &"pinning_shot"
+display_name = "Pinning Shot"
+description = "An arrow that halves the target's speed for 4 s."
+shape = 2
+max_range = 6
+mana_cost = 10.0
+cooldown_seconds = 10.0
+ranged = true
+projectile_speed = 14.0
+effects = Array[ExtResource("1_idqsc")]([SubResource("Resource_pd0jx"), SubResource("Resource_baujl")])
+ap_to_master = 40

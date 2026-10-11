@@ -4,6 +4,9 @@
 [ext_resource type="Resource" path="res://content/items/wolf_pelt.tres" id="2_spih2"]
 [ext_resource type="Resource" path="res://content/items/wolf_fang.tres" id="3_2bfmr"]
 [ext_resource type="Script" path="res://data/defs/loot_table.gd" id="4_8n375"]
+[ext_resource type="Resource" path="res://content/items/greataxe.tres" id="4_qypvb"]
+[ext_resource type="Resource" path="res://content/items/frostweave_robe.tres" id="5_kjlyx"]
+[ext_resource type="Resource" path="res://content/items/acolytes_leggings.tres" id="6_lf5wd"]
 
 [sub_resource type="Resource" id="Resource_qypvb"]
 script = ExtResource("1_02cov")
@@ -16,8 +19,23 @@ item = ExtResource("3_2bfmr")
 chance = 0.3
 max_count = 2
 
+[sub_resource type="Resource" id="Resource_hd3f3"]
+script = ExtResource("1_02cov")
+item = ExtResource("4_qypvb")
+chance = 0.02
+
+[sub_resource type="Resource" id="Resource_tm0j1"]
+script = ExtResource("1_02cov")
+item = ExtResource("5_kjlyx")
+chance = 0.02
+
+[sub_resource type="Resource" id="Resource_wkepy"]
+script = ExtResource("1_02cov")
+item = ExtResource("6_lf5wd")
+chance = 0.02
+
 [resource]
 script = ExtResource("4_8n375")
 gold_min = 2
 gold_max = 6
-entries = Array[ExtResource("1_02cov")]([SubResource("Resource_qypvb"), SubResource("Resource_kjlyx")])
+entries = Array[ExtResource("1_02cov")]([SubResource("Resource_qypvb"), SubResource("Resource_kjlyx"), SubResource("Resource_hd3f3"), SubResource("Resource_tm0j1"), SubResource("Resource_wkepy")])

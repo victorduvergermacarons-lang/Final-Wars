@@ -123,7 +123,8 @@ func test_starter_content_uses_the_new_positions() -> void:
 	assert_eq(db.items[&"staff"].slot, EquipSlot.Type.MAIN_HAND)
 	assert_eq(db.items[&"shield"].slot, EquipSlot.Type.OFF_HAND)
 	assert_eq(db.items[&"holy_charm"].slot, EquipSlot.Type.ACCESSORY)
+	for id in [&"sword", &"staff", &"shield", &"holy_charm"]:
+		assert_eq(db.items[id].rarity, Rarity.Id.COMMON)
 	for item in db.items.values():
-		assert_eq(item.rarity, Rarity.Id.COMMON)
 		assert_gt(item.price, 0)
 	db.free()

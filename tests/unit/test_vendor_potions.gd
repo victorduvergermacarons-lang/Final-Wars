@@ -44,8 +44,12 @@ func _rejection(events: Array) -> String:
 	return ""
 
 
-func test_hilda_sells_both_potions() -> void:
-	assert_eq(hilda.def.sells, [hp_potion, mp_potion])
+func test_hilda_sells_potions_and_common_gear() -> void:
+	var ids := hilda.def.sells.map(func(i): return i.id)
+	for id in [&"minor_health_potion", &"minor_mana_potion", &"iron_helm", &"hunting_bow", &"swift_boots"]:
+		assert_has(ids, id)
+	for item in hilda.def.sells:
+		assert_eq(item.rarity, Rarity.Id.COMMON, "only Common goods")
 
 
 func test_buying_costs_gold_and_needs_enough() -> void:
