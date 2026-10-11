@@ -9,6 +9,7 @@ enum Kind {
 	TAUNT,
 	RESURRECT,
 	BUFF, ## Applies `buff` to the target.
+	RESTORE_MANA, ## Like HEAL, for Mana.
 }
 
 enum DamageType {
@@ -20,6 +21,8 @@ enum DamageType {
 ## Which defense mitigates it. Ignored for non-damage effects.
 @export var damage_type: DamageType = DamageType.PHYSICAL
 @export var base_amount: float = 0.0
+## HEAL / RESTORE_MANA: also restore this fraction of the target's max HP / Mana.
+@export var percent_of_max: float = 0.0
 @export var scaling: Array[AbilityScaling] = []
 @export var can_crit: bool = true
 ## Used when kind is BUFF.

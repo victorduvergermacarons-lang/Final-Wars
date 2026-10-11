@@ -30,7 +30,8 @@ the editor), over LAN or over the internet, see
 | P | Spellbook: drag abilities onto the action bar; right-click a slot to clear it |
 | B | Inventory: equipment + bag. Drag to equip/move, right-click equip/unequip, shift+click split, ctrl+right-click destroy. Hover for tooltips with comparison |
 | C | Character sheet: level, XP, stats (base / growth / gear / buffs), mastered and in-progress abilities |
-| E / right-click an NPC | Talk to a townsperson next to you (within 2 tiles) |
+| E / right-click an NPC | Talk to a townsperson next to you (within 2 tiles). Hilda sells potions: "Browse goods", then right-click bag items to sell them |
+| Right-click a potion | Drink it (or drag it onto the action bar). Potions share a 30 s cooldown and work in combat |
 | R | Release when dead |
 | Mouse wheel | Zoom |
 

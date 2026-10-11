@@ -148,16 +148,28 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 		AbilityEffect.Kind.HEAL:
 			if not target.alive:
 				return
-			var amount := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats)
+			var max_hp := target.current_stats(ctx.now).hp
+			var amount := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats) \
+					+ effect.percent_of_max * max_hp
 			var crit := _roll_crit(ctx, effect, caster_stats)
 			if crit:
 				amount *= CombatMath.crit_multiplier(caster_stats.crit_dmg, rules)
-			var max_hp := target.current_stats(ctx.now).hp
 			var healed := clampf(roundf(amount), 0.0, maxf(max_hp - target.hp, 0.0))
 			target.hp += healed
 			events.append({"type": "heal", "source": caster.id, "target": target.id,
 					"ability": ability.id, "amount": healed, "crit": crit})
 			_share_support_threat(ctx, caster, target, healed * rules.heal_threat_multiplier * effect.threat_multiplier)
+
+		AbilityEffect.Kind.RESTORE_MANA:
+			if not target.alive:
+				return
+			var max_mana := target.current_stats(ctx.now).mana
+			var amount := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats) \
+					+ effect.percent_of_max * max_mana
+			var restored := clampf(roundf(amount), 0.0, maxf(max_mana - target.mana, 0.0))
+			target.mana += restored
+			events.append({"type": "mana", "source": caster.id, "target": target.id,
+					"ability": ability.id, "amount": restored})
 
 		AbilityEffect.Kind.TAUNT:
 			if target.threat != null:

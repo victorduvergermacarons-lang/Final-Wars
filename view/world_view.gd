@@ -236,6 +236,8 @@ func _on_events(events: Array) -> void:
 				_float(e.target, ("%d!" if e.crit else "%d") % e.amount, Color(1, 0.35, 0.3), t)
 			"heal":
 				_float(e.target, ("+%d!" if e.crit else "+%d") % e.amount, Color(0.4, 1, 0.4), t)
+			"mana":
+				_float(e.target, "+%d mana" % e.amount, Color(0.45, 0.6, 1), t)
 			"miss":
 				_float(e.target, "Miss", Color(0.8, 0.8, 0.8), t)
 			"whiff":

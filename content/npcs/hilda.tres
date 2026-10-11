@@ -1,6 +1,9 @@
 [gd_resource type="Resource" script_class="NpcDef" format=3]
 
 [ext_resource type="Script" path="res://data/defs/npc_def.gd" id="1_s7o53"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_4etgy"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="3_pv0t8"]
+[ext_resource type="Resource" path="res://content/items/minor_mana_potion.tres" id="4_g0v7s"]
 
 [resource]
 script = ExtResource("1_s7o53")
@@ -8,3 +11,4 @@ id = &"hilda"
 display_name = "Hilda the Trader"
 greeting = "Welcome to Millbrook, traveler! I buy what you find out there and sell what you'll need to stay alive."
 color = Color(0.95, 0.75, 0.3, 1)
+sells = Array[ExtResource("2_4etgy")]([ExtResource("3_pv0t8"), ExtResource("4_g0v7s")])

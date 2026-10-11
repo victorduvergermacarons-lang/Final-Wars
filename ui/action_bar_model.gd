@@ -8,7 +8,7 @@ signal changed
 const SLOT_COUNT := 10
 const DEFAULT_KEYS: Array[int] = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0]
 
-## Ability id per slot (&"" = empty).
+## Ability id per slot (&"" = empty), or "item:<item id>" for a consumable.
 var slots: Array[StringName] = []
 ## Physical keycode per slot (KEY_NONE = unbound).
 var keys: Array[int] = []
@@ -102,3 +102,18 @@ func load_dict(d: Dictionary) -> void:
 	for id in d.get("auto_placed", []):
 		_auto_placed[StringName(id)] = true
 	changed.emit()
+
+
+const ITEM_PREFIX := "item:"
+
+
+static func is_item_slot(entry: StringName) -> bool:
+	return String(entry).begins_with(ITEM_PREFIX)
+
+
+static func item_id_of(entry: StringName) -> StringName:
+	return StringName(String(entry).trim_prefix(ITEM_PREFIX))
+
+
+static func item_entry(item_id: StringName) -> StringName:
+	return StringName(ITEM_PREFIX + String(item_id))

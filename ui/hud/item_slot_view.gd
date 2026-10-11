@@ -1,8 +1,9 @@
 class_name ItemSlotView
 extends Control
 ## One bag or equipment slot in the inventory window.
-## Drag between slots to move/equip/unequip. Right-click: equip from the bag or
-## unequip. Shift+click a stack to split it. Ctrl+right-click a bag item to destroy it.
+## Drag between slots to move/equip/unequip; drag a potion onto the action bar.
+## Right-click: sell (while a shop is open), use a consumable, equip, or unequip.
+## Shift+click a stack to split it. Ctrl+right-click a bag item to destroy it.
 
 enum Kind { BAG, EQUIP }
 
@@ -80,6 +81,10 @@ func _gui_input(event: InputEvent) -> void:
 			hud.session.send_intent({"type": "unequip", "slot": index})
 		elif event.ctrl_pressed:
 			hud.inventory_window.confirm_destroy(index)
+		elif hud.vendor_window.visible:
+			hud.vendor_window.sell(index)
+		elif it.use_ability != null:
+			hud.session.send_intent({"type": "use_item", "bag_index": index})
 		elif it.is_equippable():
 			hud.session.send_intent({"type": "equip", "bag_index": index})
 		accept_event()

@@ -116,11 +116,25 @@ func use_slot(i: int) -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null:
 		return
+	if ActionBarModel.is_item_slot(id):
+		use_item(ActionBarModel.item_id_of(id))
+		return
 	var ability := hero.find_ability(id)
 	if ability == null:
 		client.error("You can't use that right now")
 		return
 	use_ability(ability)
+
+
+## Uses one of the named consumable from the bag.
+func use_item(item_id: StringName) -> void:
+	var hero: Hero = session.local_hero()
+	for i in hero.bag.size():
+		var item := hero.bag.item_at(i)
+		if item != null and item.id == item_id:
+			session.send_intent({"type": "use_item", "bag_index": i})
+			return
+	client.error("You don't have any left")
 
 
 func use_ability(ability: AbilityDef) -> void:

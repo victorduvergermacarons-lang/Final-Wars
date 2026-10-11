@@ -17,13 +17,13 @@ var _step := Vector2.ZERO
 func can_use(ability: AbilityDef, now: float) -> bool:
 	if ability.on_gcd and gcd_remaining(now) > 0.0:
 		return false
-	return ability_remaining(ability.id, now) <= 0.0
+	return ability_remaining(ability.cooldown_key(), now) <= 0.0
 
 
 ## Starts the ability's cooldown and, if it uses the GCD, the GCD.
 func trigger(ability: AbilityDef, now: float, gcd_seconds: float) -> void:
 	if ability.cooldown_seconds > 0.0:
-		_abilities[ability.id] = Vector2(now, ability.cooldown_seconds)
+		_abilities[ability.cooldown_key()] = Vector2(now, ability.cooldown_seconds)
 	if ability.on_gcd and gcd_seconds > 0.0:
 		_gcd = Vector2(now, gcd_seconds)
 

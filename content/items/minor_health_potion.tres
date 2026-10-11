@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_75ii7"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_vhkqw"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_xm8gq"]
+[ext_resource type="Resource" path="res://content/abilities/drink_health_potion.tres" id="4_nu4i3"]
+
+[sub_resource type="Resource" id="Resource_lqi7s"]
+script = ExtResource("1_75ii7")
+
+[sub_resource type="Resource" id="Resource_0nuvn"]
+script = ExtResource("1_75ii7")
+
+[resource]
+script = ExtResource("2_vhkqw")
+id = &"minor_health_potion"
+display_name = "Minor Health Potion"
+description = "Restores 40% of your max HP. Shares a 30 s cooldown with other potions."
+price = 20
+max_stack = 20
+use_ability = ExtResource("4_nu4i3")
+stats = SubResource("Resource_0nuvn")
+growth = SubResource("Resource_lqi7s")

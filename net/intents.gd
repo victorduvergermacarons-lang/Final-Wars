@@ -41,6 +41,19 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"take_loot":
 			if not _ints(raw, out, ["loot"]):
 				return {}
+		"use_item":
+			if not _ints(raw, out, ["bag_index"]):
+				return {}
+		"buy":
+			var item = raw.get("item")
+			if typeof(item) != TYPE_STRING and typeof(item) != TYPE_STRING_NAME:
+				return {}
+			if not _ints(raw, out, ["npc", "count"]):
+				return {}
+			out.item = StringName(item)
+		"sell":
+			if not _ints(raw, out, ["npc", "bag_index", "count"]):
+				return {}
 		"equip":
 			if not _ints(raw, out, ["bag_index"], ["slot"]):
 				return {}

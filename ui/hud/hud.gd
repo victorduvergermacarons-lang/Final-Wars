@@ -20,6 +20,10 @@ const REASONS := {
 	"too_far": "You're too far away",
 	"no_npc": "There's no one to talk to here",
 	"no_loot": "That loot is gone",
+	"not_enough_gold": "You don't have enough gold",
+	"cant_sell": "The trader won't buy that",
+	"not_sold_here": "That isn't sold here",
+	"not_usable": "You can't use that",
 }
 
 var session
@@ -36,6 +40,7 @@ var _party_frames := {} # hero id -> UnitFrame
 var inventory_window: InventoryWindow
 var dialogue: DialogueBox
 var loot_window: LootWindow
+var vendor_window: VendorWindow
 var _spellbook: SpellbookPanel
 var _character: CharacterSheet
 var _death: PanelContainer
@@ -109,6 +114,8 @@ func _build() -> void:
 	right.add_child(inventory_window)
 	loot_window = LootWindow.new(self)
 	right.add_child(loot_window)
+	vendor_window = VendorWindow.new(self)
+	right.add_child(vendor_window)
 	_spellbook = SpellbookPanel.new(self)
 	_spellbook.visible = false
 	right.add_child(_spellbook)
@@ -134,6 +141,8 @@ func _build() -> void:
 	dialogue.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	dialogue.position.y -= 130
 	_root.add_child(dialogue)
+	dialogue.opened.connect(_on_dialogue_opened)
+	dialogue.closed.connect(func(): vendor_window.close())
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -263,10 +272,25 @@ func _on_events(events: Array) -> void:
 				client.say("You loot " + ", ".join(parts) + ".")
 				if e.left >= 0:
 					client.error("Your bag is full — the rest waits 60 s in the loot window")
+			"buy":
+				var bought: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				client.say("You buy %s for %d gold." % [bought.display_name if bought else e.item, e.gold])
+			"sell":
+				var sold: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				client.say("You sell %s%s for %d gold." % [sold.display_name if sold else e.item,
+						" ×%d" % e.count if e.count > 1 else "", e.gold])
 			"dialogue":
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:
 					dialogue.open(npc)
+
+
+## Adds the NPC's extra conversation options (shop, quests…).
+func _on_dialogue_opened(npc: Npc) -> void:
+	if not npc.def.sells.is_empty():
+		dialogue.add_option("Browse goods", func():
+			vendor_window.open(npc)
+			inventory_window.visible = true)
 
 
 func _small_button(text: String, on_press: Callable) -> Button:

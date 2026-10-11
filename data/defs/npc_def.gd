@@ -8,3 +8,6 @@ extends Resource
 ## What the NPC says when you talk to them.
 @export_multiline var greeting: String = ""
 @export var color: Color = Color(0.95, 0.8, 0.3)
+## Goods for sale (unlimited stock). Anyone selling something is a vendor and
+## also buys items from players.
+@export var sells: Array[ItemDef] = []

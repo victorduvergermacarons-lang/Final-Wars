@@ -13,6 +13,11 @@ func test_valid_intents_pass_through() -> void:
 	assert_eq(Intents.sanitize({"type": "move_item", "from": 0, "to": 4}), {"type": "move_item", "from": 0, "to": 4})
 	assert_eq(Intents.sanitize({"type": "split_item", "index": 2, "count": 5}), {"type": "split_item", "index": 2, "count": 5})
 	assert_eq(Intents.sanitize({"type": "destroy_item", "index": 2}), {"type": "destroy_item", "index": 2})
+	assert_eq(Intents.sanitize({"type": "buy", "npc": 4, "item": "minor_health_potion", "count": 2}),
+			{"type": "buy", "npc": 4, "item": &"minor_health_potion", "count": 2})
+	assert_eq(Intents.sanitize({"type": "sell", "npc": 4, "bag_index": 3, "count": 1}),
+			{"type": "sell", "npc": 4, "bag_index": 3, "count": 1})
+	assert_eq(Intents.sanitize({"type": "use_item", "bag_index": 3}), {"type": "use_item", "bag_index": 3})
 	assert_eq(Intents.sanitize({"type": "unequip", "slot": 1}), {"type": "unequip", "slot": 1})
 
 

@@ -84,9 +84,27 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_process_frames(1)
 	assert_true(hud.dialogue.visible, "dialogue opened")
 	assert_eq(hud.dialogue.current_npc().def.id, &"hilda")
+	# Buy a potion from Hilda, put it on the action bar and drink it.
+	hero.gold = 100
+	hud.vendor_window.open(hud.dialogue.current_npc())
+	hud.vendor_window.buy_item(&"minor_health_potion")
+	await wait_physics_frames(6)
+	var potion: ItemDef = ContentDB.items[&"minor_health_potion"]
+	assert_eq(hero.bag.count_of(potion), 1, "bought")
+	assert_eq(hero.gold, 80)
+	var slot: SlotButton = hud.find_children("*", "SlotButton", true, false)[6]
+	slot._drop_data(Vector2.ZERO, {"item_from": ItemSlotView.Kind.BAG, "index": hero.bag.index_of(potion)})
+	assert_eq(game.client.action_bar.slots[6], &"item:minor_health_potion")
+	hero.hp = 10
+	input.use_slot(6)
+	await wait_physics_frames(6)
+	assert_gt(hero.hp, 50.0, "drank it")
+	assert_eq(hero.bag.count_of(potion), 0)
+
 	hero.move.place(Vector2i(14, 16))
 	await wait_process_frames(2)
 	assert_false(hud.dialogue.visible, "closed after walking away")
+	assert_false(hud.vendor_window.visible, "shop closes with the conversation")
 
 	# Leaving town through the east exit switches the map.
 	var old_view := game.get_node("WorldView")

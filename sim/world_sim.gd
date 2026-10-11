@@ -9,6 +9,9 @@ extends RefCounted
 ##   {"type": "release"}
 ##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles)
 ##   {"type": "take_loot", "loot": int}      (loot that didn't fit in the bag)
+##   {"type": "use_item", "bag_index": int}  (consumables, e.g. potions)
+##   {"type": "buy", "npc": int, "item": StringName, "count": int}
+##   {"type": "sell", "npc": int, "bag_index": int, "count": int}
 ##   {"type": "equip", "bag_index": int, "slot": EquipSlot.Id (optional)}
 ##   {"type": "unequip", "slot": EquipSlot.Id}   (into the bag)
 ##   {"type": "move_item", "from": int, "to": int}   (bag slots: swap or merge)
@@ -365,6 +368,12 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_talk(hero, intent.get("npc", -1))
 		"take_loot":
 			reason = _intent_take_loot(hero, intent.get("loot", -1))
+		"use_item":
+			reason = _intent_use_item(hero, intent.get("bag_index", -1))
+		"buy":
+			reason = _intent_buy(hero, intent.get("npc", -1), intent.get("item", &""), intent.get("count", 1))
+		"sell":
+			reason = _intent_sell(hero, intent.get("npc", -1), intent.get("bag_index", -1), intent.get("count", 1))
 		"equip":
 			reason = _intent_equip(hero, intent.get("bag_index", -1), intent.get("slot", -1))
 		"unequip":
@@ -438,6 +447,70 @@ func _intent_talk(hero: Hero, npc_id: int) -> String:
 	if GridModel.distance(hero.tile(), npc.tile()) > TALK_RANGE:
 		return "too_far"
 	emit({"type": "dialogue", "target": hero.id, "npc": npc.id, "def": npc.def.id})
+	return ""
+
+
+## Uses one of a consumable: its ability is cast on the hero (cooldown and GCD
+## rules apply as for any ability); the item is used up only if that worked.
+func _intent_use_item(hero: Hero, bag_index: int) -> String:
+	var item := hero.bag.item_at(bag_index)
+	if item == null:
+		return "empty"
+	if item.use_ability == null:
+		return "not_usable"
+	var result := cast(hero, item.use_ability, hero)
+	if result != AbilityResolver.Result.OK:
+		return AbilityResolver.Result.keys()[result].to_lower()
+	hero.bag.remove_at(bag_index, 1)
+	emit({"type": "use_item", "target": hero.id, "item": item.id})
+	return ""
+
+
+func _vendor(hero: Hero, npc_id: int) -> Npc:
+	var npc: Npc = _npcs.get(npc_id)
+	if npc == null or npc.def.sells.is_empty() or GridModel.distance(hero.tile(), npc.tile()) > TALK_RANGE + 1:
+		return null
+	return npc
+
+
+func _intent_buy(hero: Hero, npc_id: int, item_id: StringName, count: int) -> String:
+	if not hero.alive:
+		return "dead"
+	var npc := _vendor(hero, npc_id)
+	if npc == null:
+		return "too_far"
+	var item: ItemDef = null
+	for it in npc.def.sells:
+		if it.id == item_id:
+			item = it
+	if item == null:
+		return "not_sold_here"
+	count = clampi(count, 1, item.max_stack)
+	var cost := item.price * count
+	if hero.gold < cost:
+		return "not_enough_gold"
+	if hero.bag.room_for(item) < count:
+		return "bag_full"
+	hero.gold -= cost
+	hero.bag.add(item, count)
+	emit({"type": "buy", "target": hero.id, "item": item.id, "count": count, "gold": cost})
+	return ""
+
+
+func _intent_sell(hero: Hero, npc_id: int, bag_index: int, count: int) -> String:
+	if not hero.alive:
+		return "dead"
+	if _vendor(hero, npc_id) == null:
+		return "too_far"
+	var item := hero.bag.item_at(bag_index)
+	if item == null:
+		return "empty"
+	if item.price <= 0:
+		return "cant_sell"
+	var n := hero.bag.remove_at(bag_index, clampi(count, 1, hero.bag.count_at(bag_index)))
+	var paid := floori(item.price * rules.vendor_sell_fraction) * n
+	hero.gold = mini(hero.gold + paid, CharacterData.MAX_GOLD)
+	emit({"type": "sell", "target": hero.id, "item": item.id, "count": n, "gold": paid})
 	return ""
 
 

@@ -35,6 +35,8 @@ enum TargetType {
 @export var cooldown_seconds: float = 0.0
 ## Whether using it triggers (and is blocked by) the global cooldown.
 @export var on_gcd: bool = true
+## Abilities with the same group share one cooldown (e.g. all potions).
+@export var cooldown_group: StringName = &""
 ## Ranged abilities can get the high-ground bonus.
 @export var ranged: bool = false
 @export var requires_line_of_sight: bool = true
@@ -65,3 +67,8 @@ func validate() -> PackedStringArray:
 	if ap_to_master < 0:
 		errors.append("%s: negative ap_to_master" % id)
 	return errors
+
+
+## The key its cooldown is tracked under: the group if it has one, else its id.
+func cooldown_key() -> StringName:
+	return cooldown_group if cooldown_group != &"" else id
