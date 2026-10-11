@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_7f18q"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_pcx0w"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_loubc"]
+[ext_resource type="Resource" path="res://content/abilities/heal.tres" id="4_5v4vl"]
+[ext_resource type="Resource" path="res://content/abilities/resurrect.tres" id="5_6peby"]
+
+[sub_resource type="Resource" id="Resource_cana0"]
+script = ExtResource("1_7f18q")
+mana = 6.0
+mag_atk = 2.0
+mag_def = 2.0
+
+[sub_resource type="Resource" id="Resource_swea8"]
+script = ExtResource("1_7f18q")
+mana = 20.0
+mag_atk = 6.0
+mag_def = 5.0
+
+[resource]
+script = ExtResource("2_pcx0w")
+id = &"holy_charm"
+display_name = "Holy Charm"
+slot = 2
+stats = SubResource("Resource_swea8")
+growth = SubResource("Resource_cana0")
+teaches = Array[ExtResource("3_loubc")]([ExtResource("4_5v4vl"), ExtResource("5_6peby")])

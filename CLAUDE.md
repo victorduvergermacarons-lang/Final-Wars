@@ -214,10 +214,22 @@ docs/            how-to docs (building, testing, local multiplayer)
       enemy evades: clears threat, heals to full, is untargetable, walks home.
     - Combat ends 5 s after no fighting enemy lists the hero.
     - Heroes have no auto-attack; they only use action-bar abilities.
+13. **View & controls** (approved 2026-10-11):
+    - Isometric tiles 64×32 px, 16 px per height level; camera follows the hero,
+      mouse-wheel zoom.
+    - W/↑ = grid up (screen up-right), D/→ = right (down-right), S/↓ = down
+      (down-left), A/← = left (up-left), like FFTA.
+    - WoW-style targeting: click an actor, Tab cycles nearby enemies, Esc clears.
+      Self abilities ignore the target; ally abilities fall back to self.
+    - Placeholder art: height-tinted tiles, blue water, grey rocks, heroes as
+      circles, enemies as red diamonds, floating combat text.
+    - Test zone "Greenfields" (30×30): hill, height-4 plateau reached by a ramp,
+      river with two bridges, two graveyards, five Wolves.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-11 | Step 8 view/controls/zone approved | See rule 13. Enemy type: Wolf. |
 | 2026-10-11 | Step 7 world/AI rules approved | See rules 10 and 12. No hero auto-attack. |
 | 2026-10-11 | Step 6 progression numbers approved; level-up refills HP/Mana | See rule 9. |
 | 2026-10-11 | Step 5 combat numbers approved | See rule 7. |

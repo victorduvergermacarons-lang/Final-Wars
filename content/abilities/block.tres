@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_y3qwe"]
+[ext_resource type="Resource" path="res://content/buffs/block.tres" id="2_3nxvd"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="3_o1pfc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_erx1y"]
+
+[sub_resource type="Resource" id="Resource_off5y"]
+script = ExtResource("1_y3qwe")
+kind = 4
+buff = ExtResource("2_3nxvd")
+
+[resource]
+script = ExtResource("4_erx1y")
+id = &"block"
+display_name = "Block"
+description = "Raise your shield: Physical Defense doubled for 6 s."
+target = 0
+max_range = 0
+cooldown_seconds = 20.0
+effects = Array[ExtResource("1_y3qwe")]([SubResource("Resource_off5y")])
+ap_to_master = 30
