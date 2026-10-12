@@ -128,10 +128,10 @@ func test_solo_game_runs_with_hud() -> void:
 	hero.move.place(Vector2i(14, 16))
 	await wait_process_frames(2)
 
-	# Leaving town through the east exit switches the map.
+	# Walking off the town's east edge switches the map.
 	var old_view := game.get_node("WorldView")
-	hero.move.place(Vector2i(16, 9))
-	session.send_intent({"type": "step", "to": Vector2i(17, 9)})
+	hero.move.place(Vector2i(17, 9))
+	session.send_intent({"type": "step", "to": Vector2i(18, 9)})
 	await wait_physics_frames(30)
 	assert_eq(session.zone().id, &"greenfields")
 	var new_view := game.get_node_or_null("WorldView")

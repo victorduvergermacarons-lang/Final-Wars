@@ -134,7 +134,7 @@ func _run_join(port: int, players: int, index: int) -> void:
 			_finish(false, "%s: received another player's bag" % me)
 			return
 	if index == 1:
-		# Walk out of town through the east exit: the client must switch maps.
+		# Walk off the town's east edge: the client must switch maps.
 		var switched := [false]
 		session.zone_changed.connect(func(_z): switched[0] = true)
 		var toward_exit := func():
@@ -142,6 +142,9 @@ func _run_join(port: int, players: int, index: int) -> void:
 				return true
 			var t := session.render_time()
 			if not hero.move.is_moving(t):
+				if hero.tile() == Vector2i(17, 9):
+					session.send_intent({"type": "step", "to": Vector2i(18, 9)})
+					return false
 				var path := Pathfinder.find_path(session.grid(), hero.tile(), Vector2i(17, 9), 2,
 						{}, -1, 5000)
 				if path.size() >= 2:

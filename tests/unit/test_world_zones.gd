@@ -1,5 +1,5 @@
 extends GutTest
-## World: several zones, exit tiles, per-zone state.
+## World: several zones, map edges that lead into each other, per-zone state.
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
 
@@ -43,37 +43,53 @@ func test_ids_are_unique_across_zones() -> void:
 			seen[id] = true
 
 
-func test_walking_onto_an_exit_moves_the_hero() -> void:
-	_walk_to(Vector2i(16, 9))
-	world.submit(hero.id, {"type": "step", "to": Vector2i(17, 9)})
+func test_walking_off_the_edge_moves_the_hero() -> void:
+	_walk_to(Vector2i(17, 12))
+	world.submit(hero.id, {"type": "step", "to": Vector2i(18, 12)})
 	var events := world.advance(0.3)
 	assert_eq(world.zone_of(hero.id).zone.id, &"greenfields")
-	assert_eq(hero.tile(), Vector2i(1, 25))
+	assert_eq(hero.tile(), Vector2i(0, 25), "on the very edge of the next map, same row + offset")
+	assert_eq(hero.facing, Vector2i.RIGHT, "still facing the way you walked")
 	assert_null(world.zone(&"town").get_actor(hero.id), "gone from town")
 	assert_true(events.any(func(e): return e.type == "zone_change" and e.to == &"greenfields"))
-	# Intents now go to the new zone.
-	world.submit(hero.id, {"type": "step", "to": Vector2i(2, 25)})
+	# Intents now go to the new zone; stepping onto the edge tile itself doesn't bounce you back.
+	world.submit(hero.id, {"type": "step", "to": Vector2i(1, 25)})
 	world.advance(0.3)
-	assert_eq(hero.tile(), Vector2i(2, 25))
-
-
-func test_and_back_again() -> void:
-	_walk_to(Vector2i(16, 9))
-	world.submit(hero.id, {"type": "step", "to": Vector2i(17, 9)})
-	world.advance(0.3)
+	assert_eq(hero.tile(), Vector2i(1, 25))
 	world.submit(hero.id, {"type": "step", "to": Vector2i(0, 25)})
 	world.advance(0.3)
-	assert_eq(world.zone_of(hero.id).zone.id, &"town")
-	assert_eq(hero.tile(), Vector2i(16, 9))
+	assert_eq(world.zone_of(hero.id).zone.id, &"greenfields")
 
 
-func test_exits_are_refused_in_combat() -> void:
-	_walk_to(Vector2i(16, 9))
+func test_any_edge_tile_works_and_back_again() -> void:
+	for row in [1, 5, 16]:
+		_walk_to(Vector2i(17, row))
+		world.submit(hero.id, {"type": "step", "to": Vector2i(18, row)})
+		world.advance(0.3)
+		assert_eq(world.zone_of(hero.id).zone.id, &"greenfields", "row %d" % row)
+		assert_eq(hero.tile(), Vector2i(0, row + 13))
+		world.submit(hero.id, {"type": "step", "to": Vector2i(-1, row + 13)})
+		world.advance(0.3)
+		assert_eq(world.zone_of(hero.id).zone.id, &"town")
+		assert_eq(hero.tile(), Vector2i(17, row))
+
+
+func test_edges_without_a_neighbour_are_walls() -> void:
+	world.move_hero(hero.id, &"greenfields", Vector2i(5, 29))
+	world.submit(hero.id, {"type": "step", "to": Vector2i(5, 30)}) # Greenfields' south edge leads nowhere
+	var events := world.advance(0.3)
+	assert_eq(world.zone_of(hero.id).zone.id, &"greenfields")
+	assert_eq(hero.tile(), Vector2i(5, 29))
+	assert_true(events.any(func(e): return e.type == "rejected" and e.reason == "blocked"))
+
+
+func test_edges_are_refused_in_combat() -> void:
+	_walk_to(Vector2i(17, 9))
 	hero.combat_until = world.now + 100.0
-	world.submit(hero.id, {"type": "step", "to": Vector2i(17, 9)})
+	world.submit(hero.id, {"type": "step", "to": Vector2i(18, 9)})
 	var events := world.advance(0.3)
 	assert_eq(world.zone_of(hero.id).zone.id, &"town")
-	assert_true(events.any(func(e): return e.type == "rejected" and e.intent == "exit"))
+	assert_true(events.any(func(e): return e.type == "rejected" and e.reason == "in_combat"))
 
 
 func test_events_carry_their_zone() -> void:
@@ -92,9 +108,7 @@ func test_snapshot_only_contains_the_viewers_zone() -> void:
 
 
 func test_release_uses_a_graveyard_in_the_same_zone() -> void:
-	_walk_to(Vector2i(16, 9))
-	world.submit(hero.id, {"type": "step", "to": Vector2i(17, 9)})
-	world.advance(0.3)
+	world.move_hero(hero.id, &"greenfields", Vector2i(2, 25))
 	hero.die()
 	world.submit(hero.id, {"type": "release"})
 	world.step()

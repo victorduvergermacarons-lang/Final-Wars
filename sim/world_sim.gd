@@ -53,6 +53,8 @@ var _next_projectile_id := 1
 var _history := {}
 const HISTORY_SECONDS := 2.0
 var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
+## Heroes asking to walk off a map edge this tick: [[hero id, ZoneEdge], ...]; World moves them.
+var _edge_requests: Array = []
 var _events: Array[Dictionary] = []
 
 
@@ -116,6 +118,21 @@ func transfer_in(hero: Hero, tile: Vector2i, ack: int = 0) -> void:
 	ctx.add_actor(hero)
 	if ack > 0:
 		_acks[hero.id] = ack
+
+
+## The edge of this zone that stepping in direction `dir` off the map leads through, or null.
+func edge_for(dir: Vector2i) -> ZoneEdge:
+	for e in zone.edges:
+		if e != null and e.side == dir:
+			return e
+	return null
+
+
+## Edge requests made since the last call (World handles them after each tick).
+func take_edge_requests() -> Array:
+	var out := _edge_requests
+	_edge_requests = []
+	return out
 
 
 ## The exit on `tile`, or null.
@@ -439,7 +456,23 @@ func _intent_step(hero: Hero, to: Vector2i) -> String:
 	if hero.move.is_moving(now) and GridModel.distance(hero.tile(), to) == 1:
 		hero.pending_step = to
 		return ""
-	return try_step(hero, to)
+	return _step_or_leave(hero, to)
+
+
+## A step off the map leaves through that edge (if it leads somewhere).
+func _step_or_leave(hero: Hero, to: Vector2i) -> String:
+	if grid.in_bounds(to) or GridModel.distance(hero.tile(), to) != 1:
+		return try_step(hero, to)
+	var edge := edge_for(to - hero.tile())
+	if edge == null:
+		return "blocked"
+	if hero.in_combat(now):
+		return "in_combat"
+	if hero.buffs.is_rooted(now):
+		return "rooted"
+	hero.face(to - hero.tile())
+	_edge_requests.append([hero.id, edge])
+	return ""
 
 
 ## Turning is free and instant, in and out of combat. It also cancels a step
@@ -461,7 +494,7 @@ func _take_pending_step(hero: Hero) -> void:
 		return
 	var to: Vector2i = hero.pending_step
 	hero.pending_step = null
-	var reason := try_step(hero, to)
+	var reason := _step_or_leave(hero, to)
 	if reason != "":
 		emit({"type": "rejected", "target": hero.id, "intent": "step", "reason": reason})
 

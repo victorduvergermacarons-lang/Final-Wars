@@ -16,6 +16,8 @@ extends Resource
 @export var hero_spawns: Array[Vector2i] = []
 @export var enemy_spawns: Array[EnemySpawn] = []
 @export var exits: Array[ZoneExit] = []
+## Map sides that lead into other zones (walk off the edge).
+@export var edges: Array[ZoneEdge] = []
 @export var npcs: Array[NpcSpawn] = []
 
 const HEIGHT_CHARS := "0123456789abcdefghijklmnopqrstuvwxyz"
@@ -62,6 +64,11 @@ func validate() -> PackedStringArray:
 			errors.append("%s: exit without a destination" % id)
 		elif e.tile.x < 0 or e.tile.y < 0 or e.tile.x >= w or e.tile.y >= height_rows.size():
 			errors.append("%s: exit %s out of bounds" % [id, e.tile])
+	for edge in edges:
+		if edge == null or edge.to_zone == &"":
+			errors.append("%s: edge without a destination" % id)
+		elif not GridModel.DIRECTIONS.has(edge.side):
+			errors.append("%s: edge side %s is not a direction" % [id, edge.side])
 	for spawn in enemy_spawns:
 		if spawn == null or spawn.enemy == null:
 			errors.append("%s: enemy spawn without an enemy" % id)

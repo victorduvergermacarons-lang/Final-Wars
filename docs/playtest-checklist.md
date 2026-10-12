@@ -67,8 +67,8 @@ needs 2–4 players: real friends, or several game windows on one computer (see
       **Expect:** your hero turns to face down-right without moving.
 - [ ] **Do:** hold D.
       **Expect:** your hero walks tile by tile, quickly, with no pause between tiles.
-- [ ] **Do:** walk to the town's down-right edge (hold D; the road out is near Captain Rowan).
-      **Expect:** stepping onto the edge takes you to **Greenfields**, a bigger map with grey wolves (red diamonds labelled "Wolf Lv1").
+- [ ] **Do:** walk to the town's down-right edge (hold D) and keep walking off the map, from any tile along that edge.
+      **Expect:** you arrive on the very edge of **Greenfields**, a bigger map with grey wolves (red diamonds labelled "Wolf Lv1"), and keep walking if you hold D. Walking back off Greenfields' up-left edge returns you to town. Other map edges are walls.
 - [ ] **Do:** walk near a Wolf.
       **Expect:** it charges you, and you get a red outline (in combat).
 - [ ] **Expect:** in combat you walk much more slowly (about 1.5 s per tile), and the Wolf is faster than you.

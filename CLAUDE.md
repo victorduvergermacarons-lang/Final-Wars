@@ -514,8 +514,12 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     computer. The host validates a joining hero's data (known ids, sane values) but
     otherwise trusts it.
 13. **Zones (as built in step 7):** `World` holds one `WorldSim` per zone, stepped on a
-    shared clock with shared actor ids. Exit tiles (`ZoneDef.exits`) move a hero when
-    they arrive on one; exits don't work while you're in combat. Each client only gets
+    shared clock with shared actor ids. **Map edges** (`ZoneDef.edges`, post-M2
+    playtest): stepping off the map from any walkable tile on a linked side puts you on
+    the matching edge tile of the next zone (row + `offset`; nudged up to 2 tiles along
+    the edge if blocked), still facing the way you walked. Town east edge ↔ Greenfields
+    west edge, offset 13 (town rows 1–16 = Greenfields rows 14–29). Single exit tiles
+    (`ZoneDef.exits`) still exist for doors later. Neither works while you're in combat. Each client only gets
     its own zone's snapshot and events and rebuilds its map when it changes zone.
     Town "Millbrook" (18×18) is the start/join zone; its east edge leads to
     Greenfields' west edge.
@@ -569,6 +573,7 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Zones connect along whole map edges: walk off the edge to enter the next map | User change; replaces the 3 exit tiles that dropped you 1–2 tiles in from the edge. |
 | 2026-10-12 | Turning in combat made immediate; Skirmisher sees your facing 0.3 s late | User reports. Causes: a second held key didn't turn, and a step queued while walking turned you back when the step cooldown ended. |
 | 2026-10-12 | Combat ends as soon as the last enemy fighting you dies, evades or drops you | User change (was 5 s). Fixed enemies darting 2 tiles on aggro (first steps skipped the step cooldown). |
 | 2026-10-12 | Post-M2 playtest fixes: Brute hits twice as hard; Renew costs 10 mana; Skirmisher reacts 0.3 s | User changes. Also fixed Frozen (no root), Pinned (no slow) and Rallied (no attack bonus): values lost when the content was generated; a content test now checks them. |

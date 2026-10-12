@@ -31,7 +31,7 @@ before moving its hero.
 
 ### Things worth trying with several instances
 
-Everyone starts in the town of Millbrook; the road out (down-right edge, past Captain
+Everyone starts in the town of Millbrook; walking off its down-right edge (past Captain
 Rowan) leads to Greenfields. The full feature-by-feature list is in
 [playtest-checklist.md](playtest-checklist.md), section 12.
 

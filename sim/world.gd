@@ -112,6 +112,10 @@ func move_hero(hero_id: int, zone_id: StringName, tile: Vector2i) -> void:
 
 func _handle_exits() -> Array[Dictionary]:
 	var events: Array[Dictionary] = []
+	for id in zone_ids():
+		var sim: WorldSim = _zones[id]
+		for req in sim.take_edge_requests():
+			events.append_array(_leave_by_edge(sim, req[0], req[1]))
 	for hero in heroes():
 		var sim := zone_of(hero.id)
 		var tile := hero.tile()
@@ -130,6 +134,25 @@ func _handle_exits() -> Array[Dictionary]:
 		events.append({"type": "zone_change", "target": hero.id, "from": sim.zone.id,
 				"to": exit.to_zone, "zone": exit.to_zone})
 	return events
+
+
+## Moves a hero who stepped off `sim`'s map through `edge` to the matching edge
+## tile of the next zone (or the nearest free tile along that edge).
+func _leave_by_edge(sim: WorldSim, hero_id: int, edge: ZoneEdge) -> Array[Dictionary]:
+	var hero := sim.get_actor(hero_id) as Hero
+	var dest: WorldSim = _zones.get(edge.to_zone)
+	if hero == null or dest == null:
+		return []
+	var target := edge.arrival(hero.tile(), Vector2i(dest.grid.width, dest.grid.depth))
+	for k in [0, 1, -1, 2, -2]:
+		var t: Vector2i = target + edge.along() * k
+		if dest.grid.in_bounds(t) and dest.grid.is_walkable(t) and not dest.is_occupied(t):
+			var from := sim.zone.id
+			move_hero(hero_id, edge.to_zone, t)
+			hero.face(edge.side)
+			return [{"type": "zone_change", "target": hero_id, "from": from, "to": edge.to_zone,
+					"zone": edge.to_zone}]
+	return [{"type": "rejected", "target": hero_id, "intent": "step", "reason": "blocked", "zone": sim.zone.id}]
 
 
 ## Every hero in every zone, by id.
