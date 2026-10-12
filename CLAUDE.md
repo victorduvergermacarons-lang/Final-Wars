@@ -7,7 +7,7 @@ This file is the living design doc. Keep it current as decisions are made.
 **Status:** Milestone 1 complete and playtested, including the post-M1 combat revision
 (facing, directional abilities, faster enemies, reaction delay). Milestone 2 built and
 playtested; post-playtest fixes done. **Milestone 3 (abilities, mastery, targeting) is
-being planned** — brief below; the plan awaits approval. For the numbers the game actually uses today, see **Gameplay as built** below;
+in progress** — brief, plan and decisions below. For the numbers the game actually uses today, see **Gameplay as built** below;
 the brief sections keep the original wording.
 
 ## Working agreements
@@ -668,9 +668,60 @@ enemies at a chosen level.
 
 When finished: a playtest checklist written for a non-programmer.
 
+### Milestone 3 build order (approved 2026-10-12)
+A. Data: 1 spreadsheet importer + validation + docs · 2 Mastery stats (permanent vs gear).
+B. Learning: 3 learning slot, unlock checks, Mastery on learn / per use / caps ·
+   4 power formula in one place.
+C. Engine: 5 grid geometry (8-way/any-angle lines, square areas, push paths) · 6 four
+   targeting types, aim intents, 100 ms grace, dodge warning · 7 effects part 1 (damage,
+   heal, over-time, shields, stat buffs, taunt, CC, casts/channels/wind-ups, interrupts,
+   charges) · 8 effects part 2 (knockback/pull, dash/leap/blink, terrain + walls,
+   ground zones, counters/reflects, resurrection).
+D. Content: 9 the ~32 first abilities + items for all 145 · 10 convert old content and
+   enemies · 11 balance pass.
+E. UI: 12 aiming (hold key, mouse aim, tile highlights, telegraphs) · 13 ability tree
+   screen + drag to bar · 14 learning slot indicator.
+F. 15 debug console · 16 docs + playtest checklist.
+
+### Milestone 3 decisions (approved 2026-10-12, "defaults OK")
+1. **Numbers not in the sheet** (damage/heal amounts, mana costs, some ranges and
+   durations): damage/heal and mana default by tier and role from one tuning file,
+   overridable per ability; numbers written in the Effect text (range 4, 3×3, 2 s,
+   knockback 3…) go into each ability's behavior data. The importer also reads optional
+   Base / Mana Cost / Range / Duration columns if they are ever added to the sheet.
+2. **Diagonals:** movement stays 4-directional. Ability ranges and areas use square
+   (Chebyshev) distance: "adjacent" includes diagonals, "within 4" is a square, 3×3
+   areas, 8-way aiming and 8-direction knockbacks.
+3. **Old content:** the M1/M2 abilities (Strike, Fireball, Block, Heal, Resurrect,
+   Taunt, Cleave, Aimed Shot, Frost Nova, Renew, Dash, Pinning Shot, Rallying Roar) are
+   retired. Armor pieces stay as stat-only gear. New heroes start with Rusty Shortsword,
+   Ember Fist Scroll and Mender's Scroll.
+4. **Scrolls and weapons:** weapons go in the main hand (swords one-handed, bows and
+   hammers two-handed). Scrolls aren't worn: one is placed from the bag into the
+   learning slot. An unmastered ability is usable only while its item is in the learning
+   slot (or, for a weapon, wielded). Mastered weapon arts need a weapon of that type in
+   hand; mastered bending always works.
+5. **Items:** weapon stats by tier; rarity T1 Common, T2 Uncommon, T3 Rare, T4–5 Epic.
+   Hilda sells T1 scrolls and weapons; T2 items drop from Greenfields enemies and quest
+   rewards; T3+ wait for future zones.
+6. **Hit and miss:** Targeted abilities can't miss; skillshots and ground attacks hit
+   whoever is in the path or area (no Accuracy/Evasion roll; dodge by moving).
+   Accuracy/Evasion remain for enemy melee. Flanking bonuses stay for melee.
+7. **Enemies:** melee becomes Targeted with a short wind-up (Wolf 0.3 s) so stepping away
+   still dodges; the Shaman's bolt becomes a skillshot; Grizzlehide's Charge becomes a
+   telegraphed Ground ability.
+8. **Haste:** −25% step cooldown, ability cooldowns and GCD while active (tunable).
+9. **Healing / resurrect:** Water only; resurrection returns at Water Tier 3 (Revive).
+10. **AP:** 10 per level-up plus a little per kill, to the learning item only. AP to
+    master by tier: 20 / 30 / 40 / 50 / 50 (T1–T5).
+11. **Casting:** moving during a cast or channel cancels it (cooldown not spent);
+    wind-ups like Smash 0.3 s can't be cancelled.
+12. **Importer:** GDScript run by Godot, no Python needed.
+
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Milestone 3 plan (16 steps) and 12 decisions approved | "defaults OK". See "Milestone 3 decisions". |
 | 2026-10-12 | Milestone 3 brief recorded (abilities, mastery, targeting); `design/Ability_Tree.xlsx` is the source of truth for abilities | Plan and open questions sent for approval. Supersedes the earlier "disciplines" specialization proposal. |
 | 2026-10-12 | Readability: [E] Talk prompt, Bandit Camp banner + glowing quest area, tracker behind menus, texts no longer overlap | User reports (decision 21). The camp was unmarked, so "Find the bandit camp" was hard to find; its goal is now the banner tile, radius 2. |
 | 2026-10-12 | Action bar pages: 6 bars, Shift+1–6, page number bottom-right | User request (WoW-style). 6 pages is my default (WoW's count); one constant, `ActionBarModel.PAGE_COUNT`. |
