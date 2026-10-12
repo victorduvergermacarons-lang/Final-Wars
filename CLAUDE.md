@@ -5,8 +5,9 @@
 This file is the living design doc. Keep it current as decisions are made.
 
 **Status:** Milestone 1 complete and playtested, including the post-M1 combat revision
-(facing, directional abilities, faster enemies, reaction delay). Milestone 2 is built
-(all 18 steps); it is waiting on the playtest in `docs/playtest-checklist.md`. For the numbers the game actually uses today, see **Gameplay as built** below;
+(facing, directional abilities, faster enemies, reaction delay). Milestone 2 built and
+playtested; post-playtest fixes done. **Milestone 3 (abilities, mastery, targeting) is
+being planned** — brief below; the plan awaits approval. For the numbers the game actually uses today, see **Gameplay as built** below;
 the brief sections keep the original wording.
 
 ## Working agreements
@@ -585,9 +586,92 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     of the action bar. The default font lacks ◀ ▶ ⚔ ✓, so the UI uses < > [combat]
     and "(done)" instead. Checked on real renders (`tests/visual/shots.tscn`).
 
+## Milestone 3: ability, mastery and targeting systems (brief, 2026-10-12)
+
+**Source of truth for abilities: `design/Ability_Tree.xlsx`** (all tabs, especially
+Abilities and Rules & Legend). The designer edits and re-uploads it often. (The first
+upload landed at the repo root as `Ability_Tree_1.xlsx`.)
+
+### 1. Data pipeline
+- A script converts `design/Ability_Tree.xlsx` into Godot ability Resources (or one data
+  file the game loads). Document how to re-run it.
+- Import every column. Effect and Targeting Details text is for humans; behavior is
+  implemented in code/data per ability, but numbers (cooldown, tier, mastery values,
+  prerequisites, item names) come from the sheet.
+- Validate on import with clear errors: unknown prerequisite names, duplicate IDs,
+  missing items, tiers outside 1–5.
+
+### 2. Learning and mastery rules
+- Trees: Fire, Earth, Water, Air (taught by scrolls), Sword, Bow, Hammer (taught by
+  weapons). Each tree has its own Mastery stat (0 and up).
+- Every ability is taught by exactly one named item (Taught By column); those items exist
+  in the game.
+- Single learning slot: the hero designates one equipped item as the learning item. Only
+  it earns AP toward its ability. Other equipped items still give stats and their already
+  mastered abilities, but don't teach.
+- An ability can be learned only when the hero meets its Mastery Required (tier
+  thresholds 0/150/350/600/900, Tiers tab) and has mastered every prerequisite.
+  "Air Mastery 350" requires that much Mastery in the other tree; "any element Mastery
+  350" means any one of Fire/Earth/Water/Air.
+- Mastery gain per ability, from the sheet:
+  - Mastery on Learn: one-time bonus when the ability is mastered (full AP).
+  - Mastery per Use: each use against an enemy at or near the hero's level (configurable;
+    default within 3 levels below or any level above). Heals and buffs count when used
+    during combat.
+  - Per-use Mastery stops once that ability has contributed its Mastery Cap in total.
+- Item per-level growth may include Mastery. Gear-bonus Mastery boosts ability power but
+  does NOT count toward unlocking tiers; only permanent Mastery does.
+- Ability power scales with the tree's Mastery plus the stats in Scales With; the formulas
+  live in one tunable place.
+
+### 3. Targeting (Rules & Legend > Targeting)
+- **Targeted:** pick a unit; locks on, can't miss. Range and line of sight checked at
+  cast. Abilities with a cast or channel fail if the target leaves range or breaks LOS.
+- **Skillshot:** aim at an enemy or direction; direction locks on release. Per ability:
+  any-angle (rasterize the line from caster through the aim point onto tiles) or 8-way.
+  Projectiles travel at a per-ability speed and hit the first unit unless they pierce.
+  Height and walls block lines.
+- **Ground:** pick a tile; the affected area is telegraphed for the listed time, then
+  resolves on whoever stands there at that moment.
+- **Self:** centered on or affecting the caster.
+- While aiming, highlight the exact tiles that will be affected.
+- Knockbacks and pulls move units along tile lines snapped to 8 directions, stopping at
+  walls, units and unclimbable height; hitting a wall can deal bonus damage where noted.
+- Dodge rule: debug warning when a skillshot's travel time or a telegraph is shorter than
+  the step cooldown + 0.3 s.
+- Networking: the host resolves all hits, with a ~100 ms grace window (a skillshot hits if
+  the target occupied the tile at any moment in the last 100 ms).
+- Enemies use the same targeting rules as players.
+
+### 4. Effect building blocks
+Reusable, data-driven effects, so most abilities are combinations: damage, heal,
+damage/heal over time, shields, buffs/debuffs on any stat, taunt,
+stun/root/slow/silence/sleep, knockback/pull, dash/leap/blink, terrain raise/lower and
+walls, persistent ground zones, counters/reflects, resurrection, cast times, channels,
+wind-ups, and charges (e.g. Flame Dash charges scaling with Fire Mastery).
+
+### 5. First abilities (~30)
+All Tier 1 and Tier 2 abilities of Fire and Water, plus Air Palm, Gust, Air Step, Air
+Blast, Rock Throw, Raise Pillar, Earth Wall, Seismic Stomp, Slash, Lunge, Quick Shot,
+Aimed Shot, Smash, Ground Slam. Unimplemented abilities are marked in the data and can't
+be equipped yet.
+
+### 6. UI
+- Ability tree screen per tree: tiers, prerequisite lines, locked/learnable/learning/
+  mastered states, current Mastery vs thresholds, each ability's mastery progress to its cap.
+- Learning slot indicator on the character sheet and item tooltips.
+- Abilities can be dragged from the tree to the action bar.
+
+### 7. Debug tools
+Console commands: set level, set a tree's Mastery, grant AP, master an ability, spawn
+enemies at a chosen level.
+
+When finished: a playtest checklist written for a non-programmer.
+
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Milestone 3 brief recorded (abilities, mastery, targeting); `design/Ability_Tree.xlsx` is the source of truth for abilities | Plan and open questions sent for approval. Supersedes the earlier "disciplines" specialization proposal. |
 | 2026-10-12 | Readability: [E] Talk prompt, Bandit Camp banner + glowing quest area, tracker behind menus, texts no longer overlap | User reports (decision 21). The camp was unmarked, so "Find the bandit camp" was hard to find; its goal is now the banner tile, radius 2. |
 | 2026-10-12 | Action bar pages: 6 bars, Shift+1–6, page number bottom-right | User request (WoW-style). 6 pages is my default (WoW's count); one constant, `ActionBarModel.PAGE_COUNT`. |
 | 2026-10-12 | Zones connect along whole map edges: walk off the edge to enter the next map | User change; replaces the 3 exit tiles that dropped you 1–2 tiles in from the edge. |
