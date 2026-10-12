@@ -5,8 +5,8 @@
 This file is the living design doc. Keep it current as decisions are made.
 
 **Status:** Milestone 1 complete and playtested, including the post-M1 combat revision
-(facing, directional abilities, faster enemies, reaction delay). Milestone 2 is in progress
-(plan and decisions below). For the numbers the game actually uses today, see **Gameplay as built** below;
+(facing, directional abilities, faster enemies, reaction delay). Milestone 2 is built
+(all 18 steps); it is waiting on the playtest in `docs/playtest-checklist.md`. For the numbers the game actually uses today, see **Gameplay as built** below;
 the brief sections keep the original wording.
 
 ## Working agreements
@@ -226,16 +226,17 @@ Input ─► Intent ─► [network] ─► Host WorldSim (validates cooldowns/r
 project.godot, run_tests.sh, .gutconfig.json
 addons/gut/      GUT test framework (vendored)
 autoload/        net (ENet host/join), content_db (loads .tres)
-sim/             world_sim + grid/ stats/ combat/ progression/ entities/ ai/
+sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/
 net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
-content/         items/ abilities/ enemies/ heroes/ zones/ rules/ (.tres)
+content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ (.tres)
 view/            world view, iso tile renderer, actor views, camera
-ui/              main menu, HUD (action bar, unit frames), death dialog, equip panel
+ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
+                 inventory, character sheet, spellbook, dialogue, vendor, loot, quest log, tracker)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
-tests/unit/      GUT tests (test_*.gd)
-docs/            how-to docs (building, testing, local multiplayer)
+tests/           unit/ integration/ balance/ (GUT, test_*.gd) and net/ (multi-process check)
+docs/            local multiplayer testing, playtest checklist
 ```
 
 ### Build order (milestone 1)
@@ -556,10 +557,14 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     to clients in every snapshot; NPCs can swap their greeting per flag
     (`NpcDef.flag_greetings`). Quest items (`ItemDef.quest_item`) show "Quest item" and
     can't be sold.
+20. **Polish (step 18):** a "Leave game" button saves and returns to the menu;
+    enemy projectiles are purple (heroes' orange); a quest's prerequisites are checked
+    before its level, so a locked chain quest says "finish an earlier quest first".
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Milestone 2 built (step 18: polish, docs, playtest checklist) | `docs/playtest-checklist.md` covers every feature for a non-programmer. Visuals still unchecked on a real screen. |
 | 2026-10-12 | M2 step 17: 5 sample quests incl. Rowan's 3-quest chain; world event "grizzlehide_slain" | See "Milestone 2 quests". Quest texts, rewards and the Rowan greeting change are content choices, easy to edit in `content/quests/`. |
 | 2026-10-12 | M2 step 16: quest UI | Decision 18. Quest log on L. |
 | 2026-10-12 | M2 step 15: quest system | Decision 17. Implementation choices: shared credit within 15 tiles or via the threat table; turn-in refused when the bag can't hold the rewards; abandon allowed; no repeatable quests. |

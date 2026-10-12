@@ -29,8 +29,18 @@ Available flags: `--solo`, `--host`, `--join=ADDRESS`, `--port=N`, `--name=NAME`
 **Tip:** each window only takes keyboard input while it has focus. Click a window
 before moving its hero.
 
-### Things worth trying with two instances
+### Things worth trying with several instances
 
+Everyone starts in the town of Millbrook; the road out (down-right edge, past Captain
+Rowan) leads to Greenfields. The full feature-by-feature list is in
+[playtest-checklist.md](playtest-checklist.md), section 12.
+
+- Join a third or fourth window while the others are already out in Greenfields:
+  it starts in town.
+- Both take Captain Rowan's "Wolves at the Gate": a Wolf killed by one counts for
+  everyone on the quest nearby. Loot is personal: each gets their own drops.
+- Gather four heroes for Old Grizzlehide, the elite bear patrolling the middle of
+  Greenfields.
 - Walk Bob next to a Wolf so it aggros, face it (tap the direction) and Strike;
   have Alice click Bob's party frame and press Heal: Alice joins the fight (red
   outline = in combat). Or have Alice line up with the Wolf and throw Fireballs.

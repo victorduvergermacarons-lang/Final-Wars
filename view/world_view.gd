@@ -187,15 +187,20 @@ func _draw_actor(a: Actor) -> void:
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))
 
 
-## Fireballs: a glowing ball moving along its path at the origin's height.
+## Projectiles: a glowing ball moving along its path at the origin's height.
+## Heroes' are orange, enemies' purple.
 func _draw_projectiles(grid: GridModel) -> void:
 	var t: float = session.render_time()
 	for p in session.projectiles():
 		var dist := clampf((t - p.start) * p.speed, 0.0, p.length + 0.5)
 		var pos := Vector2(p.origin) + Vector2(p.dir) * dist
 		var screen := Iso.to_screen(pos, grid.height_at(p.origin)) + Vector2(0, -16)
-		draw_circle(screen, 8, Color(1, 0.45, 0.1, 0.5))
-		draw_circle(screen, 5, Color(1, 0.85, 0.3))
+		if session.get_actor(p.source) is Enemy:
+			draw_circle(screen, 8, Color(0.6, 0.2, 0.9, 0.5))
+			draw_circle(screen, 5, Color(0.85, 0.6, 1.0))
+		else:
+			draw_circle(screen, 8, Color(1, 0.45, 0.1, 0.5))
+			draw_circle(screen, 5, Color(1, 0.85, 0.3))
 
 
 ## A small arrow on the ground pointing the way the actor faces.

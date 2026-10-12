@@ -1,5 +1,8 @@
 class_name Hud
 extends CanvasLayer
+
+## The player clicked "Leave game" (save and return to the main menu).
+signal leave_requested
 ## In-game HUD: unit frames, action bar (with keybind mode), spellbook,
 ## character panel, death panel, mid-screen errors and a message log.
 
@@ -105,6 +108,7 @@ func _build() -> void:
 	buttons.add_child(_small_button("Quests (L)", func(): _toggle(quest_log)))
 	_bind_button = _small_button("Keybinds", func(): _set_bind_mode(not bind_mode))
 	buttons.add_child(_bind_button)
+	buttons.add_child(_small_button("Leave game", func(): leave_requested.emit()))
 	var bar := HBoxContainer.new()
 	bar.add_theme_constant_override("separation", 4)
 	for i in ActionBarModel.SLOT_COUNT:

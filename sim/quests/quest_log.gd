@@ -44,11 +44,11 @@ static func can_accept(hero: Hero, def: QuestDef) -> String:
 		return "quest_active"
 	if is_done(hero, def.id):
 		return "quest_done"
-	if hero.level < def.min_level:
-		return "level_too_low"
 	for pre in def.prerequisites:
 		if not is_done(hero, pre):
 			return "prerequisite"
+	if hero.level < def.min_level:
+		return "level_too_low"
 	return ""
 
 

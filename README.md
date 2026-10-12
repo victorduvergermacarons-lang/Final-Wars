@@ -34,9 +34,23 @@ the editor), over LAN or over the internet, see
 | E / right-click an NPC | Talk to a townsperson next to you (within 2 tiles). Hilda sells potions: "Browse goods", then right-click bag items to sell them |
 | Right-click a potion | Drink it (or drag it onto the action bar). Potions share a 30 s cooldown and work in combat |
 | R | Release when dead |
+| Leave game (button) | Save and return to the main menu |
 | Mouse wheel | Zoom |
 
 Your action bar layout and keybinds are saved in `user://settings.cfg`.
+
+## What's in the game (Milestone 2)
+- **Millbrook** (town, where everyone starts and joins): Hilda the trader, quest givers
+  Captain Rowan and Old Maren, a graveyard.
+- **Greenfields** (through the town's down-right edge): Wolves (Lv1), Goblin Shamans
+  (Lv2, ranged, keep their distance), Bandit Brutes (Lv3, slow, hit hard), Fen
+  Skirmishers (Lv4, fast, flank) and the elite **Old Grizzlehide** (Lv5, needs a group).
+- 12 equippable items in four rarities, each teaching an ability; 5 quests including
+  Captain Rowan's 3-quest chain.
+- Up to 4 players. Characters save on each player's computer; the host saves world events.
+
+To test every feature step by step (no programming needed), follow
+[docs/playtest-checklist.md](docs/playtest-checklist.md).
 
 ## Run the tests
 Tests use [GUT](https://github.com/bitwes/Gut) 9.7.1, vendored in `addons/gut`.
@@ -55,7 +69,7 @@ Balance report (scripted fights on the real simulation with shipped content):
 godot --headless --path . tests/balance/balance_report.tscn
 ```
 
-Network check (two headless Godot processes, host + client on localhost):
+Network check (four headless Godot processes, host + 3 clients on localhost):
 
 ```bash
 GODOT=/path/to/godot tests/net/run_net_check.sh

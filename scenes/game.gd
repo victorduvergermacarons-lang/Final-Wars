@@ -108,6 +108,7 @@ func _build_client(zone: ZoneDef) -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.setup(session, client, input, settings_path)
+	hud.leave_requested.connect(func(): ended.emit("Your hero is saved."))
 
 
 func _make_view(zone: ZoneDef) -> WorldView:
