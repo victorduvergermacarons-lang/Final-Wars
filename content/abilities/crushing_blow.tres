@@ -6,10 +6,11 @@
 
 [sub_resource type="Resource" id="Resource_0wusf"]
 script = ExtResource("2_sj2bt")
+coefficient = 2.0
 
 [sub_resource type="Resource" id="Resource_qepji"]
 script = ExtResource("1_jik7h")
-base_amount = 12.0
+base_amount = 24.0
 scaling = Array[ExtResource("2_sj2bt")]([SubResource("Resource_0wusf")])
 
 [resource]

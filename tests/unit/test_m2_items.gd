@@ -93,3 +93,35 @@ func test_bow_kills_a_wolf_at_range() -> void:
 	var bow := BalanceSim.average(db, [[&"hunting_bow", &"holy_charm"]], [&"aimed_shot"], 1, 6)
 	assert_eq(bow.win_rate, 1.0, str(bow))
 	assert_lt(bow.seconds, 12.0, str(bow))
+
+
+## Guards against values lost when content was generated (every mechanic in the
+## design tables must be in the shipped .tres files).
+func test_buffs_carry_their_mechanics() -> void:
+	assert_true(db.buffs[&"frozen"].roots, "Frost Nova roots")
+	assert_eq(db.buffs[&"pinned"].step_cooldown_multiplier, 2.0, "Pinning Shot slows steps x2")
+	var rallied: BuffDef = db.buffs[&"rallied"]
+	var stats := rallied.modifiers.map(func(m): return [m.stat, m.multiplier])
+	assert_has(stats, [Stat.Id.PHYS_ATK, 1.2])
+	assert_has(stats, [Stat.Id.MAG_ATK, 1.2])
+	assert_eq(db.buffs[&"block"].modifiers[0].multiplier, 2.0)
+	assert_eq(db.abilities[&"renew"].mana_cost, 10.0)
+
+
+func test_frost_nova_roots_a_wolf_in_the_world() -> void:
+	var zone: ZoneDef = db.zones[&"greenfields"]
+	var world := WorldSim.new(zone, db.rules, 4)
+	var hero := world.add_hero(db.heroes[&"adventurer"])
+	hero.wear(db.items[&"frostweave_robe"])
+	hero.mana = hero.stats.mana
+	var wolf: Enemy = world.enemies().filter(func(e): return e.def.id == &"wolf")[0]
+	hero.move.place(wolf.tile() + Vector2i(0, 1))
+	world.submit(hero.id, {"type": "cast", "ability": &"frost_nova", "target": -1})
+	world.step()
+	assert_true(wolf.buffs.is_rooted(world.now), "wolf is rooted")
+	hero.move.place(wolf.tile() + Vector2i(0, 4)) # step back out of reach
+	var start := wolf.tile()
+	world.advance(1.5)
+	assert_eq(wolf.tile(), start, "can't follow while rooted")
+	world.advance(2.0)
+	assert_ne(wolf.tile(), start, "chases again once the root wears off")

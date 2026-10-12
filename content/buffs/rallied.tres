@@ -3,8 +3,19 @@
 [ext_resource type="Script" path="res://data/defs/stat_modifier.gd" id="1_er5mx"]
 [ext_resource type="Script" path="res://data/defs/buff_def.gd" id="2_s3oth"]
 
+[sub_resource type="Resource" id="Resource_patk"]
+script = ExtResource("1_er5mx")
+stat = 2
+multiplier = 1.2
+
+[sub_resource type="Resource" id="Resource_matk"]
+script = ExtResource("1_er5mx")
+stat = 3
+multiplier = 1.2
+
 [resource]
 script = ExtResource("2_s3oth")
 id = &"rallied"
 display_name = "Rallied"
 duration_seconds = 120.0
+modifiers = Array[ExtResource("1_er5mx")]([SubResource("Resource_patk"), SubResource("Resource_matk")])

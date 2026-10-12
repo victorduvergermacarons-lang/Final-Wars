@@ -154,7 +154,7 @@ the nearest graveyard.
 | Swift Boots | Feet | Common | Speed +15, Eva +3 | Dash (2 tiles, 15 s, off GCD) | 20 |
 | Greataxe | Two-Hand | Uncommon | PhysAtk +22, Crit +3 | Cleave (arc, 6 + 0.9×PhysAtk, no cooldown) | 30 |
 | Frostweave Robe | Chest | Uncommon | MagAtk +10, Mana +25, MagDef +8 | Frost Nova (around 1, 10 + 0.6×MagAtk, root 2 s, 20 mana, 15 s) | 30 |
-| Acolyte's Leggings | Legs | Uncommon | MagAtk +6, HP +20, Mana +15 | Renew (30 + 1.0×MagAtk over 9 s, 15 mana, 6 s) | 30 |
+| Acolyte's Leggings | Legs | Uncommon | MagAtk +6, HP +20, Mana +15 | Renew (30 + 1.0×MagAtk over 9 s, 10 mana, 6 s) | 30 |
 | Ranger's Gloves | Hands | Rare | PhysAtk +6, Eva +5, Speed +10 | Pinning Shot (line 6, slow ×2 for 4 s, 10 mana, 10 s) | 40 |
 | Grizzlehide Mantle | Chest | Epic | HP +60, PhysAtk +10, PhysDef +20, MagDef +10 | Rallying Roar (allies within 3: +20% attack 120 s) | 50 |
 
@@ -166,13 +166,13 @@ Ranger's Gloves and the Mantle come from the new enemies and the elite.
 |-------|----|----|-------|---------|-----------------|---------|-------|---------------------|
 | Wolf | 1 | Melee | (see above) | Bite | 0.8 s / 0.3 s | 50 / 2 | 2–6 g, pelt, fang, Uncommons 2% | (8,13) (11,24) (5,20) (18,4) |
 | Goblin Shaman | 2 | Kiter | HP 160, MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
-| Bandit Brute | 3 | Melee | HP 320, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 12 + 1.0×PhysAtk, 3.5 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
-| Fen Skirmisher | 4 | Flanker | HP 220, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.25 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
+| Bandit Brute | 3 | Melee | HP 320, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 24 + 2.0×PhysAtk, 3.5 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
+| Fen Skirmisher | 4 | Flanker | HP 220, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.3 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
 | **Old Grizzlehide** (elite) | 5 | Melee, patrols | HP 1400, PhysAtk 26, PhysDef 25, MagDef 15, Acc 5, Jump 2; aggro 4, leash 12 | Cleave: arc, 12 + 1.0×PhysAtk, 2.5 s · Charge: front 2–4 tiles, dashes up to 3 tiles then 15 + 1.0×PhysAtk, 12 s | 1.0 s / 0.3 s (patrol 0.8 s/tile) | 400 / 10 | 30–60 g, Grizzlehide Mantle 25%, Ranger's Gloves 30%; respawn 5 min | loop (8,17) → (12,12) → (22,12) → (20,16), crossing the north bridge |
 
 XP by level: +10% per enemy level above you (max +50%); from 3 levels below, −20% per
-level (3 below = 80%), never under 20%. Balance report (bots stand still and always face the enemy): sword hero
-beats a Brute at level 3 (~90% HP lost), staff hero beats a Shaman at level 2 (~40%),
+level (3 below = 80%), never under 20%. Balance report (bots stand still and always face the enemy): a level-3 sword
+hero who just trades blows with a Brute loses, but wins by healing itself (~95% HP lost) or with a shield, staff hero beats a Shaman at level 2 (~40%),
 sword hero beats a Skirmisher at level 4 80% of the time; Grizzlehide kills a lone or
 paired level-5 hero but a level-5 group of four wins (~46 s).
 
@@ -564,6 +564,7 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Post-M2 playtest fixes: Brute hits twice as hard; Renew costs 10 mana; Skirmisher reacts 0.3 s | User changes. Also fixed Frozen (no root), Pinned (no slow) and Rallied (no attack bonus): values lost when the content was generated; a content test now checks them. |
 | 2026-10-12 | Milestone 2 built (step 18: polish, docs, playtest checklist) | `docs/playtest-checklist.md` covers every feature for a non-programmer. Visuals still unchecked on a real screen. |
 | 2026-10-12 | M2 step 17: 5 sample quests incl. Rowan's 3-quest chain; world event "grizzlehide_slain" | See "Milestone 2 quests". Quest texts, rewards and the Rowan greeting change are content choices, easy to edit in `content/quests/`. |
 | 2026-10-12 | M2 step 16: quest UI | Decision 18. Quest log on L. |

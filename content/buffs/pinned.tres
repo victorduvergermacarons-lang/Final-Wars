@@ -9,3 +9,4 @@ id = &"pinned"
 display_name = "Pinned"
 duration_seconds = 4.0
 is_debuff = true
+step_cooldown_multiplier = 2.0

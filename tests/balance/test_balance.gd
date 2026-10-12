@@ -76,8 +76,12 @@ func test_level_2_after_two_wolves_and_first_mastery_at_level_3() -> void:
 
 func test_m2_enemies_are_beatable_solo_at_their_level() -> void:
 	var rot := [&"strike", &"cleave", &"fireball"]
+	# The Brute hits twice as hard as first tuned (user change): standing and trading
+	# blows loses, but healing yourself (or a shield) wins.
 	var brute := BalanceSim.average(db, [[&"sword", &"holy_charm"]], rot, 1, 4, 0.0, false, &"bandit_brute", 3)
-	assert_gt(brute.win_rate, 0.5, "sword hero beats a Brute at level 3: %s" % brute)
+	assert_lt(brute.win_rate, 0.5, "trading blows with a Brute at level 3 loses: %s" % brute)
+	var healed := BalanceSim.average(db, [[&"sword", &"holy_charm"]], rot, 1, 4, 0.5, false, &"bandit_brute", 3)
+	assert_gt(healed.win_rate, 0.5, "with heals it wins: %s" % healed)
 	var shaman := BalanceSim.average(db, [[&"staff", &"holy_charm"]], rot, 1, 4, 0.0, false, &"goblin_shaman", 2)
 	assert_gt(shaman.win_rate, 0.5, "staff hero beats a Shaman at level 2: %s" % shaman)
 

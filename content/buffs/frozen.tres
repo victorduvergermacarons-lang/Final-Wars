@@ -9,3 +9,4 @@ id = &"frozen"
 display_name = "Frozen"
 duration_seconds = 2.0
 is_debuff = true
+roots = true
