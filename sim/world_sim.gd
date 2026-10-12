@@ -439,8 +439,19 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 ## Telegraphed areas and lobbed shots in flight, as plain data for clients:
 ## [{"source", "ability", "tiles", "at"}].
 func pending_hits() -> Array:
-	return _pending_hits.map(func(h): return {"source": h.caster, "ability": h.ability.id,
+	var out := _pending_hits.map(func(h): return {"source": h.caster, "ability": h.ability.id,
 			"tiles": h.tiles, "at": h.at})
+	# Ground abilities winding up (Grizzlehide's Charge) are telegraphed too.
+	for id in _sorted(ctx.actors):
+		var a: Actor = ctx.actors[id]
+		var c: Dictionary = a.casting
+		if c.is_empty() or c.kind != "windup" or c.ability.targeting != AbilityDef.TargetingMode.GROUND \
+				or c.aim == null:
+			continue
+		var center := Vector2i(roundi(c.aim.x), roundi(c.aim.y))
+		out.append({"source": a.id, "ability": c.ability.id,
+				"tiles": CastResolver.area_tiles(grid, center, c.ability.area_radius), "at": c.end})
+	return out
 
 
 func _update_pending_hits() -> void:

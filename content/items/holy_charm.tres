@@ -24,6 +24,7 @@ id = &"holy_charm"
 display_name = "Holy Charm"
 slot = 7
 price = 25
+retired = true
 stats = SubResource("Resource_swea8")
 growth = SubResource("Resource_cana0")
 teaches = Array[ExtResource("3_loubc")]([ExtResource("4_5v4vl"), ExtResource("5_6peby")])

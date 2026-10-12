@@ -67,7 +67,12 @@ func test_world_starts_from_shipped_content() -> void:
 	var world := WorldSim.new(db.zones[&"greenfields"], db.rules, 1)
 	var hero := world.add_hero(db.heroes[&"adventurer"])
 	assert_eq(world.enemies().size(), 11)
-	assert_eq(hero.available_abilities().map(func(a): return a.id), [&"strike", &"heal", &"resurrect"])
+	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"rusty_shortsword")
+	assert_eq(hero.learning_item.id, &"ember_fist_scroll", "starts learning Fire Punch")
+	assert_eq(hero.bag.count_of(db.items[&"menders_scroll"]), 1)
+	var ids := hero.available_abilities().map(func(a): return String(a.id))
+	ids.sort()
+	assert_eq(ids, ["F01", "S01"])
 	world.advance(1.0)
 	assert_true(hero.alive)
 

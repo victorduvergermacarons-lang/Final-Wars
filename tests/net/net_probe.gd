@@ -114,7 +114,13 @@ func _run_join(port: int, players: int, index: int) -> void:
 		for e in events:
 			if e.type == "cast" and e.source == hero.id:
 				heard_cast[0] = true)
-	session.send_intent({"type": "cast", "ability": &"heal", "target": hero.id})
+	# Put Mender's Scroll in the learning slot (private state), then cast Healing
+	# Touch on yourself.
+	session.send_intent({"type": "learn", "bag_index": hero.bag.index_of(ContentDB.items[&"menders_scroll"])})
+	if not await _wait_until(func(): return hero.learning_item != null and hero.learning_item.id == &"menders_scroll"):
+		_finish(false, "%s: couldn't learn from a scroll" % me)
+		return
+	session.send_intent({"type": "cast", "ability": &"W01", "target": hero.id})
 	# Walk up until 4 tiles from the start (other guests may be in the way at first).
 	var start := hero.tile()
 	var walked := func():

@@ -29,45 +29,43 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(30)
 	assert_ne(hero.tile(), start, "hero moved")
 
-	# Starting abilities were auto-placed on the bar in order.
-	assert_eq(game.client.action_bar.slots.slice(0, 3), [&"strike", &"heal", &"resurrect"] as Array[StringName])
+	# Starting abilities were auto-placed on the bar in order: Slash (the sword in
+	# hand) and Fire Punch (the scroll in the learning slot).
+	assert_eq(game.client.action_bar.slots.slice(0, 2), [&"S01", &"F01"] as Array[StringName])
 
-	# Slot 2 (Heal) casts on self with no target; the GCD starts.
+	# Put Mender's Scroll in the learning slot: Healing Touch joins the bar.
+	session.send_intent({"type": "learn", "bag_index": hero.bag.index_of(ContentDB.items[&"menders_scroll"])})
+	await wait_physics_frames(6)
+	assert_eq(hero.learning_item.id, &"menders_scroll")
+	var heal_slot := game.client.action_bar.slots.find(&"W01")
+	assert_gt(heal_slot, -1, "Healing Touch on the bar")
+
+	# Healing Touch casts on self with no target; the GCD starts.
 	hero.hp -= 30
-	input.use_slot(1)
+	input.use_slot(heal_slot)
 	await wait_physics_frames(6)
 	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "heal went through the action bar")
 
-	# Strike needs no target: it hits the tile in front (here: nobody, so it whiffs).
-	var whiffs := []
-	session.events_received.connect(func(events):
-		for e in events:
-			if e.type == "whiff":
-				whiffs.append(e))
-	await wait_physics_frames(70) # let the 1 s GCD from Heal run out (60 physics frames per second)
-	input.use_slot(0)
-	await wait_physics_frames(6)
-	assert_eq(whiffs.size(), 1, "Strike went out and hit nothing")
-
-	# Equip the Staff from the inventory window (out of combat): Fireball appears on the bar.
+	# Equip a new sword from the inventory window (out of combat): Lunge appears on the bar.
+	hero.bag.add(ContentDB.items[&"travelers_longsword"])
 	hud._toggle(hud.inventory_window)
 	hud._toggle(hud._character)
 	hud._toggle(hud._spellbook)
 	hud._toggle(hud.quest_log)
 	await wait_process_frames(2)
-	var staff_index := hero.bag.index_of(ContentDB.items[&"staff"])
-	assert_gt(staff_index, -1)
+	var sword_index := hero.bag.index_of(ContentDB.items[&"travelers_longsword"])
+	assert_gt(sword_index, -1)
 	var main_hand: ItemSlotView = null
 	for v in hud.inventory_window.find_children("*", "ItemSlotView", true, false):
 		if v.kind == ItemSlotView.Kind.EQUIP and v.index == EquipSlot.Id.MAIN_HAND:
 			main_hand = v
-	main_hand._drop_data(Vector2.ZERO, {"item_from": ItemSlotView.Kind.BAG, "index": staff_index})
+	main_hand._drop_data(Vector2.ZERO, {"item_from": ItemSlotView.Kind.BAG, "index": sword_index})
 	await wait_physics_frames(6)
 	await wait_process_frames(2)
-	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"staff")
-	assert_eq(hero.bag.count_of(ContentDB.items[&"sword"]), 1, "the sword went to the bag")
-	assert_true(game.client.action_bar.slots.has(&"fireball"))
-	assert_true(game.client.action_bar.slots.has(&"strike"), "Strike's slot stays (dimmed)")
+	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"travelers_longsword")
+	assert_eq(hero.bag.count_of(ContentDB.items[&"rusty_shortsword"]), 1, "the old sword went to the bag")
+	assert_true(game.client.action_bar.slots.has(&"S04"))
+	assert_true(game.client.action_bar.slots.has(&"S01"), "Slash's slot stays (dimmed)")
 	var tooltip = main_hand._make_custom_tooltip("")
 	assert_not_null(tooltip, "tooltip builds")
 	tooltip.free()
@@ -143,7 +141,7 @@ func test_solo_game_runs_with_hud() -> void:
 	# Saving writes the hero's progress to the store.
 	game.store = CharacterStore.new("user://test_smoke_characters")
 	game.save_now()
-	assert_eq(game.store.load_character("Tester").equipped["5"], "staff")
+	assert_eq(game.store.load_character("Tester").equipped["5"], "travelers_longsword")
 	game.store.delete("Tester")
 
 	game.free()

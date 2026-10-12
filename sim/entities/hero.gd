@@ -54,9 +54,19 @@ static func from_def(p_id: int, def: HeroDef) -> Hero:
 		to_bag.erase(item)
 	for item in to_bag:
 		h.bag.add(item)
+	h.give_starting_learning(def)
 	h.hp = h.stats.hp
 	h.mana = h.stats.mana
 	return h
+
+
+## Puts the def's starting scroll from the bag into the learning slot.
+func give_starting_learning(def: HeroDef) -> void:
+	if def.starting_learning == null:
+		return
+	var index := bag.index_of(def.starting_learning)
+	if index >= 0:
+		TreeRules.learn_from_bag(self, index)
 
 
 ## Which position `item` would go in: `requested` if allowed, otherwise the first

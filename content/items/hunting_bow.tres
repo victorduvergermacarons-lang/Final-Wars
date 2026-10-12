@@ -21,6 +21,7 @@ id = &"hunting_bow"
 display_name = "Hunting Bow"
 slot = 8
 price = 40
+retired = true
 stats = SubResource("Resource_rnkhi")
 growth = SubResource("Resource_mtgdo")
 teaches = Array[ExtResource("3_7c3ou")]([ExtResource("4_f5uc7")])

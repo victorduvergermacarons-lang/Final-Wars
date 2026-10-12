@@ -24,3 +24,4 @@ cooldown_seconds = 2.5
 ranged = true
 projectile_speed = 9.0
 effects = Array[ExtResource("1_fucek")]([SubResource("Resource_87a2n")])
+targeting = 2

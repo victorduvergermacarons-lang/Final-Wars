@@ -48,9 +48,46 @@ func reload() -> void:
 	var built := TreeContent.build(tree, tree_tuning)
 	abilities.merge(built.abilities)
 	items.merge(built.items)
+	_link_tree_items()
 	if OS.is_debug_build():
 		for w in CastResolver.dodge_warnings(abilities.values(), rules):
 			print("DODGE WARNING: " + w)
+
+
+## Content (.tres) can name ability-tree items only by id, since those are built
+## at load time. Puts the real items in place; safe to repeat (replaces by id).
+func _link_tree_items() -> void:
+	for h in heroes.values():
+		_link_list(h.starting_items, h.starting_item_ids)
+		_link_list(h.starting_equipment, h.starting_equipment_ids)
+		h.starting_learning = _item(h.starting_learning_id) if h.starting_learning_id != &"" else null
+	for n in npcs.values():
+		_link_list(n.sells, n.sells_ids)
+	for q in quests.values():
+		_link_list(q.reward_items, q.reward_item_ids)
+		_link_list(q.reward_choices, q.reward_choice_ids)
+	for e in enemies.values():
+		if e.loot != null:
+			for entry in e.loot.entries:
+				if entry.item_id != &"":
+					entry.item = _item(entry.item_id)
+
+
+func _link_list(list: Array, ids: Array) -> void:
+	for id in ids:
+		for i in range(list.size() - 1, -1, -1):
+			if list[i] == null or list[i].id == id:
+				list.remove_at(i)
+		var item := _item(id)
+		if item != null:
+			list.append(item)
+
+
+func _item(id: StringName) -> ItemDef:
+	if not items.has(id):
+		push_error("Content names an unknown item: %s" % id)
+		return null
+	return items[id]
 
 
 ## Every problem found in the loaded content; empty when all is valid.

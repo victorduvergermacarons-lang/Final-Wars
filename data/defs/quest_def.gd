@@ -24,6 +24,9 @@ extends Resource
 @export var reward_items: Array[ItemDef] = []
 ## The player picks one of these (none = no choice).
 @export var reward_choices: Array[ItemDef] = []
+## Ability-tree items by id (ContentDB adds them to the two lists above).
+@export var reward_item_ids: Array[StringName] = []
+@export var reward_choice_ids: Array[StringName] = []
 ## World flag the host sets when anyone turns this in ("" = none).
 @export var sets_world_flag: StringName = &""
 ## Announced to everyone in the zone the first time the flag is set.

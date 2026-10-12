@@ -211,9 +211,11 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var flank := CombatMath.Flank.FRONT
 			if ability.is_melee():
 				flank = CombatMath.flank(caster.tile(), target.tile(), target.facing)
-			# Milestone 3 targeting has no hit roll: you dodge by moving.
-			var sure_hit := ability.targeting != AbilityDef.TargetingMode.LEGACY \
-					or (flank == CombatMath.Flank.BEHIND and rules.behind_never_misses)
+			# Milestone 3 targeting has no hit roll (you dodge by moving), except enemy
+			# melee, which still rolls Accuracy against Evasion.
+			var rolls := ability.targeting == AbilityDef.TargetingMode.LEGACY \
+					or (caster is Enemy and ability.is_melee())
+			var sure_hit := not rolls or (flank == CombatMath.Flank.BEHIND and rules.behind_never_misses)
 			if not sure_hit and ctx.rng.randf() >= CombatMath.hit_chance(caster_stats.accuracy, target_stats.evasion, rules):
 				events.append({"type": "miss", "source": caster.id, "target": target.id, "ability": ability.id})
 				return

@@ -13,6 +13,8 @@ extends Resource
 ## Goods for sale (unlimited stock). Anyone selling something is a vendor and
 ## also buys items from players.
 @export var sells: Array[ItemDef] = []
+## Ability-tree items for sale, by id (ContentDB adds them to `sells`).
+@export var sells_ids: Array[StringName] = []
 
 
 ## The greeting for the current world state (`flags`: flag id -> value).

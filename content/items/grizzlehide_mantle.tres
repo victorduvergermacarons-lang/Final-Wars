@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_7fe4s"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_eh5va"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_q0pi5"]
-[ext_resource type="Resource" path="res://content/abilities/rallying_roar.tres" id="4_i58ee"]
 
 [sub_resource type="Resource" id="Resource_orqvq"]
 script = ExtResource("1_7fe4s")
@@ -27,4 +26,3 @@ rarity = 3
 price = 500
 stats = SubResource("Resource_oq64j")
 growth = SubResource("Resource_orqvq")
-teaches = Array[ExtResource("3_q0pi5")]([ExtResource("4_i58ee")])

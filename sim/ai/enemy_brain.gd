@@ -143,7 +143,11 @@ static func _fight_kiter(world: WorldSim, enemy: Enemy, target: Actor, seen: Vec
 			world.try_step(enemy, away)
 			return
 	var delta := seen - enemy.tile()
-	if delta != Vector2i.ZERO and (delta.x == 0 or delta.y == 0):
+	var lines_up := enemy.def.abilities.any(func(a): return a.targeting == AbilityDef.TargetingMode.LEGACY)
+	if not lines_up:
+		if _try_attack(world, enemy, target, seen, false) != Attack.OUT_OF_REACH:
+			return
+	elif delta != Vector2i.ZERO and (delta.x == 0 or delta.y == 0):
 		enemy.face(Vector2i(signi(delta.x), signi(delta.y)))
 		if _try_attack(world, enemy, target, seen, false) != Attack.OUT_OF_REACH:
 			return
@@ -155,7 +159,8 @@ static func _fight_kiter(world: WorldSim, enemy: Enemy, target: Actor, seen: Vec
 		if d <= enemy.def.keep_away_distance:
 			return 1000.0
 		var off := t - seen
-		return mini(absi(off.x), absi(off.y)) + maxi(d - max_range, 0)
+		var line := mini(absi(off.x), absi(off.y)) if lines_up else 0
+		return line + maxi(d - max_range, 0)
 	var spot := _best_neighbor(world, enemy, score)
 	if spot != enemy.tile() and score.call(spot) < score.call(enemy.tile()):
 		world.try_step(enemy, spot)
@@ -179,6 +184,18 @@ static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vect
 		if not AbilityShapes.reaches_tile(world.ctx, enemy, ability, seen):
 			continue
 		result = Attack.WAITING
+		if ability.targeting != AbilityDef.TargetingMode.LEGACY:
+			# Aimed where the enemy saw the target (reaction delay), so moving dodges.
+			var aim: Variant = null
+			var on: Actor = target
+			if ability.targeting != AbilityDef.TargetingMode.TARGETED:
+				aim = Vector2(seen)
+				on = null
+			if CastResolver.validate(world.ctx, enemy, ability, on, aim) == AbilityResolver.Result.OK \
+					and world.cast(enemy, ability, on, aim) == AbilityResolver.Result.OK:
+				enemy.last_attack_at = world.now
+				return Attack.CAST
+			continue
 		if AbilityResolver.validate(world.ctx, enemy, ability, target) == AbilityResolver.Result.OK:
 			world.cast(enemy, ability, target)
 			enemy.last_attack_at = world.now

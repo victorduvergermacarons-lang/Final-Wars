@@ -2,6 +2,8 @@ extends GutTest
 ## Gold, loot tables, personal loot and kill rewards.
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
+## The Milestone 1 starting kit (sword, staff, shield, holy charm), kept for engine tests.
+const LEGACY_HERO := preload("res://tests/fixtures/legacy_adventurer.tres")
 
 var db
 var rules: CombatRules
@@ -60,8 +62,8 @@ func before_each() -> void:
 	for e in world.enemies():
 		e.move.place(Vector2i(29, 29)) # park the wolves out of the way
 	wolf = world.add_enemy(def, Vector2i(12, 20))
-	a = world.add_hero(db.heroes[&"adventurer"])
-	b = world.add_hero(db.heroes[&"adventurer"])
+	a = world.add_hero(LEGACY_HERO)
+	b = world.add_hero(LEGACY_HERO)
 	a.move.place(Vector2i(11, 20))
 	b.move.place(Vector2i(13, 20))
 

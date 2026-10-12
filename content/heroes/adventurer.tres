@@ -3,10 +3,6 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_ryui7"]
 [ext_resource type="Script" path="res://data/defs/hero_def.gd" id="2_rbbd5"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_btv04"]
-[ext_resource type="Resource" path="res://content/items/sword.tres" id="4_kx5ms"]
-[ext_resource type="Resource" path="res://content/items/holy_charm.tres" id="5_k1v5e"]
-[ext_resource type="Resource" path="res://content/items/staff.tres" id="6_ox7ox"]
-[ext_resource type="Resource" path="res://content/items/shield.tres" id="7_agk4n"]
 
 [sub_resource type="Resource" id="Resource_a0o6n"]
 script = ExtResource("1_ryui7")
@@ -24,5 +20,6 @@ script = ExtResource("2_rbbd5")
 id = &"adventurer"
 display_name = "Adventurer"
 base_stats = SubResource("Resource_a0o6n")
-starting_items = Array[ExtResource("3_btv04")]([ExtResource("4_kx5ms"), ExtResource("6_ox7ox"), ExtResource("7_agk4n"), ExtResource("5_k1v5e")])
-starting_equipment = Array[ExtResource("3_btv04")]([ExtResource("4_kx5ms"), ExtResource("5_k1v5e")])
+starting_item_ids = Array[StringName]([&"rusty_shortsword", &"ember_fist_scroll", &"menders_scroll"])
+starting_equipment_ids = Array[StringName]([&"rusty_shortsword"])
+starting_learning_id = &"ember_fist_scroll"

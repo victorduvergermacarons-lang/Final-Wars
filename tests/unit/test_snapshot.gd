@@ -2,6 +2,8 @@ extends GutTest
 ## Host world → snapshot → client mirror, and client-side step prediction.
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
+## The Milestone 1 starting kit (sword, staff, shield, holy charm), kept for engine tests.
+const LEGACY_HERO := preload("res://tests/fixtures/legacy_adventurer.tres")
 
 var db
 var world: WorldSim
@@ -21,9 +23,9 @@ func after_all() -> void:
 func before_each() -> void:
 	var zone: ZoneDef = db.zones[&"greenfields"]
 	world = WorldSim.new(zone, db.rules, 7)
-	hero = world.add_hero(db.heroes[&"adventurer"])
+	hero = world.add_hero(LEGACY_HERO)
 	hero.display_name = "Ann"
-	other = world.add_hero(db.heroes[&"adventurer"])
+	other = world.add_hero(LEGACY_HERO)
 	hero.move.place(Vector2i(10, 20)) # open meadow, room to walk up
 	other.move.place(Vector2i(15, 20))
 	mirror = ClientWorld.new(zone, db.rules, db)

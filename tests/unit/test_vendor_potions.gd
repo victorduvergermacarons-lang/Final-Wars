@@ -44,12 +44,17 @@ func _rejection(events: Array) -> String:
 	return ""
 
 
-func test_hilda_sells_potions_and_common_gear() -> void:
+func test_hilda_sells_potions_common_gear_and_tier_1_tree_items() -> void:
 	var ids := hilda.def.sells.map(func(i): return i.id)
-	for id in [&"minor_health_potion", &"minor_mana_potion", &"iron_helm", &"hunting_bow", &"swift_boots"]:
+	for id in [&"minor_health_potion", &"minor_mana_potion", &"iron_helm", &"swift_boots",
+			&"ember_fist_scroll", &"menders_scroll", &"rusty_shortsword", &"hunters_shortbow", &"iron_mallet"]:
 		assert_has(ids, id)
 	for item in hilda.def.sells:
 		assert_eq(item.rarity, Rarity.Id.COMMON, "only Common goods")
+		assert_false(item.retired)
+		if item.tree != "":
+			assert_eq(item.tier, 1, "%s is tier 1" % item.id)
+			assert_true(item.tree_ability().implemented, "%s works" % item.id)
 
 
 func test_buying_costs_gold_and_needs_enough() -> void:
@@ -122,7 +127,7 @@ func test_potions_work_in_combat() -> void:
 
 
 func test_non_consumables_cant_be_used() -> void:
-	assert_eq(_rejection(_do({"type": "use_item", "bag_index": hero.bag.index_of(db.items[&"staff"])})), "not_usable")
+	assert_eq(_rejection(_do({"type": "use_item", "bag_index": hero.bag.index_of(db.items[&"menders_scroll"])})), "not_usable")
 
 
 func test_action_bar_holds_potions() -> void:

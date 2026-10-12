@@ -16,6 +16,9 @@ extends Resource
 @export var max_stack: int = 1
 ## Quest items: shown as such, can't be sold.
 @export var quest_item: bool = false
+## Old Milestone 1–2 gear whose abilities were retired: never handed out, removed
+## from loaded characters (kept for engine tests).
+@export var retired: bool = false
 ## Consumables: using the item casts this ability on yourself and uses one up.
 @export var use_ability: AbilityDef
 ## Added to the hero's stats while equipped.

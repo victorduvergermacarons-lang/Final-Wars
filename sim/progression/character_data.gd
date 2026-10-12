@@ -56,24 +56,34 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	hero.growth = _stats_in(data.get("growth"))
 	var bag_data = data.get("bag")
 	hero.bag = Bag.from_array(bag_data if typeof(bag_data) == TYPE_ARRAY else [], content.items)
+	# Milestone 3 retired the old abilities and their gear: drop them.
+	var retired := false
+	for i in hero.bag.size():
+		var held := hero.bag.item_at(i)
+		if held != null and held.retired:
+			hero.bag.remove_at(i, hero.bag.count_at(i))
+			retired = true
 	var equipped = data.get("equipped")
 	if typeof(equipped) == TYPE_DICTIONARY:
 		for key in equipped:
 			var slot := _int(key, -1)
 			var item: ItemDef = content.items.get(StringName(str(equipped[key])))
+			if item != null and item.retired:
+				retired = true
+				continue
 			if slot >= 0 and slot < EquipSlot.COUNT and item != null:
 				hero.wear(item, slot)
 	var ap = data.get("ap")
 	if typeof(ap) == TYPE_DICTIONARY:
 		for key in ap:
 			var ability: AbilityDef = content.abilities.get(StringName(str(key)))
-			if ability != null:
+			if ability != null and ability.is_tree_ability():
 				hero.ap[ability.id] = clampi(_int(ap[key], 0), 0, maxi(ability.ap_to_master, 0))
 	var mastered = data.get("mastered")
 	if typeof(mastered) == TYPE_ARRAY:
 		for key in mastered:
 			var ability: AbilityDef = content.abilities.get(StringName(str(key)))
-			if ability != null:
+			if ability != null and ability.is_tree_ability():
 				hero.mastered[ability.id] = ability
 	var quests = content.get("quests")
 	hero.quest_state = QuestLog.normalize(data.get("quests"), quests if quests is Dictionary else {})
@@ -89,10 +99,34 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	if learning != null and learning.tree_ability() != null:
 		if learning.is_scroll or hero.equipment().values().has(learning):
 			hero.learning_item = learning
+	# A character from before Milestone 3 has no ability-tree items: hand out the
+	# new starting kit.
+	if retired and not _has_tree_item(hero):
+		for item in def.starting_items:
+			if item.tree != "" and hero.bag.room_for(item) > 0:
+				hero.bag.add(item)
+		for item in def.starting_equipment:
+			if item.tree != "" and hero.bag.index_of(item) >= 0 and hero.equipped_in(hero.resolve_slot(item)) == null:
+				hero.bag.remove_item(item)
+				hero.wear(item)
+		if hero.learning_item == null:
+			hero.give_starting_learning(def)
 	hero.refresh_stats()
 	hero.hp = hero.stats.hp
 	hero.mana = hero.stats.mana
 	return hero
+
+
+static func _has_tree_item(hero: Hero) -> bool:
+	if hero.learning_item != null:
+		return true
+	for item in hero.equipment().values():
+		if item != null and item.tree != "":
+			return true
+	for i in hero.bag.size():
+		if hero.bag.item_at(i) != null and hero.bag.item_at(i).tree != "":
+			return true
+	return false
 
 
 ## A fresh level-1 character.

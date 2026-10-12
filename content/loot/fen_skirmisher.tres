@@ -9,8 +9,23 @@ script = ExtResource("1_h2b1y")
 item = ExtResource("2_tsv6c")
 chance = 0.03
 
+[sub_resource type="Resource" id="Resource_h2b1y"]
+script = ExtResource("1_h2b1y")
+item_id = &"gale_scroll"
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_tsv6c"]
+script = ExtResource("1_h2b1y")
+item_id = &"scroll_of_burning_feet"
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_3u6uk"]
+script = ExtResource("1_h2b1y")
+item_id = &"leech_tide_scroll"
+chance = 0.04
+
 [resource]
 script = ExtResource("3_3u6uk")
 gold_min = 5
 gold_max = 12
-entries = Array[ExtResource("1_h2b1y")]([SubResource("Resource_0lah7")])
+entries = Array[ExtResource("1_h2b1y")]([SubResource("Resource_0lah7"), SubResource("Resource_h2b1y"), SubResource("Resource_tsv6c"), SubResource("Resource_3u6uk")])

@@ -21,6 +21,7 @@ id = &"shield"
 display_name = "Shield"
 slot = 6
 price = 25
+retired = true
 stats = SubResource("Resource_me4q2")
 growth = SubResource("Resource_10sm4")
 teaches = Array[ExtResource("3_5icf3")]([ExtResource("4_dl15q")])

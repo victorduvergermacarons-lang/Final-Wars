@@ -5,7 +5,6 @@
 [ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="3_pv0t8"]
 [ext_resource type="Resource" path="res://content/items/minor_mana_potion.tres" id="4_g0v7s"]
 [ext_resource type="Resource" path="res://content/items/iron_helm.tres" id="5_il6yv"]
-[ext_resource type="Resource" path="res://content/items/hunting_bow.tres" id="6_x6shx"]
 [ext_resource type="Resource" path="res://content/items/swift_boots.tres" id="7_8k1tp"]
 
 [resource]
@@ -14,4 +13,5 @@ id = &"hilda"
 display_name = "Hilda the Trader"
 greeting = "Welcome to Millbrook, traveler! I buy what you find out there and sell what you'll need to stay alive."
 color = Color(0.95, 0.75, 0.3, 1)
-sells = Array[ExtResource("2_4etgy")]([ExtResource("3_pv0t8"), ExtResource("4_g0v7s"), ExtResource("5_il6yv"), ExtResource("6_x6shx"), ExtResource("7_8k1tp")])
+sells = Array[ExtResource("2_4etgy")]([ExtResource("3_pv0t8"), ExtResource("4_g0v7s"), ExtResource("5_il6yv"), ExtResource("7_8k1tp")])
+sells_ids = Array[StringName]([&"ember_fist_scroll", &"cinder_kick_scroll", &"spark_scroll", &"kindling_scroll", &"menders_scroll", &"river_lash_scroll", &"scroll_of_the_current", &"frost_shard_scroll", &"open_palm_scroll", &"breeze_scroll", &"featherstep_scroll", &"pebble_scroll", &"pillar_scroll", &"stomp_scroll", &"rusty_shortsword", &"travelers_longsword", &"hunters_shortbow", &"yew_longbow", &"iron_mallet", &"quarry_maul"])

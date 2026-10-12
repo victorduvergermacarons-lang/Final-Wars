@@ -84,6 +84,13 @@ static func line_path(grid: GridModel, origin: Vector2i, dir: Vector2i, max_rang
 ## Whether an affected actor standing on `tile` would be reached, given the
 ## caster's position and facing. Used by enemy AI with *perceived* positions.
 static func reaches_tile(ctx: CombatContext, caster: Actor, ability: AbilityDef, tile: Vector2i) -> bool:
+	if ability.targeting != AbilityDef.TargetingMode.LEGACY:
+		# Milestone 3 targeting: square distance; line of sight except for ground.
+		var d := TileGeometry.distance(caster.tile(), tile)
+		if d < ability.min_range or d > ability.max_range:
+			return false
+		return ability.targeting == AbilityDef.TargetingMode.GROUND or not ability.requires_line_of_sight \
+				or d <= 1 or LineOfSight.has_los(ctx.grid, caster.tile(), tile, ctx.rules.los_height_tolerance)
 	match ability.shape:
 		AbilityDef.Shape.ARC:
 			return arc_tiles(caster).has(tile)

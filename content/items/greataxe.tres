@@ -22,6 +22,7 @@ display_name = "Greataxe"
 slot = 8
 rarity = 1
 price = 80
+retired = true
 stats = SubResource("Resource_eh685")
 growth = SubResource("Resource_tg75j")
 teaches = Array[ExtResource("3_mxw3q")]([ExtResource("4_xk54p")])

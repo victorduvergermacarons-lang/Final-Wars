@@ -6,8 +6,9 @@
 
 [sub_resource type="Resource" id="Resource_nqxak"]
 script = ExtResource("1_xtdjm")
-kind = 7
-base_amount = 3.0
+kind = 13
+applies = 1
+base_amount = 4.0
 
 [sub_resource type="Resource" id="Resource_8blwy"]
 script = ExtResource("2_s2d8c")
@@ -21,10 +22,12 @@ scaling = Array[ExtResource("2_s2d8c")]([SubResource("Resource_8blwy")])
 script = ExtResource("3_p0clh")
 id = &"charge"
 display_name = "Charge"
-description = "Rushes at a target 2-4 tiles straight ahead and mauls it."
+description = "Marks a tile 2-4 tiles away, then rushes there and mauls whoever still stands on it."
 shape = 1
 min_range = 2
 max_range = 4
 cooldown_seconds = 12.0
 max_height_difference = 2
 effects = Array[ExtResource("1_xtdjm")]([SubResource("Resource_nqxak"), SubResource("Resource_rk3og")])
+targeting = 3
+windup_seconds = 1.0

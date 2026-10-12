@@ -819,10 +819,30 @@ F. 15 debug console · 16 docs + playtest checklist.
     burn and Flame Dash trail 3 s; Air Blast impact 25; projectiles 12–16 tiles/s.
     Seismic Stomp is a one-off taunt (top threat + 10%), not a 4 s forced target.
     Soothing Mist uses range 4 (Targeting Details), not 3 (Effect text).
+22. **Old content converted (as built in step 10):** the M1/M2 weapons and accessories
+    (Sword, Staff, Shield, Holy Charm, Hunting Bow, Greataxe) are `retired`: never
+    handed out, and removed from characters when they load; the old abilities stay on
+    disk only as engine test fixtures (`tests/fixtures/legacy_adventurer.tres` keeps the
+    M1 kit for tests). The six armor pieces teach nothing now. Content refers to tree
+    items by id (`item_id`, `sells_ids`, `reward_*_ids`, `starting_*_ids`), linked by
+    ContentDB at load. New heroes: Rusty Shortsword in hand, Ember Fist Scroll in the
+    learning slot, Mender's Scroll in the bag. A character from before M3 loses retired
+    gear and old mastered abilities/AP, keeps everything else, and gets that kit.
+    Hilda sells potions, Iron Helm, Swift Boots and the 20 implemented tier-1 scrolls and
+    weapons. Tier-2 scrolls drop in Greenfields (Wolf 2%, Shaman/Skirmisher 4%, Brute
+    4–5%, Grizzlehide 15%); Goblin Fetishes offers Hunter's Shortbow instead of the
+    Hunting Bow; The Beast of Greenfields offers the Fireball, Glacier or Bulwark scroll.
+    Enemies: Bite/Quick Slash wind up 0.3 s, Crushing Blow 0.6 s (Targeted range 1;
+    enemy melee still rolls Accuracy vs Evasion); Shadow Bolt is an any-angle skillshot
+    aimed where the Shaman saw you, so it no longer lines up on rows; Grizzlehide's Cleave
+    is a 0.4 s wound-up cone on the 3 tiles in front, and Charge marks a tile 2–4 away
+    for 1 s (sent to clients as a telegraph), then rushes there and mauls whoever stands
+    on it.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 10: old content converted to the trees | Decision 22. My choices: the old weapons and accessories are retired outright (armor stays); older characters get the new kit; drop rates and Hilda's stock; Charge 1 s mark. |
 | 2026-10-12 | M3 step 9: the first 32 abilities | Decision 21. Mana costs, power multipliers, buff sizes and projectile speeds are my starting numbers; step 11 balances them. |
 | 2026-10-12 | M3 step 8: effect building blocks part 2 | Decision 20 (choices: walls skip occupied tiles; knocked-back units stop before obstacles instead of passing over them; terrain restores newest-first). |
 | 2026-10-12 | M3 step 7: effect building blocks part 1 | Decision 19 (choices: interrupts don't stop wind-ups; no cast pushback; silence spares weapon arts). |
