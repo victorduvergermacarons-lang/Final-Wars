@@ -838,10 +838,29 @@ F. 15 debug console · 16 docs + playtest checklist.
     is a 0.4 s wound-up cone on the 3 tiles in front, and Charge marks a tile 2–4 away
     for 1 s (sent to clients as a telegraph), then rushes there and mauls whoever stands
     on it.
+23. **Balance pass (step 11; enforced by `tests/balance/test_balance.gd`, numbers via
+    `tests/balance/balance_report.tscn`, builds in `balance_scenarios.gd`):**
+    - Tier defaults raised: damage 14/24/38/55/78, healing 24/36/54/76/104 (T1–T5).
+    - A scroll in the learning slot grows the hero on level-up like worn gear (per
+      element in `content/tree/tuning.tres`: Fire Magic Attack 3, Mana 6, Fire
+      Mastery 2; Water, Earth and Air similar), so bending builds grow too.
+    - Goblin Shaman Magic Attack 18 → 12; Old Grizzlehide HP 1400 → 2000.
+    - The bot turns to the nearest enemy, closes in only when nothing reaches, and can
+      dodge (step away from a wind-up aimed at it).
+    - Targets (bots never dodge unless stated): starter kit vs 1 Wolf ≈ 8 s, ~50% HP
+      lost; 2 Wolves usually kill a lone starter, a starter + healer pair wins; a
+      dodging starter loses under half the HP; sword, bow or hammer alone beats a
+      Wolf; a Wolf costs a Fire Dart caster over 60% of its mana; a level-2 caster
+      beats a Shaman; a level-3 hero trading blows with a Brute loses, but healing and
+      dodging the 0.6 s wind-up wins; a level-4 Lunge sword beats a Skirmisher;
+      Grizzlehide kills a lone level-5 hero and mostly a pair, a group of four wins
+      (~21 s).
+    - The dodge warning counts wind-up time as time to react.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 11: balance pass | Decision 23. Flagged: scrolls in the learning slot now give level-up growth (casters had no way to grow Magic Attack); Shaman and Grizzlehide retuned. |
 | 2026-10-12 | M3 step 10: old content converted to the trees | Decision 22. My choices: the old weapons and accessories are retired outright (armor stays); older characters get the new kit; drop rates and Hilda's stock; Charge 1 s mark. |
 | 2026-10-12 | M3 step 9: the first 32 abilities | Decision 21. Mana costs, power multipliers, buff sizes and projectile speeds are my starting numbers; step 11 balances them. |
 | 2026-10-12 | M3 step 8: effect building blocks part 2 | Decision 20 (choices: walls skip occupied tiles; knocked-back units stop before obstacles instead of passing over them; terrain restores newest-first). |

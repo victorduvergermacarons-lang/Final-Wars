@@ -9,7 +9,7 @@
 [sub_resource type="Resource" id="Resource_3fiim"]
 script = ExtResource("5_t16jm")
 hp = 160.0
-mag_atk = 18.0
+mag_atk = 12.0
 phys_def = 5.0
 mag_def = 10.0
 jump = 2.0

@@ -22,6 +22,17 @@ extends Resource
 @export var hammer_growth: StatBlock = StatBlock.make({Stat.Id.PHYS_ATK: 4, Stat.Id.HP: 10, Stat.Id.HAMMER_MASTERY: 2})
 @export var weapon_tier_step: float = 0.5
 
+@export_group("Scrolls")
+## Per-level growth of a scroll while it sits in the learning slot (a scroll is
+## never worn, so this is how bending builds grow). Scaled by tier like weapons.
+@export var fire_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 3, Stat.Id.MANA: 6, Stat.Id.FIRE_MASTERY: 2})
+@export var water_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 2, Stat.Id.MAG_DEF: 2, Stat.Id.MANA: 8,
+		Stat.Id.WATER_MASTERY: 2})
+@export var earth_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 1, Stat.Id.PHYS_DEF: 2, Stat.Id.HP: 8,
+		Stat.Id.EARTH_MASTERY: 2})
+@export var air_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 2, Stat.Id.EVASION: 1, Stat.Id.MANA: 6,
+		Stat.Id.AIR_MASTERY: 2})
+
 
 func ap_for(tier: int) -> int:
 	return ap_by_tier[clampi(tier, 1, ap_by_tier.size()) - 1]
@@ -47,3 +58,18 @@ func weapon_blocks(kind: String, tier: int) -> Array[StatBlock]:
 		"Hammer":
 			return [hammer_stats.scaled(k), hammer_growth.scaled(k)]
 	return [StatBlock.new(), StatBlock.new()]
+
+
+## Per-level growth of a scroll of `tree` and `tier` while it is being learned.
+func scroll_growth(tree: String, tier: int) -> StatBlock:
+	var k := 1.0 + weapon_tier_step * (maxi(tier, 1) - 1)
+	match tree:
+		"Fire":
+			return fire_scroll_growth.scaled(k)
+		"Water":
+			return water_scroll_growth.scaled(k)
+		"Earth":
+			return earth_scroll_growth.scaled(k)
+		"Air":
+			return air_scroll_growth.scaled(k)
+	return StatBlock.new()

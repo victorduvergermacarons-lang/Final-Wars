@@ -103,7 +103,7 @@ func test_old_grizzlehide_is_a_patrolling_elite() -> void:
 	var def: EnemyDef = db.enemies[&"old_grizzlehide"]
 	assert_true(def.elite)
 	assert_eq(def.level, 5)
-	assert_almost_eq(def.stats.hp, 6.0 * db.enemies[&"wolf"].stats.hp, 100.0, "about 6x Wolf HP")
+	assert_eq(def.stats.hp, 2000.0, "raised from ~6x Wolf HP in the Milestone 3 balance pass")
 	assert_eq(def.respawn_seconds, 300.0)
 	assert_eq(def.abilities.map(func(a): return a.id), [&"grizzly_cleave", &"charge"])
 	var drops: Array = def.loot.entries.map(func(e): return e.item.id)

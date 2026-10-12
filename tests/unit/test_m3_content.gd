@@ -143,3 +143,14 @@ func test_linking_twice_does_not_duplicate() -> void:
 		unique[id] = true
 	assert_eq(unique.size(), ids.size())
 	again.free()
+
+
+func test_a_scroll_being_learned_grows_the_hero_on_level_up() -> void:
+	var h := Hero.from_def(1, db.heroes[&"adventurer"])
+	assert_eq(h.learning_item.id, &"ember_fist_scroll")
+	var before := h.stats.mag_atk
+	var fire := Mastery.permanent(h, "Fire")
+	Leveling.add_xp(h, Leveling.xp_to_next(1, db.rules), db.rules)
+	var share: float = db.rules.growth_fraction
+	assert_almost_eq(h.stats.mag_atk - before, 3.0 * share, 0.01, "Fire scrolls grow Magic Attack")
+	assert_almost_eq(Mastery.permanent(h, "Fire") - fire, 2.0 * share, 0.01, "and Fire Mastery")

@@ -1,10 +1,11 @@
 extends GutTest
-## Balance targets for milestone-1 content (CLAUDE.md rule 16), checked with
-## scripted fights on the real WorldSim. If you retune content and this fails,
-## either the tuning drifted or the targets need updating together.
+## Balance targets for the ability-tree content (Milestone 3, CLAUDE.md decision 23),
+## checked with scripted fights on the real WorldSim. If you retune content and
+## this fails, either the tuning drifted or the targets need updating together.
 ## Full numbers: godot --headless --path . tests/balance/balance_report.tscn
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
+const S := preload("res://tests/balance/balance_scenarios.gd")
 const RUNS := 6
 
 var db
@@ -18,79 +19,60 @@ func after_all() -> void:
 	db.free()
 
 
-func test_sword_solo_vs_one_wolf_takes_about_8s_and_half_hp() -> void:
-	var r := BalanceSim.average(db, [[&"sword", &"holy_charm"]], [&"strike"], 1, RUNS)
-	assert_between(r.seconds, 6.5, 9.5, str(r))
+func _avg(specs: Array, enemy: StringName, count: int, level: int = 1) -> Dictionary:
+	return BalanceSim.tree_average(db, specs, enemy, count, RUNS, level)
+
+
+func test_starter_kit_beats_one_wolf_in_about_8s_with_half_hp() -> void:
+	var r := _avg([S.STARTER], &"wolf", 1)
+	assert_between(r.seconds, 6.5, 10.5, str(r))
 	assert_between(r.hp_lost_pct, 35, 65, str(r))
 	assert_eq(r.win_rate, 1.0, str(r))
 
 
-func test_two_wolves_are_dangerous_solo_without_healing() -> void:
-	var r := BalanceSim.average(db, [[&"sword", &"holy_charm"]], [&"strike"], 2, RUNS)
-	assert_lt(r.win_rate, 0.5, str(r))
+func test_two_wolves_are_dangerous_solo_but_fine_for_a_pair() -> void:
+	assert_lt(_avg([S.STARTER], &"wolf", 2).win_rate, 0.5)
+	var pair := _avg([S.STARTER, S.STARTER_HEALER], &"wolf", 2)
+	assert_eq(pair.win_rate, 1.0, str(pair))
+	assert_lt(pair.hp_lost_pct, 75, str(pair))
 
 
-func test_two_wolves_are_fine_for_a_pair() -> void:
-	var r := BalanceSim.average(db, [[&"sword", &"shield"], [&"staff", &"holy_charm"]],
-			[&"strike", &"fireball"], 2, RUNS, 0.5)
+func test_dodging_wind_ups_pays_off() -> void:
+	var still := _avg([S.STARTER], &"wolf", 1)
+	var dodging := _avg([S.STARTER_DODGE], &"wolf", 1)
+	assert_lt(dodging.hp_lost_pct * 2, still.hp_lost_pct, "%s vs %s" % [dodging, still])
+
+
+func test_single_weapon_builds_beat_a_wolf() -> void:
+	for spec in [S.SWORD_ONLY, S.ARCHER, S.HAMMER]:
+		var r := _avg([spec], &"wolf", 1)
+		assert_gt(r.win_rate, 0.79, "%s: %s" % [spec.weapon, r])
+
+
+func test_a_wolf_costs_a_caster_most_of_their_mana() -> void:
+	var r := _avg([S.CASTER], &"wolf", 1)
 	assert_eq(r.win_rate, 1.0, str(r))
-	assert_lt(r.hp_lost_pct, 75, str(r))
+	assert_lt(r.mana_left_pct, 40, str(r))
 
 
-func test_fireball_out_damages_strike_but_costs_mana() -> void:
-	var staff_hero := Hero.from_def(1, db.heroes[&"adventurer"])
-	staff_hero.unequip(EquipSlot.Id.MAIN_HAND)
-	staff_hero.wear(db.items[&"staff"])
-	var sword_hero := Hero.from_def(2, db.heroes[&"adventurer"])
-	var fireball: AbilityDef = db.abilities[&"fireball"]
-	var strike: AbilityDef = db.abilities[&"strike"]
-	var fb := StatCalc.scaled_amount(fireball.effects[0].base_amount, fireball.effects[0].scaling, staff_hero.stats)
-	var st := StatCalc.scaled_amount(strike.effects[0].base_amount, strike.effects[0].scaling, sword_hero.stats)
-	assert_gt(fb, st * 1.5, "fireball %s vs strike %s" % [fb, st])
-	assert_gt(fireball.mana_cost, 0.0)
-	var r := BalanceSim.average(db, [[&"staff", &"holy_charm"]], [&"fireball"], 1, RUNS)
-	assert_lt(r.mana_left_pct, 60, "one wolf costs a big share of the staff hero's mana: %s" % r)
+func test_level_2_caster_beats_a_shaman() -> void:
+	var r := _avg([S.CASTER], &"goblin_shaman", 1, 2)
+	assert_gt(r.win_rate, 0.79, str(r))
 
 
-func test_block_cuts_wolf_bites_by_at_least_a_fifth() -> void:
-	var tank := Hero.from_def(1, db.heroes[&"adventurer"])
-	tank.wear(db.items[&"shield"])
-	var bite: AbilityDef = db.abilities[&"wolf_bite"]
-	var raw := StatCalc.scaled_amount(bite.effects[0].base_amount, bite.effects[0].scaling, db.enemies[&"wolf"].stats)
-	var k: float = db.rules.physical_defense_k
-	var normal := raw * (1.0 - CombatMath.mitigation(tank.stats.phys_def, k))
-	var blocked := raw * (1.0 - CombatMath.mitigation(tank.stats.phys_def * 2.0, k))
-	assert_between(1.0 - blocked / normal, 0.2, 0.4, "normal %s, blocked %s" % [normal, blocked])
+func test_brute_punishes_standing_still_but_heals_and_dodging_win() -> void:
+	assert_lt(_avg([S.L3_SWORD], &"bandit_brute", 1, 3).win_rate, 0.5, "trading blows loses")
+	var r := _avg([S.L3_SWORD_DODGE], &"bandit_brute", 1, 3)
+	assert_eq(r.win_rate, 1.0, str(r))
 
 
-func test_level_2_after_two_wolves_and_first_mastery_at_level_3() -> void:
-	var rules: CombatRules = db.rules
-	var xp: int = db.enemies[&"wolf"].xp_reward
-	assert_eq(int(Leveling.xp_to_next(1, rules)) / xp, 2, "wolves to level 2")
-	var to_level_3 := Leveling.xp_to_next(1, rules) + Leveling.xp_to_next(2, rules)
-	assert_eq(ceili(to_level_3 / xp), 6, "wolves to level 3")
-	for id in [&"strike", &"fireball", &"heal", &"block"]:
-		assert_eq(db.abilities[id].ap_to_master, rules.ap_per_level * 2, "%s mastered after 2 level-ups" % id)
-	assert_eq(db.abilities[&"resurrect"].ap_to_master, rules.ap_per_level * 3)
-
-
-func test_m2_enemies_are_beatable_solo_at_their_level() -> void:
-	var rot := [&"strike", &"cleave", &"fireball"]
-	# The Brute hits twice as hard as first tuned (user change): standing and trading
-	# blows loses, but healing yourself (or a shield) wins.
-	var brute := BalanceSim.average(db, [[&"sword", &"holy_charm"]], rot, 1, 4, 0.0, false, &"bandit_brute", 3)
-	assert_lt(brute.win_rate, 0.5, "trading blows with a Brute at level 3 loses: %s" % brute)
-	var healed := BalanceSim.average(db, [[&"sword", &"holy_charm"]], rot, 1, 4, 0.5, false, &"bandit_brute", 3)
-	assert_gt(healed.win_rate, 0.5, "with heals it wins: %s" % healed)
-	var shaman := BalanceSim.average(db, [[&"staff", &"holy_charm"]], rot, 1, 4, 0.0, false, &"goblin_shaman", 2)
-	assert_gt(shaman.win_rate, 0.5, "staff hero beats a Shaman at level 2: %s" % shaman)
+func test_level_4_sword_beats_a_skirmisher() -> void:
+	var r := _avg([S.L4_LUNGE], &"fen_skirmisher", 1, 4)
+	assert_eq(r.win_rate, 1.0, str(r))
 
 
 func test_grizzlehide_needs_a_group() -> void:
-	var rot := [&"strike", &"cleave", &"fireball"]
-	var solo := BalanceSim.average(db, [[&"sword", &"holy_charm"]], rot, 1, 3, 0.5, false, &"old_grizzlehide", 5)
-	assert_eq(solo.win_rate, 0.0, "a lone level-5 hero loses: %s" % solo)
-	var group := [[&"sword", &"shield", &"iron_helm"], [&"greataxe", &"holy_charm"],
-			[&"staff", &"frostweave_robe"], [&"staff", &"holy_charm", &"acolytes_leggings"]]
-	var four := BalanceSim.average(db, group, rot, 1, 3, 0.5, false, &"old_grizzlehide", 5)
-	assert_gt(four.win_rate, 0.5, "a level-5 group of four wins: %s" % four)
+	assert_eq(_avg([S.L4_LUNGE], &"old_grizzlehide", 1, 5).win_rate, 0.0, "solo loses")
+	assert_lt(_avg([S.L5_TANK, S.L5_HEALER], &"old_grizzlehide", 1, 5).win_rate, 0.34, "a pair mostly loses")
+	var group := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"old_grizzlehide", 1, 5)
+	assert_gt(group.win_rate, 0.8, str(group))

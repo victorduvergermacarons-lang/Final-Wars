@@ -273,6 +273,8 @@ static func dodge_warnings(abilities: Array, rules: CombatRules) -> PackedString
 				warn = 0.0
 		elif a.targeting == AbilityDef.TargetingMode.GROUND and a.effects.any(func(e): return e.kind == AbilityEffect.Kind.DAMAGE):
 			warn = a.telegraph_seconds
+		if warn >= 0.0:
+			warn += a.windup_seconds # a wind-up is time to react too
 		if warn >= 0.0 and warn < limit:
 			out.append("%s (%s): %.2f s to react, under step %.1f s + %.1f s: can't really be dodged" % [
 					a.display_name, a.id, warn, rules.combat_step_base_seconds, rules.dodge_reaction_seconds])

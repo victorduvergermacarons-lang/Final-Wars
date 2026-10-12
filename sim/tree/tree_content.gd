@@ -45,6 +45,7 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 		item.description = "Teaches %s (%s, tier %d)." % [row.name, row.tree, row.tier]
 		if item.is_scroll:
 			item.slot = EquipSlot.Type.NONE
+			item.growth = tuning.scroll_growth(row.tree, row.tier)
 		else:
 			item.slot = EquipSlot.Type.MAIN_HAND if row.item_type == "Sword" else EquipSlot.Type.TWO_HAND
 			var blocks := tuning.weapon_blocks(row.item_type, row.tier)

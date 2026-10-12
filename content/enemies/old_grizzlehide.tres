@@ -9,7 +9,7 @@
 
 [sub_resource type="Resource" id="Resource_3ndvn"]
 script = ExtResource("6_sx854")
-hp = 1400.0
+hp = 2000.0
 phys_atk = 26.0
 phys_def = 25.0
 mag_def = 15.0

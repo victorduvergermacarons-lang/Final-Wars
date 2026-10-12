@@ -30,7 +30,11 @@ static func add_xp(hero: Hero, amount: float, rules: CombatRules) -> Array[Dicti
 ## One level-up: growth from equipped items, AP, stat refresh, optional refill.
 static func level_up(hero: Hero, rules: CombatRules) -> Array[Dictionary]:
 	hero.level += 1
-	var gain := ItemGrowth.gain_for_level(hero.equipped_items(), hero.growth, rules)
+	# A scroll in the learning slot grows the hero like a worn item.
+	var growing := hero.equipped_items()
+	if hero.learning_item != null and hero.learning_item.is_scroll:
+		growing.append(hero.learning_item)
+	var gain := ItemGrowth.gain_for_level(growing, hero.growth, rules)
 	hero.growth.add(gain)
 	hero.refresh_stats()
 	if rules.refill_on_level_up:

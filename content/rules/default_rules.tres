@@ -44,3 +44,5 @@ xp_bonus_cap_percent = 50.0
 xp_penalty_from_levels_below = 3
 xp_penalty_percent_per_level = 20.0
 xp_floor_percent = 20.0
+tier_damage_base = Array[float]([14.0, 24.0, 38.0, 55.0, 78.0])
+tier_heal_base = Array[float]([24.0, 36.0, 54.0, 76.0, 104.0])
