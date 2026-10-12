@@ -64,6 +64,11 @@ func add_option(label: String, on_press: Callable) -> Button:
 	return b
 
 
+## Adds an already-built button (e.g. one with an item tooltip).
+func add_custom_option(b: Button) -> void:
+	_options.add_child(b)
+
+
 func close() -> void:
 	if visible:
 		visible = false

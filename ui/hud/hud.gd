@@ -24,6 +24,14 @@ const REASONS := {
 	"cant_sell": "The trader won't buy that",
 	"not_sold_here": "That isn't sold here",
 	"not_usable": "You can't use that",
+	"no_quest": "You don't have that quest",
+	"wrong_npc": "That's not who you need to talk to",
+	"quest_active": "You're already on that quest",
+	"quest_done": "You've already done that quest",
+	"level_too_low": "You need a higher level for that quest",
+	"prerequisite": "You need to finish an earlier quest first",
+	"quest_not_ready": "That quest isn't finished yet",
+	"choose_reward": "Choose a reward first",
 }
 
 var session
@@ -41,6 +49,8 @@ var inventory_window: InventoryWindow
 var dialogue: DialogueBox
 var loot_window: LootWindow
 var vendor_window: VendorWindow
+var quest_log: QuestLogWindow
+var _tracker: RichTextLabel
 var _spellbook: SpellbookPanel
 var _character: CharacterSheet
 var _death: PanelContainer
@@ -92,6 +102,7 @@ func _build() -> void:
 	buttons.add_child(_small_button("Spellbook (P)", func(): _toggle(_spellbook)))
 	buttons.add_child(_small_button("Character (C)", func(): _toggle(_character)))
 	buttons.add_child(_small_button("Inventory (B)", func(): _toggle(inventory_window)))
+	buttons.add_child(_small_button("Quests (L)", func(): _toggle(quest_log)))
 	_bind_button = _small_button("Keybinds", func(): _set_bind_mode(not bind_mode))
 	buttons.add_child(_bind_button)
 	var bar := HBoxContainer.new()
@@ -119,6 +130,23 @@ func _build() -> void:
 	_spellbook = SpellbookPanel.new(self)
 	_spellbook.visible = false
 	right.add_child(_spellbook)
+	quest_log = QuestLogWindow.new(self)
+	quest_log.visible = false
+	right.add_child(quest_log)
+
+	# Quest tracker on the right edge.
+	_tracker = RichTextLabel.new()
+	_tracker.bbcode_enabled = true
+	_tracker.fit_content = true
+	_tracker.scroll_active = false
+	_tracker.custom_minimum_size = Vector2(260, 0)
+	_tracker.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	_tracker.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_tracker.position.x -= 10
+	_tracker.add_theme_constant_override("outline_size", 4)
+	_tracker.add_theme_color_override("font_outline_color", Color.BLACK)
+	_tracker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_tracker)
 
 	# Death panel and mid-screen error.
 	_death = PanelContainer.new()
@@ -176,6 +204,8 @@ func _process(_delta: float) -> void:
 	client.action_bar.auto_place(ids)
 	_death.visible = not hero.alive
 	_sync_party(hero)
+	_update_quest_markers(hero)
+	_tracker.text = QuestText.tracker_bbcode(hero, ContentDB.quests)
 	var age := Time.get_ticks_msec() / 1000.0 - client.error_at
 	_error.text = client.error_text if age < ERROR_SECONDS else ""
 	_error.modulate.a = clampf((ERROR_SECONDS - age) / 0.5, 0.0, 1.0)
@@ -209,6 +239,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle(_character)
 	elif event.is_action_pressed(&"toggle_inventory"):
 		_toggle(inventory_window)
+	elif event.is_action_pressed(&"toggle_quest_log"):
+		_toggle(quest_log)
 
 
 ## Keybind mode grabs key presses before anything else sees them.
@@ -246,6 +278,14 @@ func _on_events(events: Array) -> void:
 			"left":
 				client.say("%s left the game." % e.name)
 		if e.get("target", -2) != me:
+			continue
+		var quest_msg := QuestText.event_message(e, ContentDB.quests)
+		if quest_msg != "":
+			client.say(quest_msg)
+			if e.type in ["quest_accepted", "quest_completed"]:
+				var talking := dialogue.current_npc()
+				if dialogue.visible and talking != null:
+					dialogue.open(talking) # back to the main page with fresh options
 			continue
 		match e.type:
 			"rejected":
@@ -285,8 +325,18 @@ func _on_events(events: Array) -> void:
 					dialogue.open(npc)
 
 
+## "!" / "?" over quest givers, for the local hero.
+func _update_quest_markers(hero: Hero) -> void:
+	client.npc_markers.clear()
+	for npc in ContentDB.npcs.values():
+		var m := QuestLog.npc_marker(hero, ContentDB.quests, npc.id)
+		if m != "":
+			client.npc_markers[npc.id] = m
+
+
 ## Adds the NPC's extra conversation options (shop, quests…).
 func _on_dialogue_opened(npc: Npc) -> void:
+	QuestDialogue.add_options(self, npc)
 	if not npc.def.sells.is_empty():
 		dialogue.add_option("Browse goods", func():
 			vendor_window.open(npc)

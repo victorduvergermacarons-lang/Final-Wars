@@ -22,6 +22,7 @@ const OTHER := {
 	&"toggle_spellbook": [KEY_P],
 	&"toggle_character": [KEY_C],
 	&"toggle_inventory": [KEY_B],
+	&"toggle_quest_log": [KEY_L],
 	&"interact": [KEY_E],
 }
 

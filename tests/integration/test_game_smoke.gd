@@ -53,6 +53,7 @@ func test_solo_game_runs_with_hud() -> void:
 	hud._toggle(hud.inventory_window)
 	hud._toggle(hud._character)
 	hud._toggle(hud._spellbook)
+	hud._toggle(hud.quest_log)
 	await wait_process_frames(2)
 	var staff_index := hero.bag.index_of(ContentDB.items[&"staff"])
 	assert_gt(staff_index, -1)

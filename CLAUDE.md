@@ -530,10 +530,19 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     the same zone. Turn-in is refused (nothing lost) if the rewards don't fit in the
     bag. Abandoning forgets progress. Progress is saved with the character; the host
     saves world flags. Quests are not repeatable.
+18. **Quest UI (as built in step 16):** NPCs show a yellow "!" when they have a quest
+    you can accept and "?" when you can hand one in to them. Talking opens the dialogue
+    with one option per quest: "! Title" (offer page with objectives, rewards, Accept
+    / Not now), "… Title (in progress)" and "? Title (complete)" (rewards; with a
+    choice, one button per item, hover for its tooltip). Quest log on L (active
+    quests, details, Abandon). The tracker on the right edge lists every active
+    quest's objectives, turning gold with "Return to …" when done. Quest messages go
+    to the message log.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M2 step 16: quest UI | Decision 18. Quest log on L. |
 | 2026-10-12 | M2 step 15: quest system | Decision 17. Implementation choices: shared credit within 15 tiles or via the threat table; turn-in refused when the bag can't hold the rewards; abandon allowed; no repeatable quests. |
 | 2026-10-12 | M2 step 14: Old Grizzlehide roams Greenfields | Patrol + elite as built (decision 16). Brute retuned to HP 320 / Crushing Blow 12 + 1.0×PhysAtk every 3.5 s and Skirmisher to HP 220 after the balance report. |
 | 2026-10-12 | M2 step 13: enemy levels, XP by level, Goblin Shaman / Bandit Brute / Fen Skirmisher | Skirmisher strikes head-on after 2 s without attacking (implementation choice so a hero can't stall it forever by turning; `EnemyBrain.FLANK_PATIENCE`). |
