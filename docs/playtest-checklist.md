@@ -55,6 +55,8 @@ needs 2–4 players: real friends, or several game windows on one computer (see
 - [ ] **Expect:** a yellow **!** over Captain Rowan and over Old Maren (they have quests for you). Hilda has none.
 - [ ] **Do:** walk into a townsperson.
       **Expect:** you can't walk through them, and they never attack you.
+- [ ] **Do:** walk up to Hilda.
+      **Expect:** a boxed **[E] Talk** prompt appears over her when you're close enough to talk.
 - [ ] **Do:** stand next to Hilda and press **E** (or right-click her).
       **Expect:** a dialogue box with her name, a greeting, a **Browse goods** button and **Goodbye**.
 - [ ] **Do:** walk away from her.
@@ -176,6 +178,8 @@ General
       **Expect:** "! Word to Hilda" in her dialogue. Clicking it shows her request, the objective and the rewards, with **Accept** and **Not now**.
 - [ ] **Do:** click **Accept**.
       **Expect:** "Quest accepted" in the message log; the quest appears in the **tracker** on the right edge of the screen and in the **quest log (L)**.
+- [ ] **Do:** with a quest tracked, open the inventory (B), character sheet (C), spellbook (P) and Hilda's shop one at a time.
+      **Expect:** the tracker disappears while a window covers it and comes back when you close it; its text never shows through a window.
 - [ ] **Do:** open the quest log (L).
       **Expect:** a list of your quests on the left; details, objectives, "Hand in to" and rewards on the right; an **Abandon quest** button.
 
@@ -185,7 +189,7 @@ The five quests
 - [ ] **Wolves at the Gate** (Captain Rowan, kill quest, chain part 1). **Do:** kill 4 Wolves.
       **Expect:** the tracker counts 1/4 … 4/4, then turns gold with "Return to Captain Rowan", and a **?** appears over Rowan. Hand in: 120 XP and 20 gold.
 - [ ] **Chain lock:** before finishing part 1, Rowan does **not** offer "The Bandit Camp". Afterwards he does (new **!**).
-- [ ] **The Bandit Camp** (chain part 2, reach + kill). **Do:** find the camp at the bottom (south) of Greenfields and break 2 Bandit Brutes.
+- [ ] **The Bandit Camp** (chain part 2, reach + kill). **Do:** find the camp (a red banner labelled **Bandit Camp**; the ground there glows yellow while the quest needs it) and break 2 Bandit Brutes.
       **Expect:** "Find the bandit camp" ticks off when you get close to the camp; the brutes count 1/2, 2/2. Hand in to Rowan.
 - [ ] **The Beast of Greenfields** (chain part 3). **Do:** kill Old Grizzlehide (bring friends).
       **Expect:** hand-in shows three reward buttons (Greataxe, Frostweave Robe, Acolyte's Leggings). Hovering one shows its tooltip with comparison; clicking one completes the quest and gives that item.

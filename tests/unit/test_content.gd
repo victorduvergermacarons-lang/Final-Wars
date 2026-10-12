@@ -145,3 +145,19 @@ func test_rowan_greets_differently_after_grizzlehide() -> void:
 	var rowan: NpcDef = db.npcs[&"rowan"]
 	assert_eq(rowan.greeting_for({}), rowan.greeting)
 	assert_ne(rowan.greeting_for({"grizzlehide_slain": true}), rowan.greeting)
+
+
+func test_bandit_camp_is_marked_and_reachable() -> void:
+	var zone: ZoneDef = db.zones[&"greenfields"]
+	var camp: ZoneLandmark = zone.landmarks.filter(func(l): return l.name == "Bandit Camp")[0]
+	var obj: QuestObjective = db.quests[&"bandit_camp"].objectives[0]
+	assert_eq(obj.kind, QuestObjective.Kind.REACH)
+	assert_eq(obj.tile, camp.tile, "the quest asks for the marked spot")
+	var grid := GridModel.from_zone(zone)
+	var reachable := 0
+	for y in range(obj.tile.y - obj.radius, obj.tile.y + obj.radius + 1):
+		for x in range(obj.tile.x - obj.radius, obj.tile.x + obj.radius + 1):
+			var p := Vector2i(x, y)
+			if GridModel.distance(p, obj.tile) <= obj.radius and grid.is_walkable(p):
+				reachable += 1
+	assert_gt(reachable, 6, "plenty of walkable tiles count as finding the camp")

@@ -23,8 +23,12 @@ var camera: Camera2D
 var _tiles_by_depth := {} # depth -> Array[Vector2i]
 var _max_depth := 0
 var _graveyards := {}
-var _float_texts: Array = [] # {actor, text, color, t}
+var _float_texts: Array = [] # {actor, text, color, t, row}
 var _font: Font
+var _landmarks: Array[ZoneLandmark] = []
+## Labels, bars and markers queued while drawing actors, drawn last so terrain
+## and other actors never cover them.
+var _overlay: Array[Callable] = []
 
 
 func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
@@ -42,6 +46,7 @@ func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
 			_max_depth = maxi(_max_depth, d)
 	for g in zone.graveyards:
 		_graveyards[g] = true
+	_landmarks = zone.landmarks
 	camera = Camera2D.new()
 	camera.position_smoothing_enabled = true
 	camera.zoom = Vector2(1.5, 1.5)
@@ -100,12 +105,20 @@ func _draw() -> void:
 		if not actors_by_depth.has(d):
 			actors_by_depth[d] = []
 		actors_by_depth[d].append(a)
+	var quest_areas := _quest_area_tiles()
+	_overlay.clear()
 	for d in range(_max_depth + 1):
 		for p in _tiles_by_depth.get(d, []):
 			_draw_tile(grid, p)
+			if quest_areas.has(p):
+				_draw_quest_area(grid, p)
 		for a in actors_by_depth.get(d, []):
 			_draw_actor(a)
 	_draw_projectiles(grid)
+	_draw_landmarks(grid)
+	_draw_talk_prompt()
+	for f in _overlay:
+		f.call()
 	_draw_float_texts()
 
 
@@ -165,7 +178,7 @@ func _draw_actor(a: Actor) -> void:
 		_draw_label(body + Vector2(0, -22), npc.display_name, Color(1, 0.95, 0.7))
 		var marker: String = client.npc_markers.get(npc.def.id, "") if client != null else ""
 		if marker != "":
-			_draw_label(body + Vector2(0, -38), marker, Color(1, 0.85, 0.1))
+			_draw_label(body + Vector2(0, -36), marker, Color(1, 0.85, 0.1), 20)
 		return
 	else:
 		if not a.alive:
@@ -211,12 +224,20 @@ func _draw_facing(feet: Vector2, facing: Vector2i, color: Color) -> void:
 
 
 func _draw_bar(pos: Vector2, width: float, fraction: float, color: Color) -> void:
+	_overlay.append(func(): _draw_bar_now(pos, width, fraction, color))
+
+
+func _draw_bar_now(pos: Vector2, width: float, fraction: float, color: Color) -> void:
 	draw_rect(Rect2(pos, Vector2(width, 4)), Color(0, 0, 0, 0.7))
 	draw_rect(Rect2(pos, Vector2(width * clampf(fraction, 0, 1), 4)), color)
 
 
-func _draw_label(pos: Vector2, text: String, color: Color) -> void:
-	var size := 11
+## Queues a centred label for the overlay pass.
+func _draw_label(pos: Vector2, text: String, color: Color, size: int = 11) -> void:
+	_overlay.append(func(): _draw_label_now(pos, text, color, size))
+
+
+func _draw_label_now(pos: Vector2, text: String, color: Color, size: int = 11) -> void:
 	var w := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
 	draw_string_outline(_font, pos - Vector2(w * 0.5, 0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 3, Color.BLACK)
 	draw_string(_font, pos - Vector2(w * 0.5, 0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
@@ -237,8 +258,8 @@ func _draw_float_texts() -> void:
 		if actor == null:
 			continue
 		var age: float = (t - f.t) / FLOAT_TEXT_SECONDS
-		var pos := actor_screen_pos(actor) + Vector2(0, -50 - age * 30)
-		_draw_label(pos, f.text, Color(f.color, 1.0 - age))
+		var pos := actor_screen_pos(actor) + Vector2(0, -50 - age * 30 - f.row * 14)
+		_draw_label_now(pos, f.text, Color(f.color, 1.0 - age), 12)
 
 
 func _on_events(events: Array) -> void:
@@ -269,5 +290,67 @@ func _on_events(events: Array) -> void:
 				_float(e.target, "Evade", Color(0.8, 0.8, 0.8), t)
 
 
+## Texts that pop up together on one actor stack instead of overlapping.
 func _float(actor_id: int, text: String, color: Color, t: float) -> void:
-	_float_texts.append({"actor": actor_id, "text": text, "color": color, "t": t})
+	var row := 0
+	for f in _float_texts:
+		if f.actor == actor_id and t - f.t < 0.4:
+			row = maxi(row, f.row + 1)
+	_float_texts.append({"actor": actor_id, "text": text, "color": color, "t": t, "row": row})
+
+
+## Tiles inside the target area of the local hero's unfinished REACH objectives
+## in this zone, so "Find the bandit camp" shows where to go.
+func _quest_area_tiles() -> Dictionary:
+	var out := {}
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return out
+	var zone_id: StringName = session.zone().id
+	for def in QuestText.active_quests(hero, ContentDB.quests):
+		for i in def.objectives.size():
+			var o: QuestObjective = def.objectives[i]
+			if o.kind != QuestObjective.Kind.REACH or o.zone != zone_id \
+					or QuestLog.progress(hero, def, i) >= o.needed():
+				continue
+			for y in range(o.tile.y - o.radius, o.tile.y + o.radius + 1):
+				for x in range(o.tile.x - o.radius, o.tile.x + o.radius + 1):
+					var p := Vector2i(x, y)
+					if GridModel.distance(p, o.tile) <= o.radius:
+						out[p] = true
+	return out
+
+
+func _draw_quest_area(grid: GridModel, p: Vector2i) -> void:
+	var c := Iso.to_screen(Vector2(p), grid.height_at(p))
+	var pulse := 0.35 + 0.25 * sin(Time.get_ticks_msec() / 250.0)
+	var hw := Iso.TILE_W * 0.5 - 4
+	var hh := Iso.TILE_H * 0.5 - 2
+	draw_colored_polygon(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),
+			c + Vector2(-hw, 0)]), Color(1, 0.85, 0.2, pulse))
+
+
+## Named places: a banner on a pole and the name in gold.
+func _draw_landmarks(grid: GridModel) -> void:
+	for lm in _landmarks:
+		var base := Iso.to_screen(Vector2(lm.tile), grid.height_at(lm.tile))
+		draw_line(base, base + Vector2(0, -34), Color(0.35, 0.25, 0.15), 3.0)
+		draw_colored_polygon(PackedVector2Array([base + Vector2(1, -34), base + Vector2(18, -29),
+				base + Vector2(1, -24)]), Color(0.75, 0.2, 0.15))
+		_draw_label(base + Vector2(0, -40), lm.name, Color(1, 0.85, 0.3), 14)
+
+
+## "[E] Talk" over the townsperson E would talk to.
+func _draw_talk_prompt() -> void:
+	var npc := PlayerInput.talk_target(session)
+	if npc == null:
+		return
+	var marker: String = client.npc_markers.get((npc as Npc).def.id, "") if client != null else ""
+	var y := -70.0 if marker != "" else -54.0
+	var pos := actor_screen_pos(npc) + Vector2(0, y)
+	_overlay.append(func():
+		var text := "[E] Talk"
+		var w := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x
+		draw_rect(Rect2(pos - Vector2(w * 0.5 + 6, 14), Vector2(w + 12, 19)), Color(0, 0, 0, 0.7))
+		draw_rect(Rect2(pos - Vector2(w * 0.5 + 6, 14), Vector2(w + 12, 19)), Color(1, 0.85, 0.3), false, 1.0)
+		_draw_label_now(pos, text, Color(1, 0.95, 0.6), 13))

@@ -111,6 +111,7 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_process_frames(1)
 	assert_eq(game.client.npc_markers.get(&"rowan"), "!", "Rowan has a quest")
 	hero.move.place(Vector2i(11, 9))
+	assert_eq((PlayerInput.talk_target(session) as Npc).def.id, &"rowan", "the [E] Talk prompt shows on Rowan")
 	input.talk_to_nearest()
 	await wait_physics_frames(6)
 	await wait_process_frames(1)

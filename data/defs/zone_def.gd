@@ -16,6 +16,8 @@ extends Resource
 @export var hero_spawns: Array[Vector2i] = []
 @export var enemy_spawns: Array[EnemySpawn] = []
 @export var exits: Array[ZoneExit] = []
+## Named places drawn on the map.
+@export var landmarks: Array[ZoneLandmark] = []
 ## Map sides that lead into other zones (walk off the edge).
 @export var edges: Array[ZoneEdge] = []
 @export var npcs: Array[NpcSpawn] = []

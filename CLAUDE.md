@@ -182,7 +182,7 @@ paired level-5 hero but a level-5 group of four wins (~46 s).
 | Word to Hilda | Old Maren → Hilda | Lv 1 | Talk to Hilda | 40 XP, 5 g, 2 Minor Health Potions |
 | Goblin Fetishes | Old Maren | Lv 2 | Collect 5 Goblin Fetishes (Goblin Shamans, 60%, only while on the quest) | 180 XP, 25 g, choice: Iron Helm / Swift Boots / Hunting Bow |
 | Wolves at the Gate (chain 1/3) | Captain Rowan | Lv 1 | Kill 4 Wolves | 120 XP, 20 g |
-| The Bandit Camp (chain 2/3) | Captain Rowan | Lv 2, chain 1 | Find the camp (22,19 in Greenfields), break 2 Bandit Brutes | 220 XP, 30 g |
+| The Bandit Camp (chain 2/3) | Captain Rowan | Lv 2, chain 1 | Find the camp (within 2 tiles of (22,20) in Greenfields, under the "Bandit Camp" banner), break 2 Bandit Brutes | 220 XP, 30 g |
 | The Beast of Greenfields (chain 3/3) | Captain Rowan | Lv 3, chain 2 | Kill Old Grizzlehide | 500 XP, 60 g, choice: Greataxe / Frostweave Robe / Acolyte's Leggings; world event |
 
 World event: the first time anyone hands in The Beast of Greenfields, the host sets the
@@ -573,10 +573,18 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 20. **Polish (step 18):** a "Leave game" button saves and returns to the menu;
     enemy projectiles are purple (heroes' orange); a quest's prerequisites are checked
     before its level, so a locked chain quest says "finish an earlier quest first".
+21. **Readability (post-M2 playtest):** an "[E] Talk" prompt sits over the townsperson
+    E would talk to; NPC "!"/"?" markers are bigger. Named places (`ZoneDef.landmarks`)
+    get a red banner and a gold name on the map, and the tiles of an unfinished
+    "reach" objective in your zone glow yellow. Names, health bars and markers are
+    drawn last so terrain never covers them; floating combat texts that pop up
+    together on one character stack instead of overlapping. The quest tracker sits
+    behind every window and hides while one covers it.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Readability: [E] Talk prompt, Bandit Camp banner + glowing quest area, tracker behind menus, texts no longer overlap | User reports (decision 21). The camp was unmarked, so "Find the bandit camp" was hard to find; its goal is now the banner tile, radius 2. |
 | 2026-10-12 | Action bar pages: 6 bars, Shift+1–6, page number bottom-right | User request (WoW-style). 6 pages is my default (WoW's count); one constant, `ActionBarModel.PAGE_COUNT`. |
 | 2026-10-12 | Zones connect along whole map edges: walk off the edge to enter the next map | User change; replaces the 3 exit tiles that dropped you 1–2 tiles in from the edge. |
 | 2026-10-12 | Turning in combat made immediate; Skirmisher sees your facing 0.3 s late | User reports. Causes: a second held key didn't turn, and a step queued while walking turned you back when the step cooldown ended. |

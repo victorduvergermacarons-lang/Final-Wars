@@ -166,9 +166,19 @@ func use_ability(ability: AbilityDef) -> void:
 
 ## E: talk to the NPC in front of you, or the nearest one within reach.
 func talk_to_nearest() -> void:
-	var hero: Hero = session.local_hero()
-	if hero == null:
+	var best := talk_target(session)
+	if best == null:
+		client.error("There's no one to talk to here")
 		return
+	session.send_intent({"type": "talk", "npc": best.id})
+
+
+## The NPC E would talk to: the one in front of the local hero, else the nearest
+## within talking range. Null if none (the view shows an "[E] Talk" prompt on it).
+static func talk_target(session) -> Actor:
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive:
+		return null
 	var best: Actor = null
 	for a in session.actors():
 		if not (a is Npc):
@@ -181,10 +191,7 @@ func talk_to_nearest() -> void:
 			break
 		if best == null or d < GridModel.distance(hero.tile(), best.tile()):
 			best = a
-	if best == null:
-		client.error("There's no one to talk to here")
-		return
-	session.send_intent({"type": "talk", "npc": best.id})
+	return best
 
 
 func _target_next_enemy() -> void:

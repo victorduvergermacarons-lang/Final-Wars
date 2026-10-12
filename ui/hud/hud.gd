@@ -186,6 +186,7 @@ func _build() -> void:
 	_tracker.add_theme_color_override("font_outline_color", Color.BLACK)
 	_tracker.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_tracker)
+	_root.move_child(_tracker, 0) # behind every window
 
 	# Death panel and mid-screen error.
 	_death = PanelContainer.new()
@@ -246,6 +247,7 @@ func _process(_delta: float) -> void:
 	_page_label.text = str(client.action_bar.page + 1)
 	_update_quest_markers(hero)
 	_tracker.text = QuestText.tracker_bbcode(hero, ContentDB.quests)
+	_tracker.visible = _tracker.text != "" and not _tracker_covered()
 	var age := Time.get_ticks_msec() / 1000.0 - client.error_at
 	_error.text = client.error_text if age < ERROR_SECONDS else ""
 	_error.modulate.a = clampf((ERROR_SECONDS - age) / 0.5, 0.0, 1.0)
@@ -366,6 +368,16 @@ func _on_events(events: Array) -> void:
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:
 					dialogue.open(npc)
+
+
+## Whether an open window overlaps the quest tracker (then the tracker hides,
+## so its text never mixes with a menu's).
+func _tracker_covered() -> bool:
+	var area := _tracker.get_global_rect()
+	for w in [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log, dialogue]:
+		if w.is_visible_in_tree() and w.get_global_rect().intersects(area):
+			return true
+	return false
 
 
 ## "!" / "?" over quest givers, for the local hero.

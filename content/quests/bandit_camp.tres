@@ -9,7 +9,8 @@ script = ExtResource("1_ircbw")
 kind = 3
 text = "Find the bandit camp"
 zone = &"greenfields"
-tile = Vector2i(22, 19)
+tile = Vector2i(22, 20)
+radius = 2
 
 [sub_resource type="Resource" id="Resource_qgldn"]
 script = ExtResource("1_ircbw")
@@ -21,8 +22,8 @@ enemy = &"bandit_brute"
 script = ExtResource("3_yhdp2")
 id = &"bandit_camp"
 title = "The Bandit Camp"
-offer_text = "Those wolves were fleeing something. Scouts saw bandits camped at the southern end of Greenfields, across the river. Find the camp and break their two brutes."
-progress_text = "Cross the bridge near the town road, then head south along the river to the camp. Mind the brutes: slow, but they hit like a falling tree."
+offer_text = "Those wolves were fleeing something. Scouts saw bandits camped at the southern end of Greenfields, across the river. Find their camp (look for the red banner) and break their two brutes."
+progress_text = "Cross the river by the bridge nearest the town road; the camp is just past it, under a red banner. Mind the brutes: slow, but they hit like a falling tree."
 complete_text = "Bandits gone, but they'd been hunting a bear — a huge, scarred one. That's worse news than bandits."
 giver = &"rowan"
 prerequisites = Array[StringName]([&"wolves_at_the_gate"])
