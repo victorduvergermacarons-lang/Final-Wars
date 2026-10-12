@@ -53,7 +53,8 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		actors.append(d)
 	var projectiles: Array = world.projectiles().map(func(p): return p.to_dict())
 	return {"tick": world.tick_count, "now": world.now, "zone": world.zone.id, "actors": actors,
-			"projectiles": projectiles, "flags": world.world_flags.keys(), "telegraphs": world.pending_hits()}
+			"projectiles": projectiles, "flags": world.world_flags.keys(), "telegraphs": world.pending_hits(),
+			"terrain": world.changed_terrain(), "zones": world.ground_zones()}
 
 
 static func _actor(a: Actor) -> Dictionary:

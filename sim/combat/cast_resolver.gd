@@ -82,34 +82,49 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 
 static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, out: Dictionary) -> void:
 	var events: Array[Dictionary] = out.events
+	if ability.targeting == AbilityDef.TargetingMode.TARGETED and ability.target == AbilityDef.TargetType.SELF:
+		target = caster
+	var point: Variant = aim_point(caster, target, aim)
+	if ability.targeting == AbilityDef.TargetingMode.SELF and aim == null:
+		point = Vector2(caster.tile() + caster.facing)
+	if point == null:
+		point = Vector2(caster.tile() + caster.facing)
+	ctx.cast_aim = Vector2i(roundi(point.x), roundi(point.y))
+	ctx.cast_dir = TileGeometry.snap8(point - Vector2(caster.tile()))
+	ctx.cast_tiles = []
+	if ability.targeting != AbilityDef.TargetingMode.SELF or aim != null:
+		_face(caster, point)
+	# The caster's own effects first: a Lunge dashes, then strikes.
+	AbilityResolver.apply_caster_effects(ctx, caster, ability, events)
+	var trail: Array = ctx.cast_tiles.duplicate() # tiles a dash went through (Flame Dash)
 	match ability.targeting:
 		AbilityDef.TargetingMode.TARGETED:
-			if ability.target == AbilityDef.TargetType.SELF:
-				target = caster
-			_face(caster, Vector2(target.tile()))
 			events.append({"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id})
-			AbilityResolver.apply_effects(ctx, caster, ability, target, events)
+			if AbilityResolver.has_target_effects(ability):
+				var reach := ability.hit_range if ability.hit_range >= 0 else ability.max_range
+				if target == caster or TileGeometry.distance(caster.tile(), target.tile()) <= reach:
+					AbilityResolver.apply_effects(ctx, caster, ability, target, events)
+				else:
+					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": target.tile()})
+			AbilityResolver.apply_area_effects(ctx, caster, ability, trail if not trail.is_empty() else [target.tile()], events)
 		AbilityDef.TargetingMode.SKILLSHOT:
-			var point: Vector2 = aim_point(caster, target, aim)
-			_face(caster, point)
 			_cast_skillshot(ctx, caster, ability, point, out)
 		AbilityDef.TargetingMode.GROUND:
-			var tile: Vector2i = aim_tile(caster, target, aim)
-			_face(caster, Vector2(tile))
-			var area := area_tiles(ctx.grid, tile, ability.area_radius)
+			var area := area_tiles(ctx.grid, ctx.cast_aim, ability.area_radius)
 			events.append({"type": "cast", "source": caster.id, "target": -1, "ability": ability.id,
 					"tiles": area, "telegraph": ability.telegraph_seconds})
 			if ability.telegraph_seconds > 0.0:
 				out.pending = _pending(caster, ability, area, ctx.now + ability.telegraph_seconds, 0.0)
 			else:
-				hit_tiles(ctx, caster, ability, area, 0.0, events)
+				hit_tiles(ctx, caster, ability, area, 0.0, events, false, trail)
 		AbilityDef.TargetingMode.SELF:
 			events.append({"type": "cast", "source": caster.id, "target": caster.id, "ability": ability.id})
 			if ability.area_radius <= 0:
 				AbilityResolver.apply_effects(ctx, caster, ability, caster, events)
+				AbilityResolver.apply_area_effects(ctx, caster, ability, trail if not trail.is_empty() else [caster.tile()], events)
 			else:
 				var area := area_tiles(ctx.grid, caster.tile(), ability.area_radius)
-				hit_tiles(ctx, caster, ability, area, 0.0, events, ability.target == AbilityDef.TargetType.ALLY)
+				hit_tiles(ctx, caster, ability, area, 0.0, events, ability.target == AbilityDef.TargetType.ALLY, trail)
 
 
 static func _cast_skillshot(ctx: CombatContext, caster: Actor, ability: AbilityDef, point: Vector2, out: Dictionary) -> void:
@@ -123,6 +138,7 @@ static func _cast_skillshot(ctx: CombatContext, caster: Actor, ability: AbilityD
 		out.pending = _pending(caster, ability, tiles, ctx.now + ability.arc_seconds, grace)
 		return
 	var tiles := skillshot_tiles(ctx, caster, ability, point)
+	ctx.cast_tiles = tiles
 	events.append({"type": "cast", "source": caster.id, "target": -1, "ability": ability.id, "tiles": tiles})
 	if ability.projectile_speed > 0.0:
 		var p := Projectile.new()
@@ -176,10 +192,11 @@ static func area_tiles(grid: GridModel, center: Vector2i, radius: int) -> Array[
 	return TileGeometry.square(center, radius).filter(func(t): return grid.in_bounds(t))
 
 
-## Applies the ability to every affected unit on `tiles` (each once). SELF areas
-## for allies include the caster.
+## Applies the ability to every affected unit on `tiles` (each once), then its
+## AREA effects (terrain, zones) to `tiles` — or to `area_override` (a dash trail).
+## SELF areas for allies include the caster.
 static func hit_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, tiles: Array, grace: float,
-		events: Array[Dictionary], include_caster: bool = false) -> void:
+		events: Array[Dictionary], include_caster: bool = false, area_override: Array = []) -> void:
 	var hit := {}
 	if include_caster and caster.alive:
 		hit[caster.id] = true
@@ -189,9 +206,10 @@ static func hit_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, ti
 			if not hit.has(a.id):
 				hit[a.id] = true
 				AbilityResolver.apply_effects(ctx, caster, ability, a, events)
-	if hit.is_empty():
+	if hit.is_empty() and AbilityResolver.has_target_effects(ability):
 		events.append({"type": "whiff", "source": caster.id, "ability": ability.id,
 				"tile": tiles[0] if not tiles.is_empty() else caster.tile()})
+	AbilityResolver.apply_area_effects(ctx, caster, ability, area_override if not area_override.is_empty() else tiles, events)
 
 
 ## Units the ability would affect on `tile` (now, or within the grace window), by id.

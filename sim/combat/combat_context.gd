@@ -11,6 +11,14 @@ var actors := {} # id -> Actor
 ## Damage multiplier of the ability being resolved right now (e.g. Kindle), set by
 ## whoever resolves a cast, projectile or delayed hit; 1 otherwise.
 var damage_bonus: float = 1.0
+## The cast being resolved: aimed tile, its 8-way direction from the caster, and
+## its tiles (area / line). Set by CastResolver.
+var cast_aim := Vector2i.ZERO
+var cast_dir := Vector2i.ZERO
+var cast_tiles: Array = []
+## Things only the world can do, queued during resolution and handled by WorldSim
+## right after: {"type": "terrain"|"zone"|"counter", ...}.
+var requests: Array = []
 ## Recent tiles of every actor, for the skillshot grace window:
 ## id -> [[time, tile], ...] (oldest first, ~0.5 s kept).
 var recent_tiles := {}

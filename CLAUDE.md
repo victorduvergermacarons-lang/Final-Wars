@@ -790,10 +790,26 @@ F. 15 debug console · 16 docs + playtest checklist.
     Choices made here: interrupts cancel casts and channels but not wind-ups; damage
     doesn't push back casts; a damage bonus (Kindle) is fixed when the ability goes off
     and its charge is used then (wind-ups/channels: at the start).
+20. **Effects part 2 (as built in step 8):** effects say who they apply to
+    (`AbilityEffect.applies`: each unit hit, the CASTER once, or the cast's AREA once).
+    New kinds: KNOCKBACK / PULL (8-way slide; stops before walls, water, units and
+    climbs over the unit's Jump; optional impact damage when stopped; a pull stops
+    next to the caster; waves can push along the cast direction), DASH_TO (caster
+    slides toward the aim, stopping next to a unit; with `hit_range` 1 a Lunge then
+    strikes only if it got there), LEAP (over anything onto a free walkable tile) and
+    BLINK (instant), TERRAIN (raise/lower the area by N levels for a while, never
+    below 0; units ride up with it; walls make tiles impassable, built across the
+    caster's facing through the aimed tile, 3 tiles + 1 per `mastery_per_extra`,
+    skipping occupied tiles) and ZONE (a ground zone that applies `zone_ability` to
+    whoever stands in it every tick). `BuffDef` counters: `negate_hits` (Parry, uses a
+    charge each), `reflect_fraction`, `counter_ability` (used for free on the
+    attacker), `melee_only`. Being moved cancels a cast. Terrain changes and zones
+    are sent to clients in every snapshot. Resurrection already existed (RESURRECT).
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 8: effect building blocks part 2 | Decision 20 (choices: walls skip occupied tiles; knocked-back units stop before obstacles instead of passing over them; terrain restores newest-first). |
 | 2026-10-12 | M3 step 7: effect building blocks part 1 | Decision 19 (choices: interrupts don't stop wind-ups; no cast pushback; silence spares weapon arts). |
 | 2026-10-12 | M3 step 6: targeting types, aim intents, grace window, dodge warnings | Decision 18 (choices: ground needs no LOS and has no grace; casting turns you; range-1 targeted = melee). |
 | 2026-10-12 | M3 step 5: tile geometry | Decision 17. Cones widen by one tile per side per row (Breath of Fire's "4-tile cone"). |

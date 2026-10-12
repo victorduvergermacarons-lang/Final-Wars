@@ -50,6 +50,10 @@ const QUEST_SHARE_RADIUS := 15
 var _projectiles: Array[Projectile] = []
 ## Telegraphed areas and lobbed shots waiting to land (CastResolver pending hits).
 var _pending_hits: Array = []
+## Temporary terrain changes: [{"saved": {tile: [height, walkable]}, "until"}].
+var _terrain: Array = []
+## Persistent ground zones: [{"source", "tiles", "ability", "zone_ability", "tick", "next_tick", "until", "bonus"}].
+var _ground_zones: Array = []
 ## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
 var _pending_loot: Array = []
 var _next_loot_id := 1
@@ -214,6 +218,7 @@ func step() -> Array[Dictionary]:
 	_update_casts()
 	_update_projectiles()
 	_update_pending_hits()
+	_update_terrain_and_zones()
 	_tick_heals_over_time()
 	_update_combat_state()
 	_expire_loot()
@@ -481,12 +486,92 @@ func _credit_mastery(caster: Actor, ability: AbilityDef, events: Array) -> void:
 		emit(e)
 
 
-## Emits resolution events and handles any deaths among them.
+## Emits resolution events and handles any deaths among them, then whatever the
+## resolution asked the world to do (terrain, ground zones, counters).
 func _emit_resolved(events: Array) -> void:
 	for event in events:
 		emit(event)
 		if event.type == "death":
 			_on_death(get_actor(event.target))
+	_handle_requests()
+
+
+func _handle_requests() -> void:
+	while not ctx.requests.is_empty():
+		var r: Dictionary = ctx.requests.pop_front()
+		match r.type:
+			"terrain":
+				_raise_terrain(r)
+			"zone":
+				_ground_zones.append({"source": r.source, "tiles": r.tiles, "ability": r.ability,
+						"zone_ability": r.zone_ability, "tick": r.tick, "next_tick": now + r.tick,
+						"until": r.until, "bonus": r.bonus})
+				emit({"type": "zone", "source": r.source, "ability": r.ability.id, "tiles": r.tiles, "until": r.until})
+			"counter":
+				var owner := get_actor(r.owner)
+				var attacker := get_actor(r.target)
+				if owner != null and owner.alive and attacker != null and attacker.alive and r.ability != null:
+					_finish_cast(owner, r.ability, attacker, null, CastResolver.Pay.FREE)
+
+
+## Temporary terrain: raises (or lowers) tiles, optionally making them walls.
+## Units on raised tiles ride up with them. Restored when it expires.
+func _raise_terrain(r: Dictionary) -> void:
+	var saved := {}
+	for t in r.tiles:
+		if not grid.in_bounds(t):
+			continue
+		saved[t] = [grid.height_at(t), grid.is_walkable(t)]
+		var walkable: bool = grid.is_walkable(t) and not (r.blocks and not is_occupied(t))
+		grid.set_tile(t, maxi(grid.height_at(t) + int(r.levels), 0), walkable)
+	if saved.is_empty():
+		return
+	_terrain.append({"saved": saved, "until": r.until})
+	emit({"type": "terrain", "source": r.source, "ability": r.ability, "tiles": saved.keys(), "levels": r.levels,
+			"until": r.until})
+
+
+func _update_terrain_and_zones() -> void:
+	# Newest first, so overlapping changes unwind in reverse order.
+	for i in range(_terrain.size() - 1, -1, -1):
+		var change: Dictionary = _terrain[i]
+		if now + 0.0001 < change.until:
+			continue
+		for t in change.saved:
+			grid.set_tile(t, change.saved[t][0], change.saved[t][1])
+		_terrain.remove_at(i)
+		emit({"type": "terrain_end", "tiles": change.saved.keys()})
+	var active: Array = []
+	for z in _ground_zones:
+		var owner := get_actor(z.source)
+		while owner != null and now + 0.0001 >= z.next_tick and z.next_tick <= z.until + 0.0001:
+			z.next_tick += z.tick
+			var events: Array[Dictionary] = []
+			ctx.damage_bonus = z.bonus
+			for t in z.tiles:
+				for a in CastResolver.actors_on(ctx, t, owner, z.zone_ability, 0.0):
+					AbilityResolver.apply_effects(ctx, owner, z.zone_ability, a, events)
+			ctx.damage_bonus = 1.0
+			_emit_resolved(events)
+			_credit_mastery(owner, z.ability, events)
+		if owner != null and now + 0.0001 < z.until:
+			active.append(z)
+	_ground_zones = active
+
+
+## Tiles changed by abilities right now, for clients: [[tile, height, walkable]].
+func changed_terrain() -> Array:
+	var tiles := {}
+	for change in _terrain:
+		for t in change.saved:
+			tiles[t] = true
+	return tiles.keys().map(func(t): return [t, grid.height_at(t), grid.is_walkable(t)])
+
+
+## Ground zones for clients: [{"source", "ability", "tiles", "until"}].
+func ground_zones() -> Array:
+	return _ground_zones.map(func(z): return {"source": z.source, "ability": z.ability.id, "tiles": z.tiles,
+			"until": z.until})
 
 
 ## Moves every projectile along its path; the first affected actor on a tile it

@@ -24,6 +24,10 @@ var _actors := {} # id -> Actor
 var projectiles: Array = []
 ## Telegraphed areas and lobbed shots: [{"source", "ability", "tiles", "at"}].
 var telegraphs: Array = []
+## Ground zones: [{"source", "ability", "tiles", "until"}].
+var ground_zones: Array = []
+## Tiles the host changed (pillars, walls…), as applied to `grid`: tile -> true.
+var _terrain_applied := {}
 ## One-time world events that have happened (flag id -> true), from the host.
 var world_flags := {}
 var _pending: Array = [] # unacknowledged local intents: {seq, kind: "step"|"face", ...}
@@ -107,11 +111,30 @@ func _step_is_legal(hero: Hero, to: Vector2i, t: float) -> bool:
 	return true
 
 
+## Puts back the zone's own terrain where earlier changes ended, then applies the
+## host's current changes.
+func _apply_terrain(changes: Array) -> void:
+	var now_changed := {}
+	for c in changes:
+		now_changed[c[0]] = true
+	if now_changed.is_empty() and _terrain_applied.is_empty():
+		return
+	var base := GridModel.from_zone(zone)
+	for t in _terrain_applied:
+		if not now_changed.has(t):
+			grid.set_tile(t, base.height_at(t), base.is_walkable(t))
+	for c in changes:
+		grid.set_tile(c[0], int(c[1]), bool(c[2]))
+	_terrain_applied = now_changed
+
+
 func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
+	ground_zones = snap.get("zones", [])
+	_apply_terrain(snap.get("terrain", []))
 	world_flags.clear()
 	for flag in snap.get("flags", []):
 		world_flags[String(flag)] = true

@@ -116,6 +116,24 @@ func is_silenced(now: float) -> bool:
 	return _active_defs(now).any(func(d): return d.silences)
 
 
+## The first counter buff that answers a hit ({} if none): {"negate", "reflect",
+## "ability"}. Uses a charge of negating buffs that have charges.
+func counter_for(melee: bool, now: float) -> Dictionary:
+	for id in _active.keys():
+		var b: Dictionary = _active[id]
+		var d: BuffDef = b.def
+		if not has(id, now) or (d.melee_only and not melee):
+			continue
+		if not d.negate_hits and d.reflect_fraction <= 0.0 and d.counter_ability == null:
+			continue
+		if d.negate_hits and d.charges > 0:
+			b.charges -= 1
+			if b.charges <= 0:
+				_active.erase(id)
+		return {"negate": d.negate_hits, "reflect": d.reflect_fraction, "ability": d.counter_ability}
+	return {}
+
+
 ## Damage taken wakes sleepers.
 func wake() -> void:
 	for id in _active.keys():

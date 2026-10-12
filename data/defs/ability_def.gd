@@ -71,6 +71,9 @@ enum LineShape { LINE, CONE }
 ## SKILLSHOT: lobbed instead of flying (e.g. Rock Throw): lands on the aimed tile
 ## after this many seconds, over obstacles; hits whoever is on it then.
 @export var arc_seconds: float = 0.0
+## TARGETED: after the caster's own effects (e.g. a Lunge dash) the target must be
+## within this many tiles to be hit (-1 = max_range).
+@export var hit_range: int = -1
 ## GROUND / SELF: square radius of the area (0 = the tile itself).
 @export var area_radius: int = 0
 ## GROUND: seconds the area is shown before it goes off (0 = at once).

@@ -15,7 +15,19 @@ enum Kind {
 	DAMAGE_OVER_TIME, ## Applies `buff` and deals (base + scaling) in total over its duration.
 	SHIELD, ## Applies `buff` holding a shield of (base + scaling) that absorbs damage.
 	INTERRUPT, ## Cancels the target's cast or channel.
+	KNOCKBACK, ## Pushes the target base_amount tiles away (8 directions).
+	PULL, ## Pulls the target up to base_amount tiles toward the caster.
+	DASH_TO, ## Moves the caster up to base_amount tiles toward the aim (8 directions).
+	LEAP, ## The caster jumps onto the aimed tile (over obstacles).
+	BLINK, ## The caster teleports to the aimed tile.
+	TERRAIN, ## Raises (or lowers, if negative) the area by base_amount levels for a while.
+	ZONE, ## Leaves a ground zone on the area that applies zone_ability every tick.
 }
+
+## Who an effect applies to: each affected unit (TARGETS), the caster once
+## (CASTER: dashes, self buffs alongside an attack), or the cast's tiles once (AREA:
+## terrain and ground zones).
+enum Applies { TARGETS, CASTER, AREA }
 
 enum DamageType {
 	PHYSICAL,
@@ -23,6 +35,7 @@ enum DamageType {
 }
 
 @export var kind: Kind = Kind.DAMAGE
+@export var applies: Applies = Applies.TARGETS
 ## Which defense mitigates it. Ignored for non-damage effects.
 @export var damage_type: DamageType = DamageType.PHYSICAL
 @export var base_amount: float = 0.0
@@ -38,3 +51,21 @@ enum DamageType {
 @export var buff: BuffDef
 ## Multiplies the threat this effect generates (damage/heal amount × multiplier).
 @export var threat_multiplier: float = 1.0
+
+@export_group("Movement, terrain and zones")
+## KNOCKBACK: push along the cast's direction (a wave) instead of away from the caster.
+@export var push_along_cast: bool = false
+## KNOCKBACK/PULL: extra damage when the unit is stopped by a wall, ledge or unit.
+@export var impact_damage: float = 0.0
+## TERRAIN / ZONE: how long it lasts (seconds; scales with Mastery for tree abilities).
+@export var duration_seconds: float = 0.0
+## TERRAIN: the tiles become impassable (walls); WALL_LINE builds a line across the
+## caster's facing through the aimed tile instead of using the cast's area.
+@export var blocks_movement: bool = false
+@export var wall_line: bool = false
+## Size bonus: +1 (terrain levels, wall tiles, push tiles) per this much tree
+## Mastery (0 = none). E.g. Earth Wall +1 length per 300.
+@export var mastery_per_extra: float = 0.0
+## ZONE: what the zone does to units standing in it, every zone_tick_seconds.
+@export var zone_ability: AbilityDef
+@export var zone_tick_seconds: float = 1.0

@@ -106,6 +106,10 @@ func telegraphs() -> Array:
 	return zone_sim().pending_hits()
 
 
+func ground_zones() -> Array:
+	return zone_sim().ground_zones()
+
+
 func world_flags() -> Dictionary:
 	return world.world_flags
 

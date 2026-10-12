@@ -139,6 +139,10 @@ func telegraphs() -> Array:
 	return mirror.telegraphs
 
 
+func ground_zones() -> Array:
+	return mirror.ground_zones
+
+
 func world_flags() -> Dictionary:
 	return mirror.world_flags
 

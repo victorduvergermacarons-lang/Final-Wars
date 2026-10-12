@@ -38,3 +38,13 @@ extends Resource
 @export var charges: int = 0
 ## Steps cost no step cooldown while it lasts (uses a charge per step).
 @export var free_steps: bool = false
+
+@export_group("Counters")
+## Fraction of incoming damage dealt back to the attacker.
+@export var reflect_fraction: float = 0.0
+## Incoming hits are negated completely (uses a charge each, if charges > 0).
+@export var negate_hits: bool = false
+## Used on the attacker for free when the owner is hit.
+@export var counter_ability: AbilityDef
+## Negate / counter only melee hits.
+@export var melee_only: bool = true

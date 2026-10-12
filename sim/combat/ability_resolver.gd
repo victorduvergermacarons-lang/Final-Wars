@@ -127,7 +127,60 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 static func apply_effects(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor,
 		events: Array[Dictionary]) -> void:
 	for effect in ability.effects:
-		_apply_effect(ctx, caster, ability, target, effect, events)
+		if effect.applies == AbilityEffect.Applies.TARGETS:
+			_apply_effect(ctx, caster, ability, target, effect, events)
+
+
+## The ability's CASTER effects (dashes, leaps, self buffs alongside an attack).
+static func apply_caster_effects(ctx: CombatContext, caster: Actor, ability: AbilityDef, events: Array[Dictionary]) -> void:
+	for effect in ability.effects:
+		if effect.applies == AbilityEffect.Applies.CASTER:
+			_apply_effect(ctx, caster, ability, caster, effect, events)
+
+
+## The ability's AREA effects (terrain, ground zones) on `tiles`.
+static func apply_area_effects(ctx: CombatContext, caster: Actor, ability: AbilityDef, tiles: Array,
+		events: Array[Dictionary]) -> void:
+	for effect in ability.effects:
+		if effect.applies != AbilityEffect.Applies.AREA:
+			continue
+		var duration := AbilityPower.duration(caster, ability, effect.duration_seconds, ctx.now, ctx.rules)
+		match effect.kind:
+			AbilityEffect.Kind.TERRAIN:
+				var area: Array = tiles
+				if effect.wall_line:
+					area = _wall_tiles(ctx, caster, ability, effect)
+				var levels := int(effect.base_amount) + _extra(caster, ability, effect, ctx.now)
+				ctx.requests.append({"type": "terrain", "source": caster.id, "tiles": area, "levels": levels,
+						"blocks": effect.blocks_movement, "until": ctx.now + duration, "ability": ability.id})
+			AbilityEffect.Kind.ZONE:
+				ctx.requests.append({"type": "zone", "source": caster.id, "tiles": tiles, "ability": ability,
+						"zone_ability": effect.zone_ability, "tick": maxf(effect.zone_tick_seconds, 0.1),
+						"until": ctx.now + duration, "bonus": ctx.damage_bonus})
+
+
+## Whether the ability does anything to the units it reaches (else no "whiff").
+static func has_target_effects(ability: AbilityDef) -> bool:
+	return ability.effects.any(func(e): return e.applies == AbilityEffect.Applies.TARGETS)
+
+
+## +1 per `mastery_per_extra` tree Mastery.
+static func _extra(caster: Actor, ability: AbilityDef, effect: AbilityEffect, now: float) -> int:
+	if effect.mastery_per_extra <= 0.0 or not ability.is_tree_ability():
+		return 0
+	return floori(Mastery.total(caster, ability.tree, now) / effect.mastery_per_extra)
+
+
+## A wall across the caster's facing, centred on the aimed tile, skipping occupied tiles.
+static func _wall_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect) -> Array:
+	var length := 3 + _extra(caster, ability, effect, ctx.now)
+	var across := Vector2i(caster.facing.y, caster.facing.x)
+	var out := []
+	for k in range(-(length - 1) / 2, length / 2 + 1):
+		var t := ctx.cast_aim + across * k
+		if ctx.grid.in_bounds(t) and not _occupied(ctx, t, null):
+			out.append(t)
+	return out
 
 
 static func _is_valid_target(caster: Actor, ability: AbilityDef, target: Actor) -> bool:
@@ -173,7 +226,52 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var def := CombatMath.defense_for(effect.damage_type, target_stats, rules)
 			var dealt := CombatMath.final_damage(raw, def.x, def.y, rules)
 			deal_damage(ctx, caster, target, ability.id, dealt, crit, events, ["", "side", "behind"][flank],
-					effect.threat_multiplier)
+					effect.threat_multiplier, ability.is_melee())
+
+		AbilityEffect.Kind.KNOCKBACK, AbilityEffect.Kind.PULL:
+			if not target.alive or target == caster:
+				return
+			var pull := effect.kind == AbilityEffect.Kind.PULL
+			var dir := TileGeometry.snap8(Vector2((caster.tile() - target.tile()) if pull else (target.tile() - caster.tile())))
+			if effect.push_along_cast and ctx.cast_dir != Vector2i.ZERO:
+				dir = ctx.cast_dir
+			var tiles := int(effect.base_amount) + _extra(caster, ability, effect, ctx.now)
+			if pull:
+				tiles = mini(tiles, TileGeometry.distance(caster.tile(), target.tile()) - 1)
+			var r := move_unit(ctx, target, dir, tiles, 0.15)
+			events.append({"type": "pushed" if not pull else "pulled", "source": caster.id, "target": target.id,
+					"ability": ability.id, "from": r.from, "to": r.end, "stopped_by": r.stopped_by})
+			if effect.impact_damage > 0.0 and r.stopped_by != "" and target.alive:
+				var dmg := CombatMath.final_damage(effect.impact_damage * AbilityPower.mastery_multiplier(caster, ability, ctx.now, rules),
+						target.current_stats(ctx.now).phys_def, rules.physical_defense_k, rules)
+				deal_damage(ctx, caster, target, ability.id, dmg, false, events)
+
+		AbilityEffect.Kind.DASH_TO:
+			if not caster.alive:
+				return
+			var dir := ctx.cast_dir
+			if dir == Vector2i.ZERO:
+				dir = TileGeometry.snap8(Vector2(caster.facing))
+			var limit := mini(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now),
+					TileGeometry.distance(caster.tile(), ctx.cast_aim))
+			var r := move_unit(ctx, caster, dir, limit, 0.12)
+			ctx.cast_tiles = r.path
+			events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
+					"from": r.from, "to": r.end})
+
+		AbilityEffect.Kind.LEAP, AbilityEffect.Kind.BLINK:
+			var to := ctx.cast_aim
+			if not caster.alive or not ctx.grid.in_bounds(to) or not ctx.grid.is_walkable(to) or _occupied(ctx, to, caster):
+				events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": to})
+				return
+			var from := caster.tile()
+			caster.casting = {}
+			caster.move.place(from)
+			caster.move.begin(to, ctx.now, 0.35 if effect.kind == AbilityEffect.Kind.LEAP else 0.0)
+			if effect.kind == AbilityEffect.Kind.BLINK:
+				caster.move.place(to)
+			events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
+					"from": from, "to": to})
 
 		AbilityEffect.Kind.HEAL:
 			if not target.alive:
@@ -290,9 +388,22 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 ## Deals already-mitigated damage: target damage-taken multipliers, shields, sleep
 ## breaking, threat and death. Emits damage (with "absorbed") and death events.
 static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, ability_id: StringName, amount: float,
-		crit: bool, events: Array[Dictionary], flank: String = "", threat_multiplier: float = 1.0) -> void:
+		crit: bool, events: Array[Dictionary], flank: String = "", threat_multiplier: float = 1.0,
+		melee: bool = false) -> void:
 	if not target.alive:
 		return
+	# Counters (Parry, Riposte, reflects): only against an attacker.
+	if source != null and source != target:
+		var counter := target.buffs.counter_for(melee, ctx.now)
+		if not counter.is_empty():
+			if counter.negate:
+				events.append({"type": "parry", "source": source.id, "target": target.id, "ability": ability_id})
+			if counter.ability != null:
+				ctx.requests.append({"type": "counter", "owner": target.id, "ability": counter.ability, "target": source.id})
+			if counter.reflect > 0.0 and source.alive:
+				deal_damage(ctx, target, source, &"reflect", roundf(amount * counter.reflect), false, events)
+			if counter.negate:
+				return
 	var taken := maxf(roundf(amount * target.buffs.damage_taken_multiplier(ctx.now)), ctx.rules.min_damage)
 	var through := target.buffs.absorb(taken)
 	var dmg := minf(through, target.hp)
@@ -309,6 +420,26 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 		target.die()
 		target.casting = {}
 		events.append({"type": "death", "source": source.id if source != null else -1, "target": target.id})
+
+
+## Slides a unit up to `tiles` along an 8-way `dir` (knockback, pull, dash),
+## stopping before walls, water, units and climbs over its Jump. Cancels its cast.
+## Returns TileGeometry.push_path's result plus "from".
+static func move_unit(ctx: CombatContext, unit: Actor, dir: Vector2i, tiles: int, seconds: float) -> Dictionary:
+	var blocked := {}
+	for id in ctx.actors:
+		var a: Actor = ctx.actors[id]
+		if a != unit and a.alive:
+			blocked[a.tile()] = true
+	var from := unit.tile()
+	var r := TileGeometry.push_path(ctx.grid, from, dir, maxi(tiles, 0),
+			StatCalc.jump_levels(unit.current_stats(ctx.now)), blocked)
+	r.from = from
+	if r.end != from:
+		unit.casting = {}
+		unit.move.place(from)
+		unit.move.begin(r.end, ctx.now, seconds * r.path.size())
+	return r
 
 
 static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool:
