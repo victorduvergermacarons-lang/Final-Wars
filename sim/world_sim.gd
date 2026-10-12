@@ -580,7 +580,8 @@ func _on_death(actor: Actor) -> void:
 			var share := float(enemy.def.xp_reward) / earners.size()
 			for h in earners:
 				emit({"type": "kill", "target": h.id, "enemy": enemy.def.id})
-				for e in Leveling.add_xp(h, share, rules):
+				var xp := share * Leveling.xp_level_multiplier(h.level, enemy.def.level, rules)
+				for e in Leveling.add_xp(h, xp, rules):
 					emit(e)
 				for e in ApMastery.award(h, enemy.def.ap_reward):
 					emit(e)

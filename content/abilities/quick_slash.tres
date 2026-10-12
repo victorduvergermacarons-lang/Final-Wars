@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_o8b7v"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_m5e75"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_g5044"]
+
+[sub_resource type="Resource" id="Resource_qspev"]
+script = ExtResource("2_m5e75")
+
+[sub_resource type="Resource" id="Resource_sgchg"]
+script = ExtResource("1_o8b7v")
+base_amount = 8.0
+scaling = Array[ExtResource("2_m5e75")]([SubResource("Resource_qspev")])
+
+[resource]
+script = ExtResource("3_g5044")
+id = &"quick_slash"
+display_name = "Quick Slash"
+shape = 1
+cooldown_seconds = 1.5
+max_height_difference = 2
+effects = Array[ExtResource("1_o8b7v")]([SubResource("Resource_sgchg")])

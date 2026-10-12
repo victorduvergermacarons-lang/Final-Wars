@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_jik7h"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sj2bt"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_f71v0"]
+
+[sub_resource type="Resource" id="Resource_0wusf"]
+script = ExtResource("2_sj2bt")
+coefficient = 1.2
+
+[sub_resource type="Resource" id="Resource_qepji"]
+script = ExtResource("1_jik7h")
+base_amount = 14.0
+scaling = Array[ExtResource("2_sj2bt")]([SubResource("Resource_0wusf")])
+
+[resource]
+script = ExtResource("3_f71v0")
+id = &"crushing_blow"
+display_name = "Crushing Blow"
+shape = 1
+cooldown_seconds = 3.0
+max_height_difference = 2
+effects = Array[ExtResource("1_jik7h")]([SubResource("Resource_qepji")])

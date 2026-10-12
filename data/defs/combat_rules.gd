@@ -104,3 +104,13 @@ enum GrowthLimit {
 @export var flank_behind_bonus_percent: float = 50.0
 ## Melee attacks from directly behind can't miss.
 @export var behind_never_misses: bool = true
+
+@export_group("XP by level")
+## Each level the enemy is above you: +this percent XP, up to the cap.
+@export var xp_bonus_percent_per_level_above: float = 10.0
+@export var xp_bonus_cap_percent: float = 50.0
+## Enemies this many levels below you (or more) start giving less XP…
+@export var xp_penalty_from_levels_below: int = 3
+## …losing this percent per level from there, down to the floor.
+@export var xp_penalty_percent_per_level: float = 20.0
+@export var xp_floor_percent: float = 20.0

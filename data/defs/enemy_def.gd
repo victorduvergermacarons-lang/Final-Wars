@@ -2,9 +2,18 @@ class_name EnemyDef
 extends Resource
 ## An enemy type. Radii are in tiles (grid distance).
 
+enum Behavior {
+	MELEE, ## Chases its target and attacks when in reach (Wolf, Brute).
+	KITER, ## Keeps its distance, lines up ranged shots, backs off when approached (Shaman).
+	FLANKER, ## Circles to the target's side or back before attacking (Skirmisher).
+}
+
 @export var id: StringName = &""
 @export var display_name: String = ""
 @export var level: int = 1
+@export var behavior: Behavior = Behavior.MELEE
+## KITER: steps away when a hero is this close or closer.
+@export var keep_away_distance: int = 2
 @export var stats: StatBlock = StatBlock.new()
 @export var abilities: Array[AbilityDef] = []
 ## Distance at which the enemy notices a hero and aggros.

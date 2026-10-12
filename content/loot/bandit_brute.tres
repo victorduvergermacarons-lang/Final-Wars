@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_sfw5s"]
+[ext_resource type="Resource" path="res://content/items/greataxe.tres" id="2_ogk6x"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="3_nbxfg"]
+
+[sub_resource type="Resource" id="Resource_5kmwe"]
+script = ExtResource("1_sfw5s")
+item = ExtResource("2_ogk6x")
+chance = 0.04
+
+[resource]
+script = ExtResource("3_nbxfg")
+gold_min = 6
+gold_max = 14
+entries = Array[ExtResource("1_sfw5s")]([SubResource("Resource_5kmwe")])

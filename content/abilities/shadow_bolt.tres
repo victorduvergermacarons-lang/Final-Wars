@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fucek"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_kiqmj"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_5dxmu"]
+
+[sub_resource type="Resource" id="Resource_iurmd"]
+script = ExtResource("2_kiqmj")
+stat = 3
+
+[sub_resource type="Resource" id="Resource_87a2n"]
+script = ExtResource("1_fucek")
+damage_type = 1
+base_amount = 10.0
+scaling = Array[ExtResource("2_kiqmj")]([SubResource("Resource_iurmd")])
+
+[resource]
+script = ExtResource("3_5dxmu")
+id = &"shadow_bolt"
+display_name = "Shadow Bolt"
+shape = 2
+max_range = 5
+cooldown_seconds = 2.5
+ranged = true
+projectile_speed = 9.0
+effects = Array[ExtResource("1_fucek")]([SubResource("Resource_87a2n")])

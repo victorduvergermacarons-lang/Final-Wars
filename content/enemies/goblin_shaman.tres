@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_58sy7"]
+[ext_resource type="Resource" path="res://content/abilities/shadow_bolt.tres" id="2_p2q0y"]
+[ext_resource type="Resource" path="res://content/loot/goblin_shaman.tres" id="3_uoxlk"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="4_2uifa"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="5_t16jm"]
+
+[sub_resource type="Resource" id="Resource_3fiim"]
+script = ExtResource("5_t16jm")
+hp = 160.0
+mag_atk = 18.0
+phys_def = 5.0
+mag_def = 10.0
+jump = 2.0
+
+[resource]
+script = ExtResource("4_2uifa")
+id = &"goblin_shaman"
+display_name = "Goblin Shaman"
+level = 2
+behavior = 1
+stats = SubResource("Resource_3fiim")
+abilities = Array[ExtResource("1_58sy7")]([ExtResource("2_p2q0y")])
+aggro_radius = 5
+combat_step_seconds = 0.9
+reaction_seconds = 0.3
+xp_reward = 70
+ap_reward = 3
+loot = ExtResource("3_uoxlk")

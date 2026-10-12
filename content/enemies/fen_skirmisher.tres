@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_uftj1"]
+[ext_resource type="Resource" path="res://content/abilities/quick_slash.tres" id="2_7ydus"]
+[ext_resource type="Resource" path="res://content/loot/fen_skirmisher.tres" id="3_7td6n"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="4_ojpk2"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="5_eogks"]
+
+[sub_resource type="Resource" id="Resource_prqar"]
+script = ExtResource("5_eogks")
+hp = 260.0
+phys_atk = 16.0
+phys_def = 8.0
+evasion = 12.0
+jump = 2.0
+
+[resource]
+script = ExtResource("4_ojpk2")
+id = &"fen_skirmisher"
+display_name = "Fen Skirmisher"
+level = 4
+behavior = 2
+stats = SubResource("Resource_prqar")
+abilities = Array[ExtResource("1_uftj1")]([ExtResource("2_7ydus")])
+combat_step_seconds = 0.6
+reaction_seconds = 0.25
+xp_reward = 100
+ap_reward = 3
+loot = ExtResource("3_7td6n")
+respawn_seconds = 40.0

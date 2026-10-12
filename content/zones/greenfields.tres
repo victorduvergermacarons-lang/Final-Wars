@@ -2,33 +2,62 @@
 
 [ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="1_my1eq"]
 [ext_resource type="Resource" path="res://content/enemies/wolf.tres" id="2_je035"]
+[ext_resource type="Resource" path="res://content/enemies/goblin_shaman.tres" id="3_gv43p"]
 [ext_resource type="Script" path="res://data/defs/zone_exit.gd" id="3_je035"]
 [ext_resource type="Script" path="res://data/defs/zone_def.gd" id="3_r51p2"]
+[ext_resource type="Resource" path="res://content/enemies/bandit_brute.tres" id="4_xnvoe"]
+[ext_resource type="Resource" path="res://content/enemies/fen_skirmisher.tres" id="5_ly8hc"]
+[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="7_r84w6"]
 
-[sub_resource type="Resource" id="Resource_ow7wr"]
+[sub_resource type="Resource" id="Resource_h7mpn"]
 script = ExtResource("1_my1eq")
 enemy = ExtResource("2_je035")
 tile = Vector2i(8, 13)
 
-[sub_resource type="Resource" id="Resource_i3tg4"]
+[sub_resource type="Resource" id="Resource_hy82k"]
 script = ExtResource("1_my1eq")
 enemy = ExtResource("2_je035")
 tile = Vector2i(11, 24)
 
-[sub_resource type="Resource" id="Resource_gv43p"]
+[sub_resource type="Resource" id="Resource_hsds2"]
 script = ExtResource("1_my1eq")
 enemy = ExtResource("2_je035")
-tile = Vector2i(20, 20)
+tile = Vector2i(5, 20)
 
-[sub_resource type="Resource" id="Resource_xnvoe"]
-script = ExtResource("1_my1eq")
-enemy = ExtResource("2_je035")
-tile = Vector2i(26, 5)
-
-[sub_resource type="Resource" id="Resource_ly8hc"]
+[sub_resource type="Resource" id="Resource_5bukq"]
 script = ExtResource("1_my1eq")
 enemy = ExtResource("2_je035")
 tile = Vector2i(18, 4)
+
+[sub_resource type="Resource" id="Resource_v6ewg"]
+script = ExtResource("1_my1eq")
+enemy = ExtResource("3_gv43p")
+tile = Vector2i(6, 8)
+
+[sub_resource type="Resource" id="Resource_i8j2l"]
+script = ExtResource("1_my1eq")
+enemy = ExtResource("3_gv43p")
+tile = Vector2i(9, 6)
+
+[sub_resource type="Resource" id="Resource_jj0g2"]
+script = ExtResource("1_my1eq")
+enemy = ExtResource("4_xnvoe")
+tile = Vector2i(20, 20)
+
+[sub_resource type="Resource" id="Resource_ubiko"]
+script = ExtResource("1_my1eq")
+enemy = ExtResource("4_xnvoe")
+tile = Vector2i(24, 21)
+
+[sub_resource type="Resource" id="Resource_nstta"]
+script = ExtResource("1_my1eq")
+enemy = ExtResource("5_ly8hc")
+tile = Vector2i(26, 5)
+
+[sub_resource type="Resource" id="Resource_03101"]
+script = ExtResource("1_my1eq")
+enemy = ExtResource("5_ly8hc")
+tile = Vector2i(23, 3)
 
 [sub_resource type="Resource" id="Resource_r51p2"]
 script = ExtResource("3_je035")
@@ -56,5 +85,5 @@ height_rows = PackedStringArray("000000000000000001114444444444", "0000000000000
 walk_rows = PackedStringArray("..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............##..............", "..............................", "..............................", "..............##..............", "..............##..#...........", "..............##..............", "..............##..............", "....##........##......##......", "..............##..............", "..............##..............", "..............##..............", "..........#...##..........#...", "..............##..............", "..............................", "..............................", "..............##..............", "..............##..............", "..............##..............", "..............##..............")
 graveyards = Array[Vector2i]([Vector2i(27, 14)])
 hero_spawns = Array[Vector2i]([Vector2i(2, 25)])
-enemy_spawns = Array[ExtResource("1_my1eq")]([SubResource("Resource_ow7wr"), SubResource("Resource_i3tg4"), SubResource("Resource_gv43p"), SubResource("Resource_xnvoe"), SubResource("Resource_ly8hc")])
+enemy_spawns = Array[ExtResource("1_my1eq")]([SubResource("Resource_h7mpn"), SubResource("Resource_hy82k"), SubResource("Resource_hsds2"), SubResource("Resource_5bukq"), SubResource("Resource_v6ewg"), SubResource("Resource_i8j2l"), SubResource("Resource_jj0g2"), SubResource("Resource_ubiko"), SubResource("Resource_nstta"), SubResource("Resource_03101")])
 exits = Array[ExtResource("3_je035")]([SubResource("Resource_r51p2"), SubResource("Resource_r84w6"), SubResource("Resource_8bhnn")])

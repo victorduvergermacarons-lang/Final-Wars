@@ -161,6 +161,18 @@ the nearest graveyard.
 Sources: Hilda sells the Commons and potions; Wolves drop the Uncommons (2% each);
 Ranger's Gloves and the Mantle come from the new enemies and the elite.
 
+### Milestone 2 enemies (step 13)
+| Enemy | Lv | AI | Stats | Ability | Step / reaction | XP / AP | Drops | Where (Greenfields) |
+|-------|----|----|-------|---------|-----------------|---------|-------|---------------------|
+| Wolf | 1 | Melee | (see above) | Bite | 0.8 s / 0.3 s | 50 / 2 | 2–6 g, pelt, fang, Uncommons 2% | (8,13) (11,24) (5,20) (18,4) |
+| Goblin Shaman | 2 | Kiter | HP 160, MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
+| Bandit Brute | 3 | Melee | HP 420, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 14 + 1.2×PhysAtk, 3 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
+| Fen Skirmisher | 4 | Flanker | HP 260, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.25 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
+
+XP by level: +10% per enemy level above you (max +50%); from 3 levels below, −20% per
+level (3 below = 80%), never under 20%. The new types are not covered by the balance
+report; tune them after playtesting.
+
 ## Architecture (approved 2026-10-11)
 
 **Engine:** Godot 4.7.x (pinned to 4.7.2-stable), GDScript, GL Compatibility renderer.
@@ -492,10 +504,18 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     the caster forward, stopping at walls, actors and climbs over its Jump; cooldown
     groups share one cooldown (potions); a debuff on an enemy pulls it onto the
     caster. Flanking applies to melee (FRONT/ARC) only; projectiles never flank.
+15. **Enemy AI types (as built in step 13, `EnemyDef.behavior`):** MELEE chases and
+    attacks when in reach (Wolf, Brute). KITER steps away when a hero is within
+    `keep_away_distance` (2), otherwise moves to share a row or column with its
+    target within range, turns and shoots. FLANKER paths to a free tile behind or
+    beside its target and strikes from there; in front of its target it keeps
+    circling and strikes head-on only after 2 s there (or when it can't get around).
+    All types act on positions seen `reaction_seconds` ago and stay inside their leash.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M2 step 13: enemy levels, XP by level, Goblin Shaman / Bandit Brute / Fen Skirmisher | Skirmisher strikes head-on after 2 s in front of its target (implementation choice so a hero can't stall it forever by turning; `EnemyBrain.FLANK_PATIENCE`). |
 | 2026-10-11 | Zone exits are blocked while in combat | Implementation choice in M2 step 7 (prevents escaping fights by zoning); easy to change in `World._handle_exits`. |
 | 2026-10-11 | Milestone 2 plan and decisions approved | Flanking +25% side / +50% behind (user change); Rallying Roar lasts 120 s (user change); all other proposed defaults accepted. |
 | 2026-10-11 | Milestone 1 playtested; design doc brought up to date; Milestone 2 brief recorded | Added "Gameplay as built" reference. M2 plan pending approval. |

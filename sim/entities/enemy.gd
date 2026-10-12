@@ -13,6 +13,8 @@ var def: EnemyDef
 var spawn_tile := Vector2i.ZERO
 var state: State = State.IDLE
 var respawn_at: float = 0.0
+## FLANKER AI: when it started standing in front of its target (-1 = not there).
+var front_since: float = -1.0
 
 
 func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.ZERO) -> void:
@@ -45,5 +47,6 @@ func reset_at_spawn() -> void:
 	evading = false
 	threat.clear()
 	buffs.clear()
+	front_since = -1.0
 	cooldowns = Cooldowns.new()
 	move.place(spawn_tile)
