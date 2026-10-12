@@ -24,6 +24,7 @@ const OTHER := {
 	&"toggle_inventory": [KEY_B],
 	&"toggle_quest_log": [KEY_L],
 	&"toggle_trees": [KEY_T],
+	&"toggle_console": [KEY_QUOTELEFT],
 	&"interact": [KEY_E],
 }
 

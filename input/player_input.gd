@@ -40,7 +40,9 @@ func _physics_process(_delta: float) -> void:
 	if hero == null or not hero.alive:
 		_held = Vector2i.ZERO
 		return
-	var dir := _held_direction()
+	# Typing in a text box (debug console) doesn't walk.
+	var typing := get_viewport().gui_get_focus_owner() is LineEdit if is_inside_tree() else false
+	var dir := Vector2i.ZERO if typing else _held_direction()
 	var t: float = session.render_time()
 	if dir != _held:
 		_on_direction_changed(hero, dir, t)

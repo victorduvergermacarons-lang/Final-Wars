@@ -220,9 +220,9 @@ func _draw_actor(a: Actor) -> void:
 		if edef.elite:
 			diamond.append(diamond[0])
 			draw_polyline(diamond, Color(1, 0.8, 0.2, alpha), 2.0)
-			_draw_label(body + Vector2(0, -32), "Elite %s  Lv%d" % [a.display_name, edef.level], Color(1, 0.85, 0.3, alpha))
+			_draw_label(body + Vector2(0, -32), "Elite %s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.85, 0.3, alpha))
 		else:
-			_draw_label(body + Vector2(0, -26), "%s  Lv%d" % [a.display_name, edef.level], Color(1, 0.8, 0.8, alpha))
+			_draw_label(body + Vector2(0, -26), "%s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.8, 0.8, alpha))
 	if a.alive:
 		var max_hp := a.current_stats(now).hp
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))

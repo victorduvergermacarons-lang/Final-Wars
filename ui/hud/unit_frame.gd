@@ -38,7 +38,7 @@ func _draw() -> void:
 	if a is Hero:
 		title += "  Lv %d" % (a as Hero).level
 	elif a is Enemy:
-		title += "  Lv %d" % (a as Enemy).def.level
+		title += "  Lv %d" % (a as Enemy).level
 		if (a as Enemy).def.elite:
 			title += "  Elite"
 	if not a.alive:

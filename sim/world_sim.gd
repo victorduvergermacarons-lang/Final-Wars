@@ -24,6 +24,7 @@ extends RefCounted
 ##   {"type": "learn", "bag_index": int}   (a scroll into the learning slot) or
 ##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
 ##   {"type": "stop_learning"}
+##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -38,8 +39,12 @@ var now: float = 0.0
 var ids: IdSource
 var _heroes := {} # id -> Hero
 var _enemies := {} # id -> Enemy
+## Temporary enemies that died this tick, removed once it ends.
+var _remove_after_tick: Array[int] = []
 var _npcs := {} # id -> Npc
 var _intents: Array = [] # [hero_id, intent]
+## Content lookup for the debug console; null (the default) refuses debug commands.
+var debug_content = null
 ## One-time world events that have happened (e.g. a quest that changes the world).
 ## Saved by the host. Keys are event ids, values are true or small plain data.
 var world_flags := {}
@@ -160,6 +165,11 @@ func add_enemy(def: EnemyDef, tile: Vector2i) -> Enemy:
 	return enemy
 
 
+func remove_enemy(id: int) -> void:
+	_enemies.erase(id)
+	ctx.actors.erase(id)
+
+
 func remove_hero(id: int) -> void:
 	for enemy in enemies():
 		enemy.threat.remove(id)
@@ -222,6 +232,9 @@ func step() -> Array[Dictionary]:
 	_tick_heals_over_time()
 	_update_combat_state()
 	_expire_loot()
+	for id in _remove_after_tick:
+		remove_enemy(id)
+	_remove_after_tick.clear()
 	_regen()
 	_update_quests()
 	for id in _sorted(ctx.actors):
@@ -490,7 +503,7 @@ func _credit_mastery(caster: Actor, ability: AbilityDef, events: Array) -> void:
 			continue
 		var t := get_actor(e.get("target", -1))
 		if t is Enemy:
-			levels.append((t as Enemy).def.level)
+			levels.append((t as Enemy).level)
 		elif t != null and e.type in ["heal", "buff", "shield"] and hero.in_combat(now):
 			helped = true
 	for e in TreeRules.on_use(hero, ability, levels, helped, rules):
@@ -735,6 +748,14 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = "" if hero.bag.split(intent.get("index", -1), intent.get("count", 0)) else "cannot_split"
 		"learn", "stop_learning":
 			reason = _intent_learn(hero, kind, intent)
+		"debug":
+			if debug_content == null:
+				reason = "debug_disabled"
+			else:
+				var r := DebugCommands.run(self, hero, intent.get("line", ""), debug_content)
+				for e in r.events:
+					emit(e)
+				emit({"type": "debug", "target": hero.id, "ok": r.ok, "text": r.text})
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)
@@ -1043,7 +1064,7 @@ func _on_death(actor: Actor) -> void:
 			var share := float(enemy.def.xp_reward) / earners.size()
 			for h in earners:
 				emit({"type": "kill", "target": h.id, "enemy": enemy.def.id})
-				var xp := share * Leveling.xp_level_multiplier(h.level, enemy.def.level, rules)
+				var xp := share * Leveling.xp_level_multiplier(h.level, enemy.level, rules)
 				for e in Leveling.add_xp(h, xp, rules):
 					emit(e)
 				for e in ApMastery.award(h, enemy.def.ap_reward):
@@ -1051,6 +1072,8 @@ func _on_death(actor: Actor) -> void:
 				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h, quests))
 		enemy.threat.clear()
 		enemy.respawn_at = now + enemy.def.respawn_seconds
+		if enemy.temporary:
+			_remove_after_tick.append(enemy.id) # not mid-tick: loops are walking the actors
 
 
 ## Heal-over-time and damage-over-time ticks.

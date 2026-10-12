@@ -885,10 +885,21 @@ F. 15 debug console · 16 docs + playtest checklist.
     in the game yet; a scroll's growth reads "per level while in your learning slot".
     The character sheet marks which in-progress ability is being learned. The right-
     hand windows now sit side by side (stacked, they ran off a 720p screen).
+27. **Debug console (as built in step 15):** ` opens it (Esc or ` closes; Up/Down recall
+    earlier lines). Commands are sent as a `debug` intent and run by the host on your own
+    hero, only when the host allows it: debug builds (editor runs, debug exports)
+    allow it for everyone in the session, release builds refuse it. Commands: `help`,
+    `level <n>` (levelling up applies growth and AP), `mastery <tree> <n>` (permanent),
+    `ap <n>` (to the learning item), `master <ability>` (id or "name"), `spawn <enemy>
+    [level] [n]` (next to you; ±15% HP/attack/defense and XP per level from the type's
+    own; spawned enemies don't respawn), `heal` (and resets cooldowns), `gold <n>`.
+    Enemies now carry their own level (shown and used for XP and Mastery-per-use).
+    Typing in the console doesn't walk.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 15: debug console | Decision 27. My choices: debug builds allow it for every player (playtesting), release builds never; +15% per level for spawned enemies; extra heal and gold commands. |
 | 2026-10-12 | M3 step 14: learning slot indicator | Decision 26. Right-click a scroll learns it; windows on the right now sit side by side. |
 | 2026-10-12 | M3 step 13: ability tree screen | Decision 25. T opens it (a new reserved key); only usable abilities can be dragged. |
 | 2026-10-12 | M3 step 12: aiming UI | Decision 24. My choices: hold-and-release on the key, the targeted enemy is the default aim until the mouse moves, red only for range/line-of-sight problems. |

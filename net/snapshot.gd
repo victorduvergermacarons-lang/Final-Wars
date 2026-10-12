@@ -42,7 +42,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		var d := _actor(enemy)
 		d.kind = KIND_ENEMY
 		d.def = enemy.def.id
-		d.level = enemy.def.level
+		d.level = enemy.level
 		d.state = int(enemy.state)
 		d.spawn = enemy.spawn_tile
 		actors.append(d)

@@ -91,4 +91,13 @@ func _run() -> void:
 	hud.inventory_window.visible = true
 	hud._character.visible = true
 	await _shot("9_learning_slot")
+	hud.inventory_window.visible = false
+	hud._character.visible = false
+	# 9. Debug console after a few commands.
+	hud.console.open()
+	for line in ["help", "spawn wolf 3 2", "mastery water 200"]:
+		hud.console._submit(line)
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+	await _shot("10_debug_console")
 	get_tree().quit()

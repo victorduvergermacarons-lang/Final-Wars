@@ -81,6 +81,11 @@ static func sanitize(raw: Variant) -> Dictionary:
 				return {}
 		"stop_learning":
 			pass
+		"debug":
+			var line = raw.get("line")
+			if typeof(line) != TYPE_STRING or line.length() > 200:
+				return {}
+			out.line = line
 		"accept_quest", "turn_in_quest", "abandon_quest":
 			var quest = raw.get("quest")
 			if typeof(quest) != TYPE_STRING and typeof(quest) != TYPE_STRING_NAME:

@@ -38,6 +38,13 @@ var now: float:
 		return _zones[start_zone].now
 
 
+## Allows the debug console in every zone (`content`: lookup tables by id), or
+## refuses it again (null).
+func enable_debug(content) -> void:
+	for id in _zones:
+		_zones[id].debug_content = content
+
+
 func zone(id: StringName) -> WorldSim:
 	return _zones.get(id)
 

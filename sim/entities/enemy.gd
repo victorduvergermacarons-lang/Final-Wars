@@ -20,12 +20,17 @@ var state: State = State.IDLE
 var respawn_at: float = 0.0
 ## When it last used an ability, or aggroed (FLANKER patience).
 var last_attack_at: float = 0.0
+## Its level: the type's level, unless spawned at another one (debug console).
+var level: int = 1
+## Removed when it dies instead of respawning (debug spawns).
+var temporary := false
 
 
 func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.ZERO) -> void:
 	def = p_def if p_def != null else EnemyDef.new()
 	super(p_id, Team.ENEMIES, def.stats.copy())
 	display_name = def.display_name
+	level = def.level
 	spawn_tile = p_spawn
 	home_tile = p_spawn
 	move.place(p_spawn)

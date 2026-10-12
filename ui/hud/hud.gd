@@ -59,6 +59,7 @@ var _tracker: RichTextLabel
 var _page_label: Label
 var _spellbook: SpellbookPanel
 var trees_window: AbilityTreeWindow
+var console: DebugConsole
 var _character: CharacterSheet
 var _death: PanelContainer
 var _bind_button: Button
@@ -180,6 +181,14 @@ func _build() -> void:
 	for panel in right.get_children():
 		panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 
+	# Debug console (`), top centre.
+	console = DebugConsole.new(self)
+	console.visible = false
+	console.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	console.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	console.position.y += 80
+	_root.add_child(console)
+
 	# Ability trees: a big window in the middle of the screen.
 	trees_window = AbilityTreeWindow.new(self)
 	trees_window.visible = false
@@ -298,7 +307,13 @@ func _sync_party(me: Hero) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"toggle_spellbook"):
+	if event.is_action_pressed(&"toggle_console"):
+		if console.visible:
+			console.close()
+		else:
+			console.open()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"toggle_spellbook"):
 		_toggle(_spellbook)
 	elif event.is_action_pressed(&"toggle_trees"):
 		_toggle(trees_window)
@@ -339,6 +354,12 @@ func _on_bar_changed() -> void:
 func _on_events(events: Array) -> void:
 	var me: int = session.local_hero_id
 	for e in events:
+		if e.type == "debug" and e.get("target", -1) == me:
+			console.show_result(e)
+			continue
+		if e.type == "rejected" and e.get("intent", "") == "debug" and e.get("target", -1) == me:
+			console.show_result({"ok": false, "text": "The host doesn't allow debug commands (debug builds only)."})
+			continue
 		match e.type:
 			"joined":
 				client.say("%s joined the game." % e.name)
