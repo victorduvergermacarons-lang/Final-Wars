@@ -753,10 +753,17 @@ F. 15 debug console · 16 docs + playtest checklist.
     Tree effects can use the tier default base (damage 10/18/30/45/65, heal
     14/24/38/55/80 by tier) and the sheet's Scales With stats at 1.0 each; Crit Rate
     in Scales With affects crits, not the amount.
+17. **Tile geometry (as built in step 5):** `TileGeometry`: square distance, square
+    areas and rings, `snap8`, 8-way lines, any-angle lines (one tile per step along the
+    longer axis, continuing past the aim point), cones (row k is 2k−1 wide), line
+    clipping (a tile more than the LOS tolerance above the shooter, or the map edge,
+    stops it; water doesn't), and push/pull paths that stop before walls, water, units
+    and climbs over the unit's Jump (drops allowed), reporting what stopped them.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 5: tile geometry | Decision 17. Cones widen by one tile per side per row (Breath of Fire's "4-tile cone"). |
 | 2026-10-12 | M3 step 4: power formula in one place | Decision 16. Starting numbers (+0.1% power and +0.05% duration per Mastery point; tier bases) are mine, tunable in `content/rules/default_rules.tres`. |
 | 2026-10-12 | M3 step 3: learning slot, unlocks, Mastery gain | Decision 15 (choices: locked abilities unusable; cap includes the learn bonus; per-use Mastery while learning; a use counts once). |
 | 2026-10-12 | M3 step 2: Mastery stats | Decision 14. Earned Mastery lives in permanent growth. |
