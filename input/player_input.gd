@@ -20,6 +20,7 @@ var _held := Vector2i.ZERO
 var _walk_after := 0.0
 var _sent_from := Vector2i(-999, -999)
 var _sent_at := -999.0
+var _press_order: Array[Vector2i] = []
 
 
 func setup(p_session, p_client: ClientState, p_view: WorldView) -> void:
@@ -45,7 +46,10 @@ func _physics_process(_delta: float) -> void:
 	var m := hero.move
 	var next := hero.tile() + dir
 	if m.is_moving(t):
-		if m.progress(t) >= BUFFER_AT_PROGRESS and _sent_from != hero.tile():
+		# Out of combat, queue the next step so walking is smooth. In combat the
+		# next step waits for the step cooldown anyway; queuing it would turn the
+		# hero back toward it later, even after the player had turned elsewhere.
+		if m.progress(t) >= BUFFER_AT_PROGRESS and _sent_from != hero.tile() and not hero.in_combat(now):
 			_send_step(hero.tile(), next, t)
 		return
 	if hero.in_combat(now) and not hero.cooldowns.can_step(now):
@@ -54,16 +58,19 @@ func _physics_process(_delta: float) -> void:
 		_send_step(hero.tile(), next, t)
 
 
-## Pokémon-style: from a standstill, pressing a direction you aren't facing only
-## turns you; keep holding it to start walking. Already facing it, or switching
-## direction while walking, walks right away (a step turns you anyway).
+## Pressing a direction you aren't facing turns you at once (in combat too,
+## where the next step may still be on cooldown). Pokémon-style, from a
+## standstill that press only turns you; keep holding it to start walking.
+## Switching direction while already holding one walks right away.
 func _on_direction_changed(hero: Hero, dir: Vector2i, t: float) -> void:
 	var was_holding := _held != Vector2i.ZERO
 	_held = dir
 	if dir == Vector2i.ZERO:
 		return
-	if not was_holding and hero.facing != dir:
+	var turning := hero.facing != dir
+	if turning:
 		session.send_intent({"type": "face", "dir": dir})
+	if not was_holding and turning:
 		_walk_after = t + TURN_HOLD_SECONDS
 	else:
 		_walk_after = t
@@ -75,11 +82,17 @@ func _send_step(from: Vector2i, to: Vector2i, t: float) -> void:
 	session.send_intent({"type": "step", "to": to})
 
 
+## The most recently pressed direction that is still held, so rolling from one
+## key to the next turns/walks the new way right away.
 func _held_direction() -> Vector2i:
 	for action in InputActions.DIRECTIONS:
-		if Input.is_action_pressed(action):
-			return InputActions.DIRECTIONS[action]
-	return Vector2i.ZERO
+		var d: Vector2i = InputActions.DIRECTIONS[action]
+		var pressed := Input.is_action_pressed(action)
+		if pressed and not _press_order.has(d):
+			_press_order.append(d)
+		elif not pressed:
+			_press_order.erase(d)
+	return _press_order.back() if not _press_order.is_empty() else Vector2i.ZERO
 
 
 func _unhandled_input(event: InputEvent) -> void:

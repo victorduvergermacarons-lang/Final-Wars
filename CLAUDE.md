@@ -343,6 +343,9 @@ docs/            local multiplayer testing, playtest checklist
       turns you. Pokémon-style: from a standstill, tapping a direction you don't face
       only turns you; holding it (> 0.12 s) walks. Turning is free and instant, in
       combat too.
+      The newest held direction key wins; pressing a new direction turns at once even
+      while another is held or the step is on cooldown; in combat no step is queued
+      ahead, and a turn cancels any queued step (post-M2 playtest fix).
     - WoW-style targeting (click an actor, Tab cycles nearby enemies, Esc clears) is
       used by TARGETED abilities; ally abilities fall back to self. FRONT/LINE
       abilities aim where you face; their action bar slot is red when nothing would
@@ -566,6 +569,7 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Turning in combat made immediate; Skirmisher sees your facing 0.3 s late | User reports. Causes: a second held key didn't turn, and a step queued while walking turned you back when the step cooldown ended. |
 | 2026-10-12 | Combat ends as soon as the last enemy fighting you dies, evades or drops you | User change (was 5 s). Fixed enemies darting 2 tiles on aggro (first steps skipped the step cooldown). |
 | 2026-10-12 | Post-M2 playtest fixes: Brute hits twice as hard; Renew costs 10 mana; Skirmisher reacts 0.3 s | User changes. Also fixed Frozen (no root), Pinned (no slow) and Rallied (no attack bonus): values lost when the content was generated; a content test now checks them. |
 | 2026-10-12 | Milestone 2 built (step 18: polish, docs, playtest checklist) | `docs/playtest-checklist.md` covers every feature for a non-programmer. Visuals still unchecked on a real screen. |

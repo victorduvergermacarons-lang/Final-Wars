@@ -204,11 +204,22 @@ func step() -> Array[Dictionary]:
 func perceived_tile(actor: Actor, delay: float) -> Vector2i:
 	if delay <= 0.0 or not _history.has(actor.id):
 		return actor.tile()
+	return _perceived(actor, delay, 1, actor.tile())
+
+
+## The way `actor` was facing `delay` seconds ago (enemies react to turns late too).
+func perceived_facing(actor: Actor, delay: float) -> Vector2i:
+	if delay <= 0.0 or not _history.has(actor.id):
+		return actor.facing
+	return _perceived(actor, delay, 2, actor.facing)
+
+
+func _perceived(actor: Actor, delay: float, field: int, current: Vector2i) -> Vector2i:
 	var when := now - delay
-	var best := actor.tile()
+	var best := current
 	var entries: Array = _history[actor.id]
 	for i in range(entries.size() - 1, -1, -1):
-		best = entries[i][1]
+		best = entries[i][field]
 		if entries[i][0] <= when + Cooldowns.EPSILON:
 			break
 	return best
@@ -219,7 +230,7 @@ func _record_history() -> void:
 		if not _history.has(hero.id):
 			_history[hero.id] = []
 		var entries: Array = _history[hero.id]
-		entries.append([now, hero.tile()])
+		entries.append([now, hero.tile(), hero.facing])
 		while not entries.is_empty() and entries[0][0] < now - HISTORY_SECONDS:
 			entries.pop_front()
 
@@ -431,11 +442,16 @@ func _intent_step(hero: Hero, to: Vector2i) -> String:
 	return try_step(hero, to)
 
 
-## Turning is free and instant, in and out of combat.
+## Turning is free and instant, in and out of combat. It also cancels a step
+## buffered while walking, so a later step can't swing the hero back.
 func _intent_face(hero: Hero, dir: Vector2i) -> String:
 	if not hero.alive:
 		return "dead"
-	return "" if hero.face(dir) else "bad_direction"
+	if not hero.face(dir):
+		return "bad_direction"
+	if hero.pending_step != null and hero.pending_step - hero.tile() != dir:
+		hero.pending_step = null
+	return ""
 
 
 func _take_pending_step(hero: Hero) -> void:

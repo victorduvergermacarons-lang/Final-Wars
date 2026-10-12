@@ -152,3 +152,15 @@ func test_charge_closes_the_gap_and_hits() -> void:
 	assert_true(events.any(func(e): return e.type == "damage" and e.target == hero.id))
 	world.advance(0.5)
 	assert_eq(enemy.tile(), Vector2i(7, 5), "ends next to the target")
+
+
+func test_flanker_sees_a_turn_only_after_its_reaction_time() -> void:
+	_setup(EnemyDef.Behavior.FLANKER, _ability(AbilityDef.Shape.FRONT, 1, 1.5), Vector2i(7, 9), Vector2i(7, 5))
+	enemy.def.reaction_seconds = 0.3
+	hero.face(Vector2i.UP)
+	world.advance(0.5)
+	hero.face(Vector2i.DOWN)
+	world.step()
+	assert_eq(world.perceived_facing(hero, 0.3), Vector2i.UP, "the turn isn't seen yet")
+	world.advance(0.3)
+	assert_eq(world.perceived_facing(hero, 0.3), Vector2i.DOWN, "seen 0.3 s later")

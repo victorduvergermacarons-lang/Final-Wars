@@ -13,6 +13,8 @@ extends RefCounted
 ##
 ## Enemies see heroes where they were `def.reaction_seconds` ago (aggro, chasing,
 ## turning and aiming), so a hero who steps aside just in time makes a bite whiff.
+## A FLANKER also sees which way its target faces that late, so it reacts to a
+## hero turning toward it after `reaction_seconds`.
 
 
 ## Seconds without attacking after which a FLANKER strikes head-on.
@@ -94,14 +96,14 @@ static func _fight_melee(world: WorldSim, enemy: Enemy, target: Actor, seen: Vec
 ## FLANK_PATIENCE seconds (or when there is no way around).
 static func _fight_flanker(world: WorldSim, enemy: Enemy, target: Actor, seen: Vector2i) -> void:
 	var dist := GridModel.distance(enemy.tile(), seen)
-	var at_front := dist == 1 \
-			and CombatMath.flank(enemy.tile(), seen, target.facing) == CombatMath.Flank.FRONT
+	var facing := world.perceived_facing(target, enemy.def.reaction_seconds)
+	var at_front := dist == 1 and CombatMath.flank(enemy.tile(), seen, facing) == CombatMath.Flank.FRONT
 	if dist == 1 and (not at_front or world.now - enemy.last_attack_at >= FLANK_PATIENCE):
 		_try_attack(world, enemy, target, seen)
 		return
 	if not _step_ready(world, enemy):
 		return
-	var path := _path_to_flank(world, enemy, target, seen)
+	var path := _path_to_flank(world, enemy, facing, seen)
 	if path.size() >= 2 and (not at_front or path.size() <= 4):
 		world.try_step(enemy, path[1])
 	elif at_front:
@@ -112,8 +114,8 @@ static func _fight_flanker(world: WorldSim, enemy: Enemy, target: Actor, seen: V
 
 ## Shortest path to a free tile behind or beside the target ([] if none).
 ## Ties go to the tile behind.
-static func _path_to_flank(world: WorldSim, enemy: Enemy, target: Actor, seen: Vector2i) -> Array[Vector2i]:
-	var back := -target.facing
+static func _path_to_flank(world: WorldSim, enemy: Enemy, facing: Vector2i, seen: Vector2i) -> Array[Vector2i]:
+	var back := -facing
 	var goals: Array[Vector2i] = [seen + back, seen + Vector2i(back.y, back.x), seen - Vector2i(back.y, back.x)]
 	var blocked := world.occupied_tiles(enemy)
 	blocked[seen] = true
