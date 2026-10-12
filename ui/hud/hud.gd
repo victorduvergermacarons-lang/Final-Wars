@@ -58,6 +58,7 @@ var quest_log: QuestLogWindow
 var _tracker: RichTextLabel
 var _page_label: Label
 var _spellbook: SpellbookPanel
+var trees_window: AbilityTreeWindow
 var _character: CharacterSheet
 var _death: PanelContainer
 var _bind_button: Button
@@ -106,6 +107,7 @@ func _build() -> void:
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	bottom.add_child(buttons)
 	buttons.add_child(_small_button("Spellbook (P)", func(): _toggle(_spellbook)))
+	buttons.add_child(_small_button("Trees (T)", func(): _toggle(trees_window)))
 	buttons.add_child(_small_button("Character (C)", func(): _toggle(_character)))
 	buttons.add_child(_small_button("Inventory (B)", func(): _toggle(inventory_window)))
 	buttons.add_child(_small_button("Quests (L)", func(): _toggle(quest_log)))
@@ -174,6 +176,14 @@ func _build() -> void:
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
 	right.add_child(quest_log)
+
+	# Ability trees: a big window in the middle of the screen.
+	trees_window = AbilityTreeWindow.new(self)
+	trees_window.visible = false
+	trees_window.set_anchors_preset(Control.PRESET_CENTER)
+	trees_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	trees_window.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_root.add_child(trees_window)
 
 	# Quest tracker on the right edge.
 	_tracker = RichTextLabel.new()
@@ -261,7 +271,7 @@ func _process(_delta: float) -> void:
 	var lines: PackedStringArray = client.messages.duplicate()
 	if bind_mode:
 		lines.append("KEYBIND MODE: hover a slot and press a key. Esc or the Keybinds button to finish.")
-	lines.append("WASD move · E talk · click/Tab target · Esc clear target · R release · wheel zoom")
+	lines.append("WASD move · E talk · click/Tab target · Esc clear target · R release · T trees · wheel zoom")
 	_log.text = "\n".join(lines)
 	_log.size = Vector2(LOG_WIDTH, 0)
 	var view_size := get_viewport().get_visible_rect().size
@@ -287,6 +297,8 @@ func _sync_party(me: Hero) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"toggle_spellbook"):
 		_toggle(_spellbook)
+	elif event.is_action_pressed(&"toggle_trees"):
+		_toggle(trees_window)
 	elif event.is_action_pressed(&"toggle_character"):
 		_toggle(_character)
 	elif event.is_action_pressed(&"toggle_inventory"):
@@ -384,7 +396,7 @@ func _on_events(events: Array) -> void:
 ## so its text never mixes with a menu's).
 func _tracker_covered() -> bool:
 	var area := _tracker.get_global_rect()
-	for w in [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log, dialogue]:
+	for w in [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log, dialogue, trees_window]:
 		if w.is_visible_in_tree() and w.get_global_rect().intersects(area):
 			return true
 	return false

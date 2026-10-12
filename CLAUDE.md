@@ -233,7 +233,8 @@ data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
 content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ (.tres)
 view/            world view, iso tile renderer, actor views, camera
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
-                 inventory, character sheet, spellbook, dialogue, vendor, loot, quest log, tracker)
+                 inventory, character sheet, spellbook, ability trees, dialogue, vendor, loot,
+                 quest log, tracker)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator
@@ -867,10 +868,19 @@ F. 15 debug console · 16 docs + playtest checklist.
     Charge) flash red, brighter as they land; ground zones are orange; units casting,
     winding up or channelling show a bar (yellow / red / blue) with the ability name.
     Slot tint for aimed abilities ignores range (you can aim elsewhere).
+25. **Ability tree screen (as built in step 13):** T (or the "Trees (T)" button) opens a
+    window with a tab per tree. The header shows the tree's permanent Mastery (and the
+    gear bonus, power only) and the tier thresholds; each tier row says "open" or
+    "needs N". Ability nodes are colored by state: blue = learning (its item is in the
+    learning slot / wielded), gold = mastered, white = can learn now, grey = locked
+    (the tooltip says why), dark = not in the game yet. Each node shows AP while
+    learning and the Mastery it has given vs its cap. Lines join prerequisites (gold
+    once mastered). Abilities you can use right now drag onto the action bar.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 13: ability tree screen | Decision 25. T opens it (a new reserved key); only usable abilities can be dragged. |
 | 2026-10-12 | M3 step 12: aiming UI | Decision 24. My choices: hold-and-release on the key, the targeted enemy is the default aim until the mouse moves, red only for range/line-of-sight problems. |
 | 2026-10-12 | M3 step 11: balance pass | Decision 23. Flagged: scrolls in the learning slot now give level-up growth (casters had no way to grow Magic Attack); Shaman and Grizzlehide retuned. |
 | 2026-10-12 | M3 step 10: old content converted to the trees | Decision 22. My choices: the old weapons and accessories are retired outright (armor stays); older characters get the new kit; drop rates and Hilda's stock; Charge 1 s mark. |

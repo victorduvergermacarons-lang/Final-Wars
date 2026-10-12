@@ -80,4 +80,10 @@ func _run() -> void:
 	input.start_aiming(cd.abilities[&"F06"])
 	await _shot("7_aiming_telegraphs")
 	input.cancel_aiming()
+	# 7. Fire tree: Fire Dart mastered, Fire Punch being learned, tier 2 unlocked.
+	TreeRules.master(hero, cd.abilities[&"F03"])
+	Mastery.add_permanent(hero, "Fire", 160)
+	hud._toggle(hud.trees_window)
+	hud.trees_window.show_tree("Fire")
+	await _shot("8_fire_tree")
 	get_tree().quit()

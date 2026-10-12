@@ -23,6 +23,7 @@ const OTHER := {
 	&"toggle_character": [KEY_C],
 	&"toggle_inventory": [KEY_B],
 	&"toggle_quest_log": [KEY_L],
+	&"toggle_trees": [KEY_T],
 	&"interact": [KEY_E],
 }
 
