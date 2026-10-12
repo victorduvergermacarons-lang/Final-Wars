@@ -62,7 +62,7 @@ enum GrowthLimit {
 
 @export_group("Combat state")
 ## Seconds after no enemy lists a hero before they leave combat.
-@export var combat_exit_seconds: float = 5.0
+@export var combat_exit_seconds: float = 0.0
 
 @export_group("Regen")
 ## Percent of max per second.

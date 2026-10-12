@@ -77,7 +77,7 @@ needs 2–4 players: real friends, or several game windows on one computer (see
 - [ ] **Expect:** after each ability, all slots dim with a short sweep (global cooldown, 1 second).
 - [ ] **Do:** kill the Wolf.
       **Expect:** XP in the message log; your XP bar fills; some gold and maybe a Wolf Pelt or Wolf Fang ("You loot …").
-- [ ] **Expect:** about 5 seconds after the fight, the red outline goes away and your health starts coming back.
+- [ ] **Expect:** as soon as the last enemy fighting you dies, the red outline goes away and your health starts coming back.
 - [ ] **Do:** step away from a Wolf just before it bites.
       **Expect:** it sometimes bites the empty tile where you were (it reacts slightly late).
 

@@ -118,7 +118,7 @@ Tune them there; update this table when they change.
 | Walk (out of combat) | 0.2 s per tile, no step cooldown |
 | Hero step in combat | 1.5 s × 100 / (100 + Speed), min 0.5 s |
 | GCD | 1.0 s |
-| Leave combat | 5 s after no enemy lists you |
+| Leave combat | as soon as no enemy lists you (next tick; `combat_exit_seconds` = 0) |
 | Tap-to-turn threshold | 0.12 s |
 
 ### Abilities
@@ -265,7 +265,7 @@ docs/            local multiplayer testing, playtest checklist
 5. **Combat membership:** each enemy keeps a WoW-style threat table. Damage and healing
    add threat; taunt forces you to the top. A hero is in combat while any enemy lists
    them. Healing/buffing a hero in combat puts you on that enemy's table too. Combat
-   ends a few seconds after no enemy lists you.
+   ends as soon as no enemy lists you (changed from 5 s after the M2 playtest).
 6. **Line of sight:** blocked if an intermediate tile rises above the line between the
    attacker's and target's heights (configurable tolerance). High-ground bonus is
    +X% per height level of advantage, X in `CombatRules`.
@@ -330,7 +330,9 @@ docs/            local multiplayer testing, playtest checklist
       chasing, turning and aiming — so a well-timed sidestep makes a bite whiff.
     - Leash: past its leash radius from spawn, or with an empty threat table, the
       enemy evades: clears threat, heals to full, is untargetable, walks home.
-    - Combat ends 5 s after no fighting enemy lists the hero.
+    - Combat ends as soon as no fighting enemy lists the hero (was 5 s until the M2
+      playtest). An enemy counts as in combat from the moment it aggros, so its first
+      steps already use its combat step time (no dash on aggro).
     - Heroes have no auto-attack; they only use action-bar abilities.
 13. **View & controls** (approved 2026-10-11):
     - Isometric tiles 64×32 px, 16 px per height level; camera follows the hero,
@@ -564,6 +566,7 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Combat ends as soon as the last enemy fighting you dies, evades or drops you | User change (was 5 s). Fixed enemies darting 2 tiles on aggro (first steps skipped the step cooldown). |
 | 2026-10-12 | Post-M2 playtest fixes: Brute hits twice as hard; Renew costs 10 mana; Skirmisher reacts 0.3 s | User changes. Also fixed Frozen (no root), Pinned (no slow) and Rallied (no attack bonus): values lost when the content was generated; a content test now checks them. |
 | 2026-10-12 | Milestone 2 built (step 18: polish, docs, playtest checklist) | `docs/playtest-checklist.md` covers every feature for a non-programmer. Visuals still unchecked on a real screen. |
 | 2026-10-12 | M2 step 17: 5 sample quests incl. Rowan's 3-quest chain; world event "grizzlehide_slain" | See "Milestone 2 quests". Quest texts, rewards and the Rowan greeting change are content choices, easy to edit in `content/quests/`. |

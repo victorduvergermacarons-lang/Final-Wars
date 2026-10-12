@@ -36,6 +36,7 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 			enemy.state = Enemy.State.COMBAT
 			enemy.home_tile = enemy.tile()
 			enemy.last_attack_at = world.now
+			enemy.combat_until = world.combat_until_from_now()
 			_fight(world, enemy)
 		Enemy.State.COMBAT:
 			_fight(world, enemy)

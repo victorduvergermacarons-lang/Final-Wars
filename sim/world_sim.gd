@@ -258,7 +258,8 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 		return "occupied"
 	if actor.buffs.is_rooted(now):
 		return "rooted"
-	var in_combat := actor.in_combat(now)
+	# An enemy that just aggroed is fighting even before the end-of-tick update.
+	var in_combat := actor.in_combat(now) or (actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT)
 	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
 		return "not_ready"
 	actor.face(to - from)
@@ -749,8 +750,15 @@ func _expire_loot() -> void:
 
 
 ## Everyone on a fighting enemy's threat table (and the enemy) is in combat.
+## Everyone an enemy is fighting stays in combat until the next tick re-checks
+## (plus `combat_exit_seconds`, 0 by default: combat ends when the last enemy
+## fighting you dies, evades or drops you).
+func combat_until_from_now() -> float:
+	return now + rules.combat_exit_seconds + rules.tick_seconds * 1.5
+
+
 func _update_combat_state() -> void:
-	var until := now + rules.combat_exit_seconds
+	var until := combat_until_from_now()
 	for enemy in enemies():
 		if enemy.state != Enemy.State.COMBAT or not enemy.alive:
 			continue

@@ -424,3 +424,28 @@ func test_unequip_into_bag_and_back() -> void:
 	world.submit(a.id, {"type": "equip", "bag_index": sword_index})
 	world.step()
 	assert_eq(a.equipped_in(EquipSlot.Id.MAIN_HAND), hero_def.starting_items[0])
+
+
+func test_aggroed_enemy_does_not_dart_two_tiles() -> void:
+	enemy_def.combat_step_seconds = 0.8
+	_place(a, Vector2i(6, 1)) # 3 tiles away: aggro
+	var step_times: Array[float] = []
+	var last := enemy.tile()
+	for i in 40: # 2 s
+		world.step()
+		if enemy.tile() != last:
+			step_times.append(world.now)
+			last = enemy.tile()
+	assert_gt(step_times.size(), 1)
+	assert_gte(step_times[1] - step_times[0], 0.8 - 0.001, "second step waits for the step cooldown")
+
+
+func test_combat_ends_as_soon_as_the_enemy_dies() -> void:
+	_place(a, Vector2i(8, 1))
+	world.step()
+	assert_true(a.in_combat(world.now))
+	enemy.hp = 1.0
+	enemy.die()
+	world._on_death(enemy)
+	world.advance(0.1)
+	assert_false(a.in_combat(world.now), "out of combat within 0.1 s")
