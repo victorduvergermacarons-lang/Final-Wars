@@ -193,6 +193,10 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 			h.mastered[StringName(id)] = ability
 	h.quest_state = p.quests
 	h.pending_loot = p.get("loot", [])
+	h.learning_item = content.items.get(StringName(p.get("learning", "")))
+	h.mastery_contrib = {}
+	for id in p.get("contrib", {}):
+		h.mastery_contrib[StringName(id)] = float(p.contrib[id])
 
 
 ## Host state, then re-apply steps the host hasn't processed yet. If the

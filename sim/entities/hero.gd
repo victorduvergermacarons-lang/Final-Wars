@@ -20,8 +20,14 @@ var bag := Bag.new()
 var _equipped := {} # EquipSlot.Id -> ItemDef
 ## Ability id -> AP earned so far.
 var ap := {}
-## Ability id -> AbilityDef, usable forever.
+## Ability id -> AbilityDef, usable forever (tree weapon arts need a weapon of
+## that tree in hand).
 var mastered := {}
+## The single learning slot (ability trees): a scroll held in it, or an equipped
+## weapon designated for learning. Only it earns AP toward its tree ability.
+var learning_item: ItemDef = null
+## Tree ability id -> Mastery it has given so far (toward its Mastery Cap).
+var mastery_contrib := {}
 ## Where the hero died (picks the graveyard on release).
 var death_tile := Vector2i.ZERO
 ## One buffered step, taken as soon as the current walk arrives, so holding a
@@ -161,19 +167,28 @@ func equipment() -> Dictionary:
 	return _equipped.duplicate()
 
 
-## Abilities taught by equipped items, each once, in slot order.
+## Abilities taught by equipped items, each once, in slot order. Tree abilities
+## count only when they're unlocked (TreeRules.can_learn).
 func taught_abilities() -> Array[AbilityDef]:
 	var out: Array[AbilityDef] = []
 	var seen := {}
-	for item in equipped_items():
+	var sources := equipped_items()
+	if learning_item != null and learning_item.is_scroll:
+		sources.append(learning_item)
+	for item in sources:
 		for ability in item.teaches:
-			if ability != null and not seen.has(ability.id):
-				seen[ability.id] = true
-				out.append(ability)
+			if ability == null or seen.has(ability.id):
+				continue
+			if ability.is_tree_ability() and TreeRules.can_learn(self, ability) != "":
+				continue
+			seen[ability.id] = true
+			out.append(ability)
 	return out
 
 
-## Everything the hero can use right now: equipped-item abilities plus mastered ones.
+## Everything the hero can use right now: abilities of worn items (and the scroll
+## in the learning slot) plus mastered ones. Mastered weapon arts need a weapon of
+## their tree in hand.
 func available_abilities() -> Array[AbilityDef]:
 	var out := taught_abilities()
 	var seen := {}
@@ -182,9 +197,19 @@ func available_abilities() -> Array[AbilityDef]:
 	var ids := mastered.keys()
 	ids.sort()
 	for id in ids:
-		if not seen.has(id):
-			out.append(mastered[id])
+		var a: AbilityDef = mastered[id]
+		if seen.has(id) or (a.needs_weapon() and not wields(a.tree)):
+			continue
+		out.append(a)
 	return out
+
+
+## Whether a weapon of `tree` (Sword, Bow, Hammer) is equipped.
+func wields(tree: String) -> bool:
+	for item in equipped_items():
+		if item.tree == tree and not item.is_scroll:
+			return true
+	return false
 
 
 func find_ability(id: StringName) -> AbilityDef:
@@ -205,7 +230,10 @@ func is_mastered(id: StringName) -> bool:
 
 
 ## Recomputes effective stats; current HP/Mana are kept but never exceed the new max.
+## Also drops a learning weapon that is no longer worn.
 func refresh_stats() -> void:
+	if learning_item != null and not learning_item.is_scroll and not _equipped.values().has(learning_item):
+		learning_item = null
 	stats = StatCalc.total(base_stats, growth, equipped_items())
 	hp = minf(hp, stats.hp)
 	mana = minf(mana, stats.mana)

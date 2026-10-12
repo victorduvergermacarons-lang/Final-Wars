@@ -731,10 +731,26 @@ F. 15 debug console · 16 docs + playtest checklist.
     them. `Mastery.permanent` = base + growth (Mastery earned from learning and using
     abilities is added to growth, so it saves with the character); `Mastery.total` adds
     gear and buffs. The character sheet lists each tree's Mastery with the gear part.
+15. **Learning (as built in step 3):** `TreeContent` builds the game's 145 tree
+    abilities and items from the imported data (+ `content/tree/tuning.tres`: AP by
+    tier, rarity, prices, weapon stats/growth by tier, weapons grow their tree's Mastery
+    a little). `TreeRules`: unlock checks, the learning slot (`learn` / `stop_learning`
+    intents, out of combat; a scroll moves from the bag into the slot, a worn weapon can
+    be designated; taking that weapon off empties the slot), AP to the learning item
+    only, Mastery on Learn, per-use Mastery. Choices made here:
+    - A locked ability (tier Mastery or prerequisites not met) can't be used either,
+      even from a worn weapon; otherwise tiers would mean nothing for weapons.
+    - The Mastery Cap counts the learn bonus: per-use gains stop at cap − what the
+      ability already gave; the learn bonus itself is always granted.
+    - Per-use Mastery also accrues while still learning the ability.
+    - A use counts once, judged from what it did: it affected an enemy at most 3 levels
+      below (`CombatRules.mastery_level_window_below`) or any level above, or it
+      healed/buffed while the caster was in combat.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 3: learning slot, unlocks, Mastery gain | Decision 15 (choices: locked abilities unusable; cap includes the learn bonus; per-use Mastery while learning; a use counts once). |
 | 2026-10-12 | M3 step 2: Mastery stats | Decision 14. Earned Mastery lives in permanent growth. |
 | 2026-10-12 | M3 step 1: spreadsheet importer | Decision 13. Choices: one JSON data file (diff-friendly); sheet IDs as ability ids; item ids are name slugs; Mastery Required taken from the Tiers tab (a mismatching cell is a warning). |
 | 2026-10-12 | Milestone 3 plan (16 steps) and 12 decisions approved | "defaults OK". See "Milestone 3 decisions". |

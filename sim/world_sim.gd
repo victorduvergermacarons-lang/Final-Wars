@@ -20,6 +20,9 @@ extends RefCounted
 ##   {"type": "accept_quest", "npc": int, "quest": StringName}   (from its giver, within TALK_RANGE)
 ##   {"type": "turn_in_quest", "npc": int, "quest": StringName, "choice": int}   (choice: reward index or -1)
 ##   {"type": "abandon_quest", "quest": StringName}
+##   {"type": "learn", "bag_index": int}   (a scroll into the learning slot) or
+##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
+##   {"type": "stop_learning"}
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -301,6 +304,8 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 func cast(caster: Actor, ability: AbilityDef, target: Actor) -> AbilityResolver.Result:
 	var out := AbilityResolver.cast(ctx, caster, ability, target)
 	_emit_resolved(out.events)
+	if out.result == AbilityResolver.Result.OK and out.projectile == null:
+		_credit_mastery(caster, ability, out.events)
 	if out.projectile != null:
 		var p: Projectile = out.projectile
 		p.id = _next_projectile_id
@@ -313,6 +318,26 @@ func cast(caster: Actor, ability: AbilityDef, target: Actor) -> AbilityResolver.
 ## Projectiles currently in flight.
 func projectiles() -> Array[Projectile]:
 	return _projectiles
+
+
+## Per-use tree Mastery for a hero's ability use, judged from what it did:
+## hitting an enemy near the hero's level, or healing/buffing while in combat.
+func _credit_mastery(caster: Actor, ability: AbilityDef, events: Array) -> void:
+	if not (caster is Hero) or not ability.is_tree_ability():
+		return
+	var hero := caster as Hero
+	var levels: Array = []
+	var helped := false
+	for e in events:
+		if e.get("source", -1) != hero.id:
+			continue
+		var t := get_actor(e.get("target", -1))
+		if t is Enemy:
+			levels.append((t as Enemy).def.level)
+		elif t != null and e.type in ["heal", "buff", "shield"] and hero.in_combat(now):
+			helped = true
+	for e in TreeRules.on_use(hero, ability, levels, helped, rules):
+		emit(e)
 
 
 ## Emits resolution events and handles any deaths among them.
@@ -344,6 +369,7 @@ func _update_projectiles() -> void:
 			AbilityResolver.apply_effects(ctx, caster, p.ability, hit, events)
 			emit({"type": "projectile_end", "id": p.id, "tile": hit.tile(), "target": hit.id})
 			_emit_resolved(events)
+			_credit_mastery(caster, p.ability, events)
 		elif p.is_spent(now):
 			var end_tile := p.path[p.path.size() - 1] if not p.path.is_empty() else p.origin
 			emit({"type": "projectile_end", "id": p.id, "tile": end_tile, "target": -1})
@@ -435,6 +461,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = "" if hero.bag.move(intent.get("from", -1), intent.get("to", -1)) else "cannot_move"
 		"split_item":
 			reason = "" if hero.bag.split(intent.get("index", -1), intent.get("count", 0)) else "cannot_split"
+		"learn", "stop_learning":
+			reason = _intent_learn(hero, kind, intent)
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)
@@ -677,6 +705,24 @@ func _intent_release(hero: Hero) -> String:
 	hero.move.place(find_free_tile_near(best))
 	emit({"type": "release", "target": hero.id, "tile": hero.tile()})
 	return ""
+
+
+func _intent_learn(hero: Hero, kind: String, intent: Dictionary) -> String:
+	if not hero.alive:
+		return "dead"
+	if hero.in_combat(now):
+		return "in_combat"
+	var reason := ""
+	if kind == "stop_learning":
+		reason = TreeRules.stop_learning(hero)
+	elif intent.has("bag_index"):
+		reason = TreeRules.learn_from_bag(hero, intent.bag_index)
+	else:
+		reason = TreeRules.learn_from_equipped(hero, intent.get("slot", -1))
+	if reason == "":
+		emit({"type": "learning", "target": hero.id,
+				"item": hero.learning_item.id if hero.learning_item != null else &""})
+	return reason
 
 
 func _intent_equip(hero: Hero, bag_index: int, slot: int = -1) -> String:

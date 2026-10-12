@@ -15,7 +15,7 @@ func after_all() -> void:
 
 
 func _equippables() -> Array:
-	return db.items.values().filter(func(i): return i.is_equippable())
+	return db.items.values().filter(func(i): return i.is_equippable() and i.tree == "")
 
 
 func test_twelve_items_each_teaching_its_own_ability() -> void:

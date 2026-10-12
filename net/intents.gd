@@ -69,6 +69,11 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"destroy_item":
 			if not _ints(raw, out, ["index"]):
 				return {}
+		"learn":
+			if not _ints(raw, out, [], ["bag_index", "slot"]) or (out.has("bag_index") == out.has("slot")):
+				return {}
+		"stop_learning":
+			pass
 		"accept_quest", "turn_in_quest", "abandon_quest":
 			var quest = raw.get("quest")
 			if typeof(quest) != TYPE_STRING and typeof(quest) != TYPE_STRING_NAME:

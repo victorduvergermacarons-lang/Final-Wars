@@ -53,6 +53,24 @@ enum TargetType {
 ## AP needed to master this ability. 0 = cannot be mastered (e.g. enemy attacks).
 @export var ap_to_master: int = 0
 
+@export_group("Ability tree")
+## Set for abilities from design/Ability_Tree.xlsx ("" = not a tree ability).
+@export var tree: String = ""
+@export var tier: int = 0
+## Tree abilities without behavior data yet can't be learned or used.
+@export var implemented: bool = true
+## The spreadsheet row (see AbilityTreeData): prerequisites, Mastery values, texts.
+var sheet: Dictionary = {}
+
+
+func is_tree_ability() -> bool:
+	return tree != ""
+
+
+## Element (scroll) trees work without a weapon; weapon arts need one.
+func needs_weapon() -> bool:
+	return tree == "Sword" or tree == "Bow" or tree == "Hammer"
+
 
 ## Returns a list of problems; empty when the definition is usable.
 func validate() -> PackedStringArray:
@@ -63,7 +81,7 @@ func validate() -> PackedStringArray:
 		errors.append("%s: invalid range %d..%d" % [id, min_range, max_range])
 	if mana_cost < 0.0 or cooldown_seconds < 0.0:
 		errors.append("%s: negative cost or cooldown" % id)
-	if effects.is_empty():
+	if effects.is_empty() and implemented:
 		errors.append("%s: no effects" % id)
 	if shape != Shape.TARGETED and target != TargetType.ENEMY and target != TargetType.ALLY:
 		errors.append("%s: FRONT/LINE abilities must affect ENEMY or ALLY" % id)

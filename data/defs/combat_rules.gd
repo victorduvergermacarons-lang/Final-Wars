@@ -84,6 +84,9 @@ enum GrowthLimit {
 @export var max_level: int = 0
 ## Fraction of each equipped item's per-level growth gained on level-up.
 @export var growth_fraction: float = 0.5
+## Per-use tree Mastery only counts against enemies at most this many levels below
+## the hero (any level above counts).
+@export var mastery_level_window_below: int = 3
 @export var growth_limit: GrowthLimit = GrowthLimit.NONE
 ## CAP mode: maximum total growth per stat (0 = that stat is uncapped).
 @export var growth_cap: StatBlock = StatBlock.new()

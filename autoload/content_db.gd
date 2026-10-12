@@ -25,6 +25,8 @@ var npcs := {} # id -> NpcDef
 var quests := {} # id -> QuestDef
 ## Ability trees from design/Ability_Tree.xlsx (via tools/import_ability_tree.gd).
 var tree: AbilityTreeData
+var tree_tuning: TreeTuning
+const TREE_TUNING_PATH := "res://content/tree/tuning.tres"
 
 
 func _init() -> void:
@@ -42,6 +44,10 @@ func reload() -> void:
 	npcs = _load_dir(DIRS.npcs)
 	quests = _load_dir(DIRS.quests)
 	tree = AbilityTreeData.load_file()
+	tree_tuning = load(TREE_TUNING_PATH) if ResourceLoader.exists(TREE_TUNING_PATH) else TreeTuning.new()
+	var built := TreeContent.build(tree, tree_tuning)
+	abilities.merge(built.abilities)
+	items.merge(built.items)
 
 
 ## Every problem found in the loaded content; empty when all is valid.

@@ -25,6 +25,19 @@ extends Resource
 @export var growth: StatBlock = StatBlock.new()
 ## Usable while equipped; mastered permanently once enough AP is earned.
 @export var teaches: Array[AbilityDef] = []
+## Ability-tree items (design/Ability_Tree.xlsx): the tree they teach ("" = none),
+## and whether it's a scroll (not worn; placed in the learning slot) or a weapon.
+@export var tree: String = ""
+@export var tier: int = 0
+@export var is_scroll: bool = false
+
+
+## The tree ability this item teaches, or null.
+func tree_ability() -> AbilityDef:
+	for a in teaches:
+		if a != null and a.is_tree_ability():
+			return a
+	return null
 
 
 func validate() -> PackedStringArray:

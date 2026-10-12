@@ -30,7 +30,16 @@ static func capture(hero: Hero) -> Dictionary:
 		"ap": ap,
 		"mastered": hero.mastered.keys().map(func(id): return String(id)),
 		"quests": hero.quest_state.duplicate(true),
+		"learning": String(hero.learning_item.id) if hero.learning_item != null else "",
+		"mastery_contrib": _contrib_out(hero.mastery_contrib),
 	}
+
+
+static func _contrib_out(contrib: Dictionary) -> Dictionary:
+	var out := {}
+	for id in contrib:
+		out[String(id)] = float(contrib[id])
+	return out
 
 
 ## Builds a hero from saved data. `content` provides heroes/items/abilities by id.
@@ -68,6 +77,18 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 				hero.mastered[ability.id] = ability
 	var quests = content.get("quests")
 	hero.quest_state = QuestLog.normalize(data.get("quests"), quests if quests is Dictionary else {})
+	var contrib = data.get("mastery_contrib")
+	if typeof(contrib) == TYPE_DICTIONARY:
+		for key in contrib:
+			var ability: AbilityDef = content.abilities.get(StringName(str(key)))
+			if ability != null and ability.is_tree_ability():
+				var cap := float(ability.sheet.get("mastery_cap", 0.0))
+				hero.mastery_contrib[ability.id] = clampf(_float(contrib[key], 0.0), 0.0, cap + float(ability.sheet.get("mastery_on_learn", 0.0)))
+	# The learning slot: a scroll (held there, not in the bag) or a worn weapon.
+	var learning: ItemDef = content.items.get(StringName(str(data.get("learning", ""))))
+	if learning != null and learning.tree_ability() != null:
+		if learning.is_scroll or hero.equipment().values().has(learning):
+			hero.learning_item = learning
 	hero.refresh_stats()
 	hero.hp = hero.stats.hp
 	hero.mana = hero.stats.mana
