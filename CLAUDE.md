@@ -876,10 +876,20 @@ F. 15 debug console · 16 docs + playtest checklist.
     (the tooltip says why), dark = not in the game yet. Each node shows AP while
     learning and the Mastery it has given vs its cap. Lines join prerequisites (gold
     once mastered). Abilities you can use right now drag onto the action bar.
+26. **Learning slot UI (as built in step 14):** the inventory and the character sheet show
+    a Learning slot (blue) with what is being learned and its AP. Drop a scroll from the
+    bag (or right-click the scroll) or drag the weapon in hand onto it to learn; right-
+    click it or drag it to the bag to stop. The item being learned has a blue "L" and an
+    AP bar wherever it shows (slot or worn weapon). Item tooltips say where a tree item
+    stands: in your learning slot, how to learn it, locked (and why), mastered, or not
+    in the game yet; a scroll's growth reads "per level while in your learning slot".
+    The character sheet marks which in-progress ability is being learned. The right-
+    hand windows now sit side by side (stacked, they ran off a 720p screen).
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 14: learning slot indicator | Decision 26. Right-click a scroll learns it; windows on the right now sit side by side. |
 | 2026-10-12 | M3 step 13: ability tree screen | Decision 25. T opens it (a new reserved key); only usable abilities can be dragged. |
 | 2026-10-12 | M3 step 12: aiming UI | Decision 24. My choices: hold-and-release on the key, the targeted enemy is the default aim until the mouse moves, red only for range/line-of-sight problems. |
 | 2026-10-12 | M3 step 11: balance pass | Decision 23. Flagged: scrolls in the learning slot now give level-up growth (casters had no way to grow Magic Attack); Shaman and Grizzlehide retuned. |

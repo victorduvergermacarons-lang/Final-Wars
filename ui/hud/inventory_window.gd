@@ -25,11 +25,14 @@ func _init(p_hud: Hud) -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 16)
 	box.add_child(row)
+	var left := VBoxContainer.new()
+	row.add_child(left)
 	var equip := GridContainer.new()
 	equip.columns = 3
 	for slot in EquipSlot.COUNT:
 		equip.add_child(ItemSlotView.new(hud, ItemSlotView.Kind.EQUIP, slot))
-	row.add_child(equip)
+	left.add_child(equip)
+	left.add_child(LearningRow.new(hud))
 	var bag := GridContainer.new()
 	bag.columns = BAG_COLUMNS
 	for i in Bag.DEFAULT_SIZE:

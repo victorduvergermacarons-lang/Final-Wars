@@ -33,11 +33,14 @@ static func abilities(hero: Hero) -> Dictionary:
 		mastered.append(hero.mastered[id])
 	var progress: Array = []
 	var seen := {}
+	# Tree abilities earn AP only from the learning slot; old-style items from
+	# being worn.
+	var learning := hero.learning_item.tree_ability() if hero.learning_item != null else null
 	for ability in hero.taught_abilities():
 		if ability.ap_to_master > 0 and not hero.is_mastered(ability.id):
 			seen[ability.id] = true
 			progress.append({"ability": ability, "ap": hero.ap.get(ability.id, 0),
-					"needed": ability.ap_to_master, "earning": true})
+					"needed": ability.ap_to_master, "earning": not ability.is_tree_ability() or ability == learning})
 	for i in hero.bag.size():
 		var item := hero.bag.item_at(i)
 		if item == null:

@@ -31,7 +31,8 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool) -> S
 			var g := item.growth.get_stat(id) * rules.growth_fraction
 			if not is_zero_approx(g):
 				parts.append("+%s %s" % [_num(g), STAT_LABELS[id]])
-		lines.append("[color=%s]Per level while worn: %s[/color]" % [GREY, ", ".join(parts)])
+		lines.append("[color=%s]Per level while %s: %s[/color]" % [GREY,
+				"in your learning slot" if item.is_scroll else "worn", ", ".join(parts)])
 	for ability in item.teaches:
 		var progress := ""
 		if hero != null:
@@ -42,6 +43,8 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool) -> S
 		lines.append("Teaches [b]%s[/b]%s" % [ability.display_name, progress])
 		if ability.description != "":
 			lines.append("[color=%s]%s[/color]" % [GREY, ability.description])
+	if hero != null and item.tree_ability() != null:
+		lines.append_array(learning_lines(item, hero))
 	if item.description != "":
 		lines.append("[i]%s[/i]" % item.description)
 	if item.price > 0:
@@ -53,6 +56,32 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool) -> S
 			lines.append("If equipped:")
 			lines.append_array(cmp)
 	return "\n".join(lines)
+
+
+const BLUE := "#6fb6ff"
+
+
+## Where this ability-tree item stands for the hero: in the learning slot, mastered,
+## ready to learn (and how), or locked (and why).
+static func learning_lines(item: ItemDef, hero: Hero) -> PackedStringArray:
+	var ability := item.tree_ability()
+	var out: PackedStringArray = []
+	out.append("[color=%s]%s tree, tier %d%s[/color]" % [GREY, ability.tree, ability.tier,
+			"  ·  Scroll (not worn)" if item.is_scroll else ""])
+	if not ability.implemented:
+		out.append("[color=%s]This ability isn't in the game yet.[/color]" % RED)
+	elif hero.learning_item == item:
+		out.append("[color=%s]In your learning slot: earning AP.[/color]" % BLUE)
+	elif hero.is_mastered(ability.id):
+		pass # "mastered" is on the Teaches line
+	else:
+		var reason := TreeRules.can_learn(hero, ability)
+		if reason == "":
+			out.append("[color=%s]%s[/color]" % [BLUE, "Right-click or drag onto Learning to learn it." if item.is_scroll
+					else "Wield it, then drag it onto Learning to learn it."])
+		else:
+			out.append("[color=%s]Locked: %s[/color]" % [RED, AbilityTreeWindow.lock_reason(hero, ability)])
+	return out
 
 
 ## Lines like "+5 Physical Attack" (green) / "-3 HP" (red): the stat change from

@@ -86,4 +86,9 @@ func _run() -> void:
 	hud._toggle(hud.trees_window)
 	hud.trees_window.show_tree("Fire")
 	await _shot("8_fire_tree")
+	hud._toggle(hud.trees_window)
+	# 8. Inventory and character sheet with the learning slot.
+	hud.inventory_window.visible = true
+	hud._character.visible = true
+	await _shot("9_learning_slot")
 	get_tree().quit()

@@ -32,11 +32,18 @@ func _init(p_hud: Hud) -> void:
 	_mastery.fit_content = true
 	_mastery.custom_minimum_size = Vector2(360, 0)
 	box.add_child(_mastery)
+	box.add_child(LearningRow.new(hud))
+	# Scrolls once the list gets long, so the sheet fits on screen.
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(360, 110)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(scroll)
 	_abilities = RichTextLabel.new()
 	_abilities.bbcode_enabled = true
 	_abilities.fit_content = true
-	_abilities.custom_minimum_size = Vector2(360, 0)
-	box.add_child(_abilities)
+	_abilities.custom_minimum_size = Vector2(350, 0)
+	_abilities.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_abilities)
 
 
 func _cell(text: String) -> Label:
@@ -82,10 +89,11 @@ func _process(_delta: float) -> void:
 		lines.append("  [color=%s]%s[/color]" % [ItemTooltip.GREEN, a.display_name])
 	lines.append("[b]In progress:[/b]")
 	if ab.in_progress.is_empty():
-		lines.append("  [color=#a8a8b0]equip an item that teaches an ability[/color]")
+		lines.append("  [color=#a8a8b0]put a scroll or your weapon in the learning slot[/color]")
 	for p in ab.in_progress:
 		lines.append("  %s — AP %d / %d%s" % [p.ability.display_name, p.ap, p.needed,
-				"" if p.earning else "  [color=#a8a8b0](item not worn: not earning AP)[/color]"])
+				"  [color=#6fb6ff](learning)[/color]" if p.earning and p.ability.is_tree_ability() else (
+				"" if p.earning else "  [color=#a8a8b0](not learning)[/color]")])
 	_abilities.text = "\n".join(lines)
 
 

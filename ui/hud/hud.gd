@@ -154,8 +154,9 @@ func _build() -> void:
 	pager_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 	pager_box.add_child(pager_hint)
 
-	# Panels on the right.
-	var right := VBoxContainer.new()
+	# Panels on the right, side by side (stacked they ran off a 720p screen).
+	var right := HBoxContainer.new()
+	right.alignment = BoxContainer.ALIGNMENT_END
 	right.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	right.position = Vector2(-10, 10)
@@ -176,6 +177,8 @@ func _build() -> void:
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
 	right.add_child(quest_log)
+	for panel in right.get_children():
+		panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 
 	# Ability trees: a big window in the middle of the screen.
 	trees_window = AbilityTreeWindow.new(self)
