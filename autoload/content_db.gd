@@ -23,6 +23,8 @@ var zones := {} # id -> ZoneDef
 var buffs := {} # id -> BuffDef
 var npcs := {} # id -> NpcDef
 var quests := {} # id -> QuestDef
+## Ability trees from design/Ability_Tree.xlsx (via tools/import_ability_tree.gd).
+var tree: AbilityTreeData
 
 
 func _init() -> void:
@@ -39,6 +41,7 @@ func reload() -> void:
 	buffs = _load_dir(DIRS.buffs)
 	npcs = _load_dir(DIRS.npcs)
 	quests = _load_dir(DIRS.quests)
+	tree = AbilityTreeData.load_file()
 
 
 ## Every problem found in the loaded content; empty when all is valid.

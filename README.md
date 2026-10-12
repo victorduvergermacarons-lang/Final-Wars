@@ -53,6 +53,11 @@ Your action bar layout and keybinds are saved in `user://settings.cfg`.
 To test every feature step by step (no programming needed), follow
 [docs/playtest-checklist.md](docs/playtest-checklist.md).
 
+## Abilities spreadsheet
+Abilities come from `design/Ability_Tree.xlsx`. After changing it, re-run the import:
+`godot --headless --path . -s res://tools/import_ability_tree.gd` (details in
+[docs/ability-import.md](docs/ability-import.md)).
+
 ## Run the tests
 Tests use [GUT](https://github.com/bitwes/Gut) 9.7.1, vendored in `addons/gut`.
 

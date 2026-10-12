@@ -236,9 +236,11 @@ ui/              main menu, stores (characters, world, settings), HUD (action ba
                  inventory, character sheet, spellbook, dialogue, vendor, loot, quest log, tracker)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
+tools/           ability spreadsheet importer (xlsx reader, converter, CLI)
+design/          Ability_Tree.xlsx (source of truth for abilities)
 tests/           unit/ integration/ balance/ (GUT, test_*.gd), net/ (multi-process check),
                  visual/ (screenshot scene)
-docs/            local multiplayer testing, playtest checklist
+docs/            local multiplayer testing, playtest checklist, ability import
 ```
 
 ### Build order (milestone 1)
@@ -717,10 +719,18 @@ F. 15 debug console · 16 docs + playtest checklist.
 11. **Casting:** moving during a cast or channel cancels it (cooldown not spent);
     wind-ups like Smash 0.3 s can't be cancelled.
 12. **Importer:** GDScript run by Godot, no Python needed.
+13. **Ability data (as built in step 1):** `tools/import_ability_tree.gd` (with
+    `tools/xlsx_reader.gd`, `tools/ability_tree_importer.gd`) writes one data file,
+    `content/tree/ability_tree.json` (tiers, trees, abilities, items, rules text), loaded
+    as `ContentDB.tree` (`AbilityTreeData`). Ability ids are the sheet IDs (F01…); item
+    ids are slugs of the item names. Per-ability behavior will live in
+    `content/tree/behaviors/` so re-importing never touches it. A test fails if the JSON
+    is older than the spreadsheet. How-to: `docs/ability-import.md`.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 1: spreadsheet importer | Decision 13. Choices: one JSON data file (diff-friendly); sheet IDs as ability ids; item ids are name slugs; Mastery Required taken from the Tiers tab (a mismatching cell is a warning). |
 | 2026-10-12 | Milestone 3 plan (16 steps) and 12 decisions approved | "defaults OK". See "Milestone 3 decisions". |
 | 2026-10-12 | Milestone 3 brief recorded (abilities, mastery, targeting); `design/Ability_Tree.xlsx` is the source of truth for abilities | Plan and open questions sent for approval. Supersedes the earlier "disciplines" specialization proposal. |
 | 2026-10-12 | Readability: [E] Talk prompt, Bandit Camp banner + glowing quest area, tracker behind menus, texts no longer overlap | User reports (decision 21). The camp was unmarked, so "Find the bandit camp" was hard to find; its goal is now the banner tile, radius 2. |
