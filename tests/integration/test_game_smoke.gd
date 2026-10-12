@@ -107,6 +107,27 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_false(hud.dialogue.visible, "closed after walking away")
 	assert_false(hud.vendor_window.visible, "shop closes with the conversation")
 
+	# Captain Rowan offers a quest ("!"); accept it through the dialogue buttons.
+	await wait_process_frames(1)
+	assert_eq(game.client.npc_markers.get(&"rowan"), "!", "Rowan has a quest")
+	hero.move.place(Vector2i(11, 9))
+	input.talk_to_nearest()
+	await wait_physics_frames(6)
+	await wait_process_frames(1)
+	assert_eq(hud.dialogue.current_npc().def.id, &"rowan")
+	var offer := _option(hud, "! Wolves at the Gate")
+	assert_not_null(offer, "quest offered in the dialogue")
+	offer.pressed.emit()
+	await wait_process_frames(1)
+	_option(hud, "Accept").pressed.emit()
+	await wait_physics_frames(6)
+	await wait_process_frames(2)
+	assert_true(QuestLog.is_active(hero, &"wolves_at_the_gate"))
+	assert_string_contains(hud._tracker.text, "Wolves at the Gate", "tracked on screen")
+	assert_eq(game.client.npc_markers.get(&"rowan", ""), "", "no more to offer until it's done")
+	hero.move.place(Vector2i(14, 16))
+	await wait_process_frames(2)
+
 	# Leaving town through the east exit switches the map.
 	var old_view := game.get_node("WorldView")
 	hero.move.place(Vector2i(16, 9))
@@ -126,3 +147,10 @@ func test_solo_game_runs_with_hud() -> void:
 
 	game.free()
 	await wait_process_frames(1)
+
+
+func _option(hud: Hud, text: String) -> Button:
+	for b in hud.dialogue.find_children("*", "Button", true, false):
+		if b.text == text and not b.is_queued_for_deletion():
+			return b
+	return null

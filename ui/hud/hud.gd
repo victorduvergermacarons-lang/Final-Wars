@@ -277,6 +277,9 @@ func _on_events(events: Array) -> void:
 				client.say("%s joined the game." % e.name)
 			"left":
 				client.say("%s left the game." % e.name)
+			"world_flag":
+				if e.get("text", "") != "":
+					client.say(e.text)
 		if e.get("target", -2) != me:
 			continue
 		var quest_msg := QuestText.event_message(e, ContentDB.quests)

@@ -15,7 +15,10 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool) -> S
 	var lines: PackedStringArray = []
 	lines.append("[color=#%s][b]%s[/b][/color]" % [Rarity.color(item.rarity).to_html(false), item.display_name])
 	var kind: String = EquipSlot.TYPE_NAMES[item.slot] if item.is_equippable() else ""
-	lines.append("[color=%s]%s%s[/color]" % [GREY, Rarity.NAMES[item.rarity], "  ·  " + kind if kind != "" else ""])
+	if item.quest_item:
+		lines.append("[color=#ffd75e]Quest item[/color]")
+	else:
+		lines.append("[color=%s]%s%s[/color]" % [GREY, Rarity.NAMES[item.rarity], "  ·  " + kind if kind != "" else ""])
 	for id in Stat.all():
 		var v := item.stats.get_stat(id)
 		if not is_zero_approx(v):

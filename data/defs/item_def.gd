@@ -14,6 +14,8 @@ extends Resource
 @export var price: int = 0
 ## How many fit in one bag slot. Equippable items don't stack.
 @export var max_stack: int = 1
+## Quest items: shown as such, can't be sold.
+@export var quest_item: bool = false
 ## Consumables: using the item casts this ability on yourself and uses one up.
 @export var use_ability: AbilityDef
 ## Added to the hero's stats while equipped.

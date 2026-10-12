@@ -126,5 +126,8 @@ func test_starter_content_uses_the_new_positions() -> void:
 	for id in [&"sword", &"staff", &"shield", &"holy_charm"]:
 		assert_eq(db.items[id].rarity, Rarity.Id.COMMON)
 	for item in db.items.values():
-		assert_gt(item.price, 0)
+		if not item.quest_item:
+			assert_gt(item.price, 0, "%s has a price" % item.id)
+		else:
+			assert_eq(item.price, 0, "quest items can't be sold")
 	db.free()

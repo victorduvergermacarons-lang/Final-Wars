@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_rd1rx"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_teooi"]
+[ext_resource type="Resource" path="res://content/items/greataxe.tres" id="3_dbbf3"]
+[ext_resource type="Resource" path="res://content/items/frostweave_robe.tres" id="4_6cmjj"]
+[ext_resource type="Resource" path="res://content/items/acolytes_leggings.tres" id="5_5snu7"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="6_fvlaa"]
+
+[sub_resource type="Resource" id="Resource_7iaoo"]
+script = ExtResource("1_rd1rx")
+text = "Old Grizzlehide slain"
+enemy = &"old_grizzlehide"
+
+[resource]
+script = ExtResource("6_fvlaa")
+id = &"beast_of_greenfields"
+title = "The Beast of Greenfields"
+offer_text = "Old Grizzlehide. He roams the fields between the river crossings and nothing alone survives him. Gather friends — at least four — and end him."
+progress_text = "Grizzlehide walks a loop through the middle of the fields. Don't fight him alone."
+complete_text = "You actually did it. Greenfields is ours again. Take your pick from the armoury — you've earned it."
+giver = &"rowan"
+prerequisites = Array[StringName]([&"bandit_camp"])
+min_level = 3
+objectives = Array[ExtResource("1_rd1rx")]([SubResource("Resource_7iaoo")])
+reward_xp = 500
+reward_gold = 60
+reward_choices = Array[ExtResource("2_teooi")]([ExtResource("3_dbbf3"), ExtResource("4_6cmjj"), ExtResource("5_5snu7")])
+sets_world_flag = &"grizzlehide_slain"
+world_flag_message = "Bells ring in Millbrook: Old Grizzlehide is dead!"

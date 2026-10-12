@@ -135,6 +135,10 @@ func projectiles() -> Array:
 	return mirror.projectiles
 
 
+func world_flags() -> Dictionary:
+	return mirror.world_flags
+
+
 func get_actor(id: int) -> Actor:
 	return mirror.get_actor(id)
 

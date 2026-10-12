@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_xlsyo"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_prp03"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="3_gmb0r"]
+
+[sub_resource type="Resource" id="Resource_0rn8w"]
+script = ExtResource("1_xlsyo")
+text = "Wolves slain"
+count = 4
+enemy = &"wolf"
+
+[resource]
+script = ExtResource("3_gmb0r")
+id = &"wolves_at_the_gate"
+title = "Wolves at the Gate"
+offer_text = "Wolves have been taking sheep right outside the east gate. Thin the pack: four should teach them."
+progress_text = "Four wolves. They hunt in the fields just past the gate."
+complete_text = "Good work. The shepherds will sleep easier. I may have more for you."
+giver = &"rowan"
+objectives = Array[ExtResource("1_xlsyo")]([SubResource("Resource_0rn8w")])
+reward_xp = 120
+reward_gold = 20

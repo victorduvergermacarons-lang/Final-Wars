@@ -176,6 +176,19 @@ beats a Brute at level 3 (~90% HP lost), staff hero beats a Shaman at level 2 (~
 sword hero beats a Skirmisher at level 4 80% of the time; Grizzlehide kills a lone or
 paired level-5 hero but a level-5 group of four wins (~46 s).
 
+### Milestone 2 quests (step 17)
+| Quest | Giver → hand in | Needs | Objectives | Rewards |
+|-------|-----------------|-------|------------|---------|
+| Word to Hilda | Old Maren → Hilda | Lv 1 | Talk to Hilda | 40 XP, 5 g, 2 Minor Health Potions |
+| Goblin Fetishes | Old Maren | Lv 2 | Collect 5 Goblin Fetishes (Goblin Shamans, 60%, only while on the quest) | 180 XP, 25 g, choice: Iron Helm / Swift Boots / Hunting Bow |
+| Wolves at the Gate (chain 1/3) | Captain Rowan | Lv 1 | Kill 4 Wolves | 120 XP, 20 g |
+| The Bandit Camp (chain 2/3) | Captain Rowan | Lv 2, chain 1 | Find the camp (22,19 in Greenfields), break 2 Bandit Brutes | 220 XP, 30 g |
+| The Beast of Greenfields (chain 3/3) | Captain Rowan | Lv 3, chain 2 | Kill Old Grizzlehide | 500 XP, 60 g, choice: Greataxe / Frostweave Robe / Acolyte's Leggings; world event |
+
+World event: the first time anyone hands in The Beast of Greenfields, the host sets the
+`grizzlehide_slain` world flag (saved in `user://world.json`), everyone in town sees
+"Bells ring in Millbrook…", and Captain Rowan greets everyone differently from then on.
+
 ## Architecture (approved 2026-10-11)
 
 **Engine:** Godot 4.7.x (pinned to 4.7.2-stable), GDScript, GL Compatibility renderer.
@@ -538,10 +551,16 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     quests, details, Abandon). The tracker on the right edge lists every active
     quest's objectives, turning gold with "Return to …" when done. Quest messages go
     to the message log.
+19. **World events (as built in step 17):** a quest can set a world flag on hand-in
+    (`QuestDef.sets_world_flag`, once per world, with an announcement). Flags are sent
+    to clients in every snapshot; NPCs can swap their greeting per flag
+    (`NpcDef.flag_greetings`). Quest items (`ItemDef.quest_item`) show "Quest item" and
+    can't be sold.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M2 step 17: 5 sample quests incl. Rowan's 3-quest chain; world event "grizzlehide_slain" | See "Milestone 2 quests". Quest texts, rewards and the Rowan greeting change are content choices, easy to edit in `content/quests/`. |
 | 2026-10-12 | M2 step 16: quest UI | Decision 18. Quest log on L. |
 | 2026-10-12 | M2 step 15: quest system | Decision 17. Implementation choices: shared credit within 15 tiles or via the threat table; turn-in refused when the bag can't hold the rewards; abandon allowed; no repeatable quests. |
 | 2026-10-12 | M2 step 14: Old Grizzlehide roams Greenfields | Patrol + elite as built (decision 16). Brute retuned to HP 320 / Crushing Blow 12 + 1.0×PhysAtk every 3.5 s and Skirmisher to HP 220 after the balance report. |

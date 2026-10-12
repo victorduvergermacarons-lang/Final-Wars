@@ -114,3 +114,34 @@ func test_old_grizzlehide_is_a_patrolling_elite() -> void:
 			var path := Pathfinder.find_path(grid, s.patrol[i], s.patrol[(i + 1) % s.patrol.size()],
 					int(def.stats.jump), {}, -1, 100000)
 			assert_false(path.is_empty(), "patrol leg %d is walkable" % i)
+
+
+func test_sample_quests() -> void:
+	assert_eq(db.quests.size(), 5)
+	var chain := [&"wolves_at_the_gate", &"bandit_camp", &"beast_of_greenfields"]
+	for i in range(1, chain.size()):
+		assert_eq(db.quests[chain[i]].prerequisites, [chain[i - 1]] as Array[StringName], "%s follows %s" % [chain[i], chain[i - 1]])
+	var kinds := {}
+	for q in db.quests.values():
+		assert_true(db.npcs.has(q.giver), "%s giver exists" % q.id)
+		for o in q.objectives:
+			kinds[o.kind] = true
+			if o.kind == QuestObjective.Kind.KILL:
+				assert_true(db.enemies.has(o.enemy), "%s: enemy %s exists" % [q.id, o.enemy])
+			elif o.kind == QuestObjective.Kind.REACH:
+				assert_true(GridModel.from_zone(db.zones[o.zone]).is_walkable(o.tile))
+	assert_eq(kinds.size(), 4, "every objective kind is used")
+	var beast: QuestDef = db.quests[&"beast_of_greenfields"]
+	assert_eq(beast.reward_choices.size(), 3, "item choice")
+	assert_eq(beast.sets_world_flag, &"grizzlehide_slain")
+	var fetish: ItemDef = db.items[&"goblin_fetish"]
+	assert_true(fetish.quest_item)
+	var drops: Array = db.enemies[&"goblin_shaman"].loot.entries.filter(func(e): return e.item == fetish)
+	assert_eq(drops.size(), 1)
+	assert_eq(drops[0].quest_id, &"goblin_fetishes", "fetishes only drop while on the quest")
+
+
+func test_rowan_greets_differently_after_grizzlehide() -> void:
+	var rowan: NpcDef = db.npcs[&"rowan"]
+	assert_eq(rowan.greeting_for({}), rowan.greeting)
+	assert_ne(rowan.greeting_for({"grizzlehide_slain": true}), rowan.greeting)

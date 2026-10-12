@@ -26,6 +26,8 @@ extends Resource
 @export var reward_choices: Array[ItemDef] = []
 ## World flag the host sets when anyone turns this in ("" = none).
 @export var sets_world_flag: StringName = &""
+## Announced to everyone in the zone the first time the flag is set.
+@export_multiline var world_flag_message: String = ""
 
 
 func turn_in_npc() -> StringName:

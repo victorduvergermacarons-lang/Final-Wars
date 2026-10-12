@@ -38,7 +38,7 @@ func _init(p_hud: Hud) -> void:
 func open(npc: Npc) -> void:
 	npc_id = npc.id
 	_title.text = npc.display_name
-	set_text(npc.def.greeting)
+	set_text(npc.def.greeting_for(hud.session.world_flags()))
 	clear_options()
 	visible = true
 	opened.emit(npc)

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_5hhuu"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_qdwi8"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="3_ifv6d"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="4_to60d"]
+
+[sub_resource type="Resource" id="Resource_nwc75"]
+script = ExtResource("1_5hhuu")
+kind = 2
+text = "Tell Hilda about the herbs"
+npc = &"hilda"
+
+[resource]
+script = ExtResource("4_to60d")
+id = &"word_to_hilda"
+title = "Word to Hilda"
+offer_text = "Hilda at the stall has been asking after my herbs. Tell her the frost got them this year, would you? My knees won't carry me there."
+complete_text = "Frost, eh? Thank Maren for telling me. Here, take these for your trouble."
+giver = &"maren"
+turn_in = &"hilda"
+objectives = Array[ExtResource("1_5hhuu")]([SubResource("Resource_nwc75")])
+reward_xp = 40
+reward_gold = 5
+reward_items = Array[ExtResource("2_qdwi8")]([ExtResource("3_ifv6d"), ExtResource("3_ifv6d")])

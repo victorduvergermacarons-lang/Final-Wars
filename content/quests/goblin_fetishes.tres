@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_35y4k"]
+[ext_resource type="Resource" path="res://content/items/goblin_fetish.tres" id="2_yiuqc"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_oin2b"]
+[ext_resource type="Resource" path="res://content/items/iron_helm.tres" id="4_8qpji"]
+[ext_resource type="Resource" path="res://content/items/swift_boots.tres" id="5_45l0w"]
+[ext_resource type="Resource" path="res://content/items/hunting_bow.tres" id="6_tgr5e"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="7_hjl1o"]
+
+[sub_resource type="Resource" id="Resource_cj1t3"]
+script = ExtResource("1_35y4k")
+kind = 1
+text = "Goblin Fetishes"
+count = 5
+item = ExtResource("2_yiuqc")
+
+[resource]
+script = ExtResource("7_hjl1o")
+id = &"goblin_fetishes"
+title = "Goblin Fetishes"
+offer_text = "The goblin shamans on the western hill carve fetishes that sour the wells. Bring me five and I'll see them burned."
+progress_text = "Five fetishes, child. The shamans keep their distance — corner them or out-shoot them."
+complete_text = "Ugh, they still hum. Into the fire they go. Take something for your pains."
+giver = &"maren"
+min_level = 2
+objectives = Array[ExtResource("1_35y4k")]([SubResource("Resource_cj1t3")])
+reward_xp = 180
+reward_gold = 25
+reward_choices = Array[ExtResource("3_oin2b")]([ExtResource("4_8qpji"), ExtResource("5_45l0w"), ExtResource("6_tgr5e")])

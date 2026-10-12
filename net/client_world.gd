@@ -22,6 +22,8 @@ var local_hero_id: int = -1
 var _actors := {} # id -> Actor
 ## Projectiles in flight, as plain data from the host (see Projectile.to_dict).
 var projectiles: Array = []
+## One-time world events that have happened (flag id -> true), from the host.
+var world_flags := {}
 var _pending: Array = [] # unacknowledged local intents: {seq, kind: "step"|"face", ...}
 var _next_seq := 1
 
@@ -107,6 +109,9 @@ func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
 	projectiles = snap.get("projectiles", [])
+	world_flags.clear()
+	for flag in snap.get("flags", []):
+		world_flags[String(flag)] = true
 	var seen := {}
 	for d in snap.actors:
 		var id: int = d.id

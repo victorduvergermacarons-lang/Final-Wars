@@ -505,7 +505,7 @@ func _intent_turn_in_quest(hero: Hero, npc_id: int, quest_id: StringName, choice
 		emit(e)
 	if def.sets_world_flag != &"" and not world_flags.has(String(def.sets_world_flag)):
 		world_flags[String(def.sets_world_flag)] = true
-		emit({"type": "world_flag", "flag": def.sets_world_flag})
+		emit({"type": "world_flag", "flag": def.sets_world_flag, "text": def.world_flag_message})
 	return ""
 
 

@@ -170,3 +170,11 @@ func test_other_heroes_private_data_is_not_sent() -> void:
 	_sync()
 	assert_eq(mirror.local_hero().gold, 42)
 	assert_eq(mirror.get_actor(other.id).gold, 0, "never received")
+
+
+func test_world_flags_reach_clients() -> void:
+	_sync()
+	assert_eq(mirror.world_flags, {})
+	world.world_flags["grizzlehide_slain"] = true
+	_sync()
+	assert_eq(mirror.world_flags, {"grizzlehide_slain": true})
