@@ -726,10 +726,16 @@ F. 15 debug console · 16 docs + playtest checklist.
     ids are slugs of the item names. Per-ability behavior will live in
     `content/tree/behaviors/` so re-importing never touches it. A test fails if the JSON
     is older than the spreadsheet. How-to: `docs/ability-import.md`.
+14. **Mastery stats (as built in step 2):** 7 new stats (Fire, Earth, Water, Air, Sword,
+    Bow, Hammer Mastery) after the 12 combat stats, so items and item growth can carry
+    them. `Mastery.permanent` = base + growth (Mastery earned from learning and using
+    abilities is added to growth, so it saves with the character); `Mastery.total` adds
+    gear and buffs. The character sheet lists each tree's Mastery with the gear part.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 2: Mastery stats | Decision 14. Earned Mastery lives in permanent growth. |
 | 2026-10-12 | M3 step 1: spreadsheet importer | Decision 13. Choices: one JSON data file (diff-friendly); sheet IDs as ability ids; item ids are name slugs; Mastery Required taken from the Tiers tab (a mismatching cell is a warning). |
 | 2026-10-12 | Milestone 3 plan (16 steps) and 12 decisions approved | "defaults OK". See "Milestone 3 decisions". |
 | 2026-10-12 | Milestone 3 brief recorded (abilities, mastery, targeting); `design/Ability_Tree.xlsx` is the source of truth for abilities | Plan and open questions sent for approval. Supersedes the earlier "disciplines" specialization proposal. |

@@ -5,7 +5,9 @@ extends RefCounted
 ## currently worn, a green/red comparison with what they would replace.
 
 const STAT_LABELS := ["HP", "Mana", "Physical Attack", "Magic Attack", "Physical Defense",
-	"Magic Defense", "Crit Rate", "Crit Damage", "Speed", "Accuracy", "Evasion", "Jump"]
+	"Magic Defense", "Crit Rate", "Crit Damage", "Speed", "Accuracy", "Evasion", "Jump",
+	"Fire Mastery", "Earth Mastery", "Water Mastery", "Air Mastery", "Sword Mastery",
+	"Bow Mastery", "Hammer Mastery"]
 const GREEN := "#5fe36b"
 const RED := "#ff6b5b"
 const GREY := "#a8a8b0"

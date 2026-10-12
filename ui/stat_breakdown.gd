@@ -4,14 +4,15 @@ extends RefCounted
 ## equipped gear, and active buffs.
 
 
-## One row per stat: {"stat", "base", "growth", "gear", "buffs", "total"}.
-static func rows(hero: Hero, now: float) -> Array[Dictionary]:
+## One row per stat in `ids` (default: the combat stats):
+## {"stat", "base", "growth", "gear", "buffs", "total"}.
+static func rows(hero: Hero, now: float, ids: Array[Stat.Id] = Stat.core()) -> Array[Dictionary]:
 	var gear := StatBlock.new()
 	for item in hero.equipped_items():
 		gear.add(item.stats)
 	var total := hero.current_stats(now)
 	var out: Array[Dictionary] = []
-	for id in Stat.all():
+	for id in ids:
 		var base := hero.base_stats.get_stat(id)
 		var growth := hero.growth.get_stat(id)
 		var g := gear.get_stat(id)

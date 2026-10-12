@@ -7,6 +7,7 @@ var hud: Hud
 var _header: Label
 var _table: GridContainer
 var _abilities: RichTextLabel
+var _mastery: RichTextLabel
 var _cells: Array[Label] = []
 
 
@@ -24,8 +25,13 @@ func _init(p_hud: Hud) -> void:
 	for h in ["Stat", "Base", "Growth", "Gear", "Buffs", "Total"]:
 		var l := _cell(h)
 		l.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
-	for i in Stat.COUNT * 6:
+	for i in Stat.CORE_COUNT * 6:
 		_cells.append(_cell(""))
+	_mastery = RichTextLabel.new()
+	_mastery.bbcode_enabled = true
+	_mastery.fit_content = true
+	_mastery.custom_minimum_size = Vector2(360, 0)
+	box.add_child(_mastery)
 	_abilities = RichTextLabel.new()
 	_abilities.bbcode_enabled = true
 	_abilities.fit_content = true
@@ -57,6 +63,17 @@ func _process(_delta: float) -> void:
 		_cells[i + 3].text = _signed(r.gear)
 		_cells[i + 4].text = _signed(r.buffs)
 		_cells[i + 5].text = _num(r.total)
+	var m: PackedStringArray = ["[b]Mastery[/b] (permanent unlocks tiers; gear only adds power):"]
+	for tree in Mastery.TREES:
+		var perm := Mastery.permanent(hero, tree)
+		var total := Mastery.total(hero, tree, hud.session.now())
+		if is_zero_approx(perm) and is_zero_approx(total):
+			continue
+		var extra := total - perm
+		m.append("  %s %s%s" % [tree, _num(perm), "  [color=%s](+%s from gear)[/color]" % [ItemTooltip.GREEN, _num(extra)] if extra > 0.001 else ""])
+	if m.size() == 1:
+		m.append("  [color=#a8a8b0]none yet: master and use abilities to grow it[/color]")
+	_mastery.text = "\n".join(m)
 	var ab := StatBreakdown.abilities(hero)
 	var lines: PackedStringArray = ["[b]Mastered[/b] (usable without their item):"]
 	if ab.mastered.is_empty():
