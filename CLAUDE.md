@@ -6,9 +6,11 @@ This file is the living design doc. Keep it current as decisions are made.
 
 **Status:** Milestone 1 complete and playtested, including the post-M1 combat revision
 (facing, directional abilities, faster enemies, reaction delay). Milestone 2 built and
-playtested; post-playtest fixes done. **Milestone 3 (abilities, mastery, targeting) is
-in progress** — brief, plan and decisions below. For the numbers the game actually uses today, see **Gameplay as built** below;
-the brief sections keep the original wording.
+playtested; post-playtest fixes done. **Milestone 3 (abilities, mastery, targeting) built**
+(all 16 steps); awaiting a playtest with `docs/playtest-checklist-m3.md`. For the numbers
+the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
+the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
+wording.
 
 ## Working agreements
 - Propose structure/architecture changes and wait for approval before implementing them.
@@ -93,7 +95,75 @@ Quests, story, dungeons, save/load, inventory UI beyond basic equipping, matchma
 final art, sound, and more than 2 players. Don't build these yet, but don't make
 choices that block them.
 
+## Gameplay as built: Milestone 3 (ability trees)
+
+Abilities come from `design/Ability_Tree.xlsx` (names, tiers, cooldowns, Mastery
+numbers, prerequisites, items) plus behavior files in `content/tree/behaviors/`
+(targeting, range, effects, mana). Decisions 13–27 below describe the rules; tuned
+values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`.
+
+- **Start:** Rusty Shortsword in hand (Slash), Ember Fist Scroll in the learning slot
+  (Fire Punch), Mender's Scroll in the bag (Healing Touch). Adventurer base stats as below.
+- **Keys:** hold an aimed ability's key to aim, release to cast; T ability trees;
+  ` debug console (debug builds).
+- **Amounts:** (tier default + Scales With stats) × effect power × (1 + 0.1% per tree
+  Mastery). Tier defaults: damage 14/24/38/55/78, healing 24/36/54/76/104. Durations
+  +0.05% per Mastery point. Haste −25%.
+- **AP to master by tier:** 20/30/40/50/50. AP: 10 per level-up + the enemy's kill AP, to
+  the learning item only. Mastery on learn 5 (T1) / 10 (T2); per use 0.2–0.6; caps 50 / 70.
+- **Tiers open at** 0 / 150 / 350 / 600 / 900 permanent Mastery.
+- **Learning scroll growth per level** (50% applied): Fire MagAtk 3, Mana 6, Fire Mastery 2;
+  Water MagAtk 2, MagDef 2, Mana 8, Water Mastery 2; Earth MagAtk 1, PhysDef 2, HP 8, Earth
+  Mastery 2; Air MagAtk 2, Evasion 1, Mana 6, Air Mastery 2. Weapons: sword PhysAtk 10 /
+  Acc 4 (growth PhysAtk 3, HP 8, Sword Mastery 2), bow PhysAtk 13 / Acc 8, hammer PhysAtk
+  15 / PhysDef 5 / HP 15; +50% per tier above 1.
+
+| ID | Ability | Item | Targeting | Effect (power × tier default) | Mana | CD |
+|----|---------|------|-----------|-------------------------------|------|----|
+| F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent | 1.0 magical | 5 | 2 |
+| F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent | 0.8 + burn 0.6 over 3 s | 8 | 4 |
+| F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 6 | 2 |
+| F04 | Kindle | Kindling Scroll | Self | next 3 Fire casts +30% (20 s), off GCD | 10 | 20 |
+| F05 | Flame Dash | Scroll of Burning Feet | Ground 8-way, 3 | dash 3, trail burns 3 s (0.4/s); charges 1 +1/300 | 10 | 8 |
+| F06 | Fire Whip | Lash of Embers Scroll | Skillshot 8-way line 3, pierce | 1.1 | 10 | 6 |
+| F07 | Fireball | Scroll of the Fireball | Ground 5, 3×3, 0.4 s telegraph | 1.2 | 15 | 8 |
+| F08 | Burning Ground | Scorched Earth Scroll | Ground 4, 3×3 zone 6 s | 0.35 per s | 15 | 14 |
+| F09 | Blazing Combo | Blazing Fist Scroll | Targeted, adjacent | 3 × 0.5, knockback 1 | 12 | 10 |
+| W01 | Healing Touch | Mender's Scroll | Targeted ally, 2 | heal 1.0 | 8 | 3 |
+| W02 | Water Whip | River Lash Scroll | Targeted, 3 | 1.0 | 6 | 2 |
+| W03 | Flow State | Scroll of the Current | Targeted ally, 3 | Haste 30 s | 10 | 20 |
+| W04 | Frost Shard | Frost Shard Scroll | Skillshot, 4, 12 t/s | 0.9 + slow ×1.5 2 s | 8 | 4 |
+| W05 | Soothing Mist | Mist Scroll | Targeted ally, 4 | heal 1.5 over 12 s | 12 | 8 |
+| W06 | Water Pulse | Wave Scroll | Skillshot 8-way line 3, pierce | 0.9 + push 1 along the wave | 12 | 8 |
+| W07 | Leeching Tide | Leech Tide Scroll | Targeted, 3 | 1.0, heals you 50% | 12 | 10 |
+| W08 | Tidal Blessing | Tidal Scroll | Targeted ally, 3 | +20 PhysDef/MagDef 45 s | 12 | 25 |
+| W09 | Ice Spikes | Glacier Scroll | Ground 4, 3×3, 0.4 s telegraph | 1.0 + slow ×1.5 3 s | 15 | 10 |
+| A01 | Air Palm | Open Palm Scroll | Targeted, adjacent | 0.6 + knockback 1 | 6 | 4 |
+| A02 | Gust | Breeze Scroll | Targeted, 3 | 0.5 + interrupt, off GCD | 8 | 10 |
+| A03 | Air Step | Featherstep Scroll | Self | 5 free steps (10 s), off GCD | 8 | 10 |
+| A05 | Air Blast | Gale Scroll | Targeted, 3 | 0.6 + knockback 3, +25 on impact | 12 | 10 |
+| E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
+| E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
+| E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
+| E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2, 12 s (+1 tile / 300 Earth) | 15 | 15 |
+| S01 | Slash | Rusty Shortsword | Targeted, adjacent | 1.0 physical | — | 2 |
+| S04 | Lunge | Traveler's Longsword | Targeted, 3 | dash 2, then 1.1 if adjacent | — | 8 |
+| B01 | Quick Shot | Hunter's Shortbow | Targeted, 5 | 0.9 | — | 2 |
+| B02 | Aimed Shot | Yew Longbow | Skillshot, 7, 1 s draw, 14 t/s | 1.8 | — | 6 |
+| H01 | Smash | Iron Mallet | Targeted, adjacent, 0.3 s wind-up | 1.6 | — | 4 |
+| H02 | Ground Slam | Quarry Maul | Self, 3×3 | 1.0 | — | 8 |
+
+Enemy attacks (Milestone 3): Bite and Quick Slash 0.3 s wind-up, Crushing Blow 0.6 s
+(Targeted, adjacent; Accuracy vs Evasion still rolls), Shadow Bolt any-angle skillshot,
+Grizzlehide Cleave 0.4 s wound-up 3-tile cone, Charge 1 s telegraphed tile then rush +
+maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Hilda: potions, Iron Helm,
+Swift Boots and the 20 implemented tier-1 scrolls (25 g) and weapons (30 g).
+
 ## Gameplay as built (end of Milestone 1, after playtest)
+
+> Milestone 3 retired the hero abilities and weapons below (Strike … Rallying Roar, Sword,
+> Staff, Shield, Holy Charm, Hunting Bow, Greataxe); the armor stays as stat-only gear.
+> Enemy rows still apply except where the Milestone 3 section says otherwise.
 
 Quick reference of the values in the shipped content and `content/rules/default_rules.tres`.
 Tune them there; update this table when they change.
@@ -239,9 +309,10 @@ input/           player input → intents
 scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator
 design/          Ability_Tree.xlsx (source of truth for abilities)
-tests/           unit/ integration/ balance/ (GUT, test_*.gd), net/ (multi-process check),
-                 visual/ (screenshot scene)
-docs/            local multiplayer testing, playtest checklist, ability import
+tools/once/      one-off content conversions (kept for the record)
+tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
+                 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
+docs/            local multiplayer testing, playtest checklists (M2, M3), ability import
 ```
 
 ### Build order (milestone 1)
@@ -899,6 +970,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Milestone 3 built (step 16: docs, playtest checklist) | `docs/playtest-checklist-m3.md` for a non-programmer; the M2 checklist points to it for the changed parts. "Gameplay as built: Milestone 3" added. |
 | 2026-10-12 | M3 step 15: debug console | Decision 27. My choices: debug builds allow it for every player (playtesting), release builds never; +15% per level for spawned enemies; extra heal and gold commands. |
 | 2026-10-12 | M3 step 14: learning slot indicator | Decision 26. Right-click a scroll learns it; windows on the right now sit side by side. |
 | 2026-10-12 | M3 step 13: ability tree screen | Decision 25. T opens it (a new reserved key); only usable abilities can be dragged. |

@@ -1,5 +1,11 @@
 # Final Wars: Milestone 2 playtest checklist
 
+> **Milestone 3 changed abilities, items and enemy attacks.** Sections 3–5, 7, 9, the
+> rewards in 10 and resurrection in 11 describe the old abilities (Strike, Fireball,
+> Heal, Block, Resurrect…) and the old starting gear, which are gone. Use the
+> [Milestone 3 checklist](playtest-checklist-m3.md) for those; everything else here
+> (town, quests, saving, trading, zones, playing together) still applies.
+
 This list walks you through every feature in the game. You don't need to know
 anything about programming. Work through the sections in order, tick each box when
 the game does what the **Expect** line says, and write down anything that doesn't
