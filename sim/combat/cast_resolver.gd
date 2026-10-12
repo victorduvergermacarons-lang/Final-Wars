@@ -69,10 +69,12 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 	# by its projectile or delayed hit; charges are used up after.
 	out.bonus = bonus if bonus >= 0.0 else caster.buffs.damage_dealt_multiplier(ability.tree, ctx.now)
 	ctx.damage_bonus = out.bonus
+	var had := caster.buffs.ids()
+	had[&""] = true # never empty: spare what this cast applies
 	_resolve(ctx, caster, ability, target, aim, out)
 	ctx.damage_bonus = 1.0
 	if pay_mode != Pay.FREE:
-		caster.buffs.consume_on_cast(ability.tree, ctx.now)
+		caster.buffs.consume_on_cast(ability.tree, ctx.now, had)
 	if out.projectile != null:
 		out.projectile.damage_bonus = out.bonus
 	if out.pending != null:

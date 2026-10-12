@@ -56,3 +56,20 @@ equipped.
 Item ids are made from the item name (`Scroll of the Fireball` → `scroll_of_the_fireball`).
 Renaming an item changes its id, so characters holding the old one lose it; ability IDs
 (F01, W05…) are what saves and action bars use, so keep those stable.
+
+## Behavior files
+
+Each implemented ability has `content/tree/behaviors/<ID>.tres` (an `AbilityDef`: targeting,
+range, area, effects). The buffs they apply live in `content/buffs/`. The first set was
+written by a generator:
+
+    godot --headless --path . -s res://tools/make_behaviors.gd          # only missing files
+    godot --headless --path . -s res://tools/make_behaviors.gd -- --force  # rewrite all
+
+Without `--force` it never touches existing files, so tune the `.tres` files in the
+Godot inspector freely. Damage and healing use the tier default (`base_amount` = −1) plus
+the sheet's Scales With stats, times the effect's `power` (light hits below 1, heavy
+above). Name, cooldown, tier and Mastery numbers always come from the sheet.
+
+When the game loads in a debug build it prints a **DODGE WARNING** for every skillshot or
+telegraph that resolves faster than a step (step cooldown + 0.3 s).

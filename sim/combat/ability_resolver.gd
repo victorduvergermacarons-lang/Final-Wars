@@ -168,7 +168,8 @@ static func has_target_effects(ability: AbilityDef) -> bool:
 static func _extra(caster: Actor, ability: AbilityDef, effect: AbilityEffect, now: float) -> int:
 	if effect.mastery_per_extra <= 0.0 or not ability.is_tree_ability():
 		return 0
-	return floori(Mastery.total(caster, ability.tree, now) / effect.mastery_per_extra)
+	var extra := floori(Mastery.total(caster, ability.tree, now) / effect.mastery_per_extra)
+	return mini(extra, effect.max_extra) if effect.max_extra > 0 else extra
 
 
 ## A wall across the caster's facing, centred on the aimed tile, skipping occupied tiles.
@@ -225,8 +226,15 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				raw *= CombatMath.crit_multiplier(caster_stats.crit_dmg, rules)
 			var def := CombatMath.defense_for(effect.damage_type, target_stats, rules)
 			var dealt := CombatMath.final_damage(raw, def.x, def.y, rules)
+			var before := target.hp
 			deal_damage(ctx, caster, target, ability.id, dealt, crit, events, ["", "side", "behind"][flank],
 					effect.threat_multiplier, ability.is_melee())
+			if effect.lifesteal > 0.0 and caster.alive and before > target.hp:
+				var max_hp := caster.current_stats(ctx.now).hp
+				var healed := clampf(roundf((before - target.hp) * effect.lifesteal), 0.0, maxf(max_hp - caster.hp, 0.0))
+				caster.hp += healed
+				events.append({"type": "heal", "source": caster.id, "target": caster.id, "ability": ability.id,
+						"amount": healed, "crit": false})
 
 		AbilityEffect.Kind.KNOCKBACK, AbilityEffect.Kind.PULL:
 			if not target.alive or target == caster:

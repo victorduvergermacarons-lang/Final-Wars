@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_mqvph"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_o2wwk"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_drjfd"]
+
+[sub_resource type="Resource" id="Resource_wuhwu"]
+script = ExtResource("1_mqvph")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+
+[resource]
+script = ExtResource("3_drjfd")
+id = &"F01"
+mana_cost = 5.0
+effects = Array[ExtResource("1_mqvph")]([SubResource("Resource_wuhwu")])
+targeting = 1

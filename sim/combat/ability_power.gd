@@ -3,7 +3,7 @@ extends RefCounted
 ## The ability power formulas, in one place (CLAUDE.md, Milestone 3 §2). All
 ## constants live in CombatRules ("Ability power" group):
 ##
-##   amount   = (base + Σ coefficient × stat) × (1 + Mastery × mastery_power_per_point)
+##   amount   = (base + Σ coefficient × stat) × power × (1 + Mastery × mastery_power_per_point)
 ##   duration = seconds × (1 + Mastery × mastery_duration_per_point)
 ##   charges  = base charges + floor(Mastery / Mastery per extra charge)
 ##
@@ -27,7 +27,7 @@ static func amount(caster: Actor, ability: AbilityDef, effect: AbilityEffect, no
 		for term in effect.scaling:
 			if term != null:
 				value += term.coefficient * stats.get_stat(term.stat)
-	return maxf(value * mastery_multiplier(caster, ability, now, rules), 0.0)
+	return maxf(value * effect.power * mastery_multiplier(caster, ability, now, rules), 0.0)
 
 
 ## 1 + Mastery × mastery_power_per_point (1 for non-tree abilities).
@@ -55,8 +55,8 @@ static func charges(caster: Actor, ability: AbilityDef, base_charges: int, maste
 static func tier_base(ability: AbilityDef, effect: AbilityEffect, rules: CombatRules) -> float:
 	var t := clampi(ability.tier, 1, 5) - 1
 	match effect.kind:
-		AbilityEffect.Kind.DAMAGE:
+		AbilityEffect.Kind.DAMAGE, AbilityEffect.Kind.DAMAGE_OVER_TIME:
 			return rules.tier_damage_base[t]
-		AbilityEffect.Kind.HEAL, AbilityEffect.Kind.HEAL_OVER_TIME:
+		AbilityEffect.Kind.HEAL, AbilityEffect.Kind.HEAL_OVER_TIME, AbilityEffect.Kind.SHIELD:
 			return rules.tier_heal_base[t]
 	return 0.0

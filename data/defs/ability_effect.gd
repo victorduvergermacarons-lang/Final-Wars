@@ -51,6 +51,10 @@ enum DamageType {
 @export var buff: BuffDef
 ## Multiplies the threat this effect generates (damage/heal amount × multiplier).
 @export var threat_multiplier: float = 1.0
+## Multiplies the whole amount (tier default + scaling): light hits < 1, heavy > 1.
+@export var power: float = 1.0
+## DAMAGE: heals the caster this fraction of the damage dealt (Leeching Tide).
+@export var lifesteal: float = 0.0
 
 @export_group("Movement, terrain and zones")
 ## KNOCKBACK: push along the cast's direction (a wave) instead of away from the caster.
@@ -66,6 +70,8 @@ enum DamageType {
 ## Size bonus: +1 (terrain levels, wall tiles, push tiles) per this much tree
 ## Mastery (0 = none). E.g. Earth Wall +1 length per 300.
 @export var mastery_per_extra: float = 0.0
+## Most the Mastery size bonus can add (0 = no limit). Raise Pillar: 1.
+@export var max_extra: int = 0
 ## ZONE: what the zone does to units standing in it, every zone_tick_seconds.
 @export var zone_ability: AbilityDef
 @export var zone_tick_seconds: float = 1.0

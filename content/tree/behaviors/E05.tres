@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_oef71"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_0ffq7"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ywrst"]
+
+[sub_resource type="Resource" id="Resource_splyo"]
+script = ExtResource("1_oef71")
+kind = 16
+applies = 2
+base_amount = 2.0
+duration_seconds = 12.0
+blocks_movement = true
+wall_line = true
+mastery_per_extra = 300.0
+
+[resource]
+script = ExtResource("3_ywrst")
+id = &"E05"
+max_range = 4
+mana_cost = 15.0
+effects = Array[ExtResource("1_oef71")]([SubResource("Resource_splyo")])
+targeting = 3

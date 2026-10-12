@@ -236,7 +236,7 @@ ui/              main menu, stores (characters, world, settings), HUD (action ba
                  inventory, character sheet, spellbook, dialogue, vendor, loot, quest log, tracker)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
-tools/           ability spreadsheet importer (xlsx reader, converter, CLI)
+tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator
 design/          Ability_Tree.xlsx (source of truth for abilities)
 tests/           unit/ integration/ balance/ (GUT, test_*.gd), net/ (multi-process check),
                  visual/ (screenshot scene)
@@ -805,10 +805,25 @@ F. 15 debug console · 16 docs + playtest checklist.
     charge each), `reflect_fraction`, `counter_ability` (used for free on the
     attacker), `melee_only`. Being moved cancels a cast. Terrain changes and zones
     are sent to clients in every snapshot. Resurrection already existed (RESURRECT).
+21. **First abilities (as built in step 9):** 32 behavior files (`content/tree/behaviors/`,
+    written by `tools/make_behaviors.gd`, then tuned by hand): Fire F01–F09, Water
+    W01–W09, Air Palm, Gust, Air Step, Air Blast, Rock Throw, Raise Pillar, Seismic
+    Stomp, Earth Wall, Slash, Lunge, Quick Shot, Aimed Shot, Smash, Ground Slam. Every
+    other tree ability is unimplemented. Amounts = tier default + Scales With stats,
+    × a per-effect `power` (light 0.5–0.6, normal 1, Aimed Shot 1.8, Smash 1.6); new
+    `AbilityEffect.lifesteal` (Leeching Tide 50%) and `max_extra` (Raise Pillar: 2
+    levels from 500 Earth Mastery, never 3). Starting numbers I chose (step 11 tunes
+    them): element spells cost 5–15 mana, weapon arts none; Kindle +30% for 3 Fire
+    casts within 20 s and doesn't use its own charge; Haste (Flow State) −25%;
+    chills ×1.5 step time; Tidal Blessing +20 Physical and Magic Defense; Fire Kick
+    burn and Flame Dash trail 3 s; Air Blast impact 25; projectiles 12–16 tiles/s.
+    Seismic Stomp is a one-off taunt (top threat + 10%), not a 4 s forced target.
+    Soothing Mist uses range 4 (Targeting Details), not 3 (Effect text).
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 9: the first 32 abilities | Decision 21. Mana costs, power multipliers, buff sizes and projectile speeds are my starting numbers; step 11 balances them. |
 | 2026-10-12 | M3 step 8: effect building blocks part 2 | Decision 20 (choices: walls skip occupied tiles; knocked-back units stop before obstacles instead of passing over them; terrain restores newest-first). |
 | 2026-10-12 | M3 step 7: effect building blocks part 1 | Decision 19 (choices: interrupts don't stop wind-ups; no cast pushback; silence spares weapon arts). |
 | 2026-10-12 | M3 step 6: targeting types, aim intents, grace window, dodge warnings | Decision 18 (choices: ground needs no LOS and has no grace; casting turns you; range-1 targeted = melee). |

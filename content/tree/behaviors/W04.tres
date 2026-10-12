@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_uwwyq"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_y384g"]
+[ext_resource type="Resource" path="res://content/buffs/frost_shard_chill.tres" id="3_ofc6l"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_0g37c"]
+
+[sub_resource type="Resource" id="Resource_j3y37"]
+script = ExtResource("1_uwwyq")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+power = 0.9
+
+[sub_resource type="Resource" id="Resource_fd14v"]
+script = ExtResource("1_uwwyq")
+kind = 4
+buff = ExtResource("3_ofc6l")
+
+[resource]
+script = ExtResource("4_0g37c")
+id = &"W04"
+max_range = 4
+mana_cost = 8.0
+ranged = true
+projectile_speed = 12.0
+effects = Array[ExtResource("1_uwwyq")]([SubResource("Resource_j3y37"), SubResource("Resource_fd14v")])
+targeting = 2

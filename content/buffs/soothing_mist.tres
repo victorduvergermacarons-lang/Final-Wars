@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_modifier.gd" id="1_8bvlg"]
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="2_gya58"]
+
+[resource]
+script = ExtResource("2_gya58")
+id = &"soothing_mist"
+display_name = "Soothing Mist"
+duration_seconds = 12.0

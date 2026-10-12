@@ -27,6 +27,14 @@ func set_expiry(buff: BuffDef, expires: float) -> void:
 			"damage_type": 0, "next_tick": INF, "source": -1, "shield": 0.0, "charges": 0}
 
 
+## Active buff ids, as a set.
+func ids() -> Dictionary:
+	var out := {}
+	for id in _active:
+		out[id] = true
+	return out
+
+
 func remove(id: StringName) -> void:
 	_active.erase(id)
 
@@ -158,13 +166,16 @@ func damage_taken_multiplier(now: float) -> float:
 
 
 ## Uses one charge of each charged buff that applies to an ability of `tree`
-## (not free-step buffs); buffs out of charges end.
-func consume_on_cast(tree: String, now: float) -> void:
+## (not free-step buffs); buffs out of charges end. With `before` (ids() taken
+## before the cast), buffs the cast itself applied are spared.
+func consume_on_cast(tree: String, now: float, before: Dictionary = {}) -> void:
 	for id in _active.keys():
 		var b: Dictionary = _active[id]
 		var d: BuffDef = b.def
 		if not has(id, now) or d.charges <= 0 or d.free_steps:
 			continue
+		if not before.is_empty() and not before.has(id):
+			continue # applied by this very cast (Kindle doesn't use its own charge)
 		if d.affects_tree != "" and d.affects_tree != tree:
 			continue
 		b.charges -= 1

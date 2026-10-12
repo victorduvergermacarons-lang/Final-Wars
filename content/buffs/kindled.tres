@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_modifier.gd" id="1_qveb6"]
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="2_vp6yf"]
+
+[resource]
+script = ExtResource("2_vp6yf")
+id = &"kindled"
+display_name = "Kindled"
+duration_seconds = 20.0
+damage_dealt_multiplier = 1.3
+affects_tree = "Fire"
+charges = 3

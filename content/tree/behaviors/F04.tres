@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_lvtfe"]
+[ext_resource type="Resource" path="res://content/buffs/kindled.tres" id="2_tehfq"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="3_860cy"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_10akn"]
+
+[sub_resource type="Resource" id="Resource_to6we"]
+script = ExtResource("1_lvtfe")
+kind = 4
+buff = ExtResource("2_tehfq")
+
+[resource]
+script = ExtResource("4_10akn")
+id = &"F04"
+target = 0
+max_range = 0
+mana_cost = 10.0
+on_gcd = false
+effects = Array[ExtResource("1_lvtfe")]([SubResource("Resource_to6we")])
+targeting = 4

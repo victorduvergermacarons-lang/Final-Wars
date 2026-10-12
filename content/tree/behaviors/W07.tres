@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_0j1f1"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_ine42"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_cfnut"]
+
+[sub_resource type="Resource" id="Resource_sktws"]
+script = ExtResource("1_0j1f1")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+lifesteal = 0.5
+
+[resource]
+script = ExtResource("3_cfnut")
+id = &"W07"
+max_range = 3
+mana_cost = 12.0
+ranged = true
+effects = Array[ExtResource("1_0j1f1")]([SubResource("Resource_sktws")])
+targeting = 1
