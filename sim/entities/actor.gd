@@ -47,6 +47,12 @@ func tile() -> Vector2i:
 
 
 ## Stats with active buffs applied.
+## The ability being cast, wound up or channelled ({} when idle):
+## {"ability", "target", "aim", "kind": "cast"|"windup"|"channel", "start", "end",
+## "next_tick", "bonus"}. WorldSim drives it.
+var casting := {}
+
+
 func current_stats(now: float) -> StatBlock:
 	return buffs.modify(stats, now)
 

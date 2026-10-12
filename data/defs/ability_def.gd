@@ -75,6 +75,20 @@ enum LineShape { LINE, CONE }
 @export var area_radius: int = 0
 ## GROUND: seconds the area is shown before it goes off (0 = at once).
 @export var telegraph_seconds: float = 0.0
+## Cast time: resolves after this many seconds; moving, a stun or an interrupt
+## cancels it (mana and cooldown are only spent when it goes off).
+@export var cast_seconds: float = 0.0
+## Wind-up: paid at once, resolves after this delay; the caster can't move
+## meanwhile, but the target can step away (Smash 0.3 s).
+@export var windup_seconds: float = 0.0
+## Channel: paid at once, then resolves every channel_tick_seconds for this long;
+## moving, a stun or an interrupt ends it.
+@export var channel_seconds: float = 0.0
+@export var channel_tick_seconds: float = 1.0
+## Charges: uses stored up to max (base + 1 per mastery_per_charge tree Mastery);
+## each recharges in cooldown_seconds, one at a time. 0 = no charges.
+@export var charges_base: int = 0
+@export var mastery_per_charge: float = 0.0
 
 @export_group("Ability tree")
 ## Set for abilities from design/Ability_Tree.xlsx ("" = not a tree ability).
@@ -84,6 +98,18 @@ enum LineShape { LINE, CONE }
 @export var implemented: bool = true
 ## The spreadsheet row (see AbilityTreeData): prerequisites, Mastery values, texts.
 var sheet: Dictionary = {}
+
+
+## Spells are blocked by silence: element abilities, and other abilities that heal
+## or deal magical damage. Weapon arts and physical attacks still work.
+func is_spell() -> bool:
+	if is_tree_ability():
+		return not needs_weapon()
+	for e in effects:
+		if e != null and (e.kind == AbilityEffect.Kind.HEAL or e.kind == AbilityEffect.Kind.HEAL_OVER_TIME \
+				or (e.kind == AbilityEffect.Kind.DAMAGE and e.damage_type == AbilityEffect.DamageType.MAGICAL)):
+			return true
+	return false
 
 
 func is_tree_ability() -> bool:

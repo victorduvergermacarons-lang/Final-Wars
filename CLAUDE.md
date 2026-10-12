@@ -774,10 +774,27 @@ F. 15 debug console · 16 docs + playtest checklist.
     - Casting turns the caster (4-way facing) toward the target or aim point.
     - Melee for flanking = Targeted enemy abilities with range 1.
     - Cones are blocked tile by tile by terrain higher than the caster, not by occlusion.
+19. **Effects part 1 (as built in step 7):** new effect kinds DAMAGE_OVER_TIME, SHIELD,
+    INTERRUPT (with HEAL, HEAL_OVER_TIME, BUFF, TAUNT, RESURRECT…); `BuffDef` gains stun,
+    silence (blocks spells: element abilities, heals, magical attacks; weapon arts
+    still work), sleep (broken by damage), haste (`cooldown_multiplier`), damage dealt /
+    taken multipliers (optionally for one tree), charges (Kindle: next N casts of a
+    tree) and free steps (Air Step). Durations of tree buffs scale with Mastery.
+    `AbilityDef` gains `cast_seconds` (only the GCD is taken at the start; mana and
+    cooldown when it goes off; moving, a stun, an interrupt or a Targeted target
+    leaving range/LOS cancels it), `windup_seconds` (paid up front; the caster can't
+    move; the target can step away), `channel_seconds` + `channel_tick_seconds` (paid
+    up front, resolves each tick, moving/stun/interrupt ends it), and charges
+    (`charges_base` + 1 per `mastery_per_charge` tree Mastery, recharging one at a
+    time). Casts in progress are shown to clients (`cast` in each actor's snapshot).
+    Choices made here: interrupts cancel casts and channels but not wind-ups; damage
+    doesn't push back casts; a damage bonus (Kindle) is fixed when the ability goes off
+    and its charge is used then (wind-ups/channels: at the start).
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 7: effect building blocks part 1 | Decision 19 (choices: interrupts don't stop wind-ups; no cast pushback; silence spares weapon arts). |
 | 2026-10-12 | M3 step 6: targeting types, aim intents, grace window, dodge warnings | Decision 18 (choices: ground needs no LOS and has no grace; casting turns you; range-1 targeted = melee). |
 | 2026-10-12 | M3 step 5: tile geometry | Decision 17. Cones widen by one tile per side per row (Breath of Fire's "4-tile cone"). |
 | 2026-10-12 | M3 step 4: power formula in one place | Decision 16. Starting numbers (+0.1% power and +0.05% duration per Mastery point; tier bases) are mine, tunable in `content/rules/default_rules.tres`. |

@@ -12,6 +12,9 @@ enum Kind {
 	RESTORE_MANA, ## Like HEAL, for Mana.
 	HEAL_OVER_TIME, ## Applies `buff` and heals (base + scaling) in total over its duration.
 	DASH, ## Moves the caster forward up to base_amount tiles instantly.
+	DAMAGE_OVER_TIME, ## Applies `buff` and deals (base + scaling) in total over its duration.
+	SHIELD, ## Applies `buff` holding a shield of (base + scaling) that absorbs damage.
+	INTERRUPT, ## Cancels the target's cast or channel.
 }
 
 enum DamageType {

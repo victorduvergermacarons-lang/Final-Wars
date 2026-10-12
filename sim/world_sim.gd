@@ -211,6 +211,7 @@ func step() -> Array[Dictionary]:
 		_take_pending_step(hero)
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
+	_update_casts()
 	_update_projectiles()
 	_update_pending_hits()
 	_tick_heals_over_time()
@@ -294,13 +295,18 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 		return "occupied"
 	if actor.buffs.is_rooted(now):
 		return "rooted"
+	if actor.buffs.is_stunned(now):
+		return "asleep" if actor.buffs.is_asleep(now) else "stunned"
+	if not actor.casting.is_empty() and actor.casting.kind == "windup":
+		return "busy"
 	# An enemy that just aggroed is fighting even before the end-of-tick update.
 	var in_combat := actor.in_combat(now) or (actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT)
 	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
 		return "not_ready"
+	cancel_cast(actor, "moved") # moving cancels a cast or channel
 	actor.face(to - from)
 	actor.move.begin(to, now, walk_seconds if walk_seconds >= 0.0 else rules.walk_tile_seconds)
-	if in_combat:
+	if in_combat and not actor.buffs.use_free_step(now):
 		actor.cooldowns.trigger_step(now, actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now))
 	return ""
 
@@ -325,7 +331,90 @@ func cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant = null
 
 
 func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
-	var out := CastResolver.cast(ctx, caster, ability, target, aim)
+	var timed := ability.cast_seconds > 0.0 or ability.windup_seconds > 0.0 or ability.channel_seconds > 0.0
+	if timed:
+		return _start_timed_cast(caster, ability, target, aim)
+	return _finish_cast(caster, ability, target, aim, CastResolver.Pay.INSTANT)
+
+
+## Starts a cast time, wind-up or channel (see AbilityDef). Cast times only take
+## the GCD now; wind-ups and channels are paid up front.
+func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
+	var r := CastResolver.validate(ctx, caster, ability, target, aim)
+	if r != AbilityResolver.Result.OK:
+		return r
+	var kind := "cast" if ability.cast_seconds > 0.0 else ("windup" if ability.windup_seconds > 0.0 else "channel")
+	var seconds: float = ability.cast_seconds if kind == "cast" else (ability.windup_seconds if kind == "windup" else ability.channel_seconds)
+	var point: Variant = CastResolver.aim_point(caster, target, aim)
+	if point != null:
+		CastResolver._face(caster, point)
+	if kind == "cast":
+		if ability.on_gcd:
+			caster.cooldowns.trigger_gcd(now, rules.gcd_seconds * caster.buffs.cooldown_multiplier(now))
+	else:
+		AbilityResolver.pay(ctx, caster, ability)
+	caster.casting = {"ability": ability, "target": target.id if target != null else -1, "aim": point,
+			"kind": kind, "start": now, "end": now + seconds,
+			"next_tick": now + (ability.channel_tick_seconds if kind == "channel" else seconds),
+			"bonus": caster.buffs.damage_dealt_multiplier(ability.tree, now)}
+	if kind != "cast":
+		caster.buffs.consume_on_cast(ability.tree, now)
+	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
+			"target": caster.casting.target, "end": caster.casting.end})
+	return AbilityResolver.Result.OK
+
+
+## Advances every cast in progress: finishes cast times and wind-ups, ticks
+## channels, and cancels them when the caster is stunned or a Targeted target
+## leaves range or line of sight.
+func _update_casts() -> void:
+	for id in _sorted(ctx.actors):
+		var a: Actor = ctx.actors[id]
+		var c: Dictionary = a.casting
+		if c.is_empty():
+			continue
+		if not a.alive or a.buffs.is_stunned(now):
+			cancel_cast(a, "stunned")
+			continue
+		var ability: AbilityDef = c.ability
+		var target := get_actor(c.target)
+		if c.kind != "windup" and ability.targeting == AbilityDef.TargetingMode.TARGETED and c.target != a.id \
+				and CastResolver.validate(ctx, a, ability, target, c.aim, CastResolver.Pay.FREE) != AbilityResolver.Result.OK:
+			cancel_cast(a, "target_lost")
+			continue
+		match c.kind:
+			"cast":
+				if now + 0.0001 >= c.end:
+					a.casting = {}
+					var r := _finish_cast(a, ability, target, c.aim, CastResolver.Pay.COMPLETE, c.bonus)
+					if r != AbilityResolver.Result.OK:
+						emit({"type": "cast_failed", "source": a.id, "ability": ability.id,
+								"reason": AbilityResolver.Result.keys()[r].to_lower()})
+			"windup":
+				if now + 0.0001 >= c.end:
+					a.casting = {}
+					var r := _finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
+					if r != AbilityResolver.Result.OK:
+						emit({"type": "whiff", "source": a.id, "ability": ability.id, "tile": a.tile()})
+			"channel":
+				while not a.casting.is_empty() and now + 0.0001 >= c.next_tick and c.next_tick <= c.end + 0.0001:
+					c.next_tick += ability.channel_tick_seconds
+					_finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
+				if not a.casting.is_empty() and now + 0.0001 >= c.end:
+					a.casting = {}
+					emit({"type": "channel_end", "source": a.id, "ability": ability.id})
+
+
+func cancel_cast(actor: Actor, reason: String) -> void:
+	if actor.casting.is_empty():
+		return
+	emit({"type": "cast_cancel", "source": actor.id, "ability": actor.casting.ability.id, "reason": reason})
+	actor.casting = {}
+
+
+func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, pay_mode: CastResolver.Pay,
+		bonus: float = -1.0) -> AbilityResolver.Result:
+	var out := CastResolver.cast(ctx, caster, ability, target, aim, pay_mode, bonus)
 	_emit_resolved(out.events)
 	if out.result != AbilityResolver.Result.OK:
 		return out.result
@@ -359,7 +448,9 @@ func _update_pending_hits() -> void:
 		if caster == null:
 			continue
 		var events: Array[Dictionary] = []
+		ctx.damage_bonus = h.bonus
 		CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
+		ctx.damage_bonus = 1.0
 		_emit_resolved(events)
 		_credit_mastery(caster, h.ability, events)
 	_pending_hits = waiting
@@ -442,7 +533,9 @@ func _fly_skillshot(p: Projectile, caster: Actor) -> bool:
 			if p.hit_ids.has(a.id):
 				continue
 			p.hit_ids[a.id] = true
+			ctx.damage_bonus = p.damage_bonus
 			AbilityResolver.apply_effects(ctx, caster, p.ability, a, events)
+			ctx.damage_bonus = 1.0
 			if not p.pierce:
 				stopped_at = i
 				break
@@ -864,12 +957,23 @@ func _on_death(actor: Actor) -> void:
 		enemy.respawn_at = now + enemy.def.respawn_seconds
 
 
+## Heal-over-time and damage-over-time ticks.
 func _tick_heals_over_time() -> void:
 	for id in _sorted(ctx.actors):
 		var a: Actor = ctx.actors[id]
 		if not a.alive:
 			continue
-		for tick in a.buffs.due_heals(now):
+		for tick in a.buffs.due_ticks(now):
+			if tick.damage:
+				var src := get_actor(tick.source)
+				var def := CombatMath.defense_for(tick.damage_type, a.current_stats(now), rules)
+				var events: Array[Dictionary] = []
+				AbilityResolver.deal_damage(ctx, src, a, tick.buff, CombatMath.final_damage(tick.amount, def.x, def.y, rules),
+						false, events)
+				_emit_resolved(events)
+				if not a.alive:
+					break
+				continue
 			var max_hp := a.current_stats(now).hp
 			var healed := clampf(roundf(tick.amount), 0.0, maxf(max_hp - a.hp, 0.0))
 			a.hp += healed

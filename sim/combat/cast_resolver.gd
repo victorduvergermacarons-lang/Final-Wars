@@ -16,9 +16,18 @@ extends RefCounted
 ## WorldSim flies projectiles and resolves pending hits (telegraphs, lobs) later.
 
 
-static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
+## Pay modes for cast(): INSTANT checks and pays everything (mana, cooldown, GCD);
+## COMPLETE finishes a cast time (pays mana and cooldown; the GCD was taken when
+## the cast started); FREE resolves an already-paid wind-up or channel tick.
+enum Pay { INSTANT, COMPLETE, FREE }
+
+
+static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant,
+		pay_mode: Pay = Pay.INSTANT) -> AbilityResolver.Result:
 	if not caster.alive:
 		return AbilityResolver.Result.CASTER_DEAD
+	if pay_mode == Pay.INSTANT and not caster.casting.is_empty():
+		return AbilityResolver.Result.BUSY
 	match ability.targeting:
 		AbilityDef.TargetingMode.TARGETED:
 			if ability.target == AbilityDef.TargetType.SELF:
@@ -43,16 +52,35 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			var dist := TileGeometry.distance(caster.tile(), tile)
 			if dist < ability.min_range or dist > ability.max_range:
 				return AbilityResolver.Result.OUT_OF_RANGE
-	return AbilityResolver._check_cost(ctx, caster, ability)
+	if pay_mode == Pay.FREE:
+		return AbilityResolver.Result.OK
+	return AbilityResolver._check_cost(ctx, caster, ability, pay_mode == Pay.INSTANT)
 
 
-static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> Dictionary:
-	var out := {"result": validate(ctx, caster, ability, target, aim), "events": [] as Array[Dictionary],
-			"projectile": null, "pending": null}
+static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant,
+		pay_mode: Pay = Pay.INSTANT, bonus: float = -1.0) -> Dictionary:
+	var out := {"result": validate(ctx, caster, ability, target, aim, pay_mode), "events": [] as Array[Dictionary],
+			"projectile": null, "pending": null, "bonus": 1.0}
 	if out.result != AbilityResolver.Result.OK:
 		return out
-	caster.mana -= ability.mana_cost
-	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds)
+	if pay_mode != Pay.FREE:
+		AbilityResolver.pay(ctx, caster, ability, pay_mode == Pay.INSTANT)
+	# Damage bonuses (e.g. Kindle) are fixed when the ability goes off and carried
+	# by its projectile or delayed hit; charges are used up after.
+	out.bonus = bonus if bonus >= 0.0 else caster.buffs.damage_dealt_multiplier(ability.tree, ctx.now)
+	ctx.damage_bonus = out.bonus
+	_resolve(ctx, caster, ability, target, aim, out)
+	ctx.damage_bonus = 1.0
+	if pay_mode != Pay.FREE:
+		caster.buffs.consume_on_cast(ability.tree, ctx.now)
+	if out.projectile != null:
+		out.projectile.damage_bonus = out.bonus
+	if out.pending != null:
+		out.pending.bonus = out.bonus
+	return out
+
+
+static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, out: Dictionary) -> void:
 	var events: Array[Dictionary] = out.events
 	match ability.targeting:
 		AbilityDef.TargetingMode.TARGETED:
@@ -82,7 +110,6 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 			else:
 				var area := area_tiles(ctx.grid, caster.tile(), ability.area_radius)
 				hit_tiles(ctx, caster, ability, area, 0.0, events, ability.target == AbilityDef.TargetType.ALLY)
-	return out
 
 
 static func _cast_skillshot(ctx: CombatContext, caster: Actor, ability: AbilityDef, point: Vector2, out: Dictionary) -> void:
@@ -197,7 +224,7 @@ static func aim_tile(caster: Actor, target: Actor, aim: Variant) -> Variant:
 
 ## A delayed resolution (telegraphed ground area, lobbed shot).
 static func _pending(caster: Actor, ability: AbilityDef, tiles: Array[Vector2i], at: float, grace: float) -> Dictionary:
-	return {"caster": caster.id, "ability": ability, "tiles": tiles, "at": at, "grace": grace}
+	return {"caster": caster.id, "ability": ability, "tiles": tiles, "at": at, "grace": grace, "bonus": 1.0}
 
 
 ## Turns the caster (4-way facing) toward a point.

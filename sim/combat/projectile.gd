@@ -16,6 +16,8 @@ var checked: int = -1
 ## Milestone 3 skillshots: keep flying through units; ids already hit.
 var pierce: bool = false
 var hit_ids := {}
+## Damage bonus fixed at launch (e.g. Kindle).
+var damage_bonus: float = 1.0
 
 
 ## How many tiles along the path it has travelled (fractional).

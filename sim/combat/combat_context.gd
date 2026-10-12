@@ -8,6 +8,9 @@ var rules: CombatRules
 var rng: RandomNumberGenerator
 var now: float = 0.0
 var actors := {} # id -> Actor
+## Damage multiplier of the ability being resolved right now (e.g. Kindle), set by
+## whoever resolves a cast, projectile or delayed hit; 1 otherwise.
+var damage_bonus: float = 1.0
 ## Recent tiles of every actor, for the skillshot grace window:
 ## id -> [[time, tile], ...] (oldest first, ~0.5 s kept).
 var recent_tiles := {}

@@ -16,6 +16,9 @@ enum Result {
 	NO_LINE_OF_SIGHT,
 	NOT_ENOUGH_MANA,
 	ON_COOLDOWN,
+	STUNNED,
+	SILENCED,
+	BUSY, ## Already casting, winding up or channelling.
 }
 
 
@@ -38,12 +41,31 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 	return _check_cost(ctx, caster, ability)
 
 
-static func _check_cost(ctx: CombatContext, caster: Actor, ability: AbilityDef) -> Result:
+## Crowd control, mana and cooldowns (GCD optional: a finishing cast already holds it).
+static func _check_cost(ctx: CombatContext, caster: Actor, ability: AbilityDef, check_gcd: bool = true) -> Result:
+	if caster.buffs.is_stunned(ctx.now):
+		return Result.STUNNED
+	if ability.is_spell() and caster.buffs.is_silenced(ctx.now):
+		return Result.SILENCED
 	if caster.mana + Cooldowns.EPSILON < ability.mana_cost:
 		return Result.NOT_ENOUGH_MANA
-	if not caster.cooldowns.can_use(ability, ctx.now):
+	if not caster.cooldowns.can_use(ability, ctx.now, max_charges(caster, ability, ctx.now), check_gcd):
 		return Result.ON_COOLDOWN
 	return Result.OK
+
+
+## Spends mana and starts the cooldown (haste shortens it), and the GCD if asked.
+static func pay(ctx: CombatContext, caster: Actor, ability: AbilityDef, with_gcd: bool = true) -> void:
+	caster.mana -= ability.mana_cost
+	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds if with_gcd else 0.0,
+			caster.buffs.cooldown_multiplier(ctx.now), max_charges(caster, ability, ctx.now))
+
+
+## How many charges the ability holds for this caster (1 = no charges).
+static func max_charges(caster: Actor, ability: AbilityDef, now: float) -> int:
+	if ability.charges_base <= 0:
+		return 1
+	return AbilityPower.charges(caster, ability, ability.charges_base, ability.mastery_per_charge, now)
 
 
 ## Validates, then spends mana, starts cooldowns and applies every effect.
@@ -52,8 +74,7 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 	var result := validate(ctx, caster, ability, target)
 	if result != Result.OK:
 		return {"result": result, "events": [], "projectile": null}
-	caster.mana -= ability.mana_cost
-	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds)
+	pay(ctx, caster, ability)
 	var events: Array[Dictionary] = []
 	var projectile: Projectile = null
 	match ability.shape:
@@ -142,7 +163,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not sure_hit and ctx.rng.randf() >= CombatMath.hit_chance(caster_stats.accuracy, target_stats.evasion, rules):
 				events.append({"type": "miss", "source": caster.id, "target": target.id, "ability": ability.id})
 				return
-			var raw := AbilityPower.amount(caster, ability, effect, ctx.now, rules)
+			var raw := AbilityPower.amount(caster, ability, effect, ctx.now, rules) * ctx.damage_bonus
 			raw *= CombatMath.flank_multiplier(flank, rules)
 			raw *= CombatMath.high_ground_multiplier(
 					ctx.grid.height_advantage(caster.tile(), target.tile()), ability.ranged, rules)
@@ -150,16 +171,9 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if crit:
 				raw *= CombatMath.crit_multiplier(caster_stats.crit_dmg, rules)
 			var def := CombatMath.defense_for(effect.damage_type, target_stats, rules)
-			var dmg := minf(CombatMath.final_damage(raw, def.x, def.y, rules), target.hp)
-			target.hp -= dmg
-			events.append({"type": "damage", "source": caster.id, "target": target.id,
-					"ability": ability.id, "amount": dmg, "crit": crit,
-					"flank": ["", "side", "behind"][flank]})
-			if target.threat != null:
-				target.threat.add(caster.id, dmg * effect.threat_multiplier)
-			if target.hp <= 0.0:
-				target.die()
-				events.append({"type": "death", "source": caster.id, "target": target.id})
+			var dealt := CombatMath.final_damage(raw, def.x, def.y, rules)
+			deal_damage(ctx, caster, target, ability.id, dealt, crit, events, ["", "side", "behind"][flank],
+					effect.threat_multiplier)
 
 		AbilityEffect.Kind.HEAL:
 			if not target.alive:
@@ -201,10 +215,31 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			target.mana = roundf(stats.mana * rules.resurrect_fraction)
 			events.append({"type": "resurrect", "source": caster.id, "target": target.id, "ability": ability.id})
 
+		AbilityEffect.Kind.SHIELD:
+			if effect.buff == null or not target.alive:
+				return
+			var size := AbilityPower.amount(caster, ability, effect, ctx.now, rules)
+			target.buffs.apply(effect.buff, ctx.now, 0.0, caster.id,
+					{"duration": AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules),
+					"shield": size})
+			events.append({"type": "shield", "source": caster.id, "target": target.id,
+					"ability": ability.id, "buff": effect.buff.id, "amount": size})
+			_share_support_threat(ctx, caster, target, 0.0)
+
+		AbilityEffect.Kind.INTERRUPT:
+			if target.alive and not target.casting.is_empty() and target.casting.kind != "windup":
+				var what: StringName = target.casting.ability.id
+				target.casting = {}
+				events.append({"type": "interrupt", "source": caster.id, "target": target.id,
+						"ability": ability.id, "interrupted": what})
+
 		AbilityEffect.Kind.BUFF:
 			if effect.buff == null or not target.alive:
 				return
-			target.buffs.apply(effect.buff, ctx.now)
+			target.buffs.apply(effect.buff, ctx.now, 0.0, -1,
+					{"duration": AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules)})
+			if effect.buff.stuns or effect.buff.sleeps:
+				target.casting = {} # can't keep casting while stunned
 			events.append({"type": "buff", "source": caster.id, "target": target.id,
 					"ability": ability.id, "buff": effect.buff.id})
 			if caster.is_hostile_to(target):
@@ -213,12 +248,23 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			else:
 				_share_support_threat(ctx, caster, target, 0.0)
 
-		AbilityEffect.Kind.HEAL_OVER_TIME:
+		AbilityEffect.Kind.HEAL_OVER_TIME, AbilityEffect.Kind.DAMAGE_OVER_TIME:
 			if effect.buff == null or not target.alive:
 				return
 			var total := AbilityPower.amount(caster, ability, effect, ctx.now, rules)
-			var ticks := maxf(floorf(effect.buff.duration_seconds / maxf(effect.buff.tick_seconds, 0.05)), 1.0)
-			target.buffs.apply(effect.buff, ctx.now, total / ticks, caster.id)
+			var harmful := effect.kind == AbilityEffect.Kind.DAMAGE_OVER_TIME
+			if harmful:
+				total *= ctx.damage_bonus
+			var duration := AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules)
+			var ticks := maxf(floorf(duration / maxf(effect.buff.tick_seconds, 0.05)), 1.0)
+			target.buffs.apply(effect.buff, ctx.now, total / ticks, caster.id,
+					{"duration": duration, "tick_damage": harmful, "damage_type": effect.damage_type})
+			if harmful:
+				events.append({"type": "buff", "source": caster.id, "target": target.id,
+						"ability": ability.id, "buff": effect.buff.id})
+				if target.threat != null:
+					target.threat.add(caster.id, 0.0)
+				return
 			events.append({"type": "buff", "source": caster.id, "target": target.id,
 					"ability": ability.id, "buff": effect.buff.id})
 			_share_support_threat(ctx, caster, target, total * rules.heal_threat_multiplier * effect.threat_multiplier)
@@ -239,6 +285,30 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				caster.move.begin(to, ctx.now, 0.12)
 			events.append({"type": "dash", "source": caster.id, "target": caster.id,
 					"ability": ability.id, "from": from, "to": to})
+
+
+## Deals already-mitigated damage: target damage-taken multipliers, shields, sleep
+## breaking, threat and death. Emits damage (with "absorbed") and death events.
+static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, ability_id: StringName, amount: float,
+		crit: bool, events: Array[Dictionary], flank: String = "", threat_multiplier: float = 1.0) -> void:
+	if not target.alive:
+		return
+	var taken := maxf(roundf(amount * target.buffs.damage_taken_multiplier(ctx.now)), ctx.rules.min_damage)
+	var through := target.buffs.absorb(taken)
+	var dmg := minf(through, target.hp)
+	target.hp -= dmg
+	target.buffs.wake()
+	var e := {"type": "damage", "source": source.id if source != null else -1, "target": target.id,
+			"ability": ability_id, "amount": dmg, "crit": crit, "flank": flank}
+	if taken - through > 0.0:
+		e.absorbed = taken - through
+	events.append(e)
+	if target.threat != null and source != null:
+		target.threat.add(source.id, dmg * threat_multiplier)
+	if target.hp <= 0.0:
+		target.die()
+		target.casting = {}
+		events.append({"type": "death", "source": source.id if source != null else -1, "target": target.id})
 
 
 static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool:

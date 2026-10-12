@@ -158,6 +158,10 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	a.move = MoveState.from_dict(d.move)
 	a.facing = d.get("facing", Vector2i.DOWN)
 	a.cooldowns = Cooldowns.from_dict(d.cd)
+	var c: Dictionary = d.get("cast", {})
+	var cast_ability: AbilityDef = content.abilities.get(StringName(c.get("ability", ""))) if not c.is_empty() else null
+	a.casting = {} if cast_ability == null else {"ability": cast_ability, "kind": c.kind, "start": c.start,
+			"end": c.end, "target": -1, "aim": null, "next_tick": INF, "bonus": 1.0}
 	a.buffs.clear()
 	for id in d.buffs:
 		var buff: BuffDef = content.buffs.get(StringName(id))

@@ -15,3 +15,26 @@ extends Resource
 @export var tick_seconds: float = 1.0
 ## Shown on the target's frame; harmful effects (slows, roots) are debuffs.
 @export var is_debuff: bool = false
+
+@export_group("Crowd control")
+## No stepping and no abilities.
+@export var stuns: bool = false
+## No spells (element abilities, heals, magical attacks); weapon arts still work.
+@export var silences: bool = false
+## Like a stun, but any damage wakes the unit up.
+@export var sleeps: bool = false
+
+@export_group("Modifiers")
+## Ability cooldowns and the GCD are multiplied by this when triggered (Haste 0.75).
+@export var cooldown_multiplier: float = 1.0
+## Damage the owner deals × this (only abilities of `affects_tree`, if set).
+@export var damage_dealt_multiplier: float = 1.0
+## Damage the owner takes × this.
+@export var damage_taken_multiplier: float = 1.0
+## Limits damage_dealt_multiplier (and charge use) to one ability tree ("" = all).
+@export var affects_tree: String = ""
+## Uses before it ends (0 = lasts its whole duration): each qualifying ability
+## cast (Kindle: next 3 fire abilities), or each step for free_steps (Air Step).
+@export var charges: int = 0
+## Steps cost no step cooldown while it lasts (uses a charge per step).
+@export var free_steps: bool = false
