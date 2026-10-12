@@ -235,7 +235,8 @@ ui/              main menu, stores (characters, world, settings), HUD (action ba
                  inventory, character sheet, spellbook, dialogue, vendor, loot, quest log, tracker)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
-tests/           unit/ integration/ balance/ (GUT, test_*.gd) and net/ (multi-process check)
+tests/           unit/ integration/ balance/ (GUT, test_*.gd), net/ (multi-process check),
+                 visual/ (screenshot scene)
 docs/            local multiplayer testing, playtest checklist
 ```
 
@@ -578,8 +579,11 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     get a red banner and a gold name on the map, and the tiles of an unfinished
     "reach" objective in your zone glow yellow. Names, health bars and markers are
     drawn last so terrain never covers them; floating combat texts that pop up
-    together on one character stack instead of overlapping. The quest tracker sits
-    behind every window and hides while one covers it.
+    together on one character stack instead of overlapping, and every name, marker and
+    floating text is nudged up so none overlap. The quest tracker has a dark backdrop,
+    sits behind every window and hides while one covers it. The message log wraps left
+    of the action bar. The default font lacks ◀ ▶ ⚔ ✓, so the UI uses < > [combat]
+    and "(done)" instead. Checked on real renders (`tests/visual/shots.tscn`).
 
 ## Decisions log
 | Date | Decision | Notes |

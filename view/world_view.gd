@@ -26,9 +26,12 @@ var _graveyards := {}
 var _float_texts: Array = [] # {actor, text, color, t, row}
 var _font: Font
 var _landmarks: Array[ZoneLandmark] = []
-## Labels, bars and markers queued while drawing actors, drawn last so terrain
-## and other actors never cover them.
+## Bars and markers queued while drawing actors, drawn last so terrain and
+## other actors never cover them.
 var _overlay: Array[Callable] = []
+## Labels queued the same way: {pos, text, color, size, boxed}. Drawn after the
+## overlay, nudged up so no two overlap.
+var _labels: Array = []
 
 
 func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
@@ -107,6 +110,7 @@ func _draw() -> void:
 		actors_by_depth[d].append(a)
 	var quest_areas := _quest_area_tiles()
 	_overlay.clear()
+	_labels.clear()
 	for d in range(_max_depth + 1):
 		for p in _tiles_by_depth.get(d, []):
 			_draw_tile(grid, p)
@@ -119,7 +123,8 @@ func _draw() -> void:
 	_draw_talk_prompt()
 	for f in _overlay:
 		f.call()
-	_draw_float_texts()
+	_queue_float_texts()
+	_draw_labels()
 
 
 func _draw_tile(grid: GridModel, p: Vector2i) -> void:
@@ -232,9 +237,35 @@ func _draw_bar_now(pos: Vector2, width: float, fraction: float, color: Color) ->
 	draw_rect(Rect2(pos, Vector2(width * clampf(fraction, 0, 1), 4)), color)
 
 
-## Queues a centred label for the overlay pass.
-func _draw_label(pos: Vector2, text: String, color: Color, size: int = 11) -> void:
-	_overlay.append(func(): _draw_label_now(pos, text, color, size))
+## Queues a centred label (baseline at `pos`) for the label pass.
+func _draw_label(pos: Vector2, text: String, color: Color, size: int = 11, boxed: bool = false) -> void:
+	_labels.append({"pos": pos, "text": text, "color": color, "size": size, "boxed": boxed})
+
+
+## Draws queued labels from the bottom of the screen up; a label that would
+## overlap one already placed moves up just above it.
+func _draw_labels() -> void:
+	_labels.sort_custom(func(a, b): return a.pos.y > b.pos.y)
+	var placed: Array[Rect2] = []
+	for l in _labels:
+		var w: float = _font.get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1, l.size).x + (12.0 if l.boxed else 2.0)
+		var h: float = l.size + (8.0 if l.boxed else 3.0)
+		var rect := Rect2(l.pos.x - w * 0.5, l.pos.y - l.size - (4.0 if l.boxed else 1.0), w, h)
+		for i in 8:
+			var hit := -1
+			for j in placed.size():
+				if placed[j].intersects(rect):
+					hit = j
+					break
+			if hit < 0:
+				break
+			rect.position.y = placed[hit].position.y - rect.size.y
+		placed.append(rect)
+		var pos := Vector2(l.pos.x, rect.position.y + float(l.size) + (4.0 if l.boxed else 1.0))
+		if l.boxed:
+			draw_rect(rect, Color(0, 0, 0, 0.7))
+			draw_rect(rect, Color(1, 0.85, 0.3), false, 1.0)
+		_draw_label_now(pos, l.text, l.color, l.size)
 
 
 func _draw_label_now(pos: Vector2, text: String, color: Color, size: int = 11) -> void:
@@ -251,15 +282,17 @@ func _draw_ellipse(center: Vector2, rx: float, ry: float, color: Color, width: f
 	draw_polyline(pts, color, width)
 
 
-func _draw_float_texts() -> void:
+## Floating combat texts join the label pass so they don't cover names or
+## other actors' texts.
+func _queue_float_texts() -> void:
 	var t: float = session.render_time()
 	for f in _float_texts:
 		var actor: Actor = session.get_actor(f.actor)
 		if actor == null:
 			continue
 		var age: float = (t - f.t) / FLOAT_TEXT_SECONDS
-		var pos := actor_screen_pos(actor) + Vector2(0, -50 - age * 30 - f.row * 14)
-		_draw_label_now(pos, f.text, Color(f.color, 1.0 - age), 12)
+		var pos := actor_screen_pos(actor) + Vector2(0, -62 - age * 12 - f.row * 15)
+		_draw_label(pos, f.text, Color(f.color, 1.0 - age), 12)
 
 
 func _on_events(events: Array) -> void:
@@ -290,13 +323,13 @@ func _on_events(events: Array) -> void:
 				_float(e.target, "Evade", Color(0.8, 0.8, 0.8), t)
 
 
-## Texts that pop up together on one actor stack instead of overlapping.
+## A new text on an actor appears at the bottom of its stack and pushes the
+## older ones up a row, so they never overlap.
 func _float(actor_id: int, text: String, color: Color, t: float) -> void:
-	var row := 0
 	for f in _float_texts:
-		if f.actor == actor_id and t - f.t < 0.4:
-			row = maxi(row, f.row + 1)
-	_float_texts.append({"actor": actor_id, "text": text, "color": color, "t": t, "row": row})
+		if f.actor == actor_id:
+			f.row += 1
+	_float_texts.append({"actor": actor_id, "text": text, "color": color, "t": t, "row": 0})
 
 
 ## Tiles inside the target area of the local hero's unfinished REACH objectives
@@ -316,18 +349,20 @@ func _quest_area_tiles() -> Dictionary:
 			for y in range(o.tile.y - o.radius, o.tile.y + o.radius + 1):
 				for x in range(o.tile.x - o.radius, o.tile.x + o.radius + 1):
 					var p := Vector2i(x, y)
-					if GridModel.distance(p, o.tile) <= o.radius:
+					if GridModel.distance(p, o.tile) <= o.radius and session.grid().is_walkable(p):
 						out[p] = true
 	return out
 
 
 func _draw_quest_area(grid: GridModel, p: Vector2i) -> void:
 	var c := Iso.to_screen(Vector2(p), grid.height_at(p))
-	var pulse := 0.35 + 0.25 * sin(Time.get_ticks_msec() / 250.0)
+	var pulse := 0.5 + 0.2 * sin(Time.get_ticks_msec() / 250.0)
 	var hw := Iso.TILE_W * 0.5 - 4
 	var hh := Iso.TILE_H * 0.5 - 2
 	draw_colored_polygon(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),
 			c + Vector2(-hw, 0)]), Color(1, 0.85, 0.2, pulse))
+	draw_polyline(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),
+			c + Vector2(-hw, 0), c + Vector2(0, -hh)]), Color(1, 0.95, 0.5, 0.9), 1.5)
 
 
 ## Named places: a banner on a pole and the name in gold.
@@ -347,10 +382,4 @@ func _draw_talk_prompt() -> void:
 		return
 	var marker: String = client.npc_markers.get((npc as Npc).def.id, "") if client != null else ""
 	var y := -70.0 if marker != "" else -54.0
-	var pos := actor_screen_pos(npc) + Vector2(0, y)
-	_overlay.append(func():
-		var text := "[E] Talk"
-		var w := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x
-		draw_rect(Rect2(pos - Vector2(w * 0.5 + 6, 14), Vector2(w + 12, 19)), Color(0, 0, 0, 0.7))
-		draw_rect(Rect2(pos - Vector2(w * 0.5 + 6, 14), Vector2(w + 12, 19)), Color(1, 0.85, 0.3), false, 1.0)
-		_draw_label_now(pos, text, Color(1, 0.95, 0.6), 13))
+	_draw_label(actor_screen_pos(npc) + Vector2(0, y), "[E] Talk", Color(1, 0.95, 0.6), 13, true)

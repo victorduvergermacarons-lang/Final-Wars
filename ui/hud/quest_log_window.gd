@@ -63,7 +63,7 @@ func _process(_delta: float) -> void:
 	for def in active:
 		var b := Button.new()
 		var ready := QuestLog.status(hero, def) == QuestLog.Status.READY
-		b.text = def.title + ("  ✓" if ready else "")
+		b.text = def.title + ("  (done)" if ready else "")
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.focus_mode = Control.FOCUS_NONE
 		b.toggle_mode = true

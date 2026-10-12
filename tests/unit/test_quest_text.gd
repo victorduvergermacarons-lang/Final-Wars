@@ -41,7 +41,7 @@ func test_objective_lines_show_progress_and_defaults() -> void:
 	QuestLog.accept(hero, hunt)
 	assert_eq(QuestText.objective_line(hero, hunt, 0), "• Wolf slain: 0/2", "default text from the enemy name")
 	hero.bag.add(token, 3)
-	assert_string_contains(QuestText.objective_line(hero, hunt, 1), "✓ Tokens: 3/3")
+	assert_string_contains(QuestText.objective_line(hero, hunt, 1), "Tokens: 3/3 (done)")
 	assert_eq(QuestText.objective_line(hero, hunt, 2), "• Talk to Old Maren")
 
 

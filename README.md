@@ -70,6 +70,13 @@ Balance report (scripted fights on the real simulation with shipped content):
 godot --headless --path . tests/balance/balance_report.tscn
 ```
 
+Screenshots of a few set-up situations (town, open windows, the bandit camp, a
+crowded fight, the elite), for checking the look without playing:
+
+```bash
+SHOTS_DIR=/tmp/shots godot --path . res://tests/visual/shots.tscn   # needs a display (or xvfb-run)
+```
+
 Network check (four headless Godot processes, host + 3 clients on localhost):
 
 ```bash

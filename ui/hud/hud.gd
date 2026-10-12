@@ -7,6 +7,8 @@ signal leave_requested
 ## character panel, death panel, mid-screen errors and a message log.
 
 const ERROR_SECONDS := 2.0
+## Message log width: fits left of the centred action bar at 1280 px.
+const LOG_WIDTH := 310.0
 const REASONS := {
 	"out_of_range": "Out of range",
 	"no_line_of_sight": "Target not in line of sight",
@@ -135,14 +137,14 @@ func _build() -> void:
 	var pager_row := HBoxContainer.new()
 	pager_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	pager_box.add_child(pager_row)
-	pager_row.add_child(_small_button("◀", func(): client.action_bar.set_page(client.action_bar.page - 1)))
+	pager_row.add_child(_small_button("<", func(): client.action_bar.set_page(client.action_bar.page - 1)))
 	_page_label = Label.new()
 	_page_label.custom_minimum_size = Vector2(34, 0)
 	_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_page_label.add_theme_font_size_override("font_size", 28)
 	_page_label.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
 	pager_row.add_child(_page_label)
-	pager_row.add_child(_small_button("▶", func(): client.action_bar.set_page(client.action_bar.page + 1)))
+	pager_row.add_child(_small_button(">", func(): client.action_bar.set_page(client.action_bar.page + 1)))
 	var pager_hint := Label.new()
 	pager_hint.text = "Shift+1–%d" % ActionBarModel.PAGE_COUNT
 	pager_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -185,6 +187,11 @@ func _build() -> void:
 	_tracker.add_theme_constant_override("outline_size", 4)
 	_tracker.add_theme_color_override("font_outline_color", Color.BLACK)
 	_tracker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tracker_bg := StyleBoxFlat.new()
+	tracker_bg.bg_color = Color(0.05, 0.05, 0.08, 0.6)
+	tracker_bg.set_content_margin_all(6)
+	tracker_bg.set_corner_radius_all(3)
+	_tracker.add_theme_stylebox_override("normal", tracker_bg)
 	_root.add_child(_tracker)
 	_root.move_child(_tracker, 0) # behind every window
 
@@ -224,10 +231,10 @@ func _build() -> void:
 	_root.add_child(_error)
 
 	# Bottom-left message log.
+	# Wraps to the space left of the action bar; placed from the bottom each frame.
 	_log = Label.new()
-	_log.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_log.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	_log.position = Vector2(10, -10)
+	_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_log.custom_minimum_size = Vector2(LOG_WIDTH, 0)
 	_log.add_theme_color_override("font_outline_color", Color.BLACK)
 	_log.add_theme_constant_override("outline_size", 4)
 	_log.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -256,6 +263,9 @@ func _process(_delta: float) -> void:
 		lines.append("KEYBIND MODE: hover a slot and press a key. Esc or the Keybinds button to finish.")
 	lines.append("WASD move · E talk · click/Tab target · Esc clear target · R release · wheel zoom")
 	_log.text = "\n".join(lines)
+	_log.size = Vector2(LOG_WIDTH, 0)
+	var view_size := get_viewport().get_visible_rect().size
+	_log.position = Vector2(10, view_size.y - _log.get_combined_minimum_size().y - 10)
 
 
 func _sync_party(me: Hero) -> void:

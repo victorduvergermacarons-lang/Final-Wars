@@ -8,7 +8,7 @@ const GREEN := "#5fe36b"
 const GREY := "#a8a8b0"
 
 
-## "Wolves slain: 1/2", or "Talk to Old Maren" (done ones get a check mark).
+## "Wolves slain: 1/2", or "Talk to Old Maren" (done ones turn green with "(done)").
 static func objective_line(hero: Hero, def: QuestDef, i: int) -> String:
 	var o := def.objectives[i]
 	var n := QuestLog.progress(hero, def, i)
@@ -17,7 +17,7 @@ static func objective_line(hero: Hero, def: QuestDef, i: int) -> String:
 	if o.kind == QuestObjective.Kind.KILL or o.kind == QuestObjective.Kind.COLLECT:
 		line = "%s: %d/%d" % [label, n, o.needed()]
 	if n >= o.needed():
-		return "[color=%s]✓ %s[/color]" % [GREEN, line]
+		return "[color=%s]• %s (done)[/color]" % [GREEN, line]
 	return "• " + line
 
 
@@ -53,7 +53,7 @@ static func tracker_bbcode(hero: Hero, quests: Dictionary) -> String:
 	for def in active_quests(hero, quests):
 		if QuestLog.status(hero, def) == QuestLog.Status.READY:
 			var giver := npc_name(def.turn_in_npc())
-			blocks.append("[color=%s][b]%s[/b][/color]\n[color=%s]✓ Return to %s[/color]" % [GOLD, def.title, GREEN, giver])
+			blocks.append("[color=%s][b]%s[/b][/color]\n[color=%s]• Return to %s[/color]" % [GOLD, def.title, GREEN, giver])
 		else:
 			blocks.append("[b]%s[/b]\n%s" % [def.title, objectives_bbcode(hero, def)])
 	return "\n".join(blocks)

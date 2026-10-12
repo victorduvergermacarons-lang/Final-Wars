@@ -44,7 +44,7 @@ func _draw() -> void:
 	if not a.alive:
 		title += "  (dead)"
 	elif a.in_combat(now):
-		title += "  ⚔"
+		title += "  [combat]"
 	_text(title, Vector2(6, 14), 13, Color(1, 0.6, 0.6) if a.team == Actor.Team.ENEMIES else Color.WHITE)
 	var w := size.x - 12
 	_bar(Rect2(6, 20, w, 12), a.hp, stats.hp, Color(0.2, 0.75, 0.3))
