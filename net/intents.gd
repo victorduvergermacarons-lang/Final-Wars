@@ -33,6 +33,13 @@ static func sanitize(raw: Variant) -> Dictionary:
 				return {}
 			out.ability = StringName(ability)
 			out.target = raw.get("target", -1)
+			if raw.has("aim"):
+				var aim = raw.aim
+				if typeof(aim) == TYPE_VECTOR2I:
+					aim = Vector2(aim)
+				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
+					return {}
+				out.aim = aim
 		"release":
 			pass
 		"talk":

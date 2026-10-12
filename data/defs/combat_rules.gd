@@ -88,6 +88,14 @@ enum GrowthLimit {
 ## the hero (any level above counts).
 @export var mastery_level_window_below: int = 3
 
+@export_group("Targeting")
+## Network grace: a skillshot hits a unit that was on the tile at any moment in
+## the last this-many seconds (the host resolves all hits).
+@export var skillshot_grace_seconds: float = 0.1
+## Dodge rule: a skillshot's travel time or a telegraph shorter than the step
+## cooldown plus this reaction time can't really be dodged (debug warning).
+@export var dodge_reaction_seconds: float = 0.3
+
 @export_group("Ability power")
 ## See AbilityPower. Each point of tree Mastery adds this fraction of power.
 @export var mastery_power_per_point: float = 0.001

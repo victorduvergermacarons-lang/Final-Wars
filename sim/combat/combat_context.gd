@@ -8,6 +8,10 @@ var rules: CombatRules
 var rng: RandomNumberGenerator
 var now: float = 0.0
 var actors := {} # id -> Actor
+## Recent tiles of every actor, for the skillshot grace window:
+## id -> [[time, tile], ...] (oldest first, ~0.5 s kept).
+var recent_tiles := {}
+const RECENT_SECONDS := 0.5
 
 
 func _init(p_grid: GridModel, p_rules: CombatRules, p_rng: RandomNumberGenerator) -> void:
@@ -18,6 +22,28 @@ func _init(p_grid: GridModel, p_rules: CombatRules, p_rng: RandomNumberGenerator
 
 func add_actor(actor: Actor) -> void:
 	actors[actor.id] = actor
+
+
+## Records where every actor is now (called once per tick).
+func record_positions() -> void:
+	for id in actors:
+		var entries: Array = recent_tiles.get(id, [])
+		entries.append([now, actors[id].tile()])
+		while entries.size() > 1 and entries[0][0] < now - RECENT_SECONDS:
+			entries.pop_front()
+		recent_tiles[id] = entries
+
+
+## Whether `actor` is on `tile` now or was at any moment in the last `window` seconds.
+func was_on(actor: Actor, tile: Vector2i, window: float) -> bool:
+	if actor.tile() == tile:
+		return true
+	if window <= 0.0:
+		return false
+	for e in recent_tiles.get(actor.id, []):
+		if e[0] >= now - window - 0.0001 and e[1] == tile:
+			return true
+	return false
 
 
 func get_actor(id: int) -> Actor:

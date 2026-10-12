@@ -102,6 +102,10 @@ func projectiles() -> Array:
 
 
 ## Loot waiting for the local hero (didn't fit in the bag).
+func telegraphs() -> Array:
+	return zone_sim().pending_hits()
+
+
 func world_flags() -> Dictionary:
 	return world.world_flags
 

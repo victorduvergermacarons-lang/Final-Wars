@@ -135,6 +135,10 @@ func projectiles() -> Array:
 	return mirror.projectiles
 
 
+func telegraphs() -> Array:
+	return mirror.telegraphs
+
+
 func world_flags() -> Dictionary:
 	return mirror.world_flags
 

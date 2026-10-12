@@ -759,10 +759,26 @@ F. 15 debug console · 16 docs + playtest checklist.
     clipping (a tile more than the LOS tolerance above the shooter, or the map edge,
     stops it; water doesn't), and push/pull paths that stop before walls, water, units
     and climbs over the unit's Jump (drops allowed), reporting what stopped them.
+18. **Targeting (as built in step 6):** `AbilityDef.targeting` (LEGACY for the old
+    shapes; TARGETED / SKILLSHOT / GROUND / SELF) resolved by `CastResolver`. Cast
+    intents carry an optional `aim` (tile coordinates, any angle). Skillshots: instant,
+    flying (`projectile_speed`, `pierce`) or lobbed (`arc_seconds`, lands on the aimed
+    tile over obstacles); `aim` ANY_ANGLE or EIGHT_WAY; `line_shape` LINE or CONE.
+    Ground/self areas are squares (`area_radius`); ground can be telegraphed
+    (`telegraph_seconds`). Units count as on a tile if they were there within
+    `skillshot_grace_seconds` (0.1) — for skillshots only. No hit roll; crits roll.
+    Telegraphs/lobs are sent to clients (`telegraphs` in the snapshot). Dodge warnings
+    print at load in debug builds. Choices made here:
+    - Ground abilities don't need line of sight (only range); "at that moment" means no
+      grace window for telegraphs.
+    - Casting turns the caster (4-way facing) toward the target or aim point.
+    - Melee for flanking = Targeted enemy abilities with range 1.
+    - Cones are blocked tile by tile by terrain higher than the caster, not by occlusion.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 6: targeting types, aim intents, grace window, dodge warnings | Decision 18 (choices: ground needs no LOS and has no grace; casting turns you; range-1 targeted = melee). |
 | 2026-10-12 | M3 step 5: tile geometry | Decision 17. Cones widen by one tile per side per row (Breath of Fire's "4-tile cone"). |
 | 2026-10-12 | M3 step 4: power formula in one place | Decision 16. Starting numbers (+0.1% power and +0.05% duration per Mastery point; tier bases) are mine, tunable in `content/rules/default_rules.tres`. |
 | 2026-10-12 | M3 step 3: learning slot, unlocks, Mastery gain | Decision 15 (choices: locked abilities unusable; cap includes the learn bonus; per-use Mastery while learning; a use counts once). |

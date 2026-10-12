@@ -53,6 +53,29 @@ enum TargetType {
 ## AP needed to master this ability. 0 = cannot be mastered (e.g. enemy attacks).
 @export var ap_to_master: int = 0
 
+@export_group("Targeting (Milestone 3)")
+## LEGACY = the M1/M2 shapes above. The others follow the Milestone 3 targeting
+## rules (CastResolver): TARGETED locks on a unit and can't miss; SKILLSHOT is aimed
+## along a tile line; GROUND picks a tile (optionally telegraphed); SELF is
+## centred on the caster. max_range is the range / line length.
+enum TargetingMode { LEGACY, TARGETED, SKILLSHOT, GROUND, SELF }
+@export var targeting: TargetingMode = TargetingMode.LEGACY
+## SKILLSHOT: any-angle line toward the aim point, or snapped to 8 directions.
+enum Aim { ANY_ANGLE, EIGHT_WAY }
+@export var aim: Aim = Aim.ANY_ANGLE
+## SKILLSHOT: LINE hits along a line; CONE hits a widening cone (8-way).
+enum LineShape { LINE, CONE }
+@export var line_shape: LineShape = LineShape.LINE
+## SKILLSHOT: keeps going through units instead of stopping at the first one.
+@export var pierce: bool = false
+## SKILLSHOT: lobbed instead of flying (e.g. Rock Throw): lands on the aimed tile
+## after this many seconds, over obstacles; hits whoever is on it then.
+@export var arc_seconds: float = 0.0
+## GROUND / SELF: square radius of the area (0 = the tile itself).
+@export var area_radius: int = 0
+## GROUND: seconds the area is shown before it goes off (0 = at once).
+@export var telegraph_seconds: float = 0.0
+
 @export_group("Ability tree")
 ## Set for abilities from design/Ability_Tree.xlsx ("" = not a tree ability).
 @export var tree: String = ""
@@ -99,4 +122,6 @@ func cooldown_key() -> StringName:
 
 ## Melee shapes get flanking bonuses.
 func is_melee() -> bool:
-	return shape == Shape.FRONT or shape == Shape.ARC
+	if targeting == TargetingMode.TARGETED:
+		return max_range <= 1 and target == TargetType.ENEMY
+	return targeting == TargetingMode.LEGACY and (shape == Shape.FRONT or shape == Shape.ARC)

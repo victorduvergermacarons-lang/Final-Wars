@@ -13,6 +13,9 @@ var start_time: float = 0.0
 var speed: float = 10.0
 ## Index of the last path tile already checked (-1 = none yet).
 var checked: int = -1
+## Milestone 3 skillshots: keep flying through units; ids already hit.
+var pierce: bool = false
+var hit_ids := {}
 
 
 ## How many tiles along the path it has travelled (fractional).
@@ -32,4 +35,5 @@ func is_spent(now: float) -> bool:
 
 func to_dict() -> Dictionary:
 	return {"id": id, "source": caster_id, "ability": ability.id, "origin": origin, "dir": dir,
-			"length": path.size(), "start": start_time, "speed": speed}
+			"length": path.size(), "start": start_time, "speed": speed,
+			"end": path.back() if not path.is_empty() else origin}

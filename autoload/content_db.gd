@@ -48,6 +48,9 @@ func reload() -> void:
 	var built := TreeContent.build(tree, tree_tuning)
 	abilities.merge(built.abilities)
 	items.merge(built.items)
+	if OS.is_debug_build():
+		for w in CastResolver.dodge_warnings(abilities.values(), rules):
+			print("DODGE WARNING: " + w)
 
 
 ## Every problem found in the loaded content; empty when all is valid.

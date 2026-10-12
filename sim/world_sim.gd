@@ -5,7 +5,8 @@ extends RefCounted
 ## Input: intents from players, as plain Dictionaries, via submit():
 ##   {"type": "step", "to": Vector2i}         (also turns the hero that way; not while rooted)
 ##   {"type": "face", "dir": Vector2i}        (turn in place; free)
-##   {"type": "cast", "ability": StringName, "target": int}   (target -1 = none/self)
+##   {"type": "cast", "ability": StringName, "target": int, "aim": Vector2 (optional)}
+##       (target -1 = none/self; aim = tile coordinates for skillshots / ground)
 ##   {"type": "release"}
 ##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles)
 ##   {"type": "take_loot", "loot": int}      (loot that didn't fit in the bag)
@@ -47,6 +48,8 @@ var quests := {}
 ## Kill, talk and reach credit is shared with heroes this close (party = everyone).
 const QUEST_SHARE_RADIUS := 15
 var _projectiles: Array[Projectile] = []
+## Telegraphed areas and lobbed shots waiting to land (CastResolver pending hits).
+var _pending_hits: Array = []
 ## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
 var _pending_loot: Array = []
 var _next_loot_id := 1
@@ -209,6 +212,7 @@ func step() -> Array[Dictionary]:
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
 	_update_projectiles()
+	_update_pending_hits()
 	_tick_heals_over_time()
 	_update_combat_state()
 	_expire_loot()
@@ -217,6 +221,7 @@ func step() -> Array[Dictionary]:
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
 	_record_history()
+	ctx.record_positions()
 	return _events
 
 
@@ -301,7 +306,11 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 
 
 ## Resolves an ability and processes any deaths it caused.
-func cast(caster: Actor, ability: AbilityDef, target: Actor) -> AbilityResolver.Result:
+## Uses an ability. `aim` (Vector2/Vector2i tile coordinates) is for Milestone 3
+## skillshots and ground abilities; it defaults to the target's tile.
+func cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant = null) -> AbilityResolver.Result:
+	if ability.targeting != AbilityDef.TargetingMode.LEGACY:
+		return _cast_targeted(caster, ability, target, aim)
 	var out := AbilityResolver.cast(ctx, caster, ability, target)
 	_emit_resolved(out.events)
 	if out.result == AbilityResolver.Result.OK and out.projectile == null:
@@ -313,6 +322,47 @@ func cast(caster: Actor, ability: AbilityDef, target: Actor) -> AbilityResolver.
 		_projectiles.append(p)
 		emit({"type": "projectile", "projectile": p.to_dict()})
 	return out.result
+
+
+func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
+	var out := CastResolver.cast(ctx, caster, ability, target, aim)
+	_emit_resolved(out.events)
+	if out.result != AbilityResolver.Result.OK:
+		return out.result
+	if out.projectile != null:
+		var p: Projectile = out.projectile
+		p.id = _next_projectile_id
+		_next_projectile_id += 1
+		_projectiles.append(p)
+		emit({"type": "projectile", "projectile": p.to_dict()})
+	elif out.pending != null:
+		_pending_hits.append(out.pending)
+	else:
+		_credit_mastery(caster, ability, out.events)
+	return out.result
+
+
+## Telegraphed areas and lobbed shots in flight, as plain data for clients:
+## [{"source", "ability", "tiles", "at"}].
+func pending_hits() -> Array:
+	return _pending_hits.map(func(h): return {"source": h.caster, "ability": h.ability.id,
+			"tiles": h.tiles, "at": h.at})
+
+
+func _update_pending_hits() -> void:
+	var waiting: Array = []
+	for h in _pending_hits:
+		if now + 0.0001 < h.at:
+			waiting.append(h)
+			continue
+		var caster := get_actor(h.caster)
+		if caster == null:
+			continue
+		var events: Array[Dictionary] = []
+		CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
+		_emit_resolved(events)
+		_credit_mastery(caster, h.ability, events)
+	_pending_hits = waiting
 
 
 ## Projectiles currently in flight.
@@ -356,6 +406,10 @@ func _update_projectiles() -> void:
 		var caster := get_actor(p.caster_id)
 		if caster == null:
 			continue
+		if p.ability.targeting != AbilityDef.TargetingMode.LEGACY:
+			if _fly_skillshot(p, caster):
+				flying.append(p)
+			continue
 		var hit: Actor = null
 		var reached := p.tile_index_at(now)
 		for i in range(maxi(p.checked, 0), reached + 1):
@@ -376,6 +430,35 @@ func _update_projectiles() -> void:
 		else:
 			flying.append(p)
 	_projectiles = flying
+
+
+## Moves a Milestone 3 projectile; returns whether it is still flying.
+func _fly_skillshot(p: Projectile, caster: Actor) -> bool:
+	var reached := p.tile_index_at(now)
+	var events: Array[Dictionary] = []
+	var stopped_at := -1
+	for i in range(maxi(p.checked + 1, 0), reached + 1):
+		for a in CastResolver.actors_on(ctx, p.path[i], caster, p.ability, rules.skillshot_grace_seconds):
+			if p.hit_ids.has(a.id):
+				continue
+			p.hit_ids[a.id] = true
+			AbilityResolver.apply_effects(ctx, caster, p.ability, a, events)
+			if not p.pierce:
+				stopped_at = i
+				break
+		if stopped_at >= 0:
+			break
+	p.checked = maxi(p.checked, reached if stopped_at < 0 else stopped_at)
+	if not events.is_empty():
+		_emit_resolved(events)
+		_credit_mastery(caster, p.ability, events)
+	if stopped_at >= 0:
+		emit({"type": "projectile_end", "id": p.id, "tile": p.path[stopped_at], "target": events[0].get("target", -1)})
+		return false
+	if p.is_spent(now):
+		emit({"type": "projectile_end", "id": p.id, "tile": p.path.back() if not p.path.is_empty() else p.origin, "target": -1})
+		return false
+	return true
 
 
 func is_occupied(tile: Vector2i, ignore: Actor = null) -> bool:
@@ -428,7 +511,7 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 		"face":
 			reason = _intent_face(hero, intent.get("dir", Vector2i.ZERO))
 		"cast":
-			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1))
+			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1), intent.get("aim"))
 		"release":
 			reason = _intent_release(hero)
 		"talk":
@@ -527,11 +610,11 @@ func _take_pending_step(hero: Hero) -> void:
 		emit({"type": "rejected", "target": hero.id, "intent": "step", "reason": reason})
 
 
-func _intent_cast(hero: Hero, ability_id: StringName, target_id: int) -> String:
+func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Variant = null) -> String:
 	var ability := hero.find_ability(ability_id)
 	if ability == null:
 		return "unknown_ability"
-	var result := cast(hero, ability, get_actor(target_id))
+	var result := cast(hero, ability, get_actor(target_id), aim)
 	if result != AbilityResolver.Result.OK:
 		return AbilityResolver.Result.keys()[result].to_lower()
 	return ""
