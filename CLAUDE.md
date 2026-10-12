@@ -856,10 +856,22 @@ F. 15 debug console · 16 docs + playtest checklist.
       Grizzlehide kills a lone level-5 hero and mostly a pair, a group of four wins
       (~21 s).
     - The dodge warning counts wind-up time as time to react.
+24. **Aiming UI (as built in step 12):** pressing a Skillshot or Ground ability's key
+    starts aiming; the exact tiles it would affect are highlighted (blue; red when out
+    of range or line of sight; a dart's line stops at the first enemy, Earth Wall shows
+    its wall, Flame Dash its path), following the mouse, or the targeted enemy until
+    the mouse moves. Releasing the key casts at that point. Clicking such an ability
+    on the bar aims until a left click on the map. Esc or a right click cancels.
+    Targeted abilities use the current target (ally abilities fall back to self) and
+    Self abilities fire at once. Enemy telegraphs (Fireball-style areas, Grizzlehide's
+    Charge) flash red, brighter as they land; ground zones are orange; units casting,
+    winding up or channelling show a bar (yellow / red / blue) with the ability name.
+    Slot tint for aimed abilities ignores range (you can aim elsewhere).
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 12: aiming UI | Decision 24. My choices: hold-and-release on the key, the targeted enemy is the default aim until the mouse moves, red only for range/line-of-sight problems. |
 | 2026-10-12 | M3 step 11: balance pass | Decision 23. Flagged: scrolls in the learning slot now give level-up growth (casters had no way to grow Magic Attack); Shaman and Grizzlehide retuned. |
 | 2026-10-12 | M3 step 10: old content converted to the trees | Decision 22. My choices: the old weapons and accessories are retired outright (armor stays); older characters get the new kit; drop rates and Hilda's stock; Charge 1 s mark. |
 | 2026-10-12 | M3 step 9: the first 32 abilities | Decision 21. Mana costs, power multipliers, buff sizes and projectile speeds are my starting numbers; step 11 balances them. |

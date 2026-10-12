@@ -18,3 +18,10 @@ static func to_screen(tile: Vector2, height: float) -> Vector2:
 ## Draw order: larger is nearer the camera.
 static func depth(tile: Vector2i) -> int:
 	return tile.x + tile.y
+
+
+## Inverse of to_screen() for a known height: fractional tile position.
+static func from_screen(screen: Vector2, height: float) -> Vector2:
+	var a := screen.x / (TILE_W * 0.5) # x - y
+	var b := (screen.y + height * LEVEL_H) / (TILE_H * 0.5) # x + y
+	return Vector2((a + b) * 0.5, (b - a) * 0.5)

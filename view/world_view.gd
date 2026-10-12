@@ -15,6 +15,11 @@ const HEIGHT_COLORS := [
 ]
 const HERO_COLORS := [Color(0.25, 0.5, 1.0), Color(0.2, 0.85, 0.45), Color(1.0, 0.8, 0.2), Color(0.85, 0.4, 0.95)]
 const ENEMY_COLOR := Color(0.85, 0.2, 0.2)
+## Tile highlights: aiming (valid / can't), enemy telegraphs, ground zones.
+const AIM_COLOR := Color(0.45, 0.85, 1.0, 0.55)
+const AIM_BAD_COLOR := Color(1.0, 0.3, 0.25, 0.45)
+const TELEGRAPH_COLOR := Color(1.0, 0.15, 0.1)
+const ZONE_COLOR := Color(1.0, 0.55, 0.1, 0.4)
 
 var session # LocalSession or a networked session with the same API
 var client: ClientState
@@ -86,6 +91,21 @@ func actor_screen_pos(actor: Actor) -> Vector2:
 	return Iso.to_screen(tile, h)
 
 
+## The map tile under a point (world coordinates), the highest one drawn there
+## (null if none).
+func tile_at(world_pos: Vector2) -> Variant:
+	var grid: GridModel = session.grid()
+	var best: Variant = null
+	var best_depth := -1
+	for h in range(HEIGHT_COLORS.size() + 8, -1, -1):
+		var f := Iso.from_screen(world_pos, h)
+		var t := Vector2i(roundi(f.x), roundi(f.y))
+		if grid.in_bounds(t) and grid.height_at(t) == h and Iso.depth(t) > best_depth:
+			best = t
+			best_depth = Iso.depth(t)
+	return best
+
+
 ## The actor drawn closest to a screen point (in world coordinates), or null.
 func actor_at(world_pos: Vector2) -> Actor:
 	var best: Actor = null
@@ -109,6 +129,7 @@ func _draw() -> void:
 			actors_by_depth[d] = []
 		actors_by_depth[d].append(a)
 	var quest_areas := _quest_area_tiles()
+	var marks := _tile_marks()
 	_overlay.clear()
 	_labels.clear()
 	for d in range(_max_depth + 1):
@@ -116,6 +137,8 @@ func _draw() -> void:
 			_draw_tile(grid, p)
 			if quest_areas.has(p):
 				_draw_quest_area(grid, p)
+			for color in marks.get(p, []):
+				_draw_tile_mark(grid, p, color)
 		for a in actors_by_depth.get(d, []):
 			_draw_actor(a)
 	_draw_projectiles(grid)
@@ -203,6 +226,23 @@ func _draw_actor(a: Actor) -> void:
 	if a.alive:
 		var max_hp := a.current_stats(now).hp
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))
+		_draw_cast_bar(a, feet, now)
+
+
+## A bar under a unit that is casting (yellow), winding up (red) or channelling
+## (blue), filling as it goes.
+func _draw_cast_bar(a: Actor, feet: Vector2, now: float) -> void:
+	var c: Dictionary = a.casting
+	if c.is_empty() or not c.has("end"):
+		return
+	var span := maxf(float(c.end) - float(c.get("start", c.end)), 0.01)
+	var done := clampf((now - float(c.get("start", now))) / span, 0.0, 1.0)
+	var color: Color = {"cast": Color(1, 0.85, 0.2), "windup": Color(1, 0.3, 0.2), "channel": Color(0.4, 0.7, 1)}.get(
+			c.get("kind", "cast"), Color.WHITE)
+	_draw_bar(feet + Vector2(-16, 8), 32, done, color)
+	var ability = c.get("ability")
+	if ability is AbilityDef:
+		_draw_label(feet + Vector2(0, 22), ability.display_name, color, 10)
 
 
 ## Projectiles: a glowing ball moving along its path at the origin's height.
@@ -352,6 +392,42 @@ func _quest_area_tiles() -> Dictionary:
 					if GridModel.distance(p, o.tile) <= o.radius and session.grid().is_walkable(p):
 						out[p] = true
 	return out
+
+
+## Highlights per tile: tile -> [Color]. Ground zones, then enemy telegraphs
+## (brighter as they're about to land), then the local player's aim on top.
+func _tile_marks() -> Dictionary:
+	var marks := {}
+	var now: float = session.now()
+	for z in session.ground_zones():
+		for t in z.tiles:
+			_mark(marks, t, ZONE_COLOR)
+	for h in session.telegraphs():
+		var left := clampf(float(h.at) - now, 0.0, 1.5)
+		var c := Color(TELEGRAPH_COLOR, 0.65 - 0.3 * left / 1.5 + 0.1 * sin(Time.get_ticks_msec() / 80.0))
+		for t in h.tiles:
+			_mark(marks, t, c)
+	if client != null and not client.aim.is_empty():
+		var c := AIM_COLOR if client.aim.valid else AIM_BAD_COLOR
+		for t in client.aim.tiles:
+			_mark(marks, t, c)
+	return marks
+
+
+static func _mark(marks: Dictionary, tile: Vector2i, color: Color) -> void:
+	if not marks.has(tile):
+		marks[tile] = []
+	marks[tile].append(color)
+
+
+func _draw_tile_mark(grid: GridModel, p: Vector2i, color: Color) -> void:
+	var c := Iso.to_screen(Vector2(p), grid.height_at(p))
+	var hw := Iso.TILE_W * 0.5 - 3
+	var hh := Iso.TILE_H * 0.5 - 1.5
+	var pts := PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh), c + Vector2(-hw, 0)])
+	draw_colored_polygon(pts, color)
+	pts.append(pts[0])
+	draw_polyline(pts, Color(color, minf(color.a + 0.35, 1.0)), 1.5)
 
 
 func _draw_quest_area(grid: GridModel, p: Vector2i) -> void:

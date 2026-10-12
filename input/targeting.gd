@@ -6,8 +6,16 @@ extends RefCounted
 
 ## Returns {"target": actor id or -1, "error": "" or a message for the player}.
 static func pick(hero: Hero, ability: AbilityDef, target: Actor) -> Dictionary:
-	if ability.shape != AbilityDef.Shape.TARGETED:
-		return {"target": -1, "error": ""} # aimed by facing
+	match ability.targeting:
+		AbilityDef.TargetingMode.LEGACY:
+			if ability.shape != AbilityDef.Shape.TARGETED:
+				return {"target": -1, "error": ""} # aimed by facing
+		AbilityDef.TargetingMode.SELF:
+			return {"target": hero.id, "error": ""}
+		AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND:
+			# Aimed at a point; a targeted enemy is the default aim.
+			var enemy := target != null and target.alive and hero.is_hostile_to(target)
+			return {"target": target.id if enemy else -1, "error": ""}
 	match ability.target:
 		AbilityDef.TargetType.SELF:
 			return {"target": hero.id, "error": ""}
@@ -51,6 +59,8 @@ static func usability(hero: Hero, ability: AbilityDef, target: Actor, grid: Grid
 		return Usability.NO_TARGET
 	var ctx := CombatContext.new(grid, rules, null)
 	ctx.now = now
+	if ability.targeting != AbilityDef.TargetingMode.LEGACY:
+		return _m3_usability(grid, rules, hero, ability, target, now, actors)
 	if ability.shape != AbilityDef.Shape.TARGETED:
 		return _shape_usability(ctx, hero, ability, actors)
 	var chosen: Actor = hero if picked.target == hero.id else target
@@ -84,3 +94,23 @@ static func _shape_usability(ctx: CombatContext, hero: Hero, ability: AbilityDef
 		_:
 			hits = not AbilityShapes.area_victims(ctx, hero, ability).is_empty()
 	return Usability.READY if hits else Usability.OUT_OF_RANGE
+
+
+## Milestone 3 targeting: the host's own checks (CastResolver.validate). Aimed
+## abilities are judged at their default aim (the targeted enemy, else ahead).
+static func _m3_usability(grid: GridModel, rules: CombatRules, hero: Hero, ability: AbilityDef, target: Actor,
+		now: float, actors: Array) -> Usability:
+	var p := AimPreview.preview(grid, rules, actors, hero, ability, AimPreview.default_aim(hero, ability, target),
+			target, now)
+	match p.result:
+		AbilityResolver.Result.OK:
+			return Usability.READY
+		AbilityResolver.Result.ON_COOLDOWN, AbilityResolver.Result.BUSY:
+			return Usability.COOLDOWN
+		AbilityResolver.Result.NOT_ENOUGH_MANA:
+			return Usability.NO_MANA
+		AbilityResolver.Result.OUT_OF_RANGE, AbilityResolver.Result.NO_LINE_OF_SIGHT:
+			# Aimed abilities can always be aimed elsewhere with the mouse.
+			return Usability.READY if AimPreview.is_aimed(ability) else Usability.OUT_OF_RANGE
+		_:
+			return Usability.NO_TARGET

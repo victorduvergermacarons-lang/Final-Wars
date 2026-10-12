@@ -64,4 +64,20 @@ func _run() -> void:
 	var bear: Enemy = fields.enemies().filter(func(e): return e.def.elite)[0]
 	hero.move.place(bear.tile() + Vector2i(-5, 0))
 	await _shot("6_grizzlehide")
+	# 6. Milestone 3 aiming: a Fire Whip line aimed at the wolf, Burning Ground and
+	# a Fireball telegraph, a wolf winding up a bite.
+	hero.move.place(wolf.tile() + Vector2i(-3, 0))
+	hero.face(Vector2i.RIGHT)
+	for id in [&"F06", &"F07", &"F08"]:
+		TreeRules.master(hero, cd.abilities[id])
+	fields.cast(hero, cd.abilities[&"F08"], null, Vector2(wolf.tile() + Vector2i(0, 3)))
+	hero.cooldowns = Cooldowns.new()
+	fields.cast(hero, cd.abilities[&"F07"], null, Vector2(wolf.tile() + Vector2i(-1, -3)))
+	wolf.casting = {"ability": cd.abilities[&"wolf_bite"], "kind": "windup", "start": session.now(),
+			"end": session.now() + 30.0, "target": hero.id, "aim": null, "next_tick": INF, "bonus": 1.0}
+	var input: PlayerInput = game.get_node("PlayerInput")
+	game.client.target_id = wolf.id
+	input.start_aiming(cd.abilities[&"F06"])
+	await _shot("7_aiming_telegraphs")
+	input.cancel_aiming()
 	get_tree().quit()

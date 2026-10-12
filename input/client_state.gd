@@ -3,6 +3,9 @@ extends RefCounted
 ## Per-player client-side UI state shared by input, view and HUD.
 
 var target_id: int = -1
+## While aiming a skillshot or ground ability (PlayerInput): {"ability", "tiles",
+## "valid", "point"}; empty otherwise. WorldView highlights the tiles.
+var aim := {}
 var action_bar := ActionBarModel.new()
 ## Overhead marker per NPC def id ("!" quest available, "?" turn-in ready). Set by the quest UI.
 var npc_markers := {}

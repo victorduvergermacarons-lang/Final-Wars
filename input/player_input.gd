@@ -21,6 +21,10 @@ var _walk_after := 0.0
 var _sent_from := Vector2i(-999, -999)
 var _sent_at := -999.0
 var _press_order: Array[Vector2i] = []
+## Aiming a skillshot or ground ability: {"ability", "action" (key to release, or
+## &"" when started by clicking the bar: then a left click fires), "mouse" (where
+## the mouse was when aiming started)}.
+var _aiming := {}
 
 
 func setup(p_session, p_client: ClientState, p_view: WorldView) -> void:
@@ -98,6 +102,9 @@ func _held_direction() -> Vector2i:
 func _unhandled_input(event: InputEvent) -> void:
 	if session == null:
 		return
+	if not _aiming.is_empty() and _aim_input(event):
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed(&"select_target"):
 		var picked: Actor = view.actor_at(view.get_global_mouse_position())
 		client.target_id = picked.id if picked != null else -1
@@ -121,13 +128,14 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 		for i in ActionBarModel.SLOT_COUNT:
 			if event.is_action_pressed(InputActions.slot_action(i), false, true):
-				use_slot(i)
+				use_slot(i, InputActions.slot_action(i))
 				get_viewport().set_input_as_handled()
 				return
 
 
-## Fires whatever ability is in action bar slot i.
-func use_slot(i: int) -> void:
+## Fires whatever ability is in action bar slot i. `key` is the action that was
+## pressed (aimed abilities fire when it's released); "" for a click on the bar.
+func use_slot(i: int, key: StringName = &"") -> void:
 	var id := client.action_bar.slots[i]
 	if id == &"":
 		return
@@ -141,7 +149,7 @@ func use_slot(i: int) -> void:
 	if ability == null:
 		client.error("You can't use that right now")
 		return
-	use_ability(ability)
+	use_ability(ability, key)
 
 
 ## Uses one of the named consumable from the bag.
@@ -155,8 +163,11 @@ func use_item(item_id: StringName) -> void:
 	client.error("You don't have any left")
 
 
-func use_ability(ability: AbilityDef) -> void:
+func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
+	if AimPreview.is_aimed(ability):
+		start_aiming(ability, key)
+		return
 	var picked := Targeting.pick(hero, ability, session.get_actor(client.target_id))
 	if picked.error != "":
 		client.error(picked.error)
@@ -211,3 +222,93 @@ func _target_next_enemy() -> void:
 	var ids: Array = candidates.map(func(a): return a.id)
 	var i := ids.find(client.target_id)
 	client.target_id = ids[(i + 1) % ids.size()]
+
+
+## Starts aiming a skillshot or ground ability: the affected tiles follow the
+## mouse (or the targeted enemy until the mouse moves). Releasing `key` fires; with
+## no key (clicked on the bar), a left click on the map fires. Esc or a right
+## click cancels.
+func start_aiming(ability: AbilityDef, key: StringName = &"") -> void:
+	_aiming = {"ability": ability, "action": key, "mouse": _screen_mouse()}
+	_update_aim()
+
+
+## For tests: as if `key` was pressed on a slot holding `ability`.
+func use_slot_ability_for_test(ability: AbilityDef, key: StringName) -> void:
+	use_ability(ability, key)
+
+
+func _screen_mouse() -> Vector2:
+	return get_viewport().get_mouse_position() if is_inside_tree() else Vector2.ZERO
+
+
+func cancel_aiming() -> void:
+	_aiming = {}
+	client.aim = {}
+
+
+func is_aiming() -> bool:
+	return not _aiming.is_empty()
+
+
+func _process(_delta: float) -> void:
+	if not _aiming.is_empty():
+		_update_aim()
+
+
+## Where the aimed ability points now (a tile position, as Vector2).
+func aim_point() -> Vector2:
+	var hero: Hero = session.local_hero()
+	var ability: AbilityDef = _aiming.ability
+	var target: Actor = session.get_actor(client.target_id)
+	var enemy := target != null and target.alive and hero.is_hostile_to(target)
+	# Screen position, so the camera following the hero doesn't count as moving.
+	if _screen_mouse().distance_to(_aiming.mouse) < 4.0 and enemy:
+		return Vector2(target.tile())
+	var tile: Variant = view.tile_at(view.get_global_mouse_position())
+	if tile == null:
+		return AimPreview.default_aim(hero, ability, target)
+	return Vector2(tile)
+
+
+func _update_aim() -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive:
+		cancel_aiming()
+		return
+	var ability: AbilityDef = _aiming.ability
+	var point := aim_point()
+	var p := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ability, point,
+			session.get_actor(client.target_id), session.now())
+	# Red only for aiming problems (range, line of sight); cooldowns and mana show
+	# on the action bar.
+	var bad: bool = p.result in [AbilityResolver.Result.OUT_OF_RANGE, AbilityResolver.Result.NO_LINE_OF_SIGHT,
+			AbilityResolver.Result.INVALID_TARGET]
+	client.aim = {"ability": ability, "tiles": p.tiles, "point": point, "valid": not bad}
+
+
+## Handles input while aiming. Returns true if the event was used.
+func _aim_input(event: InputEvent) -> bool:
+	var key: StringName = _aiming.action
+	if key != &"" and event.is_action_released(key):
+		fire_aimed()
+		return true
+	if key == &"" and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		fire_aimed()
+		return true
+	if event.is_action_pressed(&"target_clear") or (event is InputEventMouseButton and event.pressed \
+			and event.button_index == MOUSE_BUTTON_RIGHT):
+		cancel_aiming()
+		return true
+	return false
+
+
+## Sends the aimed cast; the host checks range, cooldowns and mana.
+func fire_aimed() -> void:
+	if _aiming.is_empty():
+		return
+	var ability: AbilityDef = _aiming.ability
+	var point := aim_point()
+	var picked := Targeting.pick(session.local_hero(), ability, session.get_actor(client.target_id))
+	cancel_aiming()
+	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target, "aim": point})
