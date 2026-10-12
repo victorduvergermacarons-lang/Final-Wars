@@ -140,7 +140,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not sure_hit and ctx.rng.randf() >= CombatMath.hit_chance(caster_stats.accuracy, target_stats.evasion, rules):
 				events.append({"type": "miss", "source": caster.id, "target": target.id, "ability": ability.id})
 				return
-			var raw := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats)
+			var raw := AbilityPower.amount(caster, ability, effect, ctx.now, rules)
 			raw *= CombatMath.flank_multiplier(flank, rules)
 			raw *= CombatMath.high_ground_multiplier(
 					ctx.grid.height_advantage(caster.tile(), target.tile()), ability.ranged, rules)
@@ -163,7 +163,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not target.alive:
 				return
 			var max_hp := target.current_stats(ctx.now).hp
-			var amount := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats) \
+			var amount := AbilityPower.amount(caster, ability, effect, ctx.now, rules) \
 					+ effect.percent_of_max * max_hp
 			var crit := _roll_crit(ctx, effect, caster_stats)
 			if crit:
@@ -178,7 +178,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not target.alive:
 				return
 			var max_mana := target.current_stats(ctx.now).mana
-			var amount := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats) \
+			var amount := AbilityPower.amount(caster, ability, effect, ctx.now, rules) \
 					+ effect.percent_of_max * max_mana
 			var restored := clampf(roundf(amount), 0.0, maxf(max_mana - target.mana, 0.0))
 			target.mana += restored
@@ -214,7 +214,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 		AbilityEffect.Kind.HEAL_OVER_TIME:
 			if effect.buff == null or not target.alive:
 				return
-			var total := StatCalc.scaled_amount(effect.base_amount, effect.scaling, caster_stats)
+			var total := AbilityPower.amount(caster, ability, effect, ctx.now, rules)
 			var ticks := maxf(floorf(effect.buff.duration_seconds / maxf(effect.buff.tick_seconds, 0.05)), 1.0)
 			target.buffs.apply(effect.buff, ctx.now, total / ticks, caster.id)
 			events.append({"type": "buff", "source": caster.id, "target": target.id,

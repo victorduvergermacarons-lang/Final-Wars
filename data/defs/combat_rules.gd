@@ -87,6 +87,17 @@ enum GrowthLimit {
 ## Per-use tree Mastery only counts against enemies at most this many levels below
 ## the hero (any level above counts).
 @export var mastery_level_window_below: int = 3
+
+@export_group("Ability power")
+## See AbilityPower. Each point of tree Mastery adds this fraction of power.
+@export var mastery_power_per_point: float = 0.001
+## Each point of tree Mastery lengthens durations by this fraction.
+@export var mastery_duration_per_point: float = 0.0005
+## Coefficient for each stat named in the sheet's Scales With column.
+@export var sheet_stat_coefficient: float = 1.0
+## Default base damage / heal of a tree ability effect, by tier 1..5.
+@export var tier_damage_base: Array[float] = [10.0, 18.0, 30.0, 45.0, 65.0]
+@export var tier_heal_base: Array[float] = [14.0, 24.0, 38.0, 55.0, 80.0]
 @export var growth_limit: GrowthLimit = GrowthLimit.NONE
 ## CAP mode: maximum total growth per stat (0 = that stat is uncapped).
 @export var growth_cap: StatBlock = StatBlock.new()

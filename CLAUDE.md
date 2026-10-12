@@ -746,10 +746,18 @@ F. 15 debug console · 16 docs + playtest checklist.
     - A use counts once, judged from what it did: it affected an enemy at most 3 levels
       below (`CombatRules.mastery_level_window_below`) or any level above, or it
       healed/buffed while the caster was in combat.
+16. **Power formula (as built in step 4):** `AbilityPower` with constants in
+    `CombatRules` ("Ability power"): amount = (base + Σ coefficient × stat) × (1 +
+    Mastery × 0.001); durations × (1 + Mastery × 0.0005); charges = base + floor(Mastery
+    / per-charge). Mastery = total in the ability's tree (gear counts for power).
+    Tree effects can use the tier default base (damage 10/18/30/45/65, heal
+    14/24/38/55/80 by tier) and the sheet's Scales With stats at 1.0 each; Crit Rate
+    in Scales With affects crits, not the amount.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M3 step 4: power formula in one place | Decision 16. Starting numbers (+0.1% power and +0.05% duration per Mastery point; tier bases) are mine, tunable in `content/rules/default_rules.tres`. |
 | 2026-10-12 | M3 step 3: learning slot, unlocks, Mastery gain | Decision 15 (choices: locked abilities unusable; cap includes the learn bonus; per-use Mastery while learning; a use counts once). |
 | 2026-10-12 | M3 step 2: Mastery stats | Decision 14. Earned Mastery lives in permanent growth. |
 | 2026-10-12 | M3 step 1: spreadsheet importer | Decision 13. Choices: one JSON data file (diff-friendly); sheet IDs as ability ids; item ids are name slugs; Mastery Required taken from the Tiers tab (a mismatching cell is a warning). |

@@ -26,6 +26,10 @@ enum DamageType {
 ## HEAL / RESTORE_MANA: also restore this fraction of the target's max HP / Mana.
 @export var percent_of_max: float = 0.0
 @export var scaling: Array[AbilityScaling] = []
+## Tree abilities: use the spreadsheet's Scales With stats (each × the rules'
+## sheet_stat_coefficient) instead of `scaling`. A negative base_amount means "the
+## tier default" (CombatRules.tier_damage_base / tier_heal_base). See AbilityPower.
+@export var sheet_scaling: bool = false
 @export var can_crit: bool = true
 ## Used when kind is BUFF.
 @export var buff: BuffDef
