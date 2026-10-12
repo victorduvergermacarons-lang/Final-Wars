@@ -11,10 +11,15 @@ enum State {
 
 var def: EnemyDef
 var spawn_tile := Vector2i.ZERO
+## Leash anchor: where it was when it aggroed (its spawn tile unless patrolling).
+var home_tile := Vector2i.ZERO
+## Patrol waypoints (empty = none) and the index of the next one.
+var patrol: Array[Vector2i] = []
+var patrol_index: int = 0
 var state: State = State.IDLE
 var respawn_at: float = 0.0
-## FLANKER AI: when it started standing in front of its target (-1 = not there).
-var front_since: float = -1.0
+## When it last used an ability, or aggroed (FLANKER patience).
+var last_attack_at: float = 0.0
 
 
 func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.ZERO) -> void:
@@ -22,6 +27,7 @@ func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.Z
 	super(p_id, Team.ENEMIES, def.stats.copy())
 	display_name = def.display_name
 	spawn_tile = p_spawn
+	home_tile = p_spawn
 	move.place(p_spawn)
 
 
@@ -47,6 +53,8 @@ func reset_at_spawn() -> void:
 	evading = false
 	threat.clear()
 	buffs.clear()
-	front_since = -1.0
+	last_attack_at = 0.0
+	home_tile = spawn_tile
+	patrol_index = 0
 	cooldowns = Cooldowns.new()
 	move.place(spawn_tile)

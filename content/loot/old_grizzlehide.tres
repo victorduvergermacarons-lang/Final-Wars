@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_8f40g"]
+[ext_resource type="Resource" path="res://content/items/grizzlehide_mantle.tres" id="2_irw6o"]
+[ext_resource type="Resource" path="res://content/items/rangers_gloves.tres" id="3_elgxc"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="4_qachb"]
+
+[sub_resource type="Resource" id="Resource_mbajp"]
+script = ExtResource("1_8f40g")
+item = ExtResource("2_irw6o")
+chance = 0.25
+
+[sub_resource type="Resource" id="Resource_ywykp"]
+script = ExtResource("1_8f40g")
+item = ExtResource("3_elgxc")
+chance = 0.3
+
+[resource]
+script = ExtResource("4_qachb")
+gold_min = 30
+gold_max = 60
+entries = Array[ExtResource("1_8f40g")]([SubResource("Resource_mbajp"), SubResource("Resource_ywykp")])

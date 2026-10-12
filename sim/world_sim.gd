@@ -59,7 +59,7 @@ func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSo
 	rng.seed = rng_seed
 	ctx = CombatContext.new(grid, rules, rng)
 	for spawn in zone.enemy_spawns:
-		add_enemy(spawn.enemy, spawn.tile)
+		add_enemy(spawn.enemy, spawn.tile).patrol = spawn.patrol.duplicate()
 	for spawn in zone.npcs:
 		var npc := Npc.new(_take_id(), spawn.npc, spawn.tile)
 		npc.face(spawn.facing)
@@ -237,7 +237,8 @@ func emit(event: Dictionary) -> void:
 # --- Shared actions (used by intents and EnemyBrain) -----------------------------
 
 ## Starts a step if every rule allows it. Returns "" or a rejection reason.
-func try_step(actor: Actor, to: Vector2i) -> String:
+## `walk_seconds` overrides the walk time (enemy patrols); < 0 = the rules' value.
+func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 	if not actor.alive:
 		return "dead"
 	var from := actor.tile()
@@ -253,7 +254,7 @@ func try_step(actor: Actor, to: Vector2i) -> String:
 	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
 		return "not_ready"
 	actor.face(to - from)
-	actor.move.begin(to, now, rules.walk_tile_seconds)
+	actor.move.begin(to, now, walk_seconds if walk_seconds >= 0.0 else rules.walk_tile_seconds)
 	if in_combat:
 		actor.cooldowns.trigger_step(now, actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now))
 	return ""

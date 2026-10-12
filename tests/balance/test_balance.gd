@@ -72,3 +72,21 @@ func test_level_2_after_two_wolves_and_first_mastery_at_level_3() -> void:
 	for id in [&"strike", &"fireball", &"heal", &"block"]:
 		assert_eq(db.abilities[id].ap_to_master, rules.ap_per_level * 2, "%s mastered after 2 level-ups" % id)
 	assert_eq(db.abilities[&"resurrect"].ap_to_master, rules.ap_per_level * 3)
+
+
+func test_m2_enemies_are_beatable_solo_at_their_level() -> void:
+	var rot := [&"strike", &"cleave", &"fireball"]
+	var brute := BalanceSim.average(db, [[&"sword", &"holy_charm"]], rot, 1, 4, 0.0, false, &"bandit_brute", 3)
+	assert_gt(brute.win_rate, 0.5, "sword hero beats a Brute at level 3: %s" % brute)
+	var shaman := BalanceSim.average(db, [[&"staff", &"holy_charm"]], rot, 1, 4, 0.0, false, &"goblin_shaman", 2)
+	assert_gt(shaman.win_rate, 0.5, "staff hero beats a Shaman at level 2: %s" % shaman)
+
+
+func test_grizzlehide_needs_a_group() -> void:
+	var rot := [&"strike", &"cleave", &"fireball"]
+	var solo := BalanceSim.average(db, [[&"sword", &"holy_charm"]], rot, 1, 3, 0.5, false, &"old_grizzlehide", 5)
+	assert_eq(solo.win_rate, 0.0, "a lone level-5 hero loses: %s" % solo)
+	var group := [[&"sword", &"shield", &"iron_helm"], [&"greataxe", &"holy_charm"],
+			[&"staff", &"frostweave_robe"], [&"staff", &"holy_charm", &"acolytes_leggings"]]
+	var four := BalanceSim.average(db, group, rot, 1, 3, 0.5, false, &"old_grizzlehide", 5)
+	assert_gt(four.win_rate, 0.5, "a level-5 group of four wins: %s" % four)

@@ -8,7 +8,7 @@
 
 [sub_resource type="Resource" id="Resource_prqar"]
 script = ExtResource("5_eogks")
-hp = 260.0
+hp = 220.0
 phys_atk = 16.0
 phys_def = 8.0
 evasion = 12.0

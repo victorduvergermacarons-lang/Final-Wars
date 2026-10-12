@@ -4,3 +4,6 @@ extends Resource
 
 @export var enemy: EnemyDef
 @export var tile: Vector2i = Vector2i.ZERO
+## Waypoints walked in a loop while idle (empty = stand at the spawn tile).
+## A patrolling enemy leashes back to where it was pulled, then resumes.
+@export var patrol: Array[Vector2i] = []

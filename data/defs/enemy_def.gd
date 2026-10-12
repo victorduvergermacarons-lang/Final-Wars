@@ -31,3 +31,7 @@ enum Behavior {
 ## Personal loot each participant rolls.
 @export var loot: LootTable
 @export var respawn_seconds: float = 30.0
+## Elites are shown bigger with a gold outline and "Elite" on their name.
+@export var elite: bool = false
+## Seconds per tile while walking a patrol route (see EnemySpawn.patrol).
+@export var patrol_step_seconds: float = 1.0

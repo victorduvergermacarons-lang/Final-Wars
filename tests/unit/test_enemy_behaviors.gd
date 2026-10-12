@@ -23,7 +23,7 @@ func _ability(shape: AbilityDef.Shape, max_range: int, cooldown: float) -> Abili
 
 
 func _setup(behavior: EnemyDef.Behavior, ability: AbilityDef, enemy_tile: Vector2i, hero_tile: Vector2i,
-		step_seconds: float = 0.5) -> void:
+		step_seconds: float = 0.5, patrol: Array[Vector2i] = []) -> void:
 	rules = CombatRules.new()
 	var zone := ZoneDef.new()
 	zone.id = &"test"
@@ -48,6 +48,7 @@ func _setup(behavior: EnemyDef.Behavior, ability: AbilityDef, enemy_tile: Vector
 	var spawn := EnemySpawn.new()
 	spawn.enemy = def
 	spawn.tile = enemy_tile
+	spawn.patrol = patrol
 	zone.enemy_spawns = [spawn]
 	var hero_def := HeroDef.new()
 	hero_def.base_stats = StatBlock.make({Stat.Id.HP: 5000, Stat.Id.JUMP: 2})
@@ -103,3 +104,51 @@ func test_melee_chases_and_attacks() -> void:
 	var events := world.advance(4.0)
 	assert_false(_casts(events).is_empty())
 	assert_eq(GridModel.distance(enemy.tile(), hero.tile()), 1)
+
+
+func test_patrol_walks_the_loop_while_idle() -> void:
+	var route: Array[Vector2i] = [Vector2i(10, 10), Vector2i(13, 10), Vector2i(13, 13)]
+	_setup(EnemyDef.Behavior.MELEE, _ability(AbilityDef.Shape.FRONT, 1, 1.5), Vector2i(10, 10), Vector2i(0, 0),
+			0.5, route)
+	enemy.def.patrol_step_seconds = 0.5
+	var seen := {}
+	for i in 200: # 10 s
+		world.step()
+		seen[enemy.tile()] = true
+	assert_true(seen.has(Vector2i(13, 10)) and seen.has(Vector2i(13, 13)), "visited the waypoints")
+	assert_eq(enemy.state, Enemy.State.IDLE)
+	assert_almost_eq(enemy.move.duration, 0.5, 0.001, "walks at the patrol pace")
+
+
+func test_patroller_leashes_to_where_it_was_pulled_then_resumes() -> void:
+	var route: Array[Vector2i] = [Vector2i(10, 10), Vector2i(13, 10)]
+	_setup(EnemyDef.Behavior.MELEE, _ability(AbilityDef.Shape.FRONT, 1, 1.5), Vector2i(10, 10), Vector2i(0, 0),
+			0.5, route)
+	enemy.def.leash_radius = 3
+	enemy.move.place(Vector2i(13, 10))
+	enemy.threat.add(hero.id, 1.0)
+	world.advance(0.1)
+	assert_eq(enemy.home_tile, Vector2i(13, 10), "home is where it was pulled")
+	enemy.move.place(Vector2i(13, 14)) # dragged past the leash
+	world.advance(0.1)
+	assert_eq(enemy.state, Enemy.State.EVADING)
+	world.advance(5.0)
+	assert_eq(enemy.state, Enemy.State.IDLE)
+	world.advance(3.0)
+	assert_ne(enemy.tile(), Vector2i(13, 10), "back on its route")
+
+
+func test_charge_closes_the_gap_and_hits() -> void:
+	var dash := AbilityEffect.new()
+	dash.kind = AbilityEffect.Kind.DASH
+	dash.base_amount = 3
+	var charge := _ability(AbilityDef.Shape.FRONT, 4, 12.0)
+	charge.min_range = 2
+	charge.effects = [dash, charge.effects[0]]
+	_setup(EnemyDef.Behavior.MELEE, charge, Vector2i(7, 8), Vector2i(7, 4), 5.0)
+	var events := world.advance(1.0)
+	assert_false(_casts(events).is_empty(), "charged from 4 tiles away")
+	assert_true(events.any(func(e): return e.type == "dash" and e.source == enemy.id))
+	assert_true(events.any(func(e): return e.type == "damage" and e.target == hero.id))
+	world.advance(0.5)
+	assert_eq(enemy.tile(), Vector2i(7, 5), "ends next to the target")

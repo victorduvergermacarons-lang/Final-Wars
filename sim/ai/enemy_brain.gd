@@ -5,7 +5,8 @@ extends RefCounted
 ## attack the top of the threat table when an ability is ready, otherwise step
 ## toward it on the step cooldown → (threat table empty, or pulled past the
 ## leash radius) → EVADING: heal to full, untargetable, walk home → IDLE.
-## DEAD → respawn at the spawn point when the timer is up.
+## DEAD → respawn at the spawn point when the timer is up. An IDLE enemy with a
+## patrol route walks it; it leashes back to where it was pulled ("home").
 ##
 ## Per-type behaviour (`EnemyDef.behavior`): MELEE chases; KITER keeps its
 ## distance and lines up ranged shots; FLANKER circles to the side or back.
@@ -14,7 +15,7 @@ extends RefCounted
 ## turning and aiming), so a hero who steps aside just in time makes a bite whiff.
 
 
-## Seconds a FLANKER circles in front of its target before striking head-on.
+## Seconds without attacking after which a FLANKER strikes head-on.
 const FLANK_PATIENCE := 2.0
 
 
@@ -28,10 +29,13 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 			if enemy.threat.is_empty():
 				var hero := _find_aggro_target(world, enemy)
 				if hero == null:
+					_patrol(world, enemy)
 					return
 				enemy.threat.add(hero.id, 0.0)
 				world.emit({"type": "aggro", "source": enemy.id, "target": hero.id})
 			enemy.state = Enemy.State.COMBAT
+			enemy.home_tile = enemy.tile()
+			enemy.last_attack_at = world.now
 			_fight(world, enemy)
 		Enemy.State.COMBAT:
 			_fight(world, enemy)
@@ -59,7 +63,7 @@ static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Hero:
 
 static func _fight(world: WorldSim, enemy: Enemy) -> void:
 	if enemy.threat.is_empty() \
-			or GridModel.distance(enemy.tile(), enemy.spawn_tile) > enemy.def.leash_radius:
+			or GridModel.distance(enemy.tile(), enemy.home_tile) > enemy.def.leash_radius:
 		_start_evade(world, enemy)
 		return
 	var target := world.get_actor(enemy.threat.top())
@@ -79,23 +83,19 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 
 ## MELEE: chase the target, attack whenever an ability would reach it.
 static func _fight_melee(world: WorldSim, enemy: Enemy, target: Actor, seen: Vector2i) -> void:
-	if _try_attack(world, enemy, target, seen) != Attack.OUT_OF_REACH:
+	if _try_attack(world, enemy, target, seen) == Attack.CAST:
 		return
-	_chase(world, enemy, seen)
+	_chase(world, enemy, seen) # does nothing once adjacent
 
 
 ## FLANKER: get to the target's side or back, then strike. In front of the
-## target it keeps circling, and only strikes head-on after FLANK_PATIENCE
-## seconds there (or when there is no way around).
+## target it keeps circling, and strikes head-on only when it hasn't attacked for
+## FLANK_PATIENCE seconds (or when there is no way around).
 static func _fight_flanker(world: WorldSim, enemy: Enemy, target: Actor, seen: Vector2i) -> void:
 	var dist := GridModel.distance(enemy.tile(), seen)
 	var at_front := dist == 1 \
 			and CombatMath.flank(enemy.tile(), seen, target.facing) == CombatMath.Flank.FRONT
-	if not at_front:
-		enemy.front_since = -1.0
-	elif enemy.front_since < 0.0:
-		enemy.front_since = world.now
-	if dist == 1 and (not at_front or world.now - enemy.front_since >= FLANK_PATIENCE):
+	if dist == 1 and (not at_front or world.now - enemy.last_attack_at >= FLANK_PATIENCE):
 		_try_attack(world, enemy, target, seen)
 		return
 	if not _step_ready(world, enemy):
@@ -135,7 +135,7 @@ static func _fight_kiter(world: WorldSim, enemy: Enemy, target: Actor, seen: Vec
 	var dist := GridModel.distance(enemy.tile(), seen)
 	if dist <= enemy.def.keep_away_distance and _step_ready(world, enemy):
 		var away := _best_neighbor(world, enemy, func(t: Vector2i) -> float:
-			return -float(GridModel.distance(t, seen)) + 0.01 * GridModel.distance(t, enemy.spawn_tile))
+			return -float(GridModel.distance(t, seen)) + 0.01 * GridModel.distance(t, enemy.home_tile))
 		if away != enemy.tile() and GridModel.distance(away, seen) > dist:
 			world.try_step(enemy, away)
 			return
@@ -163,11 +163,14 @@ static func _fight_kiter(world: WorldSim, enemy: Enemy, target: Actor, seen: Vec
 enum Attack { CAST, WAITING, OUT_OF_REACH }
 
 
-## Uses the first ready ability that would reach `seen`. Faces the target first
-## when it seems adjacent (turning is free) unless `turn` is false.
+## Uses the first ready ability that would reach `seen`. First turns (free) to
+## face the target when it seems to share a row or column within ability range,
+## unless `turn` is false.
 static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vector2i, turn: bool = true) -> Attack:
-	if turn and GridModel.distance(enemy.tile(), seen) == 1:
-		enemy.face(seen - enemy.tile())
+	var delta := seen - enemy.tile()
+	if turn and delta != Vector2i.ZERO and (delta.x == 0 or delta.y == 0) \
+			and GridModel.distance(enemy.tile(), seen) <= _max_range(enemy):
+		enemy.face(Vector2i(signi(delta.x), signi(delta.y)))
 	var result := Attack.OUT_OF_REACH
 	for ability in enemy.def.abilities:
 		if not AbilityShapes.reaches_tile(world.ctx, enemy, ability, seen):
@@ -175,6 +178,7 @@ static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vect
 		result = Attack.WAITING
 		if AbilityResolver.validate(world.ctx, enemy, ability, target) == AbilityResolver.Result.OK:
 			world.cast(enemy, ability, target)
+			enemy.last_attack_at = world.now
 			return Attack.CAST
 	return result
 
@@ -204,7 +208,7 @@ static func _best_neighbor(world: WorldSim, enemy: Enemy, score: Callable) -> Ve
 		var t := here + dir
 		if not world.grid.can_step(here, t, jump) or world.is_occupied(t, enemy):
 			continue
-		if GridModel.distance(t, enemy.spawn_tile) > enemy.def.leash_radius:
+		if GridModel.distance(t, enemy.home_tile) > enemy.def.leash_radius:
 			continue
 		var s: float = score.call(t)
 		if s < best_score:
@@ -231,16 +235,32 @@ static func _start_evade(world: WorldSim, enemy: Enemy) -> void:
 	world.emit({"type": "evade", "target": enemy.id})
 
 
+## Idle with a patrol route: walk to the next waypoint at the patrol pace.
+static func _patrol(world: WorldSim, enemy: Enemy) -> void:
+	if enemy.patrol.is_empty() or enemy.move.is_moving(world.now):
+		return
+	var goal := enemy.patrol[enemy.patrol_index % enemy.patrol.size()]
+	if enemy.tile() == goal:
+		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size()
+		return
+	var path := Pathfinder.find_path(world.grid, enemy.tile(), goal,
+			StatCalc.jump_levels(enemy.current_stats(world.now)), world.occupied_tiles(enemy))
+	if path.size() < 2:
+		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size() # unreachable: skip it
+	elif not world.is_occupied(path[1], enemy):
+		world.try_step(enemy, path[1], enemy.def.patrol_step_seconds)
+
+
 static func _walk_home(world: WorldSim, enemy: Enemy) -> void:
 	if enemy.move.is_moving(world.now):
 		return
-	if enemy.tile() == enemy.spawn_tile:
+	if enemy.tile() == enemy.home_tile:
 		enemy.state = Enemy.State.IDLE
 		enemy.evading = false
 		return
-	var path := Pathfinder.find_path(world.grid, enemy.tile(), enemy.spawn_tile,
+	var path := Pathfinder.find_path(world.grid, enemy.tile(), enemy.home_tile,
 			StatCalc.jump_levels(enemy.current_stats(world.now)), world.occupied_tiles(enemy))
 	if path.size() >= 2 and not world.is_occupied(path[1], enemy):
 		world.try_step(enemy, path[1])
-	elif path.is_empty() and not world.is_occupied(enemy.spawn_tile, enemy):
-		enemy.move.place(enemy.spawn_tile) # stuck: snap home
+	elif path.is_empty() and not world.is_occupied(enemy.home_tile, enemy):
+		enemy.move.place(enemy.home_tile) # stuck: snap home

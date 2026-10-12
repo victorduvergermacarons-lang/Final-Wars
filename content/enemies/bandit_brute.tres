@@ -8,7 +8,7 @@
 
 [sub_resource type="Resource" id="Resource_ms46s"]
 script = ExtResource("5_rpmo7")
-hp = 420.0
+hp = 320.0
 phys_atk = 22.0
 phys_def = 15.0
 jump = 1.0

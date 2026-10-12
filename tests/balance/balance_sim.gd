@@ -6,8 +6,11 @@ extends RefCounted
 
 ## Runs one fight and returns {"seconds", "hp_lost_pct" (worst hero), "won", "mana_left_pct"}.
 ## `loadouts`: per hero, item ids to equip. `rotation`: ability ids in priority order.
+## `wolves` enemies of type `enemy_id` (Wolf by default); heroes start at `hero_level`
+## with the growth of their gear.
 static func fight(content, loadouts: Array, rotation: Array, wolves: int, seed: int = 1,
-		heal_below: float = 0.0, block_first: bool = false) -> Dictionary:
+		heal_below: float = 0.0, block_first: bool = false, enemy_id: StringName = &"wolf",
+		hero_level: int = 1) -> Dictionary:
 	var zone := ZoneDef.new()
 	zone.id = &"arena"
 	var rows: PackedStringArray = []
@@ -18,11 +21,11 @@ static func fight(content, loadouts: Array, rotation: Array, wolves: int, seed: 
 	zone.height_rows = rows
 	zone.walk_rows = walk
 	zone.graveyards = [Vector2i(0, 0)]
-	zone.hero_spawns = [Vector2i(3, 5), Vector2i(3, 7)]
+	zone.hero_spawns = [Vector2i(3, 5), Vector2i(3, 7), Vector2i(2, 6), Vector2i(3, 9)]
 	var spawns: Array[EnemySpawn] = []
 	for i in wolves:
 		var s := EnemySpawn.new()
-		s.enemy = content.enemies[&"wolf"]
+		s.enemy = content.enemies[enemy_id]
 		s.tile = Vector2i(6, 5 + i * 2)
 		spawns.append(s)
 	zone.enemy_spawns = spawns
@@ -34,6 +37,8 @@ static func fight(content, loadouts: Array, rotation: Array, wolves: int, seed: 
 			h.unequip(slot)
 		for id in items:
 			h.wear(content.items[id])
+		while h.level < hero_level:
+			Leveling.add_xp(h, Leveling.xp_to_next(h.level, content.rules), content.rules)
 		h.hp = h.stats.hp
 		h.mana = h.stats.mana
 		heroes.append(h)
@@ -82,13 +87,14 @@ static func fight(content, loadouts: Array, rotation: Array, wolves: int, seed: 
 
 ## Average over several seeds.
 static func average(content, loadouts: Array, rotation: Array, wolves: int, runs: int = 10,
-		heal_below: float = 0.0, block_first: bool = false) -> Dictionary:
+		heal_below: float = 0.0, block_first: bool = false, enemy_id: StringName = &"wolf",
+		hero_level: int = 1) -> Dictionary:
 	var secs := 0.0
 	var lost := 0.0
 	var wins := 0
 	var mana := 0.0
 	for i in runs:
-		var r := fight(content, loadouts, rotation, wolves, i + 1, heal_below, block_first)
+		var r := fight(content, loadouts, rotation, wolves, i + 1, heal_below, block_first, enemy_id, hero_level)
 		secs += r.seconds
 		lost += r.hp_lost_pct
 		mana += r.mana_left_pct

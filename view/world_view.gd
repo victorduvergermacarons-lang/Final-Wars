@@ -171,9 +171,17 @@ func _draw_actor(a: Actor) -> void:
 		if not a.alive:
 			return
 		var c := Color(ENEMY_COLOR, alpha)
-		draw_colored_polygon(PackedVector2Array([body + Vector2(0, -12), body + Vector2(10, 0),
-				body + Vector2(0, 12), body + Vector2(-10, 0)]), c)
-		_draw_label(body + Vector2(0, -26), "%s  Lv%d" % [a.display_name, (a as Enemy).def.level], Color(1, 0.8, 0.8, alpha))
+		var edef := (a as Enemy).def
+		var s := 1.6 if edef.elite else 1.0
+		var diamond := PackedVector2Array([body + Vector2(0, -12) * s, body + Vector2(10, 0) * s,
+				body + Vector2(0, 12) * s, body + Vector2(-10, 0) * s])
+		draw_colored_polygon(diamond, c)
+		if edef.elite:
+			diamond.append(diamond[0])
+			draw_polyline(diamond, Color(1, 0.8, 0.2, alpha), 2.0)
+			_draw_label(body + Vector2(0, -32), "Elite %s  Lv%d" % [a.display_name, edef.level], Color(1, 0.85, 0.3, alpha))
+		else:
+			_draw_label(body + Vector2(0, -26), "%s  Lv%d" % [a.display_name, edef.level], Color(1, 0.8, 0.8, alpha))
 	if a.alive:
 		var max_hp := a.current_stats(now).hp
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))

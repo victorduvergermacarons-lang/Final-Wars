@@ -161,17 +161,20 @@ the nearest graveyard.
 Sources: Hilda sells the Commons and potions; Wolves drop the Uncommons (2% each);
 Ranger's Gloves and the Mantle come from the new enemies and the elite.
 
-### Milestone 2 enemies (step 13)
+### Milestone 2 enemies (steps 13–14)
 | Enemy | Lv | AI | Stats | Ability | Step / reaction | XP / AP | Drops | Where (Greenfields) |
 |-------|----|----|-------|---------|-----------------|---------|-------|---------------------|
 | Wolf | 1 | Melee | (see above) | Bite | 0.8 s / 0.3 s | 50 / 2 | 2–6 g, pelt, fang, Uncommons 2% | (8,13) (11,24) (5,20) (18,4) |
 | Goblin Shaman | 2 | Kiter | HP 160, MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
-| Bandit Brute | 3 | Melee | HP 420, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 14 + 1.2×PhysAtk, 3 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
-| Fen Skirmisher | 4 | Flanker | HP 260, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.25 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
+| Bandit Brute | 3 | Melee | HP 320, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 12 + 1.0×PhysAtk, 3.5 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
+| Fen Skirmisher | 4 | Flanker | HP 220, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.25 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
+| **Old Grizzlehide** (elite) | 5 | Melee, patrols | HP 1400, PhysAtk 26, PhysDef 25, MagDef 15, Acc 5, Jump 2; aggro 4, leash 12 | Cleave: arc, 12 + 1.0×PhysAtk, 2.5 s · Charge: front 2–4 tiles, dashes up to 3 tiles then 15 + 1.0×PhysAtk, 12 s | 1.0 s / 0.3 s (patrol 0.8 s/tile) | 400 / 10 | 30–60 g, Grizzlehide Mantle 25%, Ranger's Gloves 30%; respawn 5 min | loop (8,17) → (12,12) → (22,12) → (20,16), crossing the north bridge |
 
 XP by level: +10% per enemy level above you (max +50%); from 3 levels below, −20% per
-level (3 below = 80%), never under 20%. The new types are not covered by the balance
-report; tune them after playtesting.
+level (3 below = 80%), never under 20%. Balance report (bots stand still and always face the enemy): sword hero
+beats a Brute at level 3 (~90% HP lost), staff hero beats a Shaman at level 2 (~40%),
+sword hero beats a Skirmisher at level 4 80% of the time; Grizzlehide kills a lone or
+paired level-5 hero but a level-5 group of four wins (~46 s).
 
 ## Architecture (approved 2026-10-11)
 
@@ -509,13 +512,19 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     `keep_away_distance` (2), otherwise moves to share a row or column with its
     target within range, turns and shoots. FLANKER paths to a free tile behind or
     beside its target and strikes from there; in front of its target it keeps
-    circling and strikes head-on only after 2 s there (or when it can't get around).
+    circling and strikes head-on only if it hasn't attacked for 2 s (or can't get around).
     All types act on positions seen `reaction_seconds` ago and stay inside their leash.
+16. **Elite and patrols (as built in step 14):** `EnemySpawn.patrol` lists waypoints an
+    idle enemy walks in a loop at `patrol_step_seconds` per tile. Any enemy's leash
+    anchor is where it was pulled, so a patroller walks back there after evading and
+    resumes its route. Elites (`EnemyDef.elite`) are drawn 1.6× bigger with a gold
+    outline and "Elite" before the name (and on the unit frame).
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
-| 2026-10-12 | M2 step 13: enemy levels, XP by level, Goblin Shaman / Bandit Brute / Fen Skirmisher | Skirmisher strikes head-on after 2 s in front of its target (implementation choice so a hero can't stall it forever by turning; `EnemyBrain.FLANK_PATIENCE`). |
+| 2026-10-12 | M2 step 14: Old Grizzlehide roams Greenfields | Patrol + elite as built (decision 16). Brute retuned to HP 320 / Crushing Blow 12 + 1.0×PhysAtk every 3.5 s and Skirmisher to HP 220 after the balance report. |
+| 2026-10-12 | M2 step 13: enemy levels, XP by level, Goblin Shaman / Bandit Brute / Fen Skirmisher | Skirmisher strikes head-on after 2 s without attacking (implementation choice so a hero can't stall it forever by turning; `EnemyBrain.FLANK_PATIENCE`). |
 | 2026-10-11 | Zone exits are blocked while in combat | Implementation choice in M2 step 7 (prevents escaping fights by zoning); easy to change in `World._handle_exits`. |
 | 2026-10-11 | Milestone 2 plan and decisions approved | Flanking +25% side / +50% behind (user change); Rallying Roar lasts 120 s (user change); all other proposed defaults accepted. |
 | 2026-10-11 | Milestone 1 playtested; design doc brought up to date; Milestone 2 brief recorded | Added "Gameplay as built" reference. M2 plan pending approval. |

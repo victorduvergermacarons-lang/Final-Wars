@@ -44,14 +44,15 @@ func test_zone_is_30_by_30_with_heights_and_enemies() -> void:
 	assert_eq(grid.width, 30)
 	assert_eq(grid.depth, 30)
 	assert_eq(grid.height_at(Vector2i(25, 5)), 4, "plateau")
-	assert_eq(zone.enemy_spawns.size(), 10)
+	assert_eq(zone.enemy_spawns.size(), 11)
 	var counts := {}
 	for s in zone.enemy_spawns:
 		counts[s.enemy.id] = counts.get(s.enemy.id, 0) + 1
 		assert_true(grid.is_walkable(s.tile))
 		var path := Pathfinder.find_path(grid, zone.hero_spawns[0], s.tile, 2, {}, -1, 100000)
 		assert_false(path.is_empty(), "%s at %s is reachable" % [s.enemy.id, s.tile])
-	assert_eq(counts, {&"wolf": 4, &"goblin_shaman": 2, &"bandit_brute": 2, &"fen_skirmisher": 2})
+	assert_eq(counts, {&"wolf": 4, &"goblin_shaman": 2, &"bandit_brute": 2, &"fen_skirmisher": 2,
+			&"old_grizzlehide": 1})
 
 
 func test_plateau_is_reachable_by_ramp_only() -> void:
@@ -65,7 +66,7 @@ func test_plateau_is_reachable_by_ramp_only() -> void:
 func test_world_starts_from_shipped_content() -> void:
 	var world := WorldSim.new(db.zones[&"greenfields"], db.rules, 1)
 	var hero := world.add_hero(db.heroes[&"adventurer"])
-	assert_eq(world.enemies().size(), 10)
+	assert_eq(world.enemies().size(), 11)
 	assert_eq(hero.available_abilities().map(func(a): return a.id), [&"strike", &"heal", &"resurrect"])
 	world.advance(1.0)
 	assert_true(hero.alive)
@@ -91,3 +92,25 @@ func test_enemy_types_levels_and_behaviors() -> void:
 	assert_eq(bolt.shape, AbilityDef.Shape.LINE)
 	assert_true(bolt.ranged)
 	assert_eq(bolt.effects[0].damage_type, AbilityEffect.DamageType.MAGICAL)
+
+
+func test_old_grizzlehide_is_a_patrolling_elite() -> void:
+	var def: EnemyDef = db.enemies[&"old_grizzlehide"]
+	assert_true(def.elite)
+	assert_eq(def.level, 5)
+	assert_almost_eq(def.stats.hp, 6.0 * db.enemies[&"wolf"].stats.hp, 100.0, "about 6x Wolf HP")
+	assert_eq(def.respawn_seconds, 300.0)
+	assert_eq(def.abilities.map(func(a): return a.id), [&"grizzly_cleave", &"charge"])
+	var drops: Array = def.loot.entries.map(func(e): return e.item.id)
+	assert_has(drops, &"grizzlehide_mantle")
+	assert_has(drops, &"rangers_gloves")
+	var zone: ZoneDef = db.zones[&"greenfields"]
+	var grid := GridModel.from_zone(zone)
+	for s in zone.enemy_spawns:
+		if s.enemy.id != &"old_grizzlehide":
+			continue
+		assert_gt(s.patrol.size(), 2, "has a patrol loop")
+		for i in s.patrol.size():
+			var path := Pathfinder.find_path(grid, s.patrol[i], s.patrol[(i + 1) % s.patrol.size()],
+					int(def.stats.jump), {}, -1, 100000)
+			assert_false(path.is_empty(), "patrol leg %d is walkable" % i)
