@@ -27,6 +27,7 @@ the editor), over LAN or over the internet, see
 | Left click | Target an ally or enemy for Heal / Resurrect (also: click a party/target frame) |
 | Tab / Esc | Next enemy / clear target |
 | 1–9, 0 | Action bar slots (rebind with the **Keybinds** button: hover a slot, press a key) |
+| Shift+1 – Shift+6 | Show action bar 1–6 (the number is shown bottom-right; the arrows there also flip bars) |
 | P | Spellbook: drag abilities onto the action bar; right-click a slot to clear it |
 | B | Inventory: equipment + bag. Drag to equip/move, right-click equip/unequip, shift+click split, ctrl+right-click destroy. Hover for tooltips with comparison |
 | L | Quest log: active quests, objectives, rewards, Abandon. The tracker on the right shows progress; "!" / "?" over NPCs mark quests to take / hand in |

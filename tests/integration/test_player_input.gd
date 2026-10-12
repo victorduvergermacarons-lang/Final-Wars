@@ -61,3 +61,20 @@ func test_turning_cancels_a_queued_step() -> void:
 	sim.step()
 	assert_null(hero.pending_step, "the old queued step is dropped")
 	assert_eq(hero.facing, Vector2i.RIGHT)
+
+
+func test_shift_number_switches_the_action_bar_page() -> void:
+	var client: ClientState = input.client
+	var ev := InputEventKey.new()
+	ev.physical_keycode = KEY_3
+	ev.shift_pressed = true
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	await wait_process_frames(2)
+	assert_eq(client.action_bar.page, 2, "Shift+3 shows bar 3")
+	var plain := InputEventKey.new()
+	plain.physical_keycode = KEY_3
+	plain.pressed = true
+	Input.parse_input_event(plain)
+	await wait_process_frames(2)
+	assert_eq(client.action_bar.page, 2, "plain 3 is a slot key, not a page switch")

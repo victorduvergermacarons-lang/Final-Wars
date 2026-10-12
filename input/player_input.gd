@@ -114,6 +114,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if picked is Npc:
 			session.send_intent({"type": "talk", "npc": picked.id})
 	else:
+		for p in ActionBarModel.PAGE_COUNT:
+			if event.is_action_pressed(InputActions.page_action(p), false, true):
+				client.action_bar.set_page(p)
+				get_viewport().set_input_as_handled()
+				return
 		for i in ActionBarModel.SLOT_COUNT:
 			if event.is_action_pressed(InputActions.slot_action(i), false, true):
 				use_slot(i)

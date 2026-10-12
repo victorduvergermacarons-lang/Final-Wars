@@ -54,6 +54,7 @@ var loot_window: LootWindow
 var vendor_window: VendorWindow
 var quest_log: QuestLogWindow
 var _tracker: RichTextLabel
+var _page_label: Label
 var _spellbook: SpellbookPanel
 var _character: CharacterSheet
 var _death: PanelContainer
@@ -114,6 +115,40 @@ func _build() -> void:
 	for i in ActionBarModel.SLOT_COUNT:
 		bar.add_child(SlotButton.new(i, self))
 	bottom.add_child(bar)
+
+	# Bottom-right: which action bar page is shown (Shift+1–6, or the arrows).
+	var pager := PanelContainer.new()
+	pager.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	pager.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	pager.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	pager.position = Vector2(-10, -10)
+	pager.tooltip_text = "Action bar page. Shift+1 to Shift+%d switch pages." % ActionBarModel.PAGE_COUNT
+	_root.add_child(pager)
+	var pager_box := VBoxContainer.new()
+	pager_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	pager.add_child(pager_box)
+	var pager_title := Label.new()
+	pager_title.text = "Action bar"
+	pager_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pager_title.add_theme_font_size_override("font_size", 12)
+	pager_box.add_child(pager_title)
+	var pager_row := HBoxContainer.new()
+	pager_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	pager_box.add_child(pager_row)
+	pager_row.add_child(_small_button("◀", func(): client.action_bar.set_page(client.action_bar.page - 1)))
+	_page_label = Label.new()
+	_page_label.custom_minimum_size = Vector2(34, 0)
+	_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_page_label.add_theme_font_size_override("font_size", 28)
+	_page_label.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	pager_row.add_child(_page_label)
+	pager_row.add_child(_small_button("▶", func(): client.action_bar.set_page(client.action_bar.page + 1)))
+	var pager_hint := Label.new()
+	pager_hint.text = "Shift+1–%d" % ActionBarModel.PAGE_COUNT
+	pager_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pager_hint.add_theme_font_size_override("font_size", 11)
+	pager_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	pager_box.add_child(pager_hint)
 
 	# Panels on the right.
 	var right := VBoxContainer.new()
@@ -208,6 +243,7 @@ func _process(_delta: float) -> void:
 	client.action_bar.auto_place(ids)
 	_death.visible = not hero.alive
 	_sync_party(hero)
+	_page_label.text = str(client.action_bar.page + 1)
 	_update_quest_markers(hero)
 	_tracker.text = QuestText.tracker_bbcode(hero, ContentDB.quests)
 	var age := Time.get_ticks_msec() / 1000.0 - client.error_at

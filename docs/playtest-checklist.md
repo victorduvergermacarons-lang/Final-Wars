@@ -20,6 +20,7 @@ needs 2–4 players: real friends, or several game windows on one computer (see
 |-----|--------------|
 | W A S D or arrow keys | Walk. A quick tap only turns you; holding walks. W = up-right, D = down-right, S = down-left, A = up-left |
 | 1 – 9, 0 | Use the ability or potion in that action bar slot |
+| Shift + 1 – 6 | Show action bar 1 – 6 |
 | Left click | Target a character (also: click a frame at the top left) |
 | Tab / Esc | Target the next enemy / clear your target |
 | E, or right-click a townsperson | Talk (you must stand within 2 tiles) |
@@ -109,6 +110,8 @@ needs 2–4 players: real friends, or several game windows on one computer (see
       **Expect:** level, XP, every stat split into base / growth / gear / buffs, and lists of mastered and in-progress abilities with AP (e.g. "Strike 0/20").
 - [ ] **Do:** press **P** and drag an ability onto an empty action bar slot.
       **Expect:** it lands there. Dragging between slots swaps them; right-clicking a slot clears it.
+- [ ] **Do:** press **Shift+2**.
+      **Expect:** the action bar switches to bar 2 (empty at first) and the panel in the bottom-right corner shows **2**. Drag an ability onto it from the spellbook, press its number key: it fires. Shift+1 brings back bar 1 unchanged. The arrows on the bottom-right panel flip bars too.
 - [ ] **Do:** click **Keybinds**, hover a slot and press a free key (e.g. Q).
       **Expect:** that slot now uses Q. Movement keys and B/C/P/L/E/R are refused. Click Done binding to finish.
 - [ ] **Do:** restart the game.

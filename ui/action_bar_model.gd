@@ -1,14 +1,22 @@
 class_name ActionBarModel
 extends RefCounted
-## What's on the action bar and which key fires each slot. Pure data, saved to
+## What's on the action bars and which key fires each slot. Pure data, saved to
 ## the player's settings; the view and input read it.
+## WoW-style pages: PAGE_COUNT bars of SLOT_COUNT slots; one is shown at a time
+## (Shift+1..6 switches) and the slot keys fire the shown bar's slots.
 
 signal changed
 
 const SLOT_COUNT := 10
+const PAGE_COUNT := 6
 const DEFAULT_KEYS: Array[int] = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0]
 
-## Ability id per slot (&"" = empty), or "item:<item id>" for a consumable.
+## Every page's slots (each an Array[StringName] of SLOT_COUNT).
+var pages: Array = []
+## Index of the page shown (0-based).
+var page: int = 0
+## The shown page's slots: ability id per slot (&"" = empty), or "item:<item id>"
+## for a consumable. Same array as pages[page].
 var slots: Array[StringName] = []
 ## Physical keycode per slot (KEY_NONE = unbound).
 var keys: Array[int] = []
@@ -18,9 +26,25 @@ var _auto_placed := {}
 
 
 func _init() -> void:
-	slots.resize(SLOT_COUNT)
-	slots.fill(&"")
+	for p in PAGE_COUNT:
+		var s: Array[StringName] = []
+		s.resize(SLOT_COUNT)
+		s.fill(&"")
+		pages.append(s)
+	slots = pages[0]
 	keys = DEFAULT_KEYS.duplicate()
+
+
+## Shows page `p` (0-based; wraps around).
+func set_page(p: int) -> void:
+	page = posmod(p, PAGE_COUNT)
+	slots = pages[page]
+	changed.emit()
+
+
+## Whether `id` is on any page.
+func has_anywhere(id: StringName) -> bool:
+	return pages.any(func(s): return s.has(id))
 
 
 func assign(slot: int, ability_id: StringName) -> void:
@@ -51,18 +75,22 @@ func slot_of(ability_id: StringName) -> int:
 	return slots.find(ability_id)
 
 
-## Puts abilities the hero has never had on the bar into the first empty slots.
-## Returns true if anything changed.
+## Puts abilities the hero has never had on a bar into the first empty slot,
+## page 1 first. Returns true if anything changed.
 func auto_place(available: Array[StringName]) -> bool:
 	var placed := false
 	for id in available:
-		if _auto_placed.has(id) or slots.has(id):
+		if _auto_placed.has(id) or has_anywhere(id):
 			_auto_placed[id] = true
 			continue
-		var empty := slots.find(&"")
-		if empty < 0:
+		var target: Array = []
+		for s in pages:
+			if s.has(&""):
+				target = s
+				break
+		if target.is_empty():
 			break
-		slots[empty] = id
+		target[target.find(&"")] = id
 		_auto_placed[id] = true
 		placed = true
 	if placed:
@@ -88,16 +116,23 @@ func key_label(slot: int) -> String:
 
 
 func to_dict() -> Dictionary:
-	return {"slots": slots.map(func(s): return String(s)), "keys": keys.duplicate(),
-			"auto_placed": _auto_placed.keys().map(func(s): return String(s))}
+	return {"pages": pages.map(func(p): return p.map(func(s): return String(s))), "page": page,
+			"keys": keys.duplicate(), "auto_placed": _auto_placed.keys().map(func(s): return String(s))}
 
 
 func load_dict(d: Dictionary) -> void:
-	var s: Array = d.get("slots", [])
+	# Older saves had a single bar under "slots".
+	var saved: Array = d.get("pages", [d.get("slots", [])])
+	for p in PAGE_COUNT:
+		var s: Array = saved[p] if p < saved.size() and typeof(saved[p]) == TYPE_ARRAY else []
+		for i in SLOT_COUNT:
+			pages[p][i] = StringName(s[i]) if i < s.size() and typeof(s[i]) == TYPE_STRING else &""
 	var k: Array = d.get("keys", [])
 	for i in SLOT_COUNT:
-		slots[i] = StringName(s[i]) if i < s.size() and typeof(s[i]) == TYPE_STRING else &""
 		keys[i] = int(k[i]) if i < k.size() and typeof(k[i]) == TYPE_INT else DEFAULT_KEYS[i]
+	var pg = d.get("page", 0)
+	page = clampi(int(pg) if typeof(pg) in [TYPE_INT, TYPE_FLOAT] else 0, 0, PAGE_COUNT - 1)
+	slots = pages[page]
 	_auto_placed = {}
 	for id in d.get("auto_placed", []):
 		_auto_placed[StringName(id)] = true

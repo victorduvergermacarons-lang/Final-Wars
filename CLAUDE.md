@@ -371,6 +371,10 @@ docs/            local multiplayer testing, playtest checklist
       `user://world.json`; each player saves their own character.
 15. **HUD** (approved 2026-10-11):
     - One action bar of 10 slots on 1–9, 0. Cooldown sweep + seconds, GCD sweep.
+      **Pages (post-M2 playtest):** 6 bars of 10 slots, WoW-style. Shift+1–6 (or the
+      arrows) shows that bar; the slot keys fire the shown bar. A panel in the screen's
+      bottom-right corner shows the bar number. New abilities fill bar 1 first, then
+      bar 2… All pages and the shown page are saved with the layout.
       Tint: blue = not enough mana, red = out of range / no valid target, dark =
       not usable right now (item unequipped and not mastered; the slot stays).
     - Spellbook (P): drag abilities onto slots; drag between slots to swap;
@@ -573,6 +577,7 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | Action bar pages: 6 bars, Shift+1–6, page number bottom-right | User request (WoW-style). 6 pages is my default (WoW's count); one constant, `ActionBarModel.PAGE_COUNT`. |
 | 2026-10-12 | Zones connect along whole map edges: walk off the edge to enter the next map | User change; replaces the 3 exit tiles that dropped you 1–2 tiles in from the edge. |
 | 2026-10-12 | Turning in combat made immediate; Skirmisher sees your facing 0.3 s late | User reports. Causes: a second held key didn't turn, and a step queued while walking turned you back when the step cooldown ended. |
 | 2026-10-12 | Combat ends as soon as the last enemy fighting you dies, evades or drops you | User change (was 5 s). Fixed enemies darting 2 tiles on aggro (first steps skipped the step cooldown). |

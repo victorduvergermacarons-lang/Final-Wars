@@ -38,6 +38,11 @@ static func is_reserved_key(key: int) -> bool:
 	return false
 
 
+## Action name for switching to action bar page p (0-based): Shift + number.
+static func page_action(p: int) -> StringName:
+	return StringName("action_page_%d" % (p + 1))
+
+
 ## Action name for action bar slot i (0-based).
 static func slot_action(i: int) -> StringName:
 	return StringName("action_slot_%d" % (i + 1))
@@ -66,6 +71,14 @@ static func ensure_registered() -> void:
 				var ev := InputEventKey.new()
 				ev.physical_keycode = key
 				InputMap.action_add_event(action, ev)
+	for p in ActionBarModel.PAGE_COUNT:
+		var action := page_action(p)
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+			var ev := InputEventKey.new()
+			ev.physical_keycode = ActionBarModel.DEFAULT_KEYS[p]
+			ev.shift_pressed = true
+			InputMap.action_add_event(action, ev)
 	if not InputMap.has_action(&"select_target"):
 		InputMap.add_action(&"select_target")
 		var click := InputEventMouseButton.new()
