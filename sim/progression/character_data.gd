@@ -66,9 +66,8 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 			var ability: AbilityDef = content.abilities.get(StringName(str(key)))
 			if ability != null:
 				hero.mastered[ability.id] = ability
-	var quests = data.get("quests")
-	if typeof(quests) == TYPE_DICTIONARY:
-		hero.quest_state = quests.duplicate(true)
+	var quests = content.get("quests")
+	hero.quest_state = QuestLog.normalize(data.get("quests"), quests if quests is Dictionary else {})
 	hero.refresh_stats()
 	hero.hp = hero.stats.hp
 	hero.mana = hero.stats.mana

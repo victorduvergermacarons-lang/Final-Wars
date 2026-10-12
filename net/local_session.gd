@@ -18,7 +18,7 @@ var _zone_id: StringName = &""
 
 ## Starts the world (all zones) with the local player's saved character.
 func start(zones: Array, start_zone: StringName, rules: CombatRules, character: Dictionary, rng_seed: int = 0) -> void:
-	world = World.new(zones, rules, rng_seed, start_zone)
+	world = World.new(zones, rules, rng_seed, start_zone, ContentDB.quests)
 	local_hero_id = world.add_saved_hero(character, ContentDB).id
 	_zone_id = zone().id
 

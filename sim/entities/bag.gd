@@ -129,6 +129,15 @@ func split(index: int, count: int) -> bool:
 	return true
 
 
+## An independent copy (for trying out changes).
+func copy() -> Bag:
+	var b := Bag.new(slots.size())
+	for i in slots.size():
+		if slots[i] != null:
+			b.slots[i] = {"item": slots[i].item, "count": slots[i].count}
+	return b
+
+
 ## Plain data: one entry per slot, null or [item id, count].
 func to_array() -> Array:
 	return slots.map(func(s): return null if s == null else [String(s.item.id), s.count])

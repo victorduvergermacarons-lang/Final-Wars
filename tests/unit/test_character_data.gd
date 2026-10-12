@@ -30,7 +30,7 @@ func _progressed_hero() -> Hero:
 	hero.mastered = {&"heal": db.abilities[&"heal"]}
 	hero.equip_from_bag(hero.bag.index_of(db.items[&"shield"]))
 	hero.bag.add(db.items[&"staff"]) # a second staff
-	hero.quest_state = {"wolf_hunt": {"state": "active", "count": 3}}
+	hero.quest_state = {"wolf_hunt": {"state": "active", "progress": [3], "ready": false}}
 	return hero
 
 
@@ -38,7 +38,15 @@ func test_round_trip_keeps_all_progress() -> void:
 	var hero := _progressed_hero()
 	var data := CharacterData.capture(hero)
 	var json_data = JSON.parse_string(JSON.stringify(data)) # as it is on disk
+	var q := QuestDef.new()
+	q.id = &"wolf_hunt"
+	var o := QuestObjective.new()
+	o.enemy = &"wolf"
+	o.count = 5
+	q.objectives = [o] as Array[QuestObjective]
+	db.quests[q.id] = q
 	var back := CharacterData.restore(9, json_data, db)
+	db.quests.erase(q.id)
 	assert_eq(back.id, 9)
 	assert_eq(back.display_name, "Ayla")
 	assert_eq(back.level, 4)
@@ -51,7 +59,8 @@ func test_round_trip_keeps_all_progress() -> void:
 	assert_eq(back.equipped_in(EquipSlot.Id.OFF_HAND).id, &"shield")
 	assert_eq(back.bag.count_of(db.items[&"staff"]), 2)
 	assert_eq(back.quest_state.wolf_hunt.state, "active")
-	assert_eq(int(back.quest_state.wolf_hunt.count), 3, "JSON numbers come back as floats; quests normalize them")
+	assert_eq(back.quest_state.wolf_hunt.progress, [3], "JSON numbers come back as floats; quests normalize them")
+	assert_eq(typeof(back.quest_state.wolf_hunt.progress[0]), TYPE_INT)
 	assert_true(back.stats.equals(hero.stats), "same stats after reload")
 	assert_eq(back.hp, back.stats.hp, "starts at full health")
 

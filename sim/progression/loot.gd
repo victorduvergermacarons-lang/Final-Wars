@@ -4,7 +4,9 @@ extends RefCounted
 
 
 ## One hero's roll: {"gold": int, "items": [[ItemDef, count], ...]}.
-static func roll(table: LootTable, rng: RandomNumberGenerator, hero: Hero) -> Dictionary:
+## Quest items drop only while the hero's quest still needs them (`quests`:
+## id -> QuestDef; without the def, while the quest is active).
+static func roll(table: LootTable, rng: RandomNumberGenerator, hero: Hero, quests: Dictionary = {}) -> Dictionary:
 	var out := {"gold": 0, "items": []}
 	if table == null:
 		return out
@@ -13,8 +15,12 @@ static func roll(table: LootTable, rng: RandomNumberGenerator, hero: Hero) -> Di
 	for entry in table.entries:
 		if entry == null or entry.item == null:
 			continue
-		if entry.quest_id != &"" and not has_active_quest(hero, entry.quest_id):
-			continue
+		if entry.quest_id != &"":
+			if quests.has(entry.quest_id):
+				if not QuestLog.needs_item(hero, quests, entry.quest_id, entry.item):
+					continue
+			elif not has_active_quest(hero, entry.quest_id):
+				continue
 		if rng.randf() < entry.chance:
 			out.items.append([entry.item, rng.randi_range(maxi(entry.min_count, 1), maxi(entry.max_count, entry.min_count))])
 	return out

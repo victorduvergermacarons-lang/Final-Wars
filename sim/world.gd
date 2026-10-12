@@ -6,8 +6,12 @@ extends RefCounted
 
 var rules: CombatRules
 var start_zone: StringName
-## One-time world events (saved by the host).
-var world_flags := {}
+## One-time world events (saved by the host). Shared by every zone's WorldSim.
+var world_flags := {}:
+	set(value):
+		world_flags = value
+		for sim in _zones.values():
+			sim.world_flags = value
 var ids := IdSource.new()
 
 var _zones := {} # id -> WorldSim
@@ -15,12 +19,17 @@ var _hero_zone := {} # hero id -> zone id
 var _last_tile := {} # hero id -> tile last tick (exits trigger on arrival)
 
 
-func _init(zone_defs: Array, p_rules: CombatRules, rng_seed: int, p_start_zone: StringName) -> void:
+## `quests`: id -> QuestDef, shared by every zone.
+func _init(zone_defs: Array, p_rules: CombatRules, rng_seed: int, p_start_zone: StringName,
+		quests: Dictionary = {}) -> void:
 	rules = p_rules
 	start_zone = p_start_zone
 	var i := 0
 	for z in zone_defs:
-		_zones[z.id] = WorldSim.new(z, rules, rng_seed + i, ids)
+		var sim := WorldSim.new(z, rules, rng_seed + i, ids)
+		sim.quests = quests
+		sim.world_flags = world_flags
+		_zones[z.id] = sim
 		i += 1
 
 
@@ -89,6 +98,18 @@ func advance(seconds: float) -> Array[Dictionary]:
 	return all
 
 
+## Moves a hero to `tile` in zone `zone_id` (exits use this).
+func move_hero(hero_id: int, zone_id: StringName, tile: Vector2i) -> void:
+	var sim := zone_of(hero_id)
+	if sim == null or not _zones.has(zone_id):
+		return
+	var ack := sim.intent_ack(hero_id)
+	var hero := sim.transfer_out(hero_id)
+	_zones[zone_id].transfer_in(hero, tile, ack)
+	_hero_zone[hero_id] = zone_id
+	_last_tile[hero_id] = hero.tile()
+
+
 func _handle_exits() -> Array[Dictionary]:
 	var events: Array[Dictionary] = []
 	for hero in heroes():
@@ -105,11 +126,7 @@ func _handle_exits() -> Array[Dictionary]:
 			events.append({"type": "rejected", "target": hero.id, "intent": "exit",
 					"reason": "in_combat", "zone": sim.zone.id})
 			continue
-		var ack := sim.intent_ack(hero.id)
-		sim.transfer_out(hero.id)
-		_zones[exit.to_zone].transfer_in(hero, exit.to_tile, ack)
-		_hero_zone[hero.id] = exit.to_zone
-		_last_tile[hero.id] = hero.tile()
+		move_hero(hero.id, exit.to_zone, exit.to_tile)
 		events.append({"type": "zone_change", "target": hero.id, "from": sim.zone.id,
 				"to": exit.to_zone, "zone": exit.to_zone})
 	return events

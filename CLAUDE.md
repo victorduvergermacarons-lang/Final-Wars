@@ -519,10 +519,22 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     anchor is where it was pulled, so a patroller walks back there after evading and
     resumes its route. Elites (`EnemyDef.elite`) are drawn 1.6× bigger with a gold
     outline and "Elite" before the name (and on the unit frame).
+17. **Quest system (as built in step 15):** `QuestDef` resources in `content/quests/`
+    (giver and turn-in NPC, prerequisites, minimum level, objectives, XP/gold/item
+    rewards, optional choice of one item, optional world flag) with `QuestObjective`s
+    of kind KILL, COLLECT, TALK or REACH. Accept and hand in by talking to the NPC
+    (within 2 tiles). COLLECT counts what's in your bag and takes it at turn-in;
+    quest drops (`LootEntry.quest_id`) only roll while you still need them.
+    **Shared progress:** kill, talk and reach credit goes to every hero on the
+    quest who is on the enemy's threat table or within 15 tiles of the event, in
+    the same zone. Turn-in is refused (nothing lost) if the rewards don't fit in the
+    bag. Abandoning forgets progress. Progress is saved with the character; the host
+    saves world flags. Quests are not repeatable.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-12 | M2 step 15: quest system | Decision 17. Implementation choices: shared credit within 15 tiles or via the threat table; turn-in refused when the bag can't hold the rewards; abandon allowed; no repeatable quests. |
 | 2026-10-12 | M2 step 14: Old Grizzlehide roams Greenfields | Patrol + elite as built (decision 16). Brute retuned to HP 320 / Crushing Blow 12 + 1.0×PhysAtk every 3.5 s and Skirmisher to HP 220 after the balance report. |
 | 2026-10-12 | M2 step 13: enemy levels, XP by level, Goblin Shaman / Bandit Brute / Fen Skirmisher | Skirmisher strikes head-on after 2 s without attacking (implementation choice so a hero can't stall it forever by turning; `EnemyBrain.FLANK_PATIENCE`). |
 | 2026-10-11 | Zone exits are blocked while in combat | Implementation choice in M2 step 7 (prevents escaping fights by zoning); easy to change in `World._handle_exits`. |

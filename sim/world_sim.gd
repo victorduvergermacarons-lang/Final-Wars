@@ -17,6 +17,9 @@ extends RefCounted
 ##   {"type": "move_item", "from": int, "to": int}   (bag slots: swap or merge)
 ##   {"type": "split_item", "index": int, "count": int}
 ##   {"type": "destroy_item", "index": int}
+##   {"type": "accept_quest", "npc": int, "quest": StringName}   (from its giver, within TALK_RANGE)
+##   {"type": "turn_in_quest", "npc": int, "quest": StringName, "choice": int}   (choice: reward index or -1)
+##   {"type": "abandon_quest", "quest": StringName}
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -36,6 +39,10 @@ var _intents: Array = [] # [hero_id, intent]
 ## One-time world events that have happened (e.g. a quest that changes the world).
 ## Saved by the host. Keys are event ids, values are true or small plain data.
 var world_flags := {}
+## Quest definitions (id -> QuestDef), shared by every zone.
+var quests := {}
+## Kill, talk and reach credit is shared with heroes this close (party = everyone).
+const QUEST_SHARE_RADIUS := 15
 var _projectiles: Array[Projectile] = []
 ## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
 var _pending_loot: Array = []
@@ -186,6 +193,7 @@ func step() -> Array[Dictionary]:
 	_update_combat_state()
 	_expire_loot()
 	_regen()
+	_update_quests()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
 	_record_history()
@@ -370,6 +378,18 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_release(hero)
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
+		"accept_quest":
+			reason = _intent_accept_quest(hero, intent.get("npc", -1), intent.get("quest", &""))
+		"turn_in_quest":
+			reason = _intent_turn_in_quest(hero, intent.get("npc", -1), intent.get("quest", &""),
+					intent.get("choice", -1))
+		"abandon_quest":
+			var def: QuestDef = quests.get(StringName(intent.get("quest", &"")))
+			if def == null or not QuestLog.is_active(hero, def.id):
+				reason = "no_quest"
+			else:
+				for e in QuestLog.abandon(hero, def):
+					emit(e)
 		"take_loot":
 			reason = _intent_take_loot(hero, intent.get("loot", -1))
 		"use_item":
@@ -451,7 +471,77 @@ func _intent_talk(hero: Hero, npc_id: int) -> String:
 	if GridModel.distance(hero.tile(), npc.tile()) > TALK_RANGE:
 		return "too_far"
 	emit({"type": "dialogue", "target": hero.id, "npc": npc.id, "def": npc.def.id})
+	for h in _quest_sharers(hero, npc.tile()):
+		for e in QuestLog.on_talk(h, quests, npc.def.id):
+			emit(e)
 	return ""
+
+
+func _intent_accept_quest(hero: Hero, npc_id: int, quest_id: StringName) -> String:
+	var def: QuestDef = quests.get(quest_id)
+	if def == null:
+		return "no_quest"
+	var reason := _check_quest_npc(hero, npc_id, def.giver)
+	if reason == "":
+		reason = QuestLog.can_accept(hero, def)
+	if reason != "":
+		return reason
+	for e in QuestLog.accept(hero, def):
+		emit(e)
+	return ""
+
+
+func _intent_turn_in_quest(hero: Hero, npc_id: int, quest_id: StringName, choice: int) -> String:
+	var def: QuestDef = quests.get(quest_id)
+	if def == null:
+		return "no_quest"
+	var reason := _check_quest_npc(hero, npc_id, def.turn_in_npc())
+	if reason != "":
+		return reason
+	var out := QuestLog.turn_in(hero, def, choice, rules)
+	if out.reason != "":
+		return out.reason
+	for e in out.events:
+		emit(e)
+	if def.sets_world_flag != &"" and not world_flags.has(String(def.sets_world_flag)):
+		world_flags[String(def.sets_world_flag)] = true
+		emit({"type": "world_flag", "flag": def.sets_world_flag})
+	return ""
+
+
+## "" if `hero` is alive and within talking range of NPC actor `npc_id`, whose type is `npc_def_id`.
+func _check_quest_npc(hero: Hero, npc_id: int, npc_def_id: StringName) -> String:
+	if not hero.alive:
+		return "dead"
+	var npc: Npc = _npcs.get(npc_id)
+	if npc == null or npc.def.id != npc_def_id:
+		return "wrong_npc"
+	if GridModel.distance(hero.tile(), npc.tile()) > TALK_RANGE:
+		return "too_far"
+	return ""
+
+
+## `hero` plus every other hero in this zone within QUEST_SHARE_RADIUS of `at`.
+func _quest_sharers(hero: Hero, at: Vector2i) -> Array[Hero]:
+	var out: Array[Hero] = [hero]
+	for h in heroes():
+		if h != hero and GridModel.distance(h.tile(), at) <= QUEST_SHARE_RADIUS:
+			out.append(h)
+	return out
+
+
+## REACH objectives (shared with nearby heroes) and COLLECT counts / ready flags.
+func _update_quests() -> void:
+	if quests.is_empty():
+		return
+	for hero in heroes():
+		if hero.alive and QuestLog.has_reach_in(hero, quests, zone.id):
+			for h in _quest_sharers(hero, hero.tile()):
+				for e in QuestLog.on_reach(h, quests, zone.id, hero.tile()):
+					emit(e)
+	for hero in heroes():
+		for e in QuestLog.refresh(hero, quests):
+			emit(e)
 
 
 ## Uses one of a consumable: its ability is cast on the hero (cooldown and GCD
@@ -577,6 +667,10 @@ func _on_death(actor: Actor) -> void:
 			var h: Hero = _heroes.get(id)
 			if h != null and h.alive:
 				earners.append(h)
+		for h in heroes():
+			if earners.has(h) or GridModel.distance(h.tile(), enemy.tile()) <= QUEST_SHARE_RADIUS:
+				for e in QuestLog.on_kill(h, quests, enemy.def.id):
+					emit(e)
 		if not earners.is_empty():
 			var share := float(enemy.def.xp_reward) / earners.size()
 			for h in earners:
@@ -586,7 +680,7 @@ func _on_death(actor: Actor) -> void:
 					emit(e)
 				for e in ApMastery.award(h, enemy.def.ap_reward):
 					emit(e)
-				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h))
+				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h, quests))
 		enemy.threat.clear()
 		enemy.respawn_at = now + enemy.def.respawn_seconds
 

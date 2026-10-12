@@ -11,6 +11,7 @@ const DIRS := {
 	"zones": "res://content/zones",
 	"buffs": "res://content/buffs",
 	"npcs": "res://content/npcs",
+	"quests": "res://content/quests",
 }
 
 var rules: CombatRules
@@ -21,6 +22,7 @@ var heroes := {} # id -> HeroDef
 var zones := {} # id -> ZoneDef
 var buffs := {} # id -> BuffDef
 var npcs := {} # id -> NpcDef
+var quests := {} # id -> QuestDef
 
 
 func _init() -> void:
@@ -36,6 +38,7 @@ func reload() -> void:
 	zones = _load_dir(DIRS.zones)
 	buffs = _load_dir(DIRS.buffs)
 	npcs = _load_dir(DIRS.npcs)
+	quests = _load_dir(DIRS.quests)
 
 
 ## Every problem found in the loaded content; empty when all is valid.
@@ -47,6 +50,14 @@ func validate() -> PackedStringArray:
 		errors.append_array(i.validate())
 	for z in zones.values():
 		errors.append_array(z.validate())
+	for q in quests.values():
+		errors.append_array(q.validate())
+		for id in [q.giver, q.turn_in_npc()]:
+			if not npcs.has(id):
+				errors.append("Quest %s: unknown NPC %s" % [q.id, id])
+		for pre in q.prerequisites:
+			if not quests.has(pre):
+				errors.append("Quest %s: unknown prerequisite %s" % [q.id, pre])
 	return errors
 
 
