@@ -65,7 +65,8 @@ P spellbook, L quest log, E talk, R release.
 - [ ] **Do:** drag the Rusty Shortsword from Main Hand onto the Learning slot.
       **Expect:** the sword now shows a blue **L** and a small AP bar; the scroll goes back to the bag.
 - [ ] **Do:** right-click the Learning slot.
-      **Expect:** it empties ("Learning: nothing").
+      **Expect:** it empties, and the sword in your hand takes over on its own: "Learning: Slash
+      (from your weapon)". With the slot empty, the weapon in hand always earns the AP.
 - [ ] **Do:** press **C** (character sheet).
       **Expect:** the same Learning slot is on the sheet, a **Mastery** section, and under
       "In progress" the ability being learned marked "(learning)", others "(not learning)".

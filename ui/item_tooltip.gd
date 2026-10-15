@@ -72,6 +72,8 @@ static func learning_lines(item: ItemDef, hero: Hero) -> PackedStringArray:
 		out.append("[color=%s]This ability isn't in the game yet.[/color]" % RED)
 	elif hero.learning_item == item:
 		out.append("[color=%s]In your learning slot: earning AP.[/color]" % BLUE)
+	elif hero.active_learning_item() == item:
+		out.append("[color=%s]Learning automatically (your learning slot is empty): earning AP.[/color]" % BLUE)
 	elif hero.is_mastered(ability.id):
 		pass # "mastered" is on the Teaches line
 	else:

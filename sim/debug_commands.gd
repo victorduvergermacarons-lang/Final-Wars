@@ -85,10 +85,10 @@ static func _mastery(hero: Hero, args: Array) -> Dictionary:
 static func _ap(hero: Hero, args: Array) -> Dictionary:
 	if args.size() != 1 or not args[0].is_valid_int():
 		return _fail("Usage: ap <n>")
-	if hero.learning_item == null:
+	if hero.active_learning_item() == null:
 		return _fail("You aren't learning anything: put a scroll or your weapon in the learning slot.")
+	var ability := hero.active_learning_item().tree_ability()
 	var events := TreeRules.award_ap(hero, clampi(int(args[0]), 1, 1000))
-	var ability := hero.learning_item.tree_ability() if hero.learning_item != null else null
 	hero.refresh_stats()
 	return _ok("AP given%s." % (" (%s: %d / %d)" % [ability.display_name, hero.ap.get(ability.id, 0),
 			ability.ap_to_master] if ability != null else ""), events)

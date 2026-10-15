@@ -88,11 +88,12 @@ static func _check_item(hero: Hero, item: ItemDef) -> String:
 	return can_learn(hero, ability)
 
 
-## Gives `amount` AP to the learning item's ability. Mastering it grants its
-## Mastery on Learn. Returns events.
+## Gives `amount` AP to the learning item's ability (with the slot empty, the
+## weapon in hand learns automatically). Mastering it grants its Mastery on Learn.
+## Returns events.
 static func award_ap(hero: Hero, amount: int) -> Array[Dictionary]:
 	var events: Array[Dictionary] = []
-	var item := hero.learning_item
+	var item := hero.active_learning_item()
 	if item == null or amount <= 0:
 		return events
 	var ability := item.tree_ability()

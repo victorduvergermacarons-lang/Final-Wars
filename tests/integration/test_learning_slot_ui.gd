@@ -60,7 +60,7 @@ func test_drop_the_worn_weapon_then_stop_learning() -> void:
 	slot._gui_input(right)
 	await wait_physics_frames(4)
 	assert_null(hero.learning_item)
-	assert_string_contains(LearningRow.text_for(hero), "nothing")
+	assert_string_contains(LearningRow.text_for(hero), "from your weapon", "the sword keeps learning on its own")
 
 
 func test_right_click_a_scroll_to_learn_it() -> void:

@@ -247,3 +247,23 @@ func refresh_stats() -> void:
 	stats = StatCalc.total(base_stats, growth, equipped_items())
 	hp = minf(hp, stats.hp)
 	mana = minf(mana, stats.mana)
+
+
+## The item earning AP: the learning slot's item, or, while the slot is empty, the
+## weapon in hand (if its ability isn't mastered yet and can be learned). Null if none.
+func active_learning_item() -> ItemDef:
+	if learning_item != null:
+		return learning_item
+	for slot in [EquipSlot.Id.MAIN_HAND, EquipSlot.Id.OFF_HAND]:
+		var item: ItemDef = _equipped.get(slot)
+		if item == null or item.is_scroll:
+			continue
+		var ability := item.tree_ability()
+		if ability != null and not is_mastered(ability.id) and TreeRules.can_learn(self, ability) == "":
+			return item
+	return null
+
+
+## True when the weapon in hand is learning on its own (the learning slot is empty).
+func learning_automatically() -> bool:
+	return learning_item == null and active_learning_item() != null

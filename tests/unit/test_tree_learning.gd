@@ -167,3 +167,25 @@ func test_learn_intents() -> void:
 	assert_eq(Intents.sanitize({"type": "learn", "slot": 5}), {"type": "learn", "slot": 5})
 	assert_eq(Intents.sanitize({"type": "learn"}), {}, "needs a bag index or a slot")
 	assert_eq(Intents.sanitize({"type": "stop_learning"}), {"type": "stop_learning"})
+
+
+func test_weapon_learns_automatically_when_the_slot_is_empty() -> void:
+	var hero := Hero.from_def(1, ContentDB.heroes[&"adventurer"])
+	TreeRules.stop_learning(hero) # the Ember Fist Scroll goes back to the bag
+	assert_null(hero.learning_item)
+	assert_eq(hero.active_learning_item().id, &"rusty_shortsword", "the sword in hand learns")
+	assert_true(hero.learning_automatically())
+	TreeRules.award_ap(hero, 10)
+	assert_eq(hero.ap.get(&"S01", 0), 10)
+	var index := -1
+	for i in hero.bag.size():
+		if hero.bag.item_at(i) != null and hero.bag.item_at(i).id == &"ember_fist_scroll":
+			index = i
+	assert_eq(TreeRules.learn_from_bag(hero, index), "")
+	TreeRules.award_ap(hero, 10)
+	assert_eq(hero.ap.get(&"S01", 0), 10, "a scroll in the slot takes over")
+	assert_eq(hero.ap.get(&"F01", 0), 10)
+	TreeRules.stop_learning(hero)
+	TreeRules.award_ap(hero, 10)
+	assert_true(hero.is_mastered(&"S01"))
+	assert_null(hero.active_learning_item(), "nothing left to learn from the sword")

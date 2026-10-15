@@ -954,7 +954,8 @@ F. 15 debug console · 16 docs + playtest checklist.
     AP bar wherever it shows (slot or worn weapon). Item tooltips say where a tree item
     stands: in your learning slot, how to learn it, locked (and why), mastered, or not
     in the game yet; a scroll's growth reads "per level while in your learning slot".
-    The character sheet marks which in-progress ability is being learned. The right-
+    The character sheet marks which in-progress ability is being learned. With the slot
+    empty, the weapon in hand learns automatically (since 2026-10-15). The right-
     hand windows now sit side by side (stacked, they ran off a 720p screen).
 27. **Debug console (as built in step 15):** ` opens it (Esc or ` closes; Up/Down recall
     earlier lines). Commands are sent as a `debug` intent and run by the host on your own
@@ -970,6 +971,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-15 | With the learning slot empty, the weapon in hand learns automatically (earns AP) | User request. A scroll in the slot takes over. `Hero.active_learning_item()`; the Learning slot text says "(from your weapon)". |
 | 2026-10-15 | Kindle renamed Sun Warrior's Breath (scroll: Sun Warrior's Breath Scroll; renamed in the spreadsheet) and also restores 10% of max Mana over 10 s | User request. New `BuffDef.mana_regen_percent`. Saves holding the old Kindling Scroll get the new one (`CharacterData.RENAMED_ITEMS`). |
 | 2026-10-15 | Projectiles are drawn along their real path (any angle; the Shaman's bolt went diagonally); the shop list scrolls | User reports. |
 | 2026-10-15 | Post-M3 fixes: Fire Punch 4 mana; Gust interrupts wind-ups (e.g. a Wolf's Bite); releasing at a graveyard ends combat | User requests. |

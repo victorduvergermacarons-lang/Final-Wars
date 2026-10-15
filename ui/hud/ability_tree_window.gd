@@ -70,7 +70,7 @@ func _process(_delta: float) -> void:
 	var permanent := Mastery.permanent(hero, tree_name)
 	var gear := Mastery.total(hero, tree_name, now) - permanent
 	var key := "%s|%s|%s|%s|%s|%.1f|%.1f" % [tree_name, hero.mastered.keys(), hero.ap, hero.mastery_contrib,
-			hero.learning_item.id if hero.learning_item != null else "", permanent, gear]
+			hero.active_learning_item().id if hero.active_learning_item() != null else "", permanent, gear]
 	if key == _shown_key:
 		return
 	_shown_key = key
@@ -88,7 +88,8 @@ static func state_of(hero: Hero, ability: AbilityDef) -> State:
 		return State.NOT_IN_GAME
 	if hero.is_mastered(ability.id):
 		return State.MASTERED
-	if hero.learning_item != null and hero.learning_item.tree_ability() == ability:
+	var learning := hero.active_learning_item()
+	if learning != null and learning.tree_ability() == ability:
 		return State.LEARNING
 	if TreeRules.can_learn(hero, ability) == "":
 		return State.LEARNABLE

@@ -35,7 +35,8 @@ static func abilities(hero: Hero) -> Dictionary:
 	var seen := {}
 	# Tree abilities earn AP only from the learning slot; old-style items from
 	# being worn.
-	var learning := hero.learning_item.tree_ability() if hero.learning_item != null else null
+	var active := hero.active_learning_item()
+	var learning := active.tree_ability() if active != null else null
 	for ability in hero.taught_abilities():
 		if ability.ap_to_master > 0 and not hero.is_mastered(ability.id):
 			seen[ability.id] = true

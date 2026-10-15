@@ -73,7 +73,7 @@ func _draw() -> void:
 		if n > 1:
 			_text(str(n), Vector2(size.x - 16, size.y - 5), 12, Color(1, 1, 0.7))
 	# Blue "L": the item being learned (the learning slot itself, or the worn weapon).
-	if kind == Kind.LEARNING or it == hud.session.local_hero().learning_item:
+	if kind == Kind.LEARNING or it == hud.session.local_hero().active_learning_item():
 		draw_rect(rect.grow(-1), LEARNING_COLOR, false, 2.0)
 		_text("L", Vector2(size.x - 12, 14), 12, LEARNING_COLOR)
 		var ability := it.tree_ability()

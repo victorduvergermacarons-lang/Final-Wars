@@ -24,9 +24,11 @@ func _process(_delta: float) -> void:
 
 ## "Learning: Fire Punch, AP 10 / 20", or a hint when the slot is empty.
 static func text_for(hero: Hero) -> String:
-	if hero == null or hero.learning_item == null:
+	var item := hero.active_learning_item() if hero != null else null
+	if item == null:
 		return "Learning: nothing.\nDrop a scroll or your\nweapon here."
-	var ability := hero.learning_item.tree_ability()
+	var ability := item.tree_ability()
 	if ability == null:
-		return "Learning: %s" % hero.learning_item.display_name
-	return "Learning: %s\nAP %d / %d" % [ability.display_name, hero.ap.get(ability.id, 0), ability.ap_to_master]
+		return "Learning: %s" % item.display_name
+	var auto := "\n(from your weapon)" if hero.learning_automatically() else ""
+	return "Learning: %s\nAP %d / %d%s" % [ability.display_name, hero.ap.get(ability.id, 0), ability.ap_to_master, auto]
