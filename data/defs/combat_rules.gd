@@ -95,6 +95,10 @@ enum GrowthLimit {
 ## Dodge rule: a skillshot's travel time or a telegraph shorter than the step
 ## cooldown plus this reaction time can't really be dodged (debug warning).
 @export var dodge_reaction_seconds: float = 0.3
+## A knockback or pull that slams a unit into a wall, ledge or another unit deals
+## this much physical damage (before Mastery and defense) when the ability sets no
+## `impact_damage` of its own. The unit it hits takes it too, if hostile to the caster.
+@export var collision_damage: float = 8.0
 
 @export_group("Ability power")
 ## See AbilityPower. Each point of tree Mastery adds this fraction of power.

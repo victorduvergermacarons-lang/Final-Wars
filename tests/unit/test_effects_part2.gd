@@ -97,6 +97,37 @@ func test_knockback_without_obstacle_deals_no_impact() -> void:
 	assert_eq(_lost(foe), 0.0)
 
 
+func test_knockback_into_a_wall_hurts_a_little_by_default() -> void:
+	_wall(Vector2i(8, 5))
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 3)]), foe)
+	assert_eq(_lost(foe), rules.collision_damage, "collision damage when the ability sets none")
+
+
+func test_knockback_into_another_enemy_hurts_both() -> void:
+	var other := world.add_enemy(foe.def, Vector2i(8, 5))
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 3)]), foe)
+	assert_eq(foe.tile(), Vector2i(7, 5))
+	assert_eq(_lost(foe), rules.collision_damage)
+	assert_eq(_lost(other), rules.collision_damage, "the enemy it was slammed into")
+
+
+func test_knockback_into_an_ally_spares_the_ally() -> void:
+	var hd := HeroDef.new()
+	hd.base_stats = StatBlock.make({Stat.Id.HP: 500})
+	var friend := world.add_hero(hd)
+	friend.move.place(Vector2i(8, 5))
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 3)]), foe)
+	assert_eq(_lost(foe), rules.collision_damage)
+	assert_eq(_lost(friend), 0.0)
+
+
+func test_heavy_unit_not_moved_takes_no_impact() -> void:
+	_wall(Vector2i(7, 5))
+	foe.weight = Weight.Id.HEAVY
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 1)]), foe)
+	assert_eq(_lost(foe), 0.0, "a 1-tile push doesn't move a heavy unit at all")
+
+
 func test_knockback_is_eight_way() -> void:
 	foe.move.place(Vector2i(6, 6))
 	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 2)]), foe)

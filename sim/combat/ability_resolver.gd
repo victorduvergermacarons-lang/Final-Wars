@@ -251,10 +251,15 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var r := move_unit(ctx, target, dir, tiles, 0.15)
 			events.append({"type": "pushed" if not pull else "pulled", "source": caster.id, "target": target.id,
 					"ability": ability.id, "from": r.from, "to": r.end, "stopped_by": r.stopped_by})
-			if effect.impact_damage > 0.0 and r.stopped_by != "" and target.alive:
-				var dmg := CombatMath.final_damage(effect.impact_damage * AbilityPower.mastery_multiplier(caster, ability, ctx.now, rules),
-						target.current_stats(ctx.now).phys_def, rules.physical_defense_k, rules)
-				deal_damage(ctx, caster, target, ability.id, dmg, false, events)
+			if r.stopped_by != "":
+				# Slammed into a wall, a ledge or someone: both sides of a unit collision
+				# get hurt (the other unit only if it is the caster's enemy).
+				var impact := effect.impact_damage if effect.impact_damage > 0.0 else rules.collision_damage
+				_impact(ctx, caster, ability, target, impact, events)
+				if r.stopped_by == "unit":
+					var hit := _actor_at(ctx, r.end + dir)
+					if hit != null and hit != caster and caster.is_hostile_to(hit) and not hit.evading:
+						_impact(ctx, caster, ability, hit, impact, events)
 
 		AbilityEffect.Kind.DASH_TO:
 			if not caster.alive:
@@ -450,6 +455,24 @@ static func move_unit(ctx: CombatContext, unit: Actor, dir: Vector2i, tiles: int
 		unit.move.place(from)
 		unit.move.begin(r.end, ctx.now, seconds * r.path.size())
 	return r
+
+
+## Collision damage: physical, scaled by the caster's tree Mastery.
+static func _impact(ctx: CombatContext, caster: Actor, ability: AbilityDef, unit: Actor, amount: float,
+		events: Array[Dictionary]) -> void:
+	if amount <= 0.0 or not unit.alive:
+		return
+	var dmg := CombatMath.final_damage(amount * AbilityPower.mastery_multiplier(caster, ability, ctx.now, ctx.rules),
+			unit.current_stats(ctx.now).phys_def, ctx.rules.physical_defense_k, ctx.rules)
+	deal_damage(ctx, caster, unit, ability.id, dmg, false, events)
+
+
+static func _actor_at(ctx: CombatContext, tile: Vector2i) -> Actor:
+	for id in ctx.actors:
+		var a: Actor = ctx.actors[id]
+		if a.alive and a.tile() == tile:
+			return a
+	return null
 
 
 static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool:
