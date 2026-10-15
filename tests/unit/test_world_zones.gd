@@ -49,7 +49,6 @@ func test_walking_off_the_edge_moves_the_hero() -> void:
 	var events := world.advance(0.3)
 	assert_eq(world.zone_of(hero.id).zone.id, &"greenfields")
 	assert_eq(hero.tile(), Vector2i(0, 25), "on the very edge of the next map, same row + offset")
-	assert_eq(hero.facing, Vector2i.RIGHT, "still facing the way you walked")
 	assert_null(world.zone(&"town").get_actor(hero.id), "gone from town")
 	assert_true(events.any(func(e): return e.type == "zone_change" and e.to == &"greenfields"))
 	# Intents now go to the new zone; stepping onto the edge tile itself doesn't bounce you back.

@@ -383,10 +383,11 @@ func test_same_seed_and_intents_give_same_result() -> void:
 
 # --- Facing ----------------------------------------------------------------------
 
-func test_steps_turn_the_hero_and_face_turns_in_place() -> void:
+func test_steps_dont_turn_the_hero_and_face_turns_in_place() -> void:
+	var facing := a.facing
 	world.submit(a.id, {"type": "step", "to": a.tile() + Vector2i.RIGHT})
 	world.step()
-	assert_eq(a.facing, Vector2i.RIGHT)
+	assert_eq(a.facing, facing, "heroes face the mouse, not where they walk")
 	world.advance(1.0)
 	var tile := a.tile()
 	world.submit(a.id, {"type": "face", "dir": Vector2i.UP})

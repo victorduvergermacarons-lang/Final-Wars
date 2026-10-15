@@ -322,7 +322,8 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
 		return "not_ready"
 	cancel_cast(actor, "moved") # moving cancels anything with a cast bar: cast, channel, wind-up
-	actor.face(to - from)
+	if not actor is Hero:
+		actor.face(to - from) # heroes face the mouse, not where they walk
 	actor.move.begin(to, now, walk_seconds if walk_seconds >= 0.0 else rules.walk_tile_seconds)
 	if in_combat and not actor.buffs.use_free_step(now):
 		actor.cooldowns.trigger_step(now, actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now))
@@ -818,7 +819,6 @@ func _step_or_leave(hero: Hero, to: Vector2i) -> String:
 		return "in_combat"
 	if hero.buffs.is_rooted(now):
 		return "rooted"
-	hero.face(to - hero.tile())
 	_edge_requests.append([hero.id, edge])
 	return ""
 

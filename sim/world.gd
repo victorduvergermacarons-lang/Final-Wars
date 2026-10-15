@@ -156,7 +156,6 @@ func _leave_by_edge(sim: WorldSim, hero_id: int, edge: ZoneEdge) -> Array[Dictio
 		if dest.grid.in_bounds(t) and dest.grid.is_walkable(t) and not dest.is_occupied(t):
 			var from := sim.zone.id
 			move_hero(hero_id, edge.to_zone, t)
-			hero.face(edge.side)
 			return [{"type": "zone_change", "target": hero_id, "from": from, "to": edge.to_zone,
 					"zone": edge.to_zone}]
 	return [{"type": "rejected", "target": hero_id, "intent": "step", "reason": "blocked", "zone": sim.zone.id}]

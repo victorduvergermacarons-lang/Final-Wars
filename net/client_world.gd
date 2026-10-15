@@ -92,7 +92,6 @@ func predict_step(seq: int, to: Vector2i, t: float) -> bool:
 		return false
 	var start := maxf(t, hero.move.start_time + hero.move.duration)
 	_pending.append({"seq": seq, "kind": "step", "to": to, "start": start})
-	hero.face(to - hero.tile())
 	hero.move.begin(to, start, rules.walk_tile_seconds)
 	return true
 
@@ -244,7 +243,6 @@ func _apply_local_hero(h: Hero, d: Dictionary) -> void:
 		if p.kind == "face":
 			h.face(p.dir)
 		elif GridModel.distance(h.tile(), p.to) == 1:
-			h.face(p.to - h.tile())
 			h.move.begin(p.to, maxf(p.start, h.move.start_time + h.move.duration), rules.walk_tile_seconds)
 	if h.move.from_tile == shown.from_tile and h.move.to_tile == shown.to_tile:
 		h.move.start_time = shown.start_time

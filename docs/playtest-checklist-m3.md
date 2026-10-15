@@ -31,7 +31,7 @@ not change (town, quests, saving, trading, zones) are still covered by the
 | Esc or right-click (while aiming) | Cancel aiming |
 | T | Ability trees |
 | ` (the key left of 1) | Debug console (only in test builds) |
-| Mouse pointer | Your hero always faces the side of it the pointer is on |
+| Mouse pointer | Your hero always faces the side of it the pointer is on, even while walking |
 | W A S D / arrows | Always walk, even a quick tap (they no longer just turn you) |
 
 The rest is unchanged: W A S D walk, Tab/click target, B inventory, C character sheet,
@@ -89,6 +89,8 @@ P spellbook, L quest log, E talk, R release.
       **Expect:** name, tree, tier, what it does, the item that teaches it, and "Mastery from this ability: x / cap".
 - [ ] **Do:** drag **Fire Punch** from the tree onto an empty action bar slot.
       **Expect:** it lands there. A box you can't use yet (white or grey) can't be dragged.
+- [ ] **Do:** drag that ability from the action bar and drop it anywhere off the bar (on the map).
+      **Expect:** the slot is empty again. Dropping it on another slot moves it there instead.
 - [ ] **Do:** check the Sword, Bow and Hammer tabs.
       **Expect:** each shows its abilities; Slash (Sword) shows "Can learn" or your progress.
 
@@ -151,6 +153,9 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 - [ ] **Frost Shard** (skillshot) and **Ice Spikes** (Ground 3×3, 0.4 s warning): damage and slow (enemy steps take longer).
 - [ ] **Water Pulse** (8-way line of 3): damages and pushes enemies 1 tile along the wave.
 - [ ] **Air Palm:** light hit + knock back 1. **Air Blast:** knock back 3; extra damage if the enemy slams into a wall, rock or ledge.
+- [ ] **Collisions:** any knockback or pull (Air Palm, Water Pulse, Blazing Combo…) that slams an enemy into a
+      wall, rock, ledge or another enemy deals a little damage (about 8, Air Blast 25). An enemy it is slammed
+      into takes the same; a fellow player doesn't.
 - [ ] **Weight:** knock back a Goblin Shaman or Fen Skirmisher (light: flies 1 tile further), a
       Wolf (medium: normal) and a Bandit Brute (heavy: 1 tile less; Air Palm doesn't move it at
       all). Targeting them shows "Light" or "Heavy" on their frame.
@@ -159,7 +164,7 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 - [ ] **Rock Throw:** a rock lobbed onto the aimed tile after 0.3 s; it misses if the enemy moved away.
 - [ ] **Raise Pillar:** lifts a tile 1 level for 15 s (2 levels from 500 Earth Mastery); anyone on it rides up.
       Cast it twice on the same tile: it stacks to 2 levels, then comes down one level at a time, and nothing comes back afterwards.
-- [ ] **Earth Wall:** a 3-tile wall (+2 height) across the way you face, centred on the aimed tile, for 12 s. It blocks shots. Heroes (Jump 2) can climb onto it; Wolves and Brutes (Jump 1) have to walk around. Tiles with someone on them are skipped.
+- [ ] **Earth Wall:** a 3-tile wall (+2 height) across the way you face, centred on the aimed tile, for 12 s. It blocks shots. Heroes (Jump 2) can climb onto it; Wolves and Brutes (Jump 1) have to walk around. Anyone standing where it rises rides up with it; enemies take a little damage (about 10).
 - [ ] **Seismic Stomp:** every enemy next to you turns on you (taunt).
 - [ ] **Lunge** (Traveler's Longsword): steps up to 2 tiles to the enemy and strikes; blocked by a wall in between, it falls short and misses.
 - [ ] **Quick Shot** (Hunter's Shortbow): instant arrow, range 5, can't miss. **Aimed Shot** (Yew Longbow): 1 s draw, then a heavy arrow along the aimed line (range 7). Moving during the draw cancels it.

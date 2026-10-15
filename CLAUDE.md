@@ -145,7 +145,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
 | E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
-| E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth) | 15 | 15 |
+| E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth); lifts units on it, enemies take 10 | 15 | 15 |
 | S01 | Slash | Rusty Shortsword | Targeted, adjacent | 1.0 physical | — | 2 |
 | S04 | Lunge | Traveler's Longsword | Targeted, 3 | dash 2, then 1.1 if adjacent | — | 8 |
 | B01 | Quick Shot | Hunter's Shortbow | Targeted, 5 | 0.9 | — | 2 |
@@ -420,8 +420,8 @@ docs/            local multiplayer testing, playtest checklists (M2, M3), abilit
     - Every actor faces one of the four directions (arrow on the ground). **Since
       2026-10-16 the hero faces the mouse** (the side of the hero the pointer is on,
       4-way), and direction keys always walk, even a short tap (the Pokémon-style
-      turn-only tap is gone). Stepping still turns you toward the step until the mouse
-      turns you back. Turning is free and instant, in combat too.
+      turn-only tap is gone). Stepping never turns a hero (since 2026-10-17); enemies
+      still face where they step. Turning is free and instant, in combat too.
       The newest held direction key wins; pressing a new direction turns at once even
       while another is held or the step is on cooldown; in combat no step is queued
       ahead, and a turn cancels any queued step (post-M2 playtest fix).
@@ -978,6 +978,10 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-17 | Steps no longer turn the hero: only the mouse sets which way a hero faces | User request. Enemies still turn toward their steps. Crossing into another zone keeps your facing too. |
+| 2026-10-17 | Dragging an ability (or potion) off the action bar and dropping it outside any slot clears that slot | User request. `SlotButton` on drag end. |
+| 2026-10-17 | Knockbacks and pulls deal a little damage when the unit is stopped by a wall, ledge or another unit; an enemy it is slammed into takes the same | User request. `CombatRules.collision_damage` = 8 (physical, × Mastery power, before defense) unless the ability sets `impact_damage` (Air Blast 25). My choice: the unit hit takes it too, if it is the caster's enemy (allies never). Nothing happens when weight cancels the push. |
+| 2026-10-17 | Earth Wall rises under units standing in it (they ride up) and enemies take a little damage | User request. `AbilityEffect.lift_damage` (Earth Wall 10, physical, × Mastery power). Occupied tiles were skipped before. |
 | 2026-10-17 | Fixed: after releasing, the enemy that killed you re-aggroed and kept you in combat | User report. Enemies react to where they saw you 0.3 s ago, so right after the release they still "saw" you at your death spot. Releasing now clears that memory. |
 | 2026-10-16 | The hero faces the mouse; WASD/arrows always walk (no turn-only taps) | User request. `PlayerInput.face_toward()` sends a face intent when the pointer's side changes. Replaces the tap-to-turn rule (13). |
 | 2026-10-16 | Moving cancels anything with a cast bar, wind-ups included; enemies don't move while attacking and don't start an attack mid-step | User request (a Wolf looked like it moved mid-bite: it started biting while still sliding onto its tile). Changes M3 decision 11. |
