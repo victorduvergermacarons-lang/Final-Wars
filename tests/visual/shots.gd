@@ -109,6 +109,12 @@ func _run() -> void:
 	for i in 4:
 		await get_tree().physics_frame
 	await _shot("11_angled_bolt")
+	# 10b. A Bandit Brute winding up Crushing Blow: three tiles telegraphed.
+	var brute: Enemy = fields.enemies().filter(func(e): return e.def.id == &"bandit_brute")[0]
+	hero.move.place(brute.tile() + Vector2i(-1, 0))
+	brute.cooldowns = Cooldowns.new()
+	fields.cast(brute, cd.abilities[&"crushing_blow"], null, Vector2(hero.tile()))
+	await _shot("11b_brute_swipe")
 	# 11. Hilda's shop, scrolled.
 	session.world.move_hero(hero.id, &"town", Vector2i(8, 8))
 	var town := session.world.zone(&"town")

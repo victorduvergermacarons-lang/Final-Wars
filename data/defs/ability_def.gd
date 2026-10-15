@@ -63,8 +63,9 @@ enum TargetingMode { LEGACY, TARGETED, SKILLSHOT, GROUND, SELF }
 ## SKILLSHOT: any-angle line toward the aim point, or snapped to 8 directions.
 enum Aim { ANY_ANGLE, EIGHT_WAY }
 @export var aim: Aim = Aim.ANY_ANGLE
-## SKILLSHOT: LINE hits along a line; CONE hits a widening cone (8-way).
-enum LineShape { LINE, CONE }
+## SKILLSHOT: LINE hits along a line; CONE hits a widening cone (8-way); ARC hits the
+## tile in front and the two tiles beside it (a sweeping swipe, 8-way).
+enum LineShape { LINE, CONE, ARC }
 @export var line_shape: LineShape = LineShape.LINE
 ## SKILLSHOT: keeps going through units instead of stopping at the first one.
 @export var pierce: bool = false

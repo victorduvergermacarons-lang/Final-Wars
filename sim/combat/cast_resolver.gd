@@ -154,7 +154,7 @@ static func _cast_skillshot(ctx: CombatContext, caster: Actor, ability: AbilityD
 		p.pierce = ability.pierce
 		out.projectile = p
 		return
-	if ability.line_shape == AbilityDef.LineShape.CONE or ability.pierce:
+	if ability.line_shape != AbilityDef.LineShape.LINE or ability.pierce:
 		hit_tiles(ctx, caster, ability, tiles, grace, events)
 		return
 	for t in tiles:
@@ -169,8 +169,10 @@ static func _cast_skillshot(ctx: CombatContext, caster: Actor, ability: AbilityD
 static func skillshot_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, point: Vector2) -> Array[Vector2i]:
 	var origin := caster.tile()
 	var tiles: Array[Vector2i]
-	if ability.line_shape == AbilityDef.LineShape.CONE:
-		tiles = TileGeometry.cone(origin, TileGeometry.snap8(point - Vector2(origin)), ability.max_range)
+	if ability.line_shape != AbilityDef.LineShape.LINE:
+		var dir := TileGeometry.snap8(point - Vector2(origin))
+		tiles = TileGeometry.arc(origin, dir) if ability.line_shape == AbilityDef.LineShape.ARC \
+				else TileGeometry.cone(origin, dir, ability.max_range)
 		return tiles.filter(func(t): return ctx.grid.in_bounds(t) \
 				and ctx.grid.height_at(t) <= ctx.grid.height_at(origin) + ctx.rules.los_height_tolerance)
 	if ability.aim == AbilityDef.Aim.EIGHT_WAY:

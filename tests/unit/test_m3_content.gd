@@ -38,13 +38,17 @@ func _arena(enemy_id: StringName, enemy_tile: Vector2i, hero_tile: Vector2i) -> 
 
 
 func test_enemy_abilities_use_milestone_3_targeting() -> void:
-	for id in [&"wolf_bite", &"crushing_blow", &"quick_slash"]:
+	for id in [&"wolf_bite", &"quick_slash"]:
 		var a: AbilityDef = db.abilities[id]
 		assert_eq(a.targeting, AbilityDef.TargetingMode.TARGETED, id)
 		assert_gt(a.windup_seconds, 0.0, "%s winds up" % id)
 	assert_eq(db.abilities[&"wolf_bite"].windup_seconds, 0.3)
 	assert_eq(db.abilities[&"shadow_bolt"].targeting, AbilityDef.TargetingMode.SKILLSHOT)
-	assert_eq(db.abilities[&"grizzly_cleave"].line_shape, AbilityDef.LineShape.CONE)
+	assert_eq(db.abilities[&"grizzly_cleave"].line_shape, AbilityDef.LineShape.ARC)
+	var blow: AbilityDef = db.abilities[&"crushing_blow"]
+	assert_eq(blow.targeting, AbilityDef.TargetingMode.SKILLSHOT)
+	assert_eq(blow.line_shape, AbilityDef.LineShape.ARC)
+	assert_eq(blow.windup_seconds, 0.6)
 	assert_eq(db.abilities[&"charge"].targeting, AbilityDef.TargetingMode.GROUND)
 
 
@@ -154,3 +158,42 @@ func test_a_scroll_being_learned_grows_the_hero_on_level_up() -> void:
 	var share: float = db.rules.growth_fraction
 	assert_almost_eq(h.stats.mag_atk - before, 3.0 * share, 0.01, "Fire scrolls grow Magic Attack")
 	assert_almost_eq(Mastery.permanent(h, "Fire") - fire, 2.0 * share, 0.01, "and Fire Mastery")
+
+
+func test_brute_telegraphs_its_swipe_and_can_be_dodged() -> void:
+	var brute := _arena(&"bandit_brute", Vector2i(6, 5), Vector2i(5, 5))
+	brute.threat.add(hero.id, 1.0)
+	brute.state = Enemy.State.COMBAT
+	for i in 30:
+		world.step()
+		if not brute.casting.is_empty():
+			break
+	assert_eq(brute.casting.get("kind", ""), "windup")
+	var marks := world.pending_hits()
+	assert_eq(marks.size(), 1, "the swipe is telegraphed")
+	var tiles: Array = marks[0].tiles
+	tiles.sort()
+	assert_eq(tiles, [Vector2i(5, 4), Vector2i(5, 5), Vector2i(5, 6)], "the tile in front and the two beside it")
+	var hp := hero.hp
+	hero.move.place(Vector2i(4, 5)) # step back out of the swipe
+	world.advance(0.7)
+	assert_eq(hero.hp, hp, "dodged")
+
+
+func test_brute_swipe_hits_whoever_stays() -> void:
+	var brute := _arena(&"bandit_brute", Vector2i(6, 5), Vector2i(5, 5))
+	brute.threat.add(hero.id, 1.0)
+	brute.state = Enemy.State.COMBAT
+	var hp := hero.hp
+	world.advance(1.5)
+	assert_lt(hero.hp, hp)
+
+
+func test_melee_enemies_dont_bite_diagonally() -> void:
+	var wolf := _arena(&"wolf", Vector2i(6, 6), Vector2i(5, 5))
+	wolf.threat.add(hero.id, 1.0)
+	wolf.state = Enemy.State.COMBAT
+	world.step()
+	assert_true(wolf.casting.is_empty(), "no bite from a diagonal tile")
+	world.advance(1.0)
+	assert_eq(TileGeometry.range_distance(wolf.tile(), hero.tile()), 1, "it steps beside you first")

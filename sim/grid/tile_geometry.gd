@@ -90,6 +90,18 @@ static func cone(origin: Vector2i, dir: Vector2i, length: int) -> Array[Vector2i
 	return out
 
 
+## A sweeping swipe: the tile one step along `dir` and the two tiles beside it
+## (for a diagonal `dir`, the two straight tiles next to it).
+static func arc(origin: Vector2i, dir: Vector2i) -> Array[Vector2i]:
+	if dir == Vector2i.ZERO:
+		return [] as Array[Vector2i]
+	var front := origin + dir
+	if dir.x != 0 and dir.y != 0:
+		return [front, origin + Vector2i(dir.x, 0), origin + Vector2i(0, dir.y)] as Array[Vector2i]
+	var side := Vector2i(-dir.y, dir.x)
+	return [front, front + side, front - side] as Array[Vector2i]
+
+
 ## Cuts a line where terrain or walls block it: a tile whose height rises more than
 ## `tolerance` above `from_height` stops the line (that tile excluded); so do tiles
 ## outside the map.

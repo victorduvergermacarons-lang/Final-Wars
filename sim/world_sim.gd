@@ -375,6 +375,11 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 			"kind": kind, "start": now, "end": now + seconds,
 			"next_tick": now + (ability.channel_tick_seconds if kind == "channel" else seconds),
 			"bonus": caster.buffs.damage_dealt_multiplier(ability.tree, now)}
+	# A wound-up swipe or lob shows the tiles it will hit (dodge by leaving them).
+	if kind == "windup" and ability.targeting == AbilityDef.TargetingMode.SKILLSHOT and point != null \
+			and ability.projectile_speed <= 0.0:
+		caster.casting.tiles = [CastResolver.lob_tile(caster.tile(), point, ability.max_range)] \
+				if ability.arc_seconds > 0.0 else CastResolver.skillshot_tiles(ctx, caster, ability, point)
 	if kind != "cast":
 		caster.buffs.consume_on_cast(ability.tree, now)
 	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
@@ -454,16 +459,19 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 func pending_hits() -> Array:
 	var out := _pending_hits.map(func(h): return {"source": h.caster, "ability": h.ability.id,
 			"tiles": h.tiles, "at": h.at})
-	# Ground abilities winding up (Grizzlehide's Charge) are telegraphed too.
+	# Wind-ups aimed at the ground (Grizzlehide's Charge) or swipes (Crushing Blow,
+	# Cleave) are telegraphed too.
 	for id in _sorted(ctx.actors):
 		var a: Actor = ctx.actors[id]
 		var c: Dictionary = a.casting
-		if c.is_empty() or c.kind != "windup" or c.ability.targeting != AbilityDef.TargetingMode.GROUND \
-				or c.aim == null:
+		if c.is_empty() or c.kind != "windup":
 			continue
-		var center := Vector2i(roundi(c.aim.x), roundi(c.aim.y))
-		out.append({"source": a.id, "ability": c.ability.id,
-				"tiles": CastResolver.area_tiles(grid, center, c.ability.area_radius), "at": c.end})
+		if c.has("tiles"):
+			out.append({"source": a.id, "ability": c.ability.id, "tiles": c.tiles, "at": c.end})
+		elif c.ability.targeting == AbilityDef.TargetingMode.GROUND and c.aim != null:
+			var center := Vector2i(roundi(c.aim.x), roundi(c.aim.y))
+			out.append({"source": a.id, "ability": c.ability.id,
+					"tiles": CastResolver.area_tiles(grid, center, c.ability.area_radius), "at": c.end})
 	return out
 
 

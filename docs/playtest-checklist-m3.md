@@ -167,9 +167,12 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 
 - [ ] **Wolf:** when next to you it shows a red "Bite" bar for 0.3 s before biting.
       **Do:** step straight away during the bar. **Expect:** "Whiff", no damage.
-- [ ] **Bandit Brute:** same with a slower 0.6 s "Crushing Blow". It hits very hard, so dodging matters.
+- [ ] **Bandit Brute:** when next to you it shows a red "Crushing Blow" bar and marks **three red
+      tiles** (the one in front of it and the two beside it) for 0.6 s, then smashes them.
+      **Do:** step off the red tiles (straight back works). **Expect:** no damage. It hits very hard if you stay.
+- [ ] **No diagonal melee:** stand diagonally next to a Wolf. **Expect:** it doesn't bite from there; it steps beside you first.
 - [ ] **Goblin Shaman:** shoots purple bolts at any angle (no longer only along rows). Stepping off the path dodges.
-- [ ] **Old Grizzlehide:** its Cleave hits the 3 tiles in front of it after a short wind-up;
+- [ ] **Old Grizzlehide:** its Cleave swipes the tile in front and the two beside it after a short, telegraphed wind-up;
       its **Charge** marks a tile 2–4 tiles away in **red** for 1 s, then it rushes there and
       mauls whoever is still on it. **Do:** step off the red tile. **Expect:** it rushes in but misses.
 - [ ] **Expect:** Old Grizzlehide is tougher than before (2000 HP); it takes a group.

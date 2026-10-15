@@ -186,7 +186,8 @@ static func tree_fight(content, specs: Array, enemy_id: StringName, count: int, 
 			if spec.get("dodge", false) and h.cooldowns.can_step(world.now):
 				var dodged := false
 				for e in foes:
-					if e.casting.get("kind", "") == "windup" and e.casting.get("target", -1) == h.id:
+					if e.casting.get("kind", "") == "windup" and (e.casting.get("target", -1) == h.id \
+							or e.casting.get("tiles", []).has(h.tile())):
 						var away := TileGeometry.snap8(Vector2(h.tile() - e.tile()))
 						for d in [Vector2i(away.x, 0), Vector2i(0, away.y)]:
 							if d != Vector2i.ZERO and not dodged and world.grid.is_walkable(h.tile() + d) \

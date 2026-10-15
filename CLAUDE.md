@@ -153,10 +153,11 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | H01 | Smash | Iron Mallet | Targeted, adjacent, 0.3 s wind-up | 1.6 | — | 4 |
 | H02 | Ground Slam | Quarry Maul | Self, 3×3 | 1.0 | — | 8 |
 
-Enemy attacks (Milestone 3): Bite and Quick Slash 0.3 s wind-up, Crushing Blow 0.6 s
-(Targeted, adjacent; Accuracy vs Evasion still rolls), Shadow Bolt any-angle skillshot,
-Grizzlehide Cleave 0.4 s wound-up 3-tile cone, Charge 1 s telegraphed tile then rush +
-maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Weight (knockbacks/pulls ±1
+Enemy attacks (Milestone 3): Bite and Quick Slash 0.3 s wind-up (Targeted, adjacent, no
+diagonals; Accuracy vs Evasion still rolls); Crushing Blow (Brute) 0.6 s wound-up swipe at
+the tile in front and the two beside it, telegraphed red during the wind-up; Shadow Bolt
+any-angle skillshot; Grizzlehide Cleave the same swipe with a 0.4 s wind-up, Charge 1 s
+telegraphed tile then rush + maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Weight (knockbacks/pulls ±1
 tile): Shaman and Skirmisher light, Brute and Grizzlehide heavy, everyone else medium. Hilda: potions, Iron Helm,
 Swift Boots and the 20 implemented tier-1 scrolls (25 g) and weapons (30 g).
 
@@ -975,6 +976,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-15 | Bandit Brute's Crushing Blow hits the ground: the tile in front and the two beside it, telegraphed during its 0.6 s wind-up | User request (easier to dodge). New skillshot shape ARC; wound-up swipes and lobs are telegraphed. Fixed Grizzlehide's Cleave, which hit only 1 tile (a range-1 cone) instead of 3; it uses ARC now. Balance targets still met (a group of 4 still beats Grizzlehide, but one bot usually dies now). |
 | 2026-10-15 | Ability ranges count diagonals as 2 tiles; melee (range 1) no longer hits diagonally, for heroes and enemies | User request; "ranges only" chosen by the user, so 3×3 areas and 8-way aiming stay. Changes M3 decision 2. |
 | 2026-10-15 | Weight: light / medium / heavy. Knockbacks and pulls move light characters 1 tile further, heavy ones 1 tile less (a 1-tile push doesn't move them) | User request; ±1 tile chosen by the user. Heroes and Wolves medium, Goblin Shaman and Fen Skirmisher light, Bandit Brute and Old Grizzlehide heavy (`EnemyDef.weight`, `Weight.adjust`). The target frame shows Light/Heavy. |
 | 2026-10-15 | With the learning slot empty, the weapon in hand learns automatically (earns AP) | User request. A scroll in the slot takes over. `Hero.active_learning_item()`; the Learning slot text says "(from your weapon)". |
