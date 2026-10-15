@@ -241,6 +241,17 @@ func test_wall_rising_under_an_enemy_hurts_it() -> void:
 	assert_eq(_lost(foe), 10.0)
 
 
+func test_lift_damage_scales_with_tree_mastery() -> void:
+	foe.move.place(Vector2i(6, 8))
+	hero.growth.set_stat(Stat.Id.EARTH_MASTERY, 500)
+	hero.refresh_stats()
+	var wall := _raise(2, 5.0, {"wall_line": true, "lift_damage": 10.0, "lift_damage_per_mastery": 0.02})
+	wall.tree = "Earth"
+	world.cast(hero, wall, null, Vector2(5, 8))
+	# (10 + 0.02 x 500) x (1 + 500 x 0.001) power = 30
+	assert_eq(_lost(foe), 30.0)
+
+
 func test_wall_rising_under_an_ally_does_not_hurt() -> void:
 	var hd := HeroDef.new()
 	hd.base_stats = StatBlock.make({Stat.Id.HP: 500})

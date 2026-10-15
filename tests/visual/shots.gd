@@ -122,4 +122,15 @@ func _run() -> void:
 	hud.vendor_window.open(hilda)
 	hud.vendor_window.visible = true
 	await _shot("12_shop")
+	hud.vendor_window.visible = false
+	hud.dialogue.visible = false
+	# 12. Standing right behind an Earth Wall (the wall runs along the grid's y axis).
+	hero.alive = true
+	hero.hp = 100.0
+	# Arrived from the tile nearer the camera (the case that drew the hero over the wall).
+	hero.move.place(Vector2i(8, 9))
+	hero.move.begin(Vector2i(8, 8), session.now() - 1.0, 0.2)
+	for y in range(5, 12):
+		town.grid.set_tile(Vector2i(9, y), town.grid.height_at(Vector2i(9, y)) + 2, true)
+	await _shot("13_behind_wall")
 	get_tree().quit()

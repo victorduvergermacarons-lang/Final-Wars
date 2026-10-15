@@ -12,6 +12,7 @@ base_amount = 2.0
 duration_seconds = 12.0
 wall_line = true
 lift_damage = 10.0
+lift_damage_per_mastery = 0.02
 mastery_per_extra = 300.0
 
 [resource]

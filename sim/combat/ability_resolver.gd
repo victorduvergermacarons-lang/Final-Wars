@@ -152,10 +152,13 @@ static func apply_area_effects(ctx: CombatContext, caster: Actor, ability: Abili
 					area = _wall_tiles(ctx, caster, ability, effect)
 				var levels := int(effect.base_amount) + _extra(caster, ability, effect, ctx.now)
 				if effect.lift_damage > 0.0 and levels > 0:
+					var lift := effect.lift_damage
+					if ability.is_tree_ability():
+						lift += effect.lift_damage_per_mastery * Mastery.total(caster, ability.tree, ctx.now)
 					for t in area:
 						var unit := _actor_at(ctx, t)
 						if unit != null and caster.is_hostile_to(unit) and not unit.evading:
-							_impact(ctx, caster, ability, unit, effect.lift_damage, events)
+							_impact(ctx, caster, ability, unit, lift, events)
 				ctx.requests.append({"type": "terrain", "source": caster.id, "tiles": area, "levels": levels,
 						"blocks": effect.blocks_movement, "until": ctx.now + duration, "ability": ability.id})
 			AbilityEffect.Kind.ZONE:

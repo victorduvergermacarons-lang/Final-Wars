@@ -124,7 +124,12 @@ func _draw() -> void:
 	var grid: GridModel = session.grid()
 	var actors_by_depth := {}
 	for a in session.actors():
-		var d := maxi(Iso.depth(a.move.from_tile), Iso.depth(a.move.to_tile))
+		# While walking, draw over both tiles it straddles; once there, only its own
+		# tile counts (else a hero who stepped away from the camera stays drawn over
+		# the terrain in front of it, e.g. an Earth Wall).
+		var d := Iso.depth(a.move.to_tile)
+		if a.move.is_moving(session.render_time()):
+			d = maxi(d, Iso.depth(a.move.from_tile))
 		if not actors_by_depth.has(d):
 			actors_by_depth[d] = []
 		actors_by_depth[d].append(a)

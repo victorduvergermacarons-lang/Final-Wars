@@ -164,7 +164,8 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 - [ ] **Rock Throw:** a rock lobbed onto the aimed tile after 0.3 s; it misses if the enemy moved away.
 - [ ] **Raise Pillar:** lifts a tile 1 level for 15 s (2 levels from 500 Earth Mastery); anyone on it rides up.
       Cast it twice on the same tile: it stacks to 2 levels, then comes down one level at a time, and nothing comes back afterwards.
-- [ ] **Earth Wall:** a 3-tile wall (+2 height) across the way you face, centred on the aimed tile, for 12 s. It blocks shots. Heroes (Jump 2) can climb onto it; Wolves and Brutes (Jump 1) have to walk around. Anyone standing where it rises rides up with it; enemies take a little damage (about 10).
+- [ ] **Earth Wall:** a 3-tile wall (+2 height) across the way you face, centred on the aimed tile, for 12 s. It blocks shots. Heroes (Jump 2) can climb onto it; Wolves and Brutes (Jump 1) have to walk around. Anyone standing where it rises rides up with it; enemies take a little damage (10, more with Earth Mastery: about 30 at 500).
+      Stand right behind a wall (step back toward it from the near side): the wall hides your lower body cleanly.
 - [ ] **Seismic Stomp:** every enemy next to you turns on you (taunt).
 - [ ] **Lunge** (Traveler's Longsword): steps up to 2 tiles to the enemy and strikes; blocked by a wall in between, it falls short and misses.
 - [ ] **Quick Shot** (Hunter's Shortbow): instant arrow, range 5, can't miss. **Aimed Shot** (Yew Longbow): 1 s draw, then a heavy arrow along the aimed line (range 7). Moving during the draw cancels it.

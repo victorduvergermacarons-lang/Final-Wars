@@ -145,7 +145,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
 | E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
-| E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth); lifts units on it, enemies take 10 | 15 | 15 |
+| E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth); lifts units on it, enemies take 10 + 0.02 per Earth Mastery | 15 | 15 |
 | S01 | Slash | Rusty Shortsword | Targeted, adjacent | 1.0 physical | — | 2 |
 | S04 | Lunge | Traveler's Longsword | Targeted, 3 | dash 2, then 1.1 if adjacent | — | 8 |
 | B01 | Quick Shot | Hunter's Shortbow | Targeted, 5 | 0.9 | — | 2 |
@@ -978,6 +978,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-17 | Earth Wall's lift damage scales with Earth Mastery: 10 + 0.02 per point (then the usual +0.1% power per point) | User request. `AbilityEffect.lift_damage_per_mastery`. 0 Mastery: 10; 500: 30. The 0.02 is my number. |
+| 2026-10-17 | Fixed: a hero who stepped away from the camera was drawn over terrain in front of it (half showing over an Earth Wall) | User report. The view sorted a standing actor by the tile it came from; it now uses its own tile once it has arrived. Screenshot `13_behind_wall` in `tests/visual/shots.gd`. |
 | 2026-10-17 | Steps no longer turn the hero: only the mouse sets which way a hero faces | User request. Enemies still turn toward their steps. Crossing into another zone keeps your facing too. |
 | 2026-10-17 | Dragging an ability (or potion) off the action bar and dropping it outside any slot clears that slot | User request. `SlotButton` on drag end. |
 | 2026-10-17 | Knockbacks and pulls deal a little damage when the unit is stopped by a wall, ledge or another unit; an enemy it is slammed into takes the same | User request. `CombatRules.collision_damage` = 8 (physical, × Mastery power, before defense) unless the ability sets `impact_damage` (Air Blast 25). My choice: the unit hit takes it too, if it is the caster's enemy (allies never). Nothing happens when weight cancels the push. |
