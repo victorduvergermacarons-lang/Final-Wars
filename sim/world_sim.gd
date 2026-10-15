@@ -1027,6 +1027,9 @@ func _intent_release(hero: Hero) -> String:
 	for enemy in enemies():
 		enemy.threat.remove(hero.id)
 	hero.combat_until = 0.0
+	# Enemies react to where they saw you a moment ago: forget the death spot, or the
+	# enemy that killed you "sees" you there and aggroes on your new self.
+	_history.erase(hero.id)
 	emit({"type": "release", "target": hero.id, "tile": hero.tile()})
 	return ""
 

@@ -978,6 +978,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-17 | Fixed: after releasing, the enemy that killed you re-aggroed and kept you in combat | User report. Enemies react to where they saw you 0.3 s ago, so right after the release they still "saw" you at your death spot. Releasing now clears that memory. |
 | 2026-10-16 | The hero faces the mouse; WASD/arrows always walk (no turn-only taps) | User request. `PlayerInput.face_toward()` sends a face intent when the pointer's side changes. Replaces the tap-to-turn rule (13). |
 | 2026-10-16 | Moving cancels anything with a cast bar, wind-ups included; enemies don't move while attacking and don't start an attack mid-step | User request (a Wolf looked like it moved mid-bite: it started biting while still sliding onto its tile). Changes M3 decision 11. |
 | 2026-10-16 | Stacked pillars come down one by one and nothing reappears; Earth Wall can be climbed by anyone whose Jump covers its +2 height | User reports. Terrain changes now store the height they added and take it off on expiry (they used to restore a saved snapshot, so the first to expire flattened both and the second then restored the first). Earth Wall no longer marks its tiles impassable; it still blocks shots. |
