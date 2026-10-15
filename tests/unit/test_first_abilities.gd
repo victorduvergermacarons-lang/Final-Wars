@@ -123,6 +123,24 @@ func test_kindle_boosts_the_next_three_fire_abilities() -> void:
 	assert_false(hero.buffs.has(&"kindled", world.now), "three charges used")
 
 
+func test_sun_warriors_breath_restores_mana_over_10s() -> void:
+	assert_eq(_a("F04").display_name, "Sun Warrior's Breath")
+	assert_eq(ContentDB_items_name("sun_warriors_breath_scroll"), "Sun Warrior's Breath Scroll")
+	world.rules.in_combat_mana_regen_percent = 0.0
+	world.rules.out_of_combat_mana_regen_percent = 0.0
+	hero.mana = 100.0
+	world.cast(hero, _a("F04"), hero)
+	var after_cost := hero.mana
+	world.advance(10.5)
+	assert_almost_eq(hero.mana - after_cost, 50.0, 1.5, "10% of 500 max Mana")
+	world.advance(5.0)
+	assert_almost_eq(hero.mana - after_cost, 50.0, 1.5, "and no more after 10 s")
+
+
+func ContentDB_items_name(id: String) -> String:
+	return db.items[StringName(id)].display_name
+
+
 func test_flame_dash_burns_the_tiles_behind() -> void:
 	world.cast(hero, _a("F05"), null, Vector2(5, 8))
 	assert_eq(hero.tile(), Vector2i(5, 8))

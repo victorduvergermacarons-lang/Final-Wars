@@ -123,7 +123,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent | 1.0 magical | 4 | 2 |
 | F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent | 0.8 + burn 0.6 over 3 s | 8 | 4 |
 | F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 6 | 2 |
-| F04 | Kindle | Kindling Scroll | Self | next 3 Fire casts +30% (20 s), off GCD | 10 | 20 |
+| F04 | Sun Warrior's Breath | Sun Warrior's Breath Scroll | Self | next 3 Fire casts +30% (20 s), +10% max Mana over 10 s, off GCD | 10 | 20 |
 | F05 | Flame Dash | Scroll of Burning Feet | Ground 8-way, 3 | dash 3, trail burns 3 s (0.4/s); charges 1 +1/300 | 10 | 8 |
 | F06 | Fire Whip | Lash of Embers Scroll | Skillshot 8-way line 3, pierce | 1.1 | 10 | 6 |
 | F07 | Fireball | Scroll of the Fireball | Ground 5, 3×3, 0.4 s telegraph | 1.2 | 15 | 8 |
@@ -970,6 +970,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-15 | Kindle renamed Sun Warrior's Breath (scroll: Sun Warrior's Breath Scroll; renamed in the spreadsheet) and also restores 10% of max Mana over 10 s | User request. New `BuffDef.mana_regen_percent`. Saves holding the old Kindling Scroll get the new one (`CharacterData.RENAMED_ITEMS`). |
 | 2026-10-15 | Projectiles are drawn along their real path (any angle; the Shaman's bolt went diagonally); the shop list scrolls | User reports. |
 | 2026-10-15 | Post-M3 fixes: Fire Punch 4 mana; Gust interrupts wind-ups (e.g. a Wolf's Bite); releasing at a graveyard ends combat | User requests. |
 | 2026-10-12 | Milestone 3 built (step 16: docs, playtest checklist) | `docs/playtest-checklist-m3.md` for a non-programmer; the M2 checklist points to it for the changed parts. "Gameplay as built: Milestone 3" added. |

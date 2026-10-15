@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="1_sunbr"]
+
+[resource]
+script = ExtResource("1_sunbr")
+id = &"sun_breath"
+display_name = "Sun Warrior's Breath"
+duration_seconds = 10.0
+mana_regen_percent = 1.0

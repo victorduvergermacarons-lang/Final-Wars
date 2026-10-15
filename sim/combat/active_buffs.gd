@@ -108,6 +108,14 @@ func cooldown_multiplier(now: float) -> float:
 	return m
 
 
+## % of max Mana restored per second by active buffs.
+func mana_regen_percent(now: float) -> float:
+	var p := 0.0
+	for d in _active_defs(now):
+		p += d.mana_regen_percent
+	return p
+
+
 func is_rooted(now: float) -> bool:
 	return _active_defs(now).any(func(d): return d.roots)
 

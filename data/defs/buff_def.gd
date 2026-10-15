@@ -13,6 +13,8 @@ extends Resource
 @export var roots: bool = false
 ## Heal-over-time buffs heal every this many seconds.
 @export var tick_seconds: float = 1.0
+## Restores this % of max Mana per second while active (Sun Warrior's Breath: 1 for 10 s).
+@export var mana_regen_percent: float = 0.0
 ## Shown on the target's frame; harmful effects (slows, roots) are debuffs.
 @export var is_debuff: bool = false
 

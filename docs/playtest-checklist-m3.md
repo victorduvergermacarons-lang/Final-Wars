@@ -105,8 +105,9 @@ Go to **Greenfields** (walk off the east edge of town) and find a Wolf.
 - [ ] **Ground (needs the debug console, section 9: `master Fireball`):** hold Fireball's key and point at a tile.
       **Expect:** a 3×3 square of blue tiles; red if the tile is more than 5 tiles away.
       Letting go marks the square **red** for a moment, then it explodes on whoever stands there.
-- [ ] **Self (Kindle; `master Kindle`):** press its key.
-      **Expect:** it works at once without aiming; your next 3 Fire abilities hit harder (bigger numbers).
+- [ ] **Self (Sun Warrior's Breath; `master F04`):** press its key.
+      **Expect:** it works at once without aiming; your next 3 Fire abilities hit harder (bigger numbers),
+      and your Mana bar refills by 10% of its maximum over the next 10 seconds.
 - [ ] **Cast bars:** **Expect:** when an enemy winds up an attack, a small **red** bar with
       the attack's name appears under it. Aimed Shot (a bow) shows a **yellow** bar for its 1 s draw.
 
@@ -172,7 +173,7 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 
 - [ ] **Do:** talk to Hilda and open her shop.
       **Expect:** potions, Iron Helm, Swift Boots, and the tier-1 scrolls (25 g) and weapons
-      (30 g) of every tree: Ember Fist, Cinder Kick, Spark, Kindling, Mender's, River Lash,
+      (30 g) of every tree: Ember Fist, Cinder Kick, Spark, Sun Warrior's Breath, Mender's, River Lash,
       Scroll of the Current, Frost Shard, Open Palm, Breeze, Featherstep, Pebble, Pillar,
       Stomp; Rusty Shortsword, Traveler's Longsword, Hunter's Shortbow, Yew Longbow, Iron
       Mallet, Quarry Maul. No Hunting Bow.

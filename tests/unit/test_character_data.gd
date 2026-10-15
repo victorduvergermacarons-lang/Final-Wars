@@ -111,6 +111,13 @@ func test_pre_milestone_3_character_is_converted() -> void:
 	assert_true(hero.ap.is_empty())
 
 
+func test_renamed_items_survive_loading() -> void:
+	var data := CharacterData.new_character("Kit", db.heroes[&"adventurer"])
+	data.bag = [["kindling_scroll", 1]]
+	var hero := CharacterData.restore(1, data, db)
+	assert_eq(hero.bag.count_of(db.items[&"sun_warriors_breath_scroll"]), 1)
+
+
 func test_garbage_save_still_loads_a_fresh_hero() -> void:
 	var hero := CharacterData.restore(1, {"hero": "dragon", "growth": "x"}, db)
 	assert_eq(hero.level, 1)

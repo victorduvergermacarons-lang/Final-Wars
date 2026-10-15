@@ -1184,6 +1184,7 @@ func _regen() -> void:
 		var fighting := a.in_combat(now)
 		var hp_pct := rules.in_combat_hp_regen_percent if fighting else rules.out_of_combat_hp_regen_percent
 		var mana_pct := rules.in_combat_mana_regen_percent if fighting else rules.out_of_combat_mana_regen_percent
+		mana_pct += a.buffs.mana_regen_percent(now)
 		a.hp = minf(a.hp + s.hp * hp_pct / 100.0 * dt, s.hp)
 		a.mana = minf(a.mana + s.mana * mana_pct / 100.0 * dt, s.mana)
 

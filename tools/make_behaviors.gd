@@ -41,9 +41,11 @@ func _fire() -> void:
 			"sheet_scaling": true, "power": 0.6, "damage_type": MAG, "buff": burn, "can_crit": false})],
 			{"mana_cost": 8.0}))
 	_save("F03", _ab(T.SKILLSHOT, 4, [_dmg(MAG)], {"projectile_speed": 16.0, "ranged": true, "mana_cost": 6.0}))
-	var kindled := _buff(&"kindled", "Kindled", 20.0, {"damage_dealt_multiplier": 1.3, "affects_tree": "Fire",
+	var kindled := _buff(&"kindled", "Sun Warrior's Fire", 20.0, {"damage_dealt_multiplier": 1.3, "affects_tree": "Fire",
 			"charges": 3})
-	_save("F04", _ab(T.SELF, 0, [_fx(K.BUFF, {"buff": kindled})], {"target": AbilityDef.TargetType.SELF,
+	var breath := _buff(&"sun_breath", "Sun Warrior's Breath", 10.0, {"mana_regen_percent": 1.0})
+	_save("F04", _ab(T.SELF, 0, [_fx(K.BUFF, {"buff": kindled}), _fx(K.BUFF, {"buff": breath})],
+			{"target": AbilityDef.TargetType.SELF,
 			"mana_cost": 10.0, "on_gcd": false}))
 	_save("F05", _ab(T.GROUND, 3, [
 			_fx(K.DASH_TO, {"base_amount": 3.0, "applies": AbilityEffect.Applies.CASTER}),

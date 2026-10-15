@@ -7,6 +7,8 @@ extends RefCounted
 const VERSION := 1
 const MAX_LEVEL_SANITY := 999
 const MAX_GOLD := 999_999_999
+## Items whose id changed (renamed in the spreadsheet): old id -> new id.
+const RENAMED_ITEMS := {"kindling_scroll": "sun_warriors_breath_scroll"}
 
 
 static func capture(hero: Hero) -> Dictionary:
@@ -55,6 +57,8 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	hero.gold = clampi(_int(data.get("gold"), 0), 0, MAX_GOLD)
 	hero.growth = _stats_in(data.get("growth"))
 	var bag_data = data.get("bag")
+	if typeof(bag_data) == TYPE_ARRAY:
+		bag_data = bag_data.map(func(e): return [_renamed(e[0]), e[1]] if typeof(e) == TYPE_ARRAY and e.size() == 2 else e)
 	hero.bag = Bag.from_array(bag_data if typeof(bag_data) == TYPE_ARRAY else [], content.items)
 	# Milestone 3 retired the old abilities and their gear: drop them.
 	var retired := false
@@ -67,7 +71,7 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	if typeof(equipped) == TYPE_DICTIONARY:
 		for key in equipped:
 			var slot := _int(key, -1)
-			var item: ItemDef = content.items.get(StringName(str(equipped[key])))
+			var item: ItemDef = content.items.get(StringName(_renamed(equipped[key])))
 			if item != null and item.retired:
 				retired = true
 				continue
@@ -95,7 +99,7 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 				var cap := float(ability.sheet.get("mastery_cap", 0.0))
 				hero.mastery_contrib[ability.id] = clampf(_float(contrib[key], 0.0), 0.0, cap + float(ability.sheet.get("mastery_on_learn", 0.0)))
 	# The learning slot: a scroll (held there, not in the bag) or a worn weapon.
-	var learning: ItemDef = content.items.get(StringName(str(data.get("learning", ""))))
+	var learning: ItemDef = content.items.get(StringName(_renamed(data.get("learning", ""))))
 	if learning != null and learning.tree_ability() != null:
 		if learning.is_scroll or hero.equipment().values().has(learning):
 			hero.learning_item = learning
@@ -180,3 +184,8 @@ static func _float(v, fallback: float) -> float:
 	if typeof(v) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(v)):
 		return float(v)
 	return fallback
+
+
+static func _renamed(id) -> String:
+	var s := str(id)
+	return RENAMED_ITEMS.get(s, s)
