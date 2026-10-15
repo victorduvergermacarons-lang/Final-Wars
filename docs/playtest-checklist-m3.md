@@ -156,7 +156,8 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 - [ ] **Air Step:** your next 5 steps have no step cooldown, even in combat.
 - [ ] **Rock Throw:** a rock lobbed onto the aimed tile after 0.3 s; it misses if the enemy moved away.
 - [ ] **Raise Pillar:** lifts a tile 1 level for 15 s (2 levels from 500 Earth Mastery); anyone on it rides up.
-- [ ] **Earth Wall:** a 3-tile wall (+2 height) across the way you face, centred on the aimed tile, for 12 s. Nobody can walk through it and it blocks shots. Tiles with someone on them are skipped.
+      Cast it twice on the same tile: it stacks to 2 levels, then comes down one level at a time, and nothing comes back afterwards.
+- [ ] **Earth Wall:** a 3-tile wall (+2 height) across the way you face, centred on the aimed tile, for 12 s. It blocks shots. Heroes (Jump 2) can climb onto it; Wolves and Brutes (Jump 1) have to walk around. Tiles with someone on them are skipped.
 - [ ] **Seismic Stomp:** every enemy next to you turns on you (taunt).
 - [ ] **Lunge** (Traveler's Longsword): steps up to 2 tiles to the enemy and strikes; blocked by a wall in between, it falls short and misses.
 - [ ] **Quick Shot** (Hunter's Shortbow): instant arrow, range 5, can't miss. **Aimed Shot** (Yew Longbow): 1 s draw, then a heavy arrow along the aimed line (range 7). Moving during the draw cancels it.
@@ -220,7 +221,7 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 - [ ] **Expect:** everyone sees each other's projectiles, telegraphs, burning ground, walls and pillars, and enemies' wind-up bars.
 - [ ] **Expect:** your Learning slot, AP and Mastery are your own; others can't see your bag or progress.
 - [ ] **Do:** one player raises an Earth Wall between a Wolf and another player.
-      **Expect:** the Wolf has to walk around it; arrows and bolts stop at it.
+      **Expect:** the Wolf (Jump 1) has to walk around it while heroes can climb over; arrows and bolts stop at it.
 - [ ] **Do:** a healer heals a friend with Healing Touch (target the friend first).
       **Expect:** the friend's health goes up on everyone's screen.
 - [ ] **Do:** fight Old Grizzlehide together. **Expect:** a group of 4 at level 5 can win if they spread out and dodge the Charge.

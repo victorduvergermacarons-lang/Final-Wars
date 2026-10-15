@@ -55,8 +55,10 @@ const QUEST_SHARE_RADIUS := 15
 var _projectiles: Array[Projectile] = []
 ## Telegraphed areas and lobbed shots waiting to land (CastResolver pending hits).
 var _pending_hits: Array = []
-## Temporary terrain changes: [{"saved": {tile: [height, walkable]}, "until"}].
+## Temporary terrain changes: [{"delta": {tile: levels added}, "blocked": {tile: true}, "until"}].
 var _terrain: Array = []
+## Walkability of changed tiles before any change touched them.
+var _terrain_base_walkable := {}
 ## Persistent ground zones: [{"source", "tiles", "ability", "zone_ability", "tick", "next_tick", "until", "bonus"}].
 var _ground_zones: Array = []
 ## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
@@ -549,30 +551,49 @@ func _handle_requests() -> void:
 ## Temporary terrain: raises (or lowers) tiles, optionally making them walls.
 ## Units on raised tiles ride up with them. Restored when it expires.
 func _raise_terrain(r: Dictionary) -> void:
-	var saved := {}
+	var delta := {}
+	var blocked := {}
 	for t in r.tiles:
 		if not grid.in_bounds(t):
 			continue
-		saved[t] = [grid.height_at(t), grid.is_walkable(t)]
-		var walkable: bool = grid.is_walkable(t) and not (r.blocks and not is_occupied(t))
-		grid.set_tile(t, maxi(grid.height_at(t) + int(r.levels), 0), walkable)
-	if saved.is_empty():
+		if not _terrain_base_walkable.has(t):
+			_terrain_base_walkable[t] = grid.is_walkable(t)
+		var h := grid.height_at(t)
+		var new_h := maxi(h + int(r.levels), 0)
+		delta[t] = new_h - h # what this change really added (lowering stops at 0)
+		var walkable := grid.is_walkable(t)
+		if r.blocks and not is_occupied(t):
+			blocked[t] = true
+			walkable = false
+		grid.set_tile(t, new_h, walkable)
+	if delta.is_empty():
 		return
-	_terrain.append({"saved": saved, "until": r.until})
-	emit({"type": "terrain", "source": r.source, "ability": r.ability, "tiles": saved.keys(), "levels": r.levels,
+	_terrain.append({"delta": delta, "blocked": blocked, "until": r.until})
+	emit({"type": "terrain", "source": r.source, "ability": r.ability, "tiles": delta.keys(), "levels": r.levels,
 			"until": r.until})
 
 
+## Each change expires on its own: its height is taken off again, so stacked
+## pillars come down one by one and the ground ends where it started.
 func _update_terrain_and_zones() -> void:
-	# Newest first, so overlapping changes unwind in reverse order.
+	var ended: Array = []
 	for i in range(_terrain.size() - 1, -1, -1):
-		var change: Dictionary = _terrain[i]
-		if now + 0.0001 < change.until:
-			continue
-		for t in change.saved:
-			grid.set_tile(t, change.saved[t][0], change.saved[t][1])
-		_terrain.remove_at(i)
-		emit({"type": "terrain_end", "tiles": change.saved.keys()})
+		if now + 0.0001 >= _terrain[i].until:
+			ended.append(_terrain[i])
+			_terrain.remove_at(i)
+	for change in ended:
+		for t in change.delta:
+			var still_blocked := false
+			var still_changed := false
+			for other in _terrain:
+				if other.delta.has(t):
+					still_changed = true
+					still_blocked = still_blocked or other.blocked.has(t)
+			var walkable: bool = _terrain_base_walkable.get(t, true) and not still_blocked
+			grid.set_tile(t, maxi(grid.height_at(t) - int(change.delta[t]), 0), walkable)
+			if not still_changed:
+				_terrain_base_walkable.erase(t)
+		emit({"type": "terrain_end", "tiles": change.delta.keys()})
 	var active: Array = []
 	for z in _ground_zones:
 		var owner := get_actor(z.source)
@@ -595,7 +616,7 @@ func _update_terrain_and_zones() -> void:
 func changed_terrain() -> Array:
 	var tiles := {}
 	for change in _terrain:
-		for t in change.saved:
+		for t in change.delta:
 			tiles[t] = true
 	return tiles.keys().map(func(t): return [t, grid.height_at(t), grid.is_walkable(t)])
 

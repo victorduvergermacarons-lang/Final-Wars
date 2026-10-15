@@ -145,7 +145,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
 | E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
-| E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2, 12 s (+1 tile / 300 Earth) | 15 | 15 |
+| E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth) | 15 | 15 |
 | S01 | Slash | Rusty Shortsword | Targeted, adjacent | 1.0 physical | — | 2 |
 | S04 | Lunge | Traveler's Longsword | Targeted, 3 | dash 2, then 1.1 if adjacent | — | 8 |
 | B01 | Quick Shot | Hunter's Shortbow | Targeted, 5 | 0.9 | — | 2 |
@@ -976,6 +976,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-16 | Stacked pillars come down one by one and nothing reappears; Earth Wall can be climbed by anyone whose Jump covers its +2 height | User reports. Terrain changes now store the height they added and take it off on expiry (they used to restore a saved snapshot, so the first to expire flattened both and the second then restored the first). Earth Wall no longer marks its tiles impassable; it still blocks shots. |
 | 2026-10-15 | Bandit Brute's Crushing Blow hits the ground: the tile in front and the two beside it, telegraphed during its 0.6 s wind-up | User request (easier to dodge). New skillshot shape ARC; wound-up swipes and lobs are telegraphed. Fixed Grizzlehide's Cleave, which hit only 1 tile (a range-1 cone) instead of 3; it uses ARC now. Balance targets still met (a group of 4 still beats Grizzlehide, but one bot usually dies now). |
 | 2026-10-15 | Ability ranges count diagonals as 2 tiles; melee (range 1) no longer hits diagonally, for heroes and enemies | User request; "ranges only" chosen by the user, so 3×3 areas and 8-way aiming stay. Changes M3 decision 2. |
 | 2026-10-15 | Weight: light / medium / heavy. Knockbacks and pulls move light characters 1 tile further, heavy ones 1 tile less (a 1-tile push doesn't move them) | User request; ±1 tile chosen by the user. Heroes and Wolves medium, Goblin Shaman and Fen Skirmisher light, Bandit Brute and Old Grizzlehide heavy (`EnemyDef.weight`, `Weight.adjust`). The target frame shows Light/Heavy. |

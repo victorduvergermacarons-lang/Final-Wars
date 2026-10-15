@@ -10,7 +10,6 @@ kind = 16
 applies = 2
 base_amount = 2.0
 duration_seconds = 12.0
-blocks_movement = true
 wall_line = true
 mastery_per_extra = 300.0
 

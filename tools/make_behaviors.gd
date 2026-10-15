@@ -72,7 +72,7 @@ func _earth() -> void:
 			"duration_seconds": 15.0, "mastery_per_extra": 500.0, "max_extra": 1})], {"mana_cost": 8.0}))
 	_save("E04", _ab(T.SELF, 0, [_fx(K.TAUNT)], {"area_radius": 1, "mana_cost": 8.0}))
 	_save("E05", _ab(T.GROUND, 4, [_fx(K.TERRAIN, {"applies": AbilityEffect.Applies.AREA, "base_amount": 2.0,
-			"duration_seconds": 12.0, "blocks_movement": true, "wall_line": true, "mastery_per_extra": 300.0})],
+			"duration_seconds": 12.0, "wall_line": true, "mastery_per_extra": 300.0})],
 			{"mana_cost": 15.0}))
 
 

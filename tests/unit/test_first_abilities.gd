@@ -215,11 +215,13 @@ func test_seismic_stomp_taunts_adjacent_enemies() -> void:
 	assert_eq(foe.threat.top(), tank.id)
 
 
-func test_earth_wall_blocks_the_way() -> void:
+func test_earth_wall_can_be_climbed_with_enough_jump() -> void:
 	world.cast(hero, _a("E05"), null, Vector2(5, 8))
 	for x in [4, 5, 6]:
-		assert_false(world.grid.is_walkable(Vector2i(x, 8)))
 		assert_eq(world.grid.height_at(Vector2i(x, 8)), 2)
+		assert_true(world.grid.is_walkable(Vector2i(x, 8)), "a wall is just high ground")
+	assert_true(world.grid.can_step(Vector2i(5, 7), Vector2i(5, 8), 2), "Jump 2 climbs it")
+	assert_false(world.grid.can_step(Vector2i(5, 7), Vector2i(5, 8), 1), "a Wolf (Jump 1) can't")
 
 
 func test_healing_touch_and_soothing_mist_heal() -> void:

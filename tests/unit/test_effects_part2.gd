@@ -321,3 +321,28 @@ func test_enemy_weights_in_content() -> void:
 	assert_eq(db.enemies[&"old_grizzlehide"].weight, Weight.Id.HEAVY)
 	assert_eq(Hero.new(1).weight, Weight.Id.MEDIUM, "heroes are medium")
 	db.free()
+
+
+func test_stacked_pillars_come_down_one_by_one() -> void:
+	world.cast(hero, _raise(1, 3.0), null, Vector2(7, 7))
+	world.advance(1.0)
+	world.cast(hero, _raise(1, 3.0), null, Vector2(7, 7))
+	assert_eq(world.grid.height_at(Vector2i(7, 7)), 2, "stacked")
+	world.advance(2.1)
+	assert_eq(world.grid.height_at(Vector2i(7, 7)), 1, "the first one ends; the second still stands")
+	world.advance(1.0)
+	assert_eq(world.grid.height_at(Vector2i(7, 7)), 0, "then the second")
+	world.advance(5.0)
+	assert_eq(world.grid.height_at(Vector2i(7, 7)), 0, "and nothing comes back")
+	assert_true(world.changed_terrain().is_empty())
+
+
+func test_overlapping_walls_keep_tiles_blocked_until_the_last_ends() -> void:
+	var wall := _raise(1, 3.0, {"blocks_movement": true})
+	world.cast(hero, wall, null, Vector2(7, 7))
+	world.advance(1.0)
+	world.cast(hero, wall, null, Vector2(7, 7))
+	world.advance(2.1)
+	assert_false(world.grid.is_walkable(Vector2i(7, 7)), "still blocked by the second")
+	world.advance(1.0)
+	assert_true(world.grid.is_walkable(Vector2i(7, 7)))
