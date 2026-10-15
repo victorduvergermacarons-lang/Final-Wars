@@ -148,7 +148,10 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 - [ ] **Frost Shard** (skillshot) and **Ice Spikes** (Ground 3×3, 0.4 s warning): damage and slow (enemy steps take longer).
 - [ ] **Water Pulse** (8-way line of 3): damages and pushes enemies 1 tile along the wave.
 - [ ] **Air Palm:** light hit + knock back 1. **Air Blast:** knock back 3; extra damage if the enemy slams into a wall, rock or ledge.
-- [ ] **Gust:** light hit that interrupts a cast. (No Greenfields enemy has a cast to interrupt yet; wind-ups can't be interrupted.)
+- [ ] **Weight:** knock back a Goblin Shaman or Fen Skirmisher (light: flies 1 tile further), a
+      Wolf (medium: normal) and a Bandit Brute (heavy: 1 tile less; Air Palm doesn't move it at
+      all). Targeting them shows "Light" or "Heavy" on their frame.
+- [ ] **Gust:** light hit that interrupts a cast. Use it on a Wolf while its red "Bite" bar shows: the bite is cancelled.
 - [ ] **Air Step:** your next 5 steps have no step cooldown, even in combat.
 - [ ] **Rock Throw:** a rock lobbed onto the aimed tile after 0.3 s; it misses if the enemy moved away.
 - [ ] **Raise Pillar:** lifts a tile 1 level for 15 s (2 levels from 500 Earth Mastery); anyone on it rides up.

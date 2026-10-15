@@ -33,5 +33,7 @@ enum Behavior {
 @export var respawn_seconds: float = 30.0
 ## Elites are shown bigger with a gold outline and "Elite" on their name.
 @export var elite: bool = false
+## How far knockbacks and pulls move it (Weight.adjust).
+@export var weight: Weight.Id = Weight.Id.MEDIUM
 ## Seconds per tile while walking a patrol route (see EnemySpawn.patrol).
 @export var patrol_step_seconds: float = 1.0

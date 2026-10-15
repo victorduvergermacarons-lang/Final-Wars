@@ -28,3 +28,4 @@ reaction_seconds = 0.3
 xp_reward = 70
 ap_reward = 3
 loot = ExtResource("3_uoxlk")
+weight = 0

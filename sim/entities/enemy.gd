@@ -31,6 +31,7 @@ func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.Z
 	super(p_id, Team.ENEMIES, def.stats.copy())
 	display_name = def.display_name
 	level = def.level
+	weight = def.weight
 	spawn_tile = p_spawn
 	home_tile = p_spawn
 	move.place(p_spawn)

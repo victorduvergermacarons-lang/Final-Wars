@@ -245,7 +245,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var dir := TileGeometry.snap8(Vector2((caster.tile() - target.tile()) if pull else (target.tile() - caster.tile())))
 			if effect.push_along_cast and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.cast_dir
-			var tiles := int(effect.base_amount) + _extra(caster, ability, effect, ctx.now)
+			var tiles := Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now), target.weight)
 			if pull:
 				tiles = mini(tiles, TileGeometry.distance(caster.tile(), target.tile()) - 1)
 			var r := move_unit(ctx, target, dir, tiles, 0.15)

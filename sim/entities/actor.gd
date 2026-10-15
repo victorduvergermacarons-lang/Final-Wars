@@ -22,6 +22,8 @@ var move := MoveState.new()
 ## FRONT and LINE abilities aim this way.
 var facing := Vector2i.DOWN
 var cooldowns := Cooldowns.new()
+## Light characters are knocked back and pulled 1 tile further, heavy ones 1 less.
+var weight: Weight.Id = Weight.Id.MEDIUM
 var buffs := ActiveBuffs.new()
 ## Enemies only: who they want to hit. Null for heroes.
 var threat: ThreatTable

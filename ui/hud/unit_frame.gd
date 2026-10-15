@@ -41,6 +41,8 @@ func _draw() -> void:
 		title += "  Lv %d" % (a as Enemy).level
 		if (a as Enemy).def.elite:
 			title += "  Elite"
+		if a.weight != Weight.Id.MEDIUM:
+			title += "  " + Weight.NAMES[a.weight]
 	if not a.alive:
 		title += "  (dead)"
 	elif a.in_combat(now):

@@ -28,3 +28,4 @@ xp_reward = 100
 ap_reward = 3
 loot = ExtResource("3_7td6n")
 respawn_seconds = 40.0
+weight = 0

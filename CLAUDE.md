@@ -156,7 +156,8 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 Enemy attacks (Milestone 3): Bite and Quick Slash 0.3 s wind-up, Crushing Blow 0.6 s
 (Targeted, adjacent; Accuracy vs Evasion still rolls), Shadow Bolt any-angle skillshot,
 Grizzlehide Cleave 0.4 s wound-up 3-tile cone, Charge 1 s telegraphed tile then rush +
-maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Hilda: potions, Iron Helm,
+maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Weight (knockbacks/pulls ±1
+tile): Shaman and Skirmisher light, Brute and Grizzlehide heavy, everyone else medium. Hilda: potions, Iron Helm,
 Swift Boots and the 20 implemented tier-1 scrolls (25 g) and weapons (30 g).
 
 ## Gameplay as built (end of Milestone 1, after playtest)
@@ -971,6 +972,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-15 | Weight: light / medium / heavy. Knockbacks and pulls move light characters 1 tile further, heavy ones 1 tile less (a 1-tile push doesn't move them) | User request; ±1 tile chosen by the user. Heroes and Wolves medium, Goblin Shaman and Fen Skirmisher light, Bandit Brute and Old Grizzlehide heavy (`EnemyDef.weight`, `Weight.adjust`). The target frame shows Light/Heavy. |
 | 2026-10-15 | With the learning slot empty, the weapon in hand learns automatically (earns AP) | User request. A scroll in the slot takes over. `Hero.active_learning_item()`; the Learning slot text says "(from your weapon)". |
 | 2026-10-15 | Kindle renamed Sun Warrior's Breath (scroll: Sun Warrior's Breath Scroll; renamed in the spreadsheet) and also restores 10% of max Mana over 10 s | User request. New `BuffDef.mana_regen_percent`. Saves holding the old Kindling Scroll get the new one (`CharacterData.RENAMED_ITEMS`). |
 | 2026-10-15 | Projectiles are drawn along their real path (any angle; the Shaman's bolt went diagonally); the shop list scrolls | User reports. |

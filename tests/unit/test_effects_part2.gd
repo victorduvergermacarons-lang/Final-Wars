@@ -294,3 +294,30 @@ func test_terrain_and_zones_reach_the_client_mirror() -> void:
 	mirror.apply_snapshot(snap)
 	assert_eq(mirror.grid.height_at(Vector2i(7, 7)), 0, "restored on the client too")
 	assert_true(mirror.ground_zones.is_empty())
+
+
+func test_weight_changes_how_far_units_are_moved() -> void:
+	foe.weight = Weight.Id.LIGHT
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 2)]), foe)
+	assert_eq(foe.tile(), Vector2i(9, 5), "light: 1 tile further")
+	foe.move.place(Vector2i(6, 5))
+	foe.weight = Weight.Id.HEAVY
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 2)]), foe)
+	assert_eq(foe.tile(), Vector2i(7, 5), "heavy: 1 tile less")
+	foe.move.place(Vector2i(6, 5))
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.KNOCKBACK, 1)]), foe)
+	assert_eq(foe.tile(), Vector2i(6, 5), "a 1-tile push doesn't move a heavy unit")
+	foe.move.place(Vector2i(10, 5))
+	world.cast(hero, _ability([_effect(AbilityEffect.Kind.PULL, 2)]), foe)
+	assert_eq(foe.tile(), Vector2i(9, 5), "heavy pulled 1 instead of 2")
+
+
+func test_enemy_weights_in_content() -> void:
+	var db = load("res://autoload/content_db.gd").new()
+	assert_eq(db.enemies[&"goblin_shaman"].weight, Weight.Id.LIGHT)
+	assert_eq(db.enemies[&"fen_skirmisher"].weight, Weight.Id.LIGHT)
+	assert_eq(db.enemies[&"wolf"].weight, Weight.Id.MEDIUM)
+	assert_eq(db.enemies[&"bandit_brute"].weight, Weight.Id.HEAVY)
+	assert_eq(db.enemies[&"old_grizzlehide"].weight, Weight.Id.HEAVY)
+	assert_eq(Hero.new(1).weight, Weight.Id.MEDIUM, "heroes are medium")
+	db.free()
