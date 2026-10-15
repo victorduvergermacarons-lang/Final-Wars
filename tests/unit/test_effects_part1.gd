@@ -225,6 +225,17 @@ func test_interrupt_cancels_a_cast() -> void:
 	assert_eq(_lost(hero), 0.0)
 
 
+func test_interrupt_cancels_a_wind_up_too() -> void:
+	var bite := _ability(AbilityEffect.Kind.DAMAGE, 50, {"windup_seconds": 0.3, "max_range": 1,
+			"target": AbilityDef.TargetType.ENEMY})
+	world.cast(foe, bite, hero)
+	assert_eq(foe.casting.get("kind", ""), "windup")
+	world.cast(hero, _ability(AbilityEffect.Kind.INTERRUPT, 0), foe)
+	assert_true(foe.casting.is_empty(), "Gust stops a Wolf's bite")
+	world.advance(0.5)
+	assert_eq(_lost(hero), 0.0)
+
+
 func test_charges_recharge_one_at_a_time() -> void:
 	var dash := _ability(AbilityEffect.Kind.DAMAGE, 1, {"charges_base": 2, "cooldown_seconds": 4.0})
 	assert_eq(world.cast(hero, dash, foe), AbilityResolver.Result.OK)

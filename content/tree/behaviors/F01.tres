@@ -13,6 +13,6 @@ sheet_scaling = true
 [resource]
 script = ExtResource("3_drjfd")
 id = &"F01"
-mana_cost = 5.0
+mana_cost = 4.0
 effects = Array[ExtResource("1_mqvph")]([SubResource("Resource_wuhwu")])
 targeting = 1

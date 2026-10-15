@@ -996,6 +996,10 @@ func _intent_release(hero: Hero) -> String:
 	hero.hp = maxf(roundf(stats.hp * rules.release_fraction), 1.0)
 	hero.mana = roundf(stats.mana * rules.release_fraction)
 	hero.move.place(find_free_tile_near(best))
+	# A fresh start at the graveyard: out of combat, off every threat table.
+	for enemy in enemies():
+		enemy.threat.remove(hero.id)
+	hero.combat_until = 0.0
 	emit({"type": "release", "target": hero.id, "tile": hero.tile()})
 	return ""
 

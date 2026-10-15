@@ -120,7 +120,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 
 | ID | Ability | Item | Targeting | Effect (power × tier default) | Mana | CD |
 |----|---------|------|-----------|-------------------------------|------|----|
-| F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent | 1.0 magical | 5 | 2 |
+| F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent | 1.0 magical | 4 | 2 |
 | F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent | 0.8 + burn 0.6 over 3 s | 8 | 4 |
 | F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 6 | 2 |
 | F04 | Kindle | Kindling Scroll | Self | next 3 Fire casts +30% (20 s), off GCD | 10 | 20 |
@@ -859,7 +859,7 @@ F. 15 debug console · 16 docs + playtest checklist.
     up front, resolves each tick, moving/stun/interrupt ends it), and charges
     (`charges_base` + 1 per `mastery_per_charge` tree Mastery, recharging one at a
     time). Casts in progress are shown to clients (`cast` in each actor's snapshot).
-    Choices made here: interrupts cancel casts and channels but not wind-ups; damage
+    Choices made here: interrupts cancel casts, channels and (since 2026-10-15) wind-ups; damage
     doesn't push back casts; a damage bonus (Kindle) is fixed when the ability goes off
     and its charge is used then (wind-ups/channels: at the start).
 20. **Effects part 2 (as built in step 8):** effects say who they apply to
@@ -970,6 +970,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-15 | Post-M3 fixes: Fire Punch 4 mana; Gust interrupts wind-ups (e.g. a Wolf's Bite); releasing at a graveyard ends combat | User requests. |
 | 2026-10-12 | Milestone 3 built (step 16: docs, playtest checklist) | `docs/playtest-checklist-m3.md` for a non-programmer; the M2 checklist points to it for the changed parts. "Gameplay as built: Milestone 3" added. |
 | 2026-10-12 | M3 step 15: debug console | Decision 27. My choices: debug builds allow it for every player (playtesting), release builds never; +15% per level for spawned enemies; extra heal and gold commands. |
 | 2026-10-12 | M3 step 14: learning slot indicator | Decision 26. Right-click a scroll learns it; windows on the right now sit side by side. |

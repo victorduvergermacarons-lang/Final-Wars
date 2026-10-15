@@ -335,7 +335,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			_share_support_threat(ctx, caster, target, 0.0)
 
 		AbilityEffect.Kind.INTERRUPT:
-			if target.alive and not target.casting.is_empty() and target.casting.kind != "windup":
+			if target.alive and not target.casting.is_empty():
 				var what: StringName = target.casting.ability.id
 				target.casting = {}
 				events.append({"type": "interrupt", "source": caster.id, "target": target.id,

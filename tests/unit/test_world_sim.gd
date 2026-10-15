@@ -302,6 +302,15 @@ func test_release_respawns_at_nearest_graveyard_with_half_resources() -> void:
 	assert_almost_eq(a.mana, 25.0, 0.5)
 
 
+func test_release_leaves_combat() -> void:
+	_kill(a)
+	a.combat_until = world.now + 100.0 # as if still listed somewhere
+	world.submit(a.id, {"type": "release"})
+	world.step()
+	assert_false(a.in_combat(world.now), "out of combat at the graveyard")
+	assert_false(enemy.threat.has(a.id))
+
+
 func test_release_rejected_while_alive_and_dead_cannot_act() -> void:
 	world.submit(a.id, {"type": "release"})
 	assert_eq(_rejections(world.step()), ["not_dead"])
