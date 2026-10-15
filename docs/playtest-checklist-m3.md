@@ -95,8 +95,9 @@ P spellbook, L quest log, E talk, R release.
 Go to **Greenfields** (walk off the east edge of town) and find a Wolf.
 
 - [ ] **Targeted (Slash, Fire Punch):** click the Wolf to target it, stand next to it
-      (diagonals count) and press 1 or 2.
-      **Expect:** it hits straight away and can't miss. Pressing it from too far away says you're out of range.
+      (straight up, down, left or right of it) and press 1 or 2.
+      **Expect:** it hits straight away and can't miss. From a diagonal tile, or further away,
+      it says you're out of range: a diagonal counts as 2 tiles for every ability's range.
 - [ ] **Skillshot (Fire Dart):** buy a **Spark Scroll** from Hilda (25 g), put it in the
       Learning slot, and put **Fire Dart** on your bar. Hold its key.
       **Expect:** while held, blue tiles show the dart's exact path, stopping at the first

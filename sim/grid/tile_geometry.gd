@@ -12,6 +12,13 @@ static func distance(a: Vector2i, b: Vector2i) -> int:
 	return maxi(absi(a.x - b.x), absi(a.y - b.y))
 
 
+## Distance for ability ranges: a diagonal counts as 2 tiles, so "adjacent"
+## (range 1) means the four straight neighbours and "within 4" is a diamond.
+## Areas (3x3), 8-way aiming and knockback paths still use distance().
+static func range_distance(a: Vector2i, b: Vector2i) -> int:
+	return absi(a.x - b.x) + absi(a.y - b.y)
+
+
 ## Every tile within `radius` (square), centre included, in row order.
 static func square(center: Vector2i, radius: int) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []

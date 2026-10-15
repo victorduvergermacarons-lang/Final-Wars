@@ -152,8 +152,8 @@ func test_leap_onto_occupied_tile_fails() -> void:
 
 func test_blink_is_instant() -> void:
 	var blink := _ground([_effect(AbilityEffect.Kind.BLINK, 0, {"applies": AbilityEffect.Applies.CASTER})])
-	world.cast(hero, blink, null, Vector2(2, 2))
-	assert_eq(hero.tile(), Vector2i(2, 2))
+	world.cast(hero, blink, null, Vector2(2, 4))
+	assert_eq(hero.tile(), Vector2i(2, 4))
 	assert_false(hero.move.is_moving(world.now))
 
 
@@ -205,10 +205,10 @@ func test_wall_grows_with_mastery() -> void:
 	hero.refresh_stats()
 	var wall := _raise(1, 5.0, {"blocks_movement": true, "wall_line": true, "mastery_per_extra": 300.0})
 	wall.tree = "Earth"
-	world.cast(hero, wall, null, Vector2(7, 9))
+	world.cast(hero, wall, null, Vector2(7, 8))
 	var blocked := 0
 	for x in range(3, 12):
-		if not world.grid.is_walkable(Vector2i(x, 9)):
+		if not world.grid.is_walkable(Vector2i(x, 8)):
 			blocked += 1
 	assert_eq(blocked, 5, "3 + 1 per 300 Mastery")
 
@@ -281,7 +281,7 @@ func test_counter_ability_strikes_the_attacker() -> void:
 
 func test_terrain_and_zones_reach_the_client_mirror() -> void:
 	world.cast(hero, _raise(2, 3.0), null, Vector2(7, 7))
-	world.cast(hero, _zone(3.0), null, Vector2(2, 2))
+	world.cast(hero, _zone(3.0), null, Vector2(3, 3))
 	var mirror := ClientWorld.new(world.zone, rules, null)
 	var snap := Snapshot.capture(world, hero.id)
 	snap.actors = []

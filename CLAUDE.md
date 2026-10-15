@@ -764,9 +764,12 @@ F. 15 debug console · 16 docs + playtest checklist.
    overridable per ability; numbers written in the Effect text (range 4, 3×3, 2 s,
    knockback 3…) go into each ability's behavior data. The importer also reads optional
    Base / Mana Cost / Range / Duration columns if they are ever added to the sheet.
-2. **Diagonals:** movement stays 4-directional. Ability ranges and areas use square
-   (Chebyshev) distance: "adjacent" includes diagonals, "within 4" is a square, 3×3
-   areas, 8-way aiming and 8-direction knockbacks.
+2. **Diagonals:** movement stays 4-directional. **Ability ranges count a diagonal as 2
+   tiles** (changed 2026-10-15; was square distance): "adjacent" / range 1 means the four
+   straight neighbours, so no melee hits diagonally, and "within 4" is a diamond
+   (`TileGeometry.range_distance`). Areas stay square (3×3, "the 8 tiles around you"),
+   and aiming and knockbacks stay 8-way. Skillshot lines are still N tiles long in any
+   direction.
 3. **Old content:** the M1/M2 abilities (Strike, Fireball, Block, Heal, Resurrect,
    Taunt, Cleave, Aimed Shot, Frost Nova, Renew, Dash, Pinning Shot, Rallying Roar) are
    retired. Armor pieces stay as stat-only gear. New heroes start with Rusty Shortsword,
@@ -972,6 +975,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-15 | Ability ranges count diagonals as 2 tiles; melee (range 1) no longer hits diagonally, for heroes and enemies | User request; "ranges only" chosen by the user, so 3×3 areas and 8-way aiming stay. Changes M3 decision 2. |
 | 2026-10-15 | Weight: light / medium / heavy. Knockbacks and pulls move light characters 1 tile further, heavy ones 1 tile less (a 1-tile push doesn't move them) | User request; ±1 tile chosen by the user. Heroes and Wolves medium, Goblin Shaman and Fen Skirmisher light, Bandit Brute and Old Grizzlehide heavy (`EnemyDef.weight`, `Weight.adjust`). The target frame shows Light/Heavy. |
 | 2026-10-15 | With the learning slot empty, the weapon in hand learns automatically (earns AP) | User request. A scroll in the slot takes over. `Hero.active_learning_item()`; the Learning slot text says "(from your weapon)". |
 | 2026-10-15 | Kindle renamed Sun Warrior's Breath (scroll: Sun Warrior's Breath Scroll; renamed in the spreadsheet) and also restores 10% of max Mana over 10 s | User request. New `BuffDef.mana_regen_percent`. Saves holding the old Kindling Scroll get the new one (`CharacterData.RENAMED_ITEMS`). |

@@ -35,7 +35,7 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			if not AbilityResolver._is_valid_target(caster, ability, target):
 				return AbilityResolver.Result.INVALID_TARGET
 			if target != caster:
-				var dist := TileGeometry.distance(caster.tile(), target.tile())
+				var dist := TileGeometry.range_distance(caster.tile(), target.tile())
 				if dist < ability.min_range or dist > ability.max_range:
 					return AbilityResolver.Result.OUT_OF_RANGE
 				if ability.requires_line_of_sight and dist > 1 \
@@ -49,7 +49,7 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			var tile: Variant = aim_tile(caster, target, aim)
 			if tile == null or not ctx.grid.in_bounds(tile):
 				return AbilityResolver.Result.INVALID_TARGET
-			var dist := TileGeometry.distance(caster.tile(), tile)
+			var dist := TileGeometry.range_distance(caster.tile(), tile)
 			if dist < ability.min_range or dist > ability.max_range:
 				return AbilityResolver.Result.OUT_OF_RANGE
 	if pay_mode == Pay.FREE:
@@ -104,7 +104,7 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			events.append({"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id})
 			if AbilityResolver.has_target_effects(ability):
 				var reach := ability.hit_range if ability.hit_range >= 0 else ability.max_range
-				if target == caster or TileGeometry.distance(caster.tile(), target.tile()) <= reach:
+				if target == caster or TileGeometry.range_distance(caster.tile(), target.tile()) <= reach:
 					AbilityResolver.apply_effects(ctx, caster, ability, target, events)
 				else:
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": target.tile()})
@@ -183,9 +183,11 @@ static func skillshot_tiles(ctx: CombatContext, caster: Actor, ability: AbilityD
 ## Where a lobbed shot lands: the aimed tile, or the furthest tile toward it in range.
 static func lob_tile(origin: Vector2i, point: Vector2, max_range: int) -> Vector2i:
 	var aimed := Vector2i(roundi(point.x), roundi(point.y))
-	if TileGeometry.distance(origin, aimed) <= max_range:
+	if TileGeometry.range_distance(origin, aimed) <= max_range:
 		return aimed
 	var line := TileGeometry.line_toward(origin, point, max_range)
+	while not line.is_empty() and TileGeometry.range_distance(origin, line.back()) > max_range:
+		line.pop_back() # diagonals count double
 	return line.back() if not line.is_empty() else origin
 
 

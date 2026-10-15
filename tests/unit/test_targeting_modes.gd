@@ -69,17 +69,25 @@ func _hurt(actor: Actor) -> bool:
 
 
 func test_targeted_locks_on_and_cannot_miss() -> void:
-	var a := _ability(AbilityDef.TargetingMode.TARGETED, 3)
+	var a := _ability(AbilityDef.TargetingMode.TARGETED, 6)
 	world.step()
-	assert_eq(world.cast(hero, a, foe), AbilityResolver.Result.OK, "(8,8) is 3 away diagonally")
+	assert_eq(world.cast(hero, a, foe), AbilityResolver.Result.OK, "(8,8) is 6 away: diagonals count double")
 	assert_true(_hurt(foe), "200 evasion doesn't matter: can't miss")
 	assert_eq(world.cast(hero, a, foe2), AbilityResolver.Result.OUT_OF_RANGE)
+
+
+func test_melee_does_not_reach_diagonally() -> void:
+	var a := _ability(AbilityDef.TargetingMode.TARGETED, 1)
+	foe.move.place(Vector2i(6, 6))
+	assert_eq(world.cast(hero, a, foe), AbilityResolver.Result.OUT_OF_RANGE, "a diagonal neighbour is 2 away")
+	foe.move.place(Vector2i(6, 5))
+	assert_eq(world.cast(hero, a, foe), AbilityResolver.Result.OK)
 
 
 func test_targeted_needs_line_of_sight() -> void:
 	world.grid.set_tile(Vector2i(6, 6), 5, false)
 	world.grid.set_tile(Vector2i(7, 7), 5, false)
-	var a := _ability(AbilityDef.TargetingMode.TARGETED, 3)
+	var a := _ability(AbilityDef.TargetingMode.TARGETED, 6)
 	assert_eq(world.cast(hero, a, foe), AbilityResolver.Result.NO_LINE_OF_SIGHT)
 
 
@@ -125,7 +133,7 @@ func test_projectile_flies_and_can_be_dodged_but_has_a_grace_window() -> void:
 
 
 func test_lob_lands_on_the_aimed_tile() -> void:
-	var a := _ability(AbilityDef.TargetingMode.SKILLSHOT, 4)
+	var a := _ability(AbilityDef.TargetingMode.SKILLSHOT, 6)
 	a.arc_seconds = 0.3
 	world.grid.set_tile(Vector2i(6, 6), 3, false) # lobs go over obstacles
 	world.step()
@@ -141,7 +149,7 @@ func test_lob_lands_on_the_aimed_tile() -> void:
 
 
 func test_ground_telegraph_resolves_on_whoever_is_there() -> void:
-	var a := _ability(AbilityDef.TargetingMode.GROUND, 5)
+	var a := _ability(AbilityDef.TargetingMode.GROUND, 8)
 	a.area_radius = 1
 	a.telegraph_seconds = 0.4
 	world.step()

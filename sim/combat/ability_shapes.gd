@@ -86,7 +86,7 @@ static func line_path(grid: GridModel, origin: Vector2i, dir: Vector2i, max_rang
 static func reaches_tile(ctx: CombatContext, caster: Actor, ability: AbilityDef, tile: Vector2i) -> bool:
 	if ability.targeting != AbilityDef.TargetingMode.LEGACY:
 		# Milestone 3 targeting: square distance; line of sight except for ground.
-		var d := TileGeometry.distance(caster.tile(), tile)
+		var d := TileGeometry.range_distance(caster.tile(), tile)
 		if d < ability.min_range or d > ability.max_range:
 			return false
 		return ability.targeting == AbilityDef.TargetingMode.GROUND or not ability.requires_line_of_sight \

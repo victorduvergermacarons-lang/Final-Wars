@@ -196,13 +196,13 @@ func test_rock_throw_lands_after_its_arc() -> void:
 
 
 func test_raise_pillar_two_levels_at_500_mastery_but_not_three() -> void:
-	world.cast(hero, _a("E03"), null, Vector2(7, 7))
-	assert_eq(world.grid.height_at(Vector2i(7, 7)), 1)
+	world.cast(hero, _a("E03"), null, Vector2(6, 7))
+	assert_eq(world.grid.height_at(Vector2i(6, 7)), 1)
 	before_each()
 	hero.growth.set_stat(Stat.Id.EARTH_MASTERY, 1200)
 	hero.refresh_stats()
-	world.cast(hero, _a("E03"), null, Vector2(7, 7))
-	assert_eq(world.grid.height_at(Vector2i(7, 7)), 2)
+	world.cast(hero, _a("E03"), null, Vector2(6, 7))
+	assert_eq(world.grid.height_at(Vector2i(6, 7)), 2)
 
 
 func test_seismic_stomp_taunts_adjacent_enemies() -> void:
