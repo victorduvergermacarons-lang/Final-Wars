@@ -250,8 +250,12 @@ func _draw_cast_bar(a: Actor, feet: Vector2, now: float) -> void:
 func _draw_projectiles(grid: GridModel) -> void:
 	var t: float = session.render_time()
 	for p in session.projectiles():
+		# Straight from where it was cast toward the end of its path (any angle).
 		var dist := clampf((t - p.start) * p.speed, 0.0, p.length + 0.5)
-		var pos := Vector2(p.origin) + Vector2(p.dir) * dist
+		var origin := Vector2(p.origin)
+		var to_end := Vector2(p.get("end", p.origin)) - origin
+		var steps := maxf(float(p.length), 1.0)
+		var pos := origin + (to_end / steps * dist if to_end.length_squared() > 0.0 else Vector2(p.dir) * dist)
 		var screen := Iso.to_screen(pos, grid.height_at(p.origin)) + Vector2(0, -16)
 		if session.get_actor(p.source) is Enemy:
 			draw_circle(screen, 8, Color(0.6, 0.2, 0.9, 0.5))

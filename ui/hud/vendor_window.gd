@@ -25,8 +25,14 @@ func _init(p_hud: Hud) -> void:
 	_gold = Label.new()
 	_gold.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
 	box.add_child(_gold)
+	# The goods scroll (Hilda sells two dozen things).
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(320, 340)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	box.add_child(scroll)
 	_list = VBoxContainer.new()
-	box.add_child(_list)
+	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_list)
 	visible = false
 
 

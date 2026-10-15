@@ -100,4 +100,20 @@ func _run() -> void:
 		await get_tree().physics_frame
 		await get_tree().physics_frame
 	await _shot("10_debug_console")
+	hud.console.close()
+	# 10. A Goblin Shaman's bolt flying at an angle toward the hero.
+	var shaman: Enemy = fields.enemies().filter(func(e): return e.def.id == &"goblin_shaman")[0]
+	hero.move.place(shaman.tile() + Vector2i(4, 2))
+	shaman.cooldowns = Cooldowns.new()
+	fields.cast(shaman, cd.abilities[&"shadow_bolt"], null, Vector2(hero.tile()))
+	for i in 4:
+		await get_tree().physics_frame
+	await _shot("11_angled_bolt")
+	# 11. Hilda's shop, scrolled.
+	session.world.move_hero(hero.id, &"town", Vector2i(8, 8))
+	var town := session.world.zone(&"town")
+	var hilda: Npc = town.npcs().filter(func(n): return n.def.id == &"hilda")[0]
+	hud.vendor_window.open(hilda)
+	hud.vendor_window.visible = true
+	await _shot("12_shop")
 	get_tree().quit()
