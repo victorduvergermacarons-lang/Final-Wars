@@ -173,7 +173,7 @@ Tune them there; update this table when they change.
 ### Changes from the original brief
 - **Combat steps are slow, not short:** 1.5 s per tile at 0 Speed (floor 0.5 s). Out of
   combat there is no step cooldown; walking takes 0.2 s per tile.
-- **Facing:** every actor faces a direction. Tap a direction to turn in place, hold to walk.
+- **Facing:** every actor faces a direction. The hero faces the mouse; direction keys always walk (since 2026-10-16).
 - **Directional combat:** melee hits the tile in front; Fireball is a projectile flying
   straight ahead. Click-targeting remains only for Heal and Resurrect.
 - **Enemies outpace heroes in combat** (Wolf 0.8 s/tile) and react 0.3 s late, so
@@ -192,7 +192,7 @@ Tune them there; update this table when they change.
 | Hero step in combat | 1.5 s × 100 / (100 + Speed), min 0.5 s |
 | GCD | 1.0 s |
 | Leave combat | as soon as no enemy lists you (next tick; `combat_exit_seconds` = 0) |
-| Tap-to-turn threshold | 0.12 s |
+| Tap-to-turn threshold | removed 2026-10-16 (keys always walk; the hero faces the mouse) |
 
 ### Abilities
 | Ability | From | Shape | Effect | Cost / cooldown | AP to master |
@@ -417,10 +417,11 @@ docs/            local multiplayer testing, playtest checklists (M2, M3), abilit
       mouse-wheel zoom.
     - W/↑ = grid up (screen up-right), D/→ = right (down-right), S/↓ = down
       (down-left), A/← = left (up-left), like FFTA.
-    - Every actor faces one of the four directions (arrow on the ground). Stepping
-      turns you. Pokémon-style: from a standstill, tapping a direction you don't face
-      only turns you; holding it (> 0.12 s) walks. Turning is free and instant, in
-      combat too.
+    - Every actor faces one of the four directions (arrow on the ground). **Since
+      2026-10-16 the hero faces the mouse** (the side of the hero the pointer is on,
+      4-way), and direction keys always walk, even a short tap (the Pokémon-style
+      turn-only tap is gone). Stepping still turns you toward the step until the mouse
+      turns you back. Turning is free and instant, in combat too.
       The newest held direction key wins; pressing a new direction turns at once even
       while another is held or the step is on cooldown; in combat no step is queued
       ahead, and a turn cancels any queued step (post-M2 playtest fix).
@@ -977,6 +978,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-16 | The hero faces the mouse; WASD/arrows always walk (no turn-only taps) | User request. `PlayerInput.face_toward()` sends a face intent when the pointer's side changes. Replaces the tap-to-turn rule (13). |
 | 2026-10-16 | Moving cancels anything with a cast bar, wind-ups included; enemies don't move while attacking and don't start an attack mid-step | User request (a Wolf looked like it moved mid-bite: it started biting while still sliding onto its tile). Changes M3 decision 11. |
 | 2026-10-16 | Stacked pillars come down one by one and nothing reappears; Earth Wall can be climbed by anyone whose Jump covers its +2 height | User reports. Terrain changes now store the height they added and take it off on expiry (they used to restore a saved snapshot, so the first to expire flattened both and the second then restored the first). Earth Wall no longer marks its tiles impassable; it still blocks shots. |
 | 2026-10-15 | Bandit Brute's Crushing Blow hits the ground: the tile in front and the two beside it, telegraphed during its 0.6 s wind-up | User request (easier to dodge). New skillshot shape ARC; wound-up swipes and lobs are telegraphed. Fixed Grizzlehide's Cleave, which hit only 1 tile (a range-1 cone) instead of 3; it uses ARC now. Balance targets still met (a group of 4 still beats Grizzlehide, but one bot usually dies now). |

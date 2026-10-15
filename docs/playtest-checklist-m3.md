@@ -31,6 +31,8 @@ not change (town, quests, saving, trading, zones) are still covered by the
 | Esc or right-click (while aiming) | Cancel aiming |
 | T | Ability trees |
 | ` (the key left of 1) | Debug console (only in test builds) |
+| Mouse pointer | Your hero always faces the side of it the pointer is on |
+| W A S D / arrows | Always walk, even a quick tap (they no longer just turn you) |
 
 The rest is unchanged: W A S D walk, Tab/click target, B inventory, C character sheet,
 P spellbook, L quest log, E talk, R release.

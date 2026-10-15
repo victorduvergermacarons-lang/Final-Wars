@@ -1,6 +1,5 @@
 extends GutTest
-## Direction keys in combat: turning must be immediate, even while the next
-## step is on cooldown or another direction key is still held.
+## Direction keys always walk (no turn-only taps); the hero faces the mouse.
 
 var session: LocalSession
 var input: PlayerInput
@@ -31,27 +30,51 @@ func _enter_combat() -> void:
 	hero.cooldowns.trigger_step(session.now(), 30.0) # next step far away
 
 
-func test_tap_turns_immediately_in_combat() -> void:
+func test_a_tap_walks_even_when_facing_elsewhere() -> void:
+	hero.face(Vector2i.UP)
+	var start := hero.tile()
+	Input.action_press(&"move_right")
+	await wait_physics_frames(3)
+	Input.action_release(&"move_right")
+	await wait_physics_frames(20)
+	assert_eq(hero.tile(), start + Vector2i.RIGHT, "walked, no turn-only tap")
+
+
+func test_keys_never_just_turn_in_combat() -> void:
 	_enter_combat()
 	hero.face(Vector2i.UP)
 	var start := hero.tile()
 	Input.action_press(&"move_right")
 	await wait_physics_frames(4)
-	assert_eq(hero.facing, Vector2i.RIGHT)
-	assert_eq(hero.tile(), start, "turned without moving")
+	assert_eq(hero.tile(), start, "the step waits for its cooldown")
+	assert_eq(hero.facing, Vector2i.UP, "and the key doesn't turn the hero (the mouse does)")
 
 
-func test_rolling_to_a_second_key_turns_while_the_first_is_held() -> void:
-	_enter_combat()
-	hero.face(Vector2i.UP)
+func test_the_newest_held_key_walks() -> void:
+	var start := hero.tile()
 	Input.action_press(&"move_up")
-	await wait_physics_frames(4)
-	Input.action_press(&"move_left") # still holding W
-	await wait_physics_frames(4)
-	assert_eq(hero.facing, Vector2i.LEFT, "the newest key wins")
+	Input.action_press(&"move_left") # pressed last
+	await wait_physics_frames(14)
+	Input.action_release(&"move_up")
 	Input.action_release(&"move_left")
-	await wait_physics_frames(4)
-	assert_eq(hero.facing, Vector2i.UP, "back to the key still held")
+	await wait_physics_frames(10)
+	assert_eq(hero.tile().y, start.y, "didn't go up")
+	assert_lt(hero.tile().x, start.x, "went left")
+
+
+func test_hero_faces_the_mouse() -> void:
+	var grid: GridModel = session.grid()
+	var h := grid.height_at(hero.tile())
+	hero.face(Vector2i.UP)
+	input.face_toward(Iso.to_screen(Vector2(hero.tile() + Vector2i(3, 1)), h))
+	await wait_physics_frames(3)
+	assert_eq(hero.facing, Vector2i.RIGHT)
+	input.face_toward(Iso.to_screen(Vector2(hero.tile() + Vector2i(-1, 4)), h))
+	await wait_physics_frames(3)
+	assert_eq(hero.facing, Vector2i.DOWN)
+	input.face_toward(Iso.to_screen(Vector2(hero.tile()), h))
+	await wait_physics_frames(3)
+	assert_eq(hero.facing, Vector2i.DOWN, "pointing at the hero itself changes nothing")
 
 
 func test_turning_cancels_a_queued_step() -> void:

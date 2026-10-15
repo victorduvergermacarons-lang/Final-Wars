@@ -9,8 +9,6 @@ const RESEND_SECONDS := 0.15
 ## buffered on the host and movement doesn't stutter.
 const BUFFER_AT_PROGRESS := 0.6
 const TAB_RANGE := 12
-## A press shorter than this (from a standstill, facing elsewhere) only turns.
-const TURN_HOLD_SECONDS := 0.12
 
 var session
 var client: ClientState
@@ -21,6 +19,8 @@ var _walk_after := 0.0
 var _sent_from := Vector2i(-999, -999)
 var _sent_at := -999.0
 var _press_order: Array[Vector2i] = []
+var _face_sent := Vector2i.ZERO
+var _face_sent_at := -999.0
 ## Aiming a skillshot or ground ability: {"ability", "action" (key to release, or
 ## &"" when started by clicking the bar: then a left click fires), "mouse" (where
 ## the mouse was when aiming started)}.
@@ -44,6 +44,8 @@ func _physics_process(_delta: float) -> void:
 	var typing := get_viewport().gui_get_focus_owner() is LineEdit if is_inside_tree() else false
 	var dir := Vector2i.ZERO if typing else _held_direction()
 	var t: float = session.render_time()
+	if view != null and is_inside_tree():
+		face_toward(view.get_global_mouse_position())
 	if dir != _held:
 		_on_direction_changed(hero, dir, t)
 	if dir == Vector2i.ZERO or t < _walk_after:
@@ -64,22 +66,33 @@ func _physics_process(_delta: float) -> void:
 		_send_step(hero.tile(), next, t)
 
 
-## Pressing a direction you aren't facing turns you at once (in combat too,
-## where the next step may still be on cooldown). Pokémon-style, from a
-## standstill that press only turns you; keep holding it to start walking.
-## Switching direction while already holding one walks right away.
-func _on_direction_changed(hero: Hero, dir: Vector2i, t: float) -> void:
-	var was_holding := _held != Vector2i.ZERO
+## A direction key always walks, straight away (facing follows the mouse, see
+## _face_mouse()).
+func _on_direction_changed(_hero: Hero, dir: Vector2i, t: float) -> void:
 	_held = dir
-	if dir == Vector2i.ZERO:
+	_walk_after = t
+
+
+## Turns the hero toward a point on the map (world coordinates): the mouse.
+## Sends a face intent only when the facing should change (again after
+## RESEND_SECONDS if the host hasn't turned the hero yet, e.g. right after a step).
+func face_toward(world_pos: Vector2) -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive:
 		return
-	var turning := hero.facing != dir
-	if turning:
-		session.send_intent({"type": "face", "dir": dir})
-	if not was_holding and turning:
-		_walk_after = t + TURN_HOLD_SECONDS
-	else:
-		_walk_after = t
+	var grid: GridModel = session.grid()
+	var off := Iso.from_screen(world_pos, grid.height_at(hero.tile())) - Vector2(hero.tile())
+	if off.length() < 0.5:
+		return # pointing at the hero itself
+	var dir := Vector2i(int(signf(off.x)), 0) if absf(off.x) >= absf(off.y) else Vector2i(0, int(signf(off.y)))
+	if dir == Vector2i.ZERO or dir == hero.facing:
+		return
+	var t: float = session.render_time()
+	if dir == _face_sent and t - _face_sent_at < RESEND_SECONDS:
+		return
+	_face_sent = dir
+	_face_sent_at = t
+	session.send_intent({"type": "face", "dir": dir})
 
 
 func _send_step(from: Vector2i, to: Vector2i, t: float) -> void:

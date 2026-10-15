@@ -24,7 +24,7 @@ needs 2–4 players: real friends, or several game windows on one computer (see
 **Keys**
 | Key | What it does |
 |-----|--------------|
-| W A S D or arrow keys | Walk. A quick tap only turns you; holding walks. W = up-right, D = down-right, S = down-left, A = up-left |
+| W A S D or arrow keys | Walk (even a quick tap). W = up-right, D = down-right, S = down-left, A = up-left. Since Milestone 3 your hero faces the mouse pointer |
 | 1 – 9, 0 | Use the ability or potion in that action bar slot |
 | Shift + 1 – 6 | Show action bar 1 – 6 |
 | Left click | Target a character (also: click a frame at the top left) |
@@ -73,7 +73,8 @@ needs 2–4 players: real friends, or several game windows on one computer (see
 ## 3. Movement and basic combat (the Milestone 1 basics)
 
 - [ ] **Do:** tap D once.
-      **Expect:** your hero turns to face down-right without moving.
+      **Expect:** your hero takes one step down-right. Move the mouse around your hero: the arrow
+      under it turns to face the side the pointer is on.
 - [ ] **Do:** hold D.
       **Expect:** your hero walks tile by tile, quickly, with no pause between tiles.
 - [ ] **Do:** walk to the town's down-right edge (hold D) and keep walking off the map, from any tile along that edge.
@@ -81,7 +82,7 @@ needs 2–4 players: real friends, or several game windows on one computer (see
 - [ ] **Do:** walk near a Wolf.
       **Expect:** it charges you, and you get a red outline (in combat).
 - [ ] **Expect:** in combat you walk much more slowly (about 1.5 s per tile), and the Wolf is faster than you.
-- [ ] **Do:** face the Wolf (tap toward it) and press the key for **Strike** (slot 1 by default).
+- [ ] **Do:** face the Wolf (point the mouse at it) and press the key for **Strike** (slot 1 by default).
       **Expect:** a damage number floats up and the Wolf's health bar drops. If you face away, the attack shows "Whiff".
 - [ ] **Expect:** after each ability, all slots dim with a short sweep (global cooldown, 1 second).
 - [ ] **Do:** kill the Wolf.
