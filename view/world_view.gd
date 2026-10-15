@@ -122,30 +122,34 @@ func _draw() -> void:
 	if session == null:
 		return
 	var grid: GridModel = session.grid()
-	var actors_by_depth := {}
+	var actors_by_tile := {}
 	for a in session.actors():
-		# While walking, draw over both tiles it straddles; once there, only its own
-		# tile counts (else a hero who stepped away from the camera stays drawn over
-		# the terrain in front of it, e.g. an Earth Wall).
-		var d := Iso.depth(a.move.to_tile)
-		if a.move.is_moving(session.render_time()):
-			d = maxi(d, Iso.depth(a.move.from_tile))
-		if not actors_by_depth.has(d):
-			actors_by_depth[d] = []
-		actors_by_depth[d].append(a)
+		var t := _draw_anchor(a)
+		if not actors_by_tile.has(t):
+			actors_by_tile[t] = []
+		actors_by_tile[t].append(a)
+		# A sideways push straddles two tiles of one row: both go under it.
+		if a.move.is_moving(session.render_time()) and Iso.depth(a.move.from_tile) == Iso.depth(t) \
+				and not actors_by_tile.has(a.move.from_tile):
+			actors_by_tile[a.move.from_tile] = []
 	var quest_areas := _quest_area_tiles()
 	var marks := _tile_marks()
 	_overlay.clear()
 	_labels.clear()
 	for d in range(_max_depth + 1):
-		for p in _tiles_by_depth.get(d, []):
-			_draw_tile(grid, p)
-			if quest_areas.has(p):
-				_draw_quest_area(grid, p)
-			for color in marks.get(p, []):
-				_draw_tile_mark(grid, p, color)
-		for a in actors_by_depth.get(d, []):
-			_draw_actor(a)
+		# Tiles in one depth row never overlap each other, so the row is drawn as:
+		# tiles actors stand on (or straddle), those actors, then the rest of the
+		# row, which covers them where it is in front (e.g. a wall beside them).
+		var row: Array = _tiles_by_depth.get(d, [])
+		var anchors := row.filter(func(p): return actors_by_tile.has(p))
+		for p in anchors:
+			_draw_tile_with_marks(grid, p, quest_areas, marks)
+		for p in anchors:
+			for a in actors_by_tile[p]:
+				_draw_actor(a)
+		for p in row:
+			if not actors_by_tile.has(p):
+				_draw_tile_with_marks(grid, p, quest_areas, marks)
 	_draw_projectiles(grid)
 	_draw_landmarks(grid)
 	_draw_talk_prompt()
@@ -153,6 +157,29 @@ func _draw() -> void:
 		f.call()
 	_queue_float_texts()
 	_draw_labels()
+
+
+func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary, marks: Dictionary) -> void:
+	_draw_tile(grid, p)
+	if quest_areas.has(p):
+		_draw_quest_area(grid, p)
+	for color in marks.get(p, []):
+		_draw_tile_mark(grid, p, color)
+
+
+## The tile an actor is drawn with. Standing: its own tile. Walking: the
+## nearer-to-camera of the two tiles it straddles (the other one is in an earlier
+## row), so neither covers its feet, while the rest of that row (e.g. a wall beside
+## it, in front of where it is heading) still hides it. Ties: sideways pushes.
+func _draw_anchor(a: Actor) -> Vector2i:
+	var m := a.move
+	if not m.is_moving(session.render_time()):
+		return m.to_tile
+	var df := Iso.depth(m.from_tile)
+	var dt := Iso.depth(m.to_tile)
+	if df != dt:
+		return m.from_tile if df > dt else m.to_tile
+	return m.to_tile
 
 
 func _draw_tile(grid: GridModel, p: Vector2i) -> void:

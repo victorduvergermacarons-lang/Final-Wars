@@ -133,4 +133,12 @@ func _run() -> void:
 	for y in range(5, 12):
 		town.grid.set_tile(Vector2i(9, y), town.grid.height_at(Vector2i(9, y)) + 2, true)
 	await _shot("13_behind_wall")
+	# Mid-step beside the wall: walking away from the camera (70% of the way) and
+	# toward it (30%); the wall must hide the hero in both.
+	hero.move.place(Vector2i(8, 9))
+	hero.move.begin(Vector2i(8, 8), session.render_time() - 7.0, 10.0)
+	await _shot("13b_walking_away")
+	hero.move.place(Vector2i(8, 8))
+	hero.move.begin(Vector2i(8, 9), session.render_time() - 3.0, 10.0)
+	await _shot("13c_walking_toward")
 	get_tree().quit()
