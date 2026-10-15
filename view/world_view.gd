@@ -123,33 +123,37 @@ func _draw() -> void:
 		return
 	var grid: GridModel = session.grid()
 	var actors_by_tile := {}
+	# Draw-order constraints inside a depth row: tile -> tiles that must be drawn
+	# (with their actors) before it.
+	var after := {}
+	var t_now: float = session.render_time()
 	for a in session.actors():
 		var t := _draw_anchor(a)
 		if not actors_by_tile.has(t):
 			actors_by_tile[t] = []
 		actors_by_tile[t].append(a)
-		# A sideways push straddles two tiles of one row: both go under it.
-		if a.move.is_moving(session.render_time()) and Iso.depth(a.move.from_tile) == Iso.depth(t) \
-				and not actors_by_tile.has(a.move.from_tile):
-			actors_by_tile[a.move.from_tile] = []
+		if not a.move.is_moving(t_now):
+			continue
+		var other: Vector2i = a.move.from_tile if t == a.move.to_tile else a.move.to_tile
+		if Iso.depth(other) == Iso.depth(t):
+			_must_follow(after, t, other) # a sideways push: both tiles go under it
+		else:
+			# It straddles `other` (one row back): the tiles of this row in front of
+			# `other`, e.g. a wall beside it, must cover it, even with someone on them.
+			for q in [other + Vector2i(1, 0), other + Vector2i(0, 1)]:
+				if q != t and Iso.depth(q) == Iso.depth(t):
+					_must_follow(after, q, t)
 	var quest_areas := _quest_area_tiles()
 	var marks := _tile_marks()
 	_overlay.clear()
 	_labels.clear()
 	for d in range(_max_depth + 1):
-		# Tiles in one depth row never overlap each other, so the row is drawn as:
-		# tiles actors stand on (or straddle), those actors, then the rest of the
-		# row, which covers them where it is in front (e.g. a wall beside them).
-		var row: Array = _tiles_by_depth.get(d, [])
-		var anchors := row.filter(func(p): return actors_by_tile.has(p))
-		for p in anchors:
+		# Tiles in one depth row never overlap each other, so each tile can be drawn
+		# with the actors on it, in any order that keeps the constraints above.
+		for p in _row_order(_tiles_by_depth.get(d, []), after):
 			_draw_tile_with_marks(grid, p, quest_areas, marks)
-		for p in anchors:
-			for a in actors_by_tile[p]:
+			for a in actors_by_tile.get(p, []):
 				_draw_actor(a)
-		for p in row:
-			if not actors_by_tile.has(p):
-				_draw_tile_with_marks(grid, p, quest_areas, marks)
 	_draw_projectiles(grid)
 	_draw_landmarks(grid)
 	_draw_talk_prompt()
@@ -157,6 +161,36 @@ func _draw() -> void:
 		f.call()
 	_queue_float_texts()
 	_draw_labels()
+
+
+static func _must_follow(after: Dictionary, tile: Vector2i, first: Vector2i) -> void:
+	if not after.has(tile):
+		after[tile] = []
+	after[tile].append(first)
+
+
+## The row's tiles in their usual order, moved only as needed so every tile comes
+## after the tiles `after` lists for it (a cycle is broken arbitrarily).
+static func _row_order(row: Array, after: Dictionary) -> Array:
+	if after.is_empty():
+		return row
+	var out := []
+	var state := {} # 1 = visiting, 2 = done
+	var in_row := {}
+	for p in row:
+		in_row[p] = true
+	var visit := func(p: Vector2i, visit: Callable) -> void:
+		if state.get(p, 0) != 0:
+			return
+		state[p] = 1
+		for q in after.get(p, []):
+			if in_row.has(q):
+				visit.call(q, visit)
+		state[p] = 2
+		out.append(p)
+	for p in row:
+		visit.call(p, visit)
+	return out
 
 
 func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary, marks: Dictionary) -> void:

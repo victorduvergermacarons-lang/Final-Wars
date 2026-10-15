@@ -141,4 +141,12 @@ func _run() -> void:
 	hero.move.place(Vector2i(8, 8))
 	hero.move.begin(Vector2i(8, 9), session.render_time() - 3.0, 10.0)
 	await _shot("13c_walking_toward")
+	# Same, with a (calm) wolf standing on the wall tile beside the hero: the wall
+	# still hides the hero, and the wolf stands on top.
+	var calm: EnemyDef = cd.enemies[&"wolf"].duplicate()
+	calm.aggro_radius = 0
+	town.add_enemy(calm, Vector2i(9, 8))
+	hero.move.place(Vector2i(8, 8))
+	hero.move.begin(Vector2i(8, 9), session.render_time() - 3.0, 10.0)
+	await _shot("13d_wall_tile_occupied")
 	get_tree().quit()
