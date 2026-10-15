@@ -67,6 +67,9 @@ enum DamageType {
 ## caster's facing through the aimed tile instead of using the cast's area.
 @export var blocks_movement: bool = false
 @export var wall_line: bool = false
+## TERRAIN: units on the tiles ride up with them; enemies of the caster take this
+## much physical damage (before Mastery and defense). Earth Wall.
+@export var lift_damage: float = 0.0
 ## Size bonus: +1 (terrain levels, wall tiles, push tiles) per this much tree
 ## Mastery (0 = none). E.g. Earth Wall +1 length per 300.
 @export var mastery_per_extra: float = 0.0

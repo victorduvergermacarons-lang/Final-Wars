@@ -218,17 +218,37 @@ func test_lowered_terrain_never_goes_below_zero() -> void:
 	assert_eq(world.grid.height_at(Vector2i(7, 7)), 1)
 
 
-func test_wall_line_blocks_movement_and_skips_occupied_tiles() -> void:
+func test_wall_line_blocks_movement_and_lifts_units_in_it() -> void:
 	foe.move.place(Vector2i(6, 8))
 	var wall := _raise(1, 5.0, {"blocks_movement": true, "wall_line": true})
 	world.cast(hero, wall, null, Vector2(5, 8))
 	# Facing down (0,1): the wall runs across it, centred on (5,8).
 	assert_false(world.grid.is_walkable(Vector2i(4, 8)))
 	assert_false(world.grid.is_walkable(Vector2i(5, 8)))
-	assert_true(world.grid.is_walkable(Vector2i(6, 8)), "the foe's tile is skipped")
-	assert_eq(world.grid.height_at(Vector2i(6, 8)), 0)
+	assert_eq(world.grid.height_at(Vector2i(6, 8)), 1, "rises under the foe")
+	assert_eq(foe.tile(), Vector2i(6, 8), "the foe rides up with it")
+	assert_true(world.grid.is_walkable(Vector2i(6, 8)), "an occupied tile never becomes a wall")
+	assert_eq(_lost(foe), 0.0, "no lift damage unless the effect sets it")
 	world.advance(5.1)
 	assert_true(world.grid.is_walkable(Vector2i(5, 8)))
+
+
+func test_wall_rising_under_an_enemy_hurts_it() -> void:
+	foe.move.place(Vector2i(6, 8))
+	var wall := _raise(2, 5.0, {"wall_line": true, "lift_damage": 10.0})
+	world.cast(hero, wall, null, Vector2(5, 8))
+	assert_eq(world.grid.height_at(foe.tile()), 2)
+	assert_eq(_lost(foe), 10.0)
+
+
+func test_wall_rising_under_an_ally_does_not_hurt() -> void:
+	var hd := HeroDef.new()
+	hd.base_stats = StatBlock.make({Stat.Id.HP: 500})
+	var friend := world.add_hero(hd)
+	friend.move.place(Vector2i(6, 8))
+	world.cast(hero, _raise(2, 5.0, {"wall_line": true, "lift_damage": 10.0}), null, Vector2(5, 8))
+	assert_eq(world.grid.height_at(friend.tile()), 2, "lifted")
+	assert_eq(_lost(friend), 0.0)
 
 
 func test_wall_grows_with_mastery() -> void:

@@ -151,6 +151,11 @@ static func apply_area_effects(ctx: CombatContext, caster: Actor, ability: Abili
 				if effect.wall_line:
 					area = _wall_tiles(ctx, caster, ability, effect)
 				var levels := int(effect.base_amount) + _extra(caster, ability, effect, ctx.now)
+				if effect.lift_damage > 0.0 and levels > 0:
+					for t in area:
+						var unit := _actor_at(ctx, t)
+						if unit != null and caster.is_hostile_to(unit) and not unit.evading:
+							_impact(ctx, caster, ability, unit, effect.lift_damage, events)
 				ctx.requests.append({"type": "terrain", "source": caster.id, "tiles": area, "levels": levels,
 						"blocks": effect.blocks_movement, "until": ctx.now + duration, "ability": ability.id})
 			AbilityEffect.Kind.ZONE:
@@ -172,14 +177,15 @@ static func _extra(caster: Actor, ability: AbilityDef, effect: AbilityEffect, no
 	return mini(extra, effect.max_extra) if effect.max_extra > 0 else extra
 
 
-## A wall across the caster's facing, centred on the aimed tile, skipping occupied tiles.
+## A wall across the caster's facing, centred on the aimed tile. Units standing in
+## it ride up with it.
 static func _wall_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect) -> Array:
 	var length := 3 + _extra(caster, ability, effect, ctx.now)
 	var across := Vector2i(caster.facing.y, caster.facing.x)
 	var out := []
 	for k in range(-(length - 1) / 2, length / 2 + 1):
 		var t := ctx.cast_aim + across * k
-		if ctx.grid.in_bounds(t) and not _occupied(ctx, t, null):
+		if ctx.grid.in_bounds(t):
 			out.append(t)
 	return out
 

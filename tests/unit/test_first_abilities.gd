@@ -224,6 +224,14 @@ func test_earth_wall_can_be_climbed_with_enough_jump() -> void:
 	assert_false(world.grid.can_step(Vector2i(5, 7), Vector2i(5, 8), 1), "a Wolf (Jump 1) can't")
 
 
+func test_earth_wall_lifts_an_enemy_and_hurts_it() -> void:
+	foe.move.place(Vector2i(6, 8))
+	var before := _lost(foe)
+	world.cast(hero, _a("E05"), null, Vector2(5, 8))
+	assert_eq(world.grid.height_at(foe.tile()), 2, "rides up with the wall")
+	assert_between(_lost(foe) - before, 1.0, 15.0, "a small amount of damage")
+
+
 func test_healing_touch_and_soothing_mist_heal() -> void:
 	hero.hp = 100
 	world.cast(hero, _a("W01"), hero)
