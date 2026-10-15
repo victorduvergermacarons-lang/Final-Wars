@@ -75,6 +75,9 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 		return
 
 	var seen := world.perceived_tile(target, enemy.def.reaction_seconds)
+	# Mid-attack (cast bar showing) an enemy stands still: moving would cancel it.
+	if not enemy.casting.is_empty():
+		return
 	match enemy.def.behavior:
 		EnemyDef.Behavior.KITER:
 			_fight_kiter(world, enemy, target, seen)
@@ -175,6 +178,10 @@ enum Attack { CAST, WAITING, OUT_OF_REACH }
 ## face the target when it seems to share a row or column within ability range,
 ## unless `turn` is false.
 static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vector2i, turn: bool = true) -> Attack:
+	# Never start an attack while still walking onto a tile (it would look like
+	# moving mid-attack).
+	if enemy.move.is_moving(world.now):
+		return Attack.WAITING
 	var delta := seen - enemy.tile()
 	if turn and delta != Vector2i.ZERO and (delta.x == 0 or delta.y == 0) \
 			and GridModel.distance(enemy.tile(), seen) <= _max_range(enemy):

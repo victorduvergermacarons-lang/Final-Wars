@@ -185,10 +185,18 @@ func test_cast_fails_if_the_target_leaves_range() -> void:
 	assert_true(hero.casting.is_empty())
 
 
-func test_windup_roots_the_caster_but_the_target_can_step_away() -> void:
+func test_moving_cancels_a_windup() -> void:
 	var smash := _ability(AbilityEffect.Kind.DAMAGE, 50, {"windup_seconds": 0.3, "max_range": 1})
 	world.cast(hero, smash, foe)
-	assert_eq(world.try_step(hero, Vector2i(5, 4)), "busy")
+	assert_eq(world.try_step(hero, Vector2i(5, 4)), "")
+	assert_true(hero.casting.is_empty(), "the wind-up is cancelled")
+	world.advance(0.4)
+	assert_eq(_lost(foe), 0.0)
+
+
+func test_the_target_can_step_away_from_a_windup() -> void:
+	var smash := _ability(AbilityEffect.Kind.DAMAGE, 50, {"windup_seconds": 0.3, "max_range": 1})
+	world.cast(hero, smash, foe)
 	foe.move.place(Vector2i(7, 5))
 	world.advance(0.35)
 	assert_eq(_lost(foe), 0.0, "stepped away from the wind-up")

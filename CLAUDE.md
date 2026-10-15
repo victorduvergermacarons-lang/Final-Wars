@@ -793,8 +793,9 @@ F. 15 debug console · 16 docs + playtest checklist.
 9. **Healing / resurrect:** Water only; resurrection returns at Water Tier 3 (Revive).
 10. **AP:** 10 per level-up plus a little per kill, to the learning item only. AP to
     master by tier: 20 / 30 / 40 / 50 / 50 (T1–T5).
-11. **Casting:** moving during a cast or channel cancels it (cooldown not spent);
-    wind-ups like Smash 0.3 s can't be cancelled.
+11. **Casting:** moving during a cast, channel or wind-up (anything with a cast bar)
+    cancels it (cooldown not spent; changed 2026-10-16, wind-ups used to hold you in place).
+    Enemies stand still while their cast bar shows and never start an attack mid-step.
 12. **Importer:** GDScript run by Godot, no Python needed.
 13. **Ability data (as built in step 1):** `tools/import_ability_tree.gd` (with
     `tools/xlsx_reader.gd`, `tools/ability_tree_importer.gd`) writes one data file,
@@ -976,6 +977,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-16 | Moving cancels anything with a cast bar, wind-ups included; enemies don't move while attacking and don't start an attack mid-step | User request (a Wolf looked like it moved mid-bite: it started biting while still sliding onto its tile). Changes M3 decision 11. |
 | 2026-10-16 | Stacked pillars come down one by one and nothing reappears; Earth Wall can be climbed by anyone whose Jump covers its +2 height | User reports. Terrain changes now store the height they added and take it off on expiry (they used to restore a saved snapshot, so the first to expire flattened both and the second then restored the first). Earth Wall no longer marks its tiles impassable; it still blocks shots. |
 | 2026-10-15 | Bandit Brute's Crushing Blow hits the ground: the tile in front and the two beside it, telegraphed during its 0.6 s wind-up | User request (easier to dodge). New skillshot shape ARC; wound-up swipes and lobs are telegraphed. Fixed Grizzlehide's Cleave, which hit only 1 tile (a range-1 cone) instead of 3; it uses ARC now. Balance targets still met (a group of 4 still beats Grizzlehide, but one bot usually dies now). |
 | 2026-10-15 | Ability ranges count diagonals as 2 tiles; melee (range 1) no longer hits diagonally, for heroes and enemies | User request; "ranges only" chosen by the user, so 3×3 areas and 8-way aiming stay. Changes M3 decision 2. |

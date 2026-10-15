@@ -161,12 +161,12 @@ Use the console (section 9) to `master` each one, or learn them from scrolls. Ea
 - [ ] **Seismic Stomp:** every enemy next to you turns on you (taunt).
 - [ ] **Lunge** (Traveler's Longsword): steps up to 2 tiles to the enemy and strikes; blocked by a wall in between, it falls short and misses.
 - [ ] **Quick Shot** (Hunter's Shortbow): instant arrow, range 5, can't miss. **Aimed Shot** (Yew Longbow): 1 s draw, then a heavy arrow along the aimed line (range 7). Moving during the draw cancels it.
-- [ ] **Smash** (Iron Mallet): 0.3 s wind-up, then a heavy hit; if the enemy steps away first, it misses. **Ground Slam** (Quarry Maul): hits all 8 tiles around you.
+- [ ] **Smash** (Iron Mallet): 0.3 s wind-up, then a heavy hit; if the enemy steps away first, it misses. If *you* step during the wind-up, the Smash is cancelled (anything with a cast bar is). **Ground Slam** (Quarry Maul): hits all 8 tiles around you.
 - [ ] **Not in the game yet:** dark boxes in the tree (e.g. Stone Skin) can't be learned; their scrolls say "This ability isn't in the game yet."
 
 ## 6. Enemies and dodging
 
-- [ ] **Wolf:** when next to you it shows a red "Bite" bar for 0.3 s before biting.
+- [ ] **Wolf:** when next to you it stops, then shows a red "Bite" bar for 0.3 s before biting. It never moves while the bar shows.
       **Do:** step straight away during the bar. **Expect:** "Whiff", no damage.
 - [ ] **Bandit Brute:** when next to you it shows a red "Crushing Blow" bar and marks **three red
       tiles** (the one in front of it and the two beside it) for 0.6 s, then smashes them.

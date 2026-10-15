@@ -317,13 +317,11 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 		return "rooted"
 	if actor.buffs.is_stunned(now):
 		return "asleep" if actor.buffs.is_asleep(now) else "stunned"
-	if not actor.casting.is_empty() and actor.casting.kind == "windup":
-		return "busy"
 	# An enemy that just aggroed is fighting even before the end-of-tick update.
 	var in_combat := actor.in_combat(now) or (actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT)
 	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
 		return "not_ready"
-	cancel_cast(actor, "moved") # moving cancels a cast or channel
+	cancel_cast(actor, "moved") # moving cancels anything with a cast bar: cast, channel, wind-up
 	actor.face(to - from)
 	actor.move.begin(to, now, walk_seconds if walk_seconds >= 0.0 else rules.walk_tile_seconds)
 	if in_combat and not actor.buffs.use_free_step(now):

@@ -197,3 +197,23 @@ func test_melee_enemies_dont_bite_diagonally() -> void:
 	assert_true(wolf.casting.is_empty(), "no bite from a diagonal tile")
 	world.advance(1.0)
 	assert_eq(TileGeometry.range_distance(wolf.tile(), hero.tile()), 1, "it steps beside you first")
+
+
+func test_wolves_never_move_mid_attack() -> void:
+	var wolf := _arena(&"wolf", Vector2i(9, 5), Vector2i(5, 5))
+	wolf.threat.add(hero.id, 1.0)
+	wolf.state = Enemy.State.COMBAT
+	var windups := 0
+	for i in 200:
+		var was_casting := not wolf.casting.is_empty()
+		var tile_before := wolf.tile()
+		world.step()
+		if not wolf.casting.is_empty():
+			assert_false(wolf.move.is_moving(world.now), "no bite while still walking")
+		if was_casting:
+			assert_eq(wolf.tile(), tile_before, "no step during the bite's wind-up")
+		if not wolf.casting.is_empty() and not was_casting:
+			windups += 1
+		if i % 40 == 20 and hero.alive:
+			hero.move.place(hero.tile() + Vector2i(0, 1)) # keep it chasing
+	assert_gt(windups, 0, "it did attack")
