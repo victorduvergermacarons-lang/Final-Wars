@@ -99,6 +99,10 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(6)
 	assert_gt(hero.hp, 50.0, "drank it")
 	assert_eq(hero.bag.count_of(potion), 0)
+	# Dragging it off the bar (dropped anywhere but a slot) clears the slot.
+	slot._dragged_entry = game.client.action_bar.slots[6]
+	slot.drop_off_bar()
+	assert_eq(game.client.action_bar.slots[6], &"", "dragged off the bar")
 
 	hero.move.place(Vector2i(14, 16))
 	await wait_process_frames(2)

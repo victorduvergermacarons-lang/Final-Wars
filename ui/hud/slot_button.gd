@@ -1,7 +1,7 @@
 class_name SlotButton
 extends Control
-## One action bar slot: click to use, right-click to clear, drag to move,
-## drop an ability from the spellbook onto it. Draws its own cooldown sweep.
+## One action bar slot: click to use, right-click to clear, drag to move (or off
+## the bar to clear), drop an ability from the spellbook onto it. Draws its own cooldown sweep.
 
 const SIZE := Vector2(56, 56)
 const TINTS := {
@@ -17,6 +17,9 @@ const TINTS := {
 var index := 0
 var hud: Hud
 var _font: Font
+## What this slot held when a drag from it started (cleared when dropped off the bar).
+var _dragged_entry: StringName = &""
+var _dragging := false
 
 
 func _init(p_index: int, p_hud: Hud) -> void:
@@ -143,6 +146,18 @@ func _notification(what: int) -> void:
 		hud.hovered_slot = index
 	elif what == NOTIFICATION_MOUSE_EXIT and hud.hovered_slot == index:
 		hud.hovered_slot = -1
+	elif what == NOTIFICATION_DRAG_END and _dragging:
+		_dragging = false
+		if not get_viewport().gui_is_drag_successful():
+			drop_off_bar()
+
+
+## A drag from this slot ended outside any slot: the ability leaves the bar.
+func drop_off_bar() -> void:
+	var bar := hud.client.action_bar
+	if bar.slots[index] == _dragged_entry and _dragged_entry != &"":
+		bar.clear(index)
+	_dragged_entry = &""
 
 
 func _get_drag_data(_at: Vector2) -> Variant:
@@ -151,6 +166,8 @@ func _get_drag_data(_at: Vector2) -> Variant:
 	var preview := Label.new()
 	preview.text = _item().display_name if _item() != null else String(_ability().display_name)
 	set_drag_preview(preview)
+	_dragging = true
+	_dragged_entry = hud.client.action_bar.slots[index]
 	return {"slot": index}
 
 
