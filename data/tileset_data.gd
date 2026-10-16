@@ -11,7 +11,8 @@ extends RefCounted
 ##   tiles: [{id, name, category, kind, walkable, blocks_sight, ...}],
 ##   animations: {name: {frames: [ids], fps}},
 ##   terrains: {name: {tiles: [id or [id, weight]], fill: terrain under it,
-##     shore: true to pick by which sides touch land (tiles list "shore" sides)}},
+##     shore: true to pick by which sides touch land (tiles list "shore" sides),
+##     walkable: overrides its tiles' walkability (e.g. stone walls you can't climb)}},
 ##   a tile's optional "drop": art px its surface sits below a ground block's.
 ##   props: {name: {tiles: [id or [id, weight]]}} (groups of prop tiles).
 
@@ -83,6 +84,8 @@ func load_dict(d: Dictionary, folder: String) -> void:
 		var tr := _weighted(d.terrains[name].get("tiles", []))
 		tr.fill = str(d.terrains[name].get("fill", ""))
 		tr.shore = bool(d.terrains[name].get("shore", false))
+		if d.terrains[name].has("walkable"):
+			tr.walkable = bool(d.terrains[name].walkable)
 		terrains[name] = tr
 	for name in d.get("props", {}):
 		props[name] = _weighted(d.props[name].get("tiles", []))
@@ -161,15 +164,19 @@ func blocks_sight(tile_id: int) -> bool:
 	return bool(tile(tile_id).get("blocks_sight", false))
 
 
-## Whether a terrain's tiles can be walked on (its first tile decides; the
-## validator checks that all its variants agree).
+## Whether a terrain can be walked on: its own "walkable" if set, else its tiles'
+## (the first decides; the validator checks that all its variants agree).
 func terrain_walkable(terrain: String) -> bool:
 	var tr: Dictionary = terrains.get(terrain, {})
+	if tr.has("walkable"):
+		return tr.walkable
 	return not tr.is_empty() and is_walkable(tr.tiles[0])
 
 
 func terrain_walkability_consistent(terrain: String) -> bool:
 	var tr: Dictionary = terrains.get(terrain, {})
+	if tr.has("walkable"):
+		return true
 	for tid in tr.get("tiles", []):
 		if is_walkable(tid) != is_walkable(tr.tiles[0]):
 			return false

@@ -17,6 +17,13 @@ func _ready() -> void:
 	_run.call_deferred()
 
 
+## Puts the camera on the hero at once (it normally eases toward them).
+func _snap_camera(hero: Hero) -> void:
+	await get_tree().process_frame
+	var view: WorldView = game.get_node("WorldView")
+	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+
+
 func _shot(name: String) -> void:
 	for i in 8:
 		await get_tree().process_frame
@@ -157,4 +164,25 @@ func _run() -> void:
 	hero.move.place(Vector2i(8, 8))
 	hero.move.begin(Vector2i(8, 9), session.render_time() - 3.0, 10.0)
 	await _shot("13d_wall_tile_occupied")
+	# 14. The tiled zones: Greenfields overview (zoomed out), the rocky plateau,
+	# the pond and river, and Millbrook.
+	session.world.move_hero(hero.id, &"greenfields", Vector2i(15, 15))
+	await get_tree().process_frame
+	var gview: WorldView = game.get_node("WorldView")
+	for i in 3:
+		gview.camera.step_zoom(-1)
+	await _snap_camera(hero)
+	await _shot("14_greenfields_overview")
+	for i in 3:
+		gview.camera.step_zoom(1)
+	hero.move.place(Vector2i(22, 13))
+	await _snap_camera(hero)
+	await _shot("15_rocky_plateau")
+	hero.move.place(Vector2i(23, 25))
+	await _snap_camera(hero)
+	await _shot("16_pond_and_river")
+	session.world.move_hero(hero.id, &"town", Vector2i(9, 9))
+	await get_tree().process_frame
+	await _snap_camera(hero)
+	await _shot("17_millbrook")
 	get_tree().quit()

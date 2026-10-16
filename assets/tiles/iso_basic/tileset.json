@@ -143,10 +143,12 @@
   "ford": {"tiles": [69, [66, 0.5]]},
   "water": {"tiles": [86, 87, 88, 89, [90, 0.5], [91, 0.5]]},
   "deep_water": {"tiles": [90, 91, 92, 93, 94]},
-  "light_water": {"tiles": [104, 105, 106, 107, 108, 109, 110, 111, 112, 113], "shore": true},
+  "light_water": {"tiles": [104, 105, 106, 107, 108, 109, 110, 111, 112, 113], "shore": true, "fill": "cobble"},
   "water_rocks": {"tiles": [70, 71, 77, 78]},
   "water_tall_rocks": {"tiles": [72, 73, 74, 79, 80, 81]},
-  "crystal": {"tiles": [114], "fill": "cobble"}
+  "crystal": {"tiles": [114], "fill": "cobble"},
+  "rocky_ground": {"tiles": [11, 12, 13, [61, 0.6], [63, 0.6]], "fill": "cobble"},
+  "stone_wall": {"tiles": [63], "fill": "cobble", "walkable": false}
  },
  "props": {
   "flowers": {"tiles": [41, 44, 46, 47, [42, 0.5]]},
