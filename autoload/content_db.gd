@@ -26,6 +26,8 @@ var quests := {} # id -> QuestDef
 ## Ability trees from design/Ability_Tree.xlsx (via tools/import_ability_tree.gd).
 var tree: AbilityTreeData
 var tree_tuning: TreeTuning
+## Isometric tilesets (res://assets/tiles/<id>/tileset.json), by id.
+var tilesets := {} # id -> TilesetData
 const TREE_TUNING_PATH := "res://content/tree/tuning.tres"
 
 
@@ -44,6 +46,7 @@ func reload() -> void:
 	npcs = _load_dir(DIRS.npcs)
 	quests = _load_dir(DIRS.quests)
 	tree = AbilityTreeData.load_file()
+	tilesets = TilesetData.load_all()
 	tree_tuning = load(TREE_TUNING_PATH) if ResourceLoader.exists(TREE_TUNING_PATH) else TreeTuning.new()
 	var built := TreeContent.build(tree, tree_tuning)
 	abilities.merge(built.abilities)
@@ -99,6 +102,8 @@ func validate() -> PackedStringArray:
 		errors.append_array(i.validate())
 	for z in zones.values():
 		errors.append_array(z.validate())
+	for t in tilesets.values():
+		errors.append_array(t.validate())
 	for q in quests.values():
 		errors.append_array(q.validate())
 		for id in [q.giver, q.turn_in_npc()]:
