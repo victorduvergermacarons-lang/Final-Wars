@@ -7,7 +7,9 @@ This file is the living design doc. Keep it current as decisions are made.
 **Status:** Milestone 1 complete and playtested, including the post-M1 combat revision
 (facing, directional abilities, faster enemies, reaction delay). Milestone 2 built and
 playtested; post-playtest fixes done. **Milestone 3 (abilities, mastery, targeting) built**
-(all 16 steps); awaiting a playtest with `docs/playtest-checklist-m3.md`. For the numbers
+(all 16 steps); awaiting a playtest with `docs/playtest-checklist-m3.md`. **The ground now
+uses the first real tileset** (`iso_basic`, 8 steps, 2026-10-16; see **Map art** below and
+`docs/playtest-checklist-tiles.md`). For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -161,6 +163,39 @@ telegraphed tile then rush + maul. Goblin Shaman Magic Attack 12; Old Grizzlehid
 tile): Shaman and Skirmisher light, Brute and Grizzlehide heavy, everyone else medium. Hilda: potions, Iron Helm,
 Swift Boots and the 20 implemented tier-1 scrolls (25 g) and weapons (30 g).
 
+## Map art (tileset, 2026-10-16)
+
+How-to: `docs/tilesets.md`.
+- **Tilesets:** a tileset is a folder under `assets/tiles/` with its images and a
+  `tileset.json` catalog. A new one needs no code.
+- **The catalog** gives each tile:
+  - its category and kind (block / prop / surface / overlay)
+  - whether it is walkable and whether it blocks sight
+  - an optional water drop and shoreline sides
+
+  It also defines terrain kinds (weighted variants, a fill block underneath, an
+  optional walkability override, shoreline picking), prop groups, and the water
+  sparkle animation.
+- **Tiled zones:** zones name a tileset and add `terrain_rows` / `prop_rows` with
+  legends. ContentDB bakes `walk_rows` and the new `sight_rows` from the catalog;
+  the simulation reads only those rows. `GridModel.blocks_sight` stops line of
+  sight and projectiles.
+- **Pixel-perfect:** art is drawn at 2× world units (32 px tiles on the 64 px grid,
+  8 art px = one height level). `PixelCamera` zooms only to whole art scales
+  (counting the window's stretch: 3× at 1280×720, 4× at 1080p) and moves by whole
+  pixels.
+- **Drawing:** each tile is a column of blocks plus its prop, back to front.
+  Characters are fitted in so terrain and props in front cover them.
+- **Greenfields:**
+  - grass fields with patches, dirt paths, fords at the bridges
+  - the height-4 plateau as rocky ground with boulders
+  - the river with rocks in it, and a light-water pond with foam in the south-east
+  - rock pillars topped with grey boulders, scattered flowers, logs and stumps
+
+  Spawns, heights, patrols and quest areas are unchanged.
+- **Millbrook:** a bush hedge, stone houses, a cobblestone plaza, dirt paths and a
+  fountain.
+
 ## Gameplay as built (end of Milestone 1, after playtest)
 
 > Milestone 3 retired the hero abilities and weapons below (Strike … Rallying Roar, Sword,
@@ -303,6 +338,8 @@ sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ 
 net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
 content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ (.tres)
+assets/tiles/    tilesets: one folder each (tile images + tileset.json)
+art/             uploaded source art (zips; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
                  inventory, character sheet, spellbook, ability trees, dialogue, vendor, loot,
@@ -311,10 +348,10 @@ input/           player input → intents
 scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator
 design/          Ability_Tree.xlsx (source of truth for abilities)
-tools/once/      one-off content conversions (kept for the record)
+tools/once/      one-off content conversions and generators (kept for the record)
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
                  net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3), ability import
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles), ability import, tilesets
 ```
 
 ### Build order (milestone 1)
@@ -430,7 +467,9 @@ docs/            local multiplayer testing, playtest checklists (M2, M3), abilit
       abilities aim where you face; their action bar slot is red when nothing would
       be hit.
     - Placeholder art: height-tinted tiles, blue water, grey rocks, heroes as
-      circles, enemies as red diamonds, floating combat text.
+      circles, enemies as red diamonds, floating combat text. (Since 2026-10-16 the
+      ground uses the `iso_basic` tileset; see **Map art**. Characters and effects
+      are still placeholders.)
     - Test zone "Greenfields" (30×30): hill, height-4 plateau reached by a ramp,
       river with two bridges, two graveyards, five Wolves.
 14. **Networking** (approved 2026-10-11):
@@ -978,6 +1017,11 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-16 | First real tileset (`iso_basic`) for the ground, in 8 steps | User brief; plan approved. See **Map art**. User answers: all water (light and dark) unwalkable; stone-slab fords for the bridges; Millbrook retiled too; the purple crystal catalogued as unwalkable. The catalog table was reviewed and accepted. |
+| 2026-10-16 | Tileset facts that differ from the brief | Measured: a block's side is 8 art px, not 16 (so 2× art matches the existing 64×32 grid and 16 px levels). The separate tile files are the numbering; the spritesheet has 6 empty cells and 20 cells that differ from the files, so it isn't used. Props start at tile 41. Light water 104–113 are shoreline pieces, not animation frames; only the sparkles (82–85) animate. |
+| 2026-10-16 | Pixel-perfect without integer window scaling | My choice. Integer window scaling showed 1080p as a letterboxed 720p picture. Instead the camera picks zooms where art pixels are whole screen pixels, counting the window's stretch (3× at 720p, 4× at 1080p; the old fractional 4.5× view is gone), and snaps its position. The HUD scales as before. |
+| 2026-10-16 | Walkability and sight come from the catalog, baked into zone rows at load | My choice of mechanism. The simulation still reads walk/sight rows only, so it stays independent of images. New per-tile sight blocking (tall props, rocks in water) stops line of sight and projectiles. Terrains may override walkability (`stone_wall`). |
+| 2026-10-16 | Zone art choices | Mine. Rock pillars are cobble columns topped with grey boulders. The plateau is rocky ground with brown boulders, and its ramp is rocky dirt. The bandit camp sits on cracked earth. Millbrook: houses as slab-topped stone, the border as a bush hedge, the raised plaza as cobblestone, a fountain at (7,9). Only the pond and a few logs, stumps and rocks change where you can walk in Greenfields. |
 | 2026-10-17 | Earth Wall's lift damage scales with Earth Mastery: 10 + 0.02 per point (then the usual +0.1% power per point) | User request. `AbilityEffect.lift_damage_per_mastery`. 0 Mastery: 10; 500: 30. The 0.02 is my number. |
 | 2026-10-17 | Fixed: a hero who stepped away from the camera was drawn over terrain in front of it (half showing over an Earth Wall) | User report. The view sorted a standing actor by the tile it came from; it now uses its own tile once it has arrived. Mid-step (the flicker): each depth row draws every tile followed by the actors on it, ordered so the tiles in front of a walking actor come after it, so a wall beside a walking hero covers it in both directions, even with someone standing on the wall. Screenshots `13_behind_wall`, `13b_walking_away`, `13c_walking_toward`, `13d_wall_tile_occupied` in `tests/visual/shots.gd`. |
 | 2026-10-17 | Steps no longer turn the hero: only the mouse sets which way a hero faces | User request. Enemies still turn toward their steps. Crossing into another zone keeps your facing too. |
