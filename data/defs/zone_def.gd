@@ -11,6 +11,9 @@ extends Resource
 ## layer: terrain_rows, one char per tile, each char mapped to one of the
 ## tileset's terrain kinds by terrain_legend. For those zones the tileset decides
 ## walkability: ContentDB rebuilds walk_rows from it at load (bake_walkability).
+## prop_rows (optional, '.' = none) put props from the tileset's prop groups on
+## tiles, mapped by prop_legend; props and terrain also fill sight_rows ('#'
+## blocks line of sight and projectiles).
 
 @export var id: StringName = &""
 @export var display_name: String = ""
@@ -31,6 +34,11 @@ extends Resource
 @export var terrain_rows: PackedStringArray = []
 ## Terrain char -> terrain kind name in the tileset, e.g. {".": "grass", "~": "water"}.
 @export var terrain_legend: Dictionary = {}
+## One char per tile, '.' = no prop; others map to prop groups via prop_legend.
+@export var prop_rows: PackedStringArray = []
+@export var prop_legend: Dictionary = {}
+## '#' blocks line of sight; empty = nothing does (only height). Baked for tiled zones.
+@export var sight_rows: PackedStringArray = []
 
 const HEIGHT_CHARS := "0123456789abcdefghijklmnopqrstuvwxyz"
 
@@ -47,6 +55,13 @@ func has_terrain() -> bool:
 	return tileset != &"" and not terrain_rows.is_empty()
 
 
+## The prop group at `p` ("" for none).
+func prop_at(p: Vector2i) -> String:
+	if p.y < 0 or p.y >= prop_rows.size() or p.x < 0 or p.x >= prop_rows[p.y].length():
+		return ""
+	return str(prop_legend.get(prop_rows[p.y][p.x], ""))
+
+
 ## The terrain kind at `p` ("" outside the map or without a terrain layer).
 func terrain_at(p: Vector2i) -> String:
 	if p.y < 0 or p.y >= terrain_rows.size() or p.x < 0 or p.x >= terrain_rows[p.y].length():
@@ -54,16 +69,31 @@ func terrain_at(p: Vector2i) -> String:
 	return str(terrain_legend.get(terrain_rows[p.y][p.x], ""))
 
 
-## Rebuilds walk_rows from the tileset: a tile is walkable when its terrain's
-## tiles are (all variants of a terrain share walkability; see validate_terrain).
+## Rebuilds walk_rows and sight_rows from the tileset: a tile is walkable when
+## its terrain is (all variants of a terrain agree; see validate_terrain) and its
+## prop, if any, is; it blocks sight when its top block or its prop does.
 func bake_walkability(ts: TilesetData) -> void:
-	var rows: PackedStringArray = []
+	var walk: PackedStringArray = []
+	var sight: PackedStringArray = []
 	for y in terrain_rows.size():
-		var row := ""
+		var wrow := ""
+		var srow := ""
 		for x in terrain_rows[y].length():
-			row += "." if ts.terrain_walkable(terrain_at(Vector2i(x, y))) else "#"
-		rows.append(row)
-	walk_rows = rows
+			var p := Vector2i(x, y)
+			var terrain := terrain_at(p)
+			var walkable := ts.terrain_walkable(terrain)
+			var blocks := ts.blocks_sight(ts.pick(terrain, p))
+			var group := prop_at(p)
+			if group != "":
+				var prop := ts.pick_prop(group, p)
+				walkable = walkable and ts.is_walkable(prop)
+				blocks = blocks or ts.blocks_sight(prop)
+			wrow += "." if walkable else "#"
+			srow += "#" if blocks else "."
+		walk.append(wrow)
+		sight.append(srow)
+	walk_rows = walk
+	sight_rows = sight
 
 
 ## Problems with the terrain layer against its tileset (empty = fine).
@@ -86,6 +116,18 @@ func validate_terrain(ts: TilesetData) -> PackedStringArray:
 			errors.append("%s: legend '%s' names unknown terrain %s" % [id, c, name])
 		elif not ts.terrain_walkability_consistent(name):
 			errors.append("%s: terrain %s mixes walkable and unwalkable tiles" % [id, name])
+	if not prop_rows.is_empty() and prop_rows.size() != terrain_rows.size():
+		errors.append("%s: prop_rows has %d rows, terrain_rows has %d" % [id, prop_rows.size(), terrain_rows.size()])
+	for y in prop_rows.size():
+		if prop_rows[y].length() != get_width():
+			errors.append("%s: prop row %d has length %d, expected %d" % [id, y, prop_rows[y].length(), get_width()])
+		for x in prop_rows[y].length():
+			var c := prop_rows[y][x]
+			if c != "." and not prop_legend.has(c):
+				errors.append("%s: prop char '%s' at (%d,%d) is not in the legend" % [id, c, x, y])
+	for c in prop_legend:
+		if not ts.props.has(str(prop_legend[c])):
+			errors.append("%s: prop legend '%s' names unknown prop group %s" % [id, c, prop_legend[c]])
 	return errors
 
 
@@ -108,6 +150,11 @@ func validate() -> PackedStringArray:
 		for x in row.length():
 			if parse_height(row[x]) < 0:
 				errors.append("%s: bad height char '%s' at (%d,%d)" % [id, row[x], x, y])
+	if not sight_rows.is_empty() and sight_rows.size() != height_rows.size():
+		errors.append("%s: sight_rows has %d rows, height_rows has %d" % [id, sight_rows.size(), height_rows.size()])
+	for y in sight_rows.size():
+		if sight_rows[y].length() != w:
+			errors.append("%s: sight row %d has length %d, expected %d" % [id, y, sight_rows[y].length(), w])
 	for y in walk_rows.size():
 		if walk_rows[y].length() != w:
 			errors.append("%s: walk row %d has length %d, expected %d" % [id, y, walk_rows[y].length(), w])

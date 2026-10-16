@@ -118,6 +118,11 @@ func _run() -> void:
 	brute.cooldowns = Cooldowns.new()
 	fields.cast(brute, cd.abilities[&"crushing_blow"], null, Vector2(hero.tile()))
 	await _shot("11b_brute_swipe")
+	# 10c. Standing behind a boulder on a rock pillar (Greenfields (18,15)).
+	hero.alive = true
+	hero.hp = 100.0
+	hero.move.place(Vector2i(17, 15))
+	await _shot("11c_behind_boulder")
 	# 11. Hilda's shop, scrolled.
 	session.world.move_hero(hero.id, &"town", Vector2i(8, 8))
 	var town := session.world.zone(&"town")

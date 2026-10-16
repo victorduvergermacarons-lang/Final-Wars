@@ -10,7 +10,8 @@ extends RefCounted
 ##   top_y (art y of a block's top corner), level_height (art px per height level),
 ##   tiles: [{id, name, category, kind, walkable, blocks_sight, ...}],
 ##   animations: {name: {frames: [ids], fps}},
-##   terrains: {name: {tiles: [id or [id, weight]], fill: terrain under it}}.
+##   terrains: {name: {tiles: [id or [id, weight]], fill: terrain under it}},
+##   props: {name: {tiles: [id or [id, weight]]}} (groups of prop tiles).
 
 const ROOT := "res://assets/tiles"
 const CATALOG := "tileset.json"
@@ -29,6 +30,7 @@ var level_height := 8
 var tiles := {} # int id -> Dictionary
 var animations := {} # name -> {"frames": Array[int], "fps": float}
 var terrains := {} # name -> {"tiles": Array[int], "weights": Array[float], "fill": String}
+var props := {} # name -> {"tiles": Array[int], "weights": Array[float]}
 ## Problems found while loading (see validate()).
 var load_errors: PackedStringArray = []
 
@@ -76,17 +78,25 @@ func load_dict(d: Dictionary, folder: String) -> void:
 			frames.append(int(f))
 		animations[name] = {"frames": frames, "fps": float(a.get("fps", 6.0))}
 	for name in d.get("terrains", {}):
-		var tr: Dictionary = d.terrains[name]
-		var ids: Array[int] = []
-		var weights: Array[float] = []
-		for e in tr.get("tiles", []):
-			if e is Array:
-				ids.append(int(e[0]))
-				weights.append(float(e[1]))
-			else:
-				ids.append(int(e))
-				weights.append(1.0)
-		terrains[name] = {"tiles": ids, "weights": weights, "fill": str(tr.get("fill", ""))}
+		var tr := _weighted(d.terrains[name].get("tiles", []))
+		tr.fill = str(d.terrains[name].get("fill", ""))
+		terrains[name] = tr
+	for name in d.get("props", {}):
+		props[name] = _weighted(d.props[name].get("tiles", []))
+
+
+## {"tiles": ids, "weights": weights} from a list of ids or [id, weight] pairs.
+static func _weighted(entries: Array) -> Dictionary:
+	var ids: Array[int] = []
+	var weights: Array[float] = []
+	for e in entries:
+		if e is Array:
+			ids.append(int(e[0]))
+			weights.append(float(e[1]))
+		else:
+			ids.append(int(e))
+			weights.append(1.0)
+	return {"tiles": ids, "weights": weights}
 
 
 func tile(tile_id: int) -> Dictionary:
@@ -123,18 +133,29 @@ func terrain_walkability_consistent(terrain: String) -> bool:
 ## The variant of `terrain` shown at `cell` (`salt` tells stacked blocks apart).
 ## The same cell always gets the same tile; neighbours differ, weighted.
 func pick(terrain: String, cell: Vector2i, salt: int = 0) -> int:
-	var tr: Dictionary = terrains.get(terrain, {})
-	if tr.is_empty():
+	return _pick_from(terrains.get(terrain, {}), cell, salt)
+
+
+## The tile of prop group `group` shown at `cell`.
+func pick_prop(group: String, cell: Vector2i) -> int:
+	return _pick_from(props.get(group, {}), cell, PROP_SALT)
+
+
+const PROP_SALT := 7919
+
+
+static func _pick_from(entry: Dictionary, cell: Vector2i, salt: int) -> int:
+	if entry.is_empty() or entry.tiles.is_empty():
 		return -1
 	var total := 0.0
-	for w in tr.weights:
+	for w in entry.weights:
 		total += w
 	var r := float(cell_hash(cell, salt) % 100000) / 100000.0 * total
-	for i in tr.tiles.size():
-		r -= tr.weights[i]
+	for i in entry.tiles.size():
+		r -= entry.weights[i]
 		if r < 0.0:
-			return tr.tiles[i]
-	return tr.tiles[-1]
+			return entry.tiles[i]
+	return entry.tiles[-1]
 
 
 ## A stable pseudo-random number for a cell (no global RNG, same on every machine).
@@ -191,4 +212,12 @@ func validate() -> PackedStringArray:
 				break
 			seen[fill] = true
 			fill = terrains[fill].fill
+	for name in props:
+		if props[name].tiles.is_empty():
+			errors.append("%s: prop group %s has no tiles" % [id, name])
+		for tid in props[name].tiles:
+			if not tiles.has(tid):
+				errors.append("%s: prop group %s uses unknown tile %d" % [id, name, tid])
+			elif tiles[tid].get("kind") != "prop":
+				errors.append("%s: prop group %s uses tile %d, which is not a prop" % [id, name, tid])
 	return errors

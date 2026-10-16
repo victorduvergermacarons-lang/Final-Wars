@@ -4,8 +4,9 @@ extends RefCounted
 ##
 ## The sight line runs from the attacker's tile height to the target's tile
 ## height. An intermediate tile blocks if its height is more than `tolerance`
-## levels above the line at that point. Where the line passes exactly through a
-## tile corner, it is blocked only if both tiles touching that corner block.
+## levels above the line at that point, or if it blocks sight outright (a tall
+## prop). Where the line passes exactly through a tile corner, it is blocked
+## only if both tiles touching that corner block.
 
 
 static func has_los(grid: GridModel, from: Vector2i, to: Vector2i, tolerance: float) -> bool:
@@ -20,7 +21,7 @@ static func has_los(grid: GridModel, from: Vector2i, to: Vector2i, tolerance: fl
 		for p: Vector2i in group:
 			var t := Vector2(p - from).dot(ab) / len_sq
 			var line_h := lerpf(h0, h1, t)
-			if float(grid.height_at(p)) <= line_h + tolerance:
+			if not grid.blocks_sight(p) and float(grid.height_at(p)) <= line_h + tolerance:
 				all_block = false
 				break
 		if all_block:

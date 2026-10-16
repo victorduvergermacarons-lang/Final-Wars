@@ -147,5 +147,14 @@
   "water_rocks": {"tiles": [70, 71, 77, 78]},
   "water_tall_rocks": {"tiles": [72, 73, 74, 79, 80, 81]},
   "crystal": {"tiles": [114], "fill": "cobble"}
+ },
+ "props": {
+  "flowers": {"tiles": [41, 44, 46, 47, [42, 0.5]]},
+  "weeds": {"tiles": [43, 45]},
+  "logs": {"tiles": [48, 49, 50, 51]},
+  "stump": {"tiles": [52]},
+  "small_rocks": {"tiles": [53, 54, 58, 62, 67]},
+  "brown_boulders": {"tiles": [55, 56, 57, 59, 60]},
+  "grey_boulders": {"tiles": [64, 65, 68]}
  }
 }

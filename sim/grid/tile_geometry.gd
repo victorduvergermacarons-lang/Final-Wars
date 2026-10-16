@@ -104,13 +104,13 @@ static func arc(origin: Vector2i, dir: Vector2i) -> Array[Vector2i]:
 
 ## Cuts a line where terrain or walls block it: a tile whose height rises more than
 ## `tolerance` above `from_height` stops the line (that tile excluded); so do tiles
-## outside the map.
+## outside the map and tiles that block sight (a tall prop).
 static func clip_line(grid: GridModel, tiles: Array[Vector2i], from_height: int, tolerance: float) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	for t in tiles:
 		if not grid.in_bounds(t):
 			break
-		if grid.height_at(t) > from_height + tolerance:
+		if grid.height_at(t) > from_height + tolerance or grid.blocks_sight(t):
 			break
 		out.append(t)
 	return out

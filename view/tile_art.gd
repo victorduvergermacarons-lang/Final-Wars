@@ -38,6 +38,11 @@ func image_rect(top_center: Vector2) -> Rect2:
 	return Rect2(top_center - face_center * s, cell * s)
 
 
+## Props stand on the block below: drawn where a block one level up would be.
+func draw_prop(canvas: CanvasItem, tile_id: int, cell: Vector2i, height: int) -> void:
+	draw(canvas, tile_id, Iso.to_screen(Vector2(cell), height + 1))
+
+
 func draw(canvas: CanvasItem, tile_id: int, top_center: Vector2, modulate: Color = Color.WHITE) -> void:
 	var tex := texture(tile_id)
 	if tex != null:
@@ -47,7 +52,8 @@ func draw(canvas: CanvasItem, tile_id: int, top_center: Vector2, modulate: Color
 ## The blocks that make up a terrain column of height `height` at `cell`, bottom
 ## first, as [tile id, level] pairs: the terrain's own block on top, its fill
 ## terrain below. Levels under `from_level` are left out (hidden behind the tiles
-## in front).
+## in front). The top block's variant doesn't depend on the height, so a tile
+## raised by an ability keeps its look.
 func column(terrain: String, cell: Vector2i, height: int, from_level: int = 0) -> Array:
 	var out := []
 	var tr: Dictionary = data.terrains.get(terrain, {})
@@ -55,6 +61,8 @@ func column(terrain: String, cell: Vector2i, height: int, from_level: int = 0) -
 		return out
 	var fill: String = tr.fill if tr.fill != "" else terrain
 	for level in range(clampi(from_level, 0, height), height + 1):
-		var kind := terrain if level == height else fill
-		out.append([data.pick(kind, cell, level), level])
+		if level == height:
+			out.append([data.pick(terrain, cell), level])
+		else:
+			out.append([data.pick(fill, cell, level + 1), level])
 	return out

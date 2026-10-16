@@ -1,6 +1,7 @@
 class_name GridModel
 extends RefCounted
-## Logical tile grid: height and walkability per tile. Independent of visuals.
+## Logical tile grid: height, walkability and sight blocking per tile.
+## Independent of visuals.
 ## Coordinates are Vector2i(x, y); movement is 4-directional.
 
 const DIRECTIONS: Array[Vector2i] = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
@@ -9,6 +10,9 @@ var width: int = 0
 var depth: int = 0
 var _heights := PackedInt32Array()
 var _walkable := PackedByteArray()
+## Tiles that block line of sight and projectiles whatever their height (a tall
+## boulder prop, a rock standing in the river).
+var _sight_blocked := PackedByteArray()
 
 
 func _init(p_width: int = 0, p_depth: int = 0, fill_height: int = 0) -> void:
@@ -18,6 +22,8 @@ func _init(p_width: int = 0, p_depth: int = 0, fill_height: int = 0) -> void:
 	_heights.fill(fill_height)
 	_walkable.resize(width * depth)
 	_walkable.fill(1)
+	_sight_blocked.resize(width * depth)
+	_sight_blocked.fill(0)
 
 
 ## Builds a grid from zone data. Returns null (and logs) if the zone is invalid.
@@ -32,6 +38,8 @@ static func from_zone(zone: ZoneDef) -> GridModel:
 		var wrow := zone.walk_rows[y]
 		for x in grid.width:
 			grid.set_tile(Vector2i(x, y), ZoneDef.parse_height(hrow[x]), wrow[x] == ".")
+			if not zone.sight_rows.is_empty():
+				grid.set_blocks_sight(Vector2i(x, y), zone.sight_rows[y][x] == "#")
 	return grid
 
 
@@ -51,6 +59,14 @@ func set_tile(p: Vector2i, h: int, walkable: bool) -> void:
 
 func height_at(p: Vector2i) -> int:
 	return _heights[_index(p)] if in_bounds(p) else 0
+
+
+func blocks_sight(p: Vector2i) -> bool:
+	return in_bounds(p) and _sight_blocked[_index(p)] == 1
+
+
+func set_blocks_sight(p: Vector2i, blocks: bool) -> void:
+	_sight_blocked[_index(p)] = 1 if blocks else 0
 
 
 func is_walkable(p: Vector2i) -> bool:

@@ -251,13 +251,18 @@ func _draw_tile(grid: GridModel, p: Vector2i) -> void:
 		draw_line(c + Vector2(-5, -7), c + Vector2(5, -7), Color.WHITE, 2.0)
 
 
-## A tiled zone's tile: its stack of blocks, bottom first. Blocks the tiles in
-## front fully cover are skipped (they would be drawn over anyway).
+## A tiled zone's tile: its stack of blocks, bottom first, then its prop. Blocks
+## the tiles in front fully cover are skipped (they would be drawn over anyway).
 func _draw_terrain_column(grid: GridModel, p: Vector2i) -> void:
 	var h := grid.height_at(p)
 	var front := mini(_front_height(grid, p + Vector2i(1, 0)), _front_height(grid, p + Vector2i(0, 1)))
 	for block in _art.column(_zone.terrain_at(p), p, h, front):
 		_art.draw(self, block[0], Iso.to_screen(Vector2(p), block[1]))
+	# The prop goes with its tile, so the tiles in front still cover what's behind
+	# a boulder, and a unit behind it is hidden by it.
+	var group := _zone.prop_at(p)
+	if group != "":
+		_art.draw_prop(self, _art.data.pick_prop(group, p), p, h)
 	if _graveyards.has(p):
 		var c := Iso.to_screen(Vector2(p), h)
 		draw_line(c + Vector2(0, -12), c + Vector2(0, 4), Color.WHITE, 2.0)

@@ -110,3 +110,48 @@ func test_content_zones_have_valid_terrain() -> void:
 	var gf: ZoneDef = ContentDB.zones[&"greenfields"]
 	assert_true(gf.has_terrain())
 	assert_eq(Array(gf.validate_terrain(basic)), [])
+
+
+func _prop_zone() -> ZoneDef:
+	var z := ZoneDef.new()
+	z.id = &"props"
+	z.tileset = &"iso_basic"
+	z.height_rows = PackedStringArray(["00000"])
+	z.walk_rows = PackedStringArray(["....."])
+	z.terrain_rows = PackedStringArray(["....."])
+	z.terrain_legend = {".": "grass"}
+	z.prop_rows = PackedStringArray([".f.B."])
+	z.prop_legend = {"f": "flowers", "B": "grey_boulders"}
+	return z
+
+
+func test_props_bake_walkability_and_sight() -> void:
+	var z := _prop_zone()
+	assert_eq(Array(z.validate_terrain(basic)), [])
+	z.bake_walkability(basic)
+	assert_eq(Array(z.walk_rows), ["...#."], "flowers can be walked on, a boulder can't")
+	assert_eq(Array(z.sight_rows), ["...#."], "the boulder blocks sight")
+	var grid := GridModel.from_zone(z)
+	assert_true(grid.blocks_sight(Vector2i(3, 0)))
+	assert_false(grid.is_walkable(Vector2i(3, 0)))
+	assert_true(grid.is_walkable(Vector2i(1, 0)))
+
+
+func test_sight_blocking_tiles_stop_los_and_projectiles() -> void:
+	var z := _prop_zone()
+	z.bake_walkability(basic)
+	var grid := GridModel.from_zone(z)
+	assert_false(LineOfSight.has_los(grid, Vector2i(2, 0), Vector2i(4, 0), 0.5), "behind the boulder")
+	assert_true(LineOfSight.has_los(grid, Vector2i(0, 0), Vector2i(2, 0), 0.5), "over the flowers")
+	var line := TileGeometry.clip_line(grid, TileGeometry.line8(Vector2i(0, 0), Vector2i(1, 0), 4), 0, 0.5)
+	assert_eq(line, [Vector2i(1, 0), Vector2i(2, 0)] as Array[Vector2i], "a shot stops at the boulder")
+
+
+func test_prop_validation() -> void:
+	var z := _prop_zone()
+	z.prop_rows = PackedStringArray([".x.."])
+	z.prop_legend = {"f": "nope"}
+	var text := "\n".join(z.validate_terrain(basic))
+	assert_string_contains(text, "prop row 0 has length 4")
+	assert_string_contains(text, "prop char 'x' at (1,0) is not in the legend")
+	assert_string_contains(text, "unknown prop group nope")
