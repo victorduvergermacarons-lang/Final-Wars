@@ -16,8 +16,8 @@ const HEIGHT_COLORS := [
 const HERO_COLORS := [Color(0.25, 0.5, 1.0), Color(0.2, 0.85, 0.45), Color(1.0, 0.8, 0.2), Color(0.85, 0.4, 0.95)]
 const ENEMY_COLOR := Color(0.85, 0.2, 0.2)
 ## Tile highlights: aiming (valid / can't), enemy telegraphs, ground zones.
-const AIM_COLOR := Color(0.45, 0.85, 1.0, 0.55)
-const AIM_BAD_COLOR := Color(1.0, 0.3, 0.25, 0.45)
+const AIM_COLOR := Color(0.2, 0.6, 1.0, 0.6)
+const AIM_BAD_COLOR := Color(1.0, 0.25, 0.2, 0.55)
 const TELEGRAPH_COLOR := Color(1.0, 0.15, 0.1)
 const ZONE_COLOR := Color(1.0, 0.55, 0.1, 0.4)
 
@@ -554,7 +554,9 @@ func _draw_tile_mark(grid: GridModel, p: Vector2i, color: Color) -> void:
 	var pts := PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh), c + Vector2(-hw, 0)])
 	draw_colored_polygon(pts, color)
 	pts.append(pts[0])
-	draw_polyline(pts, Color(color, minf(color.a + 0.35, 1.0)), 1.5)
+	# A dark rim under the bright edge keeps marks readable on light grass.
+	draw_polyline(pts, Color(0.05, 0.05, 0.1, 0.6), 3.5)
+	draw_polyline(pts, Color(color.lightened(0.25), minf(color.a + 0.4, 1.0)), 1.5)
 
 
 func _draw_quest_area(grid: GridModel, p: Vector2i) -> void:
