@@ -31,6 +31,9 @@ var _graveyards := {}
 var _float_texts: Array = [] # {actor, text, color, t, row}
 var _font: Font
 var _landmarks: Array[ZoneLandmark] = []
+var _zone: ZoneDef
+## The zone's tileset art (null: placeholder diamonds).
+var _art: TileArt
 ## Bars and markers queued while drawing actors, drawn last so terrain and
 ## other actors never cover them.
 var _overlay: Array[Callable] = []
@@ -43,6 +46,8 @@ func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
 	session = p_session
 	client = p_client
 	_font = ThemeDB.fallback_font
+	_zone = zone
+	_art = TileArt.for_tileset(ContentDB.tilesets.get(zone.tileset)) if zone.has_terrain() else null
 	var grid: GridModel = session.grid()
 	for y in grid.depth:
 		for x in grid.width:
@@ -215,6 +220,9 @@ func _draw_anchor(a: Actor) -> Vector2i:
 
 
 func _draw_tile(grid: GridModel, p: Vector2i) -> void:
+	if _art != null:
+		_draw_terrain_column(grid, p)
+		return
 	var h := grid.height_at(p)
 	var walkable := grid.is_walkable(p)
 	var top_color: Color
@@ -241,6 +249,23 @@ func _draw_tile(grid: GridModel, p: Vector2i) -> void:
 	if _graveyards.has(p):
 		draw_line(c + Vector2(0, -12), c + Vector2(0, 4), Color.WHITE, 2.0)
 		draw_line(c + Vector2(-5, -7), c + Vector2(5, -7), Color.WHITE, 2.0)
+
+
+## A tiled zone's tile: its stack of blocks, bottom first. Blocks the tiles in
+## front fully cover are skipped (they would be drawn over anyway).
+func _draw_terrain_column(grid: GridModel, p: Vector2i) -> void:
+	var h := grid.height_at(p)
+	var front := mini(_front_height(grid, p + Vector2i(1, 0)), _front_height(grid, p + Vector2i(0, 1)))
+	for block in _art.column(_zone.terrain_at(p), p, h, front):
+		_art.draw(self, block[0], Iso.to_screen(Vector2(p), block[1]))
+	if _graveyards.has(p):
+		var c := Iso.to_screen(Vector2(p), h)
+		draw_line(c + Vector2(0, -12), c + Vector2(0, 4), Color.WHITE, 2.0)
+		draw_line(c + Vector2(-5, -7), c + Vector2(5, -7), Color.WHITE, 2.0)
+
+
+func _front_height(grid: GridModel, p: Vector2i) -> int:
+	return grid.height_at(p) if grid.in_bounds(p) else -1
 
 
 func _draw_actor(a: Actor) -> void:

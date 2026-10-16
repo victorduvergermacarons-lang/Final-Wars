@@ -6,6 +6,11 @@ extends Resource
 ## height_rows: one char per tile, '0'-'9' then 'a'-'z' for heights 10-35.
 ## walk_rows:   '.' walkable, any other char (e.g. '#') blocked.
 ## Row 0 is the top (smallest y). Every row must be `width` chars long.
+##
+## Tiled zones also name a tileset (res://assets/tiles/<id>/) and give a terrain
+## layer: terrain_rows, one char per tile, each char mapped to one of the
+## tileset's terrain kinds by terrain_legend. For those zones the tileset decides
+## walkability: ContentDB rebuilds walk_rows from it at load (bake_walkability).
 
 @export var id: StringName = &""
 @export var display_name: String = ""
@@ -21,6 +26,11 @@ extends Resource
 ## Map sides that lead into other zones (walk off the edge).
 @export var edges: Array[ZoneEdge] = []
 @export var npcs: Array[NpcSpawn] = []
+## Tileset id (see TilesetData); empty for placeholder-drawn zones.
+@export var tileset: StringName = &""
+@export var terrain_rows: PackedStringArray = []
+## Terrain char -> terrain kind name in the tileset, e.g. {".": "grass", "~": "water"}.
+@export var terrain_legend: Dictionary = {}
 
 const HEIGHT_CHARS := "0123456789abcdefghijklmnopqrstuvwxyz"
 
@@ -31,6 +41,52 @@ func get_width() -> int:
 
 func get_depth() -> int:
 	return height_rows.size()
+
+
+func has_terrain() -> bool:
+	return tileset != &"" and not terrain_rows.is_empty()
+
+
+## The terrain kind at `p` ("" outside the map or without a terrain layer).
+func terrain_at(p: Vector2i) -> String:
+	if p.y < 0 or p.y >= terrain_rows.size() or p.x < 0 or p.x >= terrain_rows[p.y].length():
+		return ""
+	return str(terrain_legend.get(terrain_rows[p.y][p.x], ""))
+
+
+## Rebuilds walk_rows from the tileset: a tile is walkable when its terrain's
+## tiles are (all variants of a terrain share walkability; see validate_terrain).
+func bake_walkability(ts: TilesetData) -> void:
+	var rows: PackedStringArray = []
+	for y in terrain_rows.size():
+		var row := ""
+		for x in terrain_rows[y].length():
+			row += "." if ts.terrain_walkable(terrain_at(Vector2i(x, y))) else "#"
+		rows.append(row)
+	walk_rows = rows
+
+
+## Problems with the terrain layer against its tileset (empty = fine).
+func validate_terrain(ts: TilesetData) -> PackedStringArray:
+	var errors: PackedStringArray = []
+	if ts == null:
+		return PackedStringArray(["%s: unknown tileset %s" % [id, tileset]])
+	if terrain_rows.size() != height_rows.size():
+		errors.append("%s: terrain_rows has %d rows, height_rows has %d" % [id, terrain_rows.size(), height_rows.size()])
+	for y in terrain_rows.size():
+		if terrain_rows[y].length() != get_width():
+			errors.append("%s: terrain row %d has length %d, expected %d" % [id, y, terrain_rows[y].length(), get_width()])
+		for x in terrain_rows[y].length():
+			var c := terrain_rows[y][x]
+			if not terrain_legend.has(c):
+				errors.append("%s: terrain char '%s' at (%d,%d) is not in the legend" % [id, c, x, y])
+	for c in terrain_legend:
+		var name := str(terrain_legend[c])
+		if not ts.terrains.has(name):
+			errors.append("%s: legend '%s' names unknown terrain %s" % [id, c, name])
+		elif not ts.terrain_walkability_consistent(name):
+			errors.append("%s: terrain %s mixes walkable and unwalkable tiles" % [id, name])
+	return errors
 
 
 static func parse_height(c: String) -> int:

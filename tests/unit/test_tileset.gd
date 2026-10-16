@@ -50,3 +50,63 @@ func test_validation_catches_mistakes() -> void:
 	assert_string_contains(text, "animation x uses unknown tile 7")
 	assert_string_contains(text, "uses tile 1, which is not a block")
 	assert_string_contains(text, "fill loop")
+
+
+func test_variants_are_stable_and_spread() -> void:
+	var seen := {}
+	for x in 20:
+		for y in 20:
+			var t := basic.pick("grass", Vector2i(x, y))
+			assert_eq(t, basic.pick("grass", Vector2i(x, y)), "same cell, same tile")
+			seen[t] = seen.get(t, 0) + 1
+	assert_eq(seen.keys().size(), 3, "all three grass variants show up")
+	for t in seen:
+		assert_gt(seen[t], 80, "roughly even (%d of 400)" % seen[t])
+
+
+func test_weights_make_rare_variants_rarer() -> void:
+	var rare := 0
+	for x in 40:
+		for y in 40:
+			if basic.pick("dirt", Vector2i(x, y)) == 7:
+				rare += 1
+	assert_between(rare, 10, 90, "tile 7 has weight 0.3 among ~9.6 (expect ~50 of 1600)")
+
+
+func test_column_stacks_fill_under_the_top() -> void:
+	var art := TileArt.for_tileset(basic)
+	var col := art.column("grass", Vector2i(3, 4), 2)
+	assert_eq(col.size(), 3, "levels 0, 1 and 2")
+	assert_true(basic.terrains.dirt.tiles.has(col[0][0]), "dirt below")
+	assert_true(basic.terrains.grass.tiles.has(col[2][0]), "grass on top")
+	assert_eq(col[2][1], 2)
+	assert_eq(art.column("grass", Vector2i(3, 4), 2, 2).size(), 1, "hidden lower blocks skipped")
+
+
+func test_image_lines_up_with_the_grid() -> void:
+	var art := TileArt.for_tileset(basic)
+	var r := art.image_rect(Vector2(100, 50))
+	assert_eq(r.size, Vector2(64, 64), "32 px art at 2x")
+	assert_eq(r.position, Vector2(100 - 32, 50 - 32), "top face centre (16, 16) in the image")
+
+
+func test_zone_terrain_bakes_walkability() -> void:
+	var z := ZoneDef.new()
+	z.id = &"t"
+	z.tileset = &"iso_basic"
+	z.height_rows = PackedStringArray(["000", "000"])
+	z.walk_rows = PackedStringArray(["...", "..."])
+	z.terrain_rows = PackedStringArray([".~=", "..?"])
+	z.terrain_legend = {".": "grass", "~": "water", "=": "ford"}
+	var errors := "\n".join(z.validate_terrain(basic))
+	assert_string_contains(errors, "terrain char '?' at (2,1) is not in the legend")
+	z.terrain_rows = PackedStringArray([".~=", "..."])
+	assert_eq(Array(z.validate_terrain(basic)), [])
+	z.bake_walkability(basic)
+	assert_eq(Array(z.walk_rows), [".#.", "..."], "water blocks, the ford doesn't")
+
+
+func test_content_zones_have_valid_terrain() -> void:
+	var gf: ZoneDef = ContentDB.zones[&"greenfields"]
+	assert_true(gf.has_terrain())
+	assert_eq(Array(gf.validate_terrain(basic)), [])

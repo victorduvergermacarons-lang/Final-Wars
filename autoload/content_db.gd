@@ -47,6 +47,9 @@ func reload() -> void:
 	quests = _load_dir(DIRS.quests)
 	tree = AbilityTreeData.load_file()
 	tilesets = TilesetData.load_all()
+	for z in zones.values():
+		if z.has_terrain() and tilesets.has(z.tileset):
+			z.bake_walkability(tilesets[z.tileset])
 	tree_tuning = load(TREE_TUNING_PATH) if ResourceLoader.exists(TREE_TUNING_PATH) else TreeTuning.new()
 	var built := TreeContent.build(tree, tree_tuning)
 	abilities.merge(built.abilities)
@@ -104,6 +107,9 @@ func validate() -> PackedStringArray:
 		errors.append_array(z.validate())
 	for t in tilesets.values():
 		errors.append_array(t.validate())
+	for z in zones.values():
+		if z.has_terrain():
+			errors.append_array(z.validate_terrain(tilesets.get(z.tileset)))
 	for q in quests.values():
 		errors.append_array(q.validate())
 		for id in [q.giver, q.turn_in_npc()]:

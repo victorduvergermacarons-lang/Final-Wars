@@ -105,6 +105,46 @@ func blocks_sight(tile_id: int) -> bool:
 	return bool(tile(tile_id).get("blocks_sight", false))
 
 
+## Whether a terrain's tiles can be walked on (its first tile decides; the
+## validator checks that all its variants agree).
+func terrain_walkable(terrain: String) -> bool:
+	var tr: Dictionary = terrains.get(terrain, {})
+	return not tr.is_empty() and is_walkable(tr.tiles[0])
+
+
+func terrain_walkability_consistent(terrain: String) -> bool:
+	var tr: Dictionary = terrains.get(terrain, {})
+	for tid in tr.get("tiles", []):
+		if is_walkable(tid) != is_walkable(tr.tiles[0]):
+			return false
+	return true
+
+
+## The variant of `terrain` shown at `cell` (`salt` tells stacked blocks apart).
+## The same cell always gets the same tile; neighbours differ, weighted.
+func pick(terrain: String, cell: Vector2i, salt: int = 0) -> int:
+	var tr: Dictionary = terrains.get(terrain, {})
+	if tr.is_empty():
+		return -1
+	var total := 0.0
+	for w in tr.weights:
+		total += w
+	var r := float(cell_hash(cell, salt) % 100000) / 100000.0 * total
+	for i in tr.tiles.size():
+		r -= tr.weights[i]
+		if r < 0.0:
+			return tr.tiles[i]
+	return tr.tiles[-1]
+
+
+## A stable pseudo-random number for a cell (no global RNG, same on every machine).
+static func cell_hash(cell: Vector2i, salt: int = 0) -> int:
+	var h := (cell.x * 73856093) ^ (cell.y * 19349663) ^ (salt * 83492791)
+	h = (h ^ (h >> 13)) * 1274126177
+	h = h ^ (h >> 16)
+	return h & 0x7fffffff
+
+
 ## Problems in the catalog, as readable messages (empty = fine).
 func validate() -> PackedStringArray:
 	var errors := load_errors.duplicate()
