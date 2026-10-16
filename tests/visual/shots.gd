@@ -10,7 +10,10 @@ var game: Game
 
 func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(out_dir)
-	get_window().size = Vector2i(1280, 720)
+	# Another window size: launch with --resolution 1920x1080 (and an xvfb screen
+	# that big); resizing the window from here leaves part of the capture black.
+	if not OS.get_cmdline_args().has("--resolution"):
+		get_window().size = Vector2i(1280, 720)
 	_run.call_deferred()
 
 

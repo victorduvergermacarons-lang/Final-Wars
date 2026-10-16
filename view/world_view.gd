@@ -23,7 +23,7 @@ const ZONE_COLOR := Color(1.0, 0.55, 0.1, 0.4)
 
 var session # LocalSession or a networked session with the same API
 var client: ClientState
-var camera: Camera2D
+var camera: PixelCamera
 
 var _tiles_by_depth := {} # depth -> Array[Vector2i]
 var _max_depth := 0
@@ -55,9 +55,7 @@ func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
 	for g in zone.graveyards:
 		_graveyards[g] = true
 	_landmarks = zone.landmarks
-	camera = Camera2D.new()
-	camera.position_smoothing_enabled = true
-	camera.zoom = Vector2(1.5, 1.5)
+	camera = PixelCamera.new()
 	add_child(camera)
 	session.events_received.connect(_on_events)
 
@@ -67,7 +65,7 @@ func _process(delta: float) -> void:
 		return
 	var hero: Actor = session.local_hero()
 	if hero != null:
-		camera.position = actor_screen_pos(hero)
+		camera.follow(actor_screen_pos(hero), delta)
 	var t: float = session.render_time()
 	_float_texts = _float_texts.filter(func(f): return t - f.t < FLOAT_TEXT_SECONDS)
 	queue_redraw()
@@ -76,9 +74,9 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			camera.zoom = (camera.zoom * 1.1).clamp(Vector2(0.5, 0.5), Vector2(3, 3))
+			camera.step_zoom(1)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			camera.zoom = (camera.zoom / 1.1).clamp(Vector2(0.5, 0.5), Vector2(3, 3))
+			camera.step_zoom(-1)
 
 
 ## Interpolated screen position of an actor's feet.
