@@ -10,7 +10,9 @@ extends RefCounted
 ##   top_y (art y of a block's top corner), level_height (art px per height level),
 ##   tiles: [{id, name, category, kind, walkable, blocks_sight, ...}],
 ##   animations: {name: {frames: [ids], fps}},
-##   terrains: {name: {tiles: [id or [id, weight]], fill: terrain under it}},
+##   terrains: {name: {tiles: [id or [id, weight]], fill: terrain under it,
+##     shore: true to pick by which sides touch land (tiles list "shore" sides)}},
+##   a tile's optional "drop": art px its surface sits below a ground block's.
 ##   props: {name: {tiles: [id or [id, weight]]}} (groups of prop tiles).
 
 const ROOT := "res://assets/tiles"
@@ -80,6 +82,7 @@ func load_dict(d: Dictionary, folder: String) -> void:
 	for name in d.get("terrains", {}):
 		var tr := _weighted(d.terrains[name].get("tiles", []))
 		tr.fill = str(d.terrains[name].get("fill", ""))
+		tr.shore = bool(d.terrains[name].get("shore", false))
 		terrains[name] = tr
 	for name in d.get("props", {}):
 		props[name] = _weighted(d.props[name].get("tiles", []))
@@ -105,6 +108,49 @@ func tile(tile_id: int) -> Dictionary:
 
 func tile_path(tile_id: int) -> String:
 	return dir.path_join(file_pattern % tile_id)
+
+
+## Grid directions by the names tiles use for their "shore" sides.
+const SIDES := {"n": Vector2i(0, -1), "w": Vector2i(-1, 0), "e": Vector2i(1, 0), "s": Vector2i(0, 1)}
+
+
+func surface_drop(tile_id: int) -> int:
+	return int(tile(tile_id).get("drop", 0))
+
+
+func is_water_tile(tile_id: int) -> bool:
+	return tile(tile_id).get("category", "") == "water"
+
+
+func is_water_terrain(terrain: String) -> bool:
+	var tr: Dictionary = terrains.get(terrain, {})
+	return not tr.is_empty() and is_water_tile(tr.tiles[0])
+
+
+## For a shore terrain: the tile whose foam best matches the sides touching land
+## (`land` holds side names from SIDES). Foam where there is water costs more
+## than missing foam; with a tie, less foam wins.
+func pick_shore(terrain: String, land: Array) -> int:
+	var tr: Dictionary = terrains.get(terrain, {})
+	var best := -1
+	var best_score := -INF
+	for tid in tr.get("tiles", []):
+		var foam: Array = tile(tid).get("shore", [])
+		var score := 0.0
+		for side in SIDES:
+			var has_foam := foam.has(side)
+			var is_land := land.has(side)
+			if has_foam and is_land:
+				score += 2.0
+			elif has_foam:
+				score -= 3.0
+			elif is_land:
+				score -= 1.0
+		score -= foam.size() * 0.01
+		if score > best_score:
+			best_score = score
+			best = tid
+	return best
 
 
 func is_walkable(tile_id: int) -> bool:

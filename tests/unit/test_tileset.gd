@@ -155,3 +155,38 @@ func test_prop_validation() -> void:
 	assert_string_contains(text, "prop row 0 has length 4")
 	assert_string_contains(text, "prop char 'x' at (1,0) is not in the legend")
 	assert_string_contains(text, "unknown prop group nope")
+
+
+func test_shore_foam_matches_the_land_around() -> void:
+	assert_eq(basic.pick_shore("light_water", []), 104, "open water: no foam")
+	assert_eq(basic.pick_shore("light_water", ["n"]), 105)
+	assert_eq(basic.pick_shore("light_water", ["s"]), 108)
+	assert_eq(basic.pick_shore("light_water", ["n", "w"]), 109)
+	assert_eq(basic.pick_shore("light_water", ["e", "s"]), 110)
+	assert_eq(basic.pick_shore("light_water", ["n", "w", "e", "s"]), 113, "a one-tile pool")
+	var opposite := basic.pick_shore("light_water", ["n", "s"])
+	assert_true([105, 108].has(opposite), "no tile for opposite sides: one of them gets foam")
+	var art := TileArt.for_tileset(basic)
+	assert_eq(art.top_tile("light_water", Vector2i(5, 5), ["e"]), 107)
+
+
+func test_water_sits_lower_and_sparkles() -> void:
+	assert_eq(basic.surface_drop(86), 4)
+	assert_eq(basic.surface_drop(22), 0)
+	assert_true(basic.is_water_terrain("water"))
+	assert_false(basic.is_water_terrain("water_rocks"), "rocks standing in water count as land")
+	var art := TileArt.for_tileset(basic)
+	var twinkling := 0
+	var frames_seen := {}
+	for x in 30:
+		for y in 30:
+			var shown := false
+			for k in 16:
+				var f := art.sparkle_frame(Vector2i(x, y), k / 6.0)
+				if f >= 0:
+					shown = true
+					frames_seen[f] = true
+			if shown:
+				twinkling += 1
+	assert_between(twinkling, 120, 240, "about one water tile in five (%d of 900)" % twinkling)
+	assert_eq(frames_seen.keys().size(), 4, "all four sparkle frames play")

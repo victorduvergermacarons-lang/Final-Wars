@@ -256,8 +256,13 @@ func _draw_tile(grid: GridModel, p: Vector2i) -> void:
 func _draw_terrain_column(grid: GridModel, p: Vector2i) -> void:
 	var h := grid.height_at(p)
 	var front := mini(_front_height(grid, p + Vector2i(1, 0)), _front_height(grid, p + Vector2i(0, 1)))
-	for block in _art.column(_zone.terrain_at(p), p, h, front):
+	var terrain := _zone.terrain_at(p)
+	for block in _art.column(terrain, p, h, front, _land_sides(p)):
 		_art.draw(self, block[0], Iso.to_screen(Vector2(p), block[1]))
+	if _art.data.is_water_terrain(terrain):
+		var sparkle := _art.sparkle_frame(p, session.render_time())
+		if sparkle >= 0:
+			_art.draw(self, sparkle, Iso.to_screen(Vector2(p), h))
 	# The prop goes with its tile, so the tiles in front still cover what's behind
 	# a boulder, and a unit behind it is hidden by it.
 	var group := _zone.prop_at(p)
@@ -267,6 +272,30 @@ func _draw_terrain_column(grid: GridModel, p: Vector2i) -> void:
 		var c := Iso.to_screen(Vector2(p), h)
 		draw_line(c + Vector2(0, -12), c + Vector2(0, 4), Color.WHITE, 2.0)
 		draw_line(c + Vector2(-5, -7), c + Vector2(5, -7), Color.WHITE, 2.0)
+
+
+## Sides of a water tile that touch land (for shoreline foam); map edges count
+## as water.
+func _land_sides(p: Vector2i) -> Array:
+	var out := []
+	if not _art.data.is_water_terrain(_zone.terrain_at(p)):
+		return out
+	for side in TilesetData.SIDES:
+		var n: Vector2i = p + TilesetData.SIDES[side]
+		var t := _zone.terrain_at(n)
+		if t != "" and not _art.data.is_water_terrain(t):
+			out.append(side)
+	return out
+
+
+## The centre of a tile's visible top: water surfaces sit a little lower.
+func surface_point(grid: GridModel, p: Vector2i) -> Vector2:
+	var c := Iso.to_screen(Vector2(p), grid.height_at(p))
+	if _art != null:
+		var terrain := _zone.terrain_at(p)
+		if _art.data.is_water_terrain(terrain) and _zone.prop_at(p) == "":
+			c.y += _art.data.surface_drop(_art.top_tile(terrain, p, _land_sides(p))) * PixelCamera.ART_SCALE
+	return c
 
 
 func _front_height(grid: GridModel, p: Vector2i) -> int:
@@ -519,7 +548,7 @@ static func _mark(marks: Dictionary, tile: Vector2i, color: Color) -> void:
 
 
 func _draw_tile_mark(grid: GridModel, p: Vector2i, color: Color) -> void:
-	var c := Iso.to_screen(Vector2(p), grid.height_at(p))
+	var c := surface_point(grid, p)
 	var hw := Iso.TILE_W * 0.5 - 3
 	var hh := Iso.TILE_H * 0.5 - 1.5
 	var pts := PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh), c + Vector2(-hw, 0)])
@@ -529,7 +558,7 @@ func _draw_tile_mark(grid: GridModel, p: Vector2i, color: Color) -> void:
 
 
 func _draw_quest_area(grid: GridModel, p: Vector2i) -> void:
-	var c := Iso.to_screen(Vector2(p), grid.height_at(p))
+	var c := surface_point(grid, p)
 	var pulse := 0.5 + 0.2 * sin(Time.get_ticks_msec() / 250.0)
 	var hw := Iso.TILE_W * 0.5 - 4
 	var hh := Iso.TILE_H * 0.5 - 2
