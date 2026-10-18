@@ -42,7 +42,7 @@ func test_enemy_abilities_use_milestone_3_targeting() -> void:
 		var a: AbilityDef = db.abilities[id]
 		assert_eq(a.targeting, AbilityDef.TargetingMode.TARGETED, id)
 		assert_gt(a.windup_seconds, 0.0, "%s winds up" % id)
-	assert_eq(db.abilities[&"wolf_bite"].windup_seconds, 0.3)
+	assert_almost_eq(db.abilities[&"wolf_bite"].windup_seconds, 0.4, 0.0001, "frame 12 of the bite at 30 fps (2026-10-18)")
 	assert_eq(db.abilities[&"shadow_bolt"].targeting, AbilityDef.TargetingMode.SKILLSHOT)
 	assert_eq(db.abilities[&"grizzly_cleave"].line_shape, AbilityDef.LineShape.ARC)
 	var blow: AbilityDef = db.abilities[&"crushing_blow"]

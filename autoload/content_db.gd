@@ -73,10 +73,23 @@ func _link_tree_items() -> void:
 		_link_list(q.reward_items, q.reward_item_ids)
 		_link_list(q.reward_choices, q.reward_choice_ids)
 	for e in enemies.values():
+		_time_abilities_to_art(e)
+	for e in enemies.values():
 		if e.loot != null:
 			for entry in e.loot.entries:
 				if entry.item_id != &"":
 					entry.item = _item(entry.item_id)
+
+
+## Attacks timed by a creature's art wind up until their hit frame (the bite
+## lands when the jaws close), whatever the frame rate is set to.
+func _time_abilities_to_art(e: EnemyDef) -> void:
+	if e.art == null:
+		return
+	for a in e.abilities:
+		var w := e.art.windup_for(a.id)
+		if w >= 0.0:
+			a.windup_seconds = w
 
 
 func _link_list(list: Array, ids: Array) -> void:

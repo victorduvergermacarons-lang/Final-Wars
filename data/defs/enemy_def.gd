@@ -35,5 +35,8 @@ enum Behavior {
 @export var elite: bool = false
 ## How far knockbacks and pulls move it (Weight.adjust).
 @export var weight: Weight.Id = Weight.Id.MEDIUM
+## Animated sprite art (null: drawn as a placeholder diamond). Its frame rates
+## also time the attacks it lists (see CreatureArtDef.timed_abilities).
+@export var art: CreatureArtDef
 ## Seconds per tile while walking a patrol route (see EnemySpawn.patrol).
 @export var patrol_step_seconds: float = 1.0

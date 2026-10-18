@@ -21,4 +21,4 @@ cooldown_seconds = 2.0
 max_height_difference = 2
 effects = Array[ExtResource("1_0k60o")]([SubResource("Resource_flud3")])
 targeting = 1
-windup_seconds = 0.3
+windup_seconds = 0.4
