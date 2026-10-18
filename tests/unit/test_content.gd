@@ -44,14 +44,14 @@ func test_zone_is_30_by_30_with_heights_and_enemies() -> void:
 	assert_eq(grid.width, 30)
 	assert_eq(grid.depth, 30)
 	assert_eq(grid.height_at(Vector2i(25, 5)), 4, "plateau")
-	assert_eq(zone.enemy_spawns.size(), 11)
+	assert_eq(zone.enemy_spawns.size(), 14) # 11 + the wolf pack of 3
 	var counts := {}
 	for s in zone.enemy_spawns:
 		counts[s.enemy.id] = counts.get(s.enemy.id, 0) + 1
 		assert_true(grid.is_walkable(s.tile))
 		var path := Pathfinder.find_path(grid, zone.hero_spawns[0], s.tile, 2, {}, -1, 100000)
 		assert_false(path.is_empty(), "%s at %s is reachable" % [s.enemy.id, s.tile])
-	assert_eq(counts, {&"wolf": 4, &"goblin_shaman": 2, &"bandit_brute": 2, &"fen_skirmisher": 2,
+	assert_eq(counts, {&"wolf": 7, &"goblin_shaman": 2, &"bandit_brute": 2, &"fen_skirmisher": 2,
 			&"old_grizzlehide": 1})
 
 
@@ -66,7 +66,7 @@ func test_plateau_is_reachable_by_ramp_only() -> void:
 func test_world_starts_from_shipped_content() -> void:
 	var world := WorldSim.new(db.zones[&"greenfields"], db.rules, 1)
 	var hero := world.add_hero(db.heroes[&"adventurer"])
-	assert_eq(world.enemies().size(), 11)
+	assert_eq(world.enemies().size(), 14)
 	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"rusty_shortsword")
 	assert_eq(hero.learning_item.id, &"ember_fist_scroll", "starts learning Fire Punch")
 	assert_eq(hero.bag.count_of(db.items[&"menders_scroll"]), 1)

@@ -140,7 +140,7 @@ func test_solo_game_runs_with_hud() -> void:
 	var new_view := game.get_node_or_null("WorldView")
 	assert_not_null(new_view)
 	assert_ne(new_view, old_view, "the view was rebuilt for the new zone")
-	assert_eq(session.actors().filter(func(a): return a is Enemy).size(), 11, "now seeing Greenfields' enemies")
+	assert_eq(session.actors().filter(func(a): return a is Enemy).size(), 14, "now seeing Greenfields' enemies (11 + the wolf pack)")
 
 	# Saving writes the hero's progress to the store.
 	game.store = CharacterStore.new("user://test_smoke_characters")

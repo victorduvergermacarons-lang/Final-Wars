@@ -9,7 +9,8 @@ This file is the living design doc. Keep it current as decisions are made.
 playtested; post-playtest fixes done. **Milestone 3 (abilities, mastery, targeting) built**
 (all 16 steps); awaiting a playtest with `docs/playtest-checklist-m3.md`. **The ground now
 uses the first real tileset** (`iso_basic`, 8 steps, 2026-10-16; see **Map art** below and
-`docs/playtest-checklist-tiles.md`). For the numbers
+`docs/playtest-checklist-tiles.md`). **Wolves are animated** (2026-10-18; see **Creature
+art** below and `docs/playtest-checklist-wolves.md`). For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -196,6 +197,38 @@ How-to: `docs/tilesets.md`.
 - **Millbrook:** a bush hedge, stone houses, a cobblestone plaza, dirt paths and a
   fountain.
 
+## Creature art (wolf, 2026-10-18)
+
+- **Sprites:** `assets/creatures/wolf/` holds the sheets (with shadows and effects, plus
+  `no_effects/` and `no_shadow_or_effects/`). Every frame is 64×64, one row per
+  facing: SW, SE, NW, NE.
+- **Art data:** `content/creatures/wolf_art.tres` (`CreatureArtDef`, linked from
+  `wolf.tres`) holds:
+  - the sheets and the feet point (32, 46), which stands on the tile centre
+  - frame rates: idle 6, bite 30, howl 10, death 10 fps; run plays 8 frames per tile
+  - the bite's hit frame (12)
+  - corpse 4 s and fade 1 s; hit flash 0.1 s
+- **Timing comes from the art:** ContentDB sets each timed ability's wind-up from its
+  hit frame. Bite 12 / 30 fps = 0.4 s (was 0.3). Howl 9 / 10 fps = 0.9 s.
+- **Facing:** grid up → NE, right → SE, down → SW, left → NW. Enemies face where they
+  step, and toward their target when attacking.
+- **Behaviour:**
+  - In combat a wolf glides over its whole 0.8 s step, so the run cycle matches the
+    ground.
+  - The bite plays from its wind-up; damage lands on frame 12. The wolf stays put for
+    the wind-up and the 2 recovery frames after it.
+  - A wolf that starts a fight (spots a hero, or is hit first) stands and howls.
+    When the howl ends, idle wolves within 6 tiles (`pack_call_radius`) join on the
+    same hero. Wolves called in don't howl.
+  - Death plays once, the corpse lies 4 s, then fades. Taking damage flashes the body
+    white (the shadowless sheet, saturated).
+- **Networking:** clients pick every frame from host times: steps, wind-ups (bite and
+  howl), and the time of death (`died_at`, now in snapshots). All players see the
+  same frame at the same moment.
+- **Greenfields:** a pack of 3 wolves in the north-west corner at (2,1), (4,1) and
+  (3,3), 15+ tiles from the lone wolves.
+- Other enemies keep the placeholder diamond until they get art.
+
 ## Gameplay as built (end of Milestone 1, after playtest)
 
 > Milestone 3 retired the hero abilities and weapons below (Strike … Rallying Roar, Sword,
@@ -339,6 +372,7 @@ net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
 content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ (.tres)
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
+assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
 art/             uploaded source art (zips; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
@@ -351,7 +385,7 @@ design/          Ability_Tree.xlsx (source of truth for abilities)
 tools/once/      one-off content conversions and generators (kept for the record)
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
                  net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles), ability import, tilesets
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves), ability import, tilesets
 ```
 
 ### Build order (milestone 1)
@@ -435,7 +469,8 @@ docs/            local multiplayer testing, playtest checklists (M2, M3, tiles),
     - Fixed 20 Hz tick on the host.
     - Gear can only be changed out of combat.
     - Aggro: an idle enemy aggros on the nearest living hero within its aggro radius
-      and in line of sight. Damage also pulls it. No group/social aggro.
+      and in line of sight. Damage also pulls it. No group/social aggro, except wolf
+      packs (since 2026-10-18): a wolf's howl calls idle wolves within 6 tiles.
     - In combat the enemy attacks the top of its threat table whenever an ability is
       ready and in reach; otherwise it paths toward the target on its step cooldown.
       It turns to face a target next to it (free) before a FRONT attack.
@@ -1017,6 +1052,11 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-18 | Animated wolf art (6 steps): sprites, idle/run/bite/howl/death, hit flash, pack howl | User brief; plan approved with all recommended options. See **Creature art**. Measured: feet at y ≈ 46 (brief said 44); jaws close on bite frame 12. |
+| 2026-10-18 | Bite: 30 fps, damage on frame 12, so a 0.4 s wind-up (was 0.3) | User choice (recommended). Balance tests still pass. |
+| 2026-10-18 | Howl: the wolf stands still for it (0.9 s); the pack is called when it ends; a wolf hit first howls too | User choice (recommended). An exception to "no group aggro" (rule 12). Called wolves don't howl; an interrupted howl calls nobody. |
+| 2026-10-18 | Wolves glide across their whole 0.8 s combat step | User choice (recommended), so the run cycle matches the ground. A wolf can't start a bite while still gliding. |
+| 2026-10-18 | Implementation choices for the wolf | Mine. Art numbers live in `CreatureArtDef` (`content/creatures/wolf_art.tres`) and set the timed abilities' wind-ups at load. Wolves are drawn in the existing back-to-front order (not as separate nodes). The hit flash uses the shadowless sheet so the shadow stays dark. Debug-spawned enemies with art now stay until their corpse fades. A pack of 3 sits in Greenfields' north-west corner. |
 | 2026-10-16 | First real tileset (`iso_basic`) for the ground, in 8 steps | User brief; plan approved. See **Map art**. User answers: all water (light and dark) unwalkable; stone-slab fords for the bridges; Millbrook retiled too; the purple crystal catalogued as unwalkable. The catalog table was reviewed and accepted. |
 | 2026-10-16 | Tileset facts that differ from the brief | Measured: a block's side is 8 art px, not 16 (so 2× art matches the existing 64×32 grid and 16 px levels). The separate tile files are the numbering; the spritesheet has 6 empty cells and 20 cells that differ from the files, so it isn't used. Props start at tile 41. Light water 104–113 are shoreline pieces, not animation frames; only the sparkles (82–85) animate. |
 | 2026-10-16 | Pixel-perfect without integer window scaling | My choice. Integer window scaling showed 1080p as a letterboxed 720p picture. Instead the camera picks zooms where art pixels are whole screen pixels, counting the window's stretch (3× at 720p, 4× at 1080p; the old fractional 4.5× view is gone), and snaps its position. The HUD scales as before. |

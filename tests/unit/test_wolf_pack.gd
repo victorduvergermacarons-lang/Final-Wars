@@ -78,3 +78,17 @@ func test_the_howl_animation_plays_during_the_howl() -> void:
 	var anim := CreatureAnimator.new()
 	var pick := anim.pick(spotter, wolf_def.art, world.now)
 	assert_eq(pick.anim, "howl")
+
+
+func test_greenfields_has_a_pack_of_three_far_from_lone_wolves() -> void:
+	var zone: ZoneDef = ContentDB.zones[&"greenfields"]
+	var pack: Array[Vector2i] = [Vector2i(2, 1), Vector2i(4, 1), Vector2i(3, 3)]
+	var others: Array[Vector2i] = []
+	for s in zone.enemy_spawns:
+		if s.enemy.id == &"wolf" and not pack.has(s.tile):
+			others.append(s.tile)
+	for p in pack:
+		assert_true(zone.enemy_spawns.any(func(s): return s.tile == p and s.enemy.id == &"wolf"), "pack wolf at %s" % p)
+		for o in others:
+			assert_gt(GridModel.distance(p, o), zone.enemy_spawns[0].enemy.pack_call_radius,
+					"a pack howl can't reach the lone wolf at %s" % o)

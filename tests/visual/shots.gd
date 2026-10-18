@@ -207,5 +207,16 @@ func _run() -> void:
 	line[0].respawn_at = INF
 	view4._flash_until[line[1].id] = session.render_time() + 30.0
 	await _shot("19_wolf_death_and_flash")
+	# 17. The pack in the north-west corner: one wolf spots the hero and howls,
+	# then the pack closes in.
+	hero.hp = hero.current_stats(session.now()).hp
+	hero.move.place(Vector2i(3, 7))
+	await _snap_camera(hero)
+	await get_tree().create_timer(0.5).timeout
+	await _snap_camera(hero)
+	await _shot("20_pack_howl")
+	await get_tree().create_timer(1.6).timeout
+	await _snap_camera(hero)
+	await _shot("21_pack_closing_in")
 	view4.camera.step_zoom(-1)
 	get_tree().quit()
