@@ -76,7 +76,8 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 
 	var seen := world.perceived_tile(target, enemy.def.reaction_seconds)
 	# Mid-attack (cast bar showing) an enemy stands still: moving would cancel it.
-	if not enemy.casting.is_empty():
+	# Animated creatures also finish their attack's recovery frames.
+	if not enemy.casting.is_empty() or world.now < enemy.busy_until:
 		return
 	match enemy.def.behavior:
 		EnemyDef.Behavior.KITER:

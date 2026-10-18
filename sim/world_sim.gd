@@ -424,6 +424,8 @@ func _update_casts() -> void:
 			"windup":
 				if now + 0.0001 >= c.end:
 					a.casting = {}
+					if a is Enemy and (a as Enemy).def.art != null:
+						(a as Enemy).busy_until = now + (a as Enemy).def.art.recovery_for(ability.id)
 					var r := _finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
 					if r != AbilityResolver.Result.OK:
 						emit({"type": "whiff", "source": a.id, "ability": ability.id, "tile": a.tile()})

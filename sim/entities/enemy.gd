@@ -20,6 +20,8 @@ var state: State = State.IDLE
 var respawn_at: float = 0.0
 ## When it last used an ability, or aggroed (FLANKER patience).
 var last_attack_at: float = 0.0
+## Animated creatures stay put until their attack's recovery frames have played.
+var busy_until: float = 0.0
 ## Its level: the type's level, unless spawned at another one (debug console).
 var level: int = 1
 ## Removed when it dies instead of respawning (debug spawns).

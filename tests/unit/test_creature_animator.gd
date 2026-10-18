@@ -83,3 +83,23 @@ func test_wolf_glides_over_its_whole_step_in_combat() -> void:
 	wolf.state = Enemy.State.COMBAT
 	assert_eq(world.try_step(wolf, Vector2i(3, 1)), "")
 	assert_almost_eq(wolf.move.duration, wolf.def.combat_step_seconds, 0.001)
+
+
+func test_wolf_stays_put_during_the_bite_and_its_recovery() -> void:
+	var hd := HeroDef.new()
+	hd.base_stats = StatBlock.make({Stat.Id.HP: 5000})
+	var hero := world.add_hero(hd)
+	hero.move.place(Vector2i(2, 2))
+	wolf.def.aggro_radius = 4
+	wolf.face(Vector2i(0, 1))
+	var events := []
+	var bitten_at := -1.0
+	var start_tile := wolf.tile()
+	for i in 40:
+		events = world.step()
+		if events.any(func(e): return e.type == "damage" and e.target == hero.id):
+			bitten_at = world.now
+			break
+		assert_eq(wolf.tile(), start_tile, "doesn't move while winding up")
+	assert_gt(bitten_at, 0.0, "it bit")
+	assert_almost_eq(wolf.busy_until, bitten_at + 2.0 / 30.0, 0.001, "busy for 2 recovery frames")
