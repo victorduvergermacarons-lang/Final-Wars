@@ -324,9 +324,16 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 	cancel_cast(actor, "moved") # moving cancels anything with a cast bar: cast, channel, wind-up
 	if not actor is Hero:
 		actor.face(to - from) # heroes face the mouse, not where they walk
-	actor.move.begin(to, now, walk_seconds if walk_seconds >= 0.0 else rules.walk_tile_seconds)
+	var step_cd := actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now)
+	if walk_seconds < 0.0:
+		walk_seconds = rules.walk_tile_seconds
+		# Animated creatures glide over their whole step in combat, so their run
+		# cycle covers the ground it shows (no sliding feet).
+		if in_combat and actor is Enemy and (actor as Enemy).def.art != null:
+			walk_seconds = step_cd
+	actor.move.begin(to, now, walk_seconds)
 	if in_combat and not actor.buffs.use_free_step(now):
-		actor.cooldowns.trigger_step(now, actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now))
+		actor.cooldowns.trigger_step(now, step_cd)
 	return ""
 
 

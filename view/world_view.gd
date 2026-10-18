@@ -34,6 +34,9 @@ var _landmarks: Array[ZoneLandmark] = []
 var _zone: ZoneDef
 ## The zone's tileset art (null: placeholder diamonds).
 var _art: TileArt
+## Animated creatures: which frame each shows.
+var _animator := CreatureAnimator.new()
+static var _frames_cache := {} # CreatureArtDef -> SpriteFrames
 ## Bars and markers queued while drawing actors, drawn last so terrain and
 ## other actors never cover them.
 var _overlay: Array[Callable] = []
@@ -310,7 +313,8 @@ func _draw_actor(a: Actor) -> void:
 		_draw_ellipse(feet, 20, 9, Color(1, 0.9, 0.2), 2.0)
 	var body := feet + Vector2(0, -14)
 	var alpha := 0.45 if a.evading else 1.0
-	if a.alive:
+	var animated := a is Enemy and (a as Enemy).def.art != null
+	if a.alive and not animated: # animated creatures show their facing themselves
 		_draw_facing(feet, a.facing, Color(1, 1, 1, 0.85 * alpha))
 	if a is Hero:
 		var color: Color = HERO_COLORS[(a.id - 1) % HERO_COLORS.size()]
@@ -336,6 +340,12 @@ func _draw_actor(a: Actor) -> void:
 			return
 		var c := Color(ENEMY_COLOR, alpha)
 		var edef := (a as Enemy).def
+		if edef.art != null and _draw_creature(a as Enemy, feet, alpha):
+			var top := feet - Vector2(0, (edef.art.feet.y - edef.art.head_y) * PixelCamera.ART_SCALE)
+			_draw_label(top + Vector2(0, -16), "%s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.8, 0.8, alpha))
+			_draw_bar(top + Vector2(-14, -10), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
+			_draw_cast_bar(a, feet, now)
+			return
 		var s := 1.6 if edef.elite else 1.0
 		var diamond := PackedVector2Array([body + Vector2(0, -12) * s, body + Vector2(10, 0) * s,
 				body + Vector2(0, 12) * s, body + Vector2(-10, 0) * s])
@@ -350,6 +360,24 @@ func _draw_actor(a: Actor) -> void:
 		var max_hp := a.current_stats(now).hp
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))
 		_draw_cast_bar(a, feet, now)
+
+
+## Draws an animated creature standing on `feet`; false if it has nothing to show.
+func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
+	var art := e.def.art
+	var pick := _animator.pick(e, art, session.render_time())
+	if pick.is_empty():
+		return false
+	if not _frames_cache.has(art):
+		_frames_cache[art] = art.build_sprite_frames()
+	var frames: SpriteFrames = _frames_cache[art]
+	var name := StringName("%s_%s" % [pick.anim, pick.dir])
+	if not frames.has_animation(name):
+		return false
+	var tex := frames.get_frame_texture(name, mini(pick.frame, frames.get_frame_count(name) - 1))
+	var s := PixelCamera.ART_SCALE
+	draw_texture_rect(tex, Rect2(feet - art.feet * s, Vector2(art.frame_size) * s), false, Color(1, 1, 1, alpha))
+	return true
 
 
 ## A bar under a unit that is casting (yellow), winding up (red) or channelling

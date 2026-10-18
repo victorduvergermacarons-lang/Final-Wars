@@ -185,4 +185,19 @@ func _run() -> void:
 	await get_tree().process_frame
 	await _snap_camera(hero)
 	await _shot("17_millbrook")
+	# 15. Wolves: one facing each way (SW, SE, NW, NE), feet on their tiles.
+	session.world.move_hero(hero.id, &"greenfields", Vector2i(9, 25))
+	await get_tree().process_frame
+	var gf := session.world.zone(&"greenfields")
+	var still: EnemyDef = cd.enemies[&"wolf"].duplicate()
+	still.aggro_radius = 0
+	var dirs := [Vector2i(0, 1), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, -1)]
+	for i in 4:
+		var w := gf.add_enemy(still, Vector2i(6 + i * 2, 27))
+		w.face(dirs[i])
+	var view4: WorldView = game.get_node("WorldView")
+	view4.camera.step_zoom(1)
+	await _snap_camera(hero)
+	await _shot("18_wolf_facings")
+	view4.camera.step_zoom(-1)
 	get_tree().quit()

@@ -16,6 +16,8 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 @export var rows: PackedStringArray = PackedStringArray(["sw", "se", "nw", "ne"])
 ## The point in a frame (pixels from its top-left) that stands on the tile centre.
 @export var feet: Vector2 = Vector2(32, 46)
+## The top of the creature's head in a frame (where its name and health bar go).
+@export var head_y: float = 18.0
 ## Frames per second per animation. "run" is not listed: it plays
 ## `run_frames_per_tile` frames per tile walked, at whatever speed the walk takes.
 @export var fps: Dictionary = {"idle": 6.0, "bite": 30.0, "howl": 10.0, "death": 10.0}
