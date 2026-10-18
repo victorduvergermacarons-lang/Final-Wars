@@ -37,6 +37,9 @@ var _art: TileArt
 ## Animated creatures: which frame each shows.
 var _animator := CreatureAnimator.new()
 static var _frames_cache := {} # CreatureArtDef -> SpriteFrames
+## Actor id -> render time its hit flash ends.
+var _flash_until := {}
+const FLASH_STRENGTH := 12.0
 ## Bars and markers queued while drawing actors, drawn last so terrain and
 ## other actors never cover them.
 var _overlay: Array[Callable] = []
@@ -336,10 +339,12 @@ func _draw_actor(a: Actor) -> void:
 			_draw_label(body + Vector2(0, -36), marker, Color(1, 0.85, 0.1), 20)
 		return
 	else:
+		var edef := (a as Enemy).def
 		if not a.alive:
+			if edef.art != null:
+				_draw_creature(a as Enemy, feet, alpha) # dying, then the corpse fades
 			return
 		var c := Color(ENEMY_COLOR, alpha)
-		var edef := (a as Enemy).def
 		if edef.art != null and _draw_creature(a as Enemy, feet, alpha):
 			var top := feet - Vector2(0, (edef.art.feet.y - edef.art.head_y) * PixelCamera.ART_SCALE)
 			_draw_label(top + Vector2(0, -16), "%s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.8, 0.8, alpha))
@@ -369,14 +374,22 @@ func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
 	if pick.is_empty():
 		return false
 	if not _frames_cache.has(art):
-		_frames_cache[art] = art.build_sprite_frames()
-	var frames: SpriteFrames = _frames_cache[art]
+		_frames_cache[art] = [art.build_sprite_frames(), art.build_sprite_frames(art.flash_sheets) if not art.flash_sheets.is_empty() else null]
+	var frames: SpriteFrames = _frames_cache[art][0]
 	var name := StringName("%s_%s" % [pick.anim, pick.dir])
 	if not frames.has_animation(name):
 		return false
 	var tex := frames.get_frame_texture(name, mini(pick.frame, frames.get_frame_count(name) - 1))
 	var s := PixelCamera.ART_SCALE
-	draw_texture_rect(tex, Rect2(feet - art.feet * s, Vector2(art.frame_size) * s), false, Color(1, 1, 1, alpha))
+	var color := Color(1, 1, 1, alpha * float(pick.get("alpha", 1.0)))
+	var rect := Rect2(feet - art.feet * s, Vector2(art.frame_size) * s)
+	draw_texture_rect(tex, rect, false, color)
+	if session.render_time() < float(_flash_until.get(e.id, -1.0)):
+		# Hit flash: no hit animation exists, so the body flashes white. The
+		# shadowless frame drawn with colours above 1 saturates to white.
+		var plain: SpriteFrames = _frames_cache[art][1]
+		var body := plain.get_frame_texture(name, mini(pick.frame, plain.get_frame_count(name) - 1)) if plain != null else tex
+		draw_texture_rect(body, rect, false, Color(FLASH_STRENGTH, FLASH_STRENGTH, FLASH_STRENGTH, color.a))
 	return true
 
 
@@ -502,6 +515,9 @@ func _on_events(events: Array) -> void:
 				elif flank == "side":
 					text = "Flank " + text
 				_float(e.target, text, Color(1, 0.35, 0.3), t)
+				var hit = session.get_actor(e.target)
+				if hit is Enemy and (hit as Enemy).def.art != null:
+					_flash_until[e.target] = t + (hit as Enemy).def.art.flash_seconds
 			"heal":
 				_float(e.target, ("+%d!" if e.crit else "+%d") % e.amount, Color(0.4, 1, 0.4), t)
 			"mana":

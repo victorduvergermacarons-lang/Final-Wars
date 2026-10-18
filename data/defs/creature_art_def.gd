@@ -11,6 +11,9 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 
 ## Animation name -> sprite sheet (idle, run, bite, howl, death...).
 @export var sheets: Dictionary = {}
+## The same sheets without shadow (and effects): the hit flash whitens these, so
+## the flash covers the body but not its shadow. Optional.
+@export var flash_sheets: Dictionary = {}
 @export var frame_size: Vector2i = Vector2i(64, 64)
 ## Which facing each sheet row shows, top row first.
 @export var rows: PackedStringArray = PackedStringArray(["sw", "se", "nw", "ne"])
@@ -64,6 +67,11 @@ func windup_for(ability_id: StringName) -> float:
 	return hit / anim_fps(anim)
 
 
+## Seconds from death until the corpse has faded away.
+func corpse_total() -> float:
+	return duration("death") + corpse_seconds + fade_seconds
+
+
 ## Seconds after the hit frame the creature stays busy (recovery frames).
 func recovery_for(ability_id: StringName) -> float:
 	if not timed_abilities.has(ability_id):
@@ -72,12 +80,14 @@ func recovery_for(ability_id: StringName) -> float:
 	return int(recovery_frames.get(anim, 0)) / anim_fps(anim)
 
 
-## A SpriteFrames with "<anim>_<dir>" animations cut from the sheets.
-func build_sprite_frames() -> SpriteFrames:
+## A SpriteFrames with "<anim>_<dir>" animations cut from the sheets (or from
+## another set laid out the same way, like `flash_sheets`).
+func build_sprite_frames(from: Dictionary = {}) -> SpriteFrames:
+	var source: Dictionary = from if not from.is_empty() else sheets
 	var sf := SpriteFrames.new()
 	sf.remove_animation(&"default")
-	for anim in sheets:
-		var tex: Texture2D = sheets[anim]
+	for anim in source:
+		var tex: Texture2D = source[anim]
 		for r in rows.size():
 			var name := StringName("%s_%s" % [anim, rows[r]])
 			sf.add_animation(name)

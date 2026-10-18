@@ -93,7 +93,9 @@ func test_spawned_enemies_do_not_respawn() -> void:
 	AbilityResolver.deal_damage(sim.ctx, hero, wolf, &"test", 99999.0, false, events)
 	sim._emit_resolved(events)
 	world.step()
-	assert_null(sim.get_actor(id), "removed after dying")
+	assert_not_null(sim.get_actor(id), "its corpse stays while it fades (animated creatures)")
+	world.advance(wolf.def.art.corpse_total() + 0.1)
+	assert_null(sim.get_actor(id), "removed once its corpse has faded")
 
 
 func test_refused_when_the_host_does_not_allow_it() -> void:

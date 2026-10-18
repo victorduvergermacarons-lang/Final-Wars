@@ -6,6 +6,11 @@
 [ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-bite.png" id="4_bite"]
 [ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-howl.png" id="5_howl"]
 [ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-death.png" id="6_death"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-idle.png" id="7_fidle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-run.png" id="8_frun"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-bite.png" id="9_fbite"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-howl.png" id="10_fhowl"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-death.png" id="11_fdeath"]
 
 [resource]
 script = ExtResource("1_art")
@@ -15,6 +20,13 @@ sheets = {
 "howl": ExtResource("5_howl"),
 "idle": ExtResource("2_idle"),
 "run": ExtResource("3_run")
+}
+flash_sheets = {
+"bite": ExtResource("9_fbite"),
+"death": ExtResource("11_fdeath"),
+"howl": ExtResource("10_fhowl"),
+"idle": ExtResource("7_fidle"),
+"run": ExtResource("8_frun")
 }
 frame_size = Vector2i(64, 64)
 rows = PackedStringArray("sw", "se", "nw", "ne")

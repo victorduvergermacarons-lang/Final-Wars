@@ -103,3 +103,44 @@ func test_wolf_stays_put_during_the_bite_and_its_recovery() -> void:
 		assert_eq(wolf.tile(), start_tile, "doesn't move while winding up")
 	assert_gt(bitten_at, 0.0, "it bit")
 	assert_almost_eq(wolf.busy_until, bitten_at + 2.0 / 30.0, 0.001, "busy for 2 recovery frames")
+
+
+func test_death_plays_once_then_the_corpse_lies_and_fades() -> void:
+	wolf.alive = false
+	wolf.died_at = 10.0
+	var start := anim.pick(wolf, art, 10.0)
+	assert_eq(start.anim, "death")
+	assert_eq(start.frame, 0)
+	var dead_still := anim.pick(wolf, art, 10.0 + art.duration("death") + 1.0)
+	assert_eq(dead_still.frame, 11, "holds the last frame")
+	assert_eq(dead_still.alpha, 1.0, "the corpse lies there")
+	var fading := anim.pick(wolf, art, 10.0 + art.duration("death") + art.corpse_seconds + art.fade_seconds * 0.5)
+	assert_almost_eq(fading.alpha, 0.5, 0.01, "halfway through the fade")
+	assert_true(anim.pick(wolf, art, 10.0 + art.corpse_total() + 0.01).is_empty(), "gone")
+
+
+func test_death_time_is_recorded_and_spawned_corpses_go_after_fading() -> void:
+	var def: EnemyDef = ContentDB.enemies[&"wolf"].duplicate()
+	def.aggro_radius = 0
+	var temp := world.add_enemy(def, Vector2i(4, 2))
+	temp.temporary = true
+	var bolt := AbilityDef.new()
+	bolt.id = &"t_kill"
+	bolt.targeting = AbilityDef.TargetingMode.TARGETED
+	bolt.max_range = 10
+	bolt.on_gcd = false
+	var dmg := AbilityEffect.new()
+	dmg.base_amount = 9999
+	dmg.can_crit = false
+	bolt.effects = [dmg] as Array[AbilityEffect]
+	var hd := HeroDef.new()
+	hd.base_stats = StatBlock.make({Stat.Id.HP: 500})
+	var hero := world.add_hero(hd)
+	hero.move.place(Vector2i(4, 0))
+	world.cast(hero, bolt, temp)
+	assert_false(temp.alive)
+	assert_almost_eq(temp.died_at, world.now, 0.001)
+	world.advance(art.corpse_total() - 0.5)
+	assert_not_null(world.get_actor(temp.id), "the corpse is still there")
+	world.advance(1.0)
+	assert_null(world.get_actor(temp.id), "removed once faded")

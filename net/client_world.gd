@@ -193,6 +193,7 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 		_apply_hero_extras(a as Hero, d)
 	elif a is Enemy:
 		(a as Enemy).state = d.state as Enemy.State
+		(a as Enemy).died_at = d.get("died_at", -1.0)
 		(a as Enemy).level = d.get("level", (a as Enemy).def.level)
 
 

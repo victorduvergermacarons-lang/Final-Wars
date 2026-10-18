@@ -41,6 +41,12 @@ var _heroes := {} # id -> Hero
 var _enemies := {} # id -> Enemy
 ## Temporary enemies that died this tick, removed once it ends.
 var _remove_after_tick: Array[int] = []
+
+
+## Removes an actor at the end of this tick (not mid-tick: loops walk the actors).
+func remove_after_tick(id: int) -> void:
+	if not _remove_after_tick.has(id):
+		_remove_after_tick.append(id)
 var _npcs := {} # id -> Npc
 var _intents: Array = [] # [hero_id, intent]
 ## Content lookup for the debug console; null (the default) refuses debug commands.
@@ -1114,9 +1120,11 @@ func _on_death(actor: Actor) -> void:
 					emit(e)
 				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h, quests))
 		enemy.threat.clear()
+		enemy.died_at = now
 		enemy.respawn_at = now + enemy.def.respawn_seconds
 		if enemy.temporary:
-			_remove_after_tick.append(enemy.id) # not mid-tick: loops are walking the actors
+			# Spawned enemies don't respawn: they go once their corpse has faded.
+			enemy.respawn_at = now + (enemy.def.art.corpse_total() if enemy.def.art != null else 0.0)
 
 
 ## Heal-over-time and damage-over-time ticks.

@@ -24,6 +24,10 @@ const FLANK_PATIENCE := 2.0
 static func update(world: WorldSim, enemy: Enemy) -> void:
 	match enemy.state:
 		Enemy.State.DEAD:
+			if enemy.temporary:
+				if world.now >= enemy.respawn_at:
+					world.remove_after_tick(enemy.id)
+				return
 			if world.now >= enemy.respawn_at and not world.is_occupied(enemy.spawn_tile, enemy):
 				enemy.reset_at_spawn()
 				world.emit({"type": "respawn", "target": enemy.id})

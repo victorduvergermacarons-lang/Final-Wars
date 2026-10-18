@@ -24,6 +24,8 @@ var last_attack_at: float = 0.0
 var busy_until: float = 0.0
 ## Called into this fight by a pack howl (so it doesn't howl itself).
 var called_by_pack := false
+## When it last died (host time; clients play the death animation from it).
+var died_at: float = -1.0
 ## Its level: the type's level, unless spawned at another one (debug console).
 var level: int = 1
 ## Removed when it dies instead of respawning (debug spawns).

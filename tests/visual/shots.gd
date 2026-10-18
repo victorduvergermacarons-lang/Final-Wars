@@ -199,5 +199,13 @@ func _run() -> void:
 	view4.camera.step_zoom(1)
 	await _snap_camera(hero)
 	await _shot("18_wolf_facings")
+	# 16. The first wolf mid-death, the second flashing white from a hit.
+	var line := gf.enemies().filter(func(e): return e.def == still)
+	line[0].alive = false
+	line[0].state = Enemy.State.DEAD
+	line[0].died_at = session.render_time() - 0.6
+	line[0].respawn_at = INF
+	view4._flash_until[line[1].id] = session.render_time() + 30.0
+	await _shot("19_wolf_death_and_flash")
 	view4.camera.step_zoom(-1)
 	get_tree().quit()
