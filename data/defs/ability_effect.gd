@@ -22,6 +22,7 @@ enum Kind {
 	BLINK, ## The caster teleports to the aimed tile.
 	TERRAIN, ## Raises (or lowers, if negative) the area by base_amount levels for a while.
 	ZONE, ## Leaves a ground zone on the area that applies zone_ability every tick.
+	CALL_PACK, ## Idle enemies of the caster's kind within its pack_call_radius join its fight.
 }
 
 ## Who an effect applies to: each affected unit (TARGETS), the caster once

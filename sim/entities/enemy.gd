@@ -22,6 +22,8 @@ var respawn_at: float = 0.0
 var last_attack_at: float = 0.0
 ## Animated creatures stay put until their attack's recovery frames have played.
 var busy_until: float = 0.0
+## Called into this fight by a pack howl (so it doesn't howl itself).
+var called_by_pack := false
 ## Its level: the type's level, unless spawned at another one (debug console).
 var level: int = 1
 ## Removed when it dies instead of respawning (debug spawns).
@@ -59,6 +61,7 @@ func reset_at_spawn() -> void:
 	mana = stats.mana
 	state = State.IDLE
 	evading = false
+	called_by_pack = false
 	threat.clear()
 	buffs.clear()
 	last_attack_at = 0.0

@@ -247,6 +247,25 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				events.append({"type": "heal", "source": caster.id, "target": caster.id, "ability": ability.id,
 						"amount": healed, "crit": false})
 
+		AbilityEffect.Kind.CALL_PACK:
+			# A howl: idle enemies of the caster's kind nearby join its fight.
+			if not caster is Enemy or caster.threat.is_empty():
+				return
+			var howler := caster as Enemy
+			var prey: int = howler.threat.top()
+			for id in ctx.actors:
+				var other = ctx.actors[id]
+				if other == howler or not other is Enemy or not other.alive:
+					continue
+				var mate := other as Enemy
+				if mate.def.id != howler.def.id or mate.state != Enemy.State.IDLE or not mate.threat.is_empty():
+					continue
+				if GridModel.distance(mate.tile(), howler.tile()) > howler.def.pack_call_radius:
+					continue
+				mate.threat.add(prey, 0.0)
+				mate.called_by_pack = true
+				events.append({"type": "pack_called", "source": howler.id, "target": mate.id})
+
 		AbilityEffect.Kind.KNOCKBACK, AbilityEffect.Kind.PULL:
 			if not target.alive or target == caster:
 				return

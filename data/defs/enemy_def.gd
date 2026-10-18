@@ -35,6 +35,11 @@ enum Behavior {
 @export var elite: bool = false
 ## How far knockbacks and pulls move it (Weight.adjust).
 @export var weight: Weight.Id = Weight.Id.MEDIUM
+## Played once when the enemy first starts fighting (spotting a hero or being
+## hit); it stands still while it plays. Enemies a howl calls in don't howl.
+@export var howl_ability: AbilityDef
+## CALL_PACK: idle enemies of this kind within this many tiles join the fight.
+@export var pack_call_radius: int = 0
 ## Animated sprite art (null: drawn as a placeholder diamond). Its frame rates
 ## also time the attacks it lists (see CreatureArtDef.timed_abilities).
 @export var art: CreatureArtDef

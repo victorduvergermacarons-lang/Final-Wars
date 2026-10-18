@@ -39,6 +39,11 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 			enemy.home_tile = enemy.tile()
 			enemy.last_attack_at = world.now
 			enemy.combat_until = world.combat_until_from_now()
+			# A wolf that spots you (or is hit first) howls before it fights; the
+			# pack it calls in comes without howling.
+			if enemy.def.howl_ability != null and not enemy.called_by_pack \
+					and world.cast(enemy, enemy.def.howl_ability, enemy) == AbilityResolver.Result.OK:
+				return
 			_fight(world, enemy)
 		Enemy.State.COMBAT:
 			_fight(world, enemy)
@@ -284,6 +289,7 @@ static func _walk_home(world: WorldSim, enemy: Enemy) -> void:
 		return
 	if enemy.tile() == enemy.home_tile:
 		enemy.state = Enemy.State.IDLE
+		enemy.called_by_pack = false
 		enemy.evading = false
 		return
 	var path := Pathfinder.find_path(world.grid, enemy.tile(), enemy.home_tile,

@@ -86,7 +86,10 @@ func _link_tree_items() -> void:
 func _time_abilities_to_art(e: EnemyDef) -> void:
 	if e.art == null:
 		return
-	for a in e.abilities:
+	var timed: Array = e.abilities.duplicate()
+	if e.howl_ability != null:
+		timed.append(e.howl_ability)
+	for a in timed:
 		var w := e.art.windup_for(a.id)
 		if w >= 0.0:
 			a.windup_seconds = w

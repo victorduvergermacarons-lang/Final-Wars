@@ -28,7 +28,8 @@ fps = {
 run_frames_per_tile = 8
 looping = PackedStringArray("idle", "run")
 timed_abilities = {
-&"wolf_bite": ["bite", 12]
+&"wolf_bite": ["bite", 12],
+&"wolf_howl": ["howl", -1]
 }
 recovery_frames = {
 "bite": 2
