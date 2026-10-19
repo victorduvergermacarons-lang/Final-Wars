@@ -123,7 +123,8 @@
   {"id": 114, "name": "Purple crystal", "category": "rock", "kind": "block", "walkable": false, "blocks_sight": false}
  ],
  "animations": {
-  "sparkle": {"frames": [82, 83, 84, 85], "fps": 6}
+  "sparkle": {"frames": [82, 83, 84, 85], "fps": 6},
+  "ripple": {"frames": [86, 87, 88, 89], "fps": 6}
  },
  "terrains": {
   "dirt": {"tiles": [0, 1, 2, 4, 5, 6, 8, 9, 10, [7, 0.3], [3, 0.3]]},
@@ -141,7 +142,7 @@
   "cobble": {"tiles": [61]},
   "slab": {"tiles": [63], "fill": "cobble"},
   "ford": {"tiles": [69, [66, 0.5]]},
-  "water": {"tiles": [86, 87, 88, 89, [90, 0.5], [91, 0.5]]},
+  "water": {"tiles": [86, 87, 88, 89], "animation": "ripple"},
   "deep_water": {"tiles": [90, 91, 92, 93, 94]},
   "light_water": {"tiles": [104, 105, 106, 107, 108, 109, 110, 111, 112, 113], "shore": true, "fill": "cobble"},
   "water_rocks": {"tiles": [70, 71, 77, 78]},

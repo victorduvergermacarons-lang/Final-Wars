@@ -194,6 +194,8 @@ How-to: `docs/tilesets.md`.
   - rock pillars topped with grey boulders, scattered flowers, logs and stumps
 
   Spawns, heights, patrols and quest areas are unchanged.
+- **River:** its water ripples, each tile cycling through tiles 86–89 at 6 fps from its
+  own starting frame (`ripple` animation; a terrain's `animation` field).
 - **Millbrook:** a bush hedge, stone houses, a cobblestone plaza, dirt paths and a
   fountain.
 
@@ -205,7 +207,7 @@ How-to: `docs/tilesets.md`.
 - **Art data:** `content/creatures/wolf_art.tres` (`CreatureArtDef`, linked from
   `wolf.tres`) holds:
   - the sheets and the feet point (32, 46), which stands on the tile centre
-  - frame rates: idle 6, bite 30, howl 10, death 10 fps; run plays 8 frames per tile
+  - frame rates: idle 6, bite 30, howl 10, death 10 fps; run plays 4 frames per tile (one cycle spans 2 tiles, matching the paws to the ground)
   - the bite's hit frame (12)
   - corpse 4 s and fade 1 s; hit flash 0.1 s
 - **Timing comes from the art:** ContentDB sets each timed ability's wind-up from its
@@ -213,7 +215,7 @@ How-to: `docs/tilesets.md`.
 - **Facing:** grid up → NE, right → SE, down → SW, left → NW. Enemies face where they
   step, and toward their target when attacking.
 - **Behaviour:**
-  - In combat a wolf glides over its whole 0.8 s step, so the run cycle matches the
+  - In combat a wolf glides over its whole 0.65 s step, so the run cycle matches the
     ground.
   - The bite plays from its wind-up; damage lands on frame 12. The wolf stays put for
     the wind-up and the 2 recovery frames after it.
@@ -244,7 +246,7 @@ Tune them there; update this table when they change.
 - **Facing:** every actor faces a direction. The hero faces the mouse; direction keys always walk (since 2026-10-16).
 - **Directional combat:** melee hits the tile in front; Fireball is a projectile flying
   straight ahead. Click-targeting remains only for Heal and Resurrect.
-- **Enemies outpace heroes in combat** (Wolf 0.8 s/tile) and react 0.3 s late, so
+- **Enemies outpace heroes in combat** (Wolf 0.65 s/tile since 2026-10-19) and react 0.3 s late, so
   sidestepping an attack works.
 - **Shield teaches Block** (not Taunt); **Holy Charm teaches two abilities** (Heal and
   Resurrect).
@@ -280,7 +282,7 @@ Tune them there; update this table when they change.
 | Staff (main hand, one-handed) | MagAtk +14, Mana +30 | MagAtk 4, Mana 8 |
 | Shield (off hand) | PhysDef +30, HP +30 | PhysDef 3, HP 12 |
 | Holy Charm (accessory) | MagAtk +6, Mana +20, MagDef +5 | MagAtk 2, Mana 6, MagDef 2 |
-| Wolf | HP 230, PhysAtk 12, PhysDef 5, Evasion 5, Jump 1; aggro 4, leash 10; 50 XP; respawn 30 s; 0.8 s/tile; 0.3 s reaction | — |
+| Wolf | HP 230, PhysAtk 12, PhysDef 5, Evasion 5, Jump 1; aggro 4, leash 10; 50 XP; respawn 30 s; 0.65 s/tile; 0.3 s reaction | — |
 
 Growth: 50% of each equipped item's growth per level. XP to next level: 100 × level.
 AP: 10 per level-up to each ability taught by an equipped item.
@@ -305,7 +307,7 @@ Ranger's Gloves and the Mantle come from the new enemies and the elite.
 ### Milestone 2 enemies (steps 13–14)
 | Enemy | Lv | AI | Stats | Ability | Step / reaction | XP / AP | Drops | Where (Greenfields) |
 |-------|----|----|-------|---------|-----------------|---------|-------|---------------------|
-| Wolf | 1 | Melee | (see above) | Bite | 0.8 s / 0.3 s | 50 / 2 | 2–6 g, pelt, fang, Uncommons 2% | (8,13) (11,24) (5,20) (18,4) |
+| Wolf | 1 | Melee | (see above) | Bite | 0.65 s / 0.3 s | 50 / 2 | 2–6 g, pelt, fang, Uncommons 2% | (8,13) (11,24) (5,20) (18,4) |
 | Goblin Shaman | 2 | Kiter | HP 160, MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
 | Bandit Brute | 3 | Melee | HP 320, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 24 + 2.0×PhysAtk, 3.5 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
 | Fen Skirmisher | 4 | Flanker | HP 220, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.3 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
@@ -474,7 +476,7 @@ docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, 
     - In combat the enemy attacks the top of its threat table whenever an ability is
       ready and in reach; otherwise it paths toward the target on its step cooldown.
       It turns to face a target next to it (free) before a FRONT attack.
-    - Per enemy type: `combat_step_seconds` (Wolf 0.8 s/tile, faster than heroes'
+    - Per enemy type: `combat_step_seconds` (Wolf 0.65 s/tile, faster than heroes'
       1.5 s, so heroes can't outrun an aggroed Wolf) and `reaction_seconds` (Wolf
       0.3 s): the enemy sees heroes where they were that long ago — for aggro,
       chasing, turning and aiming — so a well-timed sidestep makes a bite whiff.
@@ -1052,6 +1054,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-19 | Wolf faster (0.65 s per tile in combat, was 0.8); its run cycle now spans 2 tiles so the paws don't slide | User report ("too slow", paws sliding). Measured: a planted paw moves about 4 art px per frame, a tile is 16 across, so 4 frames per tile (was 8). Each step plays the half of the cycle set by its start tile, so the stride carries on in any direction. 0.65 s is my "a little faster"; still slower than the Skirmisher (0.6). Balance tests pass. |
+| 2026-10-19 | The river ripples (tiles 86–89 cycle at 6 fps, each tile from its own frame) | User choice. The deep-water variants that were mixed into the river are gone (they don't animate). |
 | 2026-10-18 | Animated wolf art (6 steps): sprites, idle/run/bite/howl/death, hit flash, pack howl | User brief; plan approved with all recommended options. See **Creature art**. Measured: feet at y ≈ 46 (brief said 44); jaws close on bite frame 12. |
 | 2026-10-18 | Bite: 30 fps, damage on frame 12, so a 0.4 s wind-up (was 0.3) | User choice (recommended). Balance tests still pass. |
 | 2026-10-18 | Howl: the wolf stands still for it (0.9 s); the pack is called when it ends; a wolf hit first howls too | User choice (recommended). An exception to "no group aggro" (rule 12). Called wolves don't howl; an interrupted howl calls nobody. |

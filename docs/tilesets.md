@@ -25,7 +25,8 @@ tileset needs only that folder, no code: the game finds every folder with a
  "level_height": 8,
  "tiles": [ {"id": 0, "name": "Dirt", "category": "ground", "kind": "block",
              "walkable": true, "blocks_sight": false}, ... ],
- "animations": {"sparkle": {"frames": [82, 83, 84, 85], "fps": 6}},
+ "animations": {"sparkle": {"frames": [82, 83, 84, 85], "fps": 6},
+                "ripple": {"frames": [86, 87, 88, 89], "fps": 6}},
  "terrains": {"grass": {"tiles": [22, 23, 24], "fill": "dirt"}, ...},
  "props": {"logs": {"tiles": [48, 49, 50, 51]}, ...}
 }
@@ -55,12 +56,16 @@ tileset needs only that folder, no code: the game finds every folder with a
   instead of a variant.
 - `walkable` overrides the tiles' own flag. `stone_wall` is cobblestone you
   can't walk on.
+- `animation` makes the top block cycle through that animation's frames
+  instead of picking a variant. Each tile starts at its own point in the loop.
+  The river (`water`) ripples this way.
 - All variants of a terrain must agree on walkability.
 
 **Props** are groups of prop tiles a map can scatter. The variant is picked by
 position, like terrains.
 
-**Animations:** `sparkle` twinkles on about one water tile in five.
+**Animations:** `sparkle` twinkles on about one water tile in five; `ripple`
+animates the river.
 
 The catalog is checked at load and by `tests/unit/test_tileset.gd`. The checks:
 - unknown categories or kinds

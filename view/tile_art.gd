@@ -38,13 +38,27 @@ func image_rect(top_center: Vector2) -> Rect2:
 	return Rect2(top_center - face_center * s, cell * s)
 
 
-## The top block of a terrain at `cell`: a shore terrain picks its foam from
-## `land` (sides touching land), others a variant by position.
-func top_tile(terrain: String, cell: Vector2i, land: Array = []) -> int:
+## The top block of a terrain at `cell` at `time`: a shore terrain picks its
+## foam from `land` (sides touching land), an animated one (the river) its frame,
+## others a variant by position.
+func top_tile(terrain: String, cell: Vector2i, land: Array = [], time: float = 0.0) -> int:
 	var tr: Dictionary = data.terrains.get(terrain, {})
 	if tr.get("shore", false):
 		return data.pick_shore(terrain, land)
+	if tr.get("animation", "") != "":
+		return animated_frame(tr.animation, cell, time)
 	return data.pick(terrain, cell)
+
+
+## A frame of a looping tile animation. Each cell starts at its own point in
+## the loop, so neighbouring tiles don't change in step.
+func animated_frame(anim_name: String, cell: Vector2i, time: float) -> int:
+	var anim: Dictionary = data.animations.get(anim_name, {})
+	var frames: Array = anim.get("frames", [])
+	if frames.is_empty():
+		return -1
+	var step := int(time * float(anim.fps)) + TilesetData.cell_hash(cell, 41) % frames.size()
+	return frames[step % frames.size()]
 
 
 ## Water sparkles: about one water tile in SPARKLE_EVERY twinkles, each on its own
@@ -78,7 +92,7 @@ func draw(canvas: CanvasItem, tile_id: int, top_center: Vector2, modulate: Color
 ## terrain below. Levels under `from_level` are left out (hidden behind the tiles
 ## in front). The top block's variant doesn't depend on the height, so a tile
 ## raised by an ability keeps its look.
-func column(terrain: String, cell: Vector2i, height: int, from_level: int = 0, land: Array = []) -> Array:
+func column(terrain: String, cell: Vector2i, height: int, from_level: int = 0, land: Array = [], time: float = 0.0) -> Array:
 	var out := []
 	var tr: Dictionary = data.terrains.get(terrain, {})
 	if tr.is_empty():
@@ -86,7 +100,7 @@ func column(terrain: String, cell: Vector2i, height: int, from_level: int = 0, l
 	var fill: String = tr.fill if tr.fill != "" else terrain
 	for level in range(clampi(from_level, 0, height), height + 1):
 		if level == height:
-			out.append([top_tile(terrain, cell, land), level])
+			out.append([top_tile(terrain, cell, land, time), level])
 		else:
 			out.append([data.pick(fill, cell, level + 1), level])
 	return out

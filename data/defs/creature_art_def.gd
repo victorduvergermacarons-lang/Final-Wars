@@ -22,9 +22,11 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## The top of the creature's head in a frame (where its name and health bar go).
 @export var head_y: float = 18.0
 ## Frames per second per animation. "run" is not listed: it plays
-## `run_frames_per_tile` frames per tile walked, at whatever speed the walk takes.
+## `run_frames_per_tile` frames per tile walked, at whatever speed the walk takes,
+## so the paws keep pace with the ground (match it to how far a planted paw
+## travels per frame; the cycle may span several tiles).
 @export var fps: Dictionary = {"idle": 6.0, "bite": 30.0, "howl": 10.0, "death": 10.0}
-@export var run_frames_per_tile: int = 8
+@export var run_frames_per_tile: int = 4
 ## Animations that loop (others play once and hold their last frame).
 @export var looping: PackedStringArray = PackedStringArray(["idle", "run"])
 ## Ability id -> [animation, hit frame]: the ability winds up for exactly

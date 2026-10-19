@@ -263,7 +263,7 @@ func _draw_terrain_column(grid: GridModel, p: Vector2i) -> void:
 	var h := grid.height_at(p)
 	var front := mini(_front_height(grid, p + Vector2i(1, 0)), _front_height(grid, p + Vector2i(0, 1)))
 	var terrain := _zone.terrain_at(p)
-	for block in _art.column(terrain, p, h, front, _land_sides(p)):
+	for block in _art.column(terrain, p, h, front, _land_sides(p), session.render_time()):
 		_art.draw(self, block[0], Iso.to_screen(Vector2(p), block[1]))
 	if _art.data.is_water_terrain(terrain):
 		var sparkle := _art.sparkle_frame(p, session.render_time())

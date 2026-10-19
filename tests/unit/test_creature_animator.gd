@@ -36,12 +36,19 @@ func test_facing_picks_the_row() -> void:
 	assert_eq(anim.pick(wolf, art, 1.0).dir, "nw")
 
 
-func test_run_plays_one_cycle_per_tile() -> void:
-	wolf.move.begin(Vector2i(3, 1), 5.0, 0.8)
-	assert_eq(anim.pick(wolf, art, 5.0).frame, 0)
-	assert_eq(anim.pick(wolf, art, 5.0 + 0.4).frame, 4, "halfway across: frame 4 of 8")
-	assert_eq(anim.pick(wolf, art, 5.0 + 0.79).frame, 7)
+func test_run_cycle_spans_two_tiles_so_the_paws_keep_pace() -> void:
+	wolf.move.place(Vector2i(2, 2))
+	wolf.move.begin(Vector2i(3, 2), 5.0, 0.8)
 	assert_eq(anim.pick(wolf, art, 5.0).anim, "run")
+	assert_eq(anim.pick(wolf, art, 5.0).frame, 0)
+	assert_eq(anim.pick(wolf, art, 5.0 + 0.4).frame, 2, "halfway across: 4 frames per tile")
+	assert_eq(anim.pick(wolf, art, 5.0 + 0.79).frame, 3)
+	# The next tile plays the other half of the cycle, whichever way it goes.
+	for to in [Vector2i(4, 2), Vector2i(3, 3), Vector2i(2, 2), Vector2i(3, 1)]:
+		wolf.move.place(Vector2i(3, 2))
+		wolf.move.begin(to, 6.0, 0.8)
+		assert_eq(anim.pick(wolf, art, 6.0).frame, 4, "step to %s carries on the stride" % to)
+		assert_eq(anim.pick(wolf, art, 6.79).frame, 7)
 
 
 func _start_bite(at: float) -> void:

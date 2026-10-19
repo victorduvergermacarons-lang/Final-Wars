@@ -190,3 +190,28 @@ func test_water_sits_lower_and_sparkles() -> void:
 				twinkling += 1
 	assert_between(twinkling, 120, 240, "about one water tile in five (%d of 900)" % twinkling)
 	assert_eq(frames_seen.keys().size(), 4, "all four sparkle frames play")
+
+
+func test_the_river_ripples() -> void:
+	var art := TileArt.for_tileset(basic)
+	var cell := Vector2i(4, 7)
+	var seq := []
+	for k in 8:
+		seq.append(art.top_tile("water", cell, [], k / 6.0))
+	assert_eq(seq.slice(0, 4), seq.slice(4, 8), "a 4-frame loop at 6 fps")
+	var sorted := seq.slice(0, 4)
+	sorted.sort()
+	assert_eq(sorted, [86, 87, 88, 89], "each ripple frame shows once per loop")
+	var starts := {}
+	for x in 10:
+		starts[art.top_tile("water", Vector2i(x, 0), [], 0.0)] = true
+	assert_gt(starts.size(), 1, "neighbouring tiles don't change in step")
+	assert_eq(art.top_tile("grass", cell, [], 0.0), art.top_tile("grass", cell, [], 3.0), "other terrain stays still")
+
+
+func test_unknown_terrain_animation_is_reported() -> void:
+	var t := TilesetData.new()
+	t.load_dict({"id": "x", "tiles": [
+		{"id": 86, "name": "W", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false}],
+		"terrains": {"w": {"tiles": [86], "animation": "nope"}}}, basic.dir)
+	assert_string_contains("\n".join(t.validate()), "unknown animation nope")

@@ -37,7 +37,7 @@ fps = {
 "howl": 10.0,
 "idle": 6.0
 }
-run_frames_per_tile = 8
+run_frames_per_tile = 4
 looping = PackedStringArray("idle", "run")
 timed_abilities = {
 &"wolf_bite": ["bite", 12],

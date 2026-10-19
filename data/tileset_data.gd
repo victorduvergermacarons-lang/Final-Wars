@@ -12,7 +12,8 @@ extends RefCounted
 ##   animations: {name: {frames: [ids], fps}},
 ##   terrains: {name: {tiles: [id or [id, weight]], fill: terrain under it,
 ##     shore: true to pick by which sides touch land (tiles list "shore" sides),
-##     walkable: overrides its tiles' walkability (e.g. stone walls you can't climb)}},
+##     walkable: overrides its tiles' walkability (e.g. stone walls you can't climb),
+##     animation: an animation whose frames its top block cycles through}},
 ##   a tile's optional "drop": art px its surface sits below a ground block's.
 ##   props: {name: {tiles: [id or [id, weight]]}} (groups of prop tiles).
 
@@ -32,7 +33,7 @@ var top_y := 8
 var level_height := 8
 var tiles := {} # int id -> Dictionary
 var animations := {} # name -> {"frames": Array[int], "fps": float}
-var terrains := {} # name -> {"tiles": Array[int], "weights": Array[float], "fill": String}
+var terrains := {} # name -> {"tiles": Array[int], "weights": Array[float], "fill": String, "animation": String, ...}
 var props := {} # name -> {"tiles": Array[int], "weights": Array[float]}
 ## Problems found while loading (see validate()).
 var load_errors: PackedStringArray = []
@@ -84,6 +85,7 @@ func load_dict(d: Dictionary, folder: String) -> void:
 		var tr := _weighted(d.terrains[name].get("tiles", []))
 		tr.fill = str(d.terrains[name].get("fill", ""))
 		tr.shore = bool(d.terrains[name].get("shore", false))
+		tr.animation = str(d.terrains[name].get("animation", ""))
 		if d.terrains[name].has("walkable"):
 			tr.walkable = bool(d.terrains[name].walkable)
 		terrains[name] = tr
@@ -254,6 +256,8 @@ func validate() -> PackedStringArray:
 				errors.append("%s: terrain %s uses tile %d, which is not a block" % [id, name, tid])
 			if tr.weights[i] <= 0.0:
 				errors.append("%s: terrain %s gives tile %d a weight of %s" % [id, name, tid, tr.weights[i]])
+		if tr.animation != "" and not animations.has(tr.animation):
+			errors.append("%s: terrain %s uses unknown animation %s" % [id, name, tr.animation])
 		var seen := {name: true}
 		var fill: String = tr.fill
 		while fill != "":

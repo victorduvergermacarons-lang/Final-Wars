@@ -20,8 +20,14 @@ func pick(actor: Enemy, art: CreatureArtDef, t: float) -> Dictionary:
 		attack.dir = dir
 		return attack
 	if actor.move.is_moving(t):
-		var n := art.frame_count("run")
-		var frame := int(actor.move.progress(t) * art.run_frames_per_tile) % maxi(n, 1)
+		var n := maxi(art.frame_count("run"), 1)
+		# One run cycle can span several tiles; which part of it a step plays
+		# comes from the tile it starts on, so the stride carries on from tile to
+		# tile (with a 2-tile cycle every step alternates halves, in any direction).
+		var cycle_tiles := maxi(ceili(float(n) / maxi(art.run_frames_per_tile, 1)), 1)
+		var from := actor.move.from_tile
+		var part := posmod(from.x + from.y, cycle_tiles)
+		var frame := int((actor.move.progress(t) + part) * art.run_frames_per_tile) % n
 		return {"anim": "run", "dir": dir, "frame": frame}
 	var idle_n := maxi(art.frame_count("idle"), 1)
 	# Each creature idles on its own beat, the same on every machine.
