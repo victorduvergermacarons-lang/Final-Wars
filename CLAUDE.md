@@ -10,7 +10,9 @@ playtested; post-playtest fixes done. **Milestone 3 (abilities, mastery, targeti
 (all 16 steps); awaiting a playtest with `docs/playtest-checklist-m3.md`. **The ground now
 uses the first real tileset** (`iso_basic`, 8 steps, 2026-10-16; see **Map art** below and
 `docs/playtest-checklist-tiles.md`). **Wolves are animated** (2026-10-18; see **Creature
-art** below and `docs/playtest-checklist-wolves.md`). For the numbers
+art** below and `docs/playtest-checklist-wolves.md`). **Enemy Testing Grounds and the
+Salamander Hound** added (2026-10-20; see those sections and
+`docs/playtest-checklist-testing-grounds.md`). For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -231,6 +233,65 @@ How-to: `docs/tilesets.md`.
   (3,3), 15+ tiles from the lone wolves.
 - Other enemies keep the placeholder diamond until they get art.
 
+## Salamander Hound (2026-10-20)
+
+A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, MELEE.
+- **Stats:** HP 190, PhysAtk 13, MagAtk 14, PhysDef 5, MagDef 12, Evasion 8, Jump 2;
+  aggro 5, leash 12; 0.5 s per tile in combat (the fastest enemy), 0.25 s reaction;
+  light; 70 XP, 3 AP; 3–8 g, Scroll of Burning Feet 4%, Scorched Earth Scroll 4%.
+- **Bite** (`hound_bite`): Targeted, adjacent, 5 + 1.0×PhysAtk physical, 1.6 s,
+  0.3 s wind-up (from the art).
+- **Cinder Pounce** (`cinder_pounce`): Ground, 8 s. Aims at the free tile beside a
+  hero 1–3 tiles away, on the hound's side (`AbilityDef.aim_beside_target`), and
+  marks that tile plus its four neighbours (`area_diamond`) for its 0.6 s wind-up.
+  Then it leaps onto the tile and deals 10 + 1.0×MagAtk magical (fire) damage to
+  whoever is still on the mark. The hero stands on one arm of the plus, so any step
+  except toward the hound gets out.
+- **Ember Trail** (passive, `EnemyDef.trail_ability` = `ember_trail`): every tile it
+  leaves while fighting becomes a 2 s ground zone dealing 2 + 0.15×MagAtk magical
+  every 0.5 s (`ember_trail_burn`).
+- Balance: a level-2 starter beats it every time in about 7 s, losing about 65% HP
+  (`tests/balance/test_balance.gd`).
+- **Art:** `art/Red-Salamander-Hound.aseprite` holds one 16-frame loop (smoke puffs, a
+  crouch, a rise) facing SE and SW, 48×48. `tools/once/aseprite_export.py` reads
+  .aseprite files (no Aseprite needed); `tools/once/make_salamander_hound_sheets.py`
+  cuts the sheets into `assets/creatures/salamander_hound/` (plus `no_shadow/` for the
+  hit flash). Art data: `content/creatures/salamander_hound_art.tres`, feet (24, 33).
+  - idle = the authored loop at 10 fps
+  - bite = loop frames 3–9 at 20 fps (jaws on frame 6)
+  - pounce = frames 2–13 at 10 fps (springs on frame 6)
+  - **Placeholders (art missing):** run reuses frames 0–3, death reuses the
+    crouch (frames 4–10), and NE/NW reuse the SE/SW rows.
+
+## Enemy Testing Grounds (2026-10-20)
+
+- **Getting there:** a 2-tile gate in Millbrook's north-east hedge at (15–16, 0), with an
+  "Enemy Testing Grounds" sign at (17, 1) and a dirt road down to the town's main path.
+  The zone edges link it with the gate at the west end of the testing map's
+  south-west edge (offset ±12). Like every edge, it works for each player and not in combat.
+- **Built from data:** `content/zones/enemy_testing.tres` only names the tileset, the
+  edge and `enemy_pens = true`. `TestingGrounds.build` (`data/testing_grounds.gd`),
+  called by ContentDB at load, lays out:
+  - one pen per enemy type in `content/enemies/`, so new enemies get a pen
+    automatically
+  - pens ordered by level, then id
+  - elites in a **Boss Arena** behind a hedge at the far east end
+  - a sign per pen, e.g. "Wolf (Lv 1)"
+  - an entrance plaza at the west end with hero spawns, a graveyard and the
+    **Reset Shrine**
+- **Spacing:** neighbouring spawns are at least
+  max(reach A + aggro B, reach B + aggro A, leash + pack call) + 3 tiles apart. Reach
+  is the leash radius plus the enemy's longest attack range. Bosses get 4 more tiles.
+  The road is out of every aggro radius. Pens are separated by low stone walls and
+  open onto the road. Today the map is 155×14.
+- **Respawn:** 10 s, from `ZoneDef.enemy_respawn_seconds` (per spawn:
+  `EnemySpawn.respawn_seconds`). Grizzlehide doesn't patrol here.
+- **Reset Shrine** (`content/npcs/reset_shrine.tres`, `NpcDef.resets_zone`): talking to
+  it runs `WorldSim.reset_zone()`:
+  - every enemy goes back to its pen at full health (debug spawns are removed)
+  - projectiles, telegraphs, ground zones and raised terrain are cleared
+  - every buff and debuff in the zone is removed, and heroes there leave combat
+
 ## Gameplay as built (end of Milestone 1, after playtest)
 
 > Milestone 3 retired the hero abilities and weapons below (Strike … Rallying Roar, Sword,
@@ -387,7 +448,7 @@ design/          Ability_Tree.xlsx (source of truth for abilities)
 tools/once/      one-off content conversions and generators (kept for the record)
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
                  net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves), ability import, tilesets
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds), ability import, tilesets
 ```
 
 ### Build order (milestone 1)
@@ -1054,6 +1115,14 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-20 | Enemy Testing Grounds + Salamander Hound | User brief ("make sensible decisions, list them"). See those sections. My decisions are listed in the next rows. |
+| 2026-10-20 | Testing map is generated at load from the enemy data, not stored | So any enemy added later gets a pen. Pens sit in a row north of a road and are ordered by level. Elites count as bosses. Spacing = reach + aggro (or leash + pack call) + 3. The road is kept out of aggro range. Low stone walls separate pens, and a hedge with a road gap marks the arena. |
+| 2026-10-20 | Millbrook gate on the north-east hedge (15–16, 0), linked as a zone edge; edges may now be 2-tile gates | The map edge (grid up = screen north-east) acts as the exit, like the Greenfields link. The zone-layout test now accepts gates of 2+ tiles (it wanted 4). |
+| 2026-10-20 | Reset Shrine is an NPC you talk to | Reuses the [E] Talk prompt and dialogue. It also clears every buff on heroes in the zone and takes them out of combat. |
+| 2026-10-20 | Cinder Pounce lands beside the hero, not on them; it marks a plus (the landing tile + its 4 neighbours) | With 1.5 s hero steps in combat, a mark centred on the hero could never be stepped out of in 0.6 s. Landing beside the target makes "step out of the marker" possible with one step. Range 1–3 for the landing tile, used when the hero is 2–3 tiles away (adjacent: it bites). |
+| 2026-10-20 | Ember Trail only while fighting; fire damage = magical | Idle or leashing hounds leave no trail. The game has no separate fire damage type. |
+| 2026-10-20 | Hound numbers | Mine: HP 190, 0.5 s steps, aggro 5, leash 12, level 2, light, Bite 5 + PhysAtk / 1.6 s, Pounce 10 + MagAtk / 8 s, embers 2 + 0.15×MagAtk per 0.5 s. |
+| 2026-10-20 | Hound animations cut from its one loop; NE/NW use SE/SW | The .aseprite has only an idle loop in two directions. Run, death and back views are placeholders (see **Salamander Hound**). |
 | 2026-10-19 | Wolf faster (0.65 s per tile in combat, was 0.8); its run cycle now spans 2 tiles so the paws don't slide | User report ("too slow", paws sliding). Measured: a planted paw moves about 4 art px per frame, a tile is 16 across, so 4 frames per tile (was 8). Each step plays the half of the cycle set by its start tile, so the stride carries on in any direction. 0.65 s is my "a little faster"; still slower than the Skirmisher (0.6). Balance tests pass. |
 | 2026-10-19 | The river ripples (tiles 86–89 cycle at 6 fps, each tile from its own frame) | User choice. The deep-water variants that were mixed into the river are gone (they don't animate). |
 | 2026-10-18 | Animated wolf art (6 steps): sprites, idle/run/bite/howl/death, hit flash, pack howl | User brief; plan approved with all recommended options. See **Creature art**. Measured: feet at y ≈ 46 (brief said 44); jaws close on bite frame 12. |

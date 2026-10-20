@@ -219,4 +219,58 @@ func _run() -> void:
 	await _snap_camera(hero)
 	await _shot("21_pack_closing_in")
 	view4.camera.step_zoom(-1)
+	# 18. Millbrook's gate to the Enemy Testing Grounds (north-east hedge).
+	hero.hp = hero.current_stats(session.now()).hp
+	session.world.move_hero(hero.id, &"town", Vector2i(16, 2))
+	await get_tree().process_frame
+	await _snap_camera(hero)
+	await _shot("22_millbrook_gate")
+	# 19. The testing grounds: entrance with the Reset Shrine, then pens.
+	session.world.move_hero(hero.id, &"enemy_testing", Vector2i(4, 11))
+	await get_tree().process_frame
+	await _snap_camera(hero)
+	await _shot("23_testing_entrance")
+	var tz := session.world.zone(&"enemy_testing")
+	var hound: Enemy = tz.enemies().filter(func(e): return e.def.id == &"salamander_hound")[0]
+	hero.move.place(hound.spawn_tile + Vector2i(0, 7))
+	await _snap_camera(hero)
+	await _shot("24_hound_pen")
+	# 20. Salamander Hounds facing each way, one flashing, one dead.
+	var calm_hound: EnemyDef = cd.enemies[&"salamander_hound"].duplicate()
+	calm_hound.aggro_radius = 0
+	var view5: WorldView = game.get_node("WorldView")
+	view5.camera.step_zoom(1)
+	var row: Array = []
+	for i in 4:
+		var h := tz.add_enemy(calm_hound, hound.spawn_tile + Vector2i(-3 + i * 2, 4))
+		h.face(dirs[i])
+		row.append(h)
+	hero.move.place(hound.spawn_tile + Vector2i(0, 7))
+	await _snap_camera(hero)
+	await _shot("25_hound_facings")
+	view5._flash_until[row[1].id] = session.render_time() + 30.0
+	row[0].alive = false
+	row[0].state = Enemy.State.DEAD
+	row[0].died_at = session.render_time() - 0.6
+	row[0].respawn_at = INF
+	await _shot("26_hound_death_and_flash")
+	for h in row:
+		tz.remove_enemy(h.id)
+	# 21. The hound fights: Cinder Pounce's mark, then its Ember Trail.
+	hero.move.place(hound.spawn_tile + Vector2i(0, 3)) # 3 tiles away: it pounces
+	await _snap_camera(hero)
+	await get_tree().create_timer(0.3).timeout
+	await _shot("27_cinder_pounce_mark")
+	await get_tree().create_timer(0.6).timeout
+	await _shot("28_pounce_landed")
+	hero.move.place(hound.tile() + Vector2i(5, 1))
+	await get_tree().create_timer(1.6).timeout
+	await _snap_camera(hero)
+	await _shot("29_ember_trail")
+	# 22. The Boss Arena at the far end.
+	var boss: Enemy = tz.enemies().filter(func(e): return e.def.elite)[0]
+	view5.camera.step_zoom(-1)
+	hero.move.place(boss.spawn_tile + Vector2i(-14, 8))
+	await _snap_camera(hero)
+	await _shot("30_boss_arena")
 	get_tree().quit()
