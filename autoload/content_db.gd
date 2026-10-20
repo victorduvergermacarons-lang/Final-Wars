@@ -48,6 +48,9 @@ func reload() -> void:
 	tree = AbilityTreeData.load_file()
 	tilesets = TilesetData.load_all()
 	for z in zones.values():
+		if z.enemy_pens:
+			TestingGrounds.build(z, enemies.values(), npcs.get(&"reset_shrine"))
+	for z in zones.values():
 		if z.has_terrain() and tilesets.has(z.tileset):
 			z.bake_walkability(tilesets[z.tileset])
 	tree_tuning = load(TREE_TUNING_PATH) if ResourceLoader.exists(TREE_TUNING_PATH) else TreeTuning.new()

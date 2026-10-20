@@ -56,15 +56,16 @@ func test_linked_edges_can_be_reached() -> void:
 				var beyond: Vector2i = p + edge.side
 				if not grid.in_bounds(beyond):
 					count += 1
-			assert_gt(count, 3, "%s: the edge to %s can be walked off from several tiles" % [z.id, edge.to_zone])
+			# An edge can be a whole open side or a gate in a hedge (2 tiles or more).
+			assert_gte(count, 2, "%s: the edge to %s can be walked off from at least 2 tiles" % [z.id, edge.to_zone])
 
 
 func test_written_walk_and_sight_rows_match_the_tileset() -> void:
 	# Tiled zones keep walk_rows/sight_rows in the file for reading; ContentDB
 	# rebuilds them from the tileset at load. They must agree.
 	for z: ZoneDef in ContentDB.zones.values():
-		if not z.has_terrain():
-			continue
+		if not z.has_terrain() or z.enemy_pens:
+			continue # generated zones (TestingGrounds) keep no rows on disk
 		var on_disk: ZoneDef = ResourceLoader.load(z.resource_path, "", ResourceLoader.CACHE_MODE_IGNORE)
 		assert_eq(Array(on_disk.walk_rows), Array(z.walk_rows), "%s walk_rows" % z.id)
 		assert_eq(Array(on_disk.sight_rows), Array(z.sight_rows), "%s sight_rows" % z.id)

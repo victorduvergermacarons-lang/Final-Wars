@@ -30,6 +30,12 @@ var died_at: float = -1.0
 var level: int = 1
 ## Removed when it dies instead of respawning (debug spawns).
 var temporary := false
+## Seconds from death to respawn for this one (< 0 = its type's respawn_seconds).
+var respawn_seconds := -1.0
+
+
+func respawn_delay() -> float:
+	return respawn_seconds if respawn_seconds >= 0.0 else def.respawn_seconds
 
 
 func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.ZERO) -> void:

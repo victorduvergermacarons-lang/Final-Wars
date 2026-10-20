@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ZoneDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="1_edge"]
+[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="2_zone"]
+
+[sub_resource type="Resource" id="Resource_to_town"]
+script = ExtResource("1_edge")
+side = Vector2i(0, 1)
+to_zone = &"town"
+offset = 12
+
+[resource]
+script = ExtResource("2_zone")
+id = &"enemy_testing"
+display_name = "Enemy Testing Grounds"
+edges = Array[ExtResource("1_edge")]([SubResource("Resource_to_town")])
+tileset = &"iso_basic"
+enemy_pens = true
+enemy_respawn_seconds = 10.0

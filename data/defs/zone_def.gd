@@ -40,6 +40,12 @@ extends Resource
 ## '#' blocks line of sight; empty = nothing does (only height). Baked for tiled zones.
 @export var sight_rows: PackedStringArray = []
 
+## Enemy testing map: TestingGrounds builds the whole layout at load, one pen
+## per enemy type (so new enemies show up without editing the map).
+@export var enemy_pens: bool = false
+## Respawn time for this zone's enemies (seconds; < 0 = each enemy type's own).
+@export var enemy_respawn_seconds: float = -1.0
+
 const HEIGHT_CHARS := "0123456789abcdefghijklmnopqrstuvwxyz"
 
 

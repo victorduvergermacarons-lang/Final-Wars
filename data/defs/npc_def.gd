@@ -13,6 +13,10 @@ extends Resource
 ## Goods for sale (unlimited stock). Anyone selling something is a vendor and
 ## also buys items from players.
 @export var sells: Array[ItemDef] = []
+## Talking to it resets its zone: every enemy back to its spawn at full health,
+## lingering effects (ground zones, telegraphs, projectiles, raised terrain, buffs
+## and debuffs on everyone there) cleared. The enemy testing map's Reset Shrine.
+@export var resets_zone: bool = false
 ## Ability-tree items for sale, by id (ContentDB adds them to `sells`).
 @export var sells_ids: Array[StringName] = []
 

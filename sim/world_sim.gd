@@ -91,7 +91,9 @@ func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSo
 	rng.seed = rng_seed
 	ctx = CombatContext.new(grid, rules, rng)
 	for spawn in zone.enemy_spawns:
-		add_enemy(spawn.enemy, spawn.tile).patrol = spawn.patrol.duplicate()
+		var enemy := add_enemy(spawn.enemy, spawn.tile)
+		enemy.patrol = spawn.patrol.duplicate()
+		enemy.respawn_seconds = spawn.respawn_seconds
 	for spawn in zone.npcs:
 		var npc := Npc.new(_take_id(), spawn.npc, spawn.tile)
 		npc.face(spawn.facing)
@@ -893,10 +895,39 @@ func _intent_talk(hero: Hero, npc_id: int) -> String:
 	if GridModel.distance(hero.tile(), npc.tile()) > TALK_RANGE:
 		return "too_far"
 	emit({"type": "dialogue", "target": hero.id, "npc": npc.id, "def": npc.def.id})
+	if npc.def.resets_zone:
+		reset_zone(hero.id)
 	for h in _quest_sharers(hero, npc.tile()):
 		for e in QuestLog.on_talk(h, quests, npc.def.id):
 			emit(e)
 	return ""
+
+
+## Puts this zone back as it started (the testing map's Reset Shrine): every
+## enemy at its spawn with full health (debug-spawned ones removed), and every
+## lingering effect gone: casts, projectiles, telegraphs, ground zones, raised
+## terrain, and buffs and debuffs on everyone. Heroes here leave combat.
+func reset_zone(by: int = -1) -> void:
+	_projectiles.clear()
+	_pending_hits.clear()
+	_ground_zones.clear()
+	for change in _terrain:
+		change.until = now # taken off at the end of this tick
+	for id in _sorted(ctx.actors):
+		var a: Actor = ctx.actors[id]
+		a.casting = {}
+		a.buffs.clear()
+	for enemy in enemies():
+		if enemy.temporary:
+			remove_after_tick(enemy.id)
+			continue
+		enemy.reset_at_spawn()
+		if is_occupied(enemy.spawn_tile, enemy):
+			enemy.move.place(find_free_tile_near(enemy.spawn_tile))
+		emit({"type": "respawn", "target": enemy.id})
+	for hero in heroes():
+		hero.combat_until = -1.0
+	emit({"type": "zone_reset", "source": by})
 
 
 func _intent_accept_quest(hero: Hero, npc_id: int, quest_id: StringName) -> String:
@@ -1130,7 +1161,7 @@ func _on_death(actor: Actor) -> void:
 				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h, quests))
 		enemy.threat.clear()
 		enemy.died_at = now
-		enemy.respawn_at = now + enemy.def.respawn_seconds
+		enemy.respawn_at = now + enemy.respawn_delay()
 		if enemy.temporary:
 			# Spawned enemies don't respawn: they go once their corpse has faded.
 			enemy.respawn_at = now + (enemy.def.art.corpse_total() if enemy.def.art != null else 0.0)

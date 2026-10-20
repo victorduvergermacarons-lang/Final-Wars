@@ -368,6 +368,8 @@ func _on_events(events: Array) -> void:
 			"world_flag":
 				if e.get("text", "") != "":
 					client.say(e.text)
+			"zone_reset":
+				client.say("The shrine glows: every creature returns to its pen and lingering effects fade.")
 		if e.get("target", -2) != me:
 			continue
 		var quest_msg := QuestText.event_message(e, ContentDB.quests)
