@@ -36,3 +36,4 @@ targeting = 2
 aim = 1
 line_shape = 1
 windup_seconds = 0.8
+flame_effect = true

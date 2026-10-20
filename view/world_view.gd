@@ -35,6 +35,11 @@ var _zone: ZoneDef
 ## The zone's tileset art (null: placeholder diamonds).
 var _art: TileArt
 ## Animated creatures: which frame each shows.
+## Fiery abilities that just went off: [{"tiles", "start"}] (see _draw_flames).
+var _flames: Array = []
+const FLAME_SECONDS := 0.7
+## Enraged creatures (EnemyDef.enrage_buff) are drawn this much hotter.
+const ENRAGE_TINT := Color(1.35, 0.85, 0.7)
 var _animator := CreatureAnimator.new()
 static var _frames_cache := {} # CreatureArtDef -> SpriteFrames
 ## Actor id -> render time its hit flash ends.
@@ -164,6 +169,7 @@ func _draw() -> void:
 			for a in actors_by_tile.get(p, []):
 				_draw_actor(a)
 	_draw_projectiles(grid)
+	_draw_flames(grid)
 	_draw_landmarks(grid)
 	_draw_talk_prompt()
 	for f in _overlay:
@@ -347,9 +353,14 @@ func _draw_actor(a: Actor) -> void:
 		var c := Color(ENEMY_COLOR, alpha)
 		if edef.art != null and _draw_creature(a as Enemy, feet, alpha):
 			var top := feet - Vector2(0, (edef.art.feet.y - edef.art.head_y) * PixelCamera.ART_SCALE)
-			_draw_label(top + Vector2(0, -16), "%s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.8, 0.8, alpha))
+			if edef.elite:
+				_draw_label(top + Vector2(0, -16), "Elite %s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.85, 0.3, alpha))
+			else:
+				_draw_label(top + Vector2(0, -16), "%s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.8, 0.8, alpha))
 			_draw_bar(top + Vector2(-14, -10), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
 			_draw_cast_bar(a, feet, now)
+			if edef.flying and not (a as Enemy).airborne(now):
+				_draw_label(feet + Vector2(0, 22), "Grounded", Color(1, 0.9, 0.4), 11) # knocked out of the air
 			return
 		var s := 1.6 if edef.elite else 1.0
 		var diamond := PackedVector2Array([body + Vector2(0, -12) * s, body + Vector2(10, 0) * s,
@@ -383,6 +394,9 @@ func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
 	var tex := frames.get_frame_texture(name, mini(pick.frame, frames.get_frame_count(name) - 1))
 	var s := PixelCamera.ART_SCALE
 	var color := Color(1, 1, 1, alpha * float(pick.get("alpha", 1.0)))
+	var now: float = session.now()
+	if e.alive and e.def.enrage_buff != null and e.buffs.has(e.def.enrage_buff.id, now):
+		color = Color(ENRAGE_TINT, color.a) # Molten Fury: glowing hotter
 	var rect := Rect2(feet - art.feet * s, Vector2(art.frame_size) * s)
 	draw_texture_rect(tex, rect, false, color)
 	if session.render_time() < float(_flash_until.get(e.id, -1.0)):
@@ -426,8 +440,34 @@ func _draw_projectiles(grid: GridModel) -> void:
 			draw_circle(screen, 8, Color(0.6, 0.2, 0.9, 0.5))
 			draw_circle(screen, 5, Color(0.85, 0.6, 1.0))
 		else:
-			draw_circle(screen, 8, Color(1, 0.45, 0.1, 0.5))
-			draw_circle(screen, 5, Color(1, 0.85, 0.3))
+			_draw_fireball(screen)
+
+
+## The fire glow heroes' projectiles use; flames (Sunfire Breath) are made of them.
+func _draw_fireball(at: Vector2, size: float = 1.0, alpha: float = 1.0) -> void:
+	draw_circle(at, 8 * size, Color(1, 0.45, 0.1, 0.5 * alpha))
+	draw_circle(at, 5 * size, Color(1, 0.85, 0.3, alpha))
+
+
+## Flames over the tiles a fiery ability just hit (AbilityDef.flame_effect):
+## a few fireballs per tile rising and fading for FLAME_SECONDS.
+func _draw_flames(grid: GridModel) -> void:
+	var t: float = session.render_time()
+	var live: Array = []
+	for f in _flames:
+		var age: float = t - f.start
+		if age > FLAME_SECONDS:
+			continue
+		live.append(f)
+		var k := age / FLAME_SECONDS
+		for tile in f.tiles:
+			var base := surface_point(grid, tile)
+			for i in 3:
+				var h := TilesetData.cell_hash(tile, 50 + i)
+				var off := Vector2(float(h % 29) - 14.0, float((h >> 5) % 11) - 5.0)
+				var rise := (12.0 + 10.0 * i) * k + 4.0 * sin(t * 18.0 + i)
+				_draw_fireball(base + off + Vector2(0, -6 - rise), 1.3 - 0.5 * k, 1.0 - k)
+	_flames = live
 
 
 ## A small arrow on the ground pointing the way the actor faces.
@@ -533,6 +573,15 @@ func _on_events(events: Array) -> void:
 				_float(e.target, "Mastered %s!" % e.ability, Color(0.6, 0.8, 1), t)
 			"evade":
 				_float(e.target, "Evade", Color(0.8, 0.8, 0.8), t)
+			"cast":
+				var ability: AbilityDef = ContentDB.abilities.get(e.get("ability", &""))
+				if ability != null and ability.flame_effect and e.has("tiles"):
+					_flames.append({"tiles": e.tiles, "start": t})
+			"grounded":
+				_float(e.target, "Grounded!", Color(1, 0.9, 0.4), t)
+			"enrage":
+				var buff: BuffDef = ContentDB.buffs.get(e.get("buff", &""))
+				_float(e.target, "%s!" % (buff.display_name if buff != null else "Enraged"), Color(1, 0.55, 0.15), t)
 
 
 ## A new text on an actor appears at the bottom of its stack and pushes the

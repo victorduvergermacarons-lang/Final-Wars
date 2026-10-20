@@ -24,11 +24,18 @@ func _snap_camera(hero: Hero) -> void:
 	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
 
 
-func _shot(name: String) -> void:
-	for i in 8:
+func _shot(name: String, frames: int = 8) -> void:
+	for i in frames:
 		await get_tree().process_frame
 	get_viewport().get_texture().get_image().save_png(out_dir + name + ".png")
 	print("shot ", name)
+
+
+## Waits (frame by frame, at most 5 s) until `cond` holds.
+func _until(cond: Callable) -> void:
+	var start := Time.get_ticks_msec()
+	while not cond.call() and Time.get_ticks_msec() - start < 5000:
+		await get_tree().process_frame
 
 
 func _run() -> void:
@@ -273,4 +280,62 @@ func _run() -> void:
 	hero.move.place(boss.spawn_tile + Vector2i(-14, 8))
 	await _snap_camera(hero)
 	await _shot("30_boss_arena")
+	# 23. Sunscale Drakes: one facing each way (recoloured gold and crimson). Staged
+	# away from the drake's own pen so it stays out of these shots.
+	var drake: Enemy = tz.enemies().filter(func(e): return e.def.id == &"sunscale_drake")[0]
+	var base := drake.spawn_tile + Vector2i(-9, 5)
+	var still_drake: EnemyDef = cd.enemies[&"sunscale_drake"].duplicate()
+	still_drake.aggro_radius = 0
+	var drakes: Array = []
+	for i in 4:
+		var dk := tz.add_enemy(still_drake, base + Vector2i(-4 + i * 3, 1))
+		dk.face(dirs[i])
+		drakes.append(dk)
+	hero.move.place(base + Vector2i(0, -1))
+	await _snap_camera(hero)
+	await _shot("31_drake_facings")
+	# 24. Grounded (an Air knockback) and enraged (Molten Fury) drakes.
+	drakes[1].buffs.apply(still_drake.grounded_buff, session.now())
+	drakes[2].hp = drakes[2].stats.hp * 0.2
+	drakes[2].buffs.apply(still_drake.enrage_buff, session.now())
+	await _shot("32_drake_grounded_and_enraged")
+	drakes[0].alive = false
+	drakes[0].state = Enemy.State.DEAD
+	drakes[0].died_at = session.render_time() - 1.0
+	drakes[0].respawn_at = INF
+	await _shot("33_drake_dying")
+	for gone in drakes:
+		tz.remove_enemy(gone.id)
+	# 25. Sunfire Breath: the cone outlined during the 0.8 s rear-back, then flames
+	# and burning ground.
+	var breather: EnemyDef = cd.enemies[&"sunscale_drake"].duplicate()
+	breather.abilities = [cd.abilities[&"sunfire_breath"]] as Array[AbilityDef]
+	# Heroes are seen 0.3 s late: let the hero stand still first, so it aims true.
+	hero.move.place(base + Vector2i(-1, 0))
+	hero.hp = hero.current_stats(session.now()).hp
+	await _snap_camera(hero)
+	await get_tree().create_timer(0.6).timeout
+	var bd := tz.add_enemy(breather, base + Vector2i(2, 0))
+	bd.threat.add(hero.id, 1.0)
+	await _until(func(): return not bd.casting.is_empty())
+	await _shot("34_breath_telegraph", 1)
+	await _until(func(): return bd.casting.is_empty())
+	await _shot("35_breath_flames", 1)
+	tz.remove_enemy(bd.id)
+	tz.reset_zone()
+	# 26. Searing Dive: the glowing lane, then the dive and its fire trail.
+	var diver: EnemyDef = cd.enemies[&"sunscale_drake"].duplicate()
+	diver.abilities = [cd.abilities[&"searing_dive"]] as Array[AbilityDef]
+	hero.move.place(base + Vector2i(0, 0))
+	hero.hp = hero.current_stats(session.now()).hp
+	await _snap_camera(hero)
+	await get_tree().create_timer(0.6).timeout
+	var dd := tz.add_enemy(diver, base + Vector2i(3, 0))
+	dd.threat.add(hero.id, 1.0)
+	await _until(func(): return not dd.casting.is_empty())
+	await _shot("36_dive_lane", 1)
+	await _until(func(): return dd.casting.is_empty())
+	await get_tree().create_timer(0.3).timeout
+	await _shot("37_dive_trail", 1)
+	tz.remove_enemy(dd.id)
 	get_tree().quit()

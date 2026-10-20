@@ -12,7 +12,8 @@ uses the first real tileset** (`iso_basic`, 8 steps, 2026-10-16; see **Map art**
 `docs/playtest-checklist-tiles.md`). **Wolves are animated** (2026-10-18; see **Creature
 art** below and `docs/playtest-checklist-wolves.md`). **Enemy Testing Grounds and the
 Salamander Hound** added (2026-10-20; see those sections and
-`docs/playtest-checklist-testing-grounds.md`). For the numbers
+`docs/playtest-checklist-testing-grounds.md`). **The Sunscale Drake** (flying elite) added
+(2026-10-20; see its section and `docs/playtest-checklist-sunscale-drake.md`). For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -263,6 +264,69 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
   - **Placeholders (art missing):** run reuses frames 0–3, death reuses the
     crouch (frames 4–10), and NE/NW reuse the SE/SW rows.
 
+## Sunscale Drake (2026-10-20)
+
+A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy.
+- **Stats:** HP 2200, PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
+  leash 14; 1.2 s per tile; 0.3 s reaction; 700 XP, 12 AP; respawn 15 min (10 s in the
+  testing grounds); 60–120 g, Fireball / Scorched Earth / Burning Feet scrolls 15% each.
+- **Flight** (`EnemyDef.flying`, `GridModel.can_fly`):
+  - It crosses any walkable tile whatever its height.
+  - It crosses walls, hedges and water up to 1 level above it (`fly_over_levels`),
+    but never tiles that block sight.
+  - Ground zones don't touch it while airborne.
+- **Talon Rake** (`talon_rake`): Targeted, adjacent, 12 + 1.0×PhysAtk, 2.5 s. The
+  0.5 s wind-up comes from the art: the talons swing through kick frame 13.
+- **Sunfire Breath** (`sunfire_breath`): skillshot cone, 8-way, 4 tiles, 10 s.
+  - It rears back for 0.8 s with the cone outlined.
+  - Then 12 + 0.8×MagAtk magical damage, with flames drawn over the cone
+    (`AbilityDef.flame_effect`).
+  - The cone burns for 3 s (`sunfire_burn`: 2 + 0.12×MagAtk every 0.5 s).
+- **Searing Dive** (`searing_dive`): Ground, range 2–5, 14 s.
+  - A 5-tile 8-way lane glows for 1 s (`AbilityResolver.charge_lane`, the same tiles
+    the dive uses).
+  - Then the new effect `CHARGE_THROUGH` moves the drake along the lane at
+    0.16 s per tile.
+  - Each enemy it reaches gets `searing_dive_hit`: 10 + 0.6×MagAtk magical, and a
+    1-tile shove sideways (`AbilityEffect.push_aside`). Anyone still in the way stops
+    the dive.
+  - The lane burns for 2 s.
+- **Airborne passive:** a knockback from an Air ability (`grounded_by_tree`) applies
+  `drake_grounded` even when its weight cancels the push: stunned 3 s and 25% more
+  damage taken. While grounded it isn't airborne, so burning ground hurts it.
+- **Molten Fury:** below 30% HP (`enrage_below`) it gains `molten_fury`: cooldowns ×0.7,
+  and its ground zones last 2 s longer (`BuffDef.zone_seconds_bonus`), so the breath's
+  fire burns 5 s. It glows hotter and the message log announces it. Evading clears it.
+- **Balance** (`tests/balance/test_balance.gd`): a level-6 group of four wins (about 31 s,
+  heavy losses); a pair or a lone hero loses.
+- **Art:** `art/Crimson_dragon_animated.aseprite` (in `art/`, not `art/creatures/`):
+  128×128, 56 frames at 100 ms.
+  - Its two layers face SW and NW. SE and NE mirror them.
+  - `tools/once/make_sunscale_drake_sheets.py` shifts each layer into 160×128
+    frames so the drawn-in shadow's centre sits on feet (80, 95).
+  - Animations:
+    - idle = Standing 0–7, 8 fps
+    - run = Moving 48–55, 8 frames per tile
+    - rake = kick 8–15, 10 fps
+    - breath = 16–23 at 5 fps (16–19 rear back, 20–23 head forward)
+    - dive = frame 24 held 1 s, then 24–31
+    - death = Dying 32–47, then 1 s still and a 1 s fade
+  - `no_shadow/` sheets are used for the hit flash.
+- **Recolour:** `CreatureArtDef.recolor` with colours in data (dark, mid and light,
+  plus strength, saturation cut-off, centre and contrast in
+  `content/creatures/sunscale_drake_art.tres`).
+  - `view/shaders/creature_recolor.gdshader` maps each opaque, low-saturation pixel's
+    brightness onto dark crimson → crimson → gold.
+  - Flames and the semi-transparent shadow keep their colours.
+  - `CreatureRecolor` renders each sheet once through the shader into an off-screen
+    viewport, so the drake still draws in the world's back-to-front order.
+- Animated elites are labelled "Elite …" in gold. "Grounded!" and "Molten Fury!" float
+  over the drake, and a grounded drake shows "Grounded" under it.
+- **Placement:** its own pen in the testing grounds' Boss Arena. Spacing now counts how
+  far an enemy's abilities can carry it (`AbilityDef.moves_caster_tiles`: dashes,
+  charges, leaps), so its dive can't reach other pens. There is no Ashkaran caldera
+  area yet, so the planned rare spawn there waits for that zone.
+
 ## Enemy Testing Grounds (2026-10-20)
 
 - **Getting there:** a 2-tile gate in Millbrook's north-east hedge at (15–16, 0), with an
@@ -281,9 +345,9 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
     **Reset Shrine**
 - **Spacing:** neighbouring spawns are at least
   max(reach A + aggro B, reach B + aggro A, leash + pack call) + 3 tiles apart. Reach
-  is the leash radius plus the enemy's longest attack range. Bosses get 4 more tiles.
-  The road is out of every aggro radius. Pens are separated by low stone walls and
-  open onto the road. Today the map is 155×14.
+  is the leash radius, plus the longest distance its abilities can carry it, plus its
+  longest attack range. Bosses get 4 more tiles. The road is out of every aggro radius.
+  Pens are separated by low stone walls and open onto the road. Today the map is 209×14.
 - **Respawn:** 10 s, from `ZoneDef.enemy_respawn_seconds` (per spawn:
   `EnemySpawn.respawn_seconds`). Grizzlehide doesn't patrol here.
 - **Reset Shrine** (`content/npcs/reset_shrine.tres`, `NpcDef.resets_zone`): talking to
@@ -448,7 +512,7 @@ design/          Ability_Tree.xlsx (source of truth for abilities)
 tools/once/      one-off content conversions and generators (kept for the record)
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
                  net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds), ability import, tilesets
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake), ability import, tilesets
 ```
 
 ### Build order (milestone 1)
@@ -1115,6 +1179,15 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-20 | Sunscale Drake (flying elite) | User brief ("make sensible decisions, list them"). See **Sunscale Drake**. My decisions are in the next rows. |
+| 2026-10-20 | Drake art: both layers used; right views mirrored; frames widened to 160×128 | The brief said one layer facing left, but the file has SW and NW layers, so there are real front-left and back-left views. Each layer is shifted so its shadow's centre is the feet point, which lets mirrored rows share it. The file is at `art/`, not `art/creatures/`. |
+| 2026-10-20 | Recolour via a shader baked once per sheet in an off-screen viewport | A shader on the world canvas can't be set per creature without breaking back-to-front drawing. Colours live in the art data. Flames and the shadow are kept. |
+| 2026-10-20 | Flight rule | Any walkable tile at any height. Unwalkable tiles (walls, hedges, water) up to 1 level above. Never tall props (tiles that block sight). Ground zones skip airborne fliers. There are no lava tiles yet; burning ground stands in for them. |
+| 2026-10-20 | Searing Dive mechanics | New `CHARGE_THROUGH` effect: hits and shoves each enemy as the drake reaches it; anyone it can't shove stops the dive. The lane is 8-way, 5 tiles, shown with the same lane function the dive uses. Trail 2 s. Range 2–5 to pick it. |
+| 2026-10-20 | Grounding applies even when weight cancels the push | The drake is heavy, so a 1-tile Air Palm doesn't move it, but it still grounds it ("any Air ability with knockback"). Water Pulse and other non-Air knockbacks don't. |
+| 2026-10-20 | Molten Fury lasts for the rest of the fight; +2 s on all its ground zones | 3 → 5 s for the breath's fire, and the dive trail goes 2 → 4 s. The cooldown cut doesn't speed its flying. |
+| 2026-10-20 | Drake numbers tuned so a level-6 group of four wins | My first numbers (HP 2600, harder hits) beat even a level-7 group. Balance bots never dodge, which flatters any enemy with ground fire. |
+| 2026-10-20 | Testing-grounds reach counts movement abilities | The drake's dive, Grizzlehide's Charge and the hound's pounce can carry them past the leash before they turn back. The map grew from 155 to 209 tiles. |
 | 2026-10-20 | Enemy Testing Grounds + Salamander Hound | User brief ("make sensible decisions, list them"). See those sections. My decisions are listed in the next rows. |
 | 2026-10-20 | Testing map is generated at load from the enemy data, not stored | So any enemy added later gets a pen. Pens sit in a row north of a road and are ordered by level. Elites count as bosses. Spacing = reach + aggro (or leash + pack call) + 3. The road is kept out of aggro range. Low stone walls separate pens, and a hedge with a road gap marks the arena. |
 | 2026-10-20 | Millbrook gate on the north-east hedge (15–16, 0), linked as a zone edge; edges may now be 2-tile gates | The map edge (grid up = screen north-east) acts as the exit, like the Greenfields link. The zone-layout test now accepts gates of 2+ tiles (it wanted 4). |

@@ -83,6 +83,8 @@ enum LineShape { LINE, CONE, ARC }
 ## Enemy AI (GROUND): aim at the free tile beside the target, on the caster's
 ## side, instead of at the target's own tile (a pounce lands next to its prey).
 @export var aim_beside_target: bool = false
+## The view draws flames over the tiles it hits when it goes off (Sunfire Breath).
+@export var flame_effect: bool = false
 ## GROUND: seconds the area is shown before it goes off (0 = at once).
 @export var telegraph_seconds: float = 0.0
 ## Cast time: resolves after this many seconds; moving, a stun or an interrupt

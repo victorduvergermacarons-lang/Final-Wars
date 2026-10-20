@@ -368,6 +368,11 @@ func _on_events(events: Array) -> void:
 			"world_flag":
 				if e.get("text", "") != "":
 					client.say(e.text)
+			"enrage":
+				var who = session.get_actor(e.get("source", -1))
+				var buff: BuffDef = ContentDB.buffs.get(e.get("buff", &""))
+				if who != null and buff != null:
+					client.say("%s flies into %s!" % [who.display_name, buff.display_name])
 			"zone_reset":
 				client.say("The shrine glows: every creature returns to its pen and lingering effects fade.")
 		if e.get("target", -2) != me:
