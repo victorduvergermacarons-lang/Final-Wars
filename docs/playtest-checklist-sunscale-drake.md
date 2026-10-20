@@ -10,7 +10,12 @@ alone, open the debug console (`) and type `level 40`, or use `spawn sunscale_dr
       pen holds the **Elite Sunscale Drake (Lv 6)**.
 - [ ] Gold-and-crimson dragon, hovering. Its shadow sits on its tile, under its body.
 - [ ] Walk around it: it faces down-left, down-right, up-left and up-right with the
-      matching picture (right-facing views are the left ones mirrored).
+      matching picture (right-facing views are the left ones mirrored). Facing
+      down-right it looks down-right (not down-left).
+- [ ] Its body covers **5 tiles** in a plus (faint orange outline on the ground). You
+      can't walk onto those tiles, and you can hit it with melee from beside any arm.
+      Your skillshots and area spells hit it on any of those tiles.
+- [ ] It squeezes through gaps only 3 tiles wide or more, and knockbacks don't move it.
 
 ## Flying
 - [ ] It moves slowly (about 1.2 s per tile) but steadily, flapping.
@@ -29,11 +34,13 @@ alone, open the debug console (`) and type `level 40`, or use `spawn sunscale_dr
 - [ ] The cone's tiles stay orange (burning) for **3 s** and hurt anyone standing in them.
 
 ## Searing Dive (about every 14 s)
-- [ ] From 2–5 tiles away, a red **lane 5 tiles long** glows toward you for **1 s**
-      while it holds a poised pose.
-- [ ] Then it dives along the lane. Anyone in the lane is burned and **shoved one tile
-      sideways**; it ends at the far end of the lane (or before something it can't pass).
-- [ ] The tiles it dove over burn for about **2 s**.
+- [ ] From 2–5 tiles away, a red **lane 3 tiles wide** (as wide as its body) and 5
+      tiles long glows toward you for **1 s** while it holds a poised pose.
+- [ ] Then it dives along the lane. Anyone in any of the 3 lanes is burned and **shoved
+      2 tiles sideways** (out of its way, toward their own side); it ends at the far
+      end of the lane (or before something it can't pass).
+- [ ] All the tiles it swept burn for about **2 s**.
+- [ ] Every attack hits noticeably harder than before (about half again as much).
 - [ ] Leave the lane before the dive: no damage, no shove.
 
 ## Grounding it (Air knockbacks)

@@ -31,6 +31,11 @@ func _init(p_grid: GridModel, p_rules: CombatRules, p_rng: RandomNumberGenerator
 	rng = p_rng
 
 
+## Set while a charge shoves units aside: which way (perpendicular to the lane) to
+## push the unit being hit; zero lets the knockback pick a free side.
+var push_side := Vector2i.ZERO
+
+
 func add_actor(actor: Actor) -> void:
 	actors[actor.id] = actor
 
@@ -47,12 +52,12 @@ func record_positions() -> void:
 
 ## Whether `actor` is on `tile` now or was at any moment in the last `window` seconds.
 func was_on(actor: Actor, tile: Vector2i, window: float) -> bool:
-	if actor.tile() == tile:
+	if actor.covers(tile):
 		return true
 	if window <= 0.0:
 		return false
 	for e in recent_tiles.get(actor.id, []):
-		if e[0] >= now - window - 0.0001 and e[1] == tile:
+		if e[0] >= now - window - 0.0001 and actor.footprint.has(tile - e[1]):
 			return true
 	return false
 

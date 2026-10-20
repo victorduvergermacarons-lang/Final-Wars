@@ -7,12 +7,12 @@
 [sub_resource type="Resource" id="Resource_rake_s"]
 script = ExtResource("2_sc")
 stat = 2
-coefficient = 1.0
+coefficient = 1.2
 
 [sub_resource type="Resource" id="Resource_rake"]
 script = ExtResource("1_fx")
 damage_type = 0
-base_amount = 12.0
+base_amount = 20.0
 scaling = Array[ExtResource("2_sc")]([SubResource("Resource_rake_s")])
 
 [resource]

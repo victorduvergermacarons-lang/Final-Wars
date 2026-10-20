@@ -35,6 +35,8 @@ var _zone: ZoneDef
 ## The zone's tileset art (null: placeholder diamonds).
 var _art: TileArt
 ## Animated creatures: which frame each shows.
+## The faint outline under a large body's tiles (its hitbox).
+const BODY_COLOR := Color(0.95, 0.35, 0.1, 0.16)
 ## Fiery abilities that just went off: [{"tiles", "start"}] (see _draw_flames).
 var _flames: Array = []
 const FLAME_SECONDS := 0.7
@@ -319,7 +321,10 @@ func _draw_actor(a: Actor) -> void:
 	var now: float = session.now()
 	var is_target := client != null and client.target_id == a.id
 	if is_target:
-		_draw_ellipse(feet, 20, 9, Color(1, 0.9, 0.2), 2.0)
+		if a.is_large():
+			_draw_ellipse(feet, Iso.TILE_W * 1.2, Iso.TILE_H * 1.2, Color(1, 0.9, 0.2), 2.0) # around its whole body
+		else:
+			_draw_ellipse(feet, 20, 9, Color(1, 0.9, 0.2), 2.0)
 	var body := feet + Vector2(0, -14)
 	var alpha := 0.45 if a.evading else 1.0
 	var animated := a is Enemy and (a as Enemy).def.art != null
@@ -623,6 +628,11 @@ func _tile_marks() -> Dictionary:
 	for z in session.ground_zones():
 		for t in z.tiles:
 			_mark(marks, t, ZONE_COLOR)
+	# Large bodies (Sunscale Drake) show the tiles they cover: their hitbox.
+	for a in session.actors():
+		if a is Enemy and a.alive and a.is_large():
+			for t in a.tiles():
+				_mark(marks, t, BODY_COLOR)
 	for h in session.telegraphs():
 		var left := clampf(float(h.at) - now, 0.0, 1.5)
 		var c := Color(TELEGRAPH_COLOR, 0.65 - 0.3 * left / 1.5 + 0.1 * sin(Time.get_ticks_msec() / 80.0))

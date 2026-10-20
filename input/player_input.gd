@@ -212,7 +212,7 @@ static func talk_target(session) -> Actor:
 		var d := GridModel.distance(hero.tile(), a.tile())
 		if d > WorldSim.TALK_RANGE:
 			continue
-		if a.tile() == hero.front_tile():
+		if a.covers(hero.front_tile()):
 			best = a
 			break
 		if best == null or d < GridModel.distance(hero.tile(), best.tile()):

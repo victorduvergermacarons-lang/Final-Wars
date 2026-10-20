@@ -86,11 +86,11 @@ static func line_path(grid: GridModel, origin: Vector2i, dir: Vector2i, max_rang
 static func reaches_tile(ctx: CombatContext, caster: Actor, ability: AbilityDef, tile: Vector2i) -> bool:
 	if ability.targeting != AbilityDef.TargetingMode.LEGACY:
 		# Milestone 3 targeting: square distance; line of sight except for ground.
-		var d := TileGeometry.range_distance(caster.tile(), tile)
+		var d := caster.range_to(tile)
 		if d < ability.min_range or d > ability.max_range:
 			return false
 		return ability.targeting == AbilityDef.TargetingMode.GROUND or not ability.requires_line_of_sight \
-				or d <= 1 or LineOfSight.has_los(ctx.grid, caster.tile(), tile, ctx.rules.los_height_tolerance)
+				or d <= 1 or LineOfSight.has_los(ctx.grid, caster.nearest_tile_to(tile), tile, ctx.rules.los_height_tolerance)
 	match ability.shape:
 		AbilityDef.Shape.ARC:
 			return arc_tiles(caster).has(tile)
@@ -143,6 +143,6 @@ static func actor_at(ctx: CombatContext, tile: Vector2i, caster: Actor, ability:
 	ids.sort()
 	for id in ids:
 		var a: Actor = ctx.actors[id]
-		if a.tile() == tile and affects(caster, ability, a):
+		if a.covers(tile) and affects(caster, ability, a):
 			return a
 	return null

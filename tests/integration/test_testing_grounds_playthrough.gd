@@ -58,18 +58,19 @@ func _fight(enemy: Enemy) -> Dictionary:
 		var stats := hero.current_stats(sim.now)
 		if hero.hp < stats.hp * 0.45:
 			world.submit(hero.id, {"type": "cast", "ability": &"W01", "target": hero.id})
-		var d := TileGeometry.range_distance(hero.tile(), enemy.tile())
+		var d := Actor.body_distance(hero, enemy) # large bodies are reached through any tile
 		if d <= 1:
-			var dir := enemy.tile() - hero.tile()
+			var dir := enemy.nearest_tile_to(hero.tile()) - hero.tile()
 			world.submit(hero.id, {"type": "face", "dir": dir})
 			world.submit(hero.id, {"type": "cast", "ability": &"S01", "target": enemy.id})
 			world.submit(hero.id, {"type": "cast", "ability": &"F01", "target": enemy.id})
 		elif d <= 3 and hero.cooldowns.ability_remaining(&"W02", sim.now) <= 0.0 and hero.cooldowns.gcd_remaining(sim.now) <= 0.0:
 			world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": enemy.id})
 		elif hero.move.can_start_step(hero.in_combat(sim.now), hero.cooldowns, sim.now):
+			var goal := enemy.nearest_tile_to(hero.tile())
 			var blocked := sim.occupied_tiles(hero)
-			blocked.erase(enemy.tile())
-			var path := Pathfinder.find_path(sim.grid, hero.tile(), enemy.tile(), 2, blocked, -1, 4000)
+			blocked.erase(goal)
+			var path := Pathfinder.find_path(sim.grid, hero.tile(), goal, 2, blocked, -1, 4000)
 			if path.size() >= 3:
 				world.submit(hero.id, {"type": "step", "to": path[1]})
 		events = _tick()

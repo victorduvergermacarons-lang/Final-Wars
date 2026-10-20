@@ -61,7 +61,7 @@ static func _until_first_enemy(ctx: CombatContext, hero: Actor, line: Array[Vect
 		out.append(t)
 		for id in ctx.actors:
 			var a: Actor = ctx.actors[id]
-			if a.alive and a.tile() == t and hero.is_hostile_to(a):
+			if a.alive and a.covers(t) and hero.is_hostile_to(a):
 				return out
 	return out
 
@@ -76,7 +76,8 @@ static func _ground_tiles(ctx: CombatContext, hero: Actor, ability: AbilityDef, 
 			for id in ctx.actors:
 				var a: Actor = ctx.actors[id]
 				if a != hero and a.alive:
-					blocked[a.tile()] = true
+					for t in a.tiles():
+						blocked[t] = true
 			var limit := mini(int(e.base_amount), TileGeometry.distance(hero.tile(), tile))
 			var r := TileGeometry.push_path(ctx.grid, hero.tile(), TileGeometry.snap8(Vector2(tile - hero.tile())),
 					limit, StatCalc.jump_levels(hero.current_stats(ctx.now)), blocked)

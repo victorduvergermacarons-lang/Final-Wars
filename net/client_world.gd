@@ -103,7 +103,7 @@ func _step_is_legal(hero: Hero, to: Vector2i, t: float) -> bool:
 	if not grid.can_step(from, to, StatCalc.jump_levels(hero.current_stats(t))):
 		return false
 	for a in _actors.values():
-		if a != hero and a.alive and a.tile() == to:
+		if a != hero and a.alive and a.covers(to):
 			return false
 	if hero.in_combat(t) and not hero.cooldowns.can_step(t):
 		return false

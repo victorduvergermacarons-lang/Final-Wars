@@ -43,6 +43,10 @@ enum Behavior {
 ## Passive: each tile it leaves while fighting gets this ability's AREA effects
 ## (Salamander Hound's Ember Trail: a short burning ground zone). null = none.
 @export var trail_ability: AbilityDef
+## The tiles its body covers, as offsets from its tile (empty = just its tile). A
+## large body is hit on, blocks movement on and is reached through every one of
+## them; it can't be knocked back. Sunscale Drake: a plus of 5.
+@export var footprint: Array[Vector2i] = []
 ## Flies (Sunscale Drake): crosses any walkable tile whatever its height, and
 ## walls, water and other unwalkable tiles up to `fly_over_levels` above it (never
 ## tall props); ground zones (burning ground) don't touch it while airborne.

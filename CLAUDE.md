@@ -267,6 +267,17 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
 ## Sunscale Drake (2026-10-20)
 
 A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy.
+- **Body (since the 2026-10-20 playtest):** a plus of 5 tiles (`EnemyDef.footprint`,
+  `Actor.footprint`):
+  - It is hit on any of those tiles (skillshots, areas, telegraphs), and blocks
+    them: nobody walks into it.
+  - Ranges are measured to and from its nearest body tile
+    (`Actor.body_distance`), so melee works from beside any arm and it rakes
+    heroes beside its arms.
+  - It needs room for its whole body to move (3-wide gaps), and knockbacks don't
+    move it.
+  - The tiles it covers are outlined faintly on the ground, and its target ring
+    surrounds the whole body.
 - **Stats:** HP 2200, PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
   leash 14; 1.2 s per tile; 0.3 s reaction; 700 XP, 12 AP; respawn 15 min (10 s in the
   testing grounds); 60–120 g, Fireball / Scorched Earth / Burning Feet scrolls 15% each.
@@ -275,30 +286,32 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   - It crosses walls, hedges and water up to 1 level above it (`fly_over_levels`),
     but never tiles that block sight.
   - Ground zones don't touch it while airborne.
-- **Talon Rake** (`talon_rake`): Targeted, adjacent, 12 + 1.0×PhysAtk, 2.5 s. The
+- **Talon Rake** (`talon_rake`): Targeted, adjacent, 20 + 1.2×PhysAtk, 2.5 s. The
   0.5 s wind-up comes from the art: the talons swing through kick frame 13.
 - **Sunfire Breath** (`sunfire_breath`): skillshot cone, 8-way, 4 tiles, 10 s.
   - It rears back for 0.8 s with the cone outlined.
-  - Then 12 + 0.8×MagAtk magical damage, with flames drawn over the cone
+  - Then 18 + 1.0×MagAtk magical damage, with flames drawn over the cone
     (`AbilityDef.flame_effect`).
-  - The cone burns for 3 s (`sunfire_burn`: 2 + 0.12×MagAtk every 0.5 s).
+  - The cone burns for 3 s (`sunfire_burn`: 3 + 0.15×MagAtk every 0.5 s).
 - **Searing Dive** (`searing_dive`): Ground, range 2–5, 14 s.
-  - A 5-tile 8-way lane glows for 1 s (`AbilityResolver.charge_lane`, the same tiles
-    the dive uses).
+  - The tiles its whole body will sweep glow for 1 s: 5 steps, 3 lanes wide when
+    straight (`AbilityResolver.charge_lane` / `charge_swept`, the same tiles the dive
+    uses).
   - Then the new effect `CHARGE_THROUGH` moves the drake along the lane at
     0.16 s per tile.
-  - Each enemy it reaches gets `searing_dive_hit`: 10 + 0.6×MagAtk magical, and a
-    1-tile shove sideways (`AbilityEffect.push_aside`). Anyone still in the way stops
-    the dive.
-  - The lane burns for 2 s.
+  - Each enemy its body reaches gets `searing_dive_hit`: 18 + 0.9×MagAtk magical,
+    and a 2-tile shove sideways (`AbilityEffect.push_aside`), toward the side of the
+    lane it was on, so it clears the body. Anyone still in the way stops the dive.
+  - The swept tiles burn for 2 s.
 - **Airborne passive:** a knockback from an Air ability (`grounded_by_tree`) applies
   `drake_grounded` even when its weight cancels the push: stunned 3 s and 25% more
   damage taken. While grounded it isn't airborne, so burning ground hurts it.
 - **Molten Fury:** below 30% HP (`enrage_below`) it gains `molten_fury`: cooldowns ×0.7,
   and its ground zones last 2 s longer (`BuffDef.zone_seconds_bonus`), so the breath's
   fire burns 5 s. It glows hotter and the message log announces it. Evading clears it.
-- **Balance** (`tests/balance/test_balance.gd`): a level-6 group of four wins (about 31 s,
-  heavy losses); a pair or a lone hero loses.
+- **Balance** (`tests/balance/test_balance.gd`, bots that never dodge): a level-7 group of
+  four wins at least half the time (level 8 about 90%); at level 6 they win about 1 time
+  in 5; a pair or a lone hero loses.
 - **Art:** `art/Crimson_dragon_animated.aseprite` (in `art/`, not `art/creatures/`):
   128×128, 56 frames at 100 ms.
   - Its two layers face SW and NW. SE and NE mirror them.
@@ -310,6 +323,8 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
     - rake = kick 8–15, 10 fps
     - breath = 16–23 at 5 fps (16–19 rear back, 20–23 head forward)
     - dive = frame 24 held 1 s, then 24–31
+    - Facings: SE shows the SW layer as drawn and SW shows it mirrored (they were
+      swapped in the first build). NW and NE are unchanged.
     - death = Dying 32–47, then 1 s still and a 1 s fade
   - `no_shadow/` sheets are used for the hit flash.
 - **Recolour:** `CreatureArtDef.recolor` with colours in data (dark, mid and light,
@@ -1179,6 +1194,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-20 | Drake playtest fixes: 5-tile body (a plus), SW/SE swapped, harder hits, the dive sweeps 3 lanes | User requests. My choices: the body blocks movement as well as being hit; ranges are measured body to body; it can't be knocked back (Air knockbacks still ground it); the dive shoves 2 tiles to the side the unit was on; damage roughly ×1.5 on every attack; the drake stays level 6, so bots that never dodge now need level 7 (dodging players should manage at 6). |
 | 2026-10-20 | Sunscale Drake (flying elite) | User brief ("make sensible decisions, list them"). See **Sunscale Drake**. My decisions are in the next rows. |
 | 2026-10-20 | Drake art: both layers used; right views mirrored; frames widened to 160×128 | The brief said one layer facing left, but the file has SW and NW layers, so there are real front-left and back-left views. Each layer is shifted so its shadow's centre is the feet point, which lets mirrored rows share it. The file is at `art/`, not `art/creatures/`. |
 | 2026-10-20 | Recolour via a shader baked once per sheet in an off-screen viewport | A shader on the world canvas can't be set per creature without breaking back-to-front drawing. Colours live in the art data. Flames and the shadow are kept. |

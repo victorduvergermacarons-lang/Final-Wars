@@ -54,6 +54,7 @@ func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.Z
 	display_name = def.display_name
 	level = def.level
 	weight = def.weight
+	footprint = def.footprint.duplicate() if not def.footprint.is_empty() else footprint
 	spawn_tile = p_spawn
 	home_tile = p_spawn
 	move.place(p_spawn)

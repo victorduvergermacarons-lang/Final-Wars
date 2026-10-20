@@ -83,7 +83,10 @@ func test_it_flies_over_low_walls_and_water_but_not_tall_ones() -> void:
 	g.set_tile(Vector2i(5, 5), 1, false) # a low wall (1 level)
 	g.set_tile(Vector2i(6, 5), 2, false) # a 2-level wall
 	g.set_tile(Vector2i(7, 5), 6, true) # a high walkable pillar
-	var d := world.add_enemy(drake_def, Vector2i(4, 5))
+	# The flight rule itself, on a one-tile flier (the drake's body adds its arms).
+	var small: EnemyDef = drake_def.duplicate()
+	small.footprint = [] as Array[Vector2i]
+	var d := world.add_enemy(small, Vector2i(4, 5))
 	assert_true(world.can_move(d, Vector2i(4, 5), Vector2i(5, 5)), "over a low wall")
 	assert_false(world.can_move(hero, Vector2i(4, 5), Vector2i(5, 5)), "heroes can't")
 	assert_false(world.can_move(d, Vector2i(6, 4), Vector2i(6, 5)), "not over a 2-level wall")
@@ -93,6 +96,53 @@ func test_it_flies_over_low_walls_and_water_but_not_tall_ones() -> void:
 	assert_false(across.is_empty())
 	var through := world.path_for(d, Vector2i(5, 5), {})
 	assert_eq(through.back(), Vector2i(5, 5), "it can hover over the wall tile")
+
+
+func test_its_body_is_a_plus_of_five_tiles() -> void:
+	var d := world.add_enemy(drake_def, Vector2i(10, 10))
+	assert_eq(d.tiles().size(), 5)
+	for t in [Vector2i(10, 10), Vector2i(11, 10), Vector2i(9, 10), Vector2i(10, 11), Vector2i(10, 9)]:
+		assert_true(d.covers(t), "covers %s" % t)
+		assert_true(world.is_occupied(t), "%s is blocked" % t)
+	assert_false(d.covers(Vector2i(11, 11)), "not the diagonals")
+	# Reached through any tile of its body: a hero beside an arm is in melee range.
+	hero.move.place(Vector2i(12, 10))
+	assert_eq(Actor.body_distance(hero, d), 1)
+	var slash: AbilityDef = ContentDB.abilities[&"talon_rake"].duplicate()
+	slash.target = AbilityDef.TargetType.ENEMY
+	assert_eq(CastResolver.validate(world.ctx, hero, slash, d, null), AbilityResolver.Result.OK, "melee from beside an arm")
+	# Skillshots and areas hit it on any of its tiles.
+	assert_eq(AbilityResolver._actor_at(world.ctx, Vector2i(10, 11)), d)
+	# A hero can't step into its body.
+	hero.move.place(Vector2i(10, 12))
+	assert_ne(world.try_step(hero, Vector2i(10, 11)), "")
+	# It rakes a hero standing beside an arm.
+	var raker := _drake_with(&"talon_rake", Vector2i(10, 4))
+	hero.move.place(Vector2i(12, 4))
+	world.step()
+	assert_eq(raker.casting.get("ability").id, &"talon_rake")
+
+
+func test_its_body_needs_room_to_move() -> void:
+	var g := world.grid
+	for y in 20:
+		g.set_tile(Vector2i(8, y), 3, false) # a tall wall it can't cross...
+	g.set_tile(Vector2i(8, 10), 0, true) # ...with a 1-tile gap: too narrow for its body
+	var d := world.add_enemy(drake_def, Vector2i(6, 10))
+	assert_true(world.path_for(d, Vector2i(10, 10), {}).is_empty(), "its arms don't fit the gap")
+	g.set_tile(Vector2i(8, 9), 0, true)
+	g.set_tile(Vector2i(8, 11), 0, true)
+	assert_false(world.path_for(d, Vector2i(10, 10), {}).is_empty(), "a 3-wide gap does")
+
+
+func test_knockbacks_dont_move_its_body() -> void:
+	var d := world.add_enemy(drake_def, Vector2i(5, 10))
+	var blast: AbilityDef = ContentDB.abilities[&"A05"]
+	var events: Array[Dictionary] = []
+	hero.move.place(Vector2i(2, 10))
+	AbilityResolver.apply_effects(world.ctx, hero, blast, d, events)
+	assert_eq(d.tile(), Vector2i(5, 10), "too big to shove")
+	assert_true(events.any(func(e): return e.type == "grounded"), "but the Air blast still grounds it")
 
 
 func test_burning_ground_does_not_touch_it_in_the_air() -> void:
@@ -150,18 +200,25 @@ func test_stepping_out_of_the_cone_dodges_the_breath() -> void:
 	assert_eq(_damage_to(events, hero, &"sunfire_breath"), 0.0)
 
 
-func test_dive_lane_telegraph_matches_the_damage_shoves_aside_and_trails_fire() -> void:
-	var d := _drake_with(&"searing_dive", Vector2i(8, 10)) # the hero is 6 tiles west...
-	hero.move.place(Vector2i(5, 10)) # ...now 3, in the lane
+func test_dive_sweeps_three_lanes_hits_and_shoves_aside_and_trails_fire() -> void:
+	var d := _drake_with(&"searing_dive", Vector2i(9, 10))
+	hero.move.place(Vector2i(6, 10)) # centre lane, 3 tiles from its nose
+	var side := _hero(Vector2i(5, 11)) # the lower lane
 	world.step()
 	assert_eq(d.casting.get("ability").id, &"searing_dive")
 	var lane: Array = world.pending_hits()[0].tiles
-	assert_eq(lane, [Vector2i(7, 10), Vector2i(6, 10), Vector2i(5, 10), Vector2i(4, 10), Vector2i(3, 10)], "a 5-tile lane")
-	var events := _run(1.05)
-	assert_gt(_damage_to(events, hero, &"searing_dive_hit"), 0.0, "hit in the lane")
-	assert_ne(hero.tile().y, 10, "shoved out of the lane")
-	assert_eq(hero.tile().x, 5)
-	assert_eq(d.move.to_tile, Vector2i(3, 10), "dove the whole lane")
+	var rows := {}
+	for t in lane:
+		rows[t.y] = true
+	assert_eq(rows.keys().size(), 3, "three lanes, as wide as its body: %s" % [lane])
+	for t in [Vector2i(4, 9), Vector2i(4, 10), Vector2i(4, 11), Vector2i(3, 10)]:
+		assert_true(lane.has(t), "%s is marked" % t)
+	var events := _run(1.1)
+	assert_gt(_damage_to(events, hero, &"searing_dive_hit"), 0.0, "centre lane hit")
+	assert_gt(_damage_to(events, side, &"searing_dive_hit"), 0.0, "side lane hit too")
+	assert_eq(side.tile().y, 13, "shoved away from the lane on its own side")
+	assert_true(absi(hero.tile().y - 10) >= 2, "the centre one shoved clear of its body")
+	assert_eq(d.move.to_tile, Vector2i(4, 10), "dove the whole lane")
 	var trail := {}
 	for z in world.ground_zones():
 		for t in z.tiles:
@@ -171,10 +228,10 @@ func test_dive_lane_telegraph_matches_the_damage_shoves_aside_and_trails_fire() 
 
 
 func test_out_of_the_lane_takes_no_dive_damage() -> void:
-	_drake_with(&"searing_dive", Vector2i(8, 10))
-	hero.move.place(Vector2i(5, 10))
+	_drake_with(&"searing_dive", Vector2i(9, 10))
+	hero.move.place(Vector2i(6, 10))
 	world.step()
-	hero.move.place(Vector2i(5, 12))
+	hero.move.place(Vector2i(6, 13)) # beyond the lower lane
 	var events := _run(1.05)
 	assert_eq(_damage_to(events, hero, &"searing_dive_hit"), 0.0)
 

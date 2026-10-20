@@ -319,8 +319,9 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 		return "not_adjacent"
 	if not can_move(actor, from, to):
 		return "blocked"
-	if is_occupied(to, actor):
-		return "occupied"
+	for t in actor.tiles(to):
+		if is_occupied(t, actor):
+			return "occupied"
 	if actor.buffs.is_rooted(now):
 		return "rooted"
 	if actor.buffs.is_stunned(now):
@@ -357,16 +358,20 @@ func _leave_trail(enemy: Enemy, tile: Vector2i) -> void:
 ## Whether `actor` may step from `from` to the neighbouring `to` (terrain only):
 ## fliers fly, everyone else climbs within their Jump.
 func can_move(actor: Actor, from: Vector2i, to: Vector2i) -> bool:
-	if actor is Enemy and (actor as Enemy).airborne(now):
-		return grid.can_fly(from, to, (actor as Enemy).fly_rise(now))
-	return grid.can_step(from, to, StatCalc.jump_levels(actor.current_stats(now)))
+	for o in actor.footprint: # a large body: every tile it covers makes the step
+		if actor is Enemy and (actor as Enemy).airborne(now):
+			if not grid.can_fly(from + o, to + o, (actor as Enemy).fly_rise(now)):
+				return false
+		elif not grid.can_step(from + o, to + o, StatCalc.jump_levels(actor.current_stats(now))):
+			return false
+	return true
 
 
 ## A path for `actor` to `goal` by its own movement rules (see can_move).
 func path_for(actor: Actor, goal: Vector2i, blocked: Dictionary, max_expanded: int = 4096) -> Array[Vector2i]:
 	var rise := (actor as Enemy).fly_rise(now) if actor is Enemy else -1
 	return Pathfinder.find_path(grid, actor.tile(), goal, StatCalc.jump_levels(actor.current_stats(now)),
-			blocked, -1, max_expanded, rise)
+			blocked, -1, max_expanded, rise, actor.footprint if actor.is_large() else [])
 
 
 ## Resolves an ability and processes any deaths it caused.
@@ -424,8 +429,8 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 	if kind == "windup" and point != null:
 		for e in ability.effects:
 			if e.kind == AbilityEffect.Kind.CHARGE_THROUGH:
-				caster.casting.tiles = AbilityResolver.charge_lane(ctx, caster,
-						TileGeometry.snap8(point - Vector2(caster.tile())), int(e.base_amount))
+				caster.casting.tiles = AbilityResolver.charge_swept(caster, AbilityResolver.charge_lane(ctx, caster,
+						TileGeometry.snap8(point - Vector2(caster.tile())), int(e.base_amount)))
 	if kind != "cast":
 		caster.buffs.consume_on_cast(ability.tree, now)
 	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
@@ -743,7 +748,15 @@ func _fly_skillshot(p: Projectile, caster: Actor) -> bool:
 func is_occupied(tile: Vector2i, ignore: Actor = null) -> bool:
 	for id in ctx.actors:
 		var a: Actor = ctx.actors[id]
-		if a != ignore and a.alive and a.tile() == tile:
+		if a != ignore and a.alive and a.covers(tile):
+			return true
+	return false
+
+
+## Whether anyone but `actor` stands on a tile its body would cover centred on `center`.
+func body_blocked(actor: Actor, center: Vector2i) -> bool:
+	for t in actor.tiles(center):
+		if is_occupied(t, actor):
 			return true
 	return false
 
@@ -754,7 +767,8 @@ func occupied_tiles(ignore: Actor = null) -> Dictionary:
 	for id in ctx.actors:
 		var a: Actor = ctx.actors[id]
 		if a != ignore and a.alive:
-			out[a.tile()] = true
+			for t in a.tiles():
+				out[t] = true
 	return out
 
 

@@ -161,7 +161,10 @@ static func reach(e: EnemyDef) -> int:
 	for a in e.abilities:
 		r = maxi(r, a.max_range)
 		moves = maxi(moves, a.moves_caster_tiles())
-	return e.leash_radius + moves + r
+	var body := 0
+	for o in e.footprint:
+		body = maxi(body, absi(o.x) + absi(o.y))
+	return e.leash_radius + moves + r + body
 
 
 ## Tiles between the spawns of neighbours `a` (west) and `b` (east): neither

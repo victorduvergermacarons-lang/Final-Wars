@@ -7,12 +7,12 @@
 [sub_resource type="Resource" id="Resource_burn_s"]
 script = ExtResource("2_sc")
 stat = 3
-coefficient = 0.12
+coefficient = 0.15
 
 [sub_resource type="Resource" id="Resource_burn"]
 script = ExtResource("1_fx")
 damage_type = 1
-base_amount = 2.0
+base_amount = 3.0
 scaling = Array[ExtResource("2_sc")]([SubResource("Resource_burn_s")])
 can_crit = false
 

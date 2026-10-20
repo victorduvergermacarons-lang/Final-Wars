@@ -273,11 +273,13 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var pull := effect.kind == AbilityEffect.Kind.PULL
 			if not pull:
 				_try_ground(ctx, caster, ability, target, events)
+			if target.is_large():
+				return # a large body (Sunscale Drake) isn't shoved around
 			var dir := TileGeometry.snap8(Vector2((caster.tile() - target.tile()) if pull else (target.tile() - caster.tile())))
 			if effect.push_along_cast and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.cast_dir
 			if effect.push_aside and ctx.cast_dir != Vector2i.ZERO:
-				dir = _aside(ctx, target, ctx.cast_dir)
+				dir = ctx.push_side if ctx.push_side != Vector2i.ZERO else _aside(ctx, target, ctx.cast_dir)
 			var tiles := Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now), target.weight)
 			if pull:
 				tiles = mini(tiles, TileGeometry.distance(caster.tile(), target.tile()) - 1)
@@ -482,7 +484,8 @@ static func move_unit(ctx: CombatContext, unit: Actor, dir: Vector2i, tiles: int
 	for id in ctx.actors:
 		var a: Actor = ctx.actors[id]
 		if a != unit and a.alive:
-			blocked[a.tile()] = true
+			for t in a.tiles():
+				blocked[t] = true
 	var from := unit.tile()
 	var r := TileGeometry.push_path(ctx.grid, from, dir, maxi(tiles, 0),
 			StatCalc.jump_levels(unit.current_stats(ctx.now)), blocked)
@@ -521,9 +524,10 @@ static func _aside(ctx: CombatContext, unit: Actor, dir: Vector2i) -> Vector2i:
 	return left
 
 
-## The tiles a charge along `dir` can cross from `from`, up to `length`: it stops
-## at terrain the caster can't cross (fliers: see GridModel.can_fly). Units are
-## not considered (the charge deals with them as it goes).
+## The centres a charge along `dir` passes through, up to `length`: it stops where
+## its body can't go on (every tile it covers must make the step; fliers: walls up
+## to their rise, never tall props). Units are not considered (the charge deals with
+## them as it goes).
 static func charge_lane(ctx: CombatContext, caster: Actor, dir: Vector2i, length: int) -> Array[Vector2i]:
 	var lane: Array[Vector2i] = []
 	if dir == Vector2i.ZERO:
@@ -532,46 +536,80 @@ static func charge_lane(ctx: CombatContext, caster: Actor, dir: Vector2i, length
 	var rise := (caster as Enemy).fly_rise(ctx.now) if flier else StatCalc.jump_levels(caster.current_stats(ctx.now))
 	var prev := caster.tile()
 	for k in range(1, length + 1):
-		var t := caster.tile() + dir * k
-		if not ctx.grid.in_bounds(t) or ctx.grid.blocks_sight(t):
-			break
-		var up := ctx.grid.height_at(t) - ctx.grid.height_at(prev)
-		if flier:
-			if not ctx.grid.is_walkable(t) and up > rise:
+		var c := caster.tile() + dir * k
+		var fits := true
+		for o in caster.footprint:
+			var t: Vector2i = c + o
+			if not ctx.grid.in_bounds(t) or ctx.grid.blocks_sight(t):
+				fits = false
 				break
-		elif not ctx.grid.is_walkable(t) or up > rise:
+			var up := ctx.grid.height_at(t) - ctx.grid.height_at(prev + o)
+			if flier:
+				if not ctx.grid.is_walkable(t) and up > rise:
+					fits = false
+			elif not ctx.grid.is_walkable(t) or up > rise:
+				fits = false
+		if not fits:
 			break
-		lane.append(t)
-		prev = t
+		lane.append(c)
+		prev = c
 	return lane
 
 
-## Charges along the cast direction: each enemy reached gets the pass ability
-## (damage, a shove out of the lane); anyone still in the way stops the charge in
-## front of them. The tiles crossed become the cast's trail (fire trail).
+## The tiles a charge sweeps with its whole body (a large body clears several
+## lanes), in the order it reaches them, without the tiles it starts on.
+static func charge_swept(caster: Actor, lane: Array) -> Array[Vector2i]:
+	var seen := {}
+	for t in caster.tiles():
+		seen[t] = true
+	var out: Array[Vector2i] = []
+	for c in lane:
+		for t in caster.tiles(c):
+			if not seen.has(t):
+				seen[t] = true
+				out.append(t)
+	return out
+
+
+## Charges along the cast direction: each enemy its body reaches gets the pass
+## ability (damage, a shove out of the way, to the side of the lane it is on);
+## anyone still in the way stops the charge. Every tile its body swept becomes the
+## cast's trail (fire trail).
 static func _charge_through(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect,
 		events: Array[Dictionary]) -> void:
 	var dir := ctx.cast_dir
 	if dir == Vector2i.ZERO:
 		dir = TileGeometry.snap8(Vector2(caster.facing))
+	var perp := TileGeometry.snap8(Vector2(-dir.y, dir.x))
 	var from := caster.tile()
 	var end := from
-	var path: Array[Vector2i] = []
-	for t in charge_lane(ctx, caster, dir, int(effect.base_amount)):
-		var unit := _actor_at(ctx, t)
-		if unit != null and unit != caster and caster.is_hostile_to(unit) and not unit.evading \
-				and effect.pass_ability != null:
-			ctx.cast_dir = dir
-			apply_effects(ctx, caster, effect.pass_ability, unit, events)
-		if _occupied(ctx, t, caster):
+	var lane: Array[Vector2i] = []
+	var hit := {}
+	for c in charge_lane(ctx, caster, dir, int(effect.base_amount)):
+		var blocked := false
+		for t in caster.tiles(c):
+			var unit := _actor_at(ctx, t)
+			if unit == null or unit == caster:
+				continue
+			if caster.is_hostile_to(unit) and not unit.evading and effect.pass_ability != null and not hit.has(unit.id):
+				hit[unit.id] = true
+				var off := unit.tile() - c
+				var side := off.x * perp.x + off.y * perp.y
+				ctx.cast_dir = dir
+				ctx.push_side = perp if side > 0 else (-perp if side < 0 else Vector2i.ZERO)
+				apply_effects(ctx, caster, effect.pass_ability, unit, events)
+				ctx.push_side = Vector2i.ZERO
+			if _occupied(ctx, t, caster):
+				blocked = true
+		if blocked:
 			break
-		end = t
-		path.append(t)
-	ctx.cast_tiles = path
+		end = c
+		lane.append(c)
+	ctx.cast_tiles = charge_swept(caster, lane)
 	if end != from:
 		caster.casting = {}
 		caster.move.place(from)
-		caster.move.begin(end, ctx.now, effect.move_seconds_per_tile * path.size())
+		caster.move.begin(end, ctx.now, effect.move_seconds_per_tile * lane.size())
 	events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
 			"from": from, "to": end})
 
@@ -589,7 +627,7 @@ static func _impact(ctx: CombatContext, caster: Actor, ability: AbilityDef, unit
 static func _actor_at(ctx: CombatContext, tile: Vector2i) -> Actor:
 	for id in ctx.actors:
 		var a: Actor = ctx.actors[id]
-		if a.alive and a.tile() == tile:
+		if a.alive and a.covers(tile):
 			return a
 	return null
 
@@ -597,7 +635,7 @@ static func _actor_at(ctx: CombatContext, tile: Vector2i) -> Actor:
 static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool:
 	for id in ctx.actors:
 		var a: Actor = ctx.actors[id]
-		if a != ignore and a.alive and a.tile() == tile:
+		if a != ignore and a.alive and a.covers(tile):
 			return true
 	return false
 

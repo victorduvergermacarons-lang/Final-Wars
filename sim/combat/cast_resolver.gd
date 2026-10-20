@@ -35,11 +35,13 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			if not AbilityResolver._is_valid_target(caster, ability, target):
 				return AbilityResolver.Result.INVALID_TARGET
 			if target != caster:
-				var dist := TileGeometry.range_distance(caster.tile(), target.tile())
+				# Large units (Sunscale Drake) are reached through any tile of their body.
+				var dist := Actor.body_distance(caster, target)
 				if dist < ability.min_range or dist > ability.max_range:
 					return AbilityResolver.Result.OUT_OF_RANGE
+				var from := caster.nearest_tile_to(target.tile())
 				if ability.requires_line_of_sight and dist > 1 \
-						and not LineOfSight.has_los(ctx.grid, caster.tile(), target.tile(), ctx.rules.los_height_tolerance):
+						and not LineOfSight.has_los(ctx.grid, from, target.nearest_tile_to(from), ctx.rules.los_height_tolerance):
 					return AbilityResolver.Result.NO_LINE_OF_SIGHT
 		AbilityDef.TargetingMode.SKILLSHOT:
 			var point: Variant = aim_point(caster, target, aim)
@@ -49,7 +51,7 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			var tile: Variant = aim_tile(caster, target, aim)
 			if tile == null or not ctx.grid.in_bounds(tile):
 				return AbilityResolver.Result.INVALID_TARGET
-			var dist := TileGeometry.range_distance(caster.tile(), tile)
+			var dist := caster.range_to(tile)
 			if dist < ability.min_range or dist > ability.max_range:
 				return AbilityResolver.Result.OUT_OF_RANGE
 	if pay_mode == Pay.FREE:
@@ -104,7 +106,7 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			events.append({"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id})
 			if AbilityResolver.has_target_effects(ability):
 				var reach := ability.hit_range if ability.hit_range >= 0 else ability.max_range
-				if target == caster or TileGeometry.range_distance(caster.tile(), target.tile()) <= reach:
+				if target == caster or Actor.body_distance(caster, target) <= reach:
 					AbilityResolver.apply_effects(ctx, caster, ability, target, events)
 				else:
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": target.tile()})

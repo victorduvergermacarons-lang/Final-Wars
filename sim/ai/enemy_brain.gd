@@ -28,7 +28,7 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 				if world.now >= enemy.respawn_at:
 					world.remove_after_tick(enemy.id)
 				return
-			if world.now >= enemy.respawn_at and not world.is_occupied(enemy.spawn_tile, enemy):
+			if world.now >= enemy.respawn_at and not world.body_blocked(enemy, enemy.spawn_tile):
 				enemy.reset_at_spawn()
 				world.emit({"type": "respawn", "target": enemy.id})
 		Enemy.State.IDLE:
@@ -243,8 +243,8 @@ static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Va
 
 
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
-	if not _step_ready(world, enemy):
-		return
+	if not _step_ready(world, enemy) or (enemy.is_large() and enemy.range_to(seen) <= 1):
+		return # a large body is already beside its target
 	var path := world.path_for(enemy, seen, world.occupied_tiles(enemy))
 	if path.size() > 2:
 		world.try_step(enemy, path[1])
@@ -263,7 +263,7 @@ static func _best_neighbor(world: WorldSim, enemy: Enemy, score: Callable) -> Ve
 	var best_score: float = score.call(here)
 	for dir in GridModel.DIRECTIONS:
 		var t := here + dir
-		if not world.can_move(enemy, here, t) or world.is_occupied(t, enemy):
+		if not world.can_move(enemy, here, t) or world.body_blocked(enemy, t):
 			continue
 		if GridModel.distance(t, enemy.home_tile) > enemy.def.leash_radius:
 			continue
@@ -314,7 +314,7 @@ static func _patrol(world: WorldSim, enemy: Enemy) -> void:
 	var path := world.path_for(enemy, goal, world.occupied_tiles(enemy))
 	if path.size() < 2:
 		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size() # unreachable: skip it
-	elif not world.is_occupied(path[1], enemy):
+	elif not world.body_blocked(enemy, path[1]):
 		world.try_step(enemy, path[1], enemy.def.patrol_step_seconds)
 
 
@@ -327,7 +327,7 @@ static func _walk_home(world: WorldSim, enemy: Enemy) -> void:
 		enemy.evading = false
 		return
 	var path := world.path_for(enemy, enemy.home_tile, world.occupied_tiles(enemy))
-	if path.size() >= 2 and not world.is_occupied(path[1], enemy):
+	if path.size() >= 2 and not world.body_blocked(enemy, path[1]):
 		world.try_step(enemy, path[1])
-	elif path.is_empty() and not world.is_occupied(enemy.home_tile, enemy):
+	elif path.is_empty() and not world.body_blocked(enemy, enemy.home_tile):
 		enemy.move.place(enemy.home_tile) # stuck: snap home

@@ -6,7 +6,7 @@ and NW (facing up-left). Right-facing rows are those layers mirrored.
 The shadow is drawn into the art and the drake hovers above it, so each layer is
 shifted into a 160 x 128 frame to put its shadow (the average over the Standing
 frames) at FEET; mirrored rows then stand on the same point.
-Rows: SW, SE (mirrored SW), NW, NE (mirrored NW). no_shadow/ drops the shadow
+Rows: SW (the SW layer mirrored), SE (the SW layer as drawn), NW, NE (mirrored NW). no_shadow/ drops the shadow
 pixels (for the hit flash).
 Usage: python3 make_sunscale_drake_sheets.py ART.aseprite OUT_DIR"""
 import os, sys
@@ -24,7 +24,9 @@ ANIMS = {
     "dive": [24] * 10 + list(range(24, 32)),  # poised for the 1 s lane telegraph, then the dive
     "death": list(range(32, 48)),     # Dying
 }
-ROWS = [("sw", "SW", False), ("se", "SW", True), ("nw", "NW", False), ("ne", "NW", True)]
+# The "SW" layer's pictures read as facing SE in game (playtest, 2026-10-20), so SE
+# uses it as drawn and SW mirrors it.
+ROWS = [("sw", "SW", True), ("se", "SW", False), ("nw", "NW", False), ("ne", "NW", True)]
 
 
 def is_shadow(p):

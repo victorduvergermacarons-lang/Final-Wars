@@ -48,6 +48,57 @@ func tile() -> Vector2i:
 	return move.to_tile
 
 
+## The tiles its body covers, as offsets from tile() (most units: just its own
+## tile; the Sunscale Drake: a plus of 5). It is hit on, blocks and is reached
+## through any of them.
+var footprint: Array[Vector2i] = [Vector2i.ZERO]
+
+
+func is_large() -> bool:
+	return footprint.size() > 1
+
+
+## Every tile its body covers when its centre is on `at` (default: where it is).
+func tiles(at: Variant = null) -> Array[Vector2i]:
+	var c: Vector2i = at if at != null else tile()
+	var out: Array[Vector2i] = []
+	for o in footprint:
+		out.append(c + o)
+	return out
+
+
+func covers(t: Vector2i) -> bool:
+	return footprint.has(t - tile())
+
+
+## Range distance (diagonals count 2) from its body to `t`: to the nearest tile it covers.
+func range_to(t: Vector2i) -> int:
+	var best := 1 << 30
+	for o in footprint:
+		best = mini(best, TileGeometry.range_distance(tile() + o, t))
+	return best
+
+
+## Of its body's tiles, the one nearest `t` (where reach and sight are measured from).
+func nearest_tile_to(t: Vector2i) -> Vector2i:
+	var best := tile()
+	var best_d := 1 << 30
+	for o in footprint:
+		var d := TileGeometry.range_distance(tile() + o, t)
+		if d < best_d:
+			best_d = d
+			best = tile() + o
+	return best
+
+
+## Range distance between two units' bodies (nearest tiles).
+static func body_distance(a: Actor, b: Actor) -> int:
+	var best := 1 << 30
+	for o in b.footprint:
+		best = mini(best, a.range_to(b.tile() + o))
+	return best
+
+
 ## Stats with active buffs applied.
 ## The ability being cast, wound up or channelled ({} when idle):
 ## {"ability", "target", "aim", "kind": "cast"|"windup"|"channel", "start", "end",
