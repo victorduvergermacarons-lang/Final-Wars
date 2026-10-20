@@ -112,7 +112,7 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 		AbilityDef.TargetingMode.SKILLSHOT:
 			_cast_skillshot(ctx, caster, ability, point, out)
 		AbilityDef.TargetingMode.GROUND:
-			var area := area_tiles(ctx.grid, ctx.cast_aim, ability.area_radius)
+			var area := area_tiles(ctx.grid, ctx.cast_aim, ability.area_radius, ability.area_diamond)
 			events.append({"type": "cast", "source": caster.id, "target": -1, "ability": ability.id,
 					"tiles": area, "telegraph": ability.telegraph_seconds})
 			if ability.telegraph_seconds > 0.0:
@@ -125,7 +125,7 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 				AbilityResolver.apply_effects(ctx, caster, ability, caster, events)
 				AbilityResolver.apply_area_effects(ctx, caster, ability, trail if not trail.is_empty() else [caster.tile()], events)
 			else:
-				var area := area_tiles(ctx.grid, caster.tile(), ability.area_radius)
+				var area := area_tiles(ctx.grid, caster.tile(), ability.area_radius, ability.area_diamond)
 				hit_tiles(ctx, caster, ability, area, 0.0, events, ability.target == AbilityDef.TargetType.ALLY, trail)
 
 
@@ -193,9 +193,10 @@ static func lob_tile(origin: Vector2i, point: Vector2, max_range: int) -> Vector
 	return line.back() if not line.is_empty() else origin
 
 
-## Square area around `center`, inside the map.
-static func area_tiles(grid: GridModel, center: Vector2i, radius: int) -> Array[Vector2i]:
-	return TileGeometry.square(center, radius).filter(func(t): return grid.in_bounds(t))
+## Square area around `center` (a diamond if `diamond`), inside the map.
+static func area_tiles(grid: GridModel, center: Vector2i, radius: int, diamond: bool = false) -> Array[Vector2i]:
+	return TileGeometry.square(center, radius).filter(func(t): return grid.in_bounds(t) \
+			and (not diamond or TileGeometry.range_distance(center, t) <= radius))
 
 
 ## Applies the ability to every affected unit on `tiles` (each once), then its

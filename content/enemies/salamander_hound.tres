@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_ab"]
+[ext_resource type="Resource" path="res://content/abilities/hound_bite.tres" id="2_bite"]
+[ext_resource type="Resource" path="res://content/abilities/cinder_pounce.tres" id="3_pounce"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="4_enemy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="5_stats"]
+[ext_resource type="Resource" path="res://content/loot/salamander_hound.tres" id="6_loot"]
+[ext_resource type="Resource" path="res://content/abilities/ember_trail.tres" id="7_trail"]
+[ext_resource type="Resource" path="res://content/creatures/salamander_hound_art.tres" id="8_art"]
+
+[sub_resource type="Resource" id="Resource_stats"]
+script = ExtResource("5_stats")
+hp = 190.0
+phys_atk = 13.0
+mag_atk = 14.0
+phys_def = 5.0
+mag_def = 12.0
+evasion = 8.0
+jump = 2.0
+
+[resource]
+script = ExtResource("4_enemy")
+id = &"salamander_hound"
+display_name = "Salamander Hound"
+level = 2
+stats = SubResource("Resource_stats")
+abilities = Array[ExtResource("1_ab")]([ExtResource("2_bite"), ExtResource("3_pounce")])
+aggro_radius = 5
+leash_radius = 12
+combat_step_seconds = 0.5
+reaction_seconds = 0.25
+xp_reward = 70
+ap_reward = 3
+loot = ExtResource("6_loot")
+respawn_seconds = 30.0
+weight = 0
+trail_ability = ExtResource("7_trail")
+art = ExtResource("8_art")

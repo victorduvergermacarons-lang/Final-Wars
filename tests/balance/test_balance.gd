@@ -76,3 +76,10 @@ func test_grizzlehide_needs_a_group() -> void:
 	assert_lt(_avg([S.L5_TANK, S.L5_HEALER], &"old_grizzlehide", 1, 5).win_rate, 0.34, "a pair mostly loses")
 	var group := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"old_grizzlehide", 1, 5)
 	assert_gt(group.win_rate, 0.8, str(group))
+
+
+func test_salamander_hound_is_a_fair_level_2_fight() -> void:
+	var r := _avg([S.STARTER], &"salamander_hound", 1, 2)
+	print("Salamander Hound vs level-2 starter: ", r)
+	assert_gt(r.win_rate, 0.8, "a level-2 starter beats it: " + str(r))
+	assert_between(r.hp_lost_pct, 25, 85, "but it hurts: " + str(r))

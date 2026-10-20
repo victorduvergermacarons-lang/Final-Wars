@@ -40,6 +40,9 @@ enum Behavior {
 @export var howl_ability: AbilityDef
 ## CALL_PACK: idle enemies of this kind within this many tiles join the fight.
 @export var pack_call_radius: int = 0
+## Passive: each tile it leaves while fighting gets this ability's AREA effects
+## (Salamander Hound's Ember Trail: a short burning ground zone). null = none.
+@export var trail_ability: AbilityDef
 ## Animated sprite art (null: drawn as a placeholder diamond). Its frame rates
 ## also time the attacks it lists (see CreatureArtDef.timed_abilities).
 @export var art: CreatureArtDef

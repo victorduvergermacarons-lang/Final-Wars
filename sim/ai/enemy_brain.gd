@@ -208,6 +208,11 @@ static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vect
 			if ability.targeting != AbilityDef.TargetingMode.TARGETED:
 				aim = Vector2(seen)
 				on = null
+				if ability.aim_beside_target:
+					var landing: Variant = _landing_beside(world, enemy, seen)
+					if landing == null:
+						continue
+					aim = Vector2(landing)
 			if CastResolver.validate(world.ctx, enemy, ability, on, aim) == AbilityResolver.Result.OK \
 					and world.cast(enemy, ability, on, aim) == AbilityResolver.Result.OK:
 				enemy.last_attack_at = world.now
@@ -218,6 +223,23 @@ static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vect
 			enemy.last_attack_at = world.now
 			return Attack.CAST
 	return result
+
+
+## The free tile beside `seen` nearest the enemy (not its own tile), where a
+## pounce lands next to its prey; null if there is none.
+static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Variant:
+	var best: Variant = null
+	var best_dist := 0
+	for dir in GridModel.DIRECTIONS:
+		var t: Vector2i = seen + dir
+		if t == enemy.tile() or not world.grid.in_bounds(t) or not world.grid.is_walkable(t) \
+				or world.is_occupied(t, enemy):
+			continue
+		var d := TileGeometry.range_distance(enemy.tile(), t)
+		if best == null or d < best_dist:
+			best = t
+			best_dist = d
+	return best
 
 
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:

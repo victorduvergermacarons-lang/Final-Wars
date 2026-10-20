@@ -40,7 +40,7 @@ static func _tiles(ctx: CombatContext, hero: Actor, ability: AbilityDef, aim: Ve
 			if target != null:
 				out.append(target.tile())
 		AbilityDef.TargetingMode.SELF:
-			out = CastResolver.area_tiles(ctx.grid, hero.tile(), ability.area_radius)
+			out = CastResolver.area_tiles(ctx.grid, hero.tile(), ability.area_radius, ability.area_diamond)
 		AbilityDef.TargetingMode.SKILLSHOT:
 			if ability.arc_seconds > 0.0:
 				out.append(CastResolver.lob_tile(hero.tile(), aim, ability.max_range))
@@ -89,4 +89,4 @@ static func _ground_tiles(ctx: CombatContext, hero: Actor, ability: AbilityDef, 
 			out.assign(AbilityResolver._wall_tiles(ctx, hero, ability, e))
 			hero.facing = facing
 			return out
-	return CastResolver.area_tiles(ctx.grid, tile, ability.area_radius)
+	return CastResolver.area_tiles(ctx.grid, tile, ability.area_radius, ability.area_diamond)

@@ -77,6 +77,12 @@ enum LineShape { LINE, CONE, ARC }
 @export var hit_range: int = -1
 ## GROUND / SELF: square radius of the area (0 = the tile itself).
 @export var area_radius: int = 0
+## GROUND / SELF: a diamond instead of a square (diagonals count 2, like ranges):
+## radius 1 is the centre and its four straight neighbours (Cinder Pounce).
+@export var area_diamond: bool = false
+## Enemy AI (GROUND): aim at the free tile beside the target, on the caster's
+## side, instead of at the target's own tile (a pounce lands next to its prey).
+@export var aim_beside_target: bool = false
 ## GROUND: seconds the area is shown before it goes off (0 = at once).
 @export var telegraph_seconds: float = 0.0
 ## Cast time: resolves after this many seconds; moving, a stun or an interrupt

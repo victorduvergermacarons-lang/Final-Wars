@@ -340,7 +340,16 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 	actor.move.begin(to, now, walk_seconds)
 	if in_combat and not actor.buffs.use_free_step(now):
 		actor.cooldowns.trigger_step(now, step_cd)
+	if actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT and (actor as Enemy).def.trail_ability != null:
+		_leave_trail(actor as Enemy, from)
 	return ""
+
+
+## A fighting enemy with a trail (Ember Trail) leaves it on the tile it just left.
+func _leave_trail(enemy: Enemy, tile: Vector2i) -> void:
+	var events: Array[Dictionary] = []
+	AbilityResolver.apply_area_effects(ctx, enemy, enemy.def.trail_ability, [tile], events)
+	_emit_resolved(events)
 
 
 ## Resolves an ability and processes any deaths it caused.
@@ -487,7 +496,7 @@ func pending_hits() -> Array:
 		elif c.ability.targeting == AbilityDef.TargetingMode.GROUND and c.aim != null:
 			var center := Vector2i(roundi(c.aim.x), roundi(c.aim.y))
 			out.append({"source": a.id, "ability": c.ability.id,
-					"tiles": CastResolver.area_tiles(grid, center, c.ability.area_radius), "at": c.end})
+					"tiles": CastResolver.area_tiles(grid, center, c.ability.area_radius, c.ability.area_diamond), "at": c.end})
 	return out
 
 
