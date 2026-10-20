@@ -34,6 +34,16 @@ var temporary := false
 var respawn_seconds := -1.0
 
 
+## Flying and not knocked down (EnemyDef.grounded_buff).
+func airborne(now: float) -> bool:
+	return def.flying and not (def.grounded_buff != null and buffs.has(def.grounded_buff.id, now))
+
+
+## Wall rise it can fly over right now (-1: walks like everyone else).
+func fly_rise(now: float) -> int:
+	return def.fly_over_levels if airborne(now) else -1
+
+
 func respawn_delay() -> float:
 	return respawn_seconds if respawn_seconds >= 0.0 else def.respawn_seconds
 

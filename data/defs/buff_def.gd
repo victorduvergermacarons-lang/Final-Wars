@@ -40,6 +40,8 @@ extends Resource
 @export var charges: int = 0
 ## Steps cost no step cooldown while it lasts (uses a charge per step).
 @export var free_steps: bool = false
+## Ground zones the bearer makes last this many seconds longer (Molten Fury).
+@export var zone_seconds_bonus: float = 0.0
 
 @export_group("Counters")
 ## Fraction of incoming damage dealt back to the attacker.

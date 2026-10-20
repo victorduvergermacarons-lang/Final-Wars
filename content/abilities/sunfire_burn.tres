@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+
+[sub_resource type="Resource" id="Resource_burn_s"]
+script = ExtResource("2_sc")
+stat = 3
+coefficient = 0.12
+
+[sub_resource type="Resource" id="Resource_burn"]
+script = ExtResource("1_fx")
+damage_type = 1
+base_amount = 2.0
+scaling = Array[ExtResource("2_sc")]([SubResource("Resource_burn_s")])
+can_crit = false
+
+[resource]
+script = ExtResource("3_ab")
+id = &"sunfire_burn"
+display_name = "Sunfire"
+description = "Burning ground left by a Sunscale Drake."
+max_range = 0
+on_gcd = false
+requires_line_of_sight = false
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_burn")])
+targeting = 1

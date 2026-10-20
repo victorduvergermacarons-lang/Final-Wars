@@ -374,7 +374,8 @@ func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
 	if pick.is_empty():
 		return false
 	if not _frames_cache.has(art):
-		_frames_cache[art] = [art.build_sprite_frames(), art.build_sprite_frames(art.flash_sheets) if not art.flash_sheets.is_empty() else null]
+		var sheets: Dictionary = CreatureRecolor.sheets(art, get_tree().root) if art.recolor else {}
+		_frames_cache[art] = [art.build_sprite_frames(sheets), art.build_sprite_frames(art.flash_sheets) if not art.flash_sheets.is_empty() else null]
 	var frames: SpriteFrames = _frames_cache[art][0]
 	var name := StringName("%s_%s" % [pick.anim, pick.dir])
 	if not frames.has_animation(name):

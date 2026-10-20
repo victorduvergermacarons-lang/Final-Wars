@@ -43,6 +43,18 @@ enum Behavior {
 ## Passive: each tile it leaves while fighting gets this ability's AREA effects
 ## (Salamander Hound's Ember Trail: a short burning ground zone). null = none.
 @export var trail_ability: AbilityDef
+## Flies (Sunscale Drake): crosses any walkable tile whatever its height, and
+## walls, water and other unwalkable tiles up to `fly_over_levels` above it (never
+## tall props); ground zones (burning ground) don't touch it while airborne.
+@export var flying: bool = false
+@export var fly_over_levels: int = 1
+## Airborne passive: a knockback from an ability of this tree ("Air") applies
+## `grounded_buff` (e.g. stunned and taking more damage), whatever its weight.
+@export var grounded_by_tree: String = ""
+@export var grounded_buff: BuffDef
+## Enrage: below this fraction of its max HP it gains `enrage_buff` (0 = never).
+@export var enrage_below: float = 0.0
+@export var enrage_buff: BuffDef
 ## Animated sprite art (null: drawn as a placeholder diamond). Its frame rates
 ## also time the attacks it lists (see CreatureArtDef.timed_abilities).
 @export var art: CreatureArtDef

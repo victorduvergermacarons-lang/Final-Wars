@@ -87,6 +87,15 @@ func can_step(from: Vector2i, to: Vector2i, jump: int, max_drop: int = -1) -> bo
 	return true
 
 
+## Flying (EnemyDef.flying): any walkable tile, whatever its height; walls, water
+## and other unwalkable tiles only if they rise at most `max_wall_rise` levels
+## above `from`; never tiles that block sight (tall rocks and props).
+func can_fly(from: Vector2i, to: Vector2i, max_wall_rise: int) -> bool:
+	if distance(from, to) != 1 or not in_bounds(from) or not in_bounds(to) or blocks_sight(to):
+		return false
+	return is_walkable(to) or height_at(to) - height_at(from) <= max_wall_rise
+
+
 ## Height levels `from` stands above `to` (negative if below).
 func height_advantage(from: Vector2i, to: Vector2i) -> int:
 	return height_at(from) - height_at(to)

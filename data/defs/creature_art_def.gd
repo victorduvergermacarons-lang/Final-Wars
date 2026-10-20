@@ -41,6 +41,29 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## The sprite flashes white this long when the creature takes damage.
 @export var flash_seconds: float = 0.1
 
+@export_group("Recolour")
+## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
+## Sunscale Drake's mauve art shown gold and crimson). Flash sheets aren't
+## recoloured (they flash white anyway).
+@export var recolor: bool = false
+@export var recolor_dark: Color = Color(0.22, 0.03, 0.06)
+@export var recolor_mid: Color = Color(0.72, 0.13, 0.10)
+@export var recolor_light: Color = Color(1.0, 0.80, 0.32)
+## 0 = original colours, 1 = fully recoloured.
+@export_range(0.0, 1.0) var recolor_strength: float = 1.0
+## Pixels at least this saturated keep their colour (flames, eyes).
+@export var recolor_keep_saturation: float = 0.45
+## Brightness that maps to the mid colour, and how much the gradient is stretched.
+@export var recolor_center: float = 0.4
+@export var recolor_contrast: float = 1.8
+
+
+## The shader parameters for the recolour (see creature_recolor.gdshader).
+func recolor_params() -> Dictionary:
+	return {"dark_color": recolor_dark, "mid_color": recolor_mid, "light_color": recolor_light,
+			"strength": recolor_strength, "keep_saturation_above": recolor_keep_saturation,
+			"center": recolor_center, "contrast": recolor_contrast}
+
 
 func frame_count(anim: String) -> int:
 	var tex: Texture2D = sheets.get(anim)

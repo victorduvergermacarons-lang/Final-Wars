@@ -23,6 +23,7 @@ enum Kind {
 	TERRAIN, ## Raises (or lowers, if negative) the area by base_amount levels for a while.
 	ZONE, ## Leaves a ground zone on the area that applies zone_ability every tick.
 	CALL_PACK, ## Idle enemies of the caster's kind within its pack_call_radius join its fight.
+	CHARGE_THROUGH, ## The caster charges up to base_amount tiles along its lane (8-way), using pass_ability on each enemy it passes (Searing Dive).
 }
 
 ## Who an effect applies to: each affected unit (TARGETS), the caster once
@@ -60,6 +61,14 @@ enum DamageType {
 @export_group("Movement, terrain and zones")
 ## KNOCKBACK: push along the cast's direction (a wave) instead of away from the caster.
 @export var push_along_cast: bool = false
+## KNOCKBACK: push sideways, across the cast's direction, instead of away (Searing
+## Dive shoves units out of its lane; the free side is picked, left first).
+@export var push_aside: bool = false
+## CHARGE_THROUGH: applied to each enemy on the lane as the caster reaches it; a
+## unit still in the way afterwards stops the charge in front of it.
+@export var pass_ability: AbilityDef
+## CHARGE_THROUGH: seconds the caster takes per tile.
+@export var move_seconds_per_tile: float = 0.12
 ## KNOCKBACK/PULL: extra damage when the unit is stopped by a wall, ledge or unit.
 @export var impact_damage: float = 0.0
 ## TERRAIN / ZONE: how long it lasts (seconds; scales with Mastery for tree abilities).

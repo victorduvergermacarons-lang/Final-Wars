@@ -78,6 +78,7 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 			or GridModel.distance(enemy.tile(), enemy.home_tile) > enemy.def.leash_radius:
 		_start_evade(world, enemy)
 		return
+	_check_enrage(world, enemy)
 	var target := world.get_actor(enemy.threat.top())
 	if target == null:
 		enemy.threat.remove(enemy.threat.top())
@@ -132,14 +133,13 @@ static func _path_to_flank(world: WorldSim, enemy: Enemy, facing: Vector2i, seen
 	var goals: Array[Vector2i] = [seen + back, seen + Vector2i(back.y, back.x), seen - Vector2i(back.y, back.x)]
 	var blocked := world.occupied_tiles(enemy)
 	blocked[seen] = true
-	var jump := StatCalc.jump_levels(enemy.current_stats(world.now))
 	var best: Array[Vector2i] = []
 	for goal in goals:
 		if goal == enemy.tile():
 			return [goal] as Array[Vector2i]
 		if blocked.has(goal) or not world.grid.is_walkable(goal):
 			continue
-		var path := Pathfinder.find_path(world.grid, enemy.tile(), goal, jump, blocked, -1, 512)
+		var path := world.path_for(enemy, goal, blocked, 512)
 		if path.size() >= 2 and (best.is_empty() or path.size() < best.size()):
 			best = path
 	return best
@@ -245,8 +245,7 @@ static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Va
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
 	if not _step_ready(world, enemy):
 		return
-	var path := Pathfinder.find_path(world.grid, enemy.tile(), seen,
-			StatCalc.jump_levels(enemy.current_stats(world.now)), world.occupied_tiles(enemy))
+	var path := world.path_for(enemy, seen, world.occupied_tiles(enemy))
 	if path.size() > 2:
 		world.try_step(enemy, path[1])
 
@@ -260,12 +259,11 @@ static func _step_ready(world: WorldSim, enemy: Enemy) -> bool:
 ## tiles the enemy could step onto right now and that stay within its leash.
 static func _best_neighbor(world: WorldSim, enemy: Enemy, score: Callable) -> Vector2i:
 	var here := enemy.tile()
-	var jump := StatCalc.jump_levels(enemy.current_stats(world.now))
 	var best := here
 	var best_score: float = score.call(here)
 	for dir in GridModel.DIRECTIONS:
 		var t := here + dir
-		if not world.grid.can_step(here, t, jump) or world.is_occupied(t, enemy):
+		if not world.can_move(enemy, here, t) or world.is_occupied(t, enemy):
 			continue
 		if GridModel.distance(t, enemy.home_tile) > enemy.def.leash_radius:
 			continue
@@ -281,6 +279,17 @@ static func _max_range(enemy: Enemy) -> int:
 	for ability in enemy.def.abilities:
 		r = maxi(r, ability.max_range)
 	return r
+
+
+## Enrage (Molten Fury): below `enrage_below` of its max HP it gains its enrage
+## buff for the rest of the fight (evading clears it).
+static func _check_enrage(world: WorldSim, enemy: Enemy) -> void:
+	var buff := enemy.def.enrage_buff
+	if buff == null or enemy.def.enrage_below <= 0.0 or enemy.buffs.has(buff.id, world.now):
+		return
+	if enemy.hp < enemy.def.enrage_below * enemy.current_stats(world.now).hp:
+		enemy.buffs.apply(buff, world.now, 0.0, enemy.id, {"duration": 3600.0})
+		world.emit({"type": "enrage", "source": enemy.id, "target": enemy.id, "buff": buff.id})
 
 
 static func _start_evade(world: WorldSim, enemy: Enemy) -> void:
@@ -302,8 +311,7 @@ static func _patrol(world: WorldSim, enemy: Enemy) -> void:
 	if enemy.tile() == goal:
 		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size()
 		return
-	var path := Pathfinder.find_path(world.grid, enemy.tile(), goal,
-			StatCalc.jump_levels(enemy.current_stats(world.now)), world.occupied_tiles(enemy))
+	var path := world.path_for(enemy, goal, world.occupied_tiles(enemy))
 	if path.size() < 2:
 		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size() # unreachable: skip it
 	elif not world.is_occupied(path[1], enemy):
@@ -318,8 +326,7 @@ static func _walk_home(world: WorldSim, enemy: Enemy) -> void:
 		enemy.called_by_pack = false
 		enemy.evading = false
 		return
-	var path := Pathfinder.find_path(world.grid, enemy.tile(), enemy.home_tile,
-			StatCalc.jump_levels(enemy.current_stats(world.now)), world.occupied_tiles(enemy))
+	var path := world.path_for(enemy, enemy.home_tile, world.occupied_tiles(enemy))
 	if path.size() >= 2 and not world.is_occupied(path[1], enemy):
 		world.try_step(enemy, path[1])
 	elif path.is_empty() and not world.is_occupied(enemy.home_tile, enemy):

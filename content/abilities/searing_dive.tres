@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+[ext_resource type="Resource" path="res://content/abilities/searing_dive_hit.tres" id="4_hit"]
+[ext_resource type="Resource" path="res://content/abilities/sunfire_burn.tres" id="5_burn"]
+
+[sub_resource type="Resource" id="Resource_charge"]
+script = ExtResource("1_fx")
+kind = 19
+applies = 1
+base_amount = 5.0
+pass_ability = ExtResource("4_hit")
+move_seconds_per_tile = 0.16
+
+[sub_resource type="Resource" id="Resource_trail"]
+script = ExtResource("1_fx")
+kind = 17
+applies = 2
+duration_seconds = 2.0
+zone_ability = ExtResource("5_burn")
+zone_tick_seconds = 0.5
+
+[resource]
+script = ExtResource("3_ab")
+id = &"searing_dive"
+display_name = "Searing Dive"
+description = "Marks a 5-tile lane toward a hero, then dives along it, burning and shoving aside whoever is in the way and leaving a short fire trail."
+min_range = 2
+max_range = 5
+cooldown_seconds = 14.0
+requires_line_of_sight = false
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_charge"), SubResource("Resource_trail")])
+targeting = 3
+windup_seconds = 1.0

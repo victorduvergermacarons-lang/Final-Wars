@@ -104,7 +104,7 @@ func test_walk_in_fight_everything_and_walk_back() -> void:
 		var enemy: Enemy = _sim().enemies().filter(func(e): return e.spawn_tile == spawn.tile)[0]
 		_debug("heal")
 		if spawn.enemy.elite:
-			_debug("level 25") # bosses are built for a group
+			_debug("level 40") # bosses are built for a group
 		assert_true(_walk_to(Vector2i(spawn.tile.x, road)), "walked the road to the %s pen" % spawn.enemy.id)
 		assert_eq(enemy.state, Enemy.State.IDLE, "%s waits in its pen" % spawn.enemy.id)
 		var r := _fight(enemy)

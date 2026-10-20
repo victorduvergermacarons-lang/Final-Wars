@@ -1,0 +1,63 @@
+[gd_resource type="Resource" script_class="CreatureArtDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/creature_art_def.gd" id="1_art"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/sunscale_drake-idle.png" id="2_idle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/sunscale_drake-run.png" id="3_run"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/sunscale_drake-rake.png" id="4_rake"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/sunscale_drake-breath.png" id="5_breath"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/sunscale_drake-dive.png" id="6_dive"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/sunscale_drake-death.png" id="7_death"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/no_shadow/sunscale_drake-idle.png" id="10_fidle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/no_shadow/sunscale_drake-run.png" id="11_frun"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/no_shadow/sunscale_drake-rake.png" id="12_frake"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/no_shadow/sunscale_drake-breath.png" id="13_fbreath"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/no_shadow/sunscale_drake-dive.png" id="14_fdive"]
+[ext_resource type="Texture2D" path="res://assets/creatures/sunscale_drake/no_shadow/sunscale_drake-death.png" id="15_fdeath"]
+
+[resource]
+script = ExtResource("1_art")
+sheets = {
+"idle": ExtResource("2_idle"),
+"run": ExtResource("3_run"),
+"rake": ExtResource("4_rake"),
+"breath": ExtResource("5_breath"),
+"dive": ExtResource("6_dive"),
+"death": ExtResource("7_death")
+}
+flash_sheets = {
+"idle": ExtResource("10_fidle"),
+"run": ExtResource("11_frun"),
+"rake": ExtResource("12_frake"),
+"breath": ExtResource("13_fbreath"),
+"dive": ExtResource("14_fdive"),
+"death": ExtResource("15_fdeath")
+}
+frame_size = Vector2i(160, 128)
+rows = PackedStringArray("sw", "se", "nw", "ne")
+feet = Vector2(80, 95)
+head_y = 24.0
+fps = {
+"breath": 5.0,
+"death": 10.0,
+"dive": 10.0,
+"idle": 8.0,
+"rake": 10.0
+}
+run_frames_per_tile = 8
+looping = PackedStringArray("idle", "run")
+timed_abilities = {
+&"talon_rake": ["rake", 5],
+&"sunfire_breath": ["breath", 4],
+&"searing_dive": ["dive", 10]
+}
+recovery_frames = {
+"breath": 4,
+"rake": 2
+}
+corpse_seconds = 1.0
+fade_seconds = 1.0
+flash_seconds = 0.1
+recolor = true
+recolor_dark = Color(0.22, 0.03, 0.06, 1)
+recolor_mid = Color(0.72, 0.13, 0.1, 1)
+recolor_light = Color(1, 0.8, 0.32, 1)

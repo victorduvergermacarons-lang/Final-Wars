@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+[ext_resource type="Resource" path="res://content/abilities/sunfire_burn.tres" id="4_burn"]
+
+[sub_resource type="Resource" id="Resource_breath_s"]
+script = ExtResource("2_sc")
+stat = 3
+coefficient = 0.8
+
+[sub_resource type="Resource" id="Resource_breath"]
+script = ExtResource("1_fx")
+damage_type = 1
+base_amount = 12.0
+scaling = Array[ExtResource("2_sc")]([SubResource("Resource_breath_s")])
+
+[sub_resource type="Resource" id="Resource_ground"]
+script = ExtResource("1_fx")
+kind = 17
+applies = 2
+duration_seconds = 3.0
+zone_ability = ExtResource("4_burn")
+zone_tick_seconds = 0.5
+
+[resource]
+script = ExtResource("3_ab")
+id = &"sunfire_breath"
+display_name = "Sunfire Breath"
+description = "Rears back, then breathes a 4-tile cone of fire that leaves the ground burning."
+max_range = 4
+cooldown_seconds = 10.0
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_breath"), SubResource("Resource_ground")])
+targeting = 2
+aim = 1
+line_shape = 1
+windup_seconds = 0.8

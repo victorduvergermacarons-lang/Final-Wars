@@ -317,7 +317,7 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 	var from := actor.tile()
 	if GridModel.distance(from, to) != 1:
 		return "not_adjacent"
-	if not grid.can_step(from, to, StatCalc.jump_levels(actor.current_stats(now))):
+	if not can_move(actor, from, to):
 		return "blocked"
 	if is_occupied(to, actor):
 		return "occupied"
@@ -352,6 +352,21 @@ func _leave_trail(enemy: Enemy, tile: Vector2i) -> void:
 	var events: Array[Dictionary] = []
 	AbilityResolver.apply_area_effects(ctx, enemy, enemy.def.trail_ability, [tile], events)
 	_emit_resolved(events)
+
+
+## Whether `actor` may step from `from` to the neighbouring `to` (terrain only):
+## fliers fly, everyone else climbs within their Jump.
+func can_move(actor: Actor, from: Vector2i, to: Vector2i) -> bool:
+	if actor is Enemy and (actor as Enemy).airborne(now):
+		return grid.can_fly(from, to, (actor as Enemy).fly_rise(now))
+	return grid.can_step(from, to, StatCalc.jump_levels(actor.current_stats(now)))
+
+
+## A path for `actor` to `goal` by its own movement rules (see can_move).
+func path_for(actor: Actor, goal: Vector2i, blocked: Dictionary, max_expanded: int = 4096) -> Array[Vector2i]:
+	var rise := (actor as Enemy).fly_rise(now) if actor is Enemy else -1
+	return Pathfinder.find_path(grid, actor.tile(), goal, StatCalc.jump_levels(actor.current_stats(now)),
+			blocked, -1, max_expanded, rise)
 
 
 ## Resolves an ability and processes any deaths it caused.
@@ -405,6 +420,12 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 			and ability.projectile_speed <= 0.0:
 		caster.casting.tiles = [CastResolver.lob_tile(caster.tile(), point, ability.max_range)] \
 				if ability.arc_seconds > 0.0 else CastResolver.skillshot_tiles(ctx, caster, ability, point)
+	# A wound-up charge (Searing Dive) shows its lane.
+	if kind == "windup" and point != null:
+		for e in ability.effects:
+			if e.kind == AbilityEffect.Kind.CHARGE_THROUGH:
+				caster.casting.tiles = AbilityResolver.charge_lane(ctx, caster,
+						TileGeometry.snap8(point - Vector2(caster.tile())), int(e.base_amount))
 	if kind != "cast":
 		caster.buffs.consume_on_cast(ability.tree, now)
 	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
@@ -628,6 +649,8 @@ func _update_terrain_and_zones() -> void:
 			ctx.damage_bonus = z.bonus
 			for t in z.tiles:
 				for a in CastResolver.actors_on(ctx, t, owner, z.zone_ability, 0.0):
+					if a is Enemy and (a as Enemy).airborne(now):
+						continue # fliers pass over burning ground
 					AbilityResolver.apply_effects(ctx, owner, z.zone_ability, a, events)
 			ctx.damage_bonus = 1.0
 			_emit_resolved(events)

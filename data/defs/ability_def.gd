@@ -110,6 +110,20 @@ enum LineShape { LINE, CONE, ARC }
 var sheet: Dictionary = {}
 
 
+## Tiles this ability can carry its caster (dashes, charges, leaps), at most.
+func moves_caster_tiles() -> int:
+	var n := 0
+	for e in effects:
+		if e.applies != AbilityEffect.Applies.CASTER:
+			continue
+		match e.kind:
+			AbilityEffect.Kind.DASH, AbilityEffect.Kind.DASH_TO, AbilityEffect.Kind.CHARGE_THROUGH:
+				n = maxi(n, int(e.base_amount))
+			AbilityEffect.Kind.LEAP, AbilityEffect.Kind.BLINK:
+				n = maxi(n, max_range)
+	return n
+
+
 ## Spells are blocked by silence: element abilities, and other abilities that heal
 ## or deal magical damage. Weapon arts and physical attacks still work.
 func is_spell() -> bool:

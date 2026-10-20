@@ -152,13 +152,16 @@ static func build(zone: ZoneDef, enemies: Array, shrine: NpcDef = null) -> void:
 	zone.npcs = npcs
 
 
-## How far from its spawn a fight with `e` can reach: its leash, plus where the
-## hero fighting it stands (its longest attack range, at least adjacent).
+## How far from its spawn a fight with `e` can reach: its leash, plus its longest
+## self-move (a dive or leap can carry it past the leash before it turns back),
+## plus where the hero fighting it stands (its longest attack range, at least adjacent).
 static func reach(e: EnemyDef) -> int:
 	var r := 1
+	var moves := 0
 	for a in e.abilities:
 		r = maxi(r, a.max_range)
-	return e.leash_radius + r
+		moves = maxi(moves, a.moves_caster_tiles())
+	return e.leash_radius + moves + r
 
 
 ## Tiles between the spawns of neighbours `a` (west) and `b` (east): neither

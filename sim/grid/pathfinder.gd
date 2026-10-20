@@ -7,10 +7,12 @@ extends RefCounted
 ## `blocked` holds tiles that can't be entered (e.g. occupied); `start` and
 ## `goal` are exempt so callers can path to an occupied target.
 ## Returns [] if there is no path within `max_expanded` node expansions.
+## `fly_rise` >= 0: the path of a flier (GridModel.can_fly with that wall rise).
 static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: int,
-		blocked: Dictionary = {}, max_drop: int = -1, max_expanded: int = 4096) -> Array[Vector2i]:
+		blocked: Dictionary = {}, max_drop: int = -1, max_expanded: int = 4096, fly_rise: int = -1) -> Array[Vector2i]:
 	var empty: Array[Vector2i] = []
-	if not grid.in_bounds(start) or not grid.is_walkable(goal):
+	if not grid.in_bounds(start) or not grid.in_bounds(goal) \
+			or (not grid.is_walkable(goal) if fly_rise < 0 else grid.blocks_sight(goal)):
 		return empty
 	if start == goal:
 		return [start] as Array[Vector2i]
@@ -32,7 +34,10 @@ static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: in
 			var next := current + dir
 			if next != goal and blocked.has(next):
 				continue
-			if not grid.can_step(current, next, jump, max_drop):
+			if fly_rise >= 0:
+				if not grid.can_fly(current, next, fly_rise):
+					continue
+			elif not grid.can_step(current, next, jump, max_drop):
 				continue
 			var new_cost: int = cost[current] + 1
 			if not cost.has(next) or new_cost < cost[next]:

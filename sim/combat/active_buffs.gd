@@ -116,6 +116,14 @@ func mana_regen_percent(now: float) -> float:
 	return p
 
 
+## Extra seconds for the ground zones the bearer makes.
+func zone_seconds_bonus(now: float) -> float:
+	var s := 0.0
+	for d in _active_defs(now):
+		s += d.zone_seconds_bonus
+	return s
+
+
 func is_rooted(now: float) -> bool:
 	return _active_defs(now).any(func(d): return d.roots)
 

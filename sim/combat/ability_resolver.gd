@@ -162,6 +162,7 @@ static func apply_area_effects(ctx: CombatContext, caster: Actor, ability: Abili
 				ctx.requests.append({"type": "terrain", "source": caster.id, "tiles": area, "levels": levels,
 						"blocks": effect.blocks_movement, "until": ctx.now + duration, "ability": ability.id})
 			AbilityEffect.Kind.ZONE:
+				duration += caster.buffs.zone_seconds_bonus(ctx.now)
 				ctx.requests.append({"type": "zone", "source": caster.id, "tiles": tiles, "ability": ability,
 						"zone_ability": effect.zone_ability, "tick": maxf(effect.zone_tick_seconds, 0.1),
 						"until": ctx.now + duration, "bonus": ctx.damage_bonus})
@@ -270,9 +271,13 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not target.alive or target == caster:
 				return
 			var pull := effect.kind == AbilityEffect.Kind.PULL
+			if not pull:
+				_try_ground(ctx, caster, ability, target, events)
 			var dir := TileGeometry.snap8(Vector2((caster.tile() - target.tile()) if pull else (target.tile() - caster.tile())))
 			if effect.push_along_cast and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.cast_dir
+			if effect.push_aside and ctx.cast_dir != Vector2i.ZERO:
+				dir = _aside(ctx, target, ctx.cast_dir)
 			var tiles := Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now), target.weight)
 			if pull:
 				tiles = mini(tiles, TileGeometry.distance(caster.tile(), target.tile()) - 1)
@@ -288,6 +293,10 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 					var hit := _actor_at(ctx, r.end + dir)
 					if hit != null and hit != caster and caster.is_hostile_to(hit) and not hit.evading:
 						_impact(ctx, caster, ability, hit, impact, events)
+
+		AbilityEffect.Kind.CHARGE_THROUGH:
+			if caster.alive:
+				_charge_through(ctx, caster, ability, effect, events)
 
 		AbilityEffect.Kind.DASH_TO:
 			if not caster.alive:
@@ -483,6 +492,88 @@ static func move_unit(ctx: CombatContext, unit: Actor, dir: Vector2i, tiles: int
 		unit.move.place(from)
 		unit.move.begin(r.end, ctx.now, seconds * r.path.size())
 	return r
+
+
+## Airborne passive: a knockback from the right tree (Air) knocks a flier down
+## (EnemyDef.grounded_buff), whatever its weight does to the push itself.
+static func _try_ground(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor,
+		events: Array[Dictionary]) -> void:
+	if not target is Enemy:
+		return
+	var def := (target as Enemy).def
+	if not def.flying or def.grounded_buff == null or def.grounded_by_tree == "" or ability.tree != def.grounded_by_tree:
+		return
+	target.casting = {}
+	target.buffs.apply(def.grounded_buff, ctx.now)
+	events.append({"type": "grounded", "source": caster.id, "target": target.id, "ability": ability.id,
+			"until": ctx.now + def.grounded_buff.duration_seconds})
+
+
+## Which way to shove `unit` out of a lane running along `dir`: across it, to the
+## left if that tile is free and passable, else to the right.
+static func _aside(ctx: CombatContext, unit: Actor, dir: Vector2i) -> Vector2i:
+	var left := TileGeometry.snap8(Vector2(-dir.y, dir.x))
+	var right := -left
+	for side in [left, right]:
+		var t: Vector2i = unit.tile() + side
+		if ctx.grid.in_bounds(t) and ctx.grid.is_walkable(t) and not _occupied(ctx, t, unit):
+			return side
+	return left
+
+
+## The tiles a charge along `dir` can cross from `from`, up to `length`: it stops
+## at terrain the caster can't cross (fliers: see GridModel.can_fly). Units are
+## not considered (the charge deals with them as it goes).
+static func charge_lane(ctx: CombatContext, caster: Actor, dir: Vector2i, length: int) -> Array[Vector2i]:
+	var lane: Array[Vector2i] = []
+	if dir == Vector2i.ZERO:
+		return lane
+	var flier := caster is Enemy and (caster as Enemy).airborne(ctx.now)
+	var rise := (caster as Enemy).fly_rise(ctx.now) if flier else StatCalc.jump_levels(caster.current_stats(ctx.now))
+	var prev := caster.tile()
+	for k in range(1, length + 1):
+		var t := caster.tile() + dir * k
+		if not ctx.grid.in_bounds(t) or ctx.grid.blocks_sight(t):
+			break
+		var up := ctx.grid.height_at(t) - ctx.grid.height_at(prev)
+		if flier:
+			if not ctx.grid.is_walkable(t) and up > rise:
+				break
+		elif not ctx.grid.is_walkable(t) or up > rise:
+			break
+		lane.append(t)
+		prev = t
+	return lane
+
+
+## Charges along the cast direction: each enemy reached gets the pass ability
+## (damage, a shove out of the lane); anyone still in the way stops the charge in
+## front of them. The tiles crossed become the cast's trail (fire trail).
+static func _charge_through(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect,
+		events: Array[Dictionary]) -> void:
+	var dir := ctx.cast_dir
+	if dir == Vector2i.ZERO:
+		dir = TileGeometry.snap8(Vector2(caster.facing))
+	var from := caster.tile()
+	var end := from
+	var path: Array[Vector2i] = []
+	for t in charge_lane(ctx, caster, dir, int(effect.base_amount)):
+		var unit := _actor_at(ctx, t)
+		if unit != null and unit != caster and caster.is_hostile_to(unit) and not unit.evading \
+				and effect.pass_ability != null:
+			ctx.cast_dir = dir
+			apply_effects(ctx, caster, effect.pass_ability, unit, events)
+		if _occupied(ctx, t, caster):
+			break
+		end = t
+		path.append(t)
+	ctx.cast_tiles = path
+	if end != from:
+		caster.casting = {}
+		caster.move.place(from)
+		caster.move.begin(end, ctx.now, effect.move_seconds_per_tile * path.size())
+	events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
+			"from": from, "to": end})
 
 
 ## Collision damage: physical, scaled by the caster's tree Mastery.
