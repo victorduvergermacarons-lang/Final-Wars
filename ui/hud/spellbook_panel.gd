@@ -13,7 +13,6 @@ func _init(p_hud: Hud) -> void:
 	super()
 	hud = p_hud
 	left.add_child(BookSpread.title("Spellbook"))
-	set_footnote("Drag an ability onto the action bar.")
 	for page in [left, right]:
 		var list := VBoxContainer.new()
 		page.add_child(list)

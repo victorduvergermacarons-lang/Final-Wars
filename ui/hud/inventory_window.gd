@@ -31,8 +31,6 @@ func _init(p_hud: Hud) -> void:
 	_gold.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	left.add_child(_gold)
-	set_footnote("Drag to move or equip · right-click to equip or take off · "
-			+ "shift+click to split a stack · ctrl+right-click to destroy")
 
 	right.add_child(BookSpread.title("Bag"))
 	right.add_child(BookSpread.bag_grid(hud, BAG_COLUMNS))

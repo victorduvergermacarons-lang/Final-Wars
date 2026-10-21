@@ -3,12 +3,14 @@ extends CanvasLayer
 
 ## The player clicked "Leave game" (save and return to the main menu).
 signal leave_requested
-## In-game HUD: unit frames, action bar (with keybind mode), spellbook,
-## character panel, death panel, mid-screen errors and a message log.
+## In-game HUD: unit frames, action bar (with keybind mode), the menu book, the
+## shop sheet, the quest tracker, death panel, mid-screen errors, and the Escape
+## menu (message log, controls, keybinds, leave game).
 
 const ERROR_SECONDS := 2.0
-## Message log width: fits left of the centred action bar at 1280 px.
-const LOG_WIDTH := 310.0
+## The quest tracker on the right: its width and text size.
+const TRACKER_WIDTH := 260.0
+const TRACKER_FONT_SIZE := 15
 const REASONS := {
 	"out_of_range": "Out of range",
 	"no_line_of_sight": "Target not in line of sight",
@@ -60,15 +62,18 @@ var loot_window: LootWindow
 var vendor_window: VendorWindow
 var quest_log: QuestLogWindow
 var _tracker: RichTextLabel
+var _tracker_panel: PanelContainer
+var _tracker_fold: Button
+## The Escape menu (log, controls, keybinds, leave game).
+var game_menu: GameMenu
 var _page_label: Label
 var _spellbook: SpellbookPanel
 var trees_window: AbilityTreeWindow
 var console: DebugConsole
 var _character: CharacterSheet
 var _death: PanelContainer
-var _bind_button: Button
+var _bind_banner: Label
 var _error: Label
-var _log: Label
 
 
 func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_path: String = SettingsStore.DEFAULT_PATH) -> void:
@@ -108,24 +113,22 @@ func _build() -> void:
 	left.add_child(_party)
 	top.add_child(UnitFrame.new(self, func(): return session.get_actor(client.target_id), 220))
 
-	# Bottom centre: action bar and panel buttons.
+	# Bottom centre: the action bar (menus open with their keys; Keybinds and Leave
+	# game are in the Escape menu), with a banner above it in keybind mode.
 	var bottom := VBoxContainer.new()
 	bottom.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	bottom.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	bottom.position.y -= 10
 	_root.add_child(bottom)
-	var buttons := HBoxContainer.new()
-	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
-	bottom.add_child(buttons)
-	buttons.add_child(_small_button("Spellbook (P)", func(): _toggle(_spellbook)))
-	buttons.add_child(_small_button("Trees (T)", func(): _toggle(trees_window)))
-	buttons.add_child(_small_button("Character (C)", func(): _toggle(_character)))
-	buttons.add_child(_small_button("Inventory (B)", func(): _toggle(inventory_window)))
-	buttons.add_child(_small_button("Quests (L)", func(): _toggle(quest_log)))
-	_bind_button = _small_button("Keybinds", func(): _set_bind_mode(not bind_mode))
-	buttons.add_child(_bind_button)
-	buttons.add_child(_small_button("Leave game", func(): leave_requested.emit()))
+	_bind_banner = Label.new()
+	_bind_banner.text = "Keybind mode: hover a slot and press a key. Esc to finish."
+	_bind_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_bind_banner.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	_bind_banner.add_theme_color_override("font_outline_color", Color.BLACK)
+	_bind_banner.add_theme_constant_override("outline_size", 4)
+	_bind_banner.visible = false
+	bottom.add_child(_bind_banner)
 	var bar := HBoxContainer.new()
 	bar.add_theme_constant_override("separation", 4)
 	for i in ActionBarModel.SLOT_COUNT:
@@ -196,23 +199,41 @@ func _build() -> void:
 	trees_window.visible = false
 	book.spread.add_child(trees_window)
 
-	# Quest tracker on the right edge.
+	# Quest tracker on the right edge: a paper note in ink (QuestText's colours are
+	# for paper) with a button that folds it down to its heading.
+	_tracker_panel = PanelContainer.new()
+	_tracker_panel.theme = UiPalette.paper_theme()
+	var tracker_bg := UiPalette.paper_panel(8)
+	tracker_bg.bg_color = Color(UiPalette.PAPER, 0.92)
+	_tracker_panel.add_theme_stylebox_override("panel", tracker_bg)
+	_tracker_panel.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	_tracker_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_tracker_panel.position.x -= 10
+	_root.add_child(_tracker_panel)
+	_root.move_child(_tracker_panel, 0) # behind every window
+	var tracker_box := VBoxContainer.new()
+	_tracker_panel.add_child(tracker_box)
+	var tracker_head := HBoxContainer.new()
+	tracker_box.add_child(tracker_head)
+	var tracker_title := Label.new()
+	tracker_title.text = "Quests"
+	tracker_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tracker_title.add_theme_font_size_override("font_size", 16)
+	tracker_title.add_theme_color_override("font_color", UiPalette.LEATHER_DARK)
+	tracker_head.add_child(tracker_title)
+	_tracker_fold = _small_button("–", func(): _fold_tracker(_tracker.visible))
+	_tracker_fold.tooltip_text = "Fold or unfold the quest list"
+	_tracker_fold.add_theme_font_size_override("font_size", 14)
+	tracker_head.add_child(_tracker_fold)
 	_tracker = RichTextLabel.new()
 	_tracker.bbcode_enabled = true
 	_tracker.fit_content = true
 	_tracker.scroll_active = false
-	_tracker.custom_minimum_size = Vector2(300, 0)
-	_tracker.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
-	_tracker.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_tracker.position.x -= 10
+	_tracker.custom_minimum_size = Vector2(TRACKER_WIDTH, 0)
 	_tracker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# A note on paper, in ink like the book (QuestText's colours are for paper).
-	_tracker.theme = UiPalette.paper_theme()
-	var tracker_bg := UiPalette.paper_panel(8)
-	tracker_bg.bg_color = Color(UiPalette.PAPER, 0.92)
-	_tracker.add_theme_stylebox_override("normal", tracker_bg)
-	_root.add_child(_tracker)
-	_root.move_child(_tracker, 0) # behind every window
+	for font in ["normal_font_size", "bold_font_size"]:
+		_tracker.add_theme_font_size_override(font, TRACKER_FONT_SIZE)
+	tracker_box.add_child(_tracker)
 
 	# Death panel and mid-screen error.
 	_death = PanelContainer.new()
@@ -249,17 +270,14 @@ func _build() -> void:
 	_error.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_error)
 
-	# Bottom-left message log.
-	# Wraps to the space left of the action bar; placed from the bottom each frame.
-	_log = Label.new()
-	_log.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_log.custom_minimum_size = Vector2(LOG_WIDTH, 0)
-	_log.add_theme_color_override("font_outline_color", Color.BLACK)
-	_log.add_theme_constant_override("outline_size", 4)
-	_log.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_root.add_child(_log)
-	# The shop sheet over everything else (the log runs behind it).
+	# The shop sheet over everything else, then the Escape menu (messages, controls,
+	# keybinds, leave game) in the middle of the screen over it all.
 	_root.move_child(vendor_window, -1)
+	game_menu = GameMenu.new(self)
+	game_menu.set_anchors_preset(Control.PRESET_CENTER)
+	game_menu.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	game_menu.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_root.add_child(game_menu)
 
 
 func _process(_delta: float) -> void:
@@ -276,18 +294,11 @@ func _process(_delta: float) -> void:
 	_page_label.text = str(client.action_bar.page + 1)
 	_update_quest_markers(hero)
 	_tracker.text = QuestText.tracker_bbcode(hero, ContentDB.quests)
-	_tracker.visible = _tracker.text != "" and not _tracker_covered()
+	_tracker_panel.visible = _tracker.text != "" and not _tracker_covered()
 	var age := Time.get_ticks_msec() / 1000.0 - client.error_at
 	_error.text = client.error_text if age < ERROR_SECONDS else ""
 	_error.modulate.a = clampf((ERROR_SECONDS - age) / 0.5, 0.0, 1.0)
-	var lines: PackedStringArray = client.messages.duplicate()
-	if bind_mode:
-		lines.append("KEYBIND MODE: hover a slot and press a key. Esc or the Keybinds button to finish.")
-	lines.append("WASD move · E talk · click/Tab target · Esc clear target · R release · T trees · wheel zoom")
-	_log.text = "\n".join(lines)
-	_log.size = Vector2(LOG_WIDTH, 0)
-	var view_size := get_viewport().get_visible_rect().size
-	_log.position = Vector2(10, view_size.y - _log.get_combined_minimum_size().y - 10)
+	_bind_banner.visible = bind_mode
 
 
 func _sync_party(me: Hero) -> void:
@@ -307,7 +318,9 @@ func _sync_party(me: Hero) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"toggle_console"):
+	if event.is_action_pressed(&"target_clear") and _escape():
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"toggle_console"):
 		if console.visible:
 			console.close()
 		else:
@@ -332,14 +345,45 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 	var key: int = event.physical_keycode
 	if key == KEY_ESCAPE:
-		_set_bind_mode(false)
+		set_bind_mode(false)
 	elif hovered_slot >= 0 and not client.action_bar.set_key(hovered_slot, key):
 		client.error("%s is used for something else" % OS.get_keycode_string(key))
 
 
-func _set_bind_mode(on: bool) -> void:
+## Keybind mode (from the Escape menu): hover an action bar slot, press a key.
+func set_bind_mode(on: bool) -> void:
 	bind_mode = on
-	_bind_button.text = "Done binding" if on else "Keybinds"
+
+
+## Esc, WoW-style: the Escape menu closes if open; otherwise open windows close
+## (menu book, shop, conversation); otherwise, with nothing targeted, the menu
+## opens. Returns false to leave Esc to PlayerInput (cancel aiming, clear target).
+func _escape() -> bool:
+	if game_menu.visible:
+		game_menu.visible = false
+		return true
+	if input != null and input.is_aiming():
+		return false
+	var closed := false
+	if book.visible:
+		close_menus()
+		closed = true
+	for w in [vendor_window, dialogue]:
+		if w.visible:
+			w.close()
+			closed = true
+	if closed:
+		return true
+	if client.target_id != -1:
+		return false
+	game_menu.visible = true
+	return true
+
+
+## Folds the quest tracker down to its heading, or unfolds it.
+func _fold_tracker(fold: bool) -> void:
+	_tracker.visible = not fold
+	_tracker_fold.text = "+" if fold else "–"
 
 
 func _toggle(panel: Control) -> void:
@@ -462,7 +506,7 @@ func _on_events(events: Array) -> void:
 func _tracker_covered() -> bool:
 	if book.visible:
 		return true
-	var area := _tracker.get_global_rect()
+	var area := _tracker_panel.get_global_rect()
 	for w in [dialogue, vendor_window]:
 		if w.visible and w.get_global_rect().intersects(area):
 			return true

@@ -1,11 +1,11 @@
 class_name BookSpread
 extends Control
 ## A menu that fills the menu book: what goes on the left page in `left`, what
-## goes on the right page in `right`, and an optional small `footnote` (how-to
-## hints) at the bottom of the right page. BookView lays it out for the book at
-## 1080p and scales the whole menu to the book's real size, so nothing here is
+## goes on the right page in `right`. BookView lays it out for the book at 1080p
+## and scales the whole menu to the book's real size, so nothing here is
 ## resampled at 1080p and text stays sharp. Content is laid out to fit its page;
-## anything taller is cut off at the page's bottom (long lists scroll).
+## anything taller is cut off at the page's bottom (long lists scroll). How-to
+## hints live in the Escape menu's Controls tab, not on the pages.
 
 const TITLE_SIZE := 26
 const NOTE_SIZE := 16
@@ -13,7 +13,6 @@ const SEPARATION := 4
 
 var left := VBoxContainer.new()
 var right := VBoxContainer.new()
-var _footnote := Label.new()
 
 
 func _init() -> void:
@@ -22,31 +21,11 @@ func _init() -> void:
 		page.add_theme_constant_override("separation", SEPARATION)
 		page.clip_contents = true
 		add_child(page)
-	_footnote.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_footnote.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_footnote.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	_footnote.add_theme_font_size_override("font_size", NOTE_SIZE)
-	_footnote.add_theme_color_override("font_color", UiPalette.INK_SOFT)
-	_footnote.visible = false
-	add_child(_footnote)
 
 
-## A small hint at the bottom of the right page ("" for none).
-func set_footnote(text: String) -> void:
-	_footnote.text = text
-	_footnote.visible = text != ""
-
-
-## Places each page's column on its page rect (this control's coordinates); the
-## footnote takes the bottom of the right page.
+## Places each page's column on its page rect (this control's coordinates).
 func lay_out(left_rect: Rect2, right_rect: Rect2) -> void:
 	_place(left, left_rect)
-	if _footnote.visible:
-		_footnote.size = Vector2(right_rect.size.x, 0.0)
-		var h := _footnote.get_combined_minimum_size().y
-		_footnote.position = Vector2(right_rect.position.x, right_rect.end.y - h)
-		_footnote.size = Vector2(right_rect.size.x, h)
-		right_rect.size.y -= h + SEPARATION
 	_place(right, right_rect)
 
 

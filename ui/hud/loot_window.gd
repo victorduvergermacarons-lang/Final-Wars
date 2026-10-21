@@ -14,7 +14,7 @@ func _init(p_hud: Hud) -> void:
 	var title := BookSpread.title("Loot")
 	title.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	left.add_child(title)
-	set_footnote("Your bag was full. Make room, then Take.")
+	left.add_child(BookSpread.note("Your bag was full. Make room, then Take."))
 	_list = VBoxContainer.new()
 	left.add_child(_list)
 	right.add_child(BookSpread.title("Your bag"))

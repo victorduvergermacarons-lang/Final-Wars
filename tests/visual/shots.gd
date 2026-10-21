@@ -386,4 +386,14 @@ func _run() -> void:
 	await get_tree().create_timer(0.3).timeout
 	await _shot("37_dive_trail", 1)
 	tz.remove_enemy(dd.id)
+	# 38. The Escape menu: the message log, then the controls; the quest tracker
+	# folded to its heading.
+	hud.client.target_id = -1
+	hud.game_menu.visible = true
+	await _shot("38_escape_menu_log")
+	hud.game_menu.find_children("*", "TabContainer", true, false)[0].current_tab = 1
+	await _shot("38b_escape_menu_controls")
+	hud.game_menu.visible = false
+	hud._fold_tracker(true)
+	await _shot("38c_tracker_folded")
 	get_tree().quit()

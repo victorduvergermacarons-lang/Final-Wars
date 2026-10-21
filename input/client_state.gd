@@ -14,12 +14,19 @@ var error_text := ""
 var error_at := -100.0
 ## Recent short messages for the player (rejections, level-ups…).
 var messages: Array[String] = []
+## Every message this session, oldest first (the Escape menu's Log), up to
+## HISTORY_SIZE.
+var history: Array[String] = []
+const HISTORY_SIZE := 300
 
 
 func say(text: String) -> void:
 	messages.append(text)
 	if messages.size() > 5:
 		messages.pop_front()
+	history.append(text)
+	if history.size() > HISTORY_SIZE:
+		history.pop_front()
 
 
 func error(text: String) -> void:

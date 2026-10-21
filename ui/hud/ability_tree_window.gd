@@ -49,13 +49,11 @@ func _init(p_hud: Hud) -> void:
 	_header = BookSpread.note("")
 	_header.add_theme_color_override("font_color", UiPalette.INK)
 	right.add_child(_header)
-	set_footnote("Drag a usable ability onto the action bar.")
 	_canvas = _Canvas.new(self)
 	add_child(_canvas)
 
 
-## The pages' headings go on top; the tree fills both pages below them, down to
-## the footnote.
+## The pages' headings go on top; the tree fills both pages below them.
 func lay_out(left_rect: Rect2, right_rect: Rect2) -> void:
 	super.lay_out(left_rect, right_rect)
 	var top := roundf(maxf(left.position.y + left.get_combined_minimum_size().y,

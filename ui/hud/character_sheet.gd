@@ -53,7 +53,6 @@ func _init(p_hud: Hud) -> void:
 	_abilities.fit_content = true
 	_abilities.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_abilities)
-	set_footnote("Permanent Mastery unlocks a tree's tiers; Mastery from gear only adds power.")
 
 
 func _cell(text: String) -> Label:

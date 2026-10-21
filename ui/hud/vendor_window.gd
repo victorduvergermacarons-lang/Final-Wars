@@ -61,7 +61,6 @@ func _init(p_hud: Hud) -> void:
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_scroll.add_child(_list)
-	box.add_child(BookSpread.note("Right-click an item in your bag (B) to sell it."))
 	visible = false
 
 
