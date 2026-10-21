@@ -13,7 +13,9 @@ uses the first real tileset** (`iso_basic`, 8 steps, 2026-10-16; see **Map art**
 art** below and `docs/playtest-checklist-wolves.md`). **Enemy Testing Grounds and the
 Salamander Hound** added (2026-10-20; see those sections and
 `docs/playtest-checklist-testing-grounds.md`). **The Sunscale Drake** (flying elite) added
-(2026-10-20; see its section and `docs/playtest-checklist-sunscale-drake.md`). For the numbers
+(2026-10-20; see its section and `docs/playtest-checklist-sunscale-drake.md`). **Performance
+work** (terrain cache, sleeping empty zones) is on the `optimised-build-1` branch
+(2026-10-21; see **Performance**). For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -371,6 +373,33 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   - projectiles, telegraphs, ground zones and raised terrain are cleared
   - every buff and debuff in the zone is removed, and heroes there leave combat
 
+## Performance (branch `optimised-build-1`, 2026-10-21)
+
+Measure with `tools/perf/` (headless, no window; a headless frame costs at least
+~6.9 ms by itself): `draw_profile.tscn` (frame time per map, both drawing modes) and
+`sim_profile.tscn` (sim cost per tick, zones sleeping or not).
+- **Terrain cache** (`WorldView.use_terrain_cache`, on by default for tileset maps):
+  - The ground is drawn once into chunk nodes of 8 depth rows under the view, and
+    Godot keeps them. A chunk is redrawn only when a height in it changes (and the
+    row behind it).
+  - The river ripples and water sparkles use self-animating textures
+    (`TileArt.animated_texture` / `sparkle_texture`), so nothing redraws for them.
+  - Each frame the view draws actors and tile highlights back to front. Inside a box
+    around each (merged where boxes overlap), it draws again, in order, the tiles from
+    that depth row forward, cut to the box. Projectiles, labels and bars go on top.
+  - Same picture as redrawing every tile: the screenshot test with
+    `SHOTS_COMPARE_CACHE=1` saves each shot both ways on one frame; all 42 match.
+  - Frame time: Greenfields 28 → 9 ms, testing grounds 77 → 7 ms.
+- **Empty zones sleep** (`CombatRules.empty_zone_sleep_seconds` = 30; negative turns it
+  off):
+  - A zone with no heroes for that long only advances its clock
+    (`WorldSim.skip_tick`). Its enemies, patrols, projectiles and ground zones wait.
+  - Anything timed in sim time (respawns, buffs, raised terrain, ground zones) still
+    runs out on schedule and resolves on the first tick after a hero arrives.
+  - The 30 s wait lets a fight that was just left settle (enemies evade, heal and
+    walk home) before the zone sleeps.
+  - Sim cost with one hero in town: 1.30 → 0.22 ms per tick.
+
 ## Gameplay as built (end of Milestone 1, after playtest)
 
 > Milestone 3 retired the hero abilities and weapons below (Strike … Rallying Roar, Sword,
@@ -525,6 +554,7 @@ scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator
 design/          Ability_Tree.xlsx (source of truth for abilities)
 tools/once/      one-off content conversions and generators (kept for the record)
+tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
                  net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
 docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake), ability import, tilesets
@@ -1194,6 +1224,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-21 | Empty zones sleep after 30 s: only their clock runs | User request ("skip empty map simulation", on the `optimised-build-1` branch). My choices: the clock keeps running so timers (respawns, buffs, ground fire) run out on time and the shared clock (read from town) stays right; things due meanwhile happen on the first tick after a hero arrives; patrols and evading enemies wait where they are; the 30 s wait (`empty_zone_sleep_seconds`, tunable) lets a fight that was just left settle first. See **Performance**. |
+| 2026-10-21 | Terrain cache: the ground is drawn once; each frame only actors and highlights, with the tiles in front redrawn inside a box around each | User request (lag on large maps; test on a separate branch, `optimised-build-1`). Cause measured: every tile redrawn every frame, off-screen too. Exact same picture, checked on all 42 screenshots. Placeholder (non-tileset) maps still draw in full. See **Performance**. |
 | 2026-10-20 | Drake playtest fixes: 5-tile body (a plus), SW/SE swapped, harder hits, the dive sweeps 3 lanes | User requests. My choices: the body blocks movement as well as being hit; ranges are measured body to body; it can't be knocked back (Air knockbacks still ground it); the dive shoves 2 tiles to the side the unit was on; damage roughly ×1.5 on every attack; the drake stays level 6, so bots that never dodge now need level 7 (dodging players should manage at 6). |
 | 2026-10-20 | Sunscale Drake (flying elite) | User brief ("make sensible decisions, list them"). See **Sunscale Drake**. My decisions are in the next rows. |
 | 2026-10-20 | Drake art: both layers used; right views mirrored; frames widened to 160×128 | The brief said one layer facing left, but the file has SW and NW layers, so there are real front-left and back-left views. Each layer is shifted so its shadow's centre is the feet point, which lets mirrored rows share it. The file is at `art/`, not `art/creatures/`. |

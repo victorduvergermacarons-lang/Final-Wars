@@ -12,6 +12,11 @@ enum GrowthLimit {
 @export_group("Simulation")
 ## Fixed sim step (20 Hz).
 @export var tick_seconds: float = 0.05
+## A zone with no heroes in it sleeps after this long: only its clock runs, so
+## timers (respawns, buffs, ground zones) still run out, but nothing acts until a
+## hero comes back. The wait lets a fight that was just left settle first
+## (enemies evade and walk home). Negative: zones never sleep.
+@export var empty_zone_sleep_seconds: float = 30.0
 
 @export_group("Movement")
 ## Time to walk across one tile (the travel animation), same for everyone.

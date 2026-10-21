@@ -254,6 +254,15 @@ func step() -> Array[Dictionary]:
 	return _events
 
 
+## A tick for a sleeping zone (World: no heroes here for a while): the clock
+## moves on and nothing else happens. Everything timed in sim time (respawns,
+## buffs, ground zones, raised terrain) is due on the first real tick after.
+func skip_tick() -> void:
+	tick_count += 1
+	now = tick_count * rules.tick_seconds
+	ctx.now = now
+
+
 ## Where `actor` stood `delay` seconds ago (its current tile if no older record).
 func perceived_tile(actor: Actor, delay: float) -> Vector2i:
 	if delay <= 0.0 or not _history.has(actor.id):
