@@ -13,6 +13,7 @@ var _new_name: LineEdit
 var _address: LineEdit
 var _port: SpinBox
 var _status: Label
+var settings_window: SettingsWindow
 
 
 func _ready() -> void:
@@ -66,10 +67,17 @@ func _ready() -> void:
 	row.add_child(host)
 	row.add_child(join)
 	box.add_child(row)
+	box.add_child(_button("Settings", func():
+		settings_window.visible = not settings_window.visible))
 	_status = Label.new()
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(_status)
+	settings_window = SettingsWindow.new()
+	settings_window.visible = false
+	settings_window.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	settings_window.position = Vector2(get_viewport().get_visible_rect().size.x - 380, 40)
+	add_child(settings_window)
 
 
 func show_status(text: String) -> void:

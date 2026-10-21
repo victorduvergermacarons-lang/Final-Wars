@@ -55,6 +55,7 @@ var dialogue: DialogueBox
 var loot_window: LootWindow
 var vendor_window: VendorWindow
 var quest_log: QuestLogWindow
+var settings_window: SettingsWindow
 var _tracker: RichTextLabel
 var _page_label: Label
 var _spellbook: SpellbookPanel
@@ -114,6 +115,7 @@ func _build() -> void:
 	buttons.add_child(_small_button("Quests (L)", func(): _toggle(quest_log)))
 	_bind_button = _small_button("Keybinds", func(): _set_bind_mode(not bind_mode))
 	buttons.add_child(_bind_button)
+	buttons.add_child(_small_button("Settings", func(): _toggle(settings_window)))
 	buttons.add_child(_small_button("Leave game", func(): leave_requested.emit()))
 	var bar := HBoxContainer.new()
 	bar.add_theme_constant_override("separation", 4)
@@ -178,6 +180,10 @@ func _build() -> void:
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
 	right.add_child(quest_log)
+	settings_window = SettingsWindow.new()
+	settings_window.settings_path = settings_path
+	settings_window.visible = false
+	right.add_child(settings_window)
 	for panel in right.get_children():
 		panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 
