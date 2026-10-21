@@ -5,6 +5,8 @@ extends RefCounted
 ## grid cell. Textures load on first use.
 
 static var _cache := {} # tileset id -> TileArt
+## Water stays on its first frame (the screenshot test, so pictures can be compared).
+static var freeze_water := false
 
 var data: TilesetData
 var _textures := {} # tile id -> Texture2D
@@ -57,7 +59,7 @@ func animated_frame(anim_name: String, cell: Vector2i, time: float) -> int:
 	var frames: Array = anim.get("frames", [])
 	if frames.is_empty():
 		return -1
-	var step := int(time * float(anim.fps)) + TilesetData.cell_hash(cell, 41) % frames.size()
+	var step := (0 if freeze_water else int(time * float(anim.fps))) + TilesetData.cell_hash(cell, 41) % frames.size()
 	return frames[step % frames.size()]
 
 
@@ -71,20 +73,78 @@ func sparkle_frame(cell: Vector2i, time: float) -> int:
 	if anim.is_empty() or TilesetData.cell_hash(cell, 31) % SPARKLE_EVERY != 0:
 		return -1
 	var frames: Array = anim.frames
-	var step := int(time * anim.fps) + TilesetData.cell_hash(cell, 37) % (frames.size() * 2)
+	var step := (0 if freeze_water else int(time * anim.fps)) + TilesetData.cell_hash(cell, 37) % (frames.size() * 2)
 	step %= frames.size() * 2
 	return frames[step] if step < frames.size() else -1
 
 
+## Self-animating versions of the tile animations, for terrain drawn once and
+## kept (WorldView's terrain cache): the GPU flips the frames, nothing is
+## redrawn. One texture per starting point in the loop, so each cell keeps its
+## own phase like animated_frame() and sparkle_frame().
+var _animated := {} # "name/phase" -> AnimatedTexture
+static var _blank: ImageTexture
+
+
+## The animation `anim_name` as `cell` shows it (its top block, e.g. the river).
+func animated_texture(anim_name: String, cell: Vector2i) -> Texture2D:
+	var frames: Array = data.animations.get(anim_name, {}).get("frames", [])
+	if frames.is_empty():
+		return null
+	return _looping(anim_name, frames, 0, TilesetData.cell_hash(cell, 41) % frames.size())
+
+
+## The sparkle `cell` shows: frames then an equal pause (null: it never sparkles).
+func sparkle_texture(cell: Vector2i) -> Texture2D:
+	var frames: Array = data.animations.get("sparkle", {}).get("frames", [])
+	if frames.is_empty() or TilesetData.cell_hash(cell, 31) % SPARKLE_EVERY != 0:
+		return null
+	return _looping("sparkle", frames, frames.size(), TilesetData.cell_hash(cell, 37) % (frames.size() * 2))
+
+
+func _looping(anim_name: String, frames: Array, blanks: int, phase: int) -> AnimatedTexture:
+	var key := "%s/%d" % [anim_name, phase]
+	if not _animated.has(key):
+		if _blank == null:
+			var img := Image.create(1, 1, false, Image.FORMAT_RGBA8)
+			_blank = ImageTexture.create_from_image(img)
+		var tex := AnimatedTexture.new()
+		tex.frames = frames.size() + blanks
+		var fps := float(data.animations[anim_name].fps)
+		for i in tex.frames:
+			tex.set_frame_texture(i, texture(frames[i]) if i < frames.size() else _blank)
+			tex.set_frame_duration(i, 1.0 / fps)
+		tex.current_frame = phase
+		tex.pause = freeze_water
+		_animated[key] = tex
+	return _animated[key]
+
+
 ## Props stand on the block below: drawn where a block one level up would be.
-func draw_prop(canvas: CanvasItem, tile_id: int, cell: Vector2i, height: int) -> void:
-	draw(canvas, tile_id, Iso.to_screen(Vector2(cell), height + 1))
+func draw_prop(canvas: CanvasItem, tile_id: int, cell: Vector2i, height: int, clip := Rect2()) -> void:
+	draw(canvas, tile_id, Iso.to_screen(Vector2(cell), height + 1), Color.WHITE, clip)
 
 
-func draw(canvas: CanvasItem, tile_id: int, top_center: Vector2, modulate: Color = Color.WHITE) -> void:
-	var tex := texture(tile_id)
-	if tex != null:
-		canvas.draw_texture_rect(tex, image_rect(top_center), false, modulate)
+## `clip` (when it has an area): draw only the part inside it, in world units on
+## whole art pixels, so the part drawn matches the full image pixel for pixel.
+func draw(canvas: CanvasItem, tile_id: int, top_center: Vector2, modulate: Color = Color.WHITE, clip := Rect2()) -> void:
+	draw_texture(canvas, texture(tile_id), top_center, modulate, clip)
+
+
+## Like draw(), for a texture in hand (e.g. an animated one).
+func draw_texture(canvas: CanvasItem, tex: Texture2D, top_center: Vector2, modulate: Color = Color.WHITE,
+		clip := Rect2()) -> void:
+	if tex == null:
+		return
+	var dest := image_rect(top_center)
+	if not clip.has_area():
+		canvas.draw_texture_rect(tex, dest, false, modulate)
+		return
+	var part := dest.intersection(clip)
+	if not part.has_area():
+		return
+	var s := PixelCamera.ART_SCALE
+	canvas.draw_texture_rect_region(tex, part, Rect2((part.position - dest.position) / s, part.size / s), modulate)
 
 
 ## The blocks that make up a terrain column of height `height` at `cell`, bottom

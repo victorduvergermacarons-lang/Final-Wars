@@ -57,6 +57,12 @@ func set_tile(p: Vector2i, h: int, walkable: bool) -> void:
 	_walkable[i] = 1 if walkable else 0
 
 
+## Every tile's height, row by row (index y × width + x). Read-only: the view
+## compares it between frames to spot terrain changes.
+func heights() -> PackedInt32Array:
+	return _heights
+
+
 func height_at(p: Vector2i) -> int:
 	return _heights[_index(p)] if in_bounds(p) else 0
 

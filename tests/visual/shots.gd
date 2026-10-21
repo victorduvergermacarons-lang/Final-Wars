@@ -10,6 +10,13 @@ var game: Game
 
 func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(out_dir)
+	# SHOTS_NO_TERRAIN_CACHE=1: redraw every tile every frame (the old way).
+	# SHOTS_COMPARE_CACHE=1: save every shot both ways, to check they match.
+	if OS.get_environment("SHOTS_NO_TERRAIN_CACHE") == "1":
+		WorldView.use_terrain_cache = false
+	# Water holds its first frame and glows stop pulsing, so pictures can be compared.
+	TileArt.freeze_water = true
+	WorldView.freeze_pulses = true
 	# Another window size: launch with --resolution 1920x1080 (and an xvfb screen
 	# that big); resizing the window from here leaves part of the capture black.
 	if not OS.get_cmdline_args().has("--resolution"):
@@ -17,18 +24,50 @@ func _ready() -> void:
 	_run.call_deferred()
 
 
+## The view of the map the hero is on. After a move to another map, the old view
+## lingers until the session's next tick swaps it, so this waits for the new one.
+func _view() -> WorldView:
+	while true:
+		var view: WorldView = game.get_node_or_null("WorldView")
+		if view != null and view.is_built_for(game.session.grid()):
+			return view
+		await get_tree().process_frame
+	return null
+
+
 ## Puts the camera on the hero at once (it normally eases toward them).
 func _snap_camera(hero: Hero) -> void:
 	await get_tree().process_frame
-	var view: WorldView = game.get_node("WorldView")
+	var view: WorldView = await _view()
 	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
 
 
 func _shot(name: String, frames: int = 8) -> void:
 	for i in frames:
 		await get_tree().process_frame
-	get_viewport().get_texture().get_image().save_png(out_dir + name + ".png")
+	if OS.get_environment("SHOTS_COMPARE_CACHE") == "1":
+		await _shot_both_ways(name)
+	else:
+		get_viewport().get_texture().get_image().save_png(out_dir + name + ".png")
 	print("shot ", name)
+
+
+## SHOTS_COMPARE_CACHE=1: the world's clock stops, then the same moment is saved
+## with the terrain cache (<name>.png) and redrawing every tile (<name>_full.png).
+## The two must match.
+func _shot_both_ways(name: String) -> void:
+	var view: WorldView = await _view()
+	var session: Node = game.session
+	session.process_mode = Node.PROCESS_MODE_DISABLED
+	for on in [true, false]:
+		view.set_terrain_cache(on)
+		for i in 3:
+			# The camera eases toward the hero; hold it still for both pictures.
+			view.camera.follow(view.actor_screen_pos(game.session.local_hero()), 0.0, true)
+			await get_tree().process_frame
+		get_viewport().get_texture().get_image().save_png(out_dir + name + ("" if on else "_full") + ".png")
+	view.set_terrain_cache(true)
+	session.process_mode = Node.PROCESS_MODE_INHERIT
 
 
 ## Waits (frame by frame, at most 5 s) until `cond` holds.
@@ -72,7 +111,7 @@ func _run() -> void:
 	var wolf: Enemy = fields.enemies().filter(func(e): return e.def.id == &"wolf")[0]
 	hero.move.place(wolf.tile() + Vector2i(0, 1))
 	hero.face(Vector2i.UP)
-	var view: WorldView = game.get_node("WorldView")
+	var view: WorldView = await _view()
 	view._on_events([{"type": "damage", "target": wolf.id, "amount": 31, "crit": false},
 			{"type": "damage", "target": wolf.id, "amount": 62, "crit": true, "flank": "side"},
 			{"type": "miss", "target": hero.id}, {"type": "level_up", "target": hero.id, "level": 4}])
@@ -175,7 +214,7 @@ func _run() -> void:
 	# the pond and river, and Millbrook.
 	session.world.move_hero(hero.id, &"greenfields", Vector2i(15, 15))
 	await get_tree().process_frame
-	var gview: WorldView = game.get_node("WorldView")
+	var gview: WorldView = await _view()
 	for i in 3:
 		gview.camera.step_zoom(-1)
 	await _snap_camera(hero)
@@ -202,7 +241,7 @@ func _run() -> void:
 	for i in 4:
 		var w := gf.add_enemy(still, Vector2i(6 + i * 2, 27))
 		w.face(dirs[i])
-	var view4: WorldView = game.get_node("WorldView")
+	var view4: WorldView = await _view()
 	view4.camera.step_zoom(1)
 	await _snap_camera(hero)
 	await _shot("18_wolf_facings")
@@ -245,7 +284,7 @@ func _run() -> void:
 	# 20. Salamander Hounds facing each way, one flashing, one dead.
 	var calm_hound: EnemyDef = cd.enemies[&"salamander_hound"].duplicate()
 	calm_hound.aggro_radius = 0
-	var view5: WorldView = game.get_node("WorldView")
+	var view5: WorldView = await _view()
 	view5.camera.step_zoom(1)
 	var row: Array = []
 	for i in 4:
