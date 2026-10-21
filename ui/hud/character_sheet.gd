@@ -4,6 +4,9 @@ extends BookSpread
 ## into base / growth / gear / buffs on the left page; Mastery, the learning slot
 ## and mastered and in-progress abilities on the right.
 
+## How far the Abilities page's content sits in from its heading.
+const INDENT := 18
+
 var hud: Hud
 var _name: Label
 var _header: Label
@@ -27,6 +30,7 @@ func _init(p_hud: Hud) -> void:
 	_header.add_theme_font_size_override("font_size", 18)
 	_header.add_theme_color_override("font_color", UiPalette.INK_SOFT)
 	heading.add_child(_header)
+	left.add_child(BookSpread.spacer(TOP_GAP)) # the table a little below the name
 	_table = GridContainer.new()
 	_table.columns = 6
 	_table.add_theme_constant_override("h_separation", 10)
@@ -38,16 +42,24 @@ func _init(p_hud: Hud) -> void:
 	for i in Stat.CORE_COUNT * 6:
 		_cells.append(_cell(""))
 	right.add_child(BookSpread.title("Abilities"))
+	# Everything under the heading sits indented from the page's edge.
+	var indent := MarginContainer.new()
+	indent.add_theme_constant_override("margin_left", INDENT)
+	indent.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right.add_child(indent)
+	var body := VBoxContainer.new()
+	body.add_theme_constant_override("separation", SEPARATION)
+	indent.add_child(body)
 	_mastery = RichTextLabel.new()
 	_mastery.bbcode_enabled = true
 	_mastery.fit_content = true
-	right.add_child(_mastery)
-	right.add_child(LearningRow.new(hud))
+	body.add_child(_mastery)
+	body.add_child(LearningRow.new(hud))
 	# Fills the rest of the page and scrolls once the list gets long.
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	right.add_child(scroll)
+	body.add_child(scroll)
 	_abilities = RichTextLabel.new()
 	_abilities.bbcode_enabled = true
 	_abilities.fit_content = true

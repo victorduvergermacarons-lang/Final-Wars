@@ -64,6 +64,7 @@ var quest_log: QuestLogWindow
 var _tracker: RichTextLabel
 var _tracker_panel: PanelContainer
 var _tracker_fold: Button
+var _tracker_dragging := false
 ## The Escape menu (log, controls, keybinds, leave game).
 var game_menu: GameMenu
 var _page_label: Label
@@ -214,7 +215,12 @@ func _build() -> void:
 	_root.move_child(_tracker_panel, 0) # behind every window
 	var tracker_box := VBoxContainer.new()
 	_tracker_panel.add_child(tracker_box)
+	# The heading is its handle: drag it to move the tracker anywhere.
 	var tracker_head := HBoxContainer.new()
+	tracker_head.mouse_filter = Control.MOUSE_FILTER_STOP
+	tracker_head.mouse_default_cursor_shape = Control.CURSOR_MOVE
+	tracker_head.tooltip_text = "Drag to move the quest list"
+	tracker_head.gui_input.connect(_on_tracker_drag)
 	tracker_box.add_child(tracker_head)
 	var tracker_title := Label.new()
 	tracker_title.text = "Quests"
@@ -379,6 +385,22 @@ func _escape() -> bool:
 		return false
 	game_menu.visible = true
 	return true
+
+
+## Dragging the quest tracker by its heading; it stays on screen.
+func _on_tracker_drag(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		_tracker_dragging = event.pressed
+		if event.pressed and _tracker_panel.anchor_left != 0.0:
+			# From its place on the right edge to a free position (same spot).
+			var at := _tracker_panel.position
+			_tracker_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+			_tracker_panel.position = at
+		_tracker_panel.accept_event()
+	elif event is InputEventMouseMotion and _tracker_dragging:
+		var screen := _root.size
+		_tracker_panel.position = (_tracker_panel.position + event.relative).clamp(
+				Vector2.ZERO, screen - _tracker_panel.size).round()
 
 
 ## Folds the quest tracker down to its heading, or unfolds it.
@@ -553,7 +575,8 @@ func _on_dialogue_opened(npc: Npc) -> void:
 	if not npc.def.sells.is_empty():
 		dialogue.add_option("Browse goods", func():
 			vendor_window.open(npc)
-			inventory_window.visible = true) # your bag, to sell from
+			inventory_window.visible = true # your bag, to sell from
+			dialogue.visible = false) # out of the way (not closed: the shop stays open)
 
 
 func _small_button(text: String, on_press: Callable) -> Button:

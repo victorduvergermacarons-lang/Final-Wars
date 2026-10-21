@@ -188,6 +188,7 @@ func _run() -> void:
 	session.world.move_hero(hero.id, &"town", Vector2i(8, 8))
 	var town := session.world.zone(&"town")
 	var hilda: Npc = town.npcs().filter(func(n): return n.def.id == &"hilda")[0]
+	hero.move.place(town.find_free_tile_near(hilda.tile() + Vector2i(0, 1))) # the shop closes from afar
 	hud.vendor_window.open(hilda)
 	hud.inventory_window.visible = true
 	await _shot("12_shop")

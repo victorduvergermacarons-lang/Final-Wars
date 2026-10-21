@@ -78,6 +78,24 @@ func test_the_book_arrows_turn_through_the_menus() -> void:
 	assert_true(hud._character.visible, "and back to the first")
 
 
+func test_the_quest_tracker_can_be_dragged() -> void:
+	var start := hud._tracker_panel.position
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	hud._on_tracker_drag(press)
+	var move := InputEventMouseMotion.new()
+	move.relative = Vector2(-50, 20)
+	hud._on_tracker_drag(move)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	hud._on_tracker_drag(release)
+	assert_almost_eq(hud._tracker_panel.position.x, start.x - 50, 1.0)
+	assert_almost_eq(hud._tracker_panel.position.y, start.y + 20, 1.0)
+	hud._on_tracker_drag(move)
+	assert_almost_eq(hud._tracker_panel.position.x, start.x - 50, 1.0, "only while held")
+
+
 func test_the_quest_tracker_folds_to_its_heading() -> void:
 	hud._fold_tracker(true)
 	assert_false(hud._tracker.visible)

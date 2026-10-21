@@ -44,10 +44,11 @@ func _ready() -> void:
 	create_row.add_child(_button("Create", _on_create))
 	box.add_child(create_row)
 	_refresh_characters("")
-
-	box = _page(book.right_page)
-	box.add_child(_button("Play Solo", func(): _start(func(c): solo_requested.emit(c))))
 	box.add_child(HSeparator.new())
+	box.add_child(_button("Play Solo", func(): _start(func(c): solo_requested.emit(c))))
+
+	# Playing together on the right page.
+	box = _page(book.right_page)
 	_address = _field(box, "Host address (to join)", "127.0.0.1")
 	var port_row := HBoxContainer.new()
 	var port_label := Label.new()

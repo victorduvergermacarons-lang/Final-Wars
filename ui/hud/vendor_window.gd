@@ -5,7 +5,10 @@ extends PanelContainer
 ## your bag to sell it (25% of its price). Drag the sheet by its title to move
 ## it. Closes when the conversation ends, or with its Close button.
 
-const WIDTH := 400.0
+const WIDTH := 380.0
+## Its writing: a little smaller than the menu book's.
+const FONT_SIZE := 17
+const TITLE_SIZE := 22
 ## Where it first opens, and how much of it stays on screen when dragged.
 const START := Vector2(16, 120)
 const KEEP_VISIBLE := Vector2(120, 40)
@@ -28,7 +31,9 @@ var _dragging := false
 
 func _init(p_hud: Hud) -> void:
 	hud = p_hud
-	theme = UiPalette.paper_theme()
+	# Paper and ink, in slightly smaller writing than the book.
+	theme = UiPalette.paper_theme().duplicate()
+	theme.default_font_size = FONT_SIZE
 	add_theme_stylebox_override("panel", UiPalette.paper_panel(12))
 	custom_minimum_size = Vector2(WIDTH, 0)
 	position = START
@@ -42,6 +47,7 @@ func _init(p_hud: Hud) -> void:
 	header.gui_input.connect(_on_header_input)
 	box.add_child(header)
 	_title = BookSpread.title("")
+	_title.add_theme_font_size_override("font_size", TITLE_SIZE)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(_title)
 	var close_button := Button.new()
@@ -125,3 +131,9 @@ func _process(_delta: float) -> void:
 	var hero: Hero = hud.session.local_hero()
 	if hero != null:
 		_gold.text = "Your gold: %d" % hero.gold
+	# The conversation box steps aside while you shop, so the shop itself closes
+	# when you walk away from the trader (or die).
+	var npc := hud.session.get_actor(npc_id) as Npc if npc_id >= 0 else null
+	if hero == null or npc == null or not hero.alive \
+			or GridModel.distance(hero.tile(), npc.tile()) > DialogueBox.CLOSE_DISTANCE:
+		close()

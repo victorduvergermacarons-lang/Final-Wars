@@ -10,6 +10,8 @@ extends Control
 const TITLE_SIZE := 26
 const NOTE_SIZE := 16
 const SEPARATION := 4
+## Space above a page's content in menus that sit lower on the page.
+const TOP_GAP := 12.0
 
 var left := VBoxContainer.new()
 var right := VBoxContainer.new()
@@ -32,6 +34,15 @@ func lay_out(left_rect: Rect2, right_rect: Rect2) -> void:
 static func _place(column: Control, room: Rect2) -> void:
 	column.position = room.position.round()
 	column.size = room.size.round()
+
+
+## Empty space of `height`, to bring what follows down the page (clear of the
+## page's darker top border, or apart from what is above).
+static func spacer(height: float) -> Control:
+	var c := Control.new()
+	c.custom_minimum_size = Vector2(0, height)
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return c
 
 
 ## A page heading in the book's leather red.

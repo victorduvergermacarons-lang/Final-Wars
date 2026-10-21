@@ -14,7 +14,9 @@ var _gold: Label
 func _init(p_hud: Hud) -> void:
 	super()
 	hud = p_hud
-	left.add_child(BookSpread.title("Equipment"))
+	var equip_title := BookSpread.title("Equipment")
+	equip_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	left.add_child(equip_title)
 	# Worn items in the middle of the page.
 	var equip := GridContainer.new()
 	equip.columns = 3
@@ -24,6 +26,8 @@ func _init(p_hud: Hud) -> void:
 	for slot in EquipSlot.COUNT:
 		equip.add_child(ItemSlotView.new(hud, ItemSlotView.Kind.EQUIP, slot))
 	left.add_child(equip)
+	# The learning slot and gold a little apart from the worn items.
+	left.add_child(BookSpread.spacer(TOP_GAP))
 	var learning := LearningRow.new(hud)
 	learning.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	left.add_child(learning)
@@ -32,7 +36,9 @@ func _init(p_hud: Hud) -> void:
 	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	left.add_child(_gold)
 
-	right.add_child(BookSpread.title("Bag"))
+	var bag_title := BookSpread.title("Bag")
+	bag_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	right.add_child(bag_title)
 	right.add_child(BookSpread.bag_grid(hud, BAG_COLUMNS))
 	_confirm = ConfirmationDialog.new()
 	_confirm.confirmed.connect(_on_destroy_confirmed)

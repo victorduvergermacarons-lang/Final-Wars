@@ -417,7 +417,8 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   uneven (2 or 3 screen pixels at 720p). Content too tall for its page is cut at the
   page bottom; long lists scroll.
 - **The shop is its own sheet** (`VendorWindow`, a paper panel apart from the book):
-  open together with the book. Talking to a trader opens it and your inventory; sell
+  open together with the book. "Browse goods" opens it and your inventory and hides the
+  conversation box (the shop closes when you walk away); writing 17, title 22. Sell
   with a right-click in the bag. Drag it by its title; it has its own Close button, and
   closes when the conversation ends. Its goods list fits between where it sits and the
   action bar.
@@ -427,7 +428,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 - **Text sizes** (user request): paper text 20 (Godot's default 16), page titles 26,
   notes 16, spacing 4. Item slots are 64 px (were 48) with the item name on up to two
   lines at 14 (was 6 letters at 11); rarity colours are lightened inside the dark slots.
-- **Main menu:** title and character on the left page, Play Solo / Host / Join on the right.
+- **Main menu:** title, character and Play Solo on the left page; Host / Join on the right.
 - **Ink on parchment** (`ui/ui_palette.gd`): paper and leather colours come from the art.
   The paper theme makes window boxes see-through, text dark ink, buttons and tabs
   leather, fields and tooltips paper. Shared text colours (`ItemTooltip`, `QuestText`)
@@ -450,7 +451,8 @@ User request. Replaces parts of HUD rule 15 (the button row and the message log)
 - **Esc, WoW-style** (`Hud._escape`): cancel aiming; else leave keybind mode; else close
   the Escape menu if open; else close the menu book, shop and conversation; else clear
   the target; else open the Escape menu. (The dialogue box no longer handles Esc itself.)
-- **Quest tracker:** a "Quests" heading with a fold button (– / +) that hides the list;
+- **Quest tracker:** a "Quests" heading (drag it to move the tracker) with a fold button
+  (– / +) that hides the list;
   text 15, 260 wide.
 
 ## Performance (branch `optimised-build-1`, 2026-10-21)
@@ -1305,6 +1307,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-21 | Layout tweaks: menus lower on the page, smaller quest text, shorter Abandon, indented abilities, centred inventory titles, smaller tree tiers, Play Solo on the left, draggable quest tracker, Browse goods hides the conversation, smaller shop writing | User requests. My choices: `BookSpread.TOP_GAP` 12 px; quest text 17 (its name stays 20), quest text box 330 px before it scrolls with Abandon (200 wide) under it; abilities indented 18 px; tree headers 14, nodes 13 with bigger gaps; the shop closes by itself when you walk away (the conversation that used to close it is hidden); the tracker's position isn't saved between sessions. |
 | 2026-10-21 | Arrows at the bottom of the book turn between menus | User request. My choices: they name the menu they lead to; order Character, Inventory, Spellbook, Trees, Quests, wrapping; the loot menu isn't in the cycle (it opens on its own when loot waits). |
 | 2026-10-21 | Escape menu (log, controls, keybinds, leave game); on-screen button row, message log and how-to hints removed; foldable, smaller quest tracker | User request. My choices: Esc order like WoW (aim → keybind mode → menu → open windows → target → menu), so with a target the first Esc clears it; the log keeps the last 300 messages; the loot menu keeps its "bag was full" line (information, not a how-to); the fold state isn't saved between sessions. See **Escape menu and a cleaner screen**. |
 | 2026-10-21 | The book always fills the screen; the shop is a separate, draggable paper sheet open beside the book | User report (text still blurred in a 1280×720 window) and request (trading separate from inventory/character/trees, both open). Cause: at 720p the book was drawn at 2× and menus at 75%. Trade-off chosen: sharp text in any window over whole-pixel art outside 1080p. My choices: the shop opens with your inventory in the book, starts at the screen's left over the equipment page, has its own Close, and sits above the message log. |

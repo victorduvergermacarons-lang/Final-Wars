@@ -12,7 +12,12 @@ var _shown_key := ""
 func _init(p_hud: Hud) -> void:
 	super()
 	hud = p_hud
+	# Lower on both pages, clear of their darker top border; the right page's list
+	# starts level with the left one's, under the title.
+	left.add_child(BookSpread.spacer(TOP_GAP))
 	left.add_child(BookSpread.title("Spellbook"))
+	right.add_child(BookSpread.spacer(TOP_GAP))
+	right.add_child(BookSpread.title(" ")) # a blank line as tall as the title
 	for page in [left, right]:
 		var list := VBoxContainer.new()
 		page.add_child(list)

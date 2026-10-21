@@ -8,9 +8,9 @@ extends BookSpread
 ## abilities can be dragged onto the action bar.
 
 ## Space between nodes; tier columns on the left page (the rest go right).
-const GAP := Vector2(10, 10)
+const GAP := Vector2(22, 16)
 const LEFT_TIERS := 3
-const TIER_HEADER_H := 44.0
+const TIER_HEADER_H := 40.0
 
 enum State { MASTERED, LEARNING, LEARNABLE, LOCKED, NOT_IN_GAME }
 
@@ -181,7 +181,7 @@ class _Canvas:
 			label.position = Vector2(roundf(col_x), lp.position.y)
 			label.size = Vector2(roundf(col_w - GAP.x), TIER_HEADER_H)
 			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			label.add_theme_font_size_override("font_size", 16)
+			label.add_theme_font_size_override("font_size", 14)
 			label.add_theme_constant_override("line_spacing", -2)
 			label.text = "Tier %d\n%s" % [tier, "open" if open else "needs %d" % int(need)]
 			label.add_theme_color_override("font_color", Color(UiPalette.GREEN) if open else Color(UiPalette.RED))
@@ -232,7 +232,7 @@ class _Node:
 		focus_mode = Control.FOCUS_NONE
 		# Long names wrap onto a second line rather than being cut.
 		autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		add_theme_font_size_override("font_size", 14)
+		add_theme_font_size_override("font_size", 13)
 		text = AbilityTreeWindow.node_text(hero, ability)
 		var color: Color = STATE_COLORS[state]
 		var style := StyleBoxFlat.new()

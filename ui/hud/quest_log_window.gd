@@ -12,25 +12,40 @@ var _abandon: Button
 var _signature := ""
 
 
+## Quest text size; the quest's name keeps the page text size.
+const TEXT_SIZE := 17
+const NAME_SIZE := 20
+## Height of the quest text before it scrolls; Abandon sits right under it.
+const DETAILS_H := 330.0
+
+
 func _init(p_hud: Hud) -> void:
 	super()
 	hud = p_hud
+	# Lower on the page, clear of its darker top border.
+	left.add_child(BookSpread.spacer(TOP_GAP))
 	left.add_child(BookSpread.title("Quest Log"))
 	_list = VBoxContainer.new()
 	left.add_child(_list)
-	# Long quest text scrolls within the page; Abandon stays below it.
+	right.add_child(BookSpread.spacer(TOP_GAP + 8.0))
+	# Long quest text scrolls; Abandon stays right under it.
 	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.custom_minimum_size = Vector2(0, DETAILS_H)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	right.add_child(scroll)
 	_details = RichTextLabel.new()
 	_details.bbcode_enabled = true
 	_details.fit_content = true
 	_details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for font in ["normal_font_size", "bold_font_size"]:
+		_details.add_theme_font_size_override(font, TEXT_SIZE)
 	scroll.add_child(_details)
+	right.add_child(BookSpread.spacer(6.0))
 	_abandon = Button.new()
 	_abandon.text = "Abandon quest"
 	_abandon.focus_mode = Control.FOCUS_NONE
+	_abandon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_abandon.custom_minimum_size = Vector2(200, 0)
 	_abandon.pressed.connect(func():
 		hud.session.send_intent({"type": "abandon_quest", "quest": selected})
 		selected = &"")
@@ -72,6 +87,6 @@ func _process(_delta: float) -> void:
 		_details.text = "[color=%s]No quests. Look for [b]![/b] over people in town.[/color]" % QuestText.GREY
 		return
 	var def: QuestDef = ContentDB.quests[selected]
-	_details.text = "[b]%s[/b]\n%s\n\n%s\n\nHand in to: %s\n%s" % [def.title, def.offer_text,
+	_details.text = "[font_size=%d][b]%s[/b][/font_size]\n%s\n\n%s\n\nHand in to: %s\n%s" % [NAME_SIZE, def.title, def.offer_text,
 			QuestText.objectives_bbcode(hero, def), QuestText.npc_name(def.turn_in_npc()),
 			QuestText.rewards_bbcode(def)]
