@@ -7,6 +7,8 @@ extends Control
 ## anchors (main menu). Uses the paper theme.
 
 signal close_requested
+## The page-turn arrows at the bottom: -1 back, +1 forward (the HUD picks the menu).
+signal turn_requested(direction: int)
 
 const TEXTURE := preload("res://assets/ui/menu_book.png")
 const ART_SIZE := Vector2(480, 270)
@@ -23,11 +25,15 @@ const SIDES := Vector2(35, 438)
 const REF_ART_SCALE := 8.0 / 3.0
 ## How much of the book must stay on screen when it is dragged (UI units).
 const KEEP_VISIBLE := Vector2(160, 60)
+## The page-turn arrows' text size (they sit in the margin under the pages).
+const TURN_FONT_SIZE := 16
 
 var left_page := Control.new()
 var right_page := Control.new()
 var spread := Control.new()
 var close_button: Button
+var prev_button: Button
+var next_button: Button
 ## Book rect in this control's coordinates, and UI units per art pixel.
 var book_rect := Rect2()
 var art_scale := 1.0
@@ -60,7 +66,41 @@ func _init(with_close: bool = true) -> void:
 		close_button.focus_mode = Control.FOCUS_NONE
 		close_button.pressed.connect(func(): close_requested.emit())
 		add_child(close_button)
+		# Page-turn arrows under the pages' bottom corners.
+		prev_button = _turn_button(-1)
+		next_button = _turn_button(1)
 	resized.connect(_layout)
+
+
+func _turn_button(direction: int) -> Button:
+	var b := Button.new()
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", TURN_FONT_SIZE)
+	b.pressed.connect(func(): turn_requested.emit(direction))
+	add_child(b)
+	return b
+
+
+## Names the menus the arrows lead to ("< Inventory", "Trees >").
+func set_turn_labels(previous: String, next: String) -> void:
+	if prev_button == null:
+		return
+	var p := "<  " + previous
+	var n := next + "  >"
+	if prev_button.text != p or next_button.text != n:
+		prev_button.text = p
+		next_button.text = n
+		_place_turn_buttons()
+
+
+func _place_turn_buttons() -> void:
+	if prev_button == null:
+		return
+	var y := book_rect.position.y + (LEFT_PAGE.end.y + 3.0) * art_scale
+	for b in [prev_button, next_button]:
+		b.size = b.get_combined_minimum_size()
+	prev_button.position = Vector2(book_rect.position.x + LEFT_PAGE.position.x * art_scale, y).round()
+	next_button.position = Vector2(book_rect.position.x + RIGHT_PAGE.end.x * art_scale - next_button.size.x, y).round()
 
 
 func _ready() -> void:
@@ -137,6 +177,7 @@ func _layout() -> void:
 		close_button.size = b
 		close_button.position = Vector2(book_rect.position.x + RIGHT_PAGE.end.x * art_scale - b.x,
 				book_rect.position.y + TOP_EDGE * art_scale - b.y - 2.0)
+	_place_turn_buttons()
 	if auto_fit:
 		fit_pages()
 	queue_redraw()

@@ -61,6 +61,23 @@ func test_keybinds_button_starts_keybind_mode() -> void:
 	assert_false(hud.game_menu.visible, "the menu gets out of the way of the action bar")
 
 
+func test_the_book_arrows_turn_through_the_menus() -> void:
+	hud._toggle(hud.inventory_window)
+	await wait_process_frames(1)
+	assert_eq(hud.book.prev_button.text, "<  Character")
+	assert_eq(hud.book.next_button.text, "Spellbook  >")
+	hud.book.next_button.pressed.emit()
+	assert_true(hud._spellbook.visible)
+	assert_false(hud.inventory_window.visible, "one menu at a time")
+	hud.book.prev_button.pressed.emit()
+	hud.book.prev_button.pressed.emit()
+	assert_true(hud._character.visible)
+	hud.book.prev_button.pressed.emit()
+	assert_true(hud.quest_log.visible, "wraps around to the last")
+	hud.book.next_button.pressed.emit()
+	assert_true(hud._character.visible, "and back to the first")
+
+
 func test_the_quest_tracker_folds_to_its_heading() -> void:
 	hud._fold_tracker(true)
 	assert_false(hud._tracker.visible)

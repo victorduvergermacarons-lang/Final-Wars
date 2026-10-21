@@ -99,6 +99,7 @@ func _build() -> void:
 	book = BookView.new()
 	book.visible = false
 	book.close_requested.connect(close_menus)
+	book.turn_requested.connect(_turn_page)
 	_root.add_child(book)
 
 	# Top-left: me, my target, then the rest of the party.
@@ -411,7 +412,31 @@ func _update_book() -> void:
 			_close_menu(w)
 	book.visible = _open_menu != null
 	if book.visible:
+		var order := _page_order()
+		var at := order.find(_open_menu) # -1 for loot: the arrows lead to the ends
+		book.set_turn_labels(_page_name(order[posmod(at - 1, order.size()) if at >= 0 else -1]),
+				_page_name(order[posmod(at + 1, order.size()) if at >= 0 else 0]))
 		book.fit_pages()
+
+
+## The menus the book's arrows turn through, in order.
+func _page_order() -> Array[Control]:
+	return [_character, inventory_window, _spellbook, trees_window, quest_log]
+
+
+func _page_name(w: Control) -> String:
+	return {_character: "Character", inventory_window: "Inventory", _spellbook: "Spellbook",
+			trees_window: "Trees", quest_log: "Quests"}.get(w, "")
+
+
+## The book's arrows: the previous (-1) or next (+1) menu, wrapping around.
+func _turn_page(direction: int) -> void:
+	var order := _page_order()
+	var at := order.find(_open_menu)
+	var to: Control = order[posmod(at + direction, order.size())] if at >= 0 \
+			else order[0 if direction > 0 else order.size() - 1]
+	to.visible = true
+	_update_book()
 
 
 ## Closes every menu in the book (its Close button).
