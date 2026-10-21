@@ -19,6 +19,11 @@ extends RefCounted
 
 ## Seconds without attacking after which a FLANKER strikes head-on.
 const FLANK_PATIENCE := 2.0
+## Chasing: tiles a path search may visit (more than a whole leash area), and
+## how long to wait after one finds nothing before searching again. An
+## unreachable target would otherwise cost a full search every tick.
+const CHASE_SEARCH := 1024
+const CHASE_RETRY_SECONDS := 0.5
 
 
 static func update(world: WorldSim, enemy: Enemy) -> void:
@@ -245,9 +250,27 @@ static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Va
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
 	if not _step_ready(world, enemy) or (enemy.is_large() and enemy.range_to(seen) <= 1):
 		return # a large body is already beside its target
-	var path := world.path_for(enemy, seen, world.occupied_tiles(enemy))
+	if world.now < enemy.chase_retry_at:
+		return
+	if enemy.is_large():
+		# A large body can't stand on its target's tile, nor usually fit its body
+		# around it: it heads for any spot with its body beside the target.
+		var beside := func(c: Vector2i) -> bool:
+			for o in enemy.footprint:
+				if TileGeometry.range_distance(c + o, seen) <= 1:
+					return true
+			return false
+		var to_beside := world.path_for(enemy, seen, world.occupied_tiles(enemy), CHASE_SEARCH, beside)
+		if to_beside.size() >= 2:
+			world.try_step(enemy, to_beside[1])
+		elif to_beside.is_empty():
+			enemy.chase_retry_at = world.now + CHASE_RETRY_SECONDS
+		return
+	var path := world.path_for(enemy, seen, world.occupied_tiles(enemy), CHASE_SEARCH)
 	if path.size() > 2:
 		world.try_step(enemy, path[1])
+	elif path.is_empty():
+		enemy.chase_retry_at = world.now + CHASE_RETRY_SECONDS
 
 
 static func _step_ready(world: WorldSim, enemy: Enemy) -> bool:

@@ -135,6 +135,30 @@ func test_its_body_needs_room_to_move() -> void:
 	assert_false(world.path_for(d, Vector2i(10, 10), {}).is_empty(), "a 3-wide gap does")
 
 
+## Regression (2026-10-21): it chased toward the hero's own tile, which its body
+## can never reach (every tile next to the hero puts an arm on them), so it stood
+## still and searched the whole map every tick.
+func test_it_chases_until_its_body_is_beside_the_hero() -> void:
+	var d := _drake_with(&"talon_rake", Vector2i(10, 4))
+	d.state = Enemy.State.COMBAT
+	hero.move.place(Vector2i(10, 12))
+	_run(12.0)
+	assert_ne(d.tile(), Vector2i(10, 4), "it moved")
+	assert_eq(d.range_to(hero.tile()), 1, "its body ends beside the hero")
+
+
+func test_an_unreachable_target_is_not_searched_every_tick() -> void:
+	var g := world.grid
+	for y in 20:
+		g.set_tile(Vector2i(8, y), 6, false) # a wall too tall to fly over, no gap
+	var d := _drake_with(&"talon_rake", Vector2i(4, 10))
+	d.state = Enemy.State.COMBAT
+	hero.move.place(Vector2i(12, 10))
+	_run(0.2)
+	assert_eq(d.tile(), Vector2i(4, 10), "no way through")
+	assert_gt(d.chase_retry_at, world.now, "waits before searching again")
+
+
 func test_knockbacks_dont_move_its_body() -> void:
 	var d := world.add_enemy(drake_def, Vector2i(5, 10))
 	var blast: AbilityDef = ContentDB.abilities[&"A05"]

@@ -221,12 +221,12 @@ How-to: `docs/tilesets.md`.
   step, and toward their target when attacking.
 - **Behaviour:**
   - In combat a wolf glides over its whole 0.65 s step, so the run cycle matches the
-    ground.
+	ground.
   - The bite plays from its wind-up; damage lands on frame 12. The wolf stays put for
-    the wind-up and the 2 recovery frames after it.
+	the wind-up and the 2 recovery frames after it.
   - A wolf that starts a fight (spots a hero, or is hit first) stands and howls.
-    When the howl ends, idle wolves within 6 tiles (`pack_call_radius`) join on the
-    same hero. Wolves called in don't howl.
+	When the howl ends, idle wolves within 6 tiles (`pack_call_radius`) join on the
+	same hero. Wolves called in don't howl.
   - Death plays once, the corpse lies 4 s, then fades. Taking damage flashes the body
     white (the shadowless sheet, saturated).
 - **Networking:** clients pick every frame from host times: steps, wind-ups (bite and
@@ -264,7 +264,7 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
   - bite = loop frames 3–9 at 20 fps (jaws on frame 6)
   - pounce = frames 2–13 at 10 fps (springs on frame 6)
   - **Placeholders (art missing):** run reuses frames 0–3, death reuses the
-    crouch (frames 4–10), and NE/NW reuse the SE/SW rows.
+	crouch (frames 4–10), and NE/NW reuse the SE/SW rows.
 
 ## Sunscale Drake (2026-10-20)
 
@@ -272,10 +272,10 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 - **Body (since the 2026-10-20 playtest):** a plus of 5 tiles (`EnemyDef.footprint`,
   `Actor.footprint`):
   - It is hit on any of those tiles (skillshots, areas, telegraphs), and blocks
-    them: nobody walks into it.
+	them: nobody walks into it.
   - Ranges are measured to and from its nearest body tile
-    (`Actor.body_distance`), so melee works from beside any arm and it rakes
-    heroes beside its arms.
+	(`Actor.body_distance`), so melee works from beside any arm and it rakes
+	heroes beside its arms.
   - It needs room for its whole body to move (3-wide gaps), and knockbacks don't
     move it.
   - The tiles it covers are outlined faintly on the ground, and its target ring
@@ -293,17 +293,17 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 - **Sunfire Breath** (`sunfire_breath`): skillshot cone, 8-way, 4 tiles, 10 s.
   - It rears back for 0.8 s with the cone outlined.
   - Then 18 + 1.0×MagAtk magical damage, with flames drawn over the cone
-    (`AbilityDef.flame_effect`).
+	(`AbilityDef.flame_effect`).
   - The cone burns for 3 s (`sunfire_burn`: 3 + 0.15×MagAtk every 0.5 s).
 - **Searing Dive** (`searing_dive`): Ground, range 2–5, 14 s.
   - The tiles its whole body will sweep glow for 1 s: 5 steps, 3 lanes wide when
-    straight (`AbilityResolver.charge_lane` / `charge_swept`, the same tiles the dive
-    uses).
+	straight (`AbilityResolver.charge_lane` / `charge_swept`, the same tiles the dive
+	uses).
   - Then the new effect `CHARGE_THROUGH` moves the drake along the lane at
-    0.16 s per tile.
+	0.16 s per tile.
   - Each enemy its body reaches gets `searing_dive_hit`: 18 + 0.9×MagAtk magical,
-    and a 2-tile shove sideways (`AbilityEffect.push_aside`), toward the side of the
-    lane it was on, so it clears the body. Anyone still in the way stops the dive.
+	and a 2-tile shove sideways (`AbilityEffect.push_aside`), toward the side of the
+	lane it was on, so it clears the body. Anyone still in the way stops the dive.
   - The swept tiles burn for 2 s.
 - **Airborne passive:** a knockback from an Air ability (`grounded_by_tree`) applies
   `drake_grounded` even when its weight cancels the push: stunned 3 s and 25% more
@@ -313,12 +313,17 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   fire burns 5 s. It glows hotter and the message log announces it. Evading clears it.
 - **Balance** (`tests/balance/test_balance.gd`, bots that never dodge): a level-7 group of
   four wins at least half the time (level 8 about 90%); at level 6 they win about 1 time
-  in 5; a pair or a lone hero loses.
+  in 5; a pair or a lone hero loses. **Since 2026-10-21 (chase fix) a level-7 group wins
+  about 17%:** the numbers above were tuned while the drake froze after dives. The user
+  keeps its numbers for now and will retune it; the level-7 target is pending in the test.
+- **Chasing:** it heads for any tile where its body is beside its target
+  (`Pathfinder.find_path`'s `arrived` test), not the target's own tile, which its body
+  can never reach.
 - **Art:** `art/Crimson_dragon_animated.aseprite` (in `art/`, not `art/creatures/`):
   128×128, 56 frames at 100 ms.
   - Its two layers face SW and NW. SE and NE mirror them.
   - `tools/once/make_sunscale_drake_sheets.py` shifts each layer into 160×128
-    frames so the drawn-in shadow's centre sits on feet (80, 95).
+	frames so the drawn-in shadow's centre sits on feet (80, 95).
   - Animations:
     - idle = Standing 0–7, 8 fps
     - run = Moving 48–55, 8 frames per tile
@@ -333,10 +338,10 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   plus strength, saturation cut-off, centre and contrast in
   `content/creatures/sunscale_drake_art.tres`).
   - `view/shaders/creature_recolor.gdshader` maps each opaque, low-saturation pixel's
-    brightness onto dark crimson → crimson → gold.
+	brightness onto dark crimson → crimson → gold.
   - Flames and the semi-transparent shadow keep their colours.
   - `CreatureRecolor` renders each sheet once through the shader into an off-screen
-    viewport, so the drake still draws in the world's back-to-front order.
+	viewport, so the drake still draws in the world's back-to-front order.
 - Animated elites are labelled "Elite …" in gold. "Grounded!" and "Molten Fury!" float
   over the drake, and a grounded drake shows "Grounded" under it.
 - **Placement:** its own pen in the testing grounds' Boss Arena. Spacing now counts how
@@ -380,24 +385,24 @@ Measure with `tools/perf/` (headless, no window; a headless frame costs at least
 `sim_profile.tscn` (sim cost per tick, zones sleeping or not).
 - **Terrain cache** (`WorldView.use_terrain_cache`, on by default for tileset maps):
   - The ground is drawn once into chunk nodes of 8 depth rows under the view, and
-    Godot keeps them. A chunk is redrawn only when a height in it changes (and the
-    row behind it).
+	Godot keeps them. A chunk is redrawn only when a height in it changes (and the
+	row behind it).
   - The river ripples and water sparkles use self-animating textures
-    (`TileArt.animated_texture` / `sparkle_texture`), so nothing redraws for them.
+	(`TileArt.animated_texture` / `sparkle_texture`), so nothing redraws for them.
   - Each frame the view draws actors and tile highlights back to front. Inside a box
-    around each (merged where boxes overlap), it draws again, in order, the tiles from
-    that depth row forward, cut to the box. Projectiles, labels and bars go on top.
+	around each (merged where boxes overlap), it draws again, in order, the tiles from
+	that depth row forward, cut to the box. Projectiles, labels and bars go on top.
   - Same picture as redrawing every tile: the screenshot test with
-    `SHOTS_COMPARE_CACHE=1` saves each shot both ways on one frame; all 42 match.
+	`SHOTS_COMPARE_CACHE=1` saves each shot both ways on one frame; all 42 match.
   - Frame time: Greenfields 28 → 9 ms, testing grounds 77 → 7 ms.
 - **Empty zones sleep** (`CombatRules.empty_zone_sleep_seconds` = 30; negative turns it
   off):
   - A zone with no heroes for that long only advances its clock
-    (`WorldSim.skip_tick`). Its enemies, patrols, projectiles and ground zones wait.
+	(`WorldSim.skip_tick`). Its enemies, patrols, projectiles and ground zones wait.
   - Anything timed in sim time (respawns, buffs, raised terrain, ground zones) still
-    runs out on schedule and resolves on the first tick after a hero arrives.
+	runs out on schedule and resolves on the first tick after a hero arrives.
   - The 30 s wait lets a fight that was just left settle (enemies evade, heal and
-    walk home) before the zone sleeps.
+	walk home) before the zone sleeps.
   - Sim cost with one hero in town: 1.30 → 0.22 ms per tick.
 
 ## Gameplay as built (end of Milestone 1, after playtest)
@@ -592,16 +597,16 @@ docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, 
    +X% per height level of advantage, X in `CombatRules`.
 7. **Combat math** (all constants in `CombatRules`):
    - Hit % = 95 + (Accuracy − Evasion) × 1, clamped to 50–100. Heals, buffs, taunts
-     and resurrects always land.
+	 and resurrects always land.
    - Mitigation = Def / (Def + 100), physical or magical per effect. Hits deal ≥ 1.
    - Crit chance = Crit Rate %. Crit multiplier = 1 + (50 + Crit Damage) / 100.
-     Heals can crit.
+	 Heals can crit.
    - Ranged abilities: +10% damage per height level above the target; no penalty
-     from below.
+	 from below.
    - Mana is spent up front; a miss still costs mana and starts cooldowns.
    - Threat: damage → threat equal to damage dealt. Healing → effective healing × 0.5,
-     split evenly across the enemies fighting the healed target (puts the healer on
-     their tables). Taunt → top threat + 10%.
+	 split evenly across the enemies fighting the healed target (puts the healer on
+	 their tables). Taunt → top threat + 10%.
    - Resurrect restores 30% HP and 30% Mana.
 8. **Equipment slots:** Main Hand, Off Hand, Accessory, Body. M1: Sword (main hand),
    Staff (main hand, one-handed), Shield (off hand), Holy Charm (accessory). Every hero starts with
@@ -611,8 +616,8 @@ docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, 
    so items may teach more than one).
    **Ability shapes** (`AbilityDef.shape`):
    - FRONT: hits whoever stands on the tile(s) straight ahead; an empty tile whiffs
-     (still costs mana/GCD/cooldown). Strike and Wolf Bite: 1 tile, only targets within
-     2 height levels.
+	 (still costs mana/GCD/cooldown). Strike and Wolf Bite: 1 tile, only targets within
+	 2 height levels.
    - LINE: a projectile flying straight ahead up to its range at the caster's height,
      stopping at the first enemy or at terrain more than the LOS tolerance above it;
      passes through allies (no friendly fire). Fireball: 5 tiles at 10 tiles/s.
@@ -624,16 +629,16 @@ docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, 
    - XP to go from level L to L+1 = 100 × L. Extra XP carries over. No level cap
      (`max_level` = 0).
    - Level-up: gain 50% of every equipped item's per-level growth, permanently.
-     Growth limit modes CAP (per-stat maximum) and DIMINISHING (gain ×
-     half_point / (half_point + growth so far)) exist but are off by default.
+	 Growth limit modes CAP (per-stat maximum) and DIMINISHING (gain ×
+	 half_point / (half_point + growth so far)) exist but are off by default.
    - Level-up gives 10 AP to every unmastered ability taught by an equipped item;
-     each ability sets its own AP threshold (`ap_to_master`). AP progress is kept
-     when the item is unequipped.
+	 each ability sets its own AP threshold (`ap_to_master`). AP progress is kept
+	 when the item is unequipped.
    - Level-up refills HP and Mana to full.
 10. **Regen & respawn:** out of combat 2% max HP and 2% max Mana per second; in
-    combat 0.5% max Mana per second, no HP regen. Release (any time, no auto-release)
-    → graveyard nearest the death spot, or the nearest free tile to it, at 50% HP and
-    Mana. Resurrect → 30% HP and Mana, in place. Dead heroes don't block tiles.
+	combat 0.5% max Mana per second, no HP regen. Release (any time, no auto-release)
+	→ graveyard nearest the death spot, or the nearest free tile to it, at 50% HP and
+	Mana. Resurrect → 30% HP and Mana, in place. Dead heroes don't block tiles.
     Enemies respawn at their spawn tile at full HP after their timer, waiting if the
     tile is occupied. All configurable.
 11. **Party:** in M1 all connected players are one party. Real party system later.
@@ -642,62 +647,62 @@ docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, 
     - Gear can only be changed out of combat.
     - Aggro: an idle enemy aggros on the nearest living hero within its aggro radius
       and in line of sight. Damage also pulls it. No group/social aggro, except wolf
-      packs (since 2026-10-18): a wolf's howl calls idle wolves within 6 tiles.
-    - In combat the enemy attacks the top of its threat table whenever an ability is
-      ready and in reach; otherwise it paths toward the target on its step cooldown.
-      It turns to face a target next to it (free) before a FRONT attack.
-    - Per enemy type: `combat_step_seconds` (Wolf 0.65 s/tile, faster than heroes'
-      1.5 s, so heroes can't outrun an aggroed Wolf) and `reaction_seconds` (Wolf
-      0.3 s): the enemy sees heroes where they were that long ago — for aggro,
-      chasing, turning and aiming — so a well-timed sidestep makes a bite whiff.
-    - Leash: past its leash radius from spawn, or with an empty threat table, the
-      enemy evades: clears threat, heals to full, is untargetable, walks home.
-    - Combat ends as soon as no fighting enemy lists the hero (was 5 s until the M2
-      playtest). An enemy counts as in combat from the moment it aggros, so its first
-      steps already use its combat step time (no dash on aggro).
-    - Heroes have no auto-attack; they only use action-bar abilities.
+	  packs (since 2026-10-18): a wolf's howl calls idle wolves within 6 tiles.
+	- In combat the enemy attacks the top of its threat table whenever an ability is
+	  ready and in reach; otherwise it paths toward the target on its step cooldown.
+	  It turns to face a target next to it (free) before a FRONT attack.
+	- Per enemy type: `combat_step_seconds` (Wolf 0.65 s/tile, faster than heroes'
+	  1.5 s, so heroes can't outrun an aggroed Wolf) and `reaction_seconds` (Wolf
+	  0.3 s): the enemy sees heroes where they were that long ago — for aggro,
+	  chasing, turning and aiming — so a well-timed sidestep makes a bite whiff.
+	- Leash: past its leash radius from spawn, or with an empty threat table, the
+	  enemy evades: clears threat, heals to full, is untargetable, walks home.
+	- Combat ends as soon as no fighting enemy lists the hero (was 5 s until the M2
+	  playtest). An enemy counts as in combat from the moment it aggros, so its first
+	  steps already use its combat step time (no dash on aggro).
+	- Heroes have no auto-attack; they only use action-bar abilities.
 13. **View & controls** (approved 2026-10-11):
-    - Isometric tiles 64×32 px, 16 px per height level; camera follows the hero,
-      mouse-wheel zoom.
-    - W/↑ = grid up (screen up-right), D/→ = right (down-right), S/↓ = down
-      (down-left), A/← = left (up-left), like FFTA.
-    - Every actor faces one of the four directions (arrow on the ground). **Since
-      2026-10-16 the hero faces the mouse** (the side of the hero the pointer is on,
-      4-way), and direction keys always walk, even a short tap (the Pokémon-style
-      turn-only tap is gone). Stepping never turns a hero (since 2026-10-17); enemies
-      still face where they step. Turning is free and instant, in combat too.
-      The newest held direction key wins; pressing a new direction turns at once even
-      while another is held or the step is on cooldown; in combat no step is queued
-      ahead, and a turn cancels any queued step (post-M2 playtest fix).
-    - WoW-style targeting (click an actor, Tab cycles nearby enemies, Esc clears) is
-      used by TARGETED abilities; ally abilities fall back to self. FRONT/LINE
-      abilities aim where you face; their action bar slot is red when nothing would
-      be hit.
-    - Placeholder art: height-tinted tiles, blue water, grey rocks, heroes as
-      circles, enemies as red diamonds, floating combat text. (Since 2026-10-16 the
-      ground uses the `iso_basic` tileset; see **Map art**. Characters and effects
-      are still placeholders.)
-    - Test zone "Greenfields" (30×30): hill, height-4 plateau reached by a ramp,
-      river with two bridges, two graveyards, five Wolves.
+	- Isometric tiles 64×32 px, 16 px per height level; camera follows the hero,
+	  mouse-wheel zoom.
+	- W/↑ = grid up (screen up-right), D/→ = right (down-right), S/↓ = down
+	  (down-left), A/← = left (up-left), like FFTA.
+	- Every actor faces one of the four directions (arrow on the ground). **Since
+	  2026-10-16 the hero faces the mouse** (the side of the hero the pointer is on,
+	  4-way), and direction keys always walk, even a short tap (the Pokémon-style
+	  turn-only tap is gone). Stepping never turns a hero (since 2026-10-17); enemies
+	  still face where they step. Turning is free and instant, in combat too.
+	  The newest held direction key wins; pressing a new direction turns at once even
+	  while another is held or the step is on cooldown; in combat no step is queued
+	  ahead, and a turn cancels any queued step (post-M2 playtest fix).
+	- WoW-style targeting (click an actor, Tab cycles nearby enemies, Esc clears) is
+	  used by TARGETED abilities; ally abilities fall back to self. FRONT/LINE
+	  abilities aim where you face; their action bar slot is red when nothing would
+	  be hit.
+	- Placeholder art: height-tinted tiles, blue water, grey rocks, heroes as
+	  circles, enemies as red diamonds, floating combat text. (Since 2026-10-16 the
+	  ground uses the `iso_basic` tileset; see **Map art**. Characters and effects
+	  are still placeholders.)
+	- Test zone "Greenfields" (30×30): hill, height-4 plateau reached by a ramp,
+	  river with two bridges, two graveyards, five Wolves.
 14. **Networking** (approved 2026-10-11):
-    - Main menu: name, Play Solo, Host (port 7777), Join (address + port).
-    - The host plays too; its intents go through the same `receive_intent()` +
-      `Intents.sanitize()` path as remote players.
-    - Host → clients every tick: full snapshot (deflate-compressed, ~0.6 KB) plus
-      the event stream. Content is referenced by id, never sent.
-    - Client-side prediction for the local hero's steps; host corrects via
+	- Main menu: name, Play Solo, Host (port 7777), Join (address + port).
+	- The host plays too; its intents go through the same `receive_intent()` +
+	  `Intents.sanitize()` path as remote players.
+	- Host → clients every tick: full snapshot (deflate-compressed, ~0.6 KB) plus
+	  the event stream. Content is referenced by id, never sent.
+	- Client-side prediction for the local hero's steps; host corrects via
       acknowledged intent sequence numbers. Abilities are not predicted.
     - Client disconnect → hero removed (enemies drop it from threat). Host
       disconnect → clients return to the menu with a message.
     - `Net.MAX_PLAYERS` = 4 (M2). Joining sends your saved character; the host
       validates it (`CharacterData.restore`). Each client gets its own snapshot:
-      other heroes' bag, gold, AP, XP and quests are never sent.
-    - The host (or solo player) saves world state (one-time events) to
-      `user://world.json`; each player saves their own character.
+	  other heroes' bag, gold, AP, XP and quests are never sent.
+	- The host (or solo player) saves world state (one-time events) to
+	  `user://world.json`; each player saves their own character.
 15. **HUD** (approved 2026-10-11):
-    - One action bar of 10 slots on 1–9, 0. Cooldown sweep + seconds, GCD sweep.
-      **Pages (post-M2 playtest):** 6 bars of 10 slots, WoW-style. Shift+1–6 (or the
-      arrows) shows that bar; the slot keys fire the shown bar. A panel in the screen's
+	- One action bar of 10 slots on 1–9, 0. Cooldown sweep + seconds, GCD sweep.
+	  **Pages (post-M2 playtest):** 6 bars of 10 slots, WoW-style. Shift+1–6 (or the
+	  arrows) shows that bar; the slot keys fire the shown bar. A panel in the screen's
       bottom-right corner shows the bar number. New abilities fill bar 1 first, then
       bar 2… All pages and the shown page are saved with the layout.
       Tint: blue = not enough mana, red = out of range / no valid target, dark =
@@ -717,14 +722,14 @@ docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, 
     - Sword hero solo vs 1 Wolf: ~8 s, ~50% HP lost (measured after the combat
       revision: 8.5 s, 57%, standing still without dodging). 2 Wolves solo without
       healing is usually lethal; a pair handles 2 Wolves.
-    - Fireball hits ~2× Strike but one Wolf costs ~60% of a staff hero's mana.
-    - Wolf: 230 HP, 50 XP, respawn 30 s. Fireball: 25 + 1.2×MagAtk, 15 mana, 2.5 s cd.
-      Shield: +30 Physical Defense.
-    - Leveling: level 2 after 2 Wolves, level 3 after 6. Starter abilities master
-      at 20 AP (2 level-ups), Resurrect at 30 AP.
-    - Block cuts Wolf bites by ~22% at level 1 (D/(D+K) can never halve damage by
-      doubling D; its share grows with Physical Defense). Block is off the GCD, so
-      using it costs no attack time.
+	- Fireball hits ~2× Strike but one Wolf costs ~60% of a staff hero's mana.
+	- Wolf: 230 HP, 50 XP, respawn 30 s. Fireball: 25 + 1.2×MagAtk, 15 mana, 2.5 s cd.
+	  Shield: +30 Physical Defense.
+	- Leveling: level 2 after 2 Wolves, level 3 after 6. Starter abilities master
+	  at 20 AP (2 level-ups), Resurrect at 30 AP.
+	- Block cuts Wolf bites by ~22% at level 1 (D/(D+K) can never halve damage by
+	  doubling D; its share grows with Physical Defense). Block is off the GCD, so
+	  using it costs no attack time.
 
 ## Milestone 2: the core RPG loop (brief, 2026-10-11)
 
@@ -833,41 +838,41 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
    Boots (Feet, C) → Dash (move 2 tiles forward instantly, 15 s) · Grizzlehide Mantle
    (Chest, Epic, elite drop) → Rallying Roar (allies within 3 tiles +20% attack for 120 s).
 10. **Flanking:** FRONT attacks from the target's side deal +25% damage; from directly
-    behind +50% and they can't miss. Applies to heroes and enemies.
+	behind +50% and they can't miss. Applies to heroes and enemies.
 11. **Enemies (levels 2–4, own areas):** Bandit Brute (2.0 s/tile, slow heavy hits) ·
     Goblin Shaman (casts line bolts, steps back when a hero is within 2 tiles) ·
     Skirmisher (0.6 s/tile, moves to your side or back before attacking).
     **Elite "Old Grizzlehide":** level 5 bear on a patrol loop, ~6× Wolf HP, Cleave +
     Charge, respawn 5 min, drops the Epic mantle and Rares.
 12. **Saving:** plain-data JSON per character in the user folder; several characters per
-    computer. The host validates a joining hero's data (known ids, sane values) but
-    otherwise trusts it.
+	computer. The host validates a joining hero's data (known ids, sane values) but
+	otherwise trusts it.
 13. **Zones (as built in step 7):** `World` holds one `WorldSim` per zone, stepped on a
-    shared clock with shared actor ids. **Map edges** (`ZoneDef.edges`, post-M2
-    playtest): stepping off the map from any walkable tile on a linked side puts you on
-    the matching edge tile of the next zone (row + `offset`; nudged up to 2 tiles along
-    the edge if blocked), still facing the way you walked. Town east edge ↔ Greenfields
-    west edge, offset 13 (town rows 1–16 = Greenfields rows 14–29). Single exit tiles
-    (`ZoneDef.exits`) still exist for doors later. Neither works while you're in combat. Each client only gets
-    its own zone's snapshot and events and rebuilds its map when it changes zone.
-    Town "Millbrook" (18×18) is the start/join zone; its east edge leads to
-    Greenfields' west edge.
+	shared clock with shared actor ids. **Map edges** (`ZoneDef.edges`, post-M2
+	playtest): stepping off the map from any walkable tile on a linked side puts you on
+	the matching edge tile of the next zone (row + `offset`; nudged up to 2 tiles along
+	the edge if blocked), still facing the way you walked. Town east edge ↔ Greenfields
+	west edge, offset 13 (town rows 1–16 = Greenfields rows 14–29). Single exit tiles
+	(`ZoneDef.exits`) still exist for doors later. Neither works while you're in combat. Each client only gets
+	its own zone's snapshot and events and rebuilds its map when it changes zone.
+	Town "Millbrook" (18×18) is the start/join zone; its east edge leads to
+	Greenfields' west edge.
 14. **Ability mechanics (as built in step 11):** shapes ARC (front tile + both sides)
     and AROUND (all tiles within range; ally versions include the caster); buffs can
     slow (multiply the step cooldown) or root (no stepping, abilities still allowed);
-    HEAL_OVER_TIME heals its total in 1 s ticks over the buff's duration; DASH moves
-    the caster forward, stopping at walls, actors and climbs over its Jump; cooldown
-    groups share one cooldown (potions); a debuff on an enemy pulls it onto the
-    caster. Flanking applies to melee (FRONT/ARC) only; projectiles never flank.
+	HEAL_OVER_TIME heals its total in 1 s ticks over the buff's duration; DASH moves
+	the caster forward, stopping at walls, actors and climbs over its Jump; cooldown
+	groups share one cooldown (potions); a debuff on an enemy pulls it onto the
+	caster. Flanking applies to melee (FRONT/ARC) only; projectiles never flank.
 15. **Enemy AI types (as built in step 13, `EnemyDef.behavior`):** MELEE chases and
-    attacks when in reach (Wolf, Brute). KITER steps away when a hero is within
-    `keep_away_distance` (2), otherwise moves to share a row or column with its
-    target within range, turns and shoots. FLANKER paths to a free tile behind or
-    beside its target and strikes from there; in front of its target it keeps
-    circling and strikes head-on only if it hasn't attacked for 2 s (or can't get around).
-    All types act on positions seen `reaction_seconds` ago and stay inside their leash.
+	attacks when in reach (Wolf, Brute). KITER steps away when a hero is within
+	`keep_away_distance` (2), otherwise moves to share a row or column with its
+	target within range, turns and shoots. FLANKER paths to a free tile behind or
+	beside its target and strikes from there; in front of its target it keeps
+	circling and strikes head-on only if it hasn't attacked for 2 s (or can't get around).
+	All types act on positions seen `reaction_seconds` ago and stay inside their leash.
 16. **Elite and patrols (as built in step 14):** `EnemySpawn.patrol` lists waypoints an
-    idle enemy walks in a loop at `patrol_step_seconds` per tile. Any enemy's leash
+	idle enemy walks in a loop at `patrol_step_seconds` per tile. Any enemy's leash
     anchor is where it was pulled, so a patroller walks back there after evading and
     resumes its route. Elites (`EnemyDef.elite`) are drawn 1.6× bigger with a gold
     outline and "Elite" before the name (and on the unit frame).
@@ -875,39 +880,39 @@ F. Quests: 15 quest system · 16 quest UI (markers, dialogue, log, tracker) · 1
     (giver and turn-in NPC, prerequisites, minimum level, objectives, XP/gold/item
     rewards, optional choice of one item, optional world flag) with `QuestObjective`s
     of kind KILL, COLLECT, TALK or REACH. Accept and hand in by talking to the NPC
-    (within 2 tiles). COLLECT counts what's in your bag and takes it at turn-in;
-    quest drops (`LootEntry.quest_id`) only roll while you still need them.
-    **Shared progress:** kill, talk and reach credit goes to every hero on the
-    quest who is on the enemy's threat table or within 15 tiles of the event, in
-    the same zone. Turn-in is refused (nothing lost) if the rewards don't fit in the
-    bag. Abandoning forgets progress. Progress is saved with the character; the host
-    saves world flags. Quests are not repeatable.
+	(within 2 tiles). COLLECT counts what's in your bag and takes it at turn-in;
+	quest drops (`LootEntry.quest_id`) only roll while you still need them.
+	**Shared progress:** kill, talk and reach credit goes to every hero on the
+	quest who is on the enemy's threat table or within 15 tiles of the event, in
+	the same zone. Turn-in is refused (nothing lost) if the rewards don't fit in the
+	bag. Abandoning forgets progress. Progress is saved with the character; the host
+	saves world flags. Quests are not repeatable.
 18. **Quest UI (as built in step 16):** NPCs show a yellow "!" when they have a quest
-    you can accept and "?" when you can hand one in to them. Talking opens the dialogue
-    with one option per quest: "! Title" (offer page with objectives, rewards, Accept
-    / Not now), "… Title (in progress)" and "? Title (complete)" (rewards; with a
-    choice, one button per item, hover for its tooltip). Quest log on L (active
-    quests, details, Abandon). The tracker on the right edge lists every active
-    quest's objectives, turning gold with "Return to …" when done. Quest messages go
+	you can accept and "?" when you can hand one in to them. Talking opens the dialogue
+	with one option per quest: "! Title" (offer page with objectives, rewards, Accept
+	/ Not now), "… Title (in progress)" and "? Title (complete)" (rewards; with a
+	choice, one button per item, hover for its tooltip). Quest log on L (active
+	quests, details, Abandon). The tracker on the right edge lists every active
+	quest's objectives, turning gold with "Return to …" when done. Quest messages go
     to the message log.
 19. **World events (as built in step 17):** a quest can set a world flag on hand-in
     (`QuestDef.sets_world_flag`, once per world, with an announcement). Flags are sent
     to clients in every snapshot; NPCs can swap their greeting per flag
     (`NpcDef.flag_greetings`). Quest items (`ItemDef.quest_item`) show "Quest item" and
-    can't be sold.
+	can't be sold.
 20. **Polish (step 18):** a "Leave game" button saves and returns to the menu;
-    enemy projectiles are purple (heroes' orange); a quest's prerequisites are checked
-    before its level, so a locked chain quest says "finish an earlier quest first".
+	enemy projectiles are purple (heroes' orange); a quest's prerequisites are checked
+	before its level, so a locked chain quest says "finish an earlier quest first".
 21. **Readability (post-M2 playtest):** an "[E] Talk" prompt sits over the townsperson
-    E would talk to; NPC "!"/"?" markers are bigger. Named places (`ZoneDef.landmarks`)
-    get a red banner and a gold name on the map, and the tiles of an unfinished
-    "reach" objective in your zone glow yellow. Names, health bars and markers are
-    drawn last so terrain never covers them; floating combat texts that pop up
-    together on one character stack instead of overlapping, and every name, marker and
-    floating text is nudged up so none overlap. The quest tracker has a dark backdrop,
-    sits behind every window and hides while one covers it. The message log wraps left
-    of the action bar. The default font lacks ◀ ▶ ⚔ ✓, so the UI uses < > [combat]
-    and "(done)" instead. Checked on real renders (`tests/visual/shots.tscn`).
+	E would talk to; NPC "!"/"?" markers are bigger. Named places (`ZoneDef.landmarks`)
+	get a red banner and a gold name on the map, and the tiles of an unfinished
+	"reach" objective in your zone glow yellow. Names, health bars and markers are
+	drawn last so terrain never covers them; floating combat texts that pop up
+	together on one character stack instead of overlapping, and every name, marker and
+	floating text is nudged up so none overlap. The quest tracker has a dark backdrop,
+	sits behind every window and hides while one covers it. The message log wraps left
+	of the action bar. The default font lacks ◀ ▶ ⚔ ✓, so the UI uses < > [combat]
+	and "(done)" instead. Checked on real renders (`tests/visual/shots.tscn`).
 
 ## Milestone 3: ability, mastery and targeting systems (brief, 2026-10-12)
 
@@ -939,8 +944,8 @@ upload landed at the repo root as `Ability_Tree_1.xlsx`.)
 - Mastery gain per ability, from the sheet:
   - Mastery on Learn: one-time bonus when the ability is mastered (full AP).
   - Mastery per Use: each use against an enemy at or near the hero's level (configurable;
-    default within 3 levels below or any level above). Heals and buffs count when used
-    during combat.
+	default within 3 levels below or any level above). Heals and buffs count when used
+	during combat.
   - Per-use Mastery stops once that ability has contributed its Mastery Cap in total.
 - Item per-level growth may include Mastery. Gear-bonus Mastery boosts ability power but
   does NOT count toward unlocking tiers; only permanent Mastery does.
@@ -1039,62 +1044,62 @@ F. 15 debug console · 16 docs + playtest checklist.
 8. **Haste:** −25% step cooldown, ability cooldowns and GCD while active (tunable).
 9. **Healing / resurrect:** Water only; resurrection returns at Water Tier 3 (Revive).
 10. **AP:** 10 per level-up plus a little per kill, to the learning item only. AP to
-    master by tier: 20 / 30 / 40 / 50 / 50 (T1–T5).
+	master by tier: 20 / 30 / 40 / 50 / 50 (T1–T5).
 11. **Casting:** moving during a cast, channel or wind-up (anything with a cast bar)
-    cancels it (cooldown not spent; changed 2026-10-16, wind-ups used to hold you in place).
-    Enemies stand still while their cast bar shows and never start an attack mid-step.
+	cancels it (cooldown not spent; changed 2026-10-16, wind-ups used to hold you in place).
+	Enemies stand still while their cast bar shows and never start an attack mid-step.
 12. **Importer:** GDScript run by Godot, no Python needed.
 13. **Ability data (as built in step 1):** `tools/import_ability_tree.gd` (with
-    `tools/xlsx_reader.gd`, `tools/ability_tree_importer.gd`) writes one data file,
-    `content/tree/ability_tree.json` (tiers, trees, abilities, items, rules text), loaded
-    as `ContentDB.tree` (`AbilityTreeData`). Ability ids are the sheet IDs (F01…); item
-    ids are slugs of the item names. Per-ability behavior will live in
-    `content/tree/behaviors/` so re-importing never touches it. A test fails if the JSON
-    is older than the spreadsheet. How-to: `docs/ability-import.md`.
+	`tools/xlsx_reader.gd`, `tools/ability_tree_importer.gd`) writes one data file,
+	`content/tree/ability_tree.json` (tiers, trees, abilities, items, rules text), loaded
+	as `ContentDB.tree` (`AbilityTreeData`). Ability ids are the sheet IDs (F01…); item
+	ids are slugs of the item names. Per-ability behavior will live in
+	`content/tree/behaviors/` so re-importing never touches it. A test fails if the JSON
+	is older than the spreadsheet. How-to: `docs/ability-import.md`.
 14. **Mastery stats (as built in step 2):** 7 new stats (Fire, Earth, Water, Air, Sword,
-    Bow, Hammer Mastery) after the 12 combat stats, so items and item growth can carry
-    them. `Mastery.permanent` = base + growth (Mastery earned from learning and using
-    abilities is added to growth, so it saves with the character); `Mastery.total` adds
-    gear and buffs. The character sheet lists each tree's Mastery with the gear part.
+	Bow, Hammer Mastery) after the 12 combat stats, so items and item growth can carry
+	them. `Mastery.permanent` = base + growth (Mastery earned from learning and using
+	abilities is added to growth, so it saves with the character); `Mastery.total` adds
+	gear and buffs. The character sheet lists each tree's Mastery with the gear part.
 15. **Learning (as built in step 3):** `TreeContent` builds the game's 145 tree
-    abilities and items from the imported data (+ `content/tree/tuning.tres`: AP by
-    tier, rarity, prices, weapon stats/growth by tier, weapons grow their tree's Mastery
+	abilities and items from the imported data (+ `content/tree/tuning.tres`: AP by
+	tier, rarity, prices, weapon stats/growth by tier, weapons grow their tree's Mastery
     a little). `TreeRules`: unlock checks, the learning slot (`learn` / `stop_learning`
     intents, out of combat; a scroll moves from the bag into the slot, a worn weapon can
     be designated; taking that weapon off empties the slot), AP to the learning item
     only, Mastery on Learn, per-use Mastery. Choices made here:
-    - A locked ability (tier Mastery or prerequisites not met) can't be used either,
-      even from a worn weapon; otherwise tiers would mean nothing for weapons.
-    - The Mastery Cap counts the learn bonus: per-use gains stop at cap − what the
-      ability already gave; the learn bonus itself is always granted.
-    - Per-use Mastery also accrues while still learning the ability.
-    - A use counts once, judged from what it did: it affected an enemy at most 3 levels
-      below (`CombatRules.mastery_level_window_below`) or any level above, or it
-      healed/buffed while the caster was in combat.
+	- A locked ability (tier Mastery or prerequisites not met) can't be used either,
+	  even from a worn weapon; otherwise tiers would mean nothing for weapons.
+	- The Mastery Cap counts the learn bonus: per-use gains stop at cap − what the
+	  ability already gave; the learn bonus itself is always granted.
+	- Per-use Mastery also accrues while still learning the ability.
+	- A use counts once, judged from what it did: it affected an enemy at most 3 levels
+	  below (`CombatRules.mastery_level_window_below`) or any level above, or it
+	  healed/buffed while the caster was in combat.
 16. **Power formula (as built in step 4):** `AbilityPower` with constants in
-    `CombatRules` ("Ability power"): amount = (base + Σ coefficient × stat) × (1 +
-    Mastery × 0.001); durations × (1 + Mastery × 0.0005); charges = base + floor(Mastery
-    / per-charge). Mastery = total in the ability's tree (gear counts for power).
+	`CombatRules` ("Ability power"): amount = (base + Σ coefficient × stat) × (1 +
+	Mastery × 0.001); durations × (1 + Mastery × 0.0005); charges = base + floor(Mastery
+	/ per-charge). Mastery = total in the ability's tree (gear counts for power).
     Tree effects can use the tier default base (damage 10/18/30/45/65, heal
-    14/24/38/55/80 by tier) and the sheet's Scales With stats at 1.0 each; Crit Rate
-    in Scales With affects crits, not the amount.
+	14/24/38/55/80 by tier) and the sheet's Scales With stats at 1.0 each; Crit Rate
+	in Scales With affects crits, not the amount.
 17. **Tile geometry (as built in step 5):** `TileGeometry`: square distance, square
-    areas and rings, `snap8`, 8-way lines, any-angle lines (one tile per step along the
-    longer axis, continuing past the aim point), cones (row k is 2k−1 wide), line
-    clipping (a tile more than the LOS tolerance above the shooter, or the map edge,
-    stops it; water doesn't), and push/pull paths that stop before walls, water, units
-    and climbs over the unit's Jump (drops allowed), reporting what stopped them.
+	areas and rings, `snap8`, 8-way lines, any-angle lines (one tile per step along the
+	longer axis, continuing past the aim point), cones (row k is 2k−1 wide), line
+	clipping (a tile more than the LOS tolerance above the shooter, or the map edge,
+	stops it; water doesn't), and push/pull paths that stop before walls, water, units
+	and climbs over the unit's Jump (drops allowed), reporting what stopped them.
 18. **Targeting (as built in step 6):** `AbilityDef.targeting` (LEGACY for the old
-    shapes; TARGETED / SKILLSHOT / GROUND / SELF) resolved by `CastResolver`. Cast
-    intents carry an optional `aim` (tile coordinates, any angle). Skillshots: instant,
-    flying (`projectile_speed`, `pierce`) or lobbed (`arc_seconds`, lands on the aimed
-    tile over obstacles); `aim` ANY_ANGLE or EIGHT_WAY; `line_shape` LINE or CONE.
-    Ground/self areas are squares (`area_radius`); ground can be telegraphed
-    (`telegraph_seconds`). Units count as on a tile if they were there within
-    `skillshot_grace_seconds` (0.1) — for skillshots only. No hit roll; crits roll.
-    Telegraphs/lobs are sent to clients (`telegraphs` in the snapshot). Dodge warnings
-    print at load in debug builds. Choices made here:
-    - Ground abilities don't need line of sight (only range); "at that moment" means no
+	shapes; TARGETED / SKILLSHOT / GROUND / SELF) resolved by `CastResolver`. Cast
+	intents carry an optional `aim` (tile coordinates, any angle). Skillshots: instant,
+	flying (`projectile_speed`, `pierce`) or lobbed (`arc_seconds`, lands on the aimed
+	tile over obstacles); `aim` ANY_ANGLE or EIGHT_WAY; `line_shape` LINE or CONE.
+	Ground/self areas are squares (`area_radius`); ground can be telegraphed
+	(`telegraph_seconds`). Units count as on a tile if they were there within
+	`skillshot_grace_seconds` (0.1) — for skillshots only. No hit roll; crits roll.
+	Telegraphs/lobs are sent to clients (`telegraphs` in the snapshot). Dodge warnings
+	print at load in debug builds. Choices made here:
+	- Ground abilities don't need line of sight (only range); "at that moment" means no
       grace window for telegraphs.
     - Casting turns the caster (4-way facing) toward the target or aim point.
     - Melee for flanking = Targeted enemy abilities with range 1.
@@ -1107,24 +1112,24 @@ F. 15 debug console · 16 docs + playtest checklist.
     tree) and free steps (Air Step). Durations of tree buffs scale with Mastery.
     `AbilityDef` gains `cast_seconds` (only the GCD is taken at the start; mana and
     cooldown when it goes off; moving, a stun, an interrupt or a Targeted target
-    leaving range/LOS cancels it), `windup_seconds` (paid up front; the caster can't
-    move; the target can step away), `channel_seconds` + `channel_tick_seconds` (paid
-    up front, resolves each tick, moving/stun/interrupt ends it), and charges
-    (`charges_base` + 1 per `mastery_per_charge` tree Mastery, recharging one at a
-    time). Casts in progress are shown to clients (`cast` in each actor's snapshot).
+	leaving range/LOS cancels it), `windup_seconds` (paid up front; the caster can't
+	move; the target can step away), `channel_seconds` + `channel_tick_seconds` (paid
+	up front, resolves each tick, moving/stun/interrupt ends it), and charges
+	(`charges_base` + 1 per `mastery_per_charge` tree Mastery, recharging one at a
+	time). Casts in progress are shown to clients (`cast` in each actor's snapshot).
     Choices made here: interrupts cancel casts, channels and (since 2026-10-15) wind-ups; damage
-    doesn't push back casts; a damage bonus (Kindle) is fixed when the ability goes off
-    and its charge is used then (wind-ups/channels: at the start).
+	doesn't push back casts; a damage bonus (Kindle) is fixed when the ability goes off
+	and its charge is used then (wind-ups/channels: at the start).
 20. **Effects part 2 (as built in step 8):** effects say who they apply to
-    (`AbilityEffect.applies`: each unit hit, the CASTER once, or the cast's AREA once).
+	(`AbilityEffect.applies`: each unit hit, the CASTER once, or the cast's AREA once).
     New kinds: KNOCKBACK / PULL (8-way slide; stops before walls, water, units and
-    climbs over the unit's Jump; optional impact damage when stopped; a pull stops
-    next to the caster; waves can push along the cast direction), DASH_TO (caster
-    slides toward the aim, stopping next to a unit; with `hit_range` 1 a Lunge then
-    strikes only if it got there), LEAP (over anything onto a free walkable tile) and
-    BLINK (instant), TERRAIN (raise/lower the area by N levels for a while, never
-    below 0; units ride up with it; walls make tiles impassable, built across the
-    caster's facing through the aimed tile, 3 tiles + 1 per `mastery_per_extra`,
+	climbs over the unit's Jump; optional impact damage when stopped; a pull stops
+	next to the caster; waves can push along the cast direction), DASH_TO (caster
+	slides toward the aim, stopping next to a unit; with `hit_range` 1 a Lunge then
+	strikes only if it got there), LEAP (over anything onto a free walkable tile) and
+	BLINK (instant), TERRAIN (raise/lower the area by N levels for a while, never
+	below 0; units ride up with it; walls make tiles impassable, built across the
+	caster's facing through the aimed tile, 3 tiles + 1 per `mastery_per_extra`,
     skipping occupied tiles) and ZONE (a ground zone that applies `zone_ability` to
     whoever stands in it every tick). `BuffDef` counters: `negate_hits` (Parry, uses a
     charge each), `reflect_fraction`, `counter_ability` (used for free on the
@@ -1139,27 +1144,27 @@ F. 15 debug console · 16 docs + playtest checklist.
     `AbilityEffect.lifesteal` (Leeching Tide 50%) and `max_extra` (Raise Pillar: 2
     levels from 500 Earth Mastery, never 3). Starting numbers I chose (step 11 tunes
     them): element spells cost 5–15 mana, weapon arts none; Kindle +30% for 3 Fire
-    casts within 20 s and doesn't use its own charge; Haste (Flow State) −25%;
-    chills ×1.5 step time; Tidal Blessing +20 Physical and Magic Defense; Fire Kick
-    burn and Flame Dash trail 3 s; Air Blast impact 25; projectiles 12–16 tiles/s.
-    Seismic Stomp is a one-off taunt (top threat + 10%), not a 4 s forced target.
-    Soothing Mist uses range 4 (Targeting Details), not 3 (Effect text).
+	casts within 20 s and doesn't use its own charge; Haste (Flow State) −25%;
+	chills ×1.5 step time; Tidal Blessing +20 Physical and Magic Defense; Fire Kick
+	burn and Flame Dash trail 3 s; Air Blast impact 25; projectiles 12–16 tiles/s.
+	Seismic Stomp is a one-off taunt (top threat + 10%), not a 4 s forced target.
+	Soothing Mist uses range 4 (Targeting Details), not 3 (Effect text).
 22. **Old content converted (as built in step 10):** the M1/M2 weapons and accessories
-    (Sword, Staff, Shield, Holy Charm, Hunting Bow, Greataxe) are `retired`: never
-    handed out, and removed from characters when they load; the old abilities stay on
-    disk only as engine test fixtures (`tests/fixtures/legacy_adventurer.tres` keeps the
-    M1 kit for tests). The six armor pieces teach nothing now. Content refers to tree
-    items by id (`item_id`, `sells_ids`, `reward_*_ids`, `starting_*_ids`), linked by
-    ContentDB at load. New heroes: Rusty Shortsword in hand, Ember Fist Scroll in the
-    learning slot, Mender's Scroll in the bag. A character from before M3 loses retired
+	(Sword, Staff, Shield, Holy Charm, Hunting Bow, Greataxe) are `retired`: never
+	handed out, and removed from characters when they load; the old abilities stay on
+	disk only as engine test fixtures (`tests/fixtures/legacy_adventurer.tres` keeps the
+	M1 kit for tests). The six armor pieces teach nothing now. Content refers to tree
+	items by id (`item_id`, `sells_ids`, `reward_*_ids`, `starting_*_ids`), linked by
+	ContentDB at load. New heroes: Rusty Shortsword in hand, Ember Fist Scroll in the
+	learning slot, Mender's Scroll in the bag. A character from before M3 loses retired
     gear and old mastered abilities/AP, keeps everything else, and gets that kit.
     Hilda sells potions, Iron Helm, Swift Boots and the 20 implemented tier-1 scrolls and
     weapons. Tier-2 scrolls drop in Greenfields (Wolf 2%, Shaman/Skirmisher 4%, Brute
-    4–5%, Grizzlehide 15%); Goblin Fetishes offers Hunter's Shortbow instead of the
-    Hunting Bow; The Beast of Greenfields offers the Fireball, Glacier or Bulwark scroll.
-    Enemies: Bite/Quick Slash wind up 0.3 s, Crushing Blow 0.6 s (Targeted range 1;
-    enemy melee still rolls Accuracy vs Evasion); Shadow Bolt is an any-angle skillshot
-    aimed where the Shaman saw you, so it no longer lines up on rows; Grizzlehide's Cleave
+	4–5%, Grizzlehide 15%); Goblin Fetishes offers Hunter's Shortbow instead of the
+	Hunting Bow; The Beast of Greenfields offers the Fireball, Glacier or Bulwark scroll.
+	Enemies: Bite/Quick Slash wind up 0.3 s, Crushing Blow 0.6 s (Targeted range 1;
+	enemy melee still rolls Accuracy vs Evasion); Shadow Bolt is an any-angle skillshot
+	aimed where the Shaman saw you, so it no longer lines up on rows; Grizzlehide's Cleave
     is a 0.4 s wound-up cone on the 3 tiles in front, and Charge marks a tile 2–4 away
     for 1 s (sent to clients as a telegraph), then rushes there and mauls whoever stands
     on it.
@@ -1182,18 +1187,18 @@ F. 15 debug console · 16 docs + playtest checklist.
       (~21 s).
     - The dodge warning counts wind-up time as time to react.
 24. **Aiming UI (as built in step 12):** pressing a Skillshot or Ground ability's key
-    starts aiming; the exact tiles it would affect are highlighted (blue; red when out
-    of range or line of sight; a dart's line stops at the first enemy, Earth Wall shows
+	starts aiming; the exact tiles it would affect are highlighted (blue; red when out
+	of range or line of sight; a dart's line stops at the first enemy, Earth Wall shows
     its wall, Flame Dash its path), following the mouse, or the targeted enemy until
     the mouse moves. Releasing the key casts at that point. Clicking such an ability
     on the bar aims until a left click on the map. Esc or a right click cancels.
     Targeted abilities use the current target (ally abilities fall back to self) and
-    Self abilities fire at once. Enemy telegraphs (Fireball-style areas, Grizzlehide's
-    Charge) flash red, brighter as they land; ground zones are orange; units casting,
-    winding up or channelling show a bar (yellow / red / blue) with the ability name.
-    Slot tint for aimed abilities ignores range (you can aim elsewhere).
+	Self abilities fire at once. Enemy telegraphs (Fireball-style areas, Grizzlehide's
+	Charge) flash red, brighter as they land; ground zones are orange; units casting,
+	winding up or channelling show a bar (yellow / red / blue) with the ability name.
+	Slot tint for aimed abilities ignores range (you can aim elsewhere).
 25. **Ability tree screen (as built in step 13):** T (or the "Trees (T)" button) opens a
-    window with a tab per tree. The header shows the tree's permanent Mastery (and the
+	window with a tab per tree. The header shows the tree's permanent Mastery (and the
     gear bonus, power only) and the tier thresholds; each tier row says "open" or
     "needs N". Ability nodes are colored by state: blue = learning (its item is in the
     learning slot / wielded), gold = mastered, white = can learn now, grey = locked
@@ -1206,24 +1211,25 @@ F. 15 debug console · 16 docs + playtest checklist.
     click it or drag it to the bag to stop. The item being learned has a blue "L" and an
     AP bar wherever it shows (slot or worn weapon). Item tooltips say where a tree item
     stands: in your learning slot, how to learn it, locked (and why), mastered, or not
-    in the game yet; a scroll's growth reads "per level while in your learning slot".
-    The character sheet marks which in-progress ability is being learned. With the slot
-    empty, the weapon in hand learns automatically (since 2026-10-15). The right-
-    hand windows now sit side by side (stacked, they ran off a 720p screen).
+	in the game yet; a scroll's growth reads "per level while in your learning slot".
+	The character sheet marks which in-progress ability is being learned. With the slot
+	empty, the weapon in hand learns automatically (since 2026-10-15). The right-
+	hand windows now sit side by side (stacked, they ran off a 720p screen).
 27. **Debug console (as built in step 15):** ` opens it (Esc or ` closes; Up/Down recall
-    earlier lines). Commands are sent as a `debug` intent and run by the host on your own
-    hero, only when the host allows it: debug builds (editor runs, debug exports)
-    allow it for everyone in the session, release builds refuse it. Commands: `help`,
-    `level <n>` (levelling up applies growth and AP), `mastery <tree> <n>` (permanent),
-    `ap <n>` (to the learning item), `master <ability>` (id or "name"), `spawn <enemy>
-    [level] [n]` (next to you; ±15% HP/attack/defense and XP per level from the type's
-    own; spawned enemies don't respawn), `heal` (and resets cooldowns), `gold <n>`.
-    Enemies now carry their own level (shown and used for XP and Mastery-per-use).
-    Typing in the console doesn't walk.
+	earlier lines). Commands are sent as a `debug` intent and run by the host on your own
+	hero, only when the host allows it: debug builds (editor runs, debug exports)
+	allow it for everyone in the session, release builds refuse it. Commands: `help`,
+	`level <n>` (levelling up applies growth and AP), `mastery <tree> <n>` (permanent),
+	`ap <n>` (to the learning item), `master <ability>` (id or "name"), `spawn <enemy>
+	[level] [n]` (next to you; ±15% HP/attack/defense and XP per level from the type's
+	own; spawned enemies don't respawn), `heal` (and resets cooldowns), `gold <n>`.
+	Enemies now carry their own level (shown and used for XP and Mastery-per-use).
+	Typing in the console doesn't walk.
 
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-21 | Fixed: the drake froze and the game lagged in its fight. Large bodies chase to "body beside the target"; a failed chase search waits 0.5 s; chase searches stop at 1024 tiles | User report (lag 2 s into the drake fight). Cause: it pathed onto the hero's tile, which its body never reaches, so every tick ran a failed whole-map search (~170 ms). The 0.5 s wait and 1024-tile limit (`EnemyBrain.CHASE_RETRY_SECONDS`, `CHASE_SEARCH`) are mine, for every enemy. The drake is now much harder (level-7 group ~17%, target 50%); user: don't change it, it will be retuned later, so that test target is pending. |
 | 2026-10-21 | Empty zones sleep after 30 s: only their clock runs | User request ("skip empty map simulation", on the `optimised-build-1` branch). My choices: the clock keeps running so timers (respawns, buffs, ground fire) run out on time and the shared clock (read from town) stays right; things due meanwhile happen on the first tick after a hero arrives; patrols and evading enemies wait where they are; the 30 s wait (`empty_zone_sleep_seconds`, tunable) lets a fight that was just left settle first. See **Performance**. |
 | 2026-10-21 | Terrain cache: the ground is drawn once; each frame only actors and highlights, with the tiles in front redrawn inside a box around each | User request (lag on large maps; test on a separate branch, `optimised-build-1`). Cause measured: every tile redrawn every frame, off-screen too. Exact same picture, checked on all 42 screenshots. Placeholder (non-tileset) maps still draw in full. See **Performance**. |
 | 2026-10-20 | Drake playtest fixes: 5-tile body (a plus), SW/SE swapped, harder hits, the dive sweeps 3 lanes | User requests. My choices: the body blocks movement as well as being hit; ranges are measured body to body; it can't be knocked back (Air knockbacks still ground it); the dive shoves 2 tiles to the side the unit was on; damage roughly ×1.5 on every attack; the drake stays level 6, so bots that never dodge now need level 7 (dodging players should manage at 6). |
