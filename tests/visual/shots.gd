@@ -184,14 +184,15 @@ func _run() -> void:
 	hero.hp = 100.0
 	hero.move.place(Vector2i(17, 15))
 	await _shot("11c_behind_boulder")
-	# 11. Hilda's shop, scrolled.
+	# 11. Hilda's shop (its own sheet) beside the inventory in the menu book.
 	session.world.move_hero(hero.id, &"town", Vector2i(8, 8))
 	var town := session.world.zone(&"town")
 	var hilda: Npc = town.npcs().filter(func(n): return n.def.id == &"hilda")[0]
 	hud.vendor_window.open(hilda)
-	hud.vendor_window.visible = true
+	hud.inventory_window.visible = true
 	await _shot("12_shop")
-	hud.vendor_window.visible = false
+	hud.vendor_window.close()
+	hud.close_menus()
 	hud.dialogue.visible = false
 	# 12. Standing right behind an Earth Wall (the wall runs along the grid's y axis).
 	hero.alive = true

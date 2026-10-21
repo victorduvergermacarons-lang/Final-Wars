@@ -177,8 +177,11 @@ func _build() -> void:
 	_spellbook.visible = false
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
-	for w in [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log]:
+	for w in [_character, inventory_window, loot_window, _spellbook, quest_log]:
 		book.spread.add_child(w)
+	# The shop is a sheet of its own, above the book, so it stays open beside
+	# your inventory.
+	_root.add_child(vendor_window)
 
 	# Debug console (`), top centre.
 	console = DebugConsole.new(self)
@@ -255,6 +258,8 @@ func _build() -> void:
 	_log.add_theme_constant_override("outline_size", 4)
 	_log.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_log)
+	# The shop sheet over everything else (the log runs behind it).
+	_root.move_child(vendor_window, -1)
 
 
 func _process(_delta: float) -> void:
@@ -343,7 +348,7 @@ func _toggle(panel: Control) -> void:
 
 ## The windows written in the book.
 func _book_windows() -> Array[Control]:
-	return [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log, trees_window]
+	return [_character, inventory_window, loot_window, _spellbook, quest_log, trees_window]
 
 
 ## Shows the book while a menu is open. Each menu fills both pages, so one is
@@ -372,10 +377,7 @@ func close_menus() -> void:
 
 
 func _close_menu(w: Control) -> void:
-	if w == vendor_window:
-		vendor_window.close()
-	else:
-		w.visible = false
+	w.visible = false
 
 
 func _on_bar_changed() -> void:
@@ -460,7 +462,11 @@ func _on_events(events: Array) -> void:
 func _tracker_covered() -> bool:
 	if book.visible:
 		return true
-	return dialogue.visible and dialogue.get_global_rect().intersects(_tracker.get_global_rect())
+	var area := _tracker.get_global_rect()
+	for w in [dialogue, vendor_window]:
+		if w.visible and w.get_global_rect().intersects(area):
+			return true
+	return false
 
 
 ## "!" / "?" over quest givers, for the local hero.
@@ -476,7 +482,9 @@ func _update_quest_markers(hero: Hero) -> void:
 func _on_dialogue_opened(npc: Npc) -> void:
 	QuestDialogue.add_options(self, npc)
 	if not npc.def.sells.is_empty():
-		dialogue.add_option("Browse goods", func(): vendor_window.open(npc)) # its right page is your bag
+		dialogue.add_option("Browse goods", func():
+			vendor_window.open(npc)
+			inventory_window.visible = true) # your bag, to sell from
 
 
 func _small_button(text: String, on_press: Callable) -> Button:

@@ -384,8 +384,8 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   and icons to come). Only **Layer 1** is used, exported to `assets/ui/menu_book.png`
   (480×270) with Aseprite's command line:
   `Aseprite.exe -b --layer "Layer 1" art/menu_book.aseprite --save-as assets/ui/menu_book.png`
-- **`BookView`** (`ui/book_view.gd`): draws the book centred at the largest whole number
-  of screen pixels per art pixel (4× at 1080p: full screen; 2× in a 1280×720 window).
+- **`BookView`** (`ui/book_view.gd`): draws the book filling the screen (the 1280×720 UI:
+  exactly 4 screen pixels per art pixel at 1080p; uneven art pixels in other windows).
   Writable areas measured on the art: left page (66, 46, 166×174), right page
   (250, 46, 158×174), and the spread over both. A Close button sits above the right
   page.
@@ -400,7 +400,6 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   | Character (C) | name with level and XP beside it, stat table | Mastery, learning slot, abilities | what Mastery does |
   | Spellbook (P) | title, first part of the list | the rest | drag onto the bar |
   | Quests (L) | quest list | the selected quest (scrolls), Abandon | |
-  | Shop | the trader's goods | your bag | right-click sells |
   | Loot | waiting loot | your bag | bag was full |
   | Trees (T) | title, tabs, tier 1–3 columns | Mastery line, tier 4–5 columns | drag onto the bar |
 
@@ -409,11 +408,17 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   The book shows while a menu is open, under the rest of the HUD (unit frames, action
   bar, menu buttons stay on top), and blocks clicks to the world. The quest tracker hides.
   New loot opens the loot menu once; closed, it stays closed until more loot comes.
-- **Sharp text:** menus are laid out for the book at 1080p (`BookView.REF_ART_SCALE`)
-  and the whole menu is scaled to the book's real size: exactly 1 at 1080p, so nothing
-  is resampled. (Pages used to shrink their content by a fraction when it was slightly
-  too big, which blurred the text.) Content too tall for its page is cut at the page
-  bottom; long lists scroll.
+- **Sharp text in any window:** the book always fills the UI, so menus are drawn at
+  their real size (scale 1) and never resampled. (Earlier: pages shrank slightly
+  too-big content by a fraction, and a 1280×720 window drew the book at 2× and every
+  menu at 75%; both blurred the text.) The cost: outside 1080p the art pixels are
+  uneven (2 or 3 screen pixels at 720p). Content too tall for its page is cut at the
+  page bottom; long lists scroll.
+- **The shop is its own sheet** (`VendorWindow`, a paper panel apart from the book):
+  open together with the book. Talking to a trader opens it and your inventory; sell
+  with a right-click in the bag. Drag it by its title; it has its own Close button, and
+  closes when the conversation ends. Its goods list fits between where it sits and the
+  action bar.
 - **Moving the book:** drag its top edge (move cursor) to move it in the window; part of
   the top edge always stays on screen (`KEEP_VISIBLE`). The book stays where you put it
   while the game runs.
@@ -1280,6 +1285,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-21 | The book always fills the screen; the shop is a separate, draggable paper sheet open beside the book | User report (text still blurred in a 1280×720 window) and request (trading separate from inventory/character/trees, both open). Cause: at 720p the book was drawn at 2× and menus at 75%. Trade-off chosen: sharp text in any window over whole-pixel art outside 1080p. My choices: the shop opens with your inventory in the book, starts at the screen's left over the equipment page, has its own Close, and sits above the message log. |
 | 2026-10-21 | Book menus: sharp text, trees left to right (tiers 1–3 left, 4–5 right), level and XP beside the name, equipment centred, how-to hints as footnotes, tighter spacing, the book can be dragged by its top edge | User requests (text looked aliased in trees, character, inventory and quest details). Cause: pages shrank slightly-too-big content by a fraction, resampling the text; menus are now laid out at the 1080p size and never shrunk at 1080p. My choices: footnotes on the right page; while an ability is learned its tree node shows AP only (Mastery in its tooltip) so two lines fit; the tree header shows only your Mastery (tier needs head each column); the book can move partly off screen but its top edge stays reachable; its place isn't saved between sessions. |
 | 2026-10-21 | Each menu fills both pages of the book, one at a time; all book text bigger | User request (e.g. inventory: worn items left, bag right; text hard to read). My choices: the split for each menu (table in **Menu book**); the shop and loot menus show your bag on their right page (the shop no longer opens the inventory beside it); text 20 / titles 28 / notes 17; 64 px item slots with two-line names; the trees laid out for 1080p and scaled as a whole. Screenshot test: `SHOTS_RESOLUTION=1920x1080` (Godot keeps `--resolution` from the script), new shots of the character sheet and spellbook. |
 | 2026-10-21 | Menus are written in the user's pixel-art book (Layer 1 only), ink on parchment | User request, as a first test (the art is unfinished). User choices: ink on parchment (not dark boxes on the pages); a new branch `ui-book-menus` from `optimised-build-1`. My choices: two windows at a time (older left, newer right, a third closes the oldest); trees across both pages; whole-pixel book scale; oversized windows scaled down to fit a page; a Close button; HUD bars and buttons stay on top; tracker, dialogue box and tooltips on paper so every coloured text reads as ink. See **Menu book**. |

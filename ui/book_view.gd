@@ -1,9 +1,8 @@
 class_name BookView
 extends Control
 ## The menu book (assets/ui/menu_book.png, Layer 1 of art/menu_book.aseprite)
-## drawn at the largest whole number of screen pixels per art pixel that fits
-## (4 at 1080p: the 480×270 art fills the screen), centred, and moved by
-## dragging its top edge. Menus go on its pages: a BookSpread in `spread` uses
+## filling the screen (exactly 4 screen pixels per art pixel at 1080p), and moved
+## by dragging its top edge. Menus go on its pages: a BookSpread in `spread` uses
 ## both pages; `left_page` / `right_page` hold content laid out by its own
 ## anchors (main menu). Uses the paper theme.
 
@@ -116,8 +115,10 @@ func _layout() -> void:
 	_stretch = minf(window.x / maxf(view.x, 1.0), window.y / maxf(view.y, 1.0))
 	if _stretch <= 0.0:
 		_stretch = 1.0
-	var screen_scale := maxf(1.0, floorf(minf(window.x / ART_SIZE.x, window.y / ART_SIZE.y)))
-	art_scale = screen_scale / _stretch
+	# The book fills the 1280×720 UI, so menus are drawn at their real size (sharp
+	# text) whatever the window. At 1080p that is exactly 4 screen pixels per art
+	# pixel; other window sizes give uneven art pixels rather than blurred text.
+	art_scale = minf(view.x / ART_SIZE.x, view.y / ART_SIZE.y)
 	var book_size := ART_SIZE * art_scale
 	# Dragged, but never so far that the handle leaves the screen.
 	var centred := (view - book_size) * 0.5
