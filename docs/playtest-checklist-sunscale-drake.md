@@ -1,7 +1,7 @@
 # Playtest checklist: the Sunscale Drake
 
 For a non-programmer. Tick each box; if something looks wrong, note what you did
-and what you saw. The drake is a level-6 elite built for a group of four. To try it
+and what you saw. The drake is a level-6 elite that beats even a group of four level-7 heroes who stand in its fire. To try it
 alone, open the debug console (`) and type `level 40`, or use `spawn sunscale_drake`.
 
 ## Finding it

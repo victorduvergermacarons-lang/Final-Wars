@@ -90,8 +90,7 @@ func test_salamander_hound_is_a_fair_level_2_fight() -> void:
 func test_sunscale_drake_needs_a_group() -> void:
 	assert_eq(_avg([S.L4_LUNGE], &"sunscale_drake", 1, 7).win_rate, 0.0, "solo loses")
 	assert_eq(_avg([S.L5_TANK, S.L5_HEALER], &"sunscale_drake", 1, 7).win_rate, 0.0, "a pair loses")
-	var l6 := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 6)
-	assert_lt(l6.win_rate, 0.6, "a level-6 group that stands in the fire mostly loses: " + str(l6))
 	var group := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 7)
-	assert_gte(group.win_rate, 0.5, "a level-7 group wins at least half the time: " + str(group))
-	assert_gt(group.hp_lost_pct, 40, "and it hurts: " + str(group))
+	assert_eq(group.win_rate, 0.0, "it beats a level-7 group of four every time: " + str(group))
+	var l10 := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 10)
+	assert_gt(l10.win_rate, 0.0, "a level-10 group can win: " + str(l10))

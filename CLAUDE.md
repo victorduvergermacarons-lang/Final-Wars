@@ -280,7 +280,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
     move it.
   - The tiles it covers are outlined faintly on the ground, and its target ring
     surrounds the whole body.
-- **Stats:** HP 1950 (2200 until 2026-10-21), PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
+- **Stats:** HP 2500, PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
   leash 14; 1.2 s per tile; 0.3 s reaction; 700 XP, 12 AP; respawn 15 min (10 s in the
   testing grounds); 60–120 g, Fireball / Scorched Earth / Burning Feet scrolls 15% each.
 - **Flight** (`EnemyDef.flying`, `GridModel.can_fly`):
@@ -314,9 +314,9 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 - **Molten Fury:** below 30% HP (`enrage_below`) it gains `molten_fury`: cooldowns ×0.7,
   and its ground zones last 2 s longer (`BuffDef.zone_seconds_bonus`), so the breath's
   fire burns 5 s. It glows hotter and the message log announces it. Evading clears it.
-- **Balance** (`tests/balance/test_balance.gd`, bots that never dodge): a level-7 group of
-  four wins about 4 times in 5; at level 6 they win about 2 times in 5; a pair or a lone
-  hero loses.
+- **Balance** (`tests/balance/test_balance.gd`, bots that never dodge): it beats a
+  level-7 group of four every time (0 of 50), and level 8 too; level-9 and level-10
+  groups win 10–20%; a pair or a lone hero loses.
 - **Large-body chasing:** a large body heads for the tiles where its body would be
   beside its target (`EnemyBrain.beside_goals`, `Pathfinder.find_path` `goals`), since
   its centre can never stand on the target. After a failed search an enemy waits 0.5 s
@@ -1263,7 +1263,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 | Date | Decision | Notes |
 |------|----------|-------|
 | 2026-10-21 | Fixed: the game lagged after the Sunscale Drake's dive | User report. After the dive the drake chased toward the hero's own tile, where its 5-tile body can never be centred, so every tick it searched 4096 tiles × 5, failed and tried again (~300 ms per tick). It now heads for the tiles beside its target, and an enemy whose search fails waits 0.5 s before searching again. Ticks are back to 2–6 ms. |
-| 2026-10-21 | Searing Dive shoves just out of the lane (1 tile from an edge lane, 2 from the centre), then stuns 1.5 s | User request. My choices: the distance ignores weight; the stun is 1.5 s and starts when the shove lands. The drake's HP drops 2200 → 1950 to keep its balance target (with the shorter shove, a level-7 group won only 1 time in 6). |
+| 2026-10-21 | Searing Dive shoves just out of the lane (1 tile from an edge lane, 2 from the centre), then stuns 1.5 s | User request. My choices: the distance ignores weight; the stun is 1.5 s and starts when the shove lands. Then, per the user, the drake must beat a level-7 group of four every time: HP 2200 → 2500 (0 of 50 level-7 wins, 0 of 50 at level 8, 10–20% at levels 9–10; bots that never dodge). |
 | 2026-10-21 | Audio system + first track | User brief ("make sensible decisions, list them"). See **Audio**. My decisions are in the next rows. |
 | 2026-10-21 | Sound effects found by naming convention; data entries optional | `audio/<folder>/<key>.wav`, folder from the key's first word. Adding a sound needs only the file; `SfxDef` entries tune level, variation, ducking. Numbered takes rotate. Missing files warn once per key. |
 | 2026-10-21 | Key names derived from content | Ability and enemy display names give the keys (`fire_fireball_cast`, `creature_wolf_howl`), so new content gets keys and a line in `AUDIO_SPEC.md` automatically. Sword/Bow/Hammer share `weapon_`; a tree word isn't repeated. |
