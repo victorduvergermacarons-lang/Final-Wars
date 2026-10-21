@@ -387,14 +387,31 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 - **`BookView`** (`ui/book_view.gd`): draws the book centred at the largest whole number
   of screen pixels per art pixel (4× at 1080p: full screen; 2× in a 1280×720 window).
   Writable areas measured on the art: left page (66, 46, 166×174), right page
-  (250, 46, 158×174), and the spread over both. Windows on a page sit at their minimum
-  size, top-centred, scaled down if they don't fit. A Close button sits above the right
+  (250, 46, 158×174), and the spread over both. A Close button sits above the right
   page.
-- **In game** (`Hud._update_book`): the menu windows (character, inventory, loot, vendor,
-  spellbook, quest log) are written on the pages. The older open one goes left, the newer
-  right; opening a third closes the oldest. The ability trees take the spread alone.
-  The book shows while any is open, under the rest of the HUD (unit frames, action bar,
-  menu buttons stay on top), and blocks clicks to the world. The quest tracker hides.
+- **Every menu fills both pages** (since 2026-10-21, user request), one menu at a time:
+  opening another closes the one before (`Hud._update_book`). Menus extend `BookSpread`
+  (`ui/book_spread.gd`): a `left` and a `right` column, each placed on its page and
+  scaled down only if its content doesn't fit.
+
+  | Menu | Left page | Right page |
+  |------|-----------|------------|
+  | Inventory (B) | equipment, learning slot, gold, how-to | bag |
+  | Character (C) | name, level, XP, stat table | Mastery, learning slot, abilities |
+  | Spellbook (P) | title, first part of the list | the rest |
+  | Quests (L) | quest list | the selected quest, Abandon |
+  | Shop | the trader's goods | your bag (right-click sells) |
+  | Loot | waiting loot | your bag |
+  | Trees (T) | title, tabs, tier labels, first 2 columns | Mastery line, other columns |
+
+  The trees are laid out for the book at 1080p and scaled as a whole, so a smaller
+  window shrinks them rather than squeezing the nodes; no node sits on the spine.
+  The book shows while a menu is open, under the rest of the HUD (unit frames, action
+  bar, menu buttons stay on top), and blocks clicks to the world. The quest tracker hides.
+  New loot opens the loot menu once; closed, it stays closed until more loot comes.
+- **Bigger text** (user request): paper text 20 (Godot's default 16), page titles 28,
+  notes 17. Item slots are 64 px (were 48) with the item name on up to two lines at 14
+  (was 6 letters at 11); rarity colours are lightened inside the dark slots.
 - **Main menu:** title and character on the left page, Play Solo / Host / Join on the right.
 - **Ink on parchment** (`ui/ui_palette.gd`): paper and leather colours come from the art.
   The paper theme makes window boxes see-through, text dark ink, buttons and tabs
@@ -1255,6 +1272,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-21 | Each menu fills both pages of the book, one at a time; all book text bigger | User request (e.g. inventory: worn items left, bag right; text hard to read). My choices: the split for each menu (table in **Menu book**); the shop and loot menus show your bag on their right page (the shop no longer opens the inventory beside it); text 20 / titles 28 / notes 17; 64 px item slots with two-line names; the trees laid out for 1080p and scaled as a whole. Screenshot test: `SHOTS_RESOLUTION=1920x1080` (Godot keeps `--resolution` from the script), new shots of the character sheet and spellbook. |
 | 2026-10-21 | Menus are written in the user's pixel-art book (Layer 1 only), ink on parchment | User request, as a first test (the art is unfinished). User choices: ink on parchment (not dark boxes on the pages); a new branch `ui-book-menus` from `optimised-build-1`. My choices: two windows at a time (older left, newer right, a third closes the oldest); trees across both pages; whole-pixel book scale; oversized windows scaled down to fit a page; a Close button; HUD bars and buttons stay on top; tracker, dialogue box and tooltips on paper so every coloured text reads as ink. See **Menu book**. |
 | 2026-10-21 | Fixed: the drake froze and the game lagged in its fight. Large bodies chase to "body beside the target"; a failed chase search waits 0.5 s; chase searches stop at 1024 tiles | User report (lag 2 s into the drake fight). Cause: it pathed onto the hero's tile, which its body never reaches, so every tick ran a failed whole-map search (~170 ms). The 0.5 s wait and 1024-tile limit (`EnemyBrain.CHASE_RETRY_SECONDS`, `CHASE_SEARCH`) are mine, for every enemy. The drake is now much harder (level-7 group ~17%, target 50%); user: don't change it, it will be retuned later, so that test target is pending. |
 | 2026-10-21 | Empty zones sleep after 30 s: only their clock runs | User request ("skip empty map simulation", on the `optimised-build-1` branch). My choices: the clock keeps running so timers (respawns, buffs, ground fire) run out on time and the shared clock (read from town) stays right; things due meanwhile happen on the first tick after a hero arrives; patrols and evading enemies wait where they are; the 30 s wait (`empty_zone_sleep_seconds`, tunable) lets a fight that was just left settle first. See **Performance**. |

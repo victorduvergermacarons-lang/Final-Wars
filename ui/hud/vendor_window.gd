@@ -1,7 +1,8 @@
 class_name VendorWindow
-extends PanelContainer
-## A vendor's goods. Buy with the buttons; while this is open, right-click an item
-## in your bag to sell it (25% of its price). Closes when the conversation ends.
+extends BookSpread
+## A vendor's shop, across the menu book: the goods on the left page (buy with
+## the buttons), your bag on the right (right-click an item to sell it for 25%
+## of its price). Closes when the conversation ends.
 
 var hud: Hud
 var npc_id := -1
@@ -11,34 +12,31 @@ var _list: VBoxContainer
 
 
 func _init(p_hud: Hud) -> void:
+	super()
 	hud = p_hud
-	custom_minimum_size = Vector2(320, 0)
-	var box := VBoxContainer.new()
-	add_child(box)
-	_title = Label.new()
-	_title.add_theme_color_override("font_color", UiPalette.LEATHER_DARK)
-	box.add_child(_title)
-	var hint := Label.new()
-	hint.text = "Right-click an item in your bag (B) to sell it."
-	hint.add_theme_color_override("font_color", UiPalette.INK_SOFT)
-	box.add_child(hint)
-	_gold = Label.new()
-	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
-	box.add_child(_gold)
-	# The goods scroll (Hilda sells two dozen things).
+	_title = BookSpread.title("")
+	left.add_child(_title)
+	# The goods scroll (Hilda sells two dozen things), within the page.
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(320, 340)
+	scroll.custom_minimum_size = Vector2(0, 380)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	box.add_child(scroll)
+	left.add_child(scroll)
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_list)
+
+	right.add_child(BookSpread.title("Your bag"))
+	_gold = Label.new()
+	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
+	right.add_child(_gold)
+	right.add_child(BookSpread.bag_grid(hud))
+	right.add_child(BookSpread.note("Right-click an item in your bag to sell it."))
 	visible = false
 
 
 func open(npc: Npc) -> void:
 	npc_id = npc.id
-	_title.text = "%s — goods" % npc.display_name
+	_title.text = "%s's goods" % npc.display_name
 	for c in _list.get_children():
 		c.queue_free()
 	for item in npc.def.sells:
@@ -46,7 +44,7 @@ func open(npc: Npc) -> void:
 		var name := RichTextLabel.new()
 		name.bbcode_enabled = true
 		name.fit_content = true
-		name.custom_minimum_size = Vector2(200, 0)
+		name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		name.text = "[color=#%s]%s[/color]  %d gold" % [Rarity.color(item.rarity).to_html(false), item.display_name, item.price]
 		name.tooltip_text = item.description
 		row.add_child(name)

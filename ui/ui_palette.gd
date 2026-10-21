@@ -23,6 +23,9 @@ const GREY := "#7a5c4f"
 const GOLD := "#94600a"
 const BLUE := "#1f5fa8"
 
+## Text size on paper (Godot's default is 16; the book's text was hard to read).
+const FONT_SIZE := 20
+
 static var _paper_theme: Theme
 
 
@@ -32,6 +35,7 @@ static func paper_theme() -> Theme:
 	if _paper_theme != null:
 		return _paper_theme
 	var t := Theme.new()
+	t.default_font_size = FONT_SIZE
 	t.set_color("font_color", "Label", INK)
 	t.set_color("default_color", "RichTextLabel", INK)
 	t.set_stylebox("panel", "PanelContainer", StyleBoxEmpty.new())

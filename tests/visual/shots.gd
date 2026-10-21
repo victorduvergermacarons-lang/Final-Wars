@@ -17,9 +17,14 @@ func _ready() -> void:
 	# Water holds its first frame and glows stop pulsing, so pictures can be compared.
 	TileArt.freeze_water = true
 	WorldView.freeze_pulses = true
-	# Another window size: launch with --resolution 1920x1080 (and an xvfb screen
-	# that big); resizing the window from here leaves part of the capture black.
-	if not OS.get_cmdline_args().has("--resolution"):
+	# Another window size: launch with --resolution 1920x1080 and
+	# SHOTS_RESOLUTION=1920x1080 (Godot keeps --resolution from the script's
+	# arguments; the screen, or xvfb, must be that big); resizing the window from
+	# here leaves part of the capture black.
+	var wanted := OS.get_environment("SHOTS_RESOLUTION").split("x")
+	if wanted.size() == 2:
+		get_window().size = Vector2i(int(wanted[0]), int(wanted[1]))
+	elif not OS.get_cmdline_args().has("--resolution"):
 		get_window().size = Vector2i(1280, 720)
 	_run.call_deferred()
 
@@ -143,12 +148,15 @@ func _run() -> void:
 	hud.trees_window.show_tree("Fire")
 	await _shot("8_fire_tree")
 	hud._toggle(hud.trees_window)
-	# 8. Inventory and character sheet with the learning slot.
+	# 8. The menu book, one menu across both pages at a time: the inventory with
+	# the learning slot, the character sheet, the spellbook.
 	hud.inventory_window.visible = true
-	hud._character.visible = true
 	await _shot("9_learning_slot")
-	hud.inventory_window.visible = false
-	hud._character.visible = false
+	hud._character.visible = true
+	await _shot("9b_character_sheet")
+	hud._spellbook.visible = true
+	await _shot("9c_spellbook")
+	hud.close_menus()
 	# 9. Debug console after a few commands.
 	hud.console.open()
 	for line in ["help", "spawn wolf 3 2", "mastery water 200"]:

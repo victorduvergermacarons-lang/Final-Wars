@@ -1,7 +1,8 @@
 class_name QuestLogWindow
-extends PanelContainer
-## Quest log (L): your active quests on the left; the selected one's text,
-## objectives and rewards on the right, with an Abandon button.
+extends BookSpread
+## Quest log (L), across the menu book: your active quests on the left page; the
+## selected one's text, objectives and rewards on the right, with an Abandon
+## button.
 
 var hud: Hud
 var selected: StringName = &""
@@ -12,27 +13,14 @@ var _signature := ""
 
 
 func _init(p_hud: Hud) -> void:
+	super()
 	hud = p_hud
-	custom_minimum_size = Vector2(520, 260)
-	var outer := VBoxContainer.new()
-	add_child(outer)
-	var title := Label.new()
-	title.text = "Quest Log"
-	title.add_theme_font_size_override("font_size", 18)
-	outer.add_child(title)
-	var row := HBoxContainer.new()
-	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	outer.add_child(row)
+	left.add_child(BookSpread.title("Quest Log"))
 	_list = VBoxContainer.new()
-	_list.custom_minimum_size = Vector2(170, 0)
-	row.add_child(_list)
-	var right := VBoxContainer.new()
-	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(right)
+	left.add_child(_list)
 	_details = RichTextLabel.new()
 	_details.bbcode_enabled = true
 	_details.fit_content = true
-	_details.custom_minimum_size = Vector2(330, 0)
 	right.add_child(_details)
 	_abandon = Button.new()
 	_abandon.text = "Abandon quest"

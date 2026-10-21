@@ -65,7 +65,13 @@ func page_rect(rect: Rect2) -> Rect2:
 func fit_pages() -> void:
 	for page in [left_page, right_page, spread]:
 		for w in page.get_children():
-			if w is Control and w.visible:
+			if w is BookSpread and w.visible:
+				# Both pages, in the spread's coordinates.
+				w.position = Vector2.ZERO
+				w.size = page.size
+				w.lay_out(Rect2(Vector2.ZERO, LEFT_PAGE.size * art_scale),
+						Rect2((RIGHT_PAGE.position - LEFT_PAGE.position) * art_scale, RIGHT_PAGE.size * art_scale))
+			elif w is Control and w.visible:
 				_fit(w, page.size)
 
 

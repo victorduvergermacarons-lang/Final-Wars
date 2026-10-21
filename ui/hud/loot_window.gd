@@ -1,6 +1,7 @@
 class_name LootWindow
-extends PanelContainer
-## Loot that didn't fit in your bag waits here for 60 s. Make room, then Take.
+extends BookSpread
+## Loot that didn't fit in your bag waits here for 60 s, across the menu book:
+## the loot on the left page, your bag on the right. Make room, then Take.
 
 var hud: Hud
 var _list: VBoxContainer
@@ -8,22 +9,26 @@ var _shown := ""
 
 
 func _init(p_hud: Hud) -> void:
+	super()
 	hud = p_hud
-	var box := VBoxContainer.new()
-	add_child(box)
-	var title := Label.new()
-	title.text = "Loot (your bag was full)"
+	var title := BookSpread.title("Loot")
 	title.add_theme_color_override("font_color", Color(UiPalette.GOLD))
-	box.add_child(title)
+	left.add_child(title)
+	left.add_child(BookSpread.note("Your bag was full. Make room, then Take."))
 	_list = VBoxContainer.new()
-	box.add_child(_list)
+	left.add_child(_list)
+	right.add_child(BookSpread.title("Your bag"))
+	right.add_child(BookSpread.bag_grid(hud))
 	visible = false
 
 
 func _process(_delta: float) -> void:
 	var loot: Array = hud.session.pending_loot()
-	visible = not loot.is_empty()
 	var key := str(loot.map(func(l): return [l.id, l.items]))
+	if loot.is_empty():
+		visible = false
+	elif key != _shown:
+		visible = true # new loot opens it; closed, it stays closed until more comes
 	if key == _shown:
 		_update_timers(loot)
 		return
@@ -35,7 +40,7 @@ func _process(_delta: float) -> void:
 		var text := RichTextLabel.new()
 		text.bbcode_enabled = true
 		text.fit_content = true
-		text.custom_minimum_size = Vector2(240, 0)
+		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		text.text = ", ".join(l.items.map(func(pair): return _item_text(pair)))
 		row.add_child(text)
 		var timer := Label.new()

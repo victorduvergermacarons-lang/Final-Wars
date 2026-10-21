@@ -50,8 +50,8 @@ var hovered_slot := -1
 var _root: Control
 ## The menu book; open menu windows are on its pages.
 var book: BookView
-## Open book windows, oldest first (the two newest are shown, older ones close).
-var _open_order: Array[Control] = []
+## The menu open in the book (one at a time; each fills both pages), or null.
+var _open_menu: Control
 var _party: VBoxContainer
 var _party_frames := {} # hero id -> UnitFrame
 var inventory_window: InventoryWindow
@@ -166,7 +166,7 @@ func _build() -> void:
 	pager_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 	pager_box.add_child(pager_hint)
 
-	# Menu windows live on the book's pages (see _update_book).
+	# Menus fill the book's two pages, one at a time (see _update_book).
 	_character = CharacterSheet.new(self)
 	_character.visible = false
 	inventory_window = InventoryWindow.new(self)
@@ -178,7 +178,7 @@ func _build() -> void:
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
 	for w in [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log]:
-		book.left_page.add_child(w)
+		book.spread.add_child(w)
 
 	# Debug console (`), top centre.
 	console = DebugConsole.new(self)
@@ -198,7 +198,7 @@ func _build() -> void:
 	_tracker.bbcode_enabled = true
 	_tracker.fit_content = true
 	_tracker.scroll_active = false
-	_tracker.custom_minimum_size = Vector2(260, 0)
+	_tracker.custom_minimum_size = Vector2(300, 0)
 	_tracker.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
 	_tracker.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_tracker.position.x -= 10
@@ -346,41 +346,36 @@ func _book_windows() -> Array[Control]:
 	return [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log, trees_window]
 
 
-## Puts open windows on the book's pages and shows the book while any is open.
-## Two pages: the older open window goes left, the newer right; opening a third
-## closes the oldest. The ability trees take both pages, alone.
+## Shows the book while a menu is open. Each menu fills both pages, so one is
+## open at a time: opening another closes the one before.
 func _update_book() -> void:
-	for w in _open_order.duplicate():
-		if not w.visible:
-			_open_order.erase(w)
+	var fresh: Array[Control] = []
 	for w in _book_windows():
-		if w.visible and not _open_order.has(w):
-			_open_order.append(w) # just opened: the newest
-	if not _open_order.is_empty():
-		var newest: Control = _open_order.back()
-		for w in _open_order.duplicate():
-			# The trees fill the spread: they close the others, and the others close them.
-			var clash: bool = (newest == trees_window) != (w == trees_window)
-			if w != newest and (clash or _open_order.size() > 2 and w == _open_order[0]):
-				w.visible = false
-				_open_order.erase(w)
-	for i in _open_order.size():
-		var w := _open_order[i]
-		var page: Control = book.spread if w == trees_window else (book.left_page if i == 0 else book.right_page)
-		if w.get_parent() != page:
-			w.reparent(page, false)
-	book.visible = not _open_order.is_empty()
+		if w.visible and w != _open_menu:
+			fresh.append(w)
+	if not fresh.is_empty():
+		_open_menu = fresh.back()
+	elif _open_menu != null and not _open_menu.visible:
+		_open_menu = null
+	for w in _book_windows():
+		if w.visible and w != _open_menu:
+			_close_menu(w)
+	book.visible = _open_menu != null
 	if book.visible:
 		book.fit_pages()
 
 
-## Closes every window in the book (its Close button).
+## Closes every menu in the book (its Close button).
 func close_menus() -> void:
 	for w in _book_windows():
-		if w == vendor_window:
-			vendor_window.close()
-		else:
-			w.visible = false
+		_close_menu(w)
+
+
+func _close_menu(w: Control) -> void:
+	if w == vendor_window:
+		vendor_window.close()
+	else:
+		w.visible = false
 
 
 func _on_bar_changed() -> void:
@@ -481,9 +476,7 @@ func _update_quest_markers(hero: Hero) -> void:
 func _on_dialogue_opened(npc: Npc) -> void:
 	QuestDialogue.add_options(self, npc)
 	if not npc.def.sells.is_empty():
-		dialogue.add_option("Browse goods", func():
-			vendor_window.open(npc)
-			inventory_window.visible = true)
+		dialogue.add_option("Browse goods", func(): vendor_window.open(npc)) # its right page is your bag
 
 
 func _small_button(text: String, on_press: Callable) -> Button:

@@ -1,6 +1,7 @@
 class_name InventoryWindow
-extends PanelContainer
-## Inventory (B): the nine equipment positions next to the bag grid.
+extends BookSpread
+## Inventory (B), across the menu book: what you wear on the left page (the nine
+## equipment positions and the learning slot), your bag on the right.
 
 const BAG_COLUMNS := 5
 
@@ -11,33 +12,25 @@ var _gold: Label
 
 
 func _init(p_hud: Hud) -> void:
+	super()
 	hud = p_hud
-	var box := VBoxContainer.new()
-	add_child(box)
-	var title := Label.new()
-	title.text = "Inventory (B) — drag to move or equip · right-click equip/unequip · shift+click split · ctrl+right-click destroy"
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD
-	title.custom_minimum_size = Vector2(420, 0)
-	box.add_child(title)
-	_gold = Label.new()
-	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
-	box.add_child(_gold)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 16)
-	box.add_child(row)
-	var left := VBoxContainer.new()
-	row.add_child(left)
+	left.add_child(BookSpread.title("Equipment"))
 	var equip := GridContainer.new()
 	equip.columns = 3
+	equip.add_theme_constant_override("h_separation", 6)
+	equip.add_theme_constant_override("v_separation", 6)
 	for slot in EquipSlot.COUNT:
 		equip.add_child(ItemSlotView.new(hud, ItemSlotView.Kind.EQUIP, slot))
 	left.add_child(equip)
 	left.add_child(LearningRow.new(hud))
-	var bag := GridContainer.new()
-	bag.columns = BAG_COLUMNS
-	for i in Bag.DEFAULT_SIZE:
-		bag.add_child(ItemSlotView.new(hud, ItemSlotView.Kind.BAG, i))
-	row.add_child(bag)
+	_gold = Label.new()
+	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
+	left.add_child(_gold)
+	left.add_child(BookSpread.note("Drag to move or equip · right-click to equip or take off · "
+			+ "shift+click to split a stack · ctrl+right-click to destroy"))
+
+	right.add_child(BookSpread.title("Bag"))
+	right.add_child(BookSpread.bag_grid(hud, BAG_COLUMNS))
 	_confirm = ConfirmationDialog.new()
 	_confirm.confirmed.connect(_on_destroy_confirmed)
 	add_child(_confirm)

@@ -1,9 +1,11 @@
 class_name CharacterSheet
-extends PanelContainer
-## Character sheet (C): level and XP, every stat split into base / growth / gear /
-## buffs, and mastered and in-progress abilities.
+extends BookSpread
+## Character sheet (C), across the menu book: level, XP and every stat split
+## into base / growth / gear / buffs on the left page; Mastery, the learning slot
+## and mastered and in-progress abilities on the right.
 
 var hud: Hud
+var _name: Label
 var _header: Label
 var _table: GridContainer
 var _abilities: RichTextLabel
@@ -12,36 +14,35 @@ var _cells: Array[Label] = []
 
 
 func _init(p_hud: Hud) -> void:
+	super()
 	hud = p_hud
-	custom_minimum_size = Vector2(380, 0)
-	var box := VBoxContainer.new()
-	add_child(box)
+	_name = BookSpread.title("")
+	left.add_child(_name)
 	_header = Label.new()
-	box.add_child(_header)
+	left.add_child(_header)
 	_table = GridContainer.new()
 	_table.columns = 6
 	_table.add_theme_constant_override("h_separation", 12)
-	box.add_child(_table)
+	left.add_child(_table)
 	for h in ["Stat", "Base", "Growth", "Gear", "Buffs", "Total"]:
 		var l := _cell(h)
 		l.add_theme_color_override("font_color", UiPalette.INK_SOFT)
 	for i in Stat.CORE_COUNT * 6:
 		_cells.append(_cell(""))
+	right.add_child(BookSpread.title("Abilities"))
 	_mastery = RichTextLabel.new()
 	_mastery.bbcode_enabled = true
 	_mastery.fit_content = true
-	_mastery.custom_minimum_size = Vector2(360, 0)
-	box.add_child(_mastery)
-	box.add_child(LearningRow.new(hud))
-	# Scrolls once the list gets long, so the sheet fits on screen.
+	right.add_child(_mastery)
+	right.add_child(LearningRow.new(hud))
+	# Scrolls once the list gets long, so the page keeps its size.
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(360, 110)
+	scroll.custom_minimum_size = Vector2(0, 220)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	box.add_child(scroll)
+	right.add_child(scroll)
 	_abilities = RichTextLabel.new()
 	_abilities.bbcode_enabled = true
 	_abilities.fit_content = true
-	_abilities.custom_minimum_size = Vector2(350, 0)
 	_abilities.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_abilities)
 
@@ -49,6 +50,7 @@ func _init(p_hud: Hud) -> void:
 func _cell(text: String) -> Label:
 	var l := Label.new()
 	l.text = text
+	l.add_theme_font_size_override("font_size", 18) # six columns have to fit the page
 	_table.add_child(l)
 	return l
 
@@ -59,7 +61,8 @@ func _process(_delta: float) -> void:
 	var hero: Hero = hud.session.local_hero()
 	if hero == null:
 		return
-	_header.text = "Character (C) — %s, level %d   XP %d / %d" % [hero.display_name, hero.level, hero.xp,
+	_name.text = hero.display_name
+	_header.text = "Level %d   ·   XP %d / %d" % [hero.level, hero.xp,
 			Leveling.xp_to_next(hero.level, hud.session.rules())]
 	var rows := StatBreakdown.rows(hero, hud.session.now())
 	for r in rows:

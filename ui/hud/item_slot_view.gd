@@ -11,7 +11,9 @@ enum Kind { BAG, EQUIP, LEARNING }
 
 const LEARNING_COLOR := Color(0.35, 0.7, 1.0)
 
-const SIZE := Vector2(48, 48)
+const SIZE := Vector2(64, 64)
+## Item names in a slot: up to two lines this size (was 6 letters at 11).
+const NAME_SIZE := 14
 
 var hud: Hud
 var kind: Kind
@@ -60,22 +62,25 @@ func _draw() -> void:
 	if it == null:
 		draw_rect(rect, LEARNING_COLOR.darkened(0.4) if kind == Kind.LEARNING else Color(0.35, 0.35, 0.4), false, 1.0)
 		if kind == Kind.EQUIP:
-			_text(EquipSlot.NAMES[index].left(5), Vector2(4, size.y * 0.5 + 4), 10, Color(0.45, 0.45, 0.5))
+			_lines(EquipSlot.NAMES[index], size.y * 0.5 - 2, NAME_SIZE, Color(0.6, 0.6, 0.65))
 		elif kind == Kind.LEARNING:
-			_text("Learn", Vector2(4, size.y * 0.5 + 4), 10, LEARNING_COLOR.darkened(0.2))
+			_lines("Learn", size.y * 0.5 + 5, NAME_SIZE, LEARNING_COLOR)
 		return
-	var c := Rarity.color(it.rarity)
+	# Rarity colours are dark ink for the paper pages; inside the dark slot
+	# they're lightened to show.
+	var c := Rarity.color(it.rarity).lightened(0.45)
 	draw_rect(rect.grow(-3), Color(c, 0.18))
 	draw_rect(rect.grow(-1), c, false, 2.0)
-	_text(it.display_name.left(6), Vector2(4, 18), 11, Color.WHITE)
+	_lines(it.display_name, 19, NAME_SIZE, Color.WHITE)
 	if kind == Kind.BAG:
 		var n: int = hud.session.local_hero().bag.count_at(index)
 		if n > 1:
-			_text(str(n), Vector2(size.x - 16, size.y - 5), 12, Color(1, 1, 0.7))
+			var count := str(n)
+			_text(count, Vector2(size.x - 6 - _width(count, 16), size.y - 6), 16, Color(1, 1, 0.7))
 	# Blue "L": the item being learned (the learning slot itself, or the worn weapon).
 	if kind == Kind.LEARNING or it == hud.session.local_hero().active_learning_item():
 		draw_rect(rect.grow(-1), LEARNING_COLOR, false, 2.0)
-		_text("L", Vector2(size.x - 12, 14), 12, LEARNING_COLOR)
+		_text("L", Vector2(size.x - 14, size.y - 10), 15, LEARNING_COLOR)
 		var ability := it.tree_ability()
 		if ability != null:
 			var hero: Hero = hud.session.local_hero()
@@ -159,6 +164,34 @@ func _drop_data(_at: Vector2, data: Variant) -> void:
 		hud.session.send_intent({"type": "equip", "bag_index": data.index, "slot": index})
 	elif not from_bag and kind == Kind.BAG:
 		hud.session.send_intent({"type": "unequip", "slot": data.index})
+
+
+## `t` on up to two lines from baseline `y`: words fill the first line, the rest
+## goes on the second; each line is cut to fit the slot.
+func _lines(t: String, y: float, font_size: int, color: Color) -> void:
+	var room := size.x - 8
+	var words := t.split(" ", false)
+	var first := ""
+	var i := 0
+	while i < words.size() and _width((first + " " + words[i]).strip_edges(), font_size) <= room:
+		first = (first + " " + words[i]).strip_edges()
+		i += 1
+	if first == "" and not words.is_empty():
+		first = _cut(words[0], room, font_size)
+		i = 1
+	_text(first, Vector2(4, y), font_size, color)
+	if i < words.size():
+		_text(_cut(" ".join(words.slice(i)), room, font_size), Vector2(4, y + font_size + 2), font_size, color)
+
+
+func _cut(t: String, room: float, font_size: int) -> String:
+	while t.length() > 1 and _width(t, font_size) > room:
+		t = t.left(t.length() - 1)
+	return t
+
+
+func _width(t: String, font_size: int) -> float:
+	return _font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 
 
 func _text(t: String, pos: Vector2, font_size: int, color: Color) -> void:
