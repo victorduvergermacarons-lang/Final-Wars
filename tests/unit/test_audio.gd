@@ -182,3 +182,13 @@ func test_volumes_are_saved_per_player() -> void:
 	assert_almost_eq(audio.get_volume("SFX"), 0.0, 0.01, "zero mutes")
 	audio.set_volume("Music", 1.0)
 	audio.set_volume("SFX", 1.0)
+
+
+func test_numbered_takes_play_in_turn() -> void:
+	_beep_entry(&"footstep_test_takes")
+	audio.config.sfx.back().file = "res://tests/fixtures/beep_take.wav" # only _1 and _2 exist
+	var p = audio.play(&"footstep_test_takes")
+	assert_not_null(p, "takes stand in for the missing single file")
+	assert_true(p.stream is AudioStreamRandomizer)
+	assert_eq(p.stream.streams_count, 2)
+	assert_false(audio.missing_keys().has(&"footstep_test_takes"))

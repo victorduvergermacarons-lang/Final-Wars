@@ -350,6 +350,7 @@ func _set_bind_mode(on: bool) -> void:
 
 func _toggle(panel: Control) -> void:
 	panel.visible = not panel.visible
+	Audio.play(&"ui_open" if panel.visible else &"ui_close")
 
 
 func _on_bar_changed() -> void:

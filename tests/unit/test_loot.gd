@@ -168,6 +168,7 @@ func test_wolves_drop_gold_and_pelts() -> void:
 	assert_not_null(wolf_def.loot)
 	assert_eq(wolf_def.ap_reward, 2)
 	var rng := RandomNumberGenerator.new()
+	rng.seed = 7 # unseeded, ~1 run in 100 fell just outside the bounds
 	var hero := Hero.new(1)
 	var gold := 0
 	var pelts := 0

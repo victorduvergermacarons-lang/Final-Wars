@@ -1,6 +1,58 @@
-[gd_resource type="Resource" script_class="AudioConfig" format=3]
+[gd_resource type="Resource" script_class="AudioConfig" load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://data/defs/audio_config.gd" id="1_cfg"]
+[ext_resource type="Script" path="res://data/defs/sfx_def.gd" id="2_sfx"]
+
+[sub_resource type="Resource" id="duck_0"]
+script = ExtResource("2_sfx")
+key = &"creature_wolf_howl"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_1"]
+script = ExtResource("2_sfx")
+key = &"creature_sunscale_drake_sunfire_breath"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_2"]
+script = ExtResource("2_sfx")
+key = &"creature_sunscale_drake_searing_dive"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_3"]
+script = ExtResource("2_sfx")
+key = &"creature_sunscale_drake_enrage"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_4"]
+script = ExtResource("2_sfx")
+key = &"creature_sunscale_drake_death"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_5"]
+script = ExtResource("2_sfx")
+key = &"creature_old_grizzlehide_charge"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_6"]
+script = ExtResource("2_sfx")
+key = &"creature_old_grizzlehide_death"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_7"]
+script = ExtResource("2_sfx")
+key = &"fire_fireball_hit"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_8"]
+script = ExtResource("2_sfx")
+key = &"world_level_up"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_9"]
+script = ExtResource("2_sfx")
+key = &"world_event"
+ducks_music = true
 
 [resource]
 script = ExtResource("1_cfg")
+sfx = Array[ExtResource("2_sfx")]([SubResource("duck_0"), SubResource("duck_1"), SubResource("duck_2"), SubResource("duck_3"), SubResource("duck_4"), SubResource("duck_5"), SubResource("duck_6"), SubResource("duck_7"), SubResource("duck_8"), SubResource("duck_9")])

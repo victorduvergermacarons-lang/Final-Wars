@@ -109,6 +109,10 @@ func _build_client(zone: ZoneDef) -> void:
 	add_child(hud)
 	hud.setup(session, client, input, settings_path)
 	hud.leave_requested.connect(func(): ended.emit("Your hero is saved."))
+	var sound := SoundDirector.new()
+	sound.name = "SoundDirector"
+	add_child(sound)
+	sound.setup(session, client, view)
 
 
 func _make_view(zone: ZoneDef) -> WorldView:
@@ -130,5 +134,8 @@ func _on_zone_changed(zone: ZoneDef) -> void:
 	var input: PlayerInput = get_node_or_null("PlayerInput")
 	if input != null:
 		input.view = view
+	var sound: SoundDirector = get_node_or_null("SoundDirector")
+	if sound != null:
+		sound.on_zone_changed(view)
 	client.target_id = -1
 	client.say("You enter %s." % zone.display_name)

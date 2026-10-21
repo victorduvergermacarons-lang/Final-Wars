@@ -17,6 +17,8 @@ var settings_window: SettingsWindow
 
 
 func _ready() -> void:
+	Audio.set_context(MusicTrackDef.Context.TITLE)
+	Audio.set_ambience(&"")
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)

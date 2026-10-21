@@ -43,6 +43,7 @@ var _warned := {} # key -> true
 var _voices := {} # key -> count playing
 ## Keys asked for this session whose file doesn't exist (see missing_keys()).
 var _missing := {}
+const MAX_VARIANTS := 9
 
 
 func _init() -> void:
@@ -53,6 +54,8 @@ func _init() -> void:
 
 func _ready() -> void:
 	ensure_buses()
+	# Every button in the game clicks (menus, HUD, windows).
+	get_tree().node_added.connect(_on_node_added)
 	for i in 2:
 		var p := AudioStreamPlayer.new()
 		p.bus = &"Music"
@@ -67,6 +70,30 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	step(delta)
+
+
+func _on_node_added(node: Node) -> void:
+	if node is BaseButton and not node.pressed.is_connected(_click):
+		node.pressed.connect(_click)
+
+
+func _click() -> void:
+	play(&"ui_click")
+
+
+# --- Zone bond (hook for drained music) --------------------------------------------
+
+## Bond values set at runtime (zone id -> 0..1), over ZoneDef.bond. Nothing sets
+## them yet; a future bond system calls set_zone_bond().
+var zone_bonds := {}
+
+
+func set_zone_bond(zone_id: StringName, value: float) -> void:
+	zone_bonds[zone_id] = clampf(value, 0.0, 1.0)
+
+
+func bond_for(zone: ZoneDef) -> float:
+	return float(zone_bonds.get(zone.id, zone.bond))
 
 
 # --- Buses and volumes ---------------------------------------------------------
@@ -344,11 +371,28 @@ func _load_stream(path: String, key: StringName) -> AudioStream:
 	var s: AudioStream = null
 	if ResourceLoader.exists(path):
 		s = load(path) as AudioStream
+	else:
+		s = _variants(path)
 	_streams[path] = s
 	if s == null:
 		_missing[key] = path
 		_warn(key, "Audio: missing sound '%s' (expected %s)" % [key, path])
 	return s
+
+
+## Numbered takes of one sound (<key>_1.wav, <key>_2.wav...) instead of <key>.wav:
+## each play picks one at random, never the same twice in a row. null if none.
+static func _variants(path: String) -> AudioStream:
+	var r := AudioStreamRandomizer.new()
+	r.playback_mode = AudioStreamRandomizer.PLAYBACK_RANDOM_NO_REPEATS
+	r.random_pitch = 1.0 # pitch and volume are varied by varied()
+	r.random_volume_offset_db = 0.0
+	for i in range(1, MAX_VARIANTS + 1):
+		var p := "%s_%d.%s" % [path.get_basename(), i, path.get_extension()]
+		if not ResourceLoader.exists(p):
+			break
+		r.add_stream(-1, load(p))
+	return r if r.streams_count > 0 else null
 
 
 func _warn(key: StringName, text: String) -> void:

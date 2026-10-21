@@ -40,6 +40,16 @@ extends Resource
 ## '#' blocks line of sight; empty = nothing does (only height). Baked for tiled zones.
 @export var sight_rows: PackedStringArray = []
 
+@export_group("Audio")
+## Which music plays here (SoundDirector switches to combat/boss music in fights).
+@export var music_context: MusicTrackDef.Context = MusicTrackDef.Context.EXPLORE
+## The ambience loop key ("" = ambience_<id>; see SoundCatalog).
+@export var ambience: StringName = &""
+## The zone's bond (0..1). Low bond will switch music to drained variants
+## (AudioConfig.drained_bond_below); nothing lowers it yet.
+@export_range(0.0, 1.0) var bond: float = 1.0
+@export_group("")
+
 ## Enemy testing map: TestingGrounds builds the whole layout at load, one pen
 ## per enemy type (so new enemies show up without editing the map).
 @export var enemy_pens: bool = false
