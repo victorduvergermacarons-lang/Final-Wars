@@ -33,11 +33,7 @@ var _shown_key := ""
 
 func _init(p_hud: Hud) -> void:
 	hud = p_hud
-	var bg := StyleBoxFlat.new()
-	bg.bg_color = Color(0.08, 0.08, 0.11, 0.97)
-	bg.set_content_margin_all(10)
-	bg.set_corner_radius_all(4)
-	add_theme_stylebox_override("panel", bg)
+	# Drawn on the menu book's pages: no box of its own (the paper shows).
 	var box := VBoxContainer.new()
 	add_child(box)
 	var title := Label.new()
@@ -155,7 +151,7 @@ class _Canvas:
 			label.position = Vector2(0, y + 8)
 			label.text = "Tier %d\n%s" % [tier, "open" if permanent + 0.0001 >= need else "needs %d" % int(need)]
 			label.add_theme_color_override("font_color",
-					Color(0.6, 0.9, 0.6) if permanent + 0.0001 >= need else Color(0.75, 0.6, 0.6))
+					Color(UiPalette.GREEN) if permanent + 0.0001 >= need else Color(UiPalette.RED))
 			add_child(label)
 			var ids: Array = by_tier.get(tier, [])
 			for i in ids.size():
@@ -173,7 +169,7 @@ class _Canvas:
 				var done := hero.is_mastered(StringName(pre))
 				_lines.append([from.position + Vector2(NODE_SIZE.x * 0.5, NODE_SIZE.y),
 						_nodes[id].position + Vector2(NODE_SIZE.x * 0.5, 0),
-						Color(0.85, 0.7, 0.2) if done else Color(0.45, 0.45, 0.5)])
+						Color(UiPalette.GOLD) if done else UiPalette.INK_SOFT])
 		queue_redraw()
 
 	func _draw() -> void:

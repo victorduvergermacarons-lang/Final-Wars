@@ -8,9 +8,9 @@ const STAT_LABELS := ["HP", "Mana", "Physical Attack", "Magic Attack", "Physical
 	"Magic Defense", "Crit Rate", "Crit Damage", "Speed", "Accuracy", "Evasion", "Jump",
 	"Fire Mastery", "Earth Mastery", "Water Mastery", "Air Mastery", "Sword Mastery",
 	"Bow Mastery", "Hammer Mastery"]
-const GREEN := "#5fe36b"
-const RED := "#ff6b5b"
-const GREY := "#a8a8b0"
+const GREEN := UiPalette.GREEN
+const RED := UiPalette.RED
+const GREY := UiPalette.GREY
 
 
 static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool) -> String:
@@ -18,7 +18,7 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool) -> S
 	lines.append("[color=#%s][b]%s[/b][/color]" % [Rarity.color(item.rarity).to_html(false), item.display_name])
 	var kind: String = EquipSlot.TYPE_NAMES[item.slot] if item.is_equippable() else ""
 	if item.quest_item:
-		lines.append("[color=#ffd75e]Quest item[/color]")
+		lines.append("[color=%s]Quest item[/color]" % UiPalette.GOLD)
 	else:
 		lines.append("[color=%s]%s%s[/color]" % [GREY, Rarity.NAMES[item.rarity], "  ·  " + kind if kind != "" else ""])
 	for id in Stat.all():
@@ -58,7 +58,7 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool) -> S
 	return "\n".join(lines)
 
 
-const BLUE := "#6fb6ff"
+const BLUE := UiPalette.BLUE
 
 
 ## Where this ability-tree item stands for the hero: in the learning slot, mastered,

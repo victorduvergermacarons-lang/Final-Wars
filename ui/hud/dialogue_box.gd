@@ -19,11 +19,14 @@ var _options: VBoxContainer
 func _init(p_hud: Hud) -> void:
 	hud = p_hud
 	custom_minimum_size = Vector2(440, 0)
+	# A paper sheet with ink text, like the menu book.
+	theme = UiPalette.paper_theme()
+	add_theme_stylebox_override("panel", UiPalette.paper_panel(10))
 	var box := VBoxContainer.new()
 	add_child(box)
 	_title = Label.new()
 	_title.add_theme_font_size_override("font_size", 18)
-	_title.add_theme_color_override("font_color", Color(1, 0.9, 0.6))
+	_title.add_theme_color_override("font_color", UiPalette.LEATHER_DARK)
 	box.add_child(_title)
 	_text = RichTextLabel.new()
 	_text.bbcode_enabled = true

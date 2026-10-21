@@ -16,18 +16,18 @@ var _status: Label
 
 
 func _ready() -> void:
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-	var box := VBoxContainer.new()
-	box.custom_minimum_size = Vector2(360, 0)
-	box.add_theme_constant_override("separation", 10)
-	center.add_child(box)
+	# Written in the menu book: the title and your character on the left page,
+	# how to play on the right.
+	var book := BookView.new(false)
+	book.auto_fit = false
+	add_child(book)
+	var box := _page(book.left_page)
 
 	var title := Label.new()
 	title.text = "Final Wars"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 40)
+	title.add_theme_color_override("font_color", UiPalette.LEATHER_DARK)
 	box.add_child(title)
 
 	var pick_label := Label.new()
@@ -44,6 +44,8 @@ func _ready() -> void:
 	create_row.add_child(_button("Create", _on_create))
 	box.add_child(create_row)
 	_refresh_characters("")
+
+	box = _page(book.right_page)
 	box.add_child(_button("Play Solo", func(): _start(func(c): solo_requested.emit(c))))
 	box.add_child(HSeparator.new())
 	_address = _field(box, "Host address (to join)", "127.0.0.1")
@@ -70,6 +72,15 @@ func _ready() -> void:
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(_status)
+
+
+## A column filling a page of the book.
+func _page(page: Control) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.add_theme_constant_override("separation", 10)
+	page.add_child(box)
+	return box
 
 
 func show_status(text: String) -> void:

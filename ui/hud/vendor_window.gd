@@ -16,14 +16,14 @@ func _init(p_hud: Hud) -> void:
 	var box := VBoxContainer.new()
 	add_child(box)
 	_title = Label.new()
-	_title.add_theme_color_override("font_color", Color(1, 0.9, 0.6))
+	_title.add_theme_color_override("font_color", UiPalette.LEATHER_DARK)
 	box.add_child(_title)
 	var hint := Label.new()
 	hint.text = "Right-click an item in your bag (B) to sell it."
-	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	hint.add_theme_color_override("font_color", UiPalette.INK_SOFT)
 	box.add_child(hint)
 	_gold = Label.new()
-	_gold.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	box.add_child(_gold)
 	# The goods scroll (Hilda sells two dozen things).
 	var scroll := ScrollContainer.new()

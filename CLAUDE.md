@@ -378,6 +378,31 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   - projectiles, telegraphs, ground zones and raised terrain are cleared
   - every buff and debuff in the zone is removed, and heroes there leave combat
 
+## Menu book (branch `ui-book-menus`, 2026-10-21; work in progress)
+
+- **Art:** `art/menu_book.aseprite` (the user's "livre menu", still being drawn; marks
+  and icons to come). Only **Layer 1** is used, exported to `assets/ui/menu_book.png`
+  (480×270) with Aseprite's command line:
+  `Aseprite.exe -b --layer "Layer 1" art/menu_book.aseprite --save-as assets/ui/menu_book.png`
+- **`BookView`** (`ui/book_view.gd`): draws the book centred at the largest whole number
+  of screen pixels per art pixel (4× at 1080p: full screen; 2× in a 1280×720 window).
+  Writable areas measured on the art: left page (66, 46, 166×174), right page
+  (250, 46, 158×174), and the spread over both. Windows on a page sit at their minimum
+  size, top-centred, scaled down if they don't fit. A Close button sits above the right
+  page.
+- **In game** (`Hud._update_book`): the menu windows (character, inventory, loot, vendor,
+  spellbook, quest log) are written on the pages. The older open one goes left, the newer
+  right; opening a third closes the oldest. The ability trees take the spread alone.
+  The book shows while any is open, under the rest of the HUD (unit frames, action bar,
+  menu buttons stay on top), and blocks clicks to the world. The quest tracker hides.
+- **Main menu:** title and character on the left page, Play Solo / Host / Join on the right.
+- **Ink on parchment** (`ui/ui_palette.gd`): paper and leather colours come from the art.
+  The paper theme makes window boxes see-through, text dark ink, buttons and tabs
+  leather, fields and tooltips paper. Shared text colours (`ItemTooltip`, `QuestText`)
+  and rarity colours are dark enough for paper, so the quest tracker and the dialogue
+  box became paper sheets too. Item slots stay dark squares. Unit frames, the action
+  bar, the message log and the death panel keep the dark default look.
+
 ## Performance (branch `optimised-build-1`, 2026-10-21)
 
 Measure with `tools/perf/` (headless, no window; a headless frame costs at least
@@ -549,6 +574,7 @@ data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
 content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ (.tres)
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
+assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
@@ -1229,6 +1255,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-21 | Menus are written in the user's pixel-art book (Layer 1 only), ink on parchment | User request, as a first test (the art is unfinished). User choices: ink on parchment (not dark boxes on the pages); a new branch `ui-book-menus` from `optimised-build-1`. My choices: two windows at a time (older left, newer right, a third closes the oldest); trees across both pages; whole-pixel book scale; oversized windows scaled down to fit a page; a Close button; HUD bars and buttons stay on top; tracker, dialogue box and tooltips on paper so every coloured text reads as ink. See **Menu book**. |
 | 2026-10-21 | Fixed: the drake froze and the game lagged in its fight. Large bodies chase to "body beside the target"; a failed chase search waits 0.5 s; chase searches stop at 1024 tiles | User report (lag 2 s into the drake fight). Cause: it pathed onto the hero's tile, which its body never reaches, so every tick ran a failed whole-map search (~170 ms). The 0.5 s wait and 1024-tile limit (`EnemyBrain.CHASE_RETRY_SECONDS`, `CHASE_SEARCH`) are mine, for every enemy. The drake is now much harder (level-7 group ~17%, target 50%); user: don't change it, it will be retuned later, so that test target is pending. |
 | 2026-10-21 | Empty zones sleep after 30 s: only their clock runs | User request ("skip empty map simulation", on the `optimised-build-1` branch). My choices: the clock keeps running so timers (respawns, buffs, ground fire) run out on time and the shared clock (read from town) stays right; things due meanwhile happen on the first tick after a hero arrives; patrols and evading enemies wait where they are; the 30 s wait (`empty_zone_sleep_seconds`, tunable) lets a fight that was just left settle first. See **Performance**. |
 | 2026-10-21 | Terrain cache: the ground is drawn once; each frame only actors and highlights, with the tiles in front redrawn inside a box around each | User request (lag on large maps; test on a separate branch, `optimised-build-1`). Cause measured: every tile redrawn every frame, off-screen too. Exact same picture, checked on all 42 screenshots. Placeholder (non-tileset) maps still draw in full. See **Performance**. |

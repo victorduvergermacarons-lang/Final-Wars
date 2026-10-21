@@ -24,7 +24,7 @@ func _init(p_hud: Hud) -> void:
 	box.add_child(_table)
 	for h in ["Stat", "Base", "Growth", "Gear", "Buffs", "Total"]:
 		var l := _cell(h)
-		l.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+		l.add_theme_color_override("font_color", UiPalette.INK_SOFT)
 	for i in Stat.CORE_COUNT * 6:
 		_cells.append(_cell(""))
 	_mastery = RichTextLabel.new()
@@ -79,21 +79,21 @@ func _process(_delta: float) -> void:
 		var extra := total - perm
 		m.append("  %s %s%s" % [tree, _num(perm), "  [color=%s](+%s from gear)[/color]" % [ItemTooltip.GREEN, _num(extra)] if extra > 0.001 else ""])
 	if m.size() == 1:
-		m.append("  [color=#a8a8b0]none yet: master and use abilities to grow it[/color]")
+		m.append("  [color=%s]none yet: master and use abilities to grow it[/color]" % UiPalette.GREY)
 	_mastery.text = "\n".join(m)
 	var ab := StatBreakdown.abilities(hero)
 	var lines: PackedStringArray = ["[b]Mastered[/b] (usable without their item):"]
 	if ab.mastered.is_empty():
-		lines.append("  [color=#a8a8b0]none yet[/color]")
+		lines.append("  [color=%s]none yet[/color]" % UiPalette.GREY)
 	for a in ab.mastered:
 		lines.append("  [color=%s]%s[/color]" % [ItemTooltip.GREEN, a.display_name])
 	lines.append("[b]In progress:[/b]")
 	if ab.in_progress.is_empty():
-		lines.append("  [color=#a8a8b0]put a scroll or your weapon in the learning slot[/color]")
+		lines.append("  [color=%s]put a scroll or your weapon in the learning slot[/color]" % UiPalette.GREY)
 	for p in ab.in_progress:
 		lines.append("  %s — AP %d / %d%s" % [p.ability.display_name, p.ap, p.needed,
-				"  [color=#6fb6ff](learning)[/color]" if p.earning and p.ability.is_tree_ability() else (
-				"" if p.earning else "  [color=#a8a8b0](not learning)[/color]")])
+				"  [color=%s](learning)[/color]" % UiPalette.BLUE if p.earning and p.ability.is_tree_ability() else (
+				"" if p.earning else "  [color=%s](not learning)[/color]" % UiPalette.GREY)])
 	_abilities.text = "\n".join(lines)
 
 

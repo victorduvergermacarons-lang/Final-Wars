@@ -20,7 +20,7 @@ func _init(p_hud: Hud) -> void:
 	title.custom_minimum_size = Vector2(420, 0)
 	box.add_child(title)
 	_gold = Label.new()
-	_gold.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	box.add_child(_gold)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 16)

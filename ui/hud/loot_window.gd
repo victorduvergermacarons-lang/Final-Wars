@@ -13,7 +13,7 @@ func _init(p_hud: Hud) -> void:
 	add_child(box)
 	var title := Label.new()
 	title.text = "Loot (your bag was full)"
-	title.add_theme_color_override("font_color", Color(1, 0.85, 0.4))
+	title.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	box.add_child(title)
 	_list = VBoxContainer.new()
 	box.add_child(_list)

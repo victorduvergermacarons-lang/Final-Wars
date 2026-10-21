@@ -48,6 +48,10 @@ var bind_mode := false
 var hovered_slot := -1
 
 var _root: Control
+## The menu book; open menu windows are on its pages.
+var book: BookView
+## Open book windows, oldest first (the two newest are shown, older ones close).
+var _open_order: Array[Control] = []
 var _party: VBoxContainer
 var _party_frames := {} # hero id -> UnitFrame
 var inventory_window: InventoryWindow
@@ -84,6 +88,13 @@ func _build() -> void:
 	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_root)
+
+	# The menu book, under the rest of the HUD (frames, action bar and buttons stay
+	# usable on top). Menu windows are written on its pages (_update_book).
+	book = BookView.new()
+	book.visible = false
+	book.close_requested.connect(close_menus)
+	_root.add_child(book)
 
 	# Top-left: me, my target, then the rest of the party.
 	var top := HBoxContainer.new()
@@ -155,31 +166,19 @@ func _build() -> void:
 	pager_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 	pager_box.add_child(pager_hint)
 
-	# Panels on the right, side by side (stacked they ran off a 720p screen).
-	var right := HBoxContainer.new()
-	right.alignment = BoxContainer.ALIGNMENT_END
-	right.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	right.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	right.position = Vector2(-10, 10)
-	_root.add_child(right)
+	# Menu windows live on the book's pages (see _update_book).
 	_character = CharacterSheet.new(self)
 	_character.visible = false
-	right.add_child(_character)
 	inventory_window = InventoryWindow.new(self)
 	inventory_window.visible = false
-	right.add_child(inventory_window)
 	loot_window = LootWindow.new(self)
-	right.add_child(loot_window)
 	vendor_window = VendorWindow.new(self)
-	right.add_child(vendor_window)
 	_spellbook = SpellbookPanel.new(self)
 	_spellbook.visible = false
-	right.add_child(_spellbook)
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
-	right.add_child(quest_log)
-	for panel in right.get_children():
-		panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	for w in [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log]:
+		book.left_page.add_child(w)
 
 	# Debug console (`), top centre.
 	console = DebugConsole.new(self)
@@ -189,13 +188,10 @@ func _build() -> void:
 	console.position.y += 80
 	_root.add_child(console)
 
-	# Ability trees: a big window in the middle of the screen.
+	# Ability trees: a big window across both pages.
 	trees_window = AbilityTreeWindow.new(self)
 	trees_window.visible = false
-	trees_window.set_anchors_preset(Control.PRESET_CENTER)
-	trees_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	trees_window.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_root.add_child(trees_window)
+	book.spread.add_child(trees_window)
 
 	# Quest tracker on the right edge.
 	_tracker = RichTextLabel.new()
@@ -206,13 +202,11 @@ func _build() -> void:
 	_tracker.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
 	_tracker.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_tracker.position.x -= 10
-	_tracker.add_theme_constant_override("outline_size", 4)
-	_tracker.add_theme_color_override("font_outline_color", Color.BLACK)
 	_tracker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var tracker_bg := StyleBoxFlat.new()
-	tracker_bg.bg_color = Color(0.05, 0.05, 0.08, 0.6)
-	tracker_bg.set_content_margin_all(6)
-	tracker_bg.set_corner_radius_all(3)
+	# A note on paper, in ink like the book (QuestText's colours are for paper).
+	_tracker.theme = UiPalette.paper_theme()
+	var tracker_bg := UiPalette.paper_panel(8)
+	tracker_bg.bg_color = Color(UiPalette.PAPER, 0.92)
 	_tracker.add_theme_stylebox_override("normal", tracker_bg)
 	_root.add_child(_tracker)
 	_root.move_child(_tracker, 0) # behind every window
@@ -264,6 +258,7 @@ func _build() -> void:
 
 
 func _process(_delta: float) -> void:
+	_update_book()
 	var hero: Hero = session.local_hero()
 	if hero == null:
 		return
@@ -346,6 +341,48 @@ func _toggle(panel: Control) -> void:
 	panel.visible = not panel.visible
 
 
+## The windows written in the book.
+func _book_windows() -> Array[Control]:
+	return [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log, trees_window]
+
+
+## Puts open windows on the book's pages and shows the book while any is open.
+## Two pages: the older open window goes left, the newer right; opening a third
+## closes the oldest. The ability trees take both pages, alone.
+func _update_book() -> void:
+	for w in _open_order.duplicate():
+		if not w.visible:
+			_open_order.erase(w)
+	for w in _book_windows():
+		if w.visible and not _open_order.has(w):
+			_open_order.append(w) # just opened: the newest
+	if not _open_order.is_empty():
+		var newest: Control = _open_order.back()
+		for w in _open_order.duplicate():
+			# The trees fill the spread: they close the others, and the others close them.
+			var clash: bool = (newest == trees_window) != (w == trees_window)
+			if w != newest and (clash or _open_order.size() > 2 and w == _open_order[0]):
+				w.visible = false
+				_open_order.erase(w)
+	for i in _open_order.size():
+		var w := _open_order[i]
+		var page: Control = book.spread if w == trees_window else (book.left_page if i == 0 else book.right_page)
+		if w.get_parent() != page:
+			w.reparent(page, false)
+	book.visible = not _open_order.is_empty()
+	if book.visible:
+		book.fit_pages()
+
+
+## Closes every window in the book (its Close button).
+func close_menus() -> void:
+	for w in _book_windows():
+		if w == vendor_window:
+			vendor_window.close()
+		else:
+			w.visible = false
+
+
 func _on_bar_changed() -> void:
 	InputActions.apply_action_bar_keys(client.action_bar)
 	SettingsStore.save_action_bar(client.action_bar, settings_path)
@@ -426,11 +463,9 @@ func _on_events(events: Array) -> void:
 ## Whether an open window overlaps the quest tracker (then the tracker hides,
 ## so its text never mixes with a menu's).
 func _tracker_covered() -> bool:
-	var area := _tracker.get_global_rect()
-	for w in [_character, inventory_window, loot_window, vendor_window, _spellbook, quest_log, dialogue, trees_window]:
-		if w.is_visible_in_tree() and w.get_global_rect().intersects(area):
-			return true
-	return false
+	if book.visible:
+		return true
+	return dialogue.visible and dialogue.get_global_rect().intersects(_tracker.get_global_rect())
 
 
 ## "!" / "?" over quest givers, for the local hero.
