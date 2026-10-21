@@ -281,6 +281,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if effect.push_aside and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.push_side if ctx.push_side != Vector2i.ZERO else _aside(ctx, target, ctx.cast_dir)
 			var tiles := Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now), target.weight)
+			if effect.push_aside and ctx.push_tiles > 0:
+				tiles = ctx.push_tiles # just out of the charge's lane
 			if pull:
 				tiles = mini(tiles, TileGeometry.distance(caster.tile(), target.tile()) - 1)
 			var r := move_unit(ctx, target, dir, tiles, 0.15)
@@ -388,8 +390,11 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 		AbilityEffect.Kind.BUFF:
 			if effect.buff == null or not target.alive:
 				return
-			target.buffs.apply(effect.buff, ctx.now, 0.0, -1,
-					{"duration": AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules)})
+			var buff_seconds := AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules)
+			if effect.buff.stuns and target.move.is_moving(ctx.now):
+				# A stun from the hit that knocked it back starts once it lands.
+				buff_seconds += target.move.start_time + target.move.duration - ctx.now
+			target.buffs.apply(effect.buff, ctx.now, 0.0, -1, {"duration": buff_seconds})
 			if effect.buff.stuns or effect.buff.sleeps:
 				target.casting = {} # can't keep casting while stunned
 			events.append({"type": "buff", "source": caster.id, "target": target.id,
@@ -585,7 +590,13 @@ static func _charge_through(ctx: CombatContext, caster: Actor, ability: AbilityD
 	var end := from
 	var lane: Array[Vector2i] = []
 	var hit := {}
-	for c in charge_lane(ctx, caster, dir, int(effect.base_amount)):
+	var planned := charge_lane(ctx, caster, dir, int(effect.base_amount))
+	# The marked area (the lane its body sweeps, and where it starts): those it hits
+	# are shoved just past its edge.
+	var area := {}
+	for t in charge_swept(caster, planned) + caster.tiles():
+		area[t] = true
+	for c in planned:
 		var blocked := false
 		for t in caster.tiles(c):
 			var unit := _actor_at(ctx, t)
@@ -596,9 +607,13 @@ static func _charge_through(ctx: CombatContext, caster: Actor, ability: AbilityD
 				var off := unit.tile() - c
 				var side := off.x * perp.x + off.y * perp.y
 				ctx.cast_dir = dir
-				ctx.push_side = perp if side > 0 else (-perp if side < 0 else Vector2i.ZERO)
+				ctx.push_side = perp if side > 0 else (-perp if side < 0 else _aside(ctx, unit, dir))
+				ctx.push_tiles = 1
+				while area.has(unit.tile() + ctx.push_side * ctx.push_tiles) and ctx.push_tiles < 4:
+					ctx.push_tiles += 1
 				apply_effects(ctx, caster, effect.pass_ability, unit, events)
 				ctx.push_side = Vector2i.ZERO
+				ctx.push_tiles = 0
 			if _occupied(ctx, t, caster):
 				blocked = true
 		if blocked:

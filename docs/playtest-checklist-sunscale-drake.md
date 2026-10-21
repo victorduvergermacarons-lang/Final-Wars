@@ -37,8 +37,12 @@ alone, open the debug console (`) and type `level 40`, or use `spawn sunscale_dr
 - [ ] From 2–5 tiles away, a red **lane 3 tiles wide** (as wide as its body) and 5
       tiles long glows toward you for **1 s** while it holds a poised pose.
 - [ ] Then it dives along the lane. Anyone in any of the 3 lanes is burned and **shoved
-      2 tiles sideways** (out of its way, toward their own side); it ends at the far
-      end of the lane (or before something it can't pass).
+      sideways, just out of the red lane**: 1 tile from an outer lane, 2 from the middle
+      lane, toward their own side. It ends at the far end of the lane (or before
+      something it can't pass).
+- [ ] After the shove you're **stunned for about 1.5 s** (you can't move or act).
+- [ ] After a dive the game stays smooth, and the drake comes back toward you,
+      even if you stand against a wall or the map's edge.
 - [ ] All the tiles it swept burn for about **2 s**.
 - [ ] Every attack hits noticeably harder than before (about half again as much).
 - [ ] Leave the lane before the dive: no damage, no shove.

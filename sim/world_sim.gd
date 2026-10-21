@@ -368,10 +368,12 @@ func can_move(actor: Actor, from: Vector2i, to: Vector2i) -> bool:
 
 
 ## A path for `actor` to `goal` by its own movement rules (see can_move).
-func path_for(actor: Actor, goal: Vector2i, blocked: Dictionary, max_expanded: int = 4096) -> Array[Vector2i]:
+## `goals` / `goal_slack`: end on any of these tiles instead (see Pathfinder).
+func path_for(actor: Actor, goal: Vector2i, blocked: Dictionary, max_expanded: int = 4096,
+		goals: Dictionary = {}, goal_slack: int = 0) -> Array[Vector2i]:
 	var rise := (actor as Enemy).fly_rise(now) if actor is Enemy else -1
 	return Pathfinder.find_path(grid, actor.tile(), goal, StatCalc.jump_levels(actor.current_stats(now)),
-			blocked, -1, max_expanded, rise, actor.footprint if actor.is_large() else [])
+			blocked, -1, max_expanded, rise, actor.footprint if actor.is_large() else [], goals, goal_slack)
 
 
 ## Resolves an ability and processes any deaths it caused.

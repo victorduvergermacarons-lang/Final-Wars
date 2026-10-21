@@ -34,6 +34,9 @@ func _init(p_grid: GridModel, p_rules: CombatRules, p_rng: RandomNumberGenerator
 ## Set while a charge shoves units aside: which way (perpendicular to the lane) to
 ## push the unit being hit; zero lets the knockback pick a free side.
 var push_side := Vector2i.ZERO
+## Set with push_side (Searing Dive): the exact tiles a sideways shove moves the unit,
+## to just outside the charge's lane, whatever its weight (0 = the effect's own).
+var push_tiles := 0
 
 
 func add_actor(actor: Actor) -> void:

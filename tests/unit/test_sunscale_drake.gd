@@ -216,8 +216,10 @@ func test_dive_sweeps_three_lanes_hits_and_shoves_aside_and_trails_fire() -> voi
 	var events := _run(1.1)
 	assert_gt(_damage_to(events, hero, &"searing_dive_hit"), 0.0, "centre lane hit")
 	assert_gt(_damage_to(events, side, &"searing_dive_hit"), 0.0, "side lane hit too")
-	assert_eq(side.tile().y, 13, "shoved away from the lane on its own side")
-	assert_true(absi(hero.tile().y - 10) >= 2, "the centre one shoved clear of its body")
+	assert_eq(side.tile().y, 12, "an edge lane is shoved 1 tile, just out of the lane, on its own side")
+	assert_eq(absi(hero.tile().y - 10), 2, "the centre lane is shoved 2 tiles, just out of the lane")
+	for unit in [hero, side]:
+		assert_true(unit.buffs.has(&"searing_dive_stun", world.now), "stunned after the shove")
 	assert_eq(d.move.to_tile, Vector2i(4, 10), "dove the whole lane")
 	var trail := {}
 	for z in world.ground_zones():
@@ -225,6 +227,38 @@ func test_dive_sweeps_three_lanes_hits_and_shoves_aside_and_trails_fire() -> voi
 			trail[t] = true
 	for t in lane:
 		assert_true(trail.has(t), "fire trail on %s" % t)
+
+
+func test_the_dive_stun_lasts_its_time_after_the_shove_lands() -> void:
+	var d := _drake_with(&"searing_dive", Vector2i(9, 10))
+	hero.move.place(Vector2i(6, 10))
+	world.step()
+	var left := -1.0
+	for i in 60:
+		world.step()
+		if hero.tile() != Vector2i(6, 10) and not hero.move.is_moving(world.now):
+			left = hero.buffs.remaining(&"searing_dive_stun", world.now)
+			break
+	assert_between(left, 1.35, 1.5, "stunned for about 1.5 s once it has landed")
+	assert_ne(d, null)
+
+
+func test_it_finds_its_way_beside_a_hero_its_body_cant_stand_on() -> void:
+	# A hero on the map edge: the drake's centre can never be on that tile, so it
+	# has to aim for the tiles beside it (it used to search the whole map every tick).
+	hero.move.place(Vector2i(0, 8))
+	var d := _drake_with(&"talon_rake", Vector2i(8, 8))
+	d.state = Enemy.State.COMBAT
+	var start := Time.get_ticks_msec()
+	var reached := false
+	for i in roundi(30.0 / world.rules.tick_seconds):
+		world.step()
+		hero.hp = hero.stats.hp
+		if d.range_to(hero.tile()) <= 1:
+			reached = true
+			break
+	assert_true(reached, "got beside the hero on the edge (at %s)" % d.tile())
+	assert_lt(Time.get_ticks_msec() - start, 5000, "without slow searches")
 
 
 func test_out_of_the_lane_takes_no_dive_damage() -> void:

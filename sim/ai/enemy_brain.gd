@@ -242,12 +242,50 @@ static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Va
 	return best
 
 
+## After a failed search for a way to its target, an enemy waits this long before
+## searching again (a full search of a big map is slow).
+const PATH_RETRY_SECONDS := 0.5
+
+
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
 	if not _step_ready(world, enemy) or (enemy.is_large() and enemy.range_to(seen) <= 1):
 		return # a large body is already beside its target
-	var path := world.path_for(enemy, seen, world.occupied_tiles(enemy))
-	if path.size() > 2:
-		world.try_step(enemy, path[1])
+	if world.now < enemy.path_retry_at:
+		return # no way there a moment ago: don't search the whole map every tick
+	var path: Array[Vector2i]
+	if enemy.is_large():
+		# Its centre can never stand on its target: head for where its body would be
+		# beside it.
+		var goals := beside_goals(enemy, seen)
+		path = world.path_for(enemy, seen, world.occupied_tiles(enemy), 4096, goals, _body_extent(enemy) + 1)
+		if path.size() >= 2:
+			world.try_step(enemy, path[1])
+	else:
+		path = world.path_for(enemy, seen, world.occupied_tiles(enemy))
+		if path.size() > 2:
+			world.try_step(enemy, path[1])
+	if path.is_empty():
+		enemy.path_retry_at = world.now + PATH_RETRY_SECONDS
+
+
+## Centres where a large body would have one of its tiles right next to `target`
+## (4 directions) without covering it.
+static func beside_goals(enemy: Enemy, target: Vector2i) -> Dictionary:
+	var goals := {}
+	for o in enemy.footprint:
+		for dir in GridModel.DIRECTIONS:
+			var c: Vector2i = target + dir - o
+			if not enemy.tiles(c).has(target):
+				goals[c] = true
+	return goals
+
+
+## How far its body reaches from its centre (grid steps).
+static func _body_extent(enemy: Enemy) -> int:
+	var r := 0
+	for o in enemy.footprint:
+		r = maxi(r, GridModel.distance(Vector2i.ZERO, o))
+	return r
 
 
 static func _step_ready(world: WorldSim, enemy: Enemy) -> bool:
