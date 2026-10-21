@@ -1,17 +1,16 @@
 class_name AbilityTreeWindow
 extends BookSpread
-## The ability trees (T), across the menu book: one tab per tree. Each tier is a
-## row with the Mastery it needs; abilities show their state (mastered, learning,
-## learnable, locked, not in the game yet), AP and how much Mastery they have
-## given toward their cap, with lines to their prerequisites. Usable abilities
-## can be dragged onto the action bar. The tier labels and the first columns sit
-## on the left page, the other columns on the right, clear of the spine.
+## The ability trees (T), across the menu book: one tab per tree. Tiers go left
+## to right, one column each: tiers 1–3 on the left page, 4 and 5 on the right,
+## each headed by the Mastery it needs. Abilities show their state (mastered,
+## learning, learnable, locked, not in the game yet), AP and how much Mastery
+## they have given toward their cap, with lines from their prerequisites. Usable
+## abilities can be dragged onto the action bar.
 
-## Space between nodes, and the tier label column on the left page.
-const GAP := Vector2(10, 14)
-const ROW_LABEL_W := 92.0
-## Columns on the left page (the rest go right).
-const LEFT_COLUMNS := 2
+## Space between nodes; tier columns on the left page (the rest go right).
+const GAP := Vector2(10, 10)
+const LEFT_TIERS := 3
+const TIER_HEADER_H := 44.0
 
 enum State { MASTERED, LEARNING, LEARNABLE, LOCKED, NOT_IN_GAME }
 
@@ -50,24 +49,20 @@ func _init(p_hud: Hud) -> void:
 	_header = BookSpread.note("")
 	_header.add_theme_color_override("font_color", UiPalette.INK)
 	right.add_child(_header)
-	right.add_child(BookSpread.note("Drag a usable ability onto the action bar."))
+	set_footnote("Drag a usable ability onto the action bar.")
 	_canvas = _Canvas.new(self)
 	add_child(_canvas)
 
 
-## The pages' headings go on top; the tree fills both pages below them. It is
-## laid out for the book at 1080p (REF_ART_SCALE) and scaled as a whole to the
-## book's real size, so a smaller window shrinks it instead of squeezing nodes.
-const REF_ART_SCALE := 8.0 / 3.0
-
-
+## The pages' headings go on top; the tree fills both pages below them, down to
+## the footnote.
 func lay_out(left_rect: Rect2, right_rect: Rect2) -> void:
 	super.lay_out(left_rect, right_rect)
-	var k := left_rect.size.x / (BookView.LEFT_PAGE.size.x * REF_ART_SCALE)
-	var top := maxf(left.position.y + left.size.y * left.scale.y, right.position.y + right.size.y * right.scale.y) + 12.0 * k
-	_canvas.scale = Vector2(k, k)
-	var geometry := [Rect2(left_rect.position.x / k, top / k, left_rect.size.x / k, (left_rect.end.y - top) / k),
-			Rect2(right_rect.position.x / k, top / k, right_rect.size.x / k, (right_rect.end.y - top) / k)]
+	var top := roundf(maxf(left.position.y + left.get_combined_minimum_size().y,
+			right.position.y + right.get_combined_minimum_size().y) + 10.0)
+	var bottom := right.position.y + right.size.y
+	var geometry := [Rect2(left_rect.position.x, top, left_rect.size.x, bottom - top),
+			Rect2(right_rect.position.x, top, right_rect.size.x, bottom - top)]
 	if geometry != _canvas.pages:
 		_canvas.pages = geometry
 		_shown_key = "" # rebuild at the new size
@@ -93,11 +88,9 @@ func _process(_delta: float) -> void:
 	if key == _shown_key:
 		return
 	_shown_key = key
-	var thresholds: PackedStringArray = []
-	for tier in range(1, 6):
-		thresholds.append(str(int(ContentDB.tree.tier_mastery.get(tier, 0))))
-	_header.text = "%s Mastery: %d (unlocks tiers)%s   ·   Tiers need %s" % [tree_name, floori(permanent),
-			"  + %d from gear (power only)" % floori(gear) if gear >= 1.0 else "", " / ".join(thresholds)]
+	# Each tier column shows what it needs; this is what you have.
+	_header.text = "%s Mastery: %d%s" % [tree_name, floori(permanent),
+			"  (+%d from gear, power only)" % floori(gear) if gear >= 1.0 else ""]
 	_canvas.rebuild(hero)
 
 
@@ -138,7 +131,8 @@ static func node_text(hero: Hero, ability: AbilityDef) -> String:
 	var progress: PackedStringArray = []
 	if not hero.is_mastered(ability.id) and (hero.ap.get(ability.id, 0) > 0 or state_of(hero, ability) == State.LEARNING):
 		progress.append("AP %d/%d" % [hero.ap.get(ability.id, 0), ability.ap_to_master])
-	if given.y > 0.0:
+	# Two lines fit a node: while AP shows, the Mastery count stays in the tooltip.
+	if given.y > 0.0 and progress.is_empty():
 		progress.append("Mastery %d/%d" % [floori(given.x), int(given.y)])
 	lines.append(" · ".join(progress) if not progress.is_empty() else STATE_NAMES[state_of(hero, ability)])
 	return "\n".join(lines)
@@ -163,39 +157,43 @@ class _Canvas:
 		_lines.clear()
 		var data: AbilityTreeData = ContentDB.tree
 		var by_tier := {}
-		var widest := 1
+		var tallest := 1
 		for id in data.ids(window.tree_name):
 			var row: Dictionary = data.ability(id)
 			if not by_tier.has(row.tier):
 				by_tier[row.tier] = []
 			by_tier[row.tier].append(id)
-			widest = maxi(widest, by_tier[row.tier].size())
-		# Columns 0..LEFT_COLUMNS-1 on the left page after the tier labels, the rest
-		# on the right page; every node the same size, five tier rows.
+			tallest = maxi(tallest, by_tier[row.tier].size())
+		# One column per tier: tiers 1..LEFT_TIERS share the left page, the rest the
+		# right page. Every node the same size; the abilities of a tier go down.
 		var lp: Rect2 = pages[0]
 		var rp: Rect2 = pages[1]
-		var right_cols := maxi(widest - LEFT_COLUMNS, 1)
-		var cell_w := minf((lp.size.x - ROW_LABEL_W) / LEFT_COLUMNS, rp.size.x / right_cols)
-		var row_h := maxf(lp.size.y, 1.0) / 5.0
-		var node_size := Vector2(maxf(cell_w - GAP.x, 40.0), maxf(row_h - GAP.y, 30.0))
+		var col_l := lp.size.x / LEFT_TIERS
+		var col_r := rp.size.x / (5 - LEFT_TIERS)
+		var row_h := (minf(lp.size.y, rp.size.y) - TIER_HEADER_H) / tallest
+		var node_size := Vector2(maxf(minf(col_l, col_r) - GAP.x, 40.0), maxf(row_h - GAP.y, 30.0)).floor()
 		var permanent := Mastery.permanent(hero, window.tree_name)
 		for tier in range(1, 6):
-			var y := lp.position.y + (tier - 1) * row_h
+			var on_left := tier <= LEFT_TIERS
+			var col_w := col_l if on_left else col_r
+			var col_x := lp.position.x + (tier - 1) * col_l if on_left else rp.position.x + (tier - 1 - LEFT_TIERS) * col_r
 			var need := float(data.tier_mastery.get(tier, 0))
+			var open := permanent + 0.0001 >= need
 			var label := Label.new()
-			label.position = Vector2(lp.position.x, y + 4)
-			label.add_theme_font_size_override("font_size", 17)
-			label.text = "Tier %d\n%s" % [tier, "open" if permanent + 0.0001 >= need else "needs %d" % int(need)]
-			label.add_theme_color_override("font_color",
-					Color(UiPalette.GREEN) if permanent + 0.0001 >= need else Color(UiPalette.RED))
+			label.position = Vector2(roundf(col_x), lp.position.y)
+			label.size = Vector2(roundf(col_w - GAP.x), TIER_HEADER_H)
+			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			label.add_theme_font_size_override("font_size", 16)
+			label.add_theme_constant_override("line_spacing", -2)
+			label.text = "Tier %d\n%s" % [tier, "open" if open else "needs %d" % int(need)]
+			label.add_theme_color_override("font_color", Color(UiPalette.GREEN) if open else Color(UiPalette.RED))
 			add_child(label)
 			var ids: Array = by_tier.get(tier, [])
 			for i in ids.size():
 				var ability: AbilityDef = ContentDB.abilities[StringName(ids[i])]
 				var n := _Node.new(hero, ability, node_size)
-				var x := lp.position.x + ROW_LABEL_W + i * cell_w if i < LEFT_COLUMNS \
-						else rp.position.x + (i - LEFT_COLUMNS) * cell_w
-				n.position = Vector2(x, y)
+				n.position = Vector2(col_x + (col_w - GAP.x - node_size.x) * 0.5,
+						lp.position.y + TIER_HEADER_H + i * row_h).round()
 				add_child(n)
 				_nodes[ability.id] = n
 		for id in _nodes:
@@ -204,9 +202,12 @@ class _Canvas:
 				var from: _Node = _nodes.get(StringName(pre))
 				if from == null:
 					continue
+				var to: _Node = _nodes[id]
 				var done := hero.is_mastered(StringName(pre))
-				_lines.append([from.position + Vector2(node_size.x * 0.5, node_size.y),
-						_nodes[id].position + Vector2(node_size.x * 0.5, 0),
+				# Left to right between tiers; top to bottom within one.
+				var sideways := to.position.x > from.position.x + 1.0
+				_lines.append([from.position + (Vector2(node_size.x, node_size.y * 0.5) if sideways else Vector2(node_size.x * 0.5, node_size.y)),
+						to.position + (Vector2(0, node_size.y * 0.5) if sideways else Vector2(node_size.x * 0.5, 0)),
 						Color(UiPalette.GOLD) if done else UiPalette.INK_SOFT])
 		queue_redraw()
 

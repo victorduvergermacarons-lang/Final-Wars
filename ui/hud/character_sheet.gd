@@ -16,13 +16,21 @@ var _cells: Array[Label] = []
 func _init(p_hud: Hud) -> void:
 	super()
 	hud = p_hud
+	# The name, with level and XP beside it.
+	var heading := HBoxContainer.new()
+	heading.add_theme_constant_override("separation", 14)
+	left.add_child(heading)
 	_name = BookSpread.title("")
-	left.add_child(_name)
+	heading.add_child(_name)
 	_header = Label.new()
-	left.add_child(_header)
+	_header.size_flags_vertical = Control.SIZE_SHRINK_END
+	_header.add_theme_font_size_override("font_size", 18)
+	_header.add_theme_color_override("font_color", UiPalette.INK_SOFT)
+	heading.add_child(_header)
 	_table = GridContainer.new()
 	_table.columns = 6
-	_table.add_theme_constant_override("h_separation", 12)
+	_table.add_theme_constant_override("h_separation", 10)
+	_table.add_theme_constant_override("v_separation", 0)
 	left.add_child(_table)
 	for h in ["Stat", "Base", "Growth", "Gear", "Buffs", "Total"]:
 		var l := _cell(h)
@@ -35,9 +43,9 @@ func _init(p_hud: Hud) -> void:
 	_mastery.fit_content = true
 	right.add_child(_mastery)
 	right.add_child(LearningRow.new(hud))
-	# Scrolls once the list gets long, so the page keeps its size.
+	# Fills the rest of the page and scrolls once the list gets long.
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(0, 220)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	right.add_child(scroll)
 	_abilities = RichTextLabel.new()
@@ -45,6 +53,7 @@ func _init(p_hud: Hud) -> void:
 	_abilities.fit_content = true
 	_abilities.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_abilities)
+	set_footnote("Permanent Mastery unlocks a tree's tiers; Mastery from gear only adds power.")
 
 
 func _cell(text: String) -> Label:
@@ -62,7 +71,7 @@ func _process(_delta: float) -> void:
 	if hero == null:
 		return
 	_name.text = hero.display_name
-	_header.text = "Level %d   ·   XP %d / %d" % [hero.level, hero.xp,
+	_header.text = "Level %d  ·  XP %d / %d" % [hero.level, hero.xp,
 			Leveling.xp_to_next(hero.level, hud.session.rules())]
 	var rows := StatBreakdown.rows(hero, hud.session.now())
 	for r in rows:
@@ -73,7 +82,7 @@ func _process(_delta: float) -> void:
 		_cells[i + 3].text = _signed(r.gear)
 		_cells[i + 4].text = _signed(r.buffs)
 		_cells[i + 5].text = _num(r.total)
-	var m: PackedStringArray = ["[b]Mastery[/b] (permanent unlocks tiers; gear only adds power):"]
+	var m: PackedStringArray = ["[b]Mastery[/b]"]
 	for tree in Mastery.TREES:
 		var perm := Mastery.permanent(hero, tree)
 		var total := Mastery.total(hero, tree, hud.session.now())

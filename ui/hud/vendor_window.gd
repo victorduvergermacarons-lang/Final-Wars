@@ -30,7 +30,7 @@ func _init(p_hud: Hud) -> void:
 	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	right.add_child(_gold)
 	right.add_child(BookSpread.bag_grid(hud))
-	right.add_child(BookSpread.note("Right-click an item in your bag to sell it."))
+	set_footnote("Right-click an item in your bag to sell it.")
 	visible = false
 
 

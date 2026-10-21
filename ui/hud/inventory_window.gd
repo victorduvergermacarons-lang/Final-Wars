@@ -15,19 +15,24 @@ func _init(p_hud: Hud) -> void:
 	super()
 	hud = p_hud
 	left.add_child(BookSpread.title("Equipment"))
+	# Worn items in the middle of the page.
 	var equip := GridContainer.new()
 	equip.columns = 3
+	equip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	equip.add_theme_constant_override("h_separation", 6)
 	equip.add_theme_constant_override("v_separation", 6)
 	for slot in EquipSlot.COUNT:
 		equip.add_child(ItemSlotView.new(hud, ItemSlotView.Kind.EQUIP, slot))
 	left.add_child(equip)
-	left.add_child(LearningRow.new(hud))
+	var learning := LearningRow.new(hud)
+	learning.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	left.add_child(learning)
 	_gold = Label.new()
+	_gold.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
 	left.add_child(_gold)
-	left.add_child(BookSpread.note("Drag to move or equip · right-click to equip or take off · "
-			+ "shift+click to split a stack · ctrl+right-click to destroy"))
+	set_footnote("Drag to move or equip · right-click to equip or take off · "
+			+ "shift+click to split a stack · ctrl+right-click to destroy")
 
 	right.add_child(BookSpread.title("Bag"))
 	right.add_child(BookSpread.bag_grid(hud, BAG_COLUMNS))

@@ -18,10 +18,16 @@ func _init(p_hud: Hud) -> void:
 	left.add_child(BookSpread.title("Quest Log"))
 	_list = VBoxContainer.new()
 	left.add_child(_list)
+	# Long quest text scrolls within the page; Abandon stays below it.
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	right.add_child(scroll)
 	_details = RichTextLabel.new()
 	_details.bbcode_enabled = true
 	_details.fit_content = true
-	right.add_child(_details)
+	_details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_details)
 	_abandon = Button.new()
 	_abandon.text = "Abandon quest"
 	_abandon.focus_mode = Control.FOCUS_NONE
