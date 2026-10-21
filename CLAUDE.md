@@ -13,7 +13,9 @@ uses the first real tileset** (`iso_basic`, 8 steps, 2026-10-16; see **Map art**
 art** below and `docs/playtest-checklist-wolves.md`). **Enemy Testing Grounds and the
 Salamander Hound** added (2026-10-20; see those sections and
 `docs/playtest-checklist-testing-grounds.md`). **The Sunscale Drake** (flying elite) added
-(2026-10-20; see its section and `docs/playtest-checklist-sunscale-drake.md`). For the numbers
+(2026-10-20; see its section and `docs/playtest-checklist-sunscale-drake.md`). **Audio
+system** and the first music track added (2026-10-21; see **Audio**, `AUDIO_SPEC.md` and
+`docs/playtest-checklist-audio.md`). For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -342,6 +344,63 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   charges, leaps), so its dive can't reach other pens. There is no Ashkaran caldera
   area yet, so the planned rare spawn there waits for that zone.
 
+## Audio (2026-10-21)
+
+`AUDIO_SPEC.md` is the sound designer's guide (formats, naming, loudness, every key with
+its status). Regenerate its key list with
+`godot --headless --path . -s res://tools/write_audio_spec.gd`; a test fails when a key
+is missing from it.
+- **Buses** (`default_bus_layout.tres`): Master, with Music, Ambience, SFX and UI under it.
+  The Settings window (main menu and in-game bar) has a slider per bus; volumes are saved
+  per player in `user://settings.cfg` `[audio]`.
+- **`Audio` autoload** (`autoload/audio.gd`), tuned by `content/audio/audio_config.tres`
+  (`AudioConfig`):
+  - **Music** by context (`MusicTrackDef.Context`: title, town, explore, combat,
+    dungeon, boss). Tracks are data: one `MusicTrackDef` per file in
+    `content/audio/music/` (name, file, contexts, loop, volume, drained). Two players
+    crossfade over 1.5 s; the same track never restarts.
+  - **Fallbacks** while tracks are missing: boss → combat; combat keeps whatever is
+    playing; dungeon → explore → town.
+  - **Ducking:** sounds whose `SfxDef` says `ducks_music` lower the music 6 dB for 0.8 s
+    (howl, breath, dive, charge, big deaths, level-up, world events).
+  - **Bond hook:** `ZoneDef.bond` (0–1, default 1), overridable with
+    `Audio.set_zone_bond`. Below 0.35 a track marked `drained` for the context is
+    preferred. No drained tracks exist yet.
+  - **Sound effects by key.** The first word of the key picks the folder and bus
+    (`AudioConfig.categories`), and the file is `audio/<folder>/<key>.wav`. Numbered
+    takes (`<key>_1.wav` …) rotate at random. An optional `SfxDef` entry changes the
+    file, level, variation, voice limit or ducking. A missing file logs one warning
+    and plays nothing.
+  - **Variation:** random pitch and volume per category (footsteps ±8% / ±2 dB, hits
+    ±5% / ±1.5 dB, UI none). At most 4 copies of a key play at once.
+  - **Positional:** world sounds are `AudioStreamPlayer2D`s in the world view, heard
+    from an `AudioListener2D` on the local hero, fading out over 14 tiles. Each
+    player hears their own position.
+- **Keys** (`SoundCatalog`, `data/sound_catalog.gd`, built from the content):
+  - hero abilities: `<tree>_<ability>_cast` when used and `…_hit` where they land.
+    The tree is fire, water, earth or air, or weapon for Sword/Bow/Hammer, and its
+    name isn't repeated (`fire_dart_cast`).
+  - creature attacks: `creature_<enemy>_<ability>` and `…_hit`; creatures also have
+    `_aggro`, `_hurt`, `_death`, `_step` (+ `_grounded`, `_enrage`).
+  - parts of abilities (ground-zone ticks, dive hits) only have a `_hit` key.
+    Abilities that never damage, heal or shield have no `_hit` key, and potions
+    (`world_…_cast`) have none either.
+  - footsteps `footstep_<terrain>` per walkable terrain (`footstep_default` without a
+    tileset), `ambience_<zone>` per zone (or `ZoneDef.ambience`), `ui_…`, `world_…`.
+- **`SoundDirector`** (`view/sound_director.gd`, made by `Game`, client side): turns
+  events into keys. A wind-up or cast plays its sound when it starts, not again when
+  it lands; hurt sounds play at most every 0.4 s per enemy. It plays footsteps for
+  every walking actor. Each 0.25 s it sets the music context: the zone's
+  (`ZoneDef.music_context`; Millbrook = town, others explore), combat while any
+  fighter within 12 tiles of the local hero (or the hero) is in combat, and boss
+  when one of them is an elite.
+- **First track:** `audio/music/music_idle_draft.ogg` (title and town), converted from
+  the uploaded MP3 (now `art/audio/`). The MP3 had 43 ms of encoder silence at the start
+  and ended at full level, so it clicked when looping. The OGG trims the silence and
+  fades 10 ms in and 120 ms out.
+- No sound effect or ambience files exist yet: all 148 keys are listed as missing in
+  `AUDIO_SPEC.md`.
+
 ## Enemy Testing Grounds (2026-10-20)
 
 - **Getting there:** a 2-tile gate in Millbrook's north-east hedge at (15–16, 0), with an
@@ -508,26 +567,28 @@ Input ─► Intent ─► [network] ─► Host WorldSim (validates cooldowns/r
 ```
 project.godot, run_tests.sh, .gutconfig.json
 addons/gut/      GUT test framework (vendored)
-autoload/        net (ENet host/join), content_db (loads .tres)
+autoload/        net (ENet host/join), content_db (loads .tres), audio (music, sound effects, volumes)
 sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/
 net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
-content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ (.tres)
+content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ audio/ (.tres)
+audio/           music/ (OGG), ambience/ (OGG), sfx/<category>/ (WAV); see AUDIO_SPEC.md
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
-art/             uploaded source art (zips; ignored by Godot, never exported)
+art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
                  inventory, character sheet, spellbook, ability trees, dialogue, vendor, loot,
                  quest log, tracker)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
-tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator
+tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator,
+                 write_audio_spec.gd (sound key list in AUDIO_SPEC.md)
 design/          Ability_Tree.xlsx (source of truth for abilities)
 tools/once/      one-off content conversions and generators (kept for the record)
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
                  net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake), ability import, tilesets
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio), ability import, tilesets
 ```
 
 ### Build order (milestone 1)
@@ -1194,6 +1255,13 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-21 | Audio system + first track | User brief ("make sensible decisions, list them"). See **Audio**. My decisions are in the next rows. |
+| 2026-10-21 | Sound effects found by naming convention; data entries optional | `audio/<folder>/<key>.wav`, folder from the key's first word. Adding a sound needs only the file; `SfxDef` entries tune level, variation, ducking. Numbered takes rotate. Missing files warn once per key. |
+| 2026-10-21 | Key names derived from content | Ability and enemy display names give the keys (`fire_fireball_cast`, `creature_wolf_howl`), so new content gets keys and a line in `AUDIO_SPEC.md` automatically. Sword/Bow/Hammer share `weapon_`; a tree word isn't repeated. |
+| 2026-10-21 | Combat music within 12 tiles; boss music when an elite fights | "A fight near the player": any fighter within 12 tiles of the local hero, or the hero. Until combat tracks exist, fights keep the current music. Explore and dungeon fall back to the town track. |
+| 2026-10-21 | Bond hook: `ZoneDef.bond` + `Audio.set_zone_bond`, drained below 0.35 | Just the hook; a drained track is a `MusicTrackDef` with `drained = true`. |
+| 2026-10-21 | Every button clicks; windows play open/close | `Audio` hooks every button as it enters the tree, so new UI gets clicks for free. |
+| 2026-10-21 | First track: MP3 moved to `art/audio/`; OGG trimmed and faded at the loop | The upload landed at the repo root. 43 ms lead-in silence removed, 10 ms fade-in, 120 ms fade-out (it ended at full level). |
 | 2026-10-20 | Drake playtest fixes: 5-tile body (a plus), SW/SE swapped, harder hits, the dive sweeps 3 lanes | User requests. My choices: the body blocks movement as well as being hit; ranges are measured body to body; it can't be knocked back (Air knockbacks still ground it); the dive shoves 2 tiles to the side the unit was on; damage roughly ×1.5 on every attack; the drake stays level 6, so bots that never dodge now need level 7 (dodging players should manage at 6). |
 | 2026-10-20 | Sunscale Drake (flying elite) | User brief ("make sensible decisions, list them"). See **Sunscale Drake**. My decisions are in the next rows. |
 | 2026-10-20 | Drake art: both layers used; right views mirrored; frames widened to 160×128 | The brief said one layer facing left, but the file has SW and NW layers, so there are real front-left and back-left views. Each layer is shifted so its shadow's centre is the feet point, which lets mirrored rows share it. The file is at `art/`, not `art/creatures/`. |
