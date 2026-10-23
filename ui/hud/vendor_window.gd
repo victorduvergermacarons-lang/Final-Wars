@@ -77,12 +77,8 @@ func open(npc: Npc) -> void:
 		c.queue_free()
 	for item in npc.def.sells:
 		var row := HBoxContainer.new()
-		var name := RichTextLabel.new()
-		name.bbcode_enabled = true
-		name.fit_content = true
+		var name := ItemLabel.new(hud, item, "  %d gold" % item.price) # full tooltip on hover
 		name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		name.text = "[color=#%s]%s[/color]  %d gold" % [Rarity.color(item.rarity).to_html(false), item.display_name, item.price]
-		name.tooltip_text = item.description
 		row.add_child(name)
 		var buy := Button.new()
 		buy.text = "Buy"

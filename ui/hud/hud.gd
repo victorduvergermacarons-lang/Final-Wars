@@ -48,6 +48,10 @@ var settings_path := SettingsStore.DEFAULT_PATH
 
 var bind_mode := false
 var hovered_slot := -1
+## The bag item under the mouse, and the item being dragged (ItemSlotView): the
+## equipment slots it would go in light up.
+var hovered_item: ItemDef
+var dragged_item: ItemDef
 
 var _root: Control
 ## The menu book; open menu windows are on its pages.

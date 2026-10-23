@@ -400,6 +400,18 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   30% with the rarity's colour. Then the item name in ink, until items have icons.
   "Equipment" and "Bag" head the pages; the learning text sits left of the boots, gold
   centred under the bag. Other menus (loot) keep the dark slots.
+- **Item tooltips** (`ItemTooltip.text` / `label`, text 16, 340 wide), on every item: bag,
+  equipment, shop and loot rows (`ItemLabel`), quest rewards. Name in rarity colour,
+  rarity and slot, stats, growth per level, then for each taught ability (and a
+  consumable's Use) what it does in numbers for your hero now (`ability_lines`): how it
+  is aimed and its range or area, mana, cooldown, cast / wind-up / channel, each effect
+  (damage, healing, % of max, over time, shields, buffs, knockbacks, dashes, terrain,
+  ground zones with their damage per tick), what it scales with, and the Mastery it has
+  given. Then where a tree item stands for you, potions' shared cooldown and stack size,
+  sell price and the comparison with what you wear.
+- **Where it goes:** hovering an equippable bag item (or dragging any item) lights up the
+  equipment slot(s) it would go in, in gold (`ItemSlotView.fits`: accessories light both,
+  a two-handed weapon the main and off hand).
 - **`BookView`** (`ui/book_view.gd`): draws the book filling the screen (the 1280×720 UI:
   exactly 4 screen pixels per art pixel at 1080p; uneven art pixels in other windows).
   Writable areas measured on the art: left page (66, 46, 166×174), right page
@@ -1323,6 +1335,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-23 | Full item tooltips (abilities and consumables in numbers) everywhere items appear; the equipment slot an item would go in lights up on hover | User request. My choices: amounts are computed for your hero at that moment (stats, buffs and Mastery included); a consumable's own description is left out when its Use lines already say it; shop and loot rows got the same tooltip; dragging keeps the highlight until the drop; tooltip text 16. |
 | 2026-10-23 | Inventory: slot mapping confirmed; titles back; learning text left of the boots, gold centred under the bag; full rarity borders on equipment, a rarity tint in the bag | User request. My choices: the bag tint is the border's colour at 30% over the paper; the learning text is centred in the space left of the boots, gold 18. |
 | 2026-10-23 | The inventory uses the user's hand-drawn page (Layer 4) and rarity borders (Layer 5) | User request ("put this into the game"; layers 2–3 are templates, not used). My choices, to confirm: the arrow slot is the Off Hand and the band slot the first Accessory; a filled slot hides its picture under paper and shows the name in ink until there are item icons; the 28×29 borders are squeezed (nine-patch) into the smaller 26×26 bag slots; the "Equipment"/"Bag" titles are gone (the drawing has none); learning text and gold sit under the bag. |
 | 2026-10-21 | Layout tweaks: menus lower on the page, smaller quest text, shorter Abandon, indented abilities, centred inventory titles, smaller tree tiers, Play Solo on the left, draggable quest tracker, Browse goods hides the conversation, smaller shop writing | User requests. My choices: `BookSpread.TOP_GAP` 12 px; quest text 17 (its name stays 20), quest text box 330 px before it scrolls with Abandon (200 wide) under it; abilities indented 18 px; tree headers 14, nodes 13 with bigger gaps; the shop closes by itself when you walk away (the conversation that used to close it is hidden); the tracker's position isn't saved between sessions. |

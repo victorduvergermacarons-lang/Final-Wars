@@ -157,6 +157,26 @@ func _run() -> void:
 		hero.bag.add(cd.items[id], 3 if id == &"minor_health_potion" else 1)
 	hero.equip_from_bag(hero.bag.index_of(cd.items[&"rangers_gloves"]))
 	await _shot("9a_inventory_rarities")
+	# Hovering the robe in the bag: the Chest slot glows, and its tooltip (shown
+	# here in a paper panel like the real one, since a screenshot can't hover).
+	hud.hovered_item = cd.items[&"frostweave_robe"]
+	var tip := PanelContainer.new()
+	tip.theme = UiPalette.paper_theme()
+	tip.add_theme_stylebox_override("panel", UiPalette.paper_theme().get_stylebox("panel", "TooltipPanel"))
+	tip.add_child(ItemTooltip.label(cd.items[&"frostweave_robe"], hero, session.rules(), false, session.now()))
+	tip.position = Vector2(700, 120)
+	hud.add_child(tip)
+	await _shot("9a2_hover_robe")
+	tip.get_child(0).free()
+	tip.add_child(ItemTooltip.label(cd.items[&"minor_health_potion"], hero, session.rules(), false, session.now()))
+	tip.reset_size()
+	await _shot("9a3_hover_potion")
+	tip.get_child(0).free()
+	tip.add_child(ItemTooltip.label(cd.items[&"scorched_earth_scroll"], hero, session.rules(), false, session.now()))
+	tip.reset_size()
+	await _shot("9a4_hover_scroll")
+	tip.queue_free()
+	hud.hovered_item = null
 	hud._character.visible = true
 	await _shot("9b_character_sheet")
 	hud._spellbook.visible = true

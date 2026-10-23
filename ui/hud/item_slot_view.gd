@@ -25,6 +25,8 @@ const RARITY_BORDERS: Array[Texture2D] = [
 ## this much over the paper.
 const RARITY_TINTS: Array[Color] = [Color("696a6a"), Color("629e39"), Color("639bff"), Color("76428a")]
 const BAG_TINT := 0.3
+## An equipment slot that the hovered or dragged item would go in glows this much.
+const HIGHLIGHT_ALPHA := 0.22
 
 var hud: Hud
 var kind: Kind
@@ -112,10 +114,11 @@ func _draw() -> void:
 ## ink, until items have icons.
 func _draw_on_page() -> void:
 	var it := item()
-	if it == null:
-		return
 	var px := BookView.REF_ART_SCALE # UI units per art pixel on the page
 	var rect := Rect2(Vector2.ZERO, size)
+	if it == null:
+		_draw_highlight(rect, px)
+		return
 	if kind == Kind.BAG:
 		# The frame line is on the edge of a bag frame.
 		draw_rect(rect.grow(-px), UiPalette.PAPER.lerp(RARITY_TINTS[it.rarity], BAG_TINT))
@@ -125,6 +128,7 @@ func _draw_on_page() -> void:
 		var border := RARITY_BORDERS[it.rarity]
 		var border_size := Vector2(border.get_size()) * px
 		draw_texture_rect(border, Rect2(((size - border_size) * 0.5).round(), border_size.round()), false)
+	_draw_highlight(rect, px)
 	var ink := UiPalette.INK
 	_lines(it.display_name, size.y * 0.5 - 2, PAGE_NAME_SIZE, ink, false)
 	if kind == Kind.BAG:
@@ -142,17 +146,42 @@ func _draw_on_page() -> void:
 			draw_rect(Rect2(5.0 * px, size.y - 4.0 * px - 3, (size.x - 10.0 * px) * frac, 3), blue)
 
 
+## An equipment slot glows while the item under the mouse (or being dragged)
+## would go in it.
+func _draw_highlight(rect: Rect2, px: float) -> void:
+	if kind != Kind.EQUIP or not fits(hud.dragged_item if hud.dragged_item != null else hud.hovered_item, index):
+		return
+	var inner := rect.grow(-2.0 * px)
+	draw_rect(inner, Color(Color(UiPalette.GOLD), HIGHLIGHT_ALPHA))
+	draw_rect(inner, Color(UiPalette.GOLD), false, px)
+
+
+## Whether `it` would go in equipment slot `slot` (a two-handed weapon takes the
+## off hand too).
+static func fits(it: ItemDef, slot: int) -> bool:
+	if it == null or not it.is_equippable():
+		return false
+	if it.slot == EquipSlot.Type.TWO_HAND and slot == EquipSlot.Id.OFF_HAND:
+		return true
+	return EquipSlot.slots_for(it.slot).has(slot)
+
+
+## Hovering a bag item lights up where it would be worn; dragging any item keeps
+## that up until it is dropped.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_MOUSE_ENTER and kind == Kind.BAG:
+		hud.hovered_item = item()
+	elif what == NOTIFICATION_MOUSE_EXIT and kind == Kind.BAG:
+		hud.hovered_item = null
+	elif what == NOTIFICATION_DRAG_END:
+		hud.dragged_item = null
+
+
 func _make_custom_tooltip(_for_text: String) -> Object:
 	var it := item()
 	if it == null:
 		return null
-	var label := RichTextLabel.new()
-	label.bbcode_enabled = true
-	label.fit_content = true
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	label.custom_minimum_size = Vector2(300, 0)
-	label.text = ItemTooltip.text(it, hud.session.local_hero(), hud.session.rules(), kind != Kind.BAG)
-	return label
+	return ItemTooltip.label(it, hud.session.local_hero(), hud.session.rules(), kind != Kind.BAG, hud.session.now())
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -188,6 +217,7 @@ func _get_drag_data(_at: Vector2) -> Variant:
 	var it := item()
 	if it == null:
 		return null
+	hud.dragged_item = it # its equipment slots stay lit until the drop
 	var preview := Label.new()
 	preview.text = it.display_name
 	preview.add_theme_color_override("font_color", Rarity.color(it.rarity))

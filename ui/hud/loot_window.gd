@@ -37,12 +37,14 @@ func _process(_delta: float) -> void:
 		c.queue_free()
 	for l in loot:
 		var row := HBoxContainer.new()
-		var text := RichTextLabel.new()
-		text.bbcode_enabled = true
-		text.fit_content = true
-		text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		text.text = ", ".join(l.items.map(func(pair): return _item_text(pair)))
-		row.add_child(text)
+		# One name per item, each with the full tooltip on hover.
+		var names := VBoxContainer.new()
+		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		for pair in l.items:
+			var item: ItemDef = ContentDB.items.get(StringName(str(pair[0])))
+			if item != null:
+				names.add_child(ItemLabel.new(hud, item, " ×%d" % pair[1] if pair[1] > 1 else ""))
+		row.add_child(names)
 		var timer := Label.new()
 		timer.name = "Timer"
 		row.add_child(timer)
@@ -62,12 +64,3 @@ func _update_timers(loot: Array) -> void:
 		for l in loot:
 			if l.id == row.get_meta("loot_id", -1):
 				(row.get_node("Timer") as Label).text = "%ds" % maxi(ceili(l.expires - hud.session.now()), 0)
-
-
-static func _item_text(pair: Array) -> String:
-	var item: ItemDef = ContentDB.items.get(StringName(str(pair[0])))
-	if item == null:
-		return str(pair[0])
-	var n: int = pair[1]
-	return "[color=#%s]%s[/color]%s" % [Rarity.color(item.rarity).to_html(false), item.display_name,
-			" ×%d" % n if n > 1 else ""]
