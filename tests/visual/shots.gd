@@ -152,6 +152,11 @@ func _run() -> void:
 	# the learning slot, the character sheet, the spellbook.
 	hud.inventory_window.visible = true
 	await _shot("9_learning_slot")
+	# Every rarity: Uncommon, Rare and Epic in the bag (tinted), one worn (its border).
+	for id in [&"frostweave_robe", &"rangers_gloves", &"grizzlehide_mantle", &"minor_health_potion"]:
+		hero.bag.add(cd.items[id], 3 if id == &"minor_health_potion" else 1)
+	hero.equip_from_bag(hero.bag.index_of(cd.items[&"rangers_gloves"]))
+	await _shot("9a_inventory_rarities")
 	hud._character.visible = true
 	await _shot("9b_character_sheet")
 	hud._spellbook.visible = true

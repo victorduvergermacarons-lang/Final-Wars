@@ -394,11 +394,12 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   Left page by picture: scroll = learning slot (93, 66), hat = Head (129, 66), sword =
   Main Hand (165, 66), glove = Hands (93, 103), chest = Chest (129, 103), arrow = Off
   Hand (165, 103), band = Accessory (93, 140), trousers = Legs (129, 140), ring =
-  Accessory (165, 140), boots = Feet (130, 178). An empty slot draws nothing (the
-  picture shows); a filled one covers the picture with paper inside the frame line,
-  draws its rarity border (centred, as drawn; squeezed as a nine-patch in bag slots)
-  and the item name in ink until items have icons. The learning text and gold go under
-  the bag. Other menus (loot) keep the dark slots.
+  Accessory (165, 140), boots = Feet (130, 178) (confirmed by the user). An empty slot
+  draws nothing (the picture shows). A filled equipment slot covers its picture with
+  paper and shows the full rarity border, centred as drawn; a filled bag slot is tinted
+  30% with the rarity's colour. Then the item name in ink, until items have icons.
+  "Equipment" and "Bag" head the pages; the learning text sits left of the boots, gold
+  centred under the bag. Other menus (loot) keep the dark slots.
 - **`BookView`** (`ui/book_view.gd`): draws the book filling the screen (the 1280×720 UI:
   exactly 4 screen pixels per art pixel at 1080p; uneven art pixels in other windows).
   Writable areas measured on the art: left page (66, 46, 166×174), right page
@@ -413,7 +414,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 
   | Menu | Left page | Right page |
   |------|-----------|------------|
-  | Inventory (B) | the hand-drawn equipment page (Layer 4): learning slot and 9 equipment slots | the hand-drawn bag (5×4), learning text and gold under it |
+  | Inventory (B) | "Equipment", the hand-drawn page (Layer 4): learning slot, 9 equipment slots, learning text | "Bag", the hand-drawn 5×4 bag, gold |
   | Character (C) | name with level and XP beside it, stat table | Mastery, learning slot, abilities |
   | Spellbook (P) | title, first part of the list | the rest |
   | Quests (L) | quest list | the selected quest (scrolls), Abandon |
@@ -1322,6 +1323,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-23 | Inventory: slot mapping confirmed; titles back; learning text left of the boots, gold centred under the bag; full rarity borders on equipment, a rarity tint in the bag | User request. My choices: the bag tint is the border's colour at 30% over the paper; the learning text is centred in the space left of the boots, gold 18. |
 | 2026-10-23 | The inventory uses the user's hand-drawn page (Layer 4) and rarity borders (Layer 5) | User request ("put this into the game"; layers 2–3 are templates, not used). My choices, to confirm: the arrow slot is the Off Hand and the band slot the first Accessory; a filled slot hides its picture under paper and shows the name in ink until there are item icons; the 28×29 borders are squeezed (nine-patch) into the smaller 26×26 bag slots; the "Equipment"/"Bag" titles are gone (the drawing has none); learning text and gold sit under the bag. |
 | 2026-10-21 | Layout tweaks: menus lower on the page, smaller quest text, shorter Abandon, indented abilities, centred inventory titles, smaller tree tiers, Play Solo on the left, draggable quest tracker, Browse goods hides the conversation, smaller shop writing | User requests. My choices: `BookSpread.TOP_GAP` 12 px; quest text 17 (its name stays 20), quest text box 330 px before it scrolls with Abandon (200 wide) under it; abilities indented 18 px; tree headers 14, nodes 13 with bigger gaps; the shop closes by itself when you walk away (the conversation that used to close it is hidden); the tracker's position isn't saved between sessions. |
 | 2026-10-21 | Arrows at the bottom of the book turn between menus | User request. My choices: they name the menu they lead to; order Character, Inventory, Spellbook, Trees, Quests, wrapping; the loot menu isn't in the cycle (it opens on its own when loot waits). |

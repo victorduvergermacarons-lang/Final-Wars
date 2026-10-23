@@ -21,7 +21,10 @@ const RARITY_BORDERS: Array[Texture2D] = [
 	preload("res://assets/ui/rarity/common.png"), preload("res://assets/ui/rarity/uncommon.png"),
 	preload("res://assets/ui/rarity/rare.png"), preload("res://assets/ui/rarity/epic.png"),
 ]
-static var _rarity_styles := {}
+## A bag slot with an item is tinted with its rarity's colour (the borders' colours),
+## this much over the paper.
+const RARITY_TINTS: Array[Color] = [Color("696a6a"), Color("629e39"), Color("639bff"), Color("76428a")]
+const BAG_TINT := 0.3
 
 var hud: Hud
 var kind: Kind
@@ -103,25 +106,25 @@ func _draw() -> void:
 
 ## A slot drawn on the inventory page art (assets/ui/inventory_page.png): the
 ## frame and the empty-slot picture are in the art, so an empty slot draws
-## nothing. With an item: paper over the picture, the item's rarity border (the
-## art's 28×29 frames, centred; squeezed to fit a smaller bag slot), and its name
-## in ink, until items have icons.
+## nothing. With an item: an equipment slot covers its picture with paper and
+## shows the item's full rarity border (the art's 28×29 frames, centred as
+## drawn); a bag slot is tinted with the rarity's colour. Then the item's name in
+## ink, until items have icons.
 func _draw_on_page() -> void:
 	var it := item()
 	if it == null:
 		return
 	var px := BookView.REF_ART_SCALE # UI units per art pixel on the page
 	var rect := Rect2(Vector2.ZERO, size)
-	# Inside the frame line: equipment frames draw it 1 art pixel in (their corner
-	# dots stick out), bag frames on the edge.
-	var line_in := 1.0 if kind == Kind.BAG else 2.0
-	draw_rect(rect.grow(-line_in * px), UiPalette.PAPER)
-	var border := RARITY_BORDERS[it.rarity]
-	var border_size := Vector2(border.get_size()) * px
-	var box := Rect2(((size - border_size) * 0.5).round(), border_size.round())
-	if border_size.x > size.x - 2.0 * px:
-		box = rect.grow(-px) # a bag slot: smaller than the border
-	_rarity_style(it.rarity).draw(get_canvas_item(), box)
+	if kind == Kind.BAG:
+		# The frame line is on the edge of a bag frame.
+		draw_rect(rect.grow(-px), UiPalette.PAPER.lerp(RARITY_TINTS[it.rarity], BAG_TINT))
+	else:
+		# Equipment frames draw their line 1 art pixel in (their corner dots stick out).
+		draw_rect(rect.grow(-2.0 * px), UiPalette.PAPER)
+		var border := RARITY_BORDERS[it.rarity]
+		var border_size := Vector2(border.get_size()) * px
+		draw_texture_rect(border, Rect2(((size - border_size) * 0.5).round(), border_size.round()), false)
 	var ink := UiPalette.INK
 	_lines(it.display_name, size.y * 0.5 - 2, PAGE_NAME_SIZE, ink, false)
 	if kind == Kind.BAG:
@@ -137,18 +140,6 @@ func _draw_on_page() -> void:
 			var hero: Hero = hud.session.local_hero()
 			var frac := float(hero.ap.get(ability.id, 0)) / maxf(ability.ap_to_master, 1.0)
 			draw_rect(Rect2(5.0 * px, size.y - 4.0 * px - 3, (size.x - 10.0 * px) * frac, 3), blue)
-
-
-## The rarity border as a nine-patch (corners kept, edges stretched), so it also
-## fits the smaller bag slots.
-static func _rarity_style(rarity: int) -> StyleBoxTexture:
-	if not _rarity_styles.has(rarity):
-		var s := StyleBoxTexture.new()
-		s.texture = RARITY_BORDERS[rarity]
-		s.set_texture_margin_all(5)
-		s.draw_center = false
-		_rarity_styles[rarity] = s
-	return _rarity_styles[rarity]
 
 
 func _make_custom_tooltip(_for_text: String) -> Object:

@@ -3,8 +3,9 @@ extends BookSpread
 ## Inventory (B), drawn by hand on the menu book (Layer 4 of
 ## art/menu_book.aseprite: assets/ui/inventory_page.png): the learning slot and
 ## the nine equipment slots on the left page, the bag on the right. Each slot
-## sits on its frame in the art, in art pixels (measured on the art); the learning
-## text and your gold go under the bag.
+## sits on its frame in the art, in art pixels (measured on the art). The titles
+## head the pages; the learning text sits beside the boots, your gold under the
+## bag.
 
 const BAG_COLUMNS := 5
 const PAGE_ART := preload("res://assets/ui/inventory_page.png")
@@ -21,16 +22,17 @@ const EQUIP_AT := {
 const BAG_FRAME := Vector2(26, 26)
 const BAG_AT := Vector2(261, 65)
 const BAG_STEP := 29.0
-## Under the bag on the right page: what is being learned, and gold.
-const INFO_AT := Rect2(261, 182, 142, 38)
+## Beside the boots on the left page: what is being learned. Under the bag on the
+## right page: gold.
+const LEARNING_TEXT_AT := Rect2(68, 180, 60, 40)
+const GOLD_AT := Rect2(261, 182, 142, 14)
 
 var hud: Hud
 var _confirm: ConfirmationDialog
 var _pending_destroy := -1
 var _gold: Label
 var _learning: Label
-var _info: VBoxContainer
-## [ItemSlotView, art rect] for every slot on the page.
+## [Control, art rect] for everything placed on the drawn page.
 var _placed: Array = []
 
 
@@ -38,42 +40,50 @@ func _init(p_hud: Hud) -> void:
 	super()
 	hud = p_hud
 	page_art = PAGE_ART
-	_place_slot(ItemSlotView.new(hud, ItemSlotView.Kind.LEARNING, 0), Rect2(LEARNING_AT, EQUIP_FRAME))
+	for page in [left, right]:
+		var heading := BookSpread.title("Equipment" if page == left else "Bag")
+		heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		page.add_child(heading)
+	_on_page(ItemSlotView.new(hud, ItemSlotView.Kind.LEARNING, 0), Rect2(LEARNING_AT, EQUIP_FRAME))
 	for slot in EQUIP_AT:
-		_place_slot(ItemSlotView.new(hud, ItemSlotView.Kind.EQUIP, slot), Rect2(EQUIP_AT[slot], EQUIP_FRAME))
+		_on_page(ItemSlotView.new(hud, ItemSlotView.Kind.EQUIP, slot), Rect2(EQUIP_AT[slot], EQUIP_FRAME))
 	for i in Bag.DEFAULT_SIZE:
 		var at := BAG_AT + Vector2(i % BAG_COLUMNS, i / BAG_COLUMNS) * BAG_STEP
-		_place_slot(ItemSlotView.new(hud, ItemSlotView.Kind.BAG, i), Rect2(at, BAG_FRAME))
-	_info = VBoxContainer.new()
-	_info.add_theme_constant_override("separation", 0)
-	add_child(_info)
+		_on_page(ItemSlotView.new(hud, ItemSlotView.Kind.BAG, i), Rect2(at, BAG_FRAME))
 	_learning = Label.new()
 	_learning.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_learning.add_theme_font_size_override("font_size", 16)
+	_learning.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_learning.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_learning.add_theme_font_size_override("font_size", 15)
+	_learning.add_theme_constant_override("line_spacing", -3)
 	_learning.add_theme_color_override("font_color", Color(UiPalette.BLUE))
-	_info.add_child(_learning)
+	_on_page(_learning, LEARNING_TEXT_AT)
 	_gold = Label.new()
-	_gold.add_theme_font_size_override("font_size", 16)
+	_gold.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_gold.add_theme_font_size_override("font_size", 18)
 	_gold.add_theme_color_override("font_color", Color(UiPalette.GOLD))
-	_info.add_child(_gold)
+	_on_page(_gold, GOLD_AT)
 	_confirm = ConfirmationDialog.new()
 	_confirm.confirmed.connect(_on_destroy_confirmed)
 	add_child(_confirm)
 
 
-func _place_slot(view: ItemSlotView, art_rect: Rect2) -> void:
-	view.on_page = true
-	add_child(view)
-	_placed.append([view, art_rect])
+## Puts `c` on the drawn page at `art_rect` (book pixels); slots are drawn the
+## page's way (ItemSlotView.on_page).
+func _on_page(c: Control, art_rect: Rect2) -> void:
+	if c is ItemSlotView:
+		c.on_page = true
+	add_child(c)
+	_placed.append([c, art_rect])
 
 
-## Slots go on their frames in the art; this control is the spread, laid out at
-## the book's 1080p size (BookView.REF_ART_SCALE units per art pixel).
+## The titles head the pages; slots go on their frames in the art. This control
+## is the spread, laid out at the book's 1080p size (BookView.REF_ART_SCALE units
+## per art pixel).
 func lay_out(left_rect: Rect2, right_rect: Rect2) -> void:
 	super.lay_out(left_rect, right_rect)
 	for p in _placed:
 		_put(p[0], p[1])
-	_put(_info, INFO_AT)
 
 
 static func _put(c: Control, art_rect: Rect2) -> void:
@@ -102,4 +112,4 @@ func _process(_delta: float) -> void:
 	var hero: Hero = hud.session.local_hero()
 	if visible and hero != null:
 		_gold.text = "Gold: %d" % hero.gold
-		_learning.text = LearningRow.text_for(hero).replace("\n", " ")
+		_learning.text = LearningRow.text_for(hero)
