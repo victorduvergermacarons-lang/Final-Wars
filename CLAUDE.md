@@ -400,7 +400,8 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   30% with the rarity's colour. Then the item name in ink, until items have icons.
   "Equipment" and "Bag" head the pages; the learning text sits left of the boots, gold
   centred under the bag. Other menus (loot) keep the dark slots.
-- **Item tooltips** (`ItemTooltip.text` / `label`, text 16, 340 wide), on every item: bag,
+- **Item tooltips** (`ItemTooltip.text` / `label`, text 13, 280 wide; every tooltip opens
+  after 0.15 s: `gui/timers/tooltip_delay_sec`), on every item: bag,
   equipment, shop and loot rows (`ItemLabel`), quest rewards. Name in rarity colour,
   rarity and slot, stats, growth per level, then for each taught ability (and a
   consumable's Use) what it does in numbers for your hero now (`ability_lines`): how it
@@ -1335,6 +1336,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-23 | Tooltips open faster and are smaller | User request. My numbers: every tooltip opens after 0.15 s (Godot's default 0.5 s); item tooltips and paper tooltips use text 13 (was 16 / 20), item tooltips 280 wide (was 340). |
 | 2026-10-23 | Full item tooltips (abilities and consumables in numbers) everywhere items appear; the equipment slot an item would go in lights up on hover | User request. My choices: amounts are computed for your hero at that moment (stats, buffs and Mastery included); a consumable's own description is left out when its Use lines already say it; shop and loot rows got the same tooltip; dragging keeps the highlight until the drop; tooltip text 16. |
 | 2026-10-23 | Inventory: slot mapping confirmed; titles back; learning text left of the boots, gold centred under the bag; full rarity borders on equipment, a rarity tint in the bag | User request. My choices: the bag tint is the border's colour at 30% over the paper; the learning text is centred in the space left of the boots, gold 18. |
 | 2026-10-23 | The inventory uses the user's hand-drawn page (Layer 4) and rarity borders (Layer 5) | User request ("put this into the game"; layers 2–3 are templates, not used). My choices, to confirm: the arrow slot is the Off Hand and the band slot the first Accessory; a filled slot hides its picture under paper and shows the name in ink until there are item icons; the 28×29 borders are squeezed (nine-patch) into the smaller 26×26 bag slots; the "Equipment"/"Bag" titles are gone (the drawing has none); learning text and gold sit under the bag. |

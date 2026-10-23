@@ -61,6 +61,7 @@ static func paper_theme() -> Theme:
 
 	t.set_stylebox("panel", "TooltipPanel", _box(PAPER, LEATHER, 2, 6))
 	t.set_color("font_color", "TooltipLabel", INK)
+	t.set_font_size("font_size", "TooltipLabel", ItemTooltip.TOOLTIP_FONT_SIZE)
 	t.set_stylebox("panel", "PopupMenu", _box(PAPER, LEATHER, 2, 4))
 	t.set_stylebox("hover", "PopupMenu", _box(PAPER_SHADE, PAPER_SHADE))
 	t.set_color("font_color", "PopupMenu", INK)

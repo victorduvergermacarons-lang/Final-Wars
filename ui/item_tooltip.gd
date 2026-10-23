@@ -81,8 +81,8 @@ static func label(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now
 	return l
 
 
-const TOOLTIP_WIDTH := 340.0
-const TOOLTIP_FONT_SIZE := 16
+const TOOLTIP_WIDTH := 280.0
+const TOOLTIP_FONT_SIZE := 13
 const BLUE := UiPalette.BLUE
 const TARGETING := ["", "Targeted", "Skillshot", "Ground", "Self"]
 
