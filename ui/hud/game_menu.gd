@@ -94,7 +94,7 @@ func _speed_tab() -> Control:
 	page.name = "Gameplay test"
 	page.add_theme_constant_override("separation", 10)
 	var about := Label.new()
-	about.text = "Game speed in fights: how fast every step in combat goes, for heroes and\nenemies alike. ×2 = twice as fast, ×0.1 = ten times slower. Ability cooldowns,\nwind-ups and projectiles don't change. Applies to everyone in the session\n(debug builds only)."
+	about.text = "Game speed in fights: while anyone is in combat, everything runs at this\nspeed: steps, cooldowns, wind-ups, casts, projectiles, buffs and burns, for heroes\nand enemies alike. ×2 = twice as fast, ×0.1 = ten times slower. Out of combat the\ngame runs normally. Applies to everyone in the session (debug builds only)."
 	page.add_child(about)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)

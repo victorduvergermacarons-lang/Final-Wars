@@ -187,35 +187,6 @@ func test_step_cooldown_applies_in_combat() -> void:
 	assert_eq(_rejections(world.step()), [])
 
 
-func test_game_speed_scales_the_combat_step_cooldown() -> void:
-	rules.combat_speed = 2.0
-	_place(a, Vector2i(6, 1))
-	world.step()
-	world.submit(a.id, {"type": "step", "to": Vector2i(6, 2)})
-	world.step()
-	world.advance(rules.walk_tile_seconds)
-	var cd := StatCalc.combat_step_cooldown(a.current_stats(world.now).speed, rules)
-	assert_gt(cd / 2.0, rules.walk_tile_seconds, "(the test needs the walk to end first)")
-	world.advance(cd / 2.0 - rules.walk_tile_seconds + rules.tick_seconds)
-	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
-	assert_eq(_rejections(world.step()), [], "twice as fast: half the step cooldown")
-
-
-func test_slow_game_speed_lengthens_the_combat_step_cooldown() -> void:
-	rules.combat_speed = 0.5
-	_place(a, Vector2i(6, 1))
-	world.step()
-	world.submit(a.id, {"type": "step", "to": Vector2i(6, 2)})
-	world.step()
-	var cd := StatCalc.combat_step_cooldown(a.current_stats(world.now).speed, rules)
-	world.advance(cd + rules.walk_tile_seconds)
-	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
-	assert_eq(_rejections(world.step()), ["not_ready"], "half as fast: double the step cooldown")
-	world.advance(cd)
-	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
-	assert_eq(_rejections(world.step()), [])
-
-
 func test_healer_joins_combat_by_healing() -> void:
 	_place(a, Vector2i(6, 1))
 	world.step()

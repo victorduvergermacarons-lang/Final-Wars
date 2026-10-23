@@ -29,9 +29,10 @@ enum GrowthLimit {
 @export var combat_step_min_seconds: float = 0.5
 ## Speed at which the step cooldown is halved (before the floor applies).
 @export var speed_half_point: float = 100.0
-## Game speed in fights (a test setting: the Escape menu's Gameplay test tab):
-## every fight step, heroes' and enemies', takes its time divided by this. 2 = twice
-## as fast, 0.1 = ten times slower. Ability timings aren't affected.
+## Game speed in fights (a test setting: the Escape menu's Gameplay test tab).
+## While any hero is in combat, the whole simulation clock runs at this speed
+## (World.time_scale): steps, cooldowns, wind-ups, projectiles, buffs, AI. 2 = twice
+## as fast, 0.1 = ten times slower. Out of combat the game runs at normal speed.
 @export_range(0.1, 2.0) var combat_speed: float = 1.0
 const COMBAT_SPEED_MIN := 0.1
 const COMBAT_SPEED_MAX := 2.0

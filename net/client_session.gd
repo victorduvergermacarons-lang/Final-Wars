@@ -119,7 +119,7 @@ func now() -> float:
 
 
 func render_time() -> float:
-	return mirror.now + minf(_clock() - _snapshot_received_at, MAX_EXTRAPOLATION)
+	return mirror.now + minf((_clock() - _snapshot_received_at) * mirror.time_scale, MAX_EXTRAPOLATION)
 
 
 func actors() -> Array[Actor]:
