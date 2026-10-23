@@ -25,6 +25,7 @@ extends RefCounted
 ##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
 ##   {"type": "stop_learning"}
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
+##   {"type": "game_speed", "value": float}   (fight step speed, 0.1–2; same rule as debug)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -342,7 +343,7 @@ func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
 	cancel_cast(actor, "moved") # moving cancels anything with a cast bar: cast, channel, wind-up
 	if not actor is Hero:
 		actor.face(to - from) # heroes face the mouse, not where they walk
-	var step_cd := actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now)
+	var step_cd := actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now) / rules.combat_speed
 	if walk_seconds < 0.0:
 		walk_seconds = rules.walk_tile_seconds
 		# Animated creatures glide over their whole step in combat, so their run
@@ -858,6 +859,15 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 				for e in r.events:
 					emit(e)
 				emit({"type": "debug", "target": hero.id, "ok": r.ok, "text": r.text})
+		"game_speed":
+			# A test setting, allowed when the debug console is (rules are shared by
+			# every zone, so it changes every fight in the world).
+			if debug_content == null:
+				reason = "debug_disabled"
+			else:
+				rules.combat_speed = clampf(intent.get("value", 1.0), CombatRules.COMBAT_SPEED_MIN,
+						CombatRules.COMBAT_SPEED_MAX)
+				emit({"type": "game_speed", "value": rules.combat_speed})
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)

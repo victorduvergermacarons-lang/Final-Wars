@@ -476,7 +476,14 @@ User request. Replaces parts of HUD rule 15 (the button row and the message log)
 - **Escape menu** (`ui/hud/game_menu.gd`, plain dark boxes, not the book): Resume,
   Keybinds (starts keybind mode and gets out of the way), Leave game, and tabs: **Log**
   (every message this session, up to 300: `ClientState.history`), **Controls** (all
-  the how-to text), **Keybinds** (how binding works).
+  the how-to text), **Keybinds** (how binding works), **Gameplay test** (below).
+- **Game speed in fights** (Gameplay test tab, 2026-10-24): a slider (drag; sent on
+  release) and a box to type an exact value, ×0.1 to ×2, plus "Reset to ×1".
+  - It sets `CombatRules.combat_speed`: every combat step's cooldown (heroes and
+    enemies; animated enemies' glide too) is divided by it. Ability cooldowns, wind-ups,
+    projectiles and walking out of combat don't change.
+  - It goes to the host as a `game_speed` intent, allowed only where the debug console
+    is (debug builds), and applies to every zone. Not saved: it lasts while the game runs.
 - **Esc, WoW-style** (`Hud._escape`): cancel aiming; else leave keybind mode; else close
   the Escape menu if open; else close the menu book, shop and conversation; else clear
   the target; else open the Escape menu. (The dialogue box no longer handles Esc itself.)
@@ -1336,6 +1343,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-24 | Game speed slider in a "Gameplay test" tab of the Escape menu, ×0.1 to ×2 | User request; user choice: it scales heroes' and enemies' fight steps alike. My choices: ability timings untouched; host-only, gated like the debug console; applies to the whole session and isn't saved; the slider sends on release, the box on each change. |
 | 2026-10-23 | Tooltips open faster and are smaller | User request. My numbers: every tooltip opens after 0.15 s (Godot's default 0.5 s); item tooltips and paper tooltips use text 13 (was 16 / 20), item tooltips 280 wide (was 340). |
 | 2026-10-23 | Full item tooltips (abilities and consumables in numbers) everywhere items appear; the equipment slot an item would go in lights up on hover | User request. My choices: amounts are computed for your hero at that moment (stats, buffs and Mastery included); a consumable's own description is left out when its Use lines already say it; shop and loot rows got the same tooltip; dragging keeps the highlight until the drop; tooltip text 16. |
 | 2026-10-23 | Inventory: slot mapping confirmed; titles back; learning text left of the boots, gold centred under the bag; full rarity borders on equipment, a rarity tint in the bag | User request. My choices: the bag tint is the border's colour at 30% over the paper; the learning text is centred in the space left of the boots, gold 18. |

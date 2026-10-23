@@ -1,8 +1,9 @@
 class_name GameMenu
 extends PanelContainer
-## The Escape menu: Resume, Keybinds, Leave game, and three tabs: the message log
+## The Escape menu: Resume, Keybinds, Leave game, and four tabs: the message log
 ## (everything that has happened this session), the controls (every how-to that
-## used to sit on screen and in the menus), and how keybinding works. Plain boxes
+## used to sit on screen and in the menus), how keybinding works, and test settings
+## (game speed in fights). Plain boxes
 ## for now (Godot's default look), not the menu book.
 
 const CONTROLS := """[b]Moving and fighting[/b]
@@ -46,6 +47,8 @@ var hud: Hud
 var _log: RichTextLabel
 var _shown_lines := -1
 var _bind: Button
+var _speed_slider: HSlider
+var _speed_box: SpinBox
 
 
 func _init(p_hud: Hud) -> void:
@@ -80,7 +83,63 @@ func _init(p_hud: Hud) -> void:
 	_log.scroll_following = true
 	_text_tab(tabs, "Controls").text = CONTROLS
 	_text_tab(tabs, "Keybinds").text = KEYBINDS
+	tabs.add_child(_speed_tab())
 	visible = false
+
+
+## "Gameplay test": the game speed in fights (CombatRules.combat_speed), as a slider
+## and a box for an exact value. Sent to the host, which applies it to everyone.
+func _speed_tab() -> Control:
+	var page := VBoxContainer.new()
+	page.name = "Gameplay test"
+	page.add_theme_constant_override("separation", 10)
+	var about := Label.new()
+	about.text = "Game speed in fights: how fast every step in combat goes, for heroes and\nenemies alike. ×2 = twice as fast, ×0.1 = ten times slower. Ability cooldowns,\nwind-ups and projectiles don't change. Applies to everyone in the session\n(debug builds only)."
+	page.add_child(about)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	page.add_child(row)
+	var label := Label.new()
+	label.text = "Game speed ×"
+	row.add_child(label)
+	_speed_slider = HSlider.new()
+	_speed_slider.min_value = CombatRules.COMBAT_SPEED_MIN
+	_speed_slider.max_value = CombatRules.COMBAT_SPEED_MAX
+	_speed_slider.step = 0.05
+	_speed_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_speed_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_speed_slider.focus_mode = Control.FOCUS_NONE
+	row.add_child(_speed_slider)
+	_speed_box = SpinBox.new()
+	_speed_box.min_value = CombatRules.COMBAT_SPEED_MIN
+	_speed_box.max_value = CombatRules.COMBAT_SPEED_MAX
+	_speed_box.step = 0.01
+	_speed_box.custom_minimum_size.x = 100
+	row.add_child(_speed_box)
+	page.add_child(_button("Reset to ×1", func(): _set_speed(1.0)))
+	show_speed(hud.session.rules().combat_speed)
+	# Dragging sends only on release, so the host isn't flooded while dragging.
+	_speed_slider.value_changed.connect(func(v: float): _speed_box.set_value_no_signal(v))
+	_speed_slider.drag_ended.connect(func(changed: bool):
+		if changed:
+			_set_speed(_speed_slider.value))
+	_speed_box.value_changed.connect(_set_speed)
+	return page
+
+
+## Shows `value` without sending it (the host's answer, or the value on opening).
+func show_speed(value: float) -> void:
+	_speed_slider.set_value_no_signal(value)
+	_speed_box.set_value_no_signal(value)
+
+
+func _set_speed(value: float) -> void:
+	show_speed(value)
+	hud.session.send_intent({"type": "game_speed", "value": value})
+
+
+static func speed_text(value: float) -> String:
+	return String.num(value, 2)
 
 
 func _process(_delta: float) -> void:

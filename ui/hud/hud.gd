@@ -12,6 +12,7 @@ const ERROR_SECONDS := 2.0
 const TRACKER_WIDTH := 260.0
 const TRACKER_FONT_SIZE := 15
 const REASONS := {
+	"debug_disabled": "The host doesn't allow test settings (debug builds only)",
 	"out_of_range": "Out of range",
 	"no_line_of_sight": "Target not in line of sight",
 	"not_enough_mana": "Not enough mana",
@@ -491,6 +492,12 @@ func _on_events(events: Array) -> void:
 			console.show_result({"ok": false, "text": "The host doesn't allow debug commands (debug builds only)."})
 			continue
 		match e.type:
+			"game_speed":
+				# The host set it in its own rules; a remote client copies it (the host's
+				# own copy is the same object).
+				session.rules().combat_speed = e.value
+				game_menu.show_speed(e.value)
+				client.say("Game speed in fights: ×%s." % GameMenu.speed_text(e.value))
 			"joined":
 				client.say("%s joined the game." % e.name)
 			"left":

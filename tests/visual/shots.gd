@@ -419,6 +419,8 @@ func _run() -> void:
 	await _shot("38_escape_menu_log")
 	hud.game_menu.find_children("*", "TabContainer", true, false)[0].current_tab = 1
 	await _shot("38b_escape_menu_controls")
+	hud.game_menu.find_children("*", "TabContainer", true, false)[0].current_tab = 3
+	await _shot("38d_escape_menu_gameplay_test")
 	hud.game_menu.visible = false
 	hud._fold_tracker(true)
 	await _shot("38c_tracker_folded")
