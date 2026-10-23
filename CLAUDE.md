@@ -381,7 +381,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 ## Menu book (branch `ui-book-menus`, 2026-10-21; work in progress)
 
 - **Art:** `art/menu_book.aseprite` (the user's "livre menu", still being drawn; marks
-  and icons to come). Only **Layer 1** is used, exported to `assets/ui/menu_book.png`
+  and icons to come). **Layer 1** (the book) is exported to `assets/ui/menu_book.png`
   (480×270) with Aseprite's command line:
   `Aseprite.exe -b --layer "Layer 1" art/menu_book.aseprite --save-as assets/ui/menu_book.png`
 - **Layers of `art/menu_book.aseprite`** (2026-10-23): 1 the book; 2 and 3 the user's
