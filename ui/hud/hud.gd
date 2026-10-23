@@ -434,6 +434,7 @@ func _update_book() -> void:
 			_close_menu(w)
 	book.visible = _open_menu != null
 	if book.visible:
+		book.page_art = (_open_menu as BookSpread).page_art
 		var order := _page_order()
 		var at := order.find(_open_menu) # -1 for loot: the arrows lead to the ends
 		book.set_turn_labels(_page_name(order[posmod(at - 1, order.size()) if at >= 0 else -1]),

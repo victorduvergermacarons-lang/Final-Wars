@@ -13,6 +13,9 @@ const SEPARATION := 4
 ## Space above a page's content in menus that sit lower on the page.
 const TOP_GAP := 12.0
 
+## Art drawn over the book while this menu is open (480×270, like the book), or
+## null.
+var page_art: Texture2D
 var left := VBoxContainer.new()
 var right := VBoxContainer.new()
 

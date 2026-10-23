@@ -384,6 +384,21 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   and icons to come). Only **Layer 1** is used, exported to `assets/ui/menu_book.png`
   (480×270) with Aseprite's command line:
   `Aseprite.exe -b --layer "Layer 1" art/menu_book.aseprite --save-as assets/ui/menu_book.png`
+- **Layers of `art/menu_book.aseprite`** (2026-10-23): 1 the book; 2 and 3 the user's
+  drawing templates (not used); 4 the inventory page, exported to
+  `assets/ui/inventory_page.png` and drawn over the book while the inventory is open
+  (`BookSpread.page_art`); 5 the rarity borders, cut into `assets/ui/rarity/common.png`,
+  `uncommon`, `rare`, `epic` (28×29 each; grey, green, blue, purple).
+- **Inventory on the drawn page** (`InventoryWindow`): every slot sits on its drawn frame
+  (art pixels: equipment frames 34×35, bag frames 26×26 every 29 px from (261, 65)).
+  Left page by picture: scroll = learning slot (93, 66), hat = Head (129, 66), sword =
+  Main Hand (165, 66), glove = Hands (93, 103), chest = Chest (129, 103), arrow = Off
+  Hand (165, 103), band = Accessory (93, 140), trousers = Legs (129, 140), ring =
+  Accessory (165, 140), boots = Feet (130, 178). An empty slot draws nothing (the
+  picture shows); a filled one covers the picture with paper inside the frame line,
+  draws its rarity border (centred, as drawn; squeezed as a nine-patch in bag slots)
+  and the item name in ink until items have icons. The learning text and gold go under
+  the bag. Other menus (loot) keep the dark slots.
 - **`BookView`** (`ui/book_view.gd`): draws the book filling the screen (the 1280×720 UI:
   exactly 4 screen pixels per art pixel at 1080p; uneven art pixels in other windows).
   Writable areas measured on the art: left page (66, 46, 166×174), right page
@@ -398,7 +413,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 
   | Menu | Left page | Right page |
   |------|-----------|------------|
-  | Inventory (B) | equipment, learning slot, gold (centred) | bag |
+  | Inventory (B) | the hand-drawn equipment page (Layer 4): learning slot and 9 equipment slots | the hand-drawn bag (5×4), learning text and gold under it |
   | Character (C) | name with level and XP beside it, stat table | Mastery, learning slot, abilities |
   | Spellbook (P) | title, first part of the list | the rest |
   | Quests (L) | quest list | the selected quest (scrolls), Abandon |
@@ -1307,6 +1322,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-23 | The inventory uses the user's hand-drawn page (Layer 4) and rarity borders (Layer 5) | User request ("put this into the game"; layers 2–3 are templates, not used). My choices, to confirm: the arrow slot is the Off Hand and the band slot the first Accessory; a filled slot hides its picture under paper and shows the name in ink until there are item icons; the 28×29 borders are squeezed (nine-patch) into the smaller 26×26 bag slots; the "Equipment"/"Bag" titles are gone (the drawing has none); learning text and gold sit under the bag. |
 | 2026-10-21 | Layout tweaks: menus lower on the page, smaller quest text, shorter Abandon, indented abilities, centred inventory titles, smaller tree tiers, Play Solo on the left, draggable quest tracker, Browse goods hides the conversation, smaller shop writing | User requests. My choices: `BookSpread.TOP_GAP` 12 px; quest text 17 (its name stays 20), quest text box 330 px before it scrolls with Abandon (200 wide) under it; abilities indented 18 px; tree headers 14, nodes 13 with bigger gaps; the shop closes by itself when you walk away (the conversation that used to close it is hidden); the tracker's position isn't saved between sessions. |
 | 2026-10-21 | Arrows at the bottom of the book turn between menus | User request. My choices: they name the menu they lead to; order Character, Inventory, Spellbook, Trees, Quests, wrapping; the loot menu isn't in the cycle (it opens on its own when loot waits). |
 | 2026-10-21 | Escape menu (log, controls, keybinds, leave game); on-screen button row, message log and how-to hints removed; foldable, smaller quest tracker | User request. My choices: Esc order like WoW (aim → keybind mode → menu → open windows → target → menu), so with a target the first Esc clears it; the log keeps the last 300 messages; the loot menu keeps its "bag was full" line (information, not a how-to); the fold state isn't saved between sessions. See **Escape menu and a cleaner screen**. |

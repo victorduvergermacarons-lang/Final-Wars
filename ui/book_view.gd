@@ -39,6 +39,12 @@ var book_rect := Rect2()
 var art_scale := 1.0
 ## Lay the spread's menus out (fit_pages) whenever the book is laid out.
 var auto_fit := true
+## The open menu's own drawing over the book (BookSpread.page_art), or null.
+var page_art: Texture2D:
+	set(value):
+		if value != page_art:
+			page_art = value
+			queue_redraw()
 ## Where the player dragged the book, from its centred place (UI units).
 var offset := Vector2.ZERO
 var _handle := Control.new()
@@ -111,6 +117,8 @@ func _ready() -> void:
 
 func _draw() -> void:
 	draw_texture_rect(TEXTURE, book_rect, false)
+	if page_art != null:
+		draw_texture_rect(page_art, book_rect, false)
 
 
 ## The page `rect` (art pixels) in this control's coordinates.
