@@ -477,17 +477,15 @@ User request. Replaces parts of HUD rule 15 (the button row and the message log)
   Keybinds (starts keybind mode and gets out of the way), Leave game, and tabs: **Log**
   (every message this session, up to 300: `ClientState.history`), **Controls** (all
   the how-to text), **Keybinds** (how binding works), **Gameplay test** (below).
-- **Game speed in fights** (Gameplay test tab, 2026-10-24): a slider (drag; sent on
+- **Game speed** (Gameplay test tab, 2026-10-24): a slider (drag; sent on
   release) and a box to type an exact value, ×0.1 to ×2, plus "Reset to ×1".
-  - It sets `CombatRules.combat_speed`. While any hero is in combat, the whole sim
-	clock runs at that speed (`World.time_scale`, applied by the session that drives
-	the ticks; clients get it in each snapshot to pace their clock): steps, ability
-	cooldowns, the GCD, casts, wind-ups, projectiles, telegraphs, buffs, ground zones,
-	enemy reactions and animations all scale together. Out of combat it is ×1.
-  - While a fight runs, everything else in the world runs at that speed too (other
-	players walking, other zones, respawn timers): there is one clock.
+  - It sets `CombatRules.game_speed`. The whole sim clock runs at that speed, in
+	and out of combat (`World.time_scale`, applied by the session that drives the
+	ticks; clients get it in each snapshot to pace their clock): walking, steps,
+	ability cooldowns, the GCD, casts, wind-ups, projectiles, telegraphs, buffs, ground
+	zones, regen, respawns, enemy reactions and animations all scale together.
   - It goes to the host as a `game_speed` intent, allowed only where the debug console
-    is (debug builds), and applies to every zone. Not saved: it lasts while the game runs.
+	is (debug builds), and applies to every zone. Not saved: it lasts while the game runs.
 - **Esc, WoW-style** (`Hud._escape`): cancel aiming; else leave keybind mode; else close
   the Escape menu if open; else close the menu book, shop and conversation; else clear
   the target; else open the Escape menu. (The dialogue box no longer handles Esc itself.)
@@ -1347,7 +1345,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
-| 2026-10-24 | Game speed slider in a "Gameplay test" tab of the Escape menu, ×0.1 to ×2 | User request: everything fight-related scales (steps, cooldowns, wind-ups, projectiles), for heroes and enemies. My choices: the whole sim clock runs at that speed while any hero is in combat (×1 otherwise), so the rest of the world follows during a fight; host-only, gated like the debug console; applies to the whole session and isn't saved; the slider sends on release, the box on each change. |
+| 2026-10-24 | Game speed slider in a "Gameplay test" tab of the Escape menu, ×0.1 to ×2 | User request: everything fight-related scales (steps, cooldowns, wind-ups, projectiles), for heroes and enemies. Then (user request) out of combat too: the whole sim clock runs at that speed all the time (`combat_speed` renamed `game_speed`). My choices: host-only, gated like the debug console; applies to the whole session and isn't saved; the slider sends on release, the box on each change. |
 | 2026-10-23 | Tooltips open faster and are smaller | User request. My numbers: every tooltip opens after 0.15 s (Godot's default 0.5 s); item tooltips and paper tooltips use text 13 (was 16 / 20), item tooltips 280 wide (was 340). |
 | 2026-10-23 | Full item tooltips (abilities and consumables in numbers) everywhere items appear; the equipment slot an item would go in lights up on hover | User request. My choices: amounts are computed for your hero at that moment (stats, buffs and Mastery included); a consumable's own description is left out when its Use lines already say it; shop and loot rows got the same tooltip; dragging keeps the highlight until the drop; tooltip text 16. |
 | 2026-10-23 | Inventory: slot mapping confirmed; titles back; learning text left of the boots, gold centred under the bag; full rarity borders on equipment, a rarity tint in the bag | User request. My choices: the bag tint is the border's colour at 30% over the paper; the learning text is centred in the space left of the boots, gold 18. |

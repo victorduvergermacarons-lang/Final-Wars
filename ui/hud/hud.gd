@@ -495,9 +495,9 @@ func _on_events(events: Array) -> void:
 			"game_speed":
 				# The host set it in its own rules; a remote client copies it (the host's
 				# own copy is the same object).
-				session.rules().combat_speed = e.value
+				session.rules().game_speed = e.value
 				game_menu.show_speed(e.value)
-				client.say("Game speed in fights: ×%s." % GameMenu.speed_text(e.value))
+				client.say("Game speed: ×%s." % GameMenu.speed_text(e.value))
 			"joined":
 				client.say("%s joined the game." % e.name)
 			"left":

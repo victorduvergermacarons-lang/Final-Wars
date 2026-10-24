@@ -50,7 +50,7 @@ func receive_intent(hero_id: int, raw: Variant) -> void:
 func _physics_process(delta: float) -> void:
 	if world == null:
 		return
-	# The game speed in fights stretches or squeezes real time into sim time.
+	# The game speed (a test setting) stretches or squeezes real time into sim time.
 	_accumulator += delta * world.time_scale()
 	var tick := world.rules.tick_seconds
 	while _accumulator >= tick:

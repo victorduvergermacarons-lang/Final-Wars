@@ -109,19 +109,19 @@ func test_refused_when_the_host_does_not_allow_it() -> void:
 func test_game_speed_is_set_by_the_host_and_refused_without_debug() -> void:
 	world.submit(hero.id, {"type": "game_speed", "value": 1.5})
 	var events := world.step()
-	assert_eq(db.rules.combat_speed, 1.5)
+	assert_eq(db.rules.game_speed, 1.5)
 	assert_true(events.any(func(e): return e.type == "game_speed" and e.value == 1.5))
 	world.enable_debug(null)
 	world.submit(hero.id, {"type": "game_speed", "value": 0.5})
 	events = world.step()
 	assert_true(events.any(func(e): return e.type == "rejected" and e.reason == "debug_disabled"))
-	assert_eq(db.rules.combat_speed, 1.5)
-	db.rules.combat_speed = 1.0
+	assert_eq(db.rules.game_speed, 1.5)
+	db.rules.game_speed = 1.0
 
 
 func test_game_speed_intent_is_clamped() -> void:
-	assert_eq(Intents.sanitize({"type": "game_speed", "value": 5}).value, CombatRules.COMBAT_SPEED_MAX)
-	assert_eq(Intents.sanitize({"type": "game_speed", "value": 0.0}).value, CombatRules.COMBAT_SPEED_MIN)
+	assert_eq(Intents.sanitize({"type": "game_speed", "value": 5}).value, CombatRules.GAME_SPEED_MAX)
+	assert_eq(Intents.sanitize({"type": "game_speed", "value": 0.0}).value, CombatRules.GAME_SPEED_MIN)
 	assert_eq(Intents.sanitize({"type": "game_speed", "value": "fast"}), {})
 
 

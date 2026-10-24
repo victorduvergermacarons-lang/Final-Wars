@@ -1,6 +1,6 @@
 extends GutTest
-## Game speed in fights (Escape menu > Gameplay test): while any hero is in combat
-## the whole sim clock runs at `CombatRules.combat_speed`; otherwise at normal speed.
+## Game speed (Escape menu > Gameplay test): the whole sim clock runs at
+## `CombatRules.game_speed`, in and out of combat.
 
 var session: LocalSession
 var hero: Hero
@@ -16,7 +16,7 @@ func before_each() -> void:
 
 
 func after_each() -> void:
-	ContentDB.rules.combat_speed = 1.0
+	ContentDB.rules.game_speed = 1.0
 	session.free()
 
 
@@ -29,22 +29,25 @@ func _sim_seconds_after(real_seconds: float, fighting := false) -> float:
 	return session.now() - start
 
 
-func test_out_of_combat_runs_at_normal_speed() -> void:
-	ContentDB.rules.combat_speed = 0.1
-	assert_eq(session.world.time_scale(), 1.0)
+func test_normal_speed_by_default() -> void:
 	assert_almost_eq(_sim_seconds_after(1.0), 1.0, 0.06)
 
 
+func test_out_of_combat_runs_at_the_game_speed() -> void:
+	ContentDB.rules.game_speed = 0.1
+	assert_almost_eq(_sim_seconds_after(2.0), 0.2, 0.06, "ten times slower")
+	ContentDB.rules.game_speed = 2.0
+	assert_almost_eq(_sim_seconds_after(1.0), 2.0, 0.06, "twice as fast")
+
+
 func test_a_fight_runs_at_the_game_speed() -> void:
-	hero.combat_until = 1.0e9
-	ContentDB.rules.combat_speed = 0.5
-	assert_eq(session.world.time_scale(), 0.5)
+	ContentDB.rules.game_speed = 0.5
 	assert_almost_eq(_sim_seconds_after(2.0, true), 1.0, 0.06, "half speed: 2 real seconds = 1 sim second")
-	ContentDB.rules.combat_speed = 2.0
+	ContentDB.rules.game_speed = 2.0
 	assert_almost_eq(_sim_seconds_after(1.0, true), 2.0, 0.06, "double speed")
 
 
 func test_the_menu_intent_sets_it() -> void:
 	session.send_intent({"type": "game_speed", "value": 0.25})
 	session._physics_process(ContentDB.rules.tick_seconds)
-	assert_eq(ContentDB.rules.combat_speed, 0.25, "debug builds (tests) allow it")
+	assert_eq(ContentDB.rules.game_speed, 0.25, "debug builds (tests) allow it")

@@ -25,7 +25,7 @@ extends RefCounted
 ##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
 ##   {"type": "stop_learning"}
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
-##   {"type": "game_speed", "value": float}   (fight step speed, 0.1–2; same rule as debug)
+##   {"type": "game_speed", "value": float}   (game clock speed, 0.1–2; same rule as debug)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -865,9 +865,9 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			if debug_content == null:
 				reason = "debug_disabled"
 			else:
-				rules.combat_speed = clampf(intent.get("value", 1.0), CombatRules.COMBAT_SPEED_MIN,
-						CombatRules.COMBAT_SPEED_MAX)
-				emit({"type": "game_speed", "value": rules.combat_speed})
+				rules.game_speed = clampf(intent.get("value", 1.0), CombatRules.GAME_SPEED_MIN,
+						CombatRules.GAME_SPEED_MAX)
+				emit({"type": "game_speed", "value": rules.game_speed})
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)

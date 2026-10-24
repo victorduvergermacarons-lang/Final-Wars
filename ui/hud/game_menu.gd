@@ -3,7 +3,7 @@ extends PanelContainer
 ## The Escape menu: Resume, Keybinds, Leave game, and four tabs: the message log
 ## (everything that has happened this session), the controls (every how-to that
 ## used to sit on screen and in the menus), how keybinding works, and test settings
-## (game speed in fights). Plain boxes
+## (game speed). Plain boxes
 ## for now (Godot's default look), not the menu book.
 
 const CONTROLS := """[b]Moving and fighting[/b]
@@ -87,14 +87,14 @@ func _init(p_hud: Hud) -> void:
 	visible = false
 
 
-## "Gameplay test": the game speed in fights (CombatRules.combat_speed), as a slider
+## "Gameplay test": the game speed (CombatRules.game_speed), as a slider
 ## and a box for an exact value. Sent to the host, which applies it to everyone.
 func _speed_tab() -> Control:
 	var page := VBoxContainer.new()
 	page.name = "Gameplay test"
 	page.add_theme_constant_override("separation", 10)
 	var about := Label.new()
-	about.text = "Game speed in fights: while anyone is in combat, everything runs at this\nspeed: steps, cooldowns, wind-ups, casts, projectiles, buffs and burns, for heroes\nand enemies alike. ×2 = twice as fast, ×0.1 = ten times slower. Out of combat the\ngame runs normally. Applies to everyone in the session (debug builds only)."
+	about.text = "Game speed: the whole game runs at this speed, in and out of combat:\nwalking, steps, cooldowns, wind-ups, casts, projectiles, buffs, regen and respawns,\nfor heroes and enemies alike. ×2 = twice as fast, ×0.1 = ten times slower.\nApplies to everyone in the session (debug builds only)."
 	page.add_child(about)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
@@ -103,21 +103,21 @@ func _speed_tab() -> Control:
 	label.text = "Game speed ×"
 	row.add_child(label)
 	_speed_slider = HSlider.new()
-	_speed_slider.min_value = CombatRules.COMBAT_SPEED_MIN
-	_speed_slider.max_value = CombatRules.COMBAT_SPEED_MAX
+	_speed_slider.min_value = CombatRules.GAME_SPEED_MIN
+	_speed_slider.max_value = CombatRules.GAME_SPEED_MAX
 	_speed_slider.step = 0.05
 	_speed_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_speed_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_speed_slider.focus_mode = Control.FOCUS_NONE
 	row.add_child(_speed_slider)
 	_speed_box = SpinBox.new()
-	_speed_box.min_value = CombatRules.COMBAT_SPEED_MIN
-	_speed_box.max_value = CombatRules.COMBAT_SPEED_MAX
+	_speed_box.min_value = CombatRules.GAME_SPEED_MIN
+	_speed_box.max_value = CombatRules.GAME_SPEED_MAX
 	_speed_box.step = 0.01
 	_speed_box.custom_minimum_size.x = 100
 	row.add_child(_speed_box)
 	page.add_child(_button("Reset to ×1", func(): _set_speed(1.0)))
-	show_speed(hud.session.rules().combat_speed)
+	show_speed(hud.session.rules().game_speed)
 	# Dragging sends only on release, so the host isn't flooded while dragging.
 	_speed_slider.value_changed.connect(func(v: float): _speed_box.set_value_no_signal(v))
 	_speed_slider.drag_ended.connect(func(changed: bool):

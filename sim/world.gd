@@ -180,14 +180,11 @@ func _leave_by_edge(sim: WorldSim, hero_id: int, edge: ZoneEdge) -> Array[Dictio
 	return [{"type": "rejected", "target": hero_id, "intent": "step", "reason": "blocked", "zone": sim.zone.id}]
 
 
-## How fast the sim clock should run against real time: the game speed in fights
-## (`rules.combat_speed`) while any hero anywhere is in combat, else 1. The session
-## that drives the ticks applies it; the sim itself only ever sees sim seconds.
+## How fast the sim clock should run against real time: the game speed
+## (`rules.game_speed`, a test setting). The session that drives the ticks applies
+## it; the sim itself only ever sees sim seconds.
 func time_scale() -> float:
-	for hero in heroes():
-		if hero.in_combat(now):
-			return rules.combat_speed
-	return 1.0
+	return rules.game_speed
 
 
 ## Every hero in every zone, by id.
