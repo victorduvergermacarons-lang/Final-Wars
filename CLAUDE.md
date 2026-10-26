@@ -518,10 +518,17 @@ across a big bar, and the player right-clicks while it is on a zone.
   accepting a moment it hasn't reached (+0.3 s slack). With no press it waits
   `timing_press_grace_seconds` (0.25) after the bar ends, then casts at miss power.
   It emits `timing_result` (miss / good / perfect).
-- **Display** (`TimingBarView`): 440×30 above the action bar, half that (220×15) under your hero
-  (Escape menu → Gameplay test → Timing bar; saved in `user://settings.cfg`). The
-  ability's name above it, then "Perfect!" / "Good" / "Miss" for 0.8 s. Other
-  players see a small green cast bar under you.
+- **Display** (`TimingBarView`): the ability's name above the bar (so a wrong key
+  shows at once), then "Perfect!" / "Good" / "Miss" for 0.8 s. Other players see a
+  small green cast bar under you. Two options (Escape menu → Gameplay test; saved in
+  `user://settings.cfg`):
+  - **Where:** under your hero, over your hero (above the name and health bar), or
+    above the action bar. 440×30 above the action bar, half that (220×15) by the hero.
+  - **Sliding** (default): every bar has that length; the cursor's speed depends on
+    the ability. **Steady speed:** the cursor always moves at the same speed and the
+    length follows the ability: the full length = 3 s (`FULL_SECONDS`), so Slash's
+    1 s bar is a third as long, centred. Longer abilities get longer bars, up to the
+    screen's width.
 - **Balance:** the bots press the green zone. Slash now hits less often, so three
   balance targets are pending (the starter and a lone sword vs a Wolf,
   plus the drake from before) until the planned combat pacing pass, which slows the
@@ -1379,6 +1386,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-26 | Timing bar options: over the hero as a third place; sliding (same length for all) or steady speed (full length = 3 s, shorter abilities shorter, centred) | User request, to compare the two (a scrolling track may follow). My choices: over the hero sits above the name and health bar; steady speed is the second option, sliding stays the default; bars over 3 s grow up to the screen's width. |
 | 2026-10-26 | Slash's bar: 1 s, green 0.3 s, crit zone 0.1 s, both centred; the crit zone is yellow (was blue); under the hero the bar is half as long and half as tall (220×15) | User request. My choices: the zones stay centred (green 0.35–0.65 s, yellow 0.45–0.55 s); "Perfect!" is yellow too; the text keeps its size. |
 | 2026-10-26 | Timing bars, first step: Slash runs a 2 s bar (green 0.5 s in the middle); right-click on green = full power, on blue (its middle) = sure crit, else reduced; the bar under the hero or above the action bar (option) | User brief: rhythm in casting, rewarding good timing; long bars only for important abilities, none for instants; moving cancels; enemies changed later. My choices: miss power 70%; blue 0.1 s wide; one press per bar, which casts at once; the client measures the press and the host judges it (0.25 s grace, 0.3 s slack); GCD at the start, mana and cooldown when it goes off; enemies skip bars; 440×30 bar; the pending balance targets. See **Timing bars**. |
 | 2026-10-24 | Game speed slider in a "Gameplay test" tab of the Escape menu, ×0.1 to ×2 | User request: everything fight-related scales (steps, cooldowns, wind-ups, projectiles), for heroes and enemies. Then (user request) out of combat too: the whole sim clock runs at that speed all the time (`combat_speed` renamed `game_speed`). My choices: host-only, gated like the debug console; applies to the whole session and isn't saved; the slider sends on release, the box on each change. |

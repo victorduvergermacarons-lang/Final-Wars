@@ -1,19 +1,30 @@
 class_name TimingBarView
 extends Control
 ## The local hero's timing bar (TimingBarDef): a big bar with its green and yellow
-## zones and a cursor sweeping across it; right-click while the cursor is on a
-## zone. Drawn under the hero, or above the action bar (the Escape menu's Gameplay
-## test tab; saved on this computer). After the press it shows the result
-## ("Perfect!", "Good", "Miss") for a moment.
+## zones and a cursor sweeping across it, under the ability's name; right-click
+## while the cursor is on a zone. After the press it shows the result
+## ("Perfect!", "Good", "Miss") for a moment. Options (the Escape menu's Gameplay
+## test tab; saved on this computer):
+## - where: under the hero, over the hero, or above the action bar
+## - sliding: every bar has the same length and the cursor's speed depends on the
+##   ability; off, the cursor always moves at the same speed and the bar's length
+##   follows the ability (the full length = FULL_SECONDS), centred.
 
-enum Place { HERO, ACTION_BAR }
+enum Place { BELOW_HERO, ACTION_BAR, ABOVE_HERO } # saved as ints: keep the order
 
-## The bar above the action bar; under the hero it is half as long and half as tall.
+## The bar above the action bar; by the hero it is half as long and half as tall.
 const BAR := Vector2(440, 30)
+## Sliding off: an ability of this many seconds fills BAR's length (shorter ones
+## are shorter, longer ones longer, up to the screen's width).
+const FULL_SECONDS := 3.0
 ## Space above the bar for the ability's name and the result.
 const LABEL_HEIGHT := 26.0
 ## Gap between the hero's feet (or the action bar) and the bar.
 const GAP := 34.0
+## Over the hero: the bar's bottom sits this far (world pixels) above the feet,
+## over the name and health bar, then GAP_ABOVE (screen pixels) higher.
+const HEAD_WORLD := 56.0
+const GAP_ABOVE := 6.0
 const RESULT_SECONDS := 0.8
 const BACK := Color(0.06, 0.06, 0.08, 0.88)
 const EDGE := Color(0.92, 0.92, 0.92)
@@ -23,7 +34,8 @@ const GRADE_TEXT := {"perfect": "Perfect!", "good": "Good", "miss": "Miss"}
 const GRADE_COLOR := {"perfect": Color(1.0, 0.88, 0.3), "good": Color(0.35, 0.95, 0.45), "miss": Color(0.8, 0.8, 0.8)}
 
 var hud: Hud
-var place: int = Place.HERO # Place
+var place: int = Place.BELOW_HERO # Place
+var sliding := true
 ## The bar being shown: {"bar": TimingBarDef, "start": float, "name": String}.
 var _shown := {}
 ## After the press: {"grade", "at", "until" (real seconds)}.
@@ -71,9 +83,14 @@ func _place_for(hero: Hero) -> Vector2:
 		var view = hud.input.view if hud.input != null else null # WorldView
 		if view == null:
 			return Vector2((screen.x - size.x) / 2.0, screen.y * 0.6)
-		var feet: Vector2 = view.get_canvas_transform() * view.actor_screen_pos(hero)
-		at = feet + Vector2(-size.x / 2.0, GAP - LABEL_HEIGHT)
-	return at.clamp(Vector2.ZERO, screen - size)
+		var xform: Transform2D = view.get_canvas_transform()
+		var feet_world: Vector2 = view.actor_screen_pos(hero)
+		if place == Place.ABOVE_HERO:
+			var head: Vector2 = xform * (feet_world + Vector2(0, -HEAD_WORLD))
+			at = head + Vector2(-size.x / 2.0, -GAP_ABOVE - size.y)
+		else:
+			at = xform * feet_world + Vector2(-size.x / 2.0, GAP - LABEL_HEIGHT)
+	return at.clamp(Vector2.ZERO, (screen - size).max(Vector2.ZERO))
 
 
 func _draw() -> void:
@@ -131,4 +148,8 @@ static func _real_now() -> float:
 
 
 func _bar_size() -> Vector2:
-	return BAR if place == Place.ACTION_BAR else BAR / 2.0
+	var s := BAR if place == Place.ACTION_BAR else BAR / 2.0
+	var bar: TimingBarDef = _shown.get("bar")
+	if not sliding and bar != null:
+		s.x = minf(s.x * bar.seconds / FULL_SECONDS, get_viewport_rect().size.x - 20.0)
+	return s

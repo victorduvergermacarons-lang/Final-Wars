@@ -107,6 +107,13 @@ func set_timing_bar_place(place: int) -> void:
 	SettingsStore.save_ui("timing_bar_place", place, settings_path)
 
 
+## Sliding: every timing bar has the same length; off: the length follows the
+## ability (constant cursor speed). Saved.
+func set_timing_bar_sliding(on: bool) -> void:
+	timing_bar.sliding = on
+	SettingsStore.save_ui("timing_bar_sliding", on, settings_path)
+
+
 func _build() -> void:
 	_root = Control.new()
 	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -159,7 +166,8 @@ func _build() -> void:
 	# The local hero's timing bar (right-click on its zones), under the hero or
 	# above the action bar.
 	timing_bar = TimingBarView.new(self)
-	timing_bar.place = int(SettingsStore.load_ui("timing_bar_place", TimingBarView.Place.HERO, settings_path))
+	timing_bar.place = int(SettingsStore.load_ui("timing_bar_place", TimingBarView.Place.BELOW_HERO, settings_path))
+	timing_bar.sliding = bool(SettingsStore.load_ui("timing_bar_sliding", true, settings_path))
 	_root.add_child(timing_bar)
 
 	# Bottom-right: which action bar page is shown (Shift+1–6, or the arrows).

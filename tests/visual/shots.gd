@@ -432,7 +432,20 @@ func _run() -> void:
 	hud.input.press_timing_bar()
 	await get_tree().create_timer(0.15).timeout
 	await _shot("39c_timing_bar_perfect", 1)
-	hud.set_timing_bar_place(TimingBarView.Place.HERO)
+	# Over the hero, then steady speed (a 1 s bar is a third of the length), under
+	# the hero and above the action bar. A fresh Slash for each.
+	for shot in [["39d_timing_bar_over_hero", TimingBarView.Place.ABOVE_HERO, true],
+			["39e_timing_bar_steady_under_hero", TimingBarView.Place.BELOW_HERO, false],
+			["39f_timing_bar_steady_action_bar", TimingBarView.Place.ACTION_BAR, false]]:
+		hud.set_timing_bar_place(shot[1])
+		hud.set_timing_bar_sliding(shot[2])
+		hero.cooldowns = Cooldowns.new()
+		tz.cast(hero, cd.abilities[&"S01"], dw)
+		await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.25)
+		await _shot(shot[0], 1)
+		hero.casting = {}
+	hud.set_timing_bar_place(TimingBarView.Place.BELOW_HERO)
+	hud.set_timing_bar_sliding(true)
 	tz.remove_enemy(dw.id)
 	# 38. The Escape menu: the message log, then the controls; the quest tracker
 	# folded to its heading.

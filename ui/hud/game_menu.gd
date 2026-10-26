@@ -130,11 +130,20 @@ func _speed_tab() -> Control:
 	place_row.add_child(place_label)
 	var place := OptionButton.new()
 	place.focus_mode = Control.FOCUS_NONE
-	place.add_item("Under your hero", TimingBarView.Place.HERO)
+	place.add_item("Under your hero", TimingBarView.Place.BELOW_HERO)
+	place.add_item("Over your hero", TimingBarView.Place.ABOVE_HERO)
 	place.add_item("Above the action bar", TimingBarView.Place.ACTION_BAR)
 	place.select(place.get_item_index(hud.timing_bar.place))
 	place.item_selected.connect(func(i: int): hud.set_timing_bar_place(place.get_item_id(i)))
 	place_row.add_child(place)
+	# Sliding: same length for every ability; off: the length follows the ability.
+	var mode := OptionButton.new()
+	mode.focus_mode = Control.FOCUS_NONE
+	mode.add_item("Sliding: same length for every ability", 1)
+	mode.add_item("Steady speed: length follows the ability (full bar = %d s)" % int(TimingBarView.FULL_SECONDS), 0)
+	mode.select(mode.get_item_index(1 if hud.timing_bar.sliding else 0))
+	mode.item_selected.connect(func(i: int): hud.set_timing_bar_sliding(mode.get_item_id(i) == 1))
+	page.add_child(mode)
 	show_speed(hud.session.rules().game_speed)
 	# Dragging sends only on release, so the host isn't flooded while dragging.
 	_speed_slider.value_changed.connect(func(v: float): _speed_box.set_value_no_signal(v))
