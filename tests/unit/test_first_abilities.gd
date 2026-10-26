@@ -99,7 +99,11 @@ func test_fire_punch_and_slash_hit_an_adjacent_enemy() -> void:
 	var after_punch := _lost(foe)
 	assert_gt(after_punch, 0.0)
 	world.advance(1.1) # GCD
-	world.cast(hero, _a("S01"), foe)
+	world.cast(hero, _a("S01"), foe) # a timing bar: it hits on the press
+	assert_eq(_lost(foe), after_punch, "not yet")
+	world.advance(0.8)
+	world.submit(hero.id, {"type": "timing_press", "at": 0.8})
+	world.step()
 	assert_gt(_lost(foe), after_punch)
 
 

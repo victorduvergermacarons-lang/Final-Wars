@@ -12,6 +12,8 @@ E: talk to the person next to you · right-click someone to talk
 Click someone, or Tab, to target · Esc: clear the target
 1–9, 0: use the action bar · Shift+1–6 (or < >): switch action bar page
 Hold an aimed ability's key to aim, release to cast · Esc or right-click: cancel
+Timing bar (e.g. Slash): right-click when the cursor is on the green zone for full
+power, on the blue middle for a sure critical strike; moving cancels it
 R: release to the graveyard when dead · mouse wheel: zoom
 
 [b]Menus[/b] (the menu book)
@@ -117,6 +119,22 @@ func _speed_tab() -> Control:
 	_speed_box.custom_minimum_size.x = 100
 	row.add_child(_speed_box)
 	page.add_child(_button("Reset to ×1", func(): _set_speed(1.0)))
+
+	# Where the timing bar (right-click on its green / blue zones) is drawn.
+	page.add_child(HSeparator.new())
+	var place_row := HBoxContainer.new()
+	place_row.add_theme_constant_override("separation", 10)
+	page.add_child(place_row)
+	var place_label := Label.new()
+	place_label.text = "Timing bar"
+	place_row.add_child(place_label)
+	var place := OptionButton.new()
+	place.focus_mode = Control.FOCUS_NONE
+	place.add_item("Under your hero", TimingBarView.Place.HERO)
+	place.add_item("Above the action bar", TimingBarView.Place.ACTION_BAR)
+	place.select(place.get_item_index(hud.timing_bar.place))
+	place.item_selected.connect(func(i: int): hud.set_timing_bar_place(place.get_item_id(i)))
+	place_row.add_child(place)
 	show_speed(hud.session.rules().game_speed)
 	# Dragging sends only on release, so the host isn't flooded while dragging.
 	_speed_slider.value_changed.connect(func(v: float): _speed_box.set_value_no_signal(v))

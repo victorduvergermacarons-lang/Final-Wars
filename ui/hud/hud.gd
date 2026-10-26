@@ -72,6 +72,8 @@ var _tracker_fold: Button
 var _tracker_dragging := false
 ## The Escape menu (log, controls, keybinds, leave game).
 var game_menu: GameMenu
+var timing_bar: TimingBarView
+var _action_bar: Control
 var _page_label: Label
 var _spellbook: SpellbookPanel
 var trees_window: AbilityTreeWindow
@@ -92,6 +94,17 @@ func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_pa
 	client.action_bar.changed.connect(_on_bar_changed)
 	session.events_received.connect(_on_events)
 	_build()
+
+
+## Where the action bar is on screen (the timing bar can sit above it).
+func action_bar_rect() -> Rect2:
+	return _action_bar.get_global_rect()
+
+
+## Puts the timing bar under the hero or above the action bar, and saves the choice.
+func set_timing_bar_place(place: int) -> void:
+	timing_bar.place = place
+	SettingsStore.save_ui("timing_bar_place", place, settings_path)
 
 
 func _build() -> void:
@@ -141,6 +154,13 @@ func _build() -> void:
 	for i in ActionBarModel.SLOT_COUNT:
 		bar.add_child(SlotButton.new(i, self))
 	bottom.add_child(bar)
+	_action_bar = bar
+
+	# The local hero's timing bar (right-click on its zones), under the hero or
+	# above the action bar.
+	timing_bar = TimingBarView.new(self)
+	timing_bar.place = int(SettingsStore.load_ui("timing_bar_place", TimingBarView.Place.HERO, settings_path))
+	_root.add_child(timing_bar)
 
 	# Bottom-right: which action bar page is shown (Shift+1–6, or the arrows).
 	var pager := PanelContainer.new()
@@ -492,6 +512,9 @@ func _on_events(events: Array) -> void:
 			console.show_result({"ok": false, "text": "The host doesn't allow debug commands (debug builds only)."})
 			continue
 		match e.type:
+			"timing_result":
+				if e.source == me:
+					timing_bar.show_result(e.grade, e.at)
 			"game_speed":
 				# The host set it in its own rules; a remote client copies it (the host's
 				# own copy is the same object).

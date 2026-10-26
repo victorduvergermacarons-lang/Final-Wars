@@ -3,14 +3,22 @@
 [ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fxoap"]
 [ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_k04mu"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_lsyin"]
+[ext_resource type="Script" path="res://data/defs/timing_bar_def.gd" id="4_tmbar"]
 
 [sub_resource type="Resource" id="Resource_lrsia"]
 script = ExtResource("1_fxoap")
 base_amount = -1.0
 sheet_scaling = true
 
+[sub_resource type="Resource" id="Resource_tmbar"]
+script = ExtResource("4_tmbar")
+seconds = 2.0
+zones = Array[Vector2]([Vector2(0.75, 0.5)])
+crit_zones = Array[Vector2]([Vector2(0.95, 0.1)])
+
 [resource]
 script = ExtResource("3_lsyin")
 id = &"S01"
 effects = Array[ExtResource("1_fxoap")]([SubResource("Resource_lrsia")])
 targeting = 1
+timing_bar = SubResource("Resource_tmbar")

@@ -40,6 +40,15 @@ const GAME_SPEED_MAX := 2.0
 @export_group("Abilities")
 @export var gcd_seconds: float = 1.0
 
+@export_group("Timing bar")
+## Power of an ability whose timing bar was missed (pressed outside the green and
+## blue zones, or not at all). Green and blue zones give full power; blue also
+## makes every hit a critical strike. See TimingBarDef.
+@export var timing_miss_power: float = 0.7
+## After the bar ends, the host waits this long for a press still on its way from
+## a client before casting at miss power.
+@export var timing_press_grace_seconds: float = 0.25
+
 @export_group("Line of sight")
 ## An obstacle blocks only if it rises more than this many levels above the
 ## sight line (roughly: how tall actors are).

@@ -56,6 +56,12 @@ func _fight(enemy: Enemy) -> Dictionary:
 	while enemy.alive and sim.now - start < FIGHT_LIMIT and hero.alive:
 		var events := []
 		var stats := hero.current_stats(sim.now)
+		# Slash's timing bar: press on the green zone, and don't step (it would cancel).
+		if hero.casting.get("kind", "") == "timing":
+			BalanceSim.play_timing_bar(sim, hero, "good")
+			events = _tick()
+			lowest = minf(lowest, hero.hp)
+			continue
 		if hero.hp < stats.hp * 0.45:
 			world.submit(hero.id, {"type": "cast", "ability": &"W01", "target": hero.id})
 		var d := Actor.body_distance(hero, enemy) # large bodies are reached through any tile

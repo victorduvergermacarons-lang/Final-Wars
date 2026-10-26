@@ -26,6 +26,7 @@ extends RefCounted
 ##   {"type": "stop_learning"}
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
 ##   {"type": "game_speed", "value": float}   (game clock speed, 0.1–2; same rule as debug)
+##   {"type": "timing_press", "at": float}   (right-click on a timing bar: seconds since it started)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -406,24 +407,33 @@ func cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant = null
 
 
 func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
-	var timed := ability.cast_seconds > 0.0 or ability.windup_seconds > 0.0 or ability.channel_seconds > 0.0
+	var timed := ability.cast_seconds > 0.0 or ability.windup_seconds > 0.0 or ability.channel_seconds > 0.0 \
+			or _has_timing_bar(caster, ability)
 	if timed:
 		return _start_timed_cast(caster, ability, target, aim)
 	return _finish_cast(caster, ability, target, aim, CastResolver.Pay.INSTANT)
 
 
-## Starts a cast time, wind-up or channel (see AbilityDef). Cast times only take
-## the GCD now; wind-ups and channels are paid up front.
+## Only heroes play timing bars (enemies cast those abilities straight away).
+static func _has_timing_bar(caster: Actor, ability: AbilityDef) -> bool:
+	return caster is Hero and ability.timing_bar != null
+
+
+## Starts a cast time, wind-up, channel or timing bar (see AbilityDef). Cast times
+## and timing bars only take the GCD now; wind-ups and channels are paid up front.
 func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
 	var r := CastResolver.validate(ctx, caster, ability, target, aim)
 	if r != AbilityResolver.Result.OK:
 		return r
 	var kind := "cast" if ability.cast_seconds > 0.0 else ("windup" if ability.windup_seconds > 0.0 else "channel")
 	var seconds: float = ability.cast_seconds if kind == "cast" else (ability.windup_seconds if kind == "windup" else ability.channel_seconds)
+	if _has_timing_bar(caster, ability):
+		kind = "timing"
+		seconds = ability.timing_bar.seconds
 	var point: Variant = CastResolver.aim_point(caster, target, aim)
 	if point != null:
 		CastResolver._face(caster, point)
-	if kind == "cast":
+	if kind == "cast" or kind == "timing":
 		if ability.on_gcd:
 			caster.cooldowns.trigger_gcd(now, rules.gcd_seconds * caster.buffs.cooldown_multiplier(now))
 	else:
@@ -443,7 +453,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 			if e.kind == AbilityEffect.Kind.CHARGE_THROUGH:
 				caster.casting.tiles = AbilityResolver.charge_swept(caster, AbilityResolver.charge_lane(ctx, caster,
 						TileGeometry.snap8(point - Vector2(caster.tile())), int(e.base_amount)))
-	if kind != "cast":
+	if kind != "cast" and kind != "timing":
 		caster.buffs.consume_on_cast(ability.tree, now)
 	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
 			"target": caster.casting.target, "end": caster.casting.end})
@@ -484,6 +494,10 @@ func _update_casts() -> void:
 					var r := _finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
 					if r != AbilityResolver.Result.OK:
 						emit({"type": "whiff", "source": a.id, "ability": ability.id, "tile": a.tile()})
+			"timing":
+				# No press came (or it was lost on the way): cast at miss power.
+				if now + 0.0001 >= c.end + rules.timing_press_grace_seconds:
+					_resolve_timing(a, -1.0)
 			"channel":
 				while not a.casting.is_empty() and now + 0.0001 >= c.next_tick and c.next_tick <= c.end + 0.0001:
 					c.next_tick += ability.channel_tick_seconds
@@ -491,6 +505,40 @@ func _update_casts() -> void:
 				if not a.casting.is_empty() and now + 0.0001 >= c.end:
 					a.casting = {}
 					emit({"type": "channel_end", "source": a.id, "ability": ability.id})
+
+
+## A right-click on the hero's timing bar, `at` seconds after it started as the
+## player saw it (their screen runs a little behind the host, so the client
+## measures it). It can't claim a moment the host hasn't reached yet (beyond a
+## little clock slack).
+func _intent_timing_press(hero: Hero, at: float) -> String:
+	var c: Dictionary = hero.casting
+	if c.is_empty() or c.kind != "timing":
+		return "" # the bar already ended (cancelled, or no press in time): nothing to say
+	_resolve_timing(hero, minf(at, now - float(c.start) + TIMING_CLOCK_SLACK))
+	return ""
+
+
+const TIMING_CLOCK_SLACK := 0.3
+
+
+## Ends `caster`'s timing bar and casts its ability: full power on a green zone,
+## full power and sure crits on a blue one, rules.timing_miss_power otherwise
+## (`at` < 0: no press). Mana and cooldown are paid now, like a cast time.
+func _resolve_timing(caster: Actor, at: float) -> void:
+	var c: Dictionary = caster.casting
+	var ability: AbilityDef = c.ability
+	caster.casting = {}
+	var grade := ability.timing_bar.judge(at) if at >= 0.0 else TimingBarDef.Grade.MISS
+	var power := rules.timing_miss_power if grade == TimingBarDef.Grade.MISS else 1.0
+	emit({"type": "timing_result", "source": caster.id, "ability": ability.id,
+			"grade": TimingBarDef.grade_name(grade), "at": at})
+	ctx.force_crit = grade == TimingBarDef.Grade.PERFECT
+	var r := _finish_cast(caster, ability, get_actor(c.target), c.aim, CastResolver.Pay.COMPLETE, c.bonus * power)
+	ctx.force_crit = false
+	if r != AbilityResolver.Result.OK:
+		emit({"type": "cast_failed", "source": caster.id, "ability": ability.id,
+				"reason": AbilityResolver.Result.keys()[r].to_lower()})
 
 
 func cancel_cast(actor: Actor, reason: String) -> void:
@@ -819,6 +867,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1), intent.get("aim"))
 		"release":
 			reason = _intent_release(hero)
+		"timing_press":
+			reason = _intent_timing_press(hero, intent.get("at", 0.0))
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
 		"accept_quest":

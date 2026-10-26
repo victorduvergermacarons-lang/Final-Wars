@@ -666,9 +666,13 @@ func _draw_cast_bar(a: Actor, feet: Vector2, now: float) -> void:
 	var c: Dictionary = a.casting
 	if c.is_empty() or not c.has("end"):
 		return
+	# Your own timing bar is drawn big by the HUD (TimingBarView); others see this one.
+	if c.get("kind", "") == "timing" and a.id == session.local_hero_id:
+		return
 	var span := maxf(float(c.end) - float(c.get("start", c.end)), 0.01)
 	var done := clampf((now - float(c.get("start", now))) / span, 0.0, 1.0)
-	var color: Color = {"cast": Color(1, 0.85, 0.2), "windup": Color(1, 0.3, 0.2), "channel": Color(0.4, 0.7, 1)}.get(
+	var color: Color = {"cast": Color(1, 0.85, 0.2), "windup": Color(1, 0.3, 0.2), "channel": Color(0.4, 0.7, 1),
+			"timing": Color(0.3, 0.9, 0.4)}.get(
 			c.get("kind", "cast"), Color.WHITE)
 	_draw_bar(feet + Vector2(-16, 8), 32, done, color)
 	var ability = c.get("ability")

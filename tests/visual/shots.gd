@@ -412,6 +412,28 @@ func _run() -> void:
 	await get_tree().create_timer(0.3).timeout
 	await _shot("37_dive_trail", 1)
 	tz.remove_enemy(dd.id)
+	# 39. Slash's timing bar: under the hero, above the action bar, then a press on
+	# the blue middle ("Perfect!").
+	tz.reset_zone()
+	var dummy: EnemyDef = cd.enemies[&"wolf"].duplicate()
+	dummy.aggro_radius = 0
+	dummy.abilities = [] as Array[AbilityDef]
+	dummy.howl_ability = null
+	hero.move.place(base)
+	hero.cooldowns = Cooldowns.new()
+	await _snap_camera(hero)
+	var dw := tz.add_enemy(dummy, base + Vector2i(1, 0))
+	tz.cast(hero, cd.abilities[&"S01"], dw)
+	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.55)
+	await _shot("39_timing_bar_hero", 1)
+	hud.set_timing_bar_place(TimingBarView.Place.ACTION_BAR)
+	await _shot("39b_timing_bar_action_bar", 1)
+	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 1.0)
+	hud.input.press_timing_bar()
+	await get_tree().create_timer(0.15).timeout
+	await _shot("39c_timing_bar_perfect", 1)
+	hud.set_timing_bar_place(TimingBarView.Place.HERO)
+	tz.remove_enemy(dw.id)
 	# 38. The Escape menu: the message log, then the controls; the quest tracker
 	# folded to its heading.
 	hud.client.target_id = -1

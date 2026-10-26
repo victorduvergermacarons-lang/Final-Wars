@@ -117,6 +117,11 @@ func _held_direction() -> Vector2i:
 func _unhandled_input(event: InputEvent) -> void:
 	if session == null:
 		return
+	# A right-click during a timing bar is the press (before anything else uses it).
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT \
+			and press_timing_bar():
+		get_viewport().set_input_as_handled()
+		return
 	if not _aiming.is_empty() and _aim_input(event):
 		get_viewport().set_input_as_handled()
 		return
@@ -146,6 +151,22 @@ func _unhandled_input(event: InputEvent) -> void:
 				use_slot(i, InputActions.slot_action(i))
 				get_viewport().set_input_as_handled()
 				return
+
+
+## Presses the local hero's timing bar, if one is running: sends how far into
+## the bar this is, as seen on this screen (the host judges it). True if a bar was
+## running (a second press on the same bar does nothing).
+func press_timing_bar() -> bool:
+	var hero: Hero = session.local_hero()
+	if hero == null or hero.casting.get("kind", "") != "timing":
+		return false
+	var start := float(hero.casting.start)
+	if float(client.timing_press.get("start", -1.0)) == start:
+		return true
+	var at: float = session.render_time() - start
+	client.timing_press = {"start": start, "at": at}
+	session.send_intent({"type": "timing_press", "at": at})
+	return true
 
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was

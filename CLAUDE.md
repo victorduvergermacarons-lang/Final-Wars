@@ -154,7 +154,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
 | E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
 | E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth); lifts units on it, enemies take 10 + 0.02 per Earth Mastery | 15 | 15 |
-| S01 | Slash | Rusty Shortsword | Targeted, adjacent | 1.0 physical | — | 2 |
+| S01 | Slash | Rusty Shortsword | Targeted, adjacent, **2 s timing bar** (see **Timing bars**) | 1.0 physical | — | 2 |
 | S04 | Lunge | Traveler's Longsword | Targeted, 3 | dash 2, then 1.1 if adjacent | — | 8 |
 | B01 | Quick Shot | Hunter's Shortbow | Targeted, 5 | 0.9 | — | 2 |
 | B02 | Aimed Shot | Yew Longbow | Skillshot, 7, 1 s draw, 14 t/s | 1.8 | — | 6 |
@@ -492,6 +492,40 @@ User request. Replaces parts of HUD rule 15 (the button row and the message log)
 - **Quest tracker:** a "Quests" heading (drag it to move the tracker) with a fold button
   (– / +) that hides the list;
   text 15, 260 wide.
+
+## Timing bars (2026-10-26, first step)
+
+The rhythm part of casting (user brief). A hero's ability with a timing bar
+(`AbilityDef.timing_bar`, a `TimingBarDef`) doesn't go off at once: a cursor sweeps
+across a big bar, and the player right-clicks while it is on a zone.
+- **Zones:**
+  - Green: full power.
+  - Blue (the middle of a green zone): full power and a sure critical strike
+    (`CombatContext.force_crit`).
+  - A press anywhere else, or none: `CombatRules.timing_miss_power` (0.7).
+  - The reward is for good timing; nothing worse than a reduced hit.
+- **Only Slash so far:** a 2 s bar, green 0.75–1.25 s, blue 0.95–1.05 s. Planned:
+  only important abilities get long bars, quick ones short bars, instants (dashes,
+  potions) none; each tree gets its own kind of pattern (taps, holds…).
+- **Rules (a cast kind `timing`):**
+  - The GCD starts with the bar; mana and cooldown are paid when it goes off.
+  - One press per bar for now: the press casts the ability at once.
+  - Moving, a stun, an interrupt or the target leaving range cancels it (cooldown
+    not spent).
+  - Enemies cast these abilities without a bar.
+- **Network:** the client measures the press against the bar as it saw it and sends
+  `{"type": "timing_press", "at"}`. The host judges it (`TimingBarDef.judge`), never
+  accepting a moment it hasn't reached (+0.3 s slack). With no press it waits
+  `timing_press_grace_seconds` (0.25) after the bar ends, then casts at miss power.
+  It emits `timing_result` (miss / good / perfect).
+- **Display** (`TimingBarView`): 440×30, under your hero or above the action bar
+  (Escape menu → Gameplay test → Timing bar; saved in `user://settings.cfg`). The
+  ability's name above it, then "Perfect!" / "Good" / "Miss" for 0.8 s. Other
+  players see a small green cast bar under you.
+- **Balance:** the bots press the green zone. Slash now hits less often, so six
+  balance targets are pending (sword builds vs Wolves, the Skirmisher, the Hound,
+  plus the drake from before) until the planned combat pacing pass, which slows the
+  enemies down.
 
 ## Performance (branch `optimised-build-1`, 2026-10-21)
 
@@ -1345,6 +1379,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-26 | Timing bars, first step: Slash runs a 2 s bar (green 0.5 s in the middle); right-click on green = full power, on blue (its middle) = sure crit, else reduced; the bar under the hero or above the action bar (option) | User brief: rhythm in casting, rewarding good timing; long bars only for important abilities, none for instants; moving cancels; enemies changed later. My choices: miss power 70%; blue 0.1 s wide; one press per bar, which casts at once; the client measures the press and the host judges it (0.25 s grace, 0.3 s slack); GCD at the start, mana and cooldown when it goes off; enemies skip bars; 440×30 bar; the pending balance targets. See **Timing bars**. |
 | 2026-10-24 | Game speed slider in a "Gameplay test" tab of the Escape menu, ×0.1 to ×2 | User request: everything fight-related scales (steps, cooldowns, wind-ups, projectiles), for heroes and enemies. Then (user request) out of combat too: the whole sim clock runs at that speed all the time (`combat_speed` renamed `game_speed`). My choices: host-only, gated like the debug console; applies to the whole session and isn't saved; the slider sends on release, the box on each change. |
 | 2026-10-23 | Tooltips open faster and are smaller | User request. My numbers: every tooltip opens after 0.15 s (Godot's default 0.5 s); item tooltips and paper tooltips use text 13 (was 16 / 20), item tooltips 280 wide (was 340). |
 | 2026-10-23 | Full item tooltips (abilities and consumables in numbers) everywhere items appear; the equipment slot an item would go in lights up on hover | User request. My choices: amounts are computed for your hero at that moment (stats, buffs and Mastery included); a consumable's own description is left out when its Use lines already say it; shop and loot rows got the same tooltip; dragging keeps the highlight until the drop; tooltip text 16. |

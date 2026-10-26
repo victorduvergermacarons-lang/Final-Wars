@@ -7,6 +7,10 @@ var target_id: int = -1
 ## "valid", "point"}; empty otherwise. WorldView highlights the tiles.
 var aim := {}
 var action_bar := ActionBarModel.new()
+## The local right-click on the current timing bar, before the host answers:
+## {"start": the bar's start time, "at": seconds into it}. TimingBarView stops the
+## cursor there at once.
+var timing_press := {}
 ## Overhead marker per NPC def id ("!" quest available, "?" turn-in ready). Set by the quest UI.
 var npc_markers := {}
 ## Short-lived error shown mid-screen ("Out of range"), with the time it appeared.

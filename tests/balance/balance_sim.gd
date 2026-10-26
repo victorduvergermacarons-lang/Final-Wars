@@ -168,6 +168,8 @@ static func tree_fight(content, specs: Array, enemy_id: StringName, count: int, 
 		for i in heroes.size():
 			var h := heroes[i]
 			var spec: Dictionary = specs[i]
+			if h.alive and h.casting.get("kind", "") == "timing":
+				play_timing_bar(world, h, spec.get("timing", "good"))
 			if not h.alive or not h.casting.is_empty():
 				continue
 			var target: Enemy = foes[0]
@@ -223,6 +225,21 @@ static func tree_fight(content, specs: Array, enemy_id: StringName, count: int, 
 		mana = minf(mana, h.mana / maxf(h.stats.mana, 1.0))
 	return {"seconds": snappedf(t, 0.05), "hp_lost_pct": roundi((1.0 - min_hp_frac) * 100), "won": won,
 			"mana_left_pct": roundi(mana * 100)}
+
+
+## The bot's right-click on a timing bar: "good" early in the first green zone
+## (full power, no sure crit), "perfect" in the middle of the first blue zone,
+## "miss" never (the bar runs out at miss power).
+static func play_timing_bar(world: WorldSim, h: Hero, skill: String) -> void:
+	var bar: TimingBarDef = h.casting.ability.timing_bar
+	var when := -1.0
+	if skill == "perfect" and not bar.crit_zones.is_empty():
+		when = bar.crit_zones[0].x + bar.crit_zones[0].y / 2.0
+	elif skill != "miss" and not bar.zones.is_empty():
+		when = bar.zones[0].x + 0.05
+	var elapsed: float = world.now - float(h.casting.start)
+	if when >= 0.0 and elapsed + 0.0001 >= when:
+		world.submit(h.id, {"type": "timing_press", "at": elapsed})
 
 
 static func tree_average(content, specs: Array, enemy_id: StringName, count: int, runs: int = 10,

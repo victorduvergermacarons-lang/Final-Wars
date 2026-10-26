@@ -641,7 +641,7 @@ static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool
 
 
 static func _roll_crit(ctx: CombatContext, effect: AbilityEffect, caster_stats: StatBlock) -> bool:
-	return effect.can_crit and ctx.rng.randf() < CombatMath.crit_chance(caster_stats.crit_rate)
+	return effect.can_crit and (ctx.force_crit or ctx.rng.randf() < CombatMath.crit_chance(caster_stats.crit_rate))
 
 
 ## Healing or buffing someone puts the caster on the threat table of every enemy
