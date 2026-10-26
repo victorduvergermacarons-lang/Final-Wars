@@ -192,3 +192,40 @@ func test_numbered_takes_play_in_turn() -> void:
 	assert_true(p.stream is AudioStreamRandomizer)
 	assert_eq(p.stream.streams_count, 2)
 	assert_false(audio.missing_keys().has(&"footstep_test_takes"))
+
+
+func test_each_region_plays_its_own_explore_track_or_the_draft() -> void:
+	var water: MusicTrackDef = audio.tracks.filter(func(x): return x.id == &"explore_tidereach")[0]
+	var draft: MusicTrackDef = audio.tracks.filter(func(x): return x.id == &"idle_draft")[0]
+	assert_true(ResourceLoader.exists(water.file), "the Tidereach OGG is imported")
+	assert_eq(water.regions, [Regions.Id.TIDEREACH] as Array[Regions.Id])
+	var explore := MusicTrackDef.Context.EXPLORE
+	assert_eq(audio.pick_track(explore, 1.0, Regions.Id.TIDEREACH).track, water, "Tidereach: its own track")
+	for r in [Regions.Id.HEARTLAND, Regions.Id.BEDRUN, Regions.Id.VAEL, Regions.Id.ASHKARA]:
+		assert_eq(audio.pick_track(explore, 1.0, r).track, draft, "%s has no music yet: the draft" % Regions.display_name(r))
+	assert_eq(audio.pick_track(explore).track, draft, "no region (title screen): never a region's track")
+	assert_eq(audio.pick_track(MusicTrackDef.Context.TOWN, 1.0, Regions.Id.TIDEREACH).track, draft,
+			"a Tidereach town would use town music: the water track is explore only")
+	assert_true(audio.pick_track(MusicTrackDef.Context.COMBAT, 1.0, Regions.Id.TIDEREACH).keep)
+
+
+func test_walking_between_regions_crossfades() -> void:
+	var explore := MusicTrackDef.Context.EXPLORE
+	audio.set_context(explore, 1.0, Regions.Id.HEARTLAND)
+	audio.step(2.0)
+	var draft: MusicTrackDef = audio.current_track
+	var old: int = audio._active
+	audio.set_context(explore, 1.0, Regions.Id.TIDEREACH)
+	assert_eq(audio.current_track.id, &"explore_tidereach")
+	assert_ne(audio._active, old, "the new track plays on the other player")
+	audio.step(0.75)
+	assert_almost_eq(audio._fade[old], 0.5, 0.02, "the draft fades out...")
+	assert_almost_eq(audio.music_fade(), 0.5, 0.02, "...while the water track fades in")
+	audio.step(1.0)
+	assert_almost_eq(audio.music_fade(), 1.0, 0.001)
+	assert_almost_eq(audio._fade[old], 0.0, 0.001)
+	audio.set_context(explore, 1.0, Regions.Id.TIDEREACH)
+	audio.step(0.1)
+	assert_almost_eq(audio.music_fade(), 1.0, 0.001, "same region again: no restart")
+	audio.set_context(explore, 1.0, Regions.Id.HEARTLAND)
+	assert_eq(audio.current_track, draft, "and back")

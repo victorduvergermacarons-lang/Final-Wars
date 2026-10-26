@@ -40,6 +40,8 @@ extends Resource
 ## '#' blocks line of sight; empty = nothing does (only height). Baked for tiled zones.
 @export var sight_rows: PackedStringArray = []
 
+## The region the zone is in (picks its explore music; see MusicTrackDef.regions).
+@export var region: Regions.Id = Regions.Id.HEARTLAND
 @export_group("Audio")
 ## Which music plays here (SoundDirector switches to combat/boss music in fights).
 @export var music_context: MusicTrackDef.Context = MusicTrackDef.Context.EXPLORE
