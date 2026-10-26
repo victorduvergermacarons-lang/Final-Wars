@@ -10,12 +10,13 @@ var _attacks := {} # actor id -> {"anim", "start", "hit_at", "resolved"}
 
 
 ## {"anim", "dir", "frame", "alpha"} for `actor` at time `t` (empty: draw nothing).
-func pick(actor: Enemy, art: CreatureArtDef, t: float) -> Dictionary:
+## Enemies attack and die; NPCs with art (any actor) idle and walk.
+func pick(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	var dir := CreatureArtDef.direction_for(actor.facing)
 	if not actor.alive:
 		_attacks.erase(actor.id)
-		return _death_frame(actor, art, t, dir)
-	var attack := _attack_frame(actor, art, t)
+		return _death_frame(actor as Enemy, art, t, dir) if actor is Enemy else {}
+	var attack := _attack_frame(actor as Enemy, art, t) if actor is Enemy else {}
 	if not attack.is_empty():
 		attack.dir = dir
 		return attack

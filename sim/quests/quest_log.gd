@@ -192,6 +192,22 @@ static func spots_at(hero: Hero, quests: Dictionary, zone_id: StringName, tile: 
 	return out
 
 
+## The INVESTIGATE spots in zone `zone_id` still to examine (the view makes them
+## glow; E examines the one beside you).
+static func open_spots(hero: Hero, quests: Dictionary, zone_id: StringName) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	for def in _active_defs(hero, quests):
+		for i in def.objectives.size():
+			var o: QuestObjective = def.objectives[i]
+			if o.kind != QuestObjective.Kind.INVESTIGATE or o.zone != zone_id:
+				continue
+			var found := found_spots(hero, def, i)
+			for n in o.spots.size():
+				if not found.has(n) and not out.has(o.spots[n]):
+					out.append(o.spots[n])
+	return out
+
+
 ## Marks investigate spot `n` of objective `i` examined.
 static func mark_spot(hero: Hero, def: QuestDef, i: int, n: int) -> Array[Dictionary]:
 	if not is_active(hero, def.id):

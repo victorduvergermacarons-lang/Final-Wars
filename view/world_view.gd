@@ -25,6 +25,8 @@ const HEIGHT_COLORS := [
 ]
 const HERO_COLORS := [Color(0.25, 0.5, 1.0), Color(0.2, 0.85, 0.45), Color(1.0, 0.8, 0.2), Color(0.85, 0.4, 0.95)]
 const ENEMY_COLOR := Color(0.85, 0.2, 0.2)
+## Quest-area value for an investigate spot (see _quest_area_tiles).
+const SPOT := "spot"
 ## Tile highlights: aiming (valid / can't), enemy telegraphs, ground zones.
 const AIM_COLOR := Color(0.2, 0.6, 1.0, 0.6)
 const AIM_BAD_COLOR := Color(1.0, 0.25, 0.2, 0.55)
@@ -405,7 +407,7 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 				if c.cover.has(p):
 					_draw_tile(self, grid, p, c.rect)
 			if quest_areas.has(p):
-				_draw_quest_area(grid, p)
+				_draw_quest_area(grid, p, quest_areas[p])
 			for color in marks.get(p, []):
 				_draw_tile_mark(grid, p, color)
 			for a in actors_by_tile.get(p, []):
@@ -445,7 +447,7 @@ static func _row_order(row: Array, after: Dictionary) -> Array:
 func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary, marks: Dictionary) -> void:
 	_draw_tile(self, grid, p)
 	if quest_areas.has(p):
-		_draw_quest_area(grid, p)
+		_draw_quest_area(grid, p, quest_areas[p])
 	for color in marks.get(p, []):
 		_draw_tile_mark(grid, p, color)
 
@@ -574,7 +576,7 @@ func _draw_actor(a: Actor) -> void:
 			_draw_ellipse(feet, 20, 9, Color(1, 0.9, 0.2), 2.0)
 	var body := feet + Vector2(0, -14)
 	var alpha := 0.45 if a.evading else 1.0
-	var animated := a is Enemy and (a as Enemy).def.art != null
+	var animated := (a is Enemy and (a as Enemy).def.art != null) or (a is Npc and (a as Npc).def.art != null)
 	if a.alive and not animated: # animated creatures show their facing themselves
 		_draw_facing(feet, a.facing, Color(1, 1, 1, 0.85 * alpha))
 	if a is Hero:
@@ -588,13 +590,7 @@ func _draw_actor(a: Actor) -> void:
 			draw_arc(body, 11, 0, TAU, 24, outline, 2.0)
 		_draw_label(body + Vector2(0, -22), "%s  Lv%d" % [a.display_name, (a as Hero).level], Color.WHITE)
 	elif a is Npc:
-		var npc := a as Npc
-		draw_rect(Rect2(body - Vector2(9, 11), Vector2(18, 22)), npc.def.color())
-		draw_rect(Rect2(body - Vector2(9, 11), Vector2(18, 22)), Color(0.1, 0.08, 0.02), false, 2.0)
-		_draw_label(body + Vector2(0, -22), npc.display_name, Color(1, 0.95, 0.7))
-		var marker: String = client.npc_markers.get(npc.def.id, "") if client != null else ""
-		if marker != "":
-			_draw_label(body + Vector2(0, -36), marker, Color(1, 0.85, 0.1), 20)
+		_draw_npc(a as Npc, feet, body)
 		return
 	else:
 		var edef := (a as Enemy).def
@@ -637,8 +633,9 @@ func _draw_actor(a: Actor) -> void:
 
 
 ## Draws an animated creature standing on `feet`; false if it has nothing to show.
-func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
-	var art := e.def.art
+func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef = null) -> bool:
+	if art == null:
+		art = (e as Enemy).def.art
 	var pick := _animator.pick(e, art, session.render_time())
 	if pick.is_empty():
 		return false
@@ -653,7 +650,7 @@ func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
 	var s := PixelCamera.ART_SCALE
 	var color := Color(1, 1, 1, alpha * float(pick.get("alpha", 1.0)))
 	var now: float = session.now()
-	if e.alive and e.def.enrage_buff != null and e.buffs.has(e.def.enrage_buff.id, now):
+	if e is Enemy and e.alive and e.def.enrage_buff != null and e.buffs.has(e.def.enrage_buff.id, now):
 		color = Color(ENRAGE_TINT, color.a) # Molten Fury: glowing hotter
 	var rect := Rect2(feet - art.feet * s, Vector2(art.frame_size) * s)
 	draw_texture_rect(tex, rect, false, color)
@@ -664,6 +661,66 @@ func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
 		var body := plain.get_frame_texture(name, mini(pick.frame, plain.get_frame_count(name) - 1)) if plain != null else tex
 		draw_texture_rect(body, rect, false, Color(FLASH_STRENGTH, FLASH_STRENGTH, FLASH_STRENGTH, color.a))
 	return true
+
+
+## An NPC, quest board, object or caravan. With art (NpcDef.art) it is drawn like
+## the creatures; until then, a shape for its kind in its faction's colour. Then
+## its name, its quest marker, and a health bar while escorted or hurt.
+func _draw_npc(npc: Npc, feet: Vector2, body: Vector2) -> void:
+	if not npc.alive:
+		return # a lost caravan is gone until it is back home
+	var def := npc.def
+	var c := def.color()
+	var ink := Color(0.1, 0.08, 0.02)
+	var top := body + Vector2(0, -22)
+	if def.art != null and _draw_creature(npc, feet, 1.0, def.art):
+		top = feet - Vector2(0, (def.art.feet.y - def.art.head_y) * PixelCamera.ART_SCALE) + Vector2(0, -6)
+	else:
+		match def.kind:
+			NpcDef.Kind.BOARD:
+				# A notice board on two posts, with pinned notes.
+				for x in [-12.0, 10.0]:
+					draw_rect(Rect2(feet + Vector2(x, -26), Vector2(3, 26)), Color(0.35, 0.24, 0.12))
+				var board := Rect2(feet + Vector2(-17, -40), Vector2(34, 20))
+				draw_rect(board, c.darkened(0.15))
+				draw_rect(board, ink, false, 2.0)
+				for n in 3:
+					draw_rect(Rect2(board.position + Vector2(4 + n * 10, 4 + (n % 2) * 3), Vector2(7, 9)),
+							Color(0.95, 0.9, 0.78))
+				top = feet + Vector2(0, -48)
+			NpcDef.Kind.OBJECT:
+				# Something to examine: a small block with a glint.
+				var box := Rect2(feet + Vector2(-10, -16), Vector2(20, 16))
+				draw_rect(box, c)
+				draw_rect(box, ink, false, 2.0)
+				draw_line(box.position, box.end, ink.lightened(0.2), 1.0)
+				draw_circle(feet + Vector2(5, -12), 2.0, Color(1, 1, 0.85))
+				top = feet + Vector2(0, -26)
+			NpcDef.Kind.CARAVAN:
+				# A covered wagon: bed, canvas and two wheels.
+				draw_rect(Rect2(feet + Vector2(-20, -18), Vector2(40, 10)), Color(0.45, 0.3, 0.15))
+				draw_colored_polygon(PackedVector2Array([feet + Vector2(-17, -18), feet + Vector2(-13, -34),
+						feet + Vector2(13, -34), feet + Vector2(17, -18)]), c)
+				draw_polyline(PackedVector2Array([feet + Vector2(-17, -18), feet + Vector2(-13, -34),
+						feet + Vector2(13, -34), feet + Vector2(17, -18)]), ink, 2.0)
+				for x in [-12.0, 12.0]:
+					draw_circle(feet + Vector2(x, -6), 6.0, ink)
+					draw_circle(feet + Vector2(x, -6), 3.0, Color(0.55, 0.4, 0.2))
+				top = feet + Vector2(0, -42)
+			_:
+				# A person: body and head.
+				draw_rect(Rect2(body - Vector2(8, 4), Vector2(16, 18)), c)
+				draw_rect(Rect2(body - Vector2(8, 4), Vector2(16, 18)), ink, false, 2.0)
+				draw_circle(body + Vector2(0, -10), 7.0, c.lightened(0.25))
+				draw_arc(body + Vector2(0, -10), 7.0, 0, TAU, 20, ink, 2.0)
+				top = body + Vector2(0, -24)
+	_draw_label(top, npc.display_name, c.lerp(Color.WHITE, 0.7))
+	if npc.escorting or npc.hp < npc.stats.hp - 0.01:
+		_draw_bar(top + Vector2(-14, 4), 28, npc.hp / maxf(npc.stats.hp, 1.0), Color(0.2, 0.85, 0.3))
+	var marker: String = client.npc_markers.get(def.id, "") if client != null else ""
+	if marker != "":
+		_draw_label(top + Vector2(0, -14), marker, Color(1, 0.85, 0.1), 20)
+	_draw_cast_bar(npc, feet, session.now())
 
 
 ## A training dummy: a straw mannequin on a wooden post with a crossbar for arms.
@@ -892,6 +949,13 @@ func _quest_area_tiles() -> Dictionary:
 					var p := Vector2i(x, y)
 					if GridModel.distance(p, o.tile) <= o.radius and session.grid().is_walkable(p):
 						out[p] = true
+		# An escort's destination glows like a place to reach.
+		var e := def.escort_objective()
+		if e >= 0 and def.objectives[e].zone == zone_id and QuestLog.progress(hero, def, e) < 1:
+			out[def.objectives[e].path[-1]] = true
+	# Spots to investigate glow differently (a pulsing ring).
+	for p in QuestLog.open_spots(hero, ContentDB.quests, zone_id):
+		out[p] = SPOT
 	return out
 
 
@@ -938,9 +1002,16 @@ func _draw_tile_mark(grid: GridModel, p: Vector2i, color: Color) -> void:
 	draw_polyline(pts, Color(color.lightened(0.25), minf(color.a + 0.4, 1.0)), 1.5)
 
 
-func _draw_quest_area(grid: GridModel, p: Vector2i) -> void:
+func _draw_quest_area(grid: GridModel, p: Vector2i, kind: Variant = true) -> void:
 	var c := surface_point(grid, p)
 	var pulse := 0.5 + 0.2 * sin(_pulse_ms() / 250.0)
+	if kind is String and kind == SPOT:
+		# An investigate spot: a glowing ring with a "?" over it.
+		var r := 10.0 + 3.0 * sin(_pulse_ms() / 200.0)
+		_draw_ellipse(c, r * 1.6, r * 0.8, Color(0.55, 0.95, 1.0, 0.9), 2.5)
+		_draw_ellipse(c, r * 0.9, r * 0.45, Color(0.85, 1.0, 1.0, 0.7), 1.5)
+		_draw_label(c + Vector2(0, -14), "?", Color(0.7, 1.0, 1.0), 16)
+		return
 	var hw := Iso.TILE_W * 0.5 - 4
 	var hh := Iso.TILE_H * 0.5 - 2
 	draw_colored_polygon(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),
@@ -959,11 +1030,25 @@ func _draw_landmarks(grid: GridModel) -> void:
 		_draw_label(base + Vector2(0, -40), lm.name, Color(1, 0.85, 0.3), 14)
 
 
-## "[E] Talk" over the townsperson E would talk to.
+## "[E] Talk" over the townsperson E would talk to ("[E] Use" on objects,
+## "[E] Examine" on a quest spot), and speech bubbles from other players'
+## conversations.
 func _draw_talk_prompt() -> void:
-	var npc := PlayerInput.talk_target(session)
-	if npc == null:
+	if client != null:
+		var bubbles := client.live_bubbles()
+		for id in bubbles:
+			var speaker: Actor = session.get_actor(id)
+			if speaker != null:
+				_draw_label(actor_screen_pos(speaker) + Vector2(0, -86), "\u201c%s\u201d" % bubbles[id].text,
+						Color(1, 1, 0.92), 12, true)
+	var what := PlayerInput.interaction(session)
+	if what.is_empty():
 		return
-	var marker: String = client.npc_markers.get((npc as Npc).def.id, "") if client != null else ""
+	if what.kind == "examine":
+		_draw_label(surface_point(session.grid(), what.tile) + Vector2(0, -34), "[E] Examine", Color(0.75, 1, 1), 13, true)
+		return
+	var npc: Npc = what.npc
+	var marker: String = client.npc_markers.get(npc.def.id, "") if client != null else ""
 	var y := -70.0 if marker != "" else -54.0
-	_draw_label(actor_screen_pos(npc) + Vector2(0, y), "[E] Talk", Color(1, 0.95, 0.6), 13, true)
+	var verb := "Use" if npc.def.kind == NpcDef.Kind.OBJECT else ("Read" if npc.def.kind == NpcDef.Kind.BOARD else "Talk")
+	_draw_label(actor_screen_pos(npc) + Vector2(0, y), "[E] %s" % verb, Color(1, 0.95, 0.6), 13, true)
