@@ -30,7 +30,7 @@ func _ability(id: StringName, target: AbilityDef.TargetType, effect: AbilityEffe
 	return ab
 
 
-func _item(id: StringName, slot: EquipSlot.Id, teaches: Array[AbilityDef]) -> ItemDef:
+func _item(id: StringName, slot: EquipSlot.Type, teaches: Array[AbilityDef]) -> ItemDef:
 	var i := ItemDef.new()
 	i.id = id
 	i.slot = slot
@@ -76,9 +76,9 @@ func before_each() -> void:
 	var heal := _ability(&"heal", AbilityDef.TargetType.ALLY, _effect(AbilityEffect.Kind.HEAL, 30), 4, 0.0, 5.0)
 	var rez := _ability(&"resurrect", AbilityDef.TargetType.DEAD_ALLY,
 			_effect(AbilityEffect.Kind.RESURRECT, 0), 4, 0.0, 10.0)
-	var sword := _item(&"sword", EquipSlot.Id.MAIN_HAND, [strike])
-	var charm := _item(&"charm", EquipSlot.Id.ACCESSORY, [heal, rez])
-	var staff := _item(&"staff", EquipSlot.Id.MAIN_HAND, [])
+	var sword := _item(&"sword", EquipSlot.Type.MAIN_HAND, [strike])
+	var charm := _item(&"charm", EquipSlot.Type.ACCESSORY, [heal, rez])
+	var staff := _item(&"staff", EquipSlot.Type.MAIN_HAND, [])
 	hero_def = HeroDef.new()
 	hero_def.base_stats = StatBlock.make({Stat.Id.HP: 100, Stat.Id.MANA: 50,
 			Stat.Id.PHYS_ATK: 20, Stat.Id.ACCURACY: 100, Stat.Id.JUMP: 2})
@@ -180,8 +180,9 @@ func test_step_cooldown_applies_in_combat() -> void:
 	world.step()
 	world.advance(rules.walk_tile_seconds)
 	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
-	assert_eq(_rejections(world.step()), ["not_ready"], "arrived, but 0.6s step cooldown running")
-	world.advance(0.4)
+	assert_eq(_rejections(world.step()), ["not_ready"], "arrived, but the combat step cooldown is running")
+	var cd := StatCalc.combat_step_cooldown(a.current_stats(world.now).speed, rules)
+	world.advance(cd - rules.walk_tile_seconds - 2 * rules.tick_seconds)
 	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
 	assert_eq(_rejections(world.step()), [])
 
@@ -198,12 +199,12 @@ func test_healer_joins_combat_by_healing() -> void:
 
 
 func test_equipping_is_blocked_in_combat() -> void:
-	world.submit(a.id, {"type": "equip", "item": &"staff"})
+	world.submit(a.id, {"type": "equip", "bag_index": a.bag.index_of(hero_def.starting_items[2])})
 	world.step()
 	assert_eq(a.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"staff", "allowed out of combat")
 	_place(b, Vector2i(7, 1))
 	world.step()
-	world.submit(b.id, {"type": "equip", "item": &"staff"})
+	world.submit(b.id, {"type": "equip", "bag_index": b.bag.index_of(hero_def.starting_items[2])})
 	assert_eq(_rejections(world.step()), ["in_combat"])
 
 
@@ -301,6 +302,15 @@ func test_release_respawns_at_nearest_graveyard_with_half_resources() -> void:
 	assert_almost_eq(a.mana, 25.0, 0.5)
 
 
+func test_release_leaves_combat() -> void:
+	_kill(a)
+	a.combat_until = world.now + 100.0 # as if still listed somewhere
+	world.submit(a.id, {"type": "release"})
+	world.step()
+	assert_false(a.in_combat(world.now), "out of combat at the graveyard")
+	assert_false(enemy.threat.has(a.id))
+
+
 func test_release_rejected_while_alive_and_dead_cannot_act() -> void:
 	world.submit(a.id, {"type": "release"})
 	assert_eq(_rejections(world.step()), ["not_dead"])
@@ -369,3 +379,83 @@ func test_same_seed_and_intents_give_same_result() -> void:
 			world.step()
 		results.append([a.hp, b.mana, enemy.hp, enemy.tile(), enemy.threat.top()])
 	assert_eq(results[0], results[1])
+
+
+# --- Facing ----------------------------------------------------------------------
+
+func test_steps_dont_turn_the_hero_and_face_turns_in_place() -> void:
+	var facing := a.facing
+	world.submit(a.id, {"type": "step", "to": a.tile() + Vector2i.RIGHT})
+	world.step()
+	assert_eq(a.facing, facing, "heroes face the mouse, not where they walk")
+	world.advance(1.0)
+	var tile := a.tile()
+	world.submit(a.id, {"type": "face", "dir": Vector2i.UP})
+	world.step()
+	assert_eq(a.facing, Vector2i.UP)
+	assert_eq(a.tile(), tile, "turning doesn't move")
+
+
+func test_turning_is_free_in_combat() -> void:
+	_place(a, Vector2i(6, 1))
+	world.step()
+	world.submit(a.id, {"type": "step", "to": Vector2i(6, 2)})
+	world.step()
+	world.submit(a.id, {"type": "face", "dir": Vector2i.LEFT})
+	assert_eq(_rejections(world.step()), [], "no step cooldown for turning")
+	assert_eq(a.facing, Vector2i.LEFT)
+
+
+func test_bad_face_direction_is_rejected() -> void:
+	world.submit(a.id, {"type": "face", "dir": Vector2i(1, 1)})
+	assert_eq(_rejections(world.step()), ["bad_direction"])
+
+
+# --- Bag intents ---------------------------------------------------------------------
+
+func test_bag_intents_move_split_destroy() -> void:
+	var staff_index := a.bag.index_of(hero_def.starting_items[2])
+	world.submit(a.id, {"type": "move_item", "from": staff_index, "to": 10})
+	world.step()
+	assert_eq(a.bag.item_at(10), hero_def.starting_items[2])
+	world.submit(a.id, {"type": "destroy_item", "index": 10})
+	assert_has(_types(world.step()), "destroy_item")
+	assert_null(a.bag.item_at(10))
+	world.submit(a.id, {"type": "split_item", "index": 10, "count": 1})
+	assert_eq(_rejections(world.step()), ["cannot_split"])
+
+
+func test_unequip_into_bag_and_back() -> void:
+	world.submit(a.id, {"type": "unequip", "slot": EquipSlot.Id.MAIN_HAND})
+	world.step()
+	assert_null(a.equipped_in(EquipSlot.Id.MAIN_HAND))
+	var sword_index := a.bag.index_of(hero_def.starting_items[0])
+	assert_gt(sword_index, -1)
+	world.submit(a.id, {"type": "equip", "bag_index": sword_index})
+	world.step()
+	assert_eq(a.equipped_in(EquipSlot.Id.MAIN_HAND), hero_def.starting_items[0])
+
+
+func test_aggroed_enemy_does_not_dart_two_tiles() -> void:
+	enemy_def.combat_step_seconds = 0.8
+	_place(a, Vector2i(6, 1)) # 3 tiles away: aggro
+	var step_times: Array[float] = []
+	var last := enemy.tile()
+	for i in 40: # 2 s
+		world.step()
+		if enemy.tile() != last:
+			step_times.append(world.now)
+			last = enemy.tile()
+	assert_gt(step_times.size(), 1)
+	assert_gte(step_times[1] - step_times[0], 0.8 - 0.001, "second step waits for the step cooldown")
+
+
+func test_combat_ends_as_soon_as_the_enemy_dies() -> void:
+	_place(a, Vector2i(8, 1))
+	world.step()
+	assert_true(a.in_combat(world.now))
+	enemy.hp = 1.0
+	enemy.die()
+	world._on_death(enemy)
+	world.advance(0.1)
+	assert_false(a.in_combat(world.now), "out of combat within 0.1 s")

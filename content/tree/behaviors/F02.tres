@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_3pd53"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_ymnsg"]
+[ext_resource type="Resource" path="res://content/buffs/fire_kick_burn.tres" id="3_xgj7g"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_w1mmo"]
+
+[sub_resource type="Resource" id="Resource_xkybl"]
+script = ExtResource("1_3pd53")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+power = 0.8
+
+[sub_resource type="Resource" id="Resource_ofsci"]
+script = ExtResource("1_3pd53")
+kind = 8
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+can_crit = false
+buff = ExtResource("3_xgj7g")
+power = 0.6
+
+[resource]
+script = ExtResource("4_w1mmo")
+id = &"F02"
+mana_cost = 8.0
+effects = Array[ExtResource("1_3pd53")]([SubResource("Resource_xkybl"), SubResource("Resource_ofsci")])
+targeting = 1

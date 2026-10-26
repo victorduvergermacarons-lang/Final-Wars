@@ -12,21 +12,45 @@ enum GrowthLimit {
 @export_group("Simulation")
 ## Fixed sim step (20 Hz).
 @export var tick_seconds: float = 0.05
+## A zone with no heroes in it sleeps after this long: only its clock runs, so
+## timers (respawns, buffs, ground zones) still run out, but nothing acts until a
+## hero comes back. The wait lets a fight that was just left settle first
+## (enemies evade and walk home). Negative: zones never sleep.
+@export var empty_zone_sleep_seconds: float = 30.0
 
 @export_group("Movement")
 ## Time to walk across one tile (the travel animation), same for everyone.
 ## Out of combat this is the only limit on stepping: there is no step cooldown,
 ## the next step can start the moment the previous one arrives.
-@export var walk_tile_seconds: float = 0.25
+@export var walk_tile_seconds: float = 0.2
 ## In-combat step cooldown at 0 Speed.
-@export var combat_step_base_seconds: float = 0.6
+@export var combat_step_base_seconds: float = 1.5
 ## Speed can never push the in-combat step cooldown below this.
-@export var combat_step_min_seconds: float = 0.3
+@export var combat_step_min_seconds: float = 0.5
 ## Speed at which the step cooldown is halved (before the floor applies).
 @export var speed_half_point: float = 100.0
+## Game speed (a test setting: the Escape menu's Gameplay test tab). The whole
+## simulation clock runs at this speed (World.time_scale), in and out of combat:
+## walking, steps, cooldowns, wind-ups, projectiles, buffs, regen, respawns, AI.
+## 2 = twice as fast, 0.1 = ten times slower.
+@export_range(0.1, 2.0) var game_speed: float = 1.0
+const GAME_SPEED_MIN := 0.1
+const GAME_SPEED_MAX := 2.0
 
 @export_group("Abilities")
 @export var gcd_seconds: float = 1.0
+
+@export_group("Timing bar")
+## Off: heroes cast every ability straight away, without its bar (tests of
+## ability effects use it).
+@export var timing_bars_enabled: bool = true
+## Power of an ability whose timing bar was missed (pressed outside the green and
+## yellow zones, or not at all). Green and yellow zones give full power; yellow also
+## makes every hit a critical strike. See TimingBarDef.
+@export var timing_miss_power: float = 0.7
+## After the bar ends, the host waits this long for a press still on its way from
+## a client before casting at miss power.
+@export var timing_press_grace_seconds: float = 0.25
 
 @export_group("Line of sight")
 ## An obstacle blocks only if it rises more than this many levels above the
@@ -62,7 +86,7 @@ enum GrowthLimit {
 
 @export_group("Combat state")
 ## Seconds after no enemy lists a hero before they leave combat.
-@export var combat_exit_seconds: float = 5.0
+@export var combat_exit_seconds: float = 0.0
 
 @export_group("Regen")
 ## Percent of max per second.
@@ -84,6 +108,32 @@ enum GrowthLimit {
 @export var max_level: int = 0
 ## Fraction of each equipped item's per-level growth gained on level-up.
 @export var growth_fraction: float = 0.5
+## Per-use tree Mastery only counts against enemies at most this many levels below
+## the hero (any level above counts).
+@export var mastery_level_window_below: int = 3
+
+@export_group("Targeting")
+## Network grace: a skillshot hits a unit that was on the tile at any moment in
+## the last this-many seconds (the host resolves all hits).
+@export var skillshot_grace_seconds: float = 0.1
+## Dodge rule: a skillshot's travel time or a telegraph shorter than the step
+## cooldown plus this reaction time can't really be dodged (debug warning).
+@export var dodge_reaction_seconds: float = 0.3
+## A knockback or pull that slams a unit into a wall, ledge or another unit deals
+## this much physical damage (before Mastery and defense) when the ability sets no
+## `impact_damage` of its own. The unit it hits takes it too, if hostile to the caster.
+@export var collision_damage: float = 8.0
+
+@export_group("Ability power")
+## See AbilityPower. Each point of tree Mastery adds this fraction of power.
+@export var mastery_power_per_point: float = 0.001
+## Each point of tree Mastery lengthens durations by this fraction.
+@export var mastery_duration_per_point: float = 0.0005
+## Coefficient for each stat named in the sheet's Scales With column.
+@export var sheet_stat_coefficient: float = 1.0
+## Default base damage / heal of a tree ability effect, by tier 1..5.
+@export var tier_damage_base: Array[float] = [10.0, 18.0, 30.0, 45.0, 65.0]
+@export var tier_heal_base: Array[float] = [14.0, 24.0, 38.0, 55.0, 80.0]
 @export var growth_limit: GrowthLimit = GrowthLimit.NONE
 ## CAP mode: maximum total growth per stat (0 = that stat is uncapped).
 @export var growth_cap: StatBlock = StatBlock.new()
@@ -93,3 +143,24 @@ enum GrowthLimit {
 @export var ap_per_level: int = 10
 ## Refill HP and Mana to full on level-up.
 @export var refill_on_level_up: bool = true
+
+@export_group("Economy")
+## Vendors pay this fraction of an item's price when you sell it.
+@export var vendor_sell_fraction: float = 0.25
+
+@export_group("Flanking")
+## Melee (FRONT/ARC) damage bonus when hitting a target from its side / from behind.
+@export var flank_side_bonus_percent: float = 25.0
+@export var flank_behind_bonus_percent: float = 50.0
+## Melee attacks from directly behind can't miss.
+@export var behind_never_misses: bool = true
+
+@export_group("XP by level")
+## Each level the enemy is above you: +this percent XP, up to the cap.
+@export var xp_bonus_percent_per_level_above: float = 10.0
+@export var xp_bonus_cap_percent: float = 50.0
+## Enemies this many levels below you (or more) start giving less XP…
+@export var xp_penalty_from_levels_below: int = 3
+## …losing this percent per level from there, down to the floor.
+@export var xp_penalty_percent_per_level: float = 20.0
+@export var xp_floor_percent: float = 20.0

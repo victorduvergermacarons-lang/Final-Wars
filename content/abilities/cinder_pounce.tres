@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+
+[sub_resource type="Resource" id="Resource_leap"]
+script = ExtResource("1_fx")
+kind = 14
+applies = 1
+
+[sub_resource type="Resource" id="Resource_scale"]
+script = ExtResource("2_sc")
+stat = 3
+
+[sub_resource type="Resource" id="Resource_dmg"]
+script = ExtResource("1_fx")
+damage_type = 1
+base_amount = 10.0
+scaling = Array[ExtResource("2_sc")]([SubResource("Resource_scale")])
+
+[resource]
+script = ExtResource("3_ab")
+id = &"cinder_pounce"
+display_name = "Cinder Pounce"
+description = "Marks the tile beside a hero up to 3 tiles away, then leaps onto it in a burst of fire, burning whoever still stands on the mark."
+min_range = 1
+max_range = 3
+cooldown_seconds = 8.0
+requires_line_of_sight = false
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_leap"), SubResource("Resource_dmg")])
+targeting = 3
+area_radius = 1
+area_diamond = true
+aim_beside_target = true
+windup_seconds = 0.6

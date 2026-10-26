@@ -1,6 +1,7 @@
 class_name GridModel
 extends RefCounted
-## Logical tile grid: height and walkability per tile. Independent of visuals.
+## Logical tile grid: height, walkability and sight blocking per tile.
+## Independent of visuals.
 ## Coordinates are Vector2i(x, y); movement is 4-directional.
 
 const DIRECTIONS: Array[Vector2i] = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
@@ -9,6 +10,9 @@ var width: int = 0
 var depth: int = 0
 var _heights := PackedInt32Array()
 var _walkable := PackedByteArray()
+## Tiles that block line of sight and projectiles whatever their height (a tall
+## boulder prop, a rock standing in the river).
+var _sight_blocked := PackedByteArray()
 
 
 func _init(p_width: int = 0, p_depth: int = 0, fill_height: int = 0) -> void:
@@ -18,6 +22,8 @@ func _init(p_width: int = 0, p_depth: int = 0, fill_height: int = 0) -> void:
 	_heights.fill(fill_height)
 	_walkable.resize(width * depth)
 	_walkable.fill(1)
+	_sight_blocked.resize(width * depth)
+	_sight_blocked.fill(0)
 
 
 ## Builds a grid from zone data. Returns null (and logs) if the zone is invalid.
@@ -32,6 +38,8 @@ static func from_zone(zone: ZoneDef) -> GridModel:
 		var wrow := zone.walk_rows[y]
 		for x in grid.width:
 			grid.set_tile(Vector2i(x, y), ZoneDef.parse_height(hrow[x]), wrow[x] == ".")
+			if not zone.sight_rows.is_empty():
+				grid.set_blocks_sight(Vector2i(x, y), zone.sight_rows[y][x] == "#")
 	return grid
 
 
@@ -49,8 +57,22 @@ func set_tile(p: Vector2i, h: int, walkable: bool) -> void:
 	_walkable[i] = 1 if walkable else 0
 
 
+## Every tile's height, row by row (index y × width + x). Read-only: the view
+## compares it between frames to spot terrain changes.
+func heights() -> PackedInt32Array:
+	return _heights
+
+
 func height_at(p: Vector2i) -> int:
 	return _heights[_index(p)] if in_bounds(p) else 0
+
+
+func blocks_sight(p: Vector2i) -> bool:
+	return in_bounds(p) and _sight_blocked[_index(p)] == 1
+
+
+func set_blocks_sight(p: Vector2i, blocks: bool) -> void:
+	_sight_blocked[_index(p)] = 1 if blocks else 0
 
 
 func is_walkable(p: Vector2i) -> bool:
@@ -69,6 +91,15 @@ func can_step(from: Vector2i, to: Vector2i, jump: int, max_drop: int = -1) -> bo
 	if max_drop >= 0 and -rise > max_drop:
 		return false
 	return true
+
+
+## Flying (EnemyDef.flying): any walkable tile, whatever its height; walls, water
+## and other unwalkable tiles only if they rise at most `max_wall_rise` levels
+## above `from`; never tiles that block sight (tall rocks and props).
+func can_fly(from: Vector2i, to: Vector2i, max_wall_rise: int) -> bool:
+	if distance(from, to) != 1 or not in_bounds(from) or not in_bounds(to) or blocks_sight(to):
+		return false
+	return is_walkable(to) or height_at(to) - height_at(from) <= max_wall_rise
 
 
 ## Height levels `from` stands above `to` (negative if below).

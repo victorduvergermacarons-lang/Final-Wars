@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_modifier.gd" id="1_a5twj"]
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="2_vglvp"]
+
+[resource]
+script = ExtResource("2_vglvp")
+id = &"fire_kick_burn"
+display_name = "Burning"
+duration_seconds = 3.0
+is_debuff = true

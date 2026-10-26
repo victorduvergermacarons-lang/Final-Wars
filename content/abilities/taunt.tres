@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_7i858"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_g4q53"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_6hslw"]
+
+[sub_resource type="Resource" id="Resource_i0l55"]
+script = ExtResource("1_7i858")
+kind = 2
+
+[resource]
+script = ExtResource("3_6hslw")
+id = &"taunt"
+display_name = "Taunt"
+description = "Force an enemy to attack you."
+max_range = 3
+cooldown_seconds = 8.0
+effects = Array[ExtResource("1_7i858")]([SubResource("Resource_i0l55")])
+ap_to_master = 20

@@ -1,12 +1,26 @@
 class_name ItemDef
 extends Resource
-## An equippable item: flat stats while equipped, per-level growth granted on
-## level-up while equipped, and abilities it teaches.
+## An item design. Equippable items give flat stats while equipped, per-level
+## growth on level-up while equipped, and teach abilities. Items are fixed designs:
+## every copy of an item is identical (no random rolls).
 
 @export var id: StringName = &""
 @export var display_name: String = ""
 @export_multiline var description: String = ""
-@export var slot: EquipSlot.Id = EquipSlot.Id.MAIN_HAND
+## Where it can be equipped (NONE: potions, quest items…).
+@export var slot: EquipSlot.Type = EquipSlot.Type.NONE
+@export var rarity: Rarity.Id = Rarity.Id.COMMON
+## Vendor price in gold (vendors buy it back for a fraction).
+@export var price: int = 0
+## How many fit in one bag slot. Equippable items don't stack.
+@export var max_stack: int = 1
+## Quest items: shown as such, can't be sold.
+@export var quest_item: bool = false
+## Old Milestone 1–2 gear whose abilities were retired: never handed out, removed
+## from loaded characters (kept for engine tests).
+@export var retired: bool = false
+## Consumables: using the item casts this ability on yourself and uses one up.
+@export var use_ability: AbilityDef
 ## Added to the hero's stats while equipped.
 @export var stats: StatBlock = StatBlock.new()
 ## Per-level growth. On level-up the hero permanently gains
@@ -14,12 +28,29 @@ extends Resource
 @export var growth: StatBlock = StatBlock.new()
 ## Usable while equipped; mastered permanently once enough AP is earned.
 @export var teaches: Array[AbilityDef] = []
+## Ability-tree items (design/Ability_Tree.xlsx): the tree they teach ("" = none),
+## and whether it's a scroll (not worn; placed in the learning slot) or a weapon.
+@export var tree: String = ""
+@export var tier: int = 0
+@export var is_scroll: bool = false
+
+
+## The tree ability this item teaches, or null.
+func tree_ability() -> AbilityDef:
+	for a in teaches:
+		if a != null and a.is_tree_ability():
+			return a
+	return null
 
 
 func validate() -> PackedStringArray:
 	var errors: PackedStringArray = []
 	if id == &"":
 		errors.append("item has no id")
+	if max_stack < 1:
+		errors.append("%s: max_stack must be at least 1" % id)
+	if is_equippable() and max_stack != 1:
+		errors.append("%s: equippable items can't stack" % id)
 	if stats == null or growth == null:
 		errors.append("%s: missing stats or growth block" % id)
 	for ability in teaches:
@@ -28,3 +59,11 @@ func validate() -> PackedStringArray:
 		else:
 			errors.append_array(ability.validate())
 	return errors
+
+
+func is_equippable() -> bool:
+	return slot != EquipSlot.Type.NONE
+
+
+func is_two_handed() -> bool:
+	return slot == EquipSlot.Type.TWO_HAND

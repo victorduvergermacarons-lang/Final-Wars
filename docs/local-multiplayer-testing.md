@@ -9,7 +9,7 @@ Godot can launch several copies of the game with one press of **F5**.
 
 1. Open the project in Godot 4.7.
 2. Menu **Debug → Customize Run Instances…**
-3. Tick **Enable Multiple Instances** and set the count to **2**.
+3. Tick **Enable Multiple Instances** and set the count to **2** (up to 4).
 4. In the instance list, give each instance its **launch arguments**:
 
    | Instance | Arguments |
@@ -29,10 +29,22 @@ Available flags: `--solo`, `--host`, `--join=ADDRESS`, `--port=N`, `--name=NAME`
 **Tip:** each window only takes keyboard input while it has focus. Click a window
 before moving its hero.
 
-### Things worth trying with two instances
+### Things worth trying with several instances
 
-- Walk Bob next to a Wolf so it aggros, then have Alice click Bob's party frame
-  and press Heal: Alice joins the fight (red outline = in combat).
+Everyone starts in the town of Millbrook; walking off its down-right edge (past Captain
+Rowan) leads to Greenfields. The full feature-by-feature list is in
+[playtest-checklist.md](playtest-checklist.md), section 12.
+
+- Join a third or fourth window while the others are already out in Greenfields:
+  it starts in town.
+- Both take Captain Rowan's "Wolves at the Gate": a Wolf killed by one counts for
+  everyone on the quest nearby. Loot is personal: each gets their own drops.
+- Gather four heroes for Old Grizzlehide, the elite bear patrolling the middle of
+  Greenfields.
+- Walk Bob next to a Wolf so it aggros, face it (tap the direction) and Strike;
+  have Alice click Bob's party frame and press Heal: Alice joins the fight (red
+  outline = in combat). Or have Alice line up with the Wolf and throw Fireballs.
+- Sidestep just before a Wolf bites: it bites where you were (0.3 s reaction).
 - Let one hero die: the other can target the body and cast **Resurrect**, or the
   dead player presses **Release** to respawn at the nearest graveyard.
 - Pull a Wolf far from its spawn: it evades (heals, untargetable) and walks home.
@@ -67,9 +79,11 @@ corrected by the host); abilities take effect once the host confirms them.
 GODOT=/path/to/godot tests/net/run_net_check.sh
 ```
 
-Starts a headless host and a headless client on localhost, makes the client
-walk four tiles and cast, and checks both sides agree. Prints
-`Network check passed.` on success; logs go to `/tmp/netcheck_*.log`.
+Starts a headless host and three headless clients on localhost (set `PLAYERS=2`
+for fewer). Each client joins with its own character, walks four tiles, casts and
+saves its hero; the host checks every guest arrived and that each hero leaves the
+world cleanly when its player disconnects. Prints `Network check passed.` on
+success; logs go to `/tmp/netcheck/`.
 
 ## Troubleshooting
 
@@ -77,7 +91,7 @@ walk four tiles and cast, and checks both sides agree. Prints
 |---------|--------------------|
 | "Could not host on port 7777" | Another program (or another host instance) uses the port. Pick another port on both sides. |
 | Joiner stays on "Connecting…", then "Could not connect" | Wrong IP, host not running, firewall blocking UDP 7777, or (internet) no port forward. |
-| "The game is full." | Milestone 1 allows 2 players (`Net.MAX_PLAYERS`). |
+| "The game is full." / can't connect to a full game | Up to 4 players (`Net.MAX_PLAYERS`). |
 | "The host is using a zone this game doesn't have" | The two copies are different builds. Both players need the same version. |
 | Two windows but keys move nothing | Click the window you want to control first. |
 | Action bar keys changed unexpectedly | Both instances share `user://settings.cfg`; rebinding in one affects the other next launch. |

@@ -17,10 +17,22 @@ var rules: CombatRules
 var content
 var now: float = 0.0
 var tick: int = 0
+## Sim seconds per real second on the host right now (World.time_scale).
+var time_scale: float = 1.0
 var local_hero_id: int = -1
 
 var _actors := {} # id -> Actor
-var _pending: Array = [] # {seq, to, start}
+## Projectiles in flight, as plain data from the host (see Projectile.to_dict).
+var projectiles: Array = []
+## Telegraphed areas and lobbed shots: [{"source", "ability", "tiles", "at"}].
+var telegraphs: Array = []
+## Ground zones: [{"source", "ability", "tiles", "until"}].
+var ground_zones: Array = []
+## Tiles the host changed (pillars, walls…), as applied to `grid`: tile -> true.
+var _terrain_applied := {}
+## One-time world events that have happened (flag id -> true), from the host.
+var world_flags := {}
+var _pending: Array = [] # unacknowledged local intents: {seq, kind: "step"|"face", ...}
 var _next_seq := 1
 
 
@@ -48,6 +60,11 @@ func local_hero() -> Hero:
 	return _actors.get(local_hero_id) as Hero
 
 
+## Keeps intent numbering going after switching to a new zone's mirror.
+func continue_sequence_from(other: ClientWorld) -> void:
+	_next_seq = other._next_seq
+
+
 func take_seq() -> int:
 	var s := _next_seq
 	_next_seq += 1
@@ -55,19 +72,28 @@ func take_seq() -> int:
 
 
 func pending_step_count() -> int:
-	return _pending.size()
+	return _pending.filter(func(p): return p.kind == "step").size()
+
+
+## Turns the local hero right away (turning is always legal while alive).
+func predict_face(seq: int, dir: Vector2i) -> bool:
+	var hero := local_hero()
+	if hero == null or not hero.alive or not hero.face(dir):
+		return false
+	_pending.append({"seq": seq, "kind": "face", "dir": dir})
+	return true
 
 
 ## Applies a step locally right away if the mirror says it's legal.
 ## `t` is the client's estimate of the host clock. Returns true if predicted.
 func predict_step(seq: int, to: Vector2i, t: float) -> bool:
 	var hero := local_hero()
-	if hero == null or not hero.alive or _pending.size() >= MAX_PENDING_STEPS:
+	if hero == null or not hero.alive or pending_step_count() >= MAX_PENDING_STEPS:
 		return false
 	if not _step_is_legal(hero, to, t):
 		return false
 	var start := maxf(t, hero.move.start_time + hero.move.duration)
-	_pending.append({"seq": seq, "to": to, "start": start})
+	_pending.append({"seq": seq, "kind": "step", "to": to, "start": start})
 	hero.move.begin(to, start, rules.walk_tile_seconds)
 	return true
 
@@ -79,16 +105,41 @@ func _step_is_legal(hero: Hero, to: Vector2i, t: float) -> bool:
 	if not grid.can_step(from, to, StatCalc.jump_levels(hero.current_stats(t))):
 		return false
 	for a in _actors.values():
-		if a != hero and a.alive and a.tile() == to:
+		if a != hero and a.alive and a.covers(to):
 			return false
 	if hero.in_combat(t) and not hero.cooldowns.can_step(t):
 		return false
 	return true
 
 
+## Puts back the zone's own terrain where earlier changes ended, then applies the
+## host's current changes.
+func _apply_terrain(changes: Array) -> void:
+	var now_changed := {}
+	for c in changes:
+		now_changed[c[0]] = true
+	if now_changed.is_empty() and _terrain_applied.is_empty():
+		return
+	var base := GridModel.from_zone(zone)
+	for t in _terrain_applied:
+		if not now_changed.has(t):
+			grid.set_tile(t, base.height_at(t), base.is_walkable(t))
+	for c in changes:
+		grid.set_tile(c[0], int(c[1]), bool(c[2]))
+	_terrain_applied = now_changed
+
+
 func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
+	time_scale = snap.get("time_scale", 1.0)
+	projectiles = snap.get("projectiles", [])
+	telegraphs = snap.get("telegraphs", [])
+	ground_zones = snap.get("zones", [])
+	_apply_terrain(snap.get("terrain", []))
+	world_flags.clear()
+	for flag in snap.get("flags", []):
+		world_flags[String(flag)] = true
 	var seen := {}
 	for d in snap.actors:
 		var id: int = d.id
@@ -111,6 +162,9 @@ func apply_snapshot(snap: Dictionary) -> void:
 func _create(d: Dictionary) -> Actor:
 	if d.kind == Snapshot.KIND_HERO:
 		return Hero.new(d.id)
+	if d.kind == Snapshot.KIND_NPC:
+		var npc_def: NpcDef = content.npcs.get(StringName(d.def))
+		return Npc.new(d.id, npc_def) if npc_def != null else null
 	var def: EnemyDef = content.enemies.get(StringName(d.def))
 	if def == null:
 		push_warning("Unknown enemy type %s" % d.def)
@@ -127,7 +181,12 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	a.evading = d.evading
 	a.combat_until = d.combat_until
 	a.move = MoveState.from_dict(d.move)
+	a.facing = d.get("facing", Vector2i.DOWN)
 	a.cooldowns = Cooldowns.from_dict(d.cd)
+	var c: Dictionary = d.get("cast", {})
+	var cast_ability: AbilityDef = content.abilities.get(StringName(c.get("ability", ""))) if not c.is_empty() else null
+	a.casting = {} if cast_ability == null else {"ability": cast_ability, "kind": c.kind, "start": c.start,
+			"end": c.end, "target": -1, "aim": null, "next_tick": INF, "bonus": 1.0}
 	a.buffs.clear()
 	for id in d.buffs:
 		var buff: BuffDef = content.buffs.get(StringName(id))
@@ -137,31 +196,43 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 		_apply_hero_extras(a as Hero, d)
 	elif a is Enemy:
 		(a as Enemy).state = d.state as Enemy.State
+		(a as Enemy).died_at = d.get("died_at", -1.0)
+		(a as Enemy).level = d.get("level", (a as Enemy).def.level)
+	elif a is Npc:
+		(a as Npc).set_escorting(d.get("escort", false))
 
 
 func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
-	h.xp = d.xp
-	var inv: Array[ItemDef] = []
-	for id in d.inv:
-		var item: ItemDef = content.items.get(StringName(id))
-		if item != null:
-			inv.append(item)
-	h.inventory = inv
 	var eq := {}
 	for slot in d.eq:
 		var item: ItemDef = content.items.get(StringName(d.eq[slot]))
 		if item != null:
 			eq[int(slot)] = item
 	h.set_equipped_raw(eq)
+	if not d.has("private"):
+		return
+	var p: Dictionary = d.private
+	h.xp = p.xp
+	h.gold = p.gold
+	h.def_id = StringName(p.get("def", "adventurer"))
+	h.bag = Bag.from_array(p.bag, content.items)
+	h.base_stats = StatBlock.from_dict(p.base)
+	h.growth = StatBlock.from_dict(p.growth)
 	h.ap = {}
-	for id in d.ap:
-		h.ap[StringName(id)] = int(d.ap[id])
+	for id in p.ap:
+		h.ap[StringName(id)] = int(p.ap[id])
 	h.mastered = {}
-	for id in d.mastered:
+	for id in p.mastered:
 		var ability: AbilityDef = content.abilities.get(StringName(id))
 		if ability != null:
 			h.mastered[StringName(id)] = ability
+	h.quest_state = p.quests
+	h.pending_loot = p.get("loot", [])
+	h.learning_item = content.items.get(StringName(p.get("learning", "")))
+	h.mastery_contrib = {}
+	for id in p.get("contrib", {}):
+		h.mastery_contrib[StringName(id)] = float(p.contrib[id])
 
 
 ## Host state, then re-apply steps the host hasn't processed yet. If the
@@ -170,10 +241,14 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 func _apply_local_hero(h: Hero, d: Dictionary) -> void:
 	var shown := h.move
 	_apply_actor(h, d)
-	var ack: int = d.ack
+	var ack: int = d.private.ack if d.has("private") else 0
 	_pending = _pending.filter(func(p): return p.seq > ack)
 	for p in _pending:
-		if h.alive and GridModel.distance(h.tile(), p.to) == 1:
+		if not h.alive:
+			break
+		if p.kind == "face":
+			h.face(p.dir)
+		elif GridModel.distance(h.tile(), p.to) == 1:
 			h.move.begin(p.to, maxf(p.start, h.move.start_time + h.move.duration), rules.walk_tile_seconds)
 	if h.move.from_tile == shown.from_tile and h.move.to_tile == shown.to_tile:
 		h.move.start_time = shown.start_time

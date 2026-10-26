@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_3xd8l"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_evf3f"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_vo3as"]
+
+[sub_resource type="Resource" id="Resource_geetj"]
+script = ExtResource("2_evf3f")
+coefficient = 0.9
+
+[sub_resource type="Resource" id="Resource_pvfdc"]
+script = ExtResource("1_3xd8l")
+base_amount = 6.0
+scaling = Array[ExtResource("2_evf3f")]([SubResource("Resource_geetj")])
+
+[resource]
+script = ExtResource("3_vo3as")
+id = &"cleave"
+display_name = "Cleave"
+description = "Hits the tile in front of you and both tiles beside it."
+shape = 3
+max_height_difference = 2
+effects = Array[ExtResource("1_3xd8l")]([SubResource("Resource_pvfdc")])
+ap_to_master = 30

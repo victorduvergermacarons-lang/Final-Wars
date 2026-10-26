@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+
+[sub_resource type="Resource" id="Resource_o0"]
+script = ExtResource("1_obj")
+kind = 6
+text = "Lay a hand on the Vael standing stone"
+npc = &"vael_stone"
+
+[sub_resource type="Resource" id="Resource_o1"]
+script = ExtResource("1_obj")
+kind = 0
+text = "Wolves around the stone driven off"
+enemy = &"wolf"
+count = 3
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_what_the_stone_remembers"
+title = "What the Stone Remembers"
+category = 0
+area = "Greenfields"
+giver = &"seer_ilyth"
+prerequisites = Array[StringName]([&"act1_ore_for_millbrook"])
+min_level = 2
+objectives = Array[ExtResource("1_obj")]([SubResource("Resource_o0"), SubResource("Resource_o1")])
+reward_xp = 320
+reward_gold = 40
+sets_world_flag = &"act1_complete"

@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_w6phm"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_wn7g6"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_wdxba"]
+
+[sub_resource type="Resource" id="Resource_4nike"]
+script = ExtResource("2_wn7g6")
+stat = 3
+
+[sub_resource type="Resource" id="Resource_ubr70"]
+script = ExtResource("1_w6phm")
+damage_type = 1
+base_amount = -1.0
+scaling = Array[ExtResource("2_wn7g6")]([SubResource("Resource_4nike")])
+can_crit = false
+power = 0.35
+
+[sub_resource type="Resource" id="Resource_xe8nv"]
+script = ExtResource("3_wdxba")
+id = &"F08_burn"
+effects = Array[ExtResource("1_w6phm")]([SubResource("Resource_ubr70")])
+targeting = 1
+tree = "Fire"
+tier = 2
+
+[sub_resource type="Resource" id="Resource_vel02"]
+script = ExtResource("1_w6phm")
+kind = 17
+applies = 2
+duration_seconds = 6.0
+zone_ability = SubResource("Resource_xe8nv")
+
+[resource]
+script = ExtResource("3_wdxba")
+id = &"F08"
+max_range = 4
+mana_cost = 15.0
+effects = Array[ExtResource("1_w6phm")]([SubResource("Resource_vel02")])
+targeting = 3
+area_radius = 1

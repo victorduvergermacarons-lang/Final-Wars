@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_sweiq"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_526ak"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_qefix"]
+
+[sub_resource type="Resource" id="Resource_tt53n"]
+script = ExtResource("1_sweiq")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+power = 1.1
+
+[resource]
+script = ExtResource("3_qefix")
+id = &"F06"
+max_range = 3
+mana_cost = 10.0
+effects = Array[ExtResource("1_sweiq")]([SubResource("Resource_tt53n")])
+targeting = 2
+aim = 1
+pierce = true

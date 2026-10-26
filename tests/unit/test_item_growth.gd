@@ -10,8 +10,8 @@ var charm: ItemDef
 func before_each() -> void:
 	rules = CombatRules.new()
 	rules.growth_fraction = 0.5
-	sword = F.item(&"sword", EquipSlot.Id.MAIN_HAND, {}, {Stat.Id.PHYS_ATK: 4, Stat.Id.HP: 10})
-	charm = F.item(&"charm", EquipSlot.Id.ACCESSORY, {}, {Stat.Id.MAG_ATK: 2, Stat.Id.HP: 6})
+	sword = F.item(&"sword", EquipSlot.Type.MAIN_HAND, {}, {Stat.Id.PHYS_ATK: 4, Stat.Id.HP: 10})
+	charm = F.item(&"charm", EquipSlot.Type.ACCESSORY, {}, {Stat.Id.MAG_ATK: 2, Stat.Id.HP: 6})
 
 
 func test_gain_is_fraction_of_every_equipped_items_growth() -> void:
@@ -58,9 +58,8 @@ func test_level_up_growth_is_permanent_after_unequip() -> void:
 
 func test_only_items_equipped_at_level_up_count() -> void:
 	var h := F.hero_with([sword])
-	h.inventory.append(charm)
 	Leveling.level_up(h, rules)
-	h.equip(charm)
+	h.wear(charm)
 	Leveling.level_up(h, rules)
 	assert_eq(h.growth.phys_atk, 4.0, "sword grew twice")
 	assert_eq(h.growth.mag_atk, 1.0, "charm grew once")

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_wow6r"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_fgmf0"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_li0q5"]
+
+[sub_resource type="Resource" id="Resource_rhpc5"]
+script = ExtResource("1_wow6r")
+
+[sub_resource type="Resource" id="Resource_tw1do"]
+script = ExtResource("1_wow6r")
+
+[resource]
+script = ExtResource("2_fgmf0")
+id = &"wolf_fang"
+display_name = "Wolf Fang"
+description = "Sharp. Traders like them."
+price = 4
+max_stack = 20
+stats = SubResource("Resource_tw1do")
+growth = SubResource("Resource_rhpc5")

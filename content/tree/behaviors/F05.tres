@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_achvs"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_llol7"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_a8nmm"]
+
+[sub_resource type="Resource" id="Resource_327yf"]
+script = ExtResource("1_achvs")
+kind = 13
+applies = 1
+base_amount = 3.0
+
+[sub_resource type="Resource" id="Resource_ugjnb"]
+script = ExtResource("2_llol7")
+stat = 3
+
+[sub_resource type="Resource" id="Resource_wntga"]
+script = ExtResource("1_achvs")
+damage_type = 1
+base_amount = -1.0
+scaling = Array[ExtResource("2_llol7")]([SubResource("Resource_ugjnb")])
+can_crit = false
+power = 0.4
+
+[sub_resource type="Resource" id="Resource_ttld7"]
+script = ExtResource("3_a8nmm")
+id = &"F05_burn"
+effects = Array[ExtResource("1_achvs")]([SubResource("Resource_wntga")])
+targeting = 1
+tree = "Fire"
+tier = 2
+
+[sub_resource type="Resource" id="Resource_247vg"]
+script = ExtResource("1_achvs")
+kind = 17
+applies = 2
+duration_seconds = 3.0
+zone_ability = SubResource("Resource_ttld7")
+
+[resource]
+script = ExtResource("3_a8nmm")
+id = &"F05"
+max_range = 3
+mana_cost = 10.0
+requires_line_of_sight = false
+effects = Array[ExtResource("1_achvs")]([SubResource("Resource_327yf"), SubResource("Resource_247vg")])
+targeting = 3
+aim = 1
+charges_base = 1
+mastery_per_charge = 300.0

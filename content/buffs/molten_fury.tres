@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="1_buff"]
+
+[resource]
+script = ExtResource("1_buff")
+id = &"molten_fury"
+display_name = "Molten Fury"
+duration_seconds = 3600.0
+cooldown_multiplier = 0.7
+zone_seconds_bonus = 2.0

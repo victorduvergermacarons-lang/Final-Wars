@@ -3,7 +3,7 @@ extends Node
 ## paths match. Holds no game logic: it forwards messages to `handler` (the
 ## active ServerSession or ClientSession).
 ##
-## Client → host: join(name), intent(dict)
+## Client → host: join(character data), intent(dict)
 ## Host → client: welcome(hero_id, zone_id), refused(reason), snapshot(dict), events(array)
 
 signal connected_to_host
@@ -13,7 +13,9 @@ signal peer_left(peer_id: int)
 
 const DEFAULT_PORT := 7777
 ## Total players including the host. Milestone 1 plays with 2.
-const MAX_PLAYERS := 2
+const MAX_PLAYERS := 4
+## Largest character save a joining player may send (bytes, encoded).
+const MAX_CHARACTER_BYTES := 64 * 1024
 
 var handler: Object
 
@@ -56,8 +58,8 @@ func is_online() -> bool:
 
 # --- Client → host ---------------------------------------------------------------
 
-func send_join(player_name: String) -> void:
-	_c2s_join.rpc_id(1, player_name)
+func send_join(character: Dictionary) -> void:
+	_c2s_join.rpc_id(1, character)
 
 
 func send_intent(intent: Dictionary) -> void:
@@ -65,9 +67,14 @@ func send_intent(intent: Dictionary) -> void:
 
 
 @rpc("any_peer", "call_remote", "reliable")
-func _c2s_join(player_name: String) -> void:
-	if handler != null and multiplayer.is_server():
-		handler.on_join(multiplayer.get_remote_sender_id(), player_name)
+func _c2s_join(character: Dictionary) -> void:
+	if handler == null or not multiplayer.is_server():
+		return
+	var peer := multiplayer.get_remote_sender_id()
+	if var_to_bytes(character).size() > MAX_CHARACTER_BYTES:
+		send_refused(peer, "Your character data is too large.")
+		return
+	handler.on_join(peer, character)
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -87,13 +94,13 @@ func send_refused(peer_id: int, reason: String) -> void:
 
 
 ## Snapshots are deflate-compressed (~5 KB → ~0.6 KB) to stay within one packet.
-func broadcast_snapshot(snap: Dictionary) -> void:
+func send_snapshot(peer_id: int, snap: Dictionary) -> void:
 	var raw := var_to_bytes(snap)
-	_s2c_snapshot.rpc(raw.size(), raw.compress(FileAccess.COMPRESSION_DEFLATE))
+	_s2c_snapshot.rpc_id(peer_id, raw.size(), raw.compress(FileAccess.COMPRESSION_DEFLATE))
 
 
-func broadcast_events(events: Array) -> void:
-	_s2c_events.rpc(events)
+func send_events(peer_id: int, events: Array) -> void:
+	_s2c_events.rpc_id(peer_id, events)
 
 
 @rpc("authority", "call_remote", "reliable")

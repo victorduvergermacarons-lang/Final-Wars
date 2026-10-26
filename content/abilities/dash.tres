@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_kju8m"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_g2st8"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_chbq4"]
+
+[sub_resource type="Resource" id="Resource_w1owh"]
+script = ExtResource("1_kju8m")
+kind = 7
+base_amount = 2.0
+
+[resource]
+script = ExtResource("3_chbq4")
+id = &"dash"
+display_name = "Dash"
+description = "Instantly move 2 tiles forward."
+target = 0
+max_range = 0
+cooldown_seconds = 15.0
+on_gcd = false
+effects = Array[ExtResource("1_kju8m")]([SubResource("Resource_w1owh")])
+ap_to_master = 20

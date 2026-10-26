@@ -10,7 +10,7 @@ static func ability(id: StringName, ap_to_master: int) -> AbilityDef:
 	return a
 
 
-static func item(id: StringName, slot: EquipSlot.Id, stats: Dictionary, growth: Dictionary,
+static func item(id: StringName, slot: EquipSlot.Type, stats: Dictionary, growth: Dictionary,
 		teaches: Array[AbilityDef] = []) -> ItemDef:
 	var i := ItemDef.new()
 	i.id = id
@@ -23,9 +23,8 @@ static func item(id: StringName, slot: EquipSlot.Id, stats: Dictionary, growth: 
 
 static func hero_with(items: Array[ItemDef]) -> Hero:
 	var h := Hero.new(1, StatBlock.make({Stat.Id.HP: 100, Stat.Id.MANA: 50, Stat.Id.JUMP: 2}))
-	h.inventory = items.duplicate()
 	for i in items:
-		h.equip(i)
+		h.wear(i)
 	h.hp = h.stats.hp
 	h.mana = h.stats.mana
 	return h

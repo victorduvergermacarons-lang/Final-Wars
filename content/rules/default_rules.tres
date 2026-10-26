@@ -4,9 +4,9 @@
 
 [resource]
 script = ExtResource("1_rules")
-walk_tile_seconds = 0.25
-combat_step_base_seconds = 0.6
-combat_step_min_seconds = 0.3
+walk_tile_seconds = 0.2
+combat_step_base_seconds = 1.5
+combat_step_min_seconds = 0.5
 speed_half_point = 100.0
 gcd_seconds = 1.0
 los_height_tolerance = 1.0
@@ -29,9 +29,20 @@ growth_limit = 0
 ap_per_level = 10
 refill_on_level_up = true
 tick_seconds = 0.05
-combat_exit_seconds = 5.0
+combat_exit_seconds = 0.0
 out_of_combat_hp_regen_percent = 2.0
 out_of_combat_mana_regen_percent = 2.0
 in_combat_hp_regen_percent = 0.0
 in_combat_mana_regen_percent = 0.5
 release_fraction = 0.5
+vendor_sell_fraction = 0.25
+flank_side_bonus_percent = 25.0
+flank_behind_bonus_percent = 50.0
+behind_never_misses = true
+xp_bonus_percent_per_level_above = 10.0
+xp_bonus_cap_percent = 50.0
+xp_penalty_from_levels_below = 3
+xp_penalty_percent_per_level = 20.0
+xp_floor_percent = 20.0
+tier_damage_base = Array[float]([14.0, 24.0, 38.0, 55.0, 78.0])
+tier_heal_base = Array[float]([24.0, 36.0, 54.0, 76.0, 104.0])

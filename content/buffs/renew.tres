@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_modifier.gd" id="1_20t21"]
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="2_usert"]
+
+[resource]
+script = ExtResource("2_usert")
+id = &"renew"
+display_name = "Renew"
+duration_seconds = 9.0

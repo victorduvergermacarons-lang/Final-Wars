@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_6lv84"]
+[ext_resource type="Resource" path="res://content/items/frostweave_robe.tres" id="2_dlgvc"]
+[ext_resource type="Resource" path="res://content/items/acolytes_leggings.tres" id="3_uyakv"]
+[ext_resource type="Resource" path="res://content/items/goblin_fetish.tres" id="4_dlgvc"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="4_iani2"]
+
+[sub_resource type="Resource" id="Resource_12ybd"]
+script = ExtResource("1_6lv84")
+item = ExtResource("2_dlgvc")
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_ynykd"]
+script = ExtResource("1_6lv84")
+item = ExtResource("3_uyakv")
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_uyakv"]
+script = ExtResource("1_6lv84")
+item = ExtResource("4_dlgvc")
+chance = 0.6
+quest_id = &"goblin_fetishes"
+
+[sub_resource type="Resource" id="Resource_dlgvc"]
+script = ExtResource("1_6lv84")
+item_id = &"scroll_of_the_fireball"
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_iani2"]
+script = ExtResource("1_6lv84")
+item_id = &"glacier_scroll"
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_m8x00"]
+script = ExtResource("1_6lv84")
+item_id = &"mist_scroll"
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_54dwd"]
+script = ExtResource("1_6lv84")
+item_id = &"lash_of_embers_scroll"
+chance = 0.04
+
+[resource]
+script = ExtResource("4_iani2")
+gold_min = 4
+gold_max = 10
+entries = Array[ExtResource("1_6lv84")]([SubResource("Resource_12ybd"), SubResource("Resource_ynykd"), SubResource("Resource_uyakv"), SubResource("Resource_dlgvc"), SubResource("Resource_iani2"), SubResource("Resource_m8x00"), SubResource("Resource_54dwd")])

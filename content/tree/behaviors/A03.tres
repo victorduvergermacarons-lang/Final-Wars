@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_8go36"]
+[ext_resource type="Resource" path="res://content/buffs/air_step.tres" id="2_ufsq5"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="3_p8005"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_hluxq"]
+
+[sub_resource type="Resource" id="Resource_xt5r8"]
+script = ExtResource("1_8go36")
+kind = 4
+buff = ExtResource("2_ufsq5")
+
+[resource]
+script = ExtResource("4_hluxq")
+id = &"A03"
+target = 0
+max_range = 0
+mana_cost = 8.0
+on_gcd = false
+effects = Array[ExtResource("1_8go36")]([SubResource("Resource_xt5r8")])
+targeting = 4

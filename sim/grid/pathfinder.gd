@@ -7,10 +7,19 @@ extends RefCounted
 ## `blocked` holds tiles that can't be entered (e.g. occupied); `start` and
 ## `goal` are exempt so callers can path to an occupied target.
 ## Returns [] if there is no path within `max_expanded` node expansions.
+## `fly_rise` >= 0: the path of a flier (GridModel.can_fly with that wall rise).
+## `footprint`: offsets of a large body (Actor.footprint); every tile it covers must
+## be able to make each step and stay clear of `blocked` (the goal step excepted).
+## `arrived` (optional, tile -> bool): the path ends at the first tile it accepts
+## (e.g. a large body beside its target); `goal` then only guides the search, and
+## no step is exempt from `blocked`.
 static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: int,
-		blocked: Dictionary = {}, max_drop: int = -1, max_expanded: int = 4096) -> Array[Vector2i]:
+		blocked: Dictionary = {}, max_drop: int = -1, max_expanded: int = 4096, fly_rise: int = -1,
+		footprint: Array = [], arrived := Callable()) -> Array[Vector2i]:
+	var body: Array = footprint if not footprint.is_empty() else [Vector2i.ZERO]
 	var empty: Array[Vector2i] = []
-	if not grid.in_bounds(start) or not grid.is_walkable(goal):
+	if not grid.in_bounds(start) or not grid.in_bounds(goal) \
+			or (not grid.is_walkable(goal) if fly_rise < 0 else grid.blocks_sight(goal)):
 		return empty
 	if start == goal:
 		return [start] as Array[Vector2i]
@@ -21,18 +30,18 @@ static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: in
 	heap.push(GridModel.distance(start, goal), start)
 	var expanded := 0
 
+	var has_arrived := arrived.is_valid()
 	while not heap.is_empty():
 		var current: Vector2i = heap.pop()
-		if current == goal:
-			return _rebuild(came_from, start, goal)
+		if current == goal or (has_arrived and arrived.call(current)):
+			return _rebuild(came_from, start, current)
 		expanded += 1
 		if expanded > max_expanded:
 			break
 		for dir in GridModel.DIRECTIONS:
 			var next := current + dir
-			if next != goal and blocked.has(next):
-				continue
-			if not grid.can_step(current, next, jump, max_drop):
+			if not _body_fits(grid, current, next, body, jump, max_drop, fly_rise, blocked,
+					next == goal and not has_arrived):
 				continue
 			var new_cost: int = cost[current] + 1
 			if not cost.has(next) or new_cost < cost[next]:
@@ -40,6 +49,22 @@ static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: in
 				came_from[next] = current
 				heap.push(new_cost + GridModel.distance(next, goal), next)
 	return empty
+
+
+## Whether a body with these offsets can step from `current` to `next`.
+static func _body_fits(grid: GridModel, current: Vector2i, next: Vector2i, body: Array, jump: int,
+		max_drop: int, fly_rise: int, blocked: Dictionary, at_goal: bool) -> bool:
+	for o in body:
+		var a: Vector2i = current + o
+		var b: Vector2i = next + o
+		if not at_goal and blocked.has(b):
+			return false
+		if fly_rise >= 0:
+			if not grid.can_fly(a, b, fly_rise):
+				return false
+		elif not grid.can_step(a, b, jump, max_drop):
+			return false
+	return true
 
 
 static func _rebuild(came_from: Dictionary, start: Vector2i, goal: Vector2i) -> Array[Vector2i]:

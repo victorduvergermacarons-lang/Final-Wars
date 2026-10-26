@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_i7imb"]
+[ext_resource type="Resource" path="res://content/abilities/crushing_blow.tres" id="2_l1q0p"]
+[ext_resource type="Resource" path="res://content/loot/bandit_brute.tres" id="3_hklvq"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="4_nk7dg"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="5_rpmo7"]
+
+[sub_resource type="Resource" id="Resource_ms46s"]
+script = ExtResource("5_rpmo7")
+hp = 320.0
+phys_atk = 22.0
+phys_def = 15.0
+jump = 1.0
+
+[resource]
+script = ExtResource("4_nk7dg")
+id = &"bandit_brute"
+display_name = "Bandit Brute"
+level = 3
+stats = SubResource("Resource_ms46s")
+abilities = Array[ExtResource("1_i7imb")]([ExtResource("2_l1q0p")])
+combat_step_seconds = 2.0
+reaction_seconds = 0.4
+xp_reward = 90
+ap_reward = 3
+loot = ExtResource("3_hklvq")
+respawn_seconds = 45.0
+weight = 2

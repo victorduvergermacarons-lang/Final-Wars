@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="CreatureArtDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/creature_art_def.gd" id="1_art"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-idle.png" id="2_idle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-run.png" id="3_run"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-bite.png" id="4_bite"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-howl.png" id="5_howl"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/wolf-death.png" id="6_death"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-idle.png" id="7_fidle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-run.png" id="8_frun"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-bite.png" id="9_fbite"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-howl.png" id="10_fhowl"]
+[ext_resource type="Texture2D" path="res://assets/creatures/wolf/no_shadow_or_effects/wolf-death.png" id="11_fdeath"]
+
+[resource]
+script = ExtResource("1_art")
+sheets = {
+"bite": ExtResource("4_bite"),
+"death": ExtResource("6_death"),
+"howl": ExtResource("5_howl"),
+"idle": ExtResource("2_idle"),
+"run": ExtResource("3_run")
+}
+flash_sheets = {
+"bite": ExtResource("9_fbite"),
+"death": ExtResource("11_fdeath"),
+"howl": ExtResource("10_fhowl"),
+"idle": ExtResource("7_fidle"),
+"run": ExtResource("8_frun")
+}
+frame_size = Vector2i(64, 64)
+rows = PackedStringArray("sw", "se", "nw", "ne")
+feet = Vector2(32, 46)
+fps = {
+"bite": 30.0,
+"death": 10.0,
+"howl": 10.0,
+"idle": 6.0
+}
+run_frames_per_tile = 4
+looping = PackedStringArray("idle", "run")
+timed_abilities = {
+&"wolf_bite": ["bite", 12],
+&"wolf_howl": ["howl", -1]
+}
+recovery_frames = {
+"bite": 2
+}
+corpse_seconds = 4.0
+fade_seconds = 1.0
+flash_seconds = 0.1

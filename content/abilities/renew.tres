@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_wtvij"]
+[ext_resource type="Resource" path="res://content/buffs/renew.tres" id="2_npnst"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="3_hcicr"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_5wp1l"]
+
+[sub_resource type="Resource" id="Resource_c8c3k"]
+script = ExtResource("3_hcicr")
+stat = 3
+
+[sub_resource type="Resource" id="Resource_630os"]
+script = ExtResource("1_wtvij")
+kind = 6
+base_amount = 30.0
+scaling = Array[ExtResource("3_hcicr")]([SubResource("Resource_c8c3k")])
+buff = ExtResource("2_npnst")
+
+[resource]
+script = ExtResource("4_5wp1l")
+id = &"renew"
+display_name = "Renew"
+description = "Heals an ally over 9 seconds."
+target = 2
+max_range = 4
+mana_cost = 10.0
+cooldown_seconds = 6.0
+effects = Array[ExtResource("1_wtvij")]([SubResource("Resource_630os")])
+ap_to_master = 30

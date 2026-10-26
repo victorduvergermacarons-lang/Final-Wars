@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_e5jl4"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_5sach"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_gf448"]
+
+[sub_resource type="Resource" id="Resource_rglp2"]
+script = ExtResource("1_e5jl4")
+base_amount = -1.0
+sheet_scaling = true
+power = 1.6
+
+[resource]
+script = ExtResource("3_gf448")
+id = &"H01"
+effects = Array[ExtResource("1_e5jl4")]([SubResource("Resource_rglp2")])
+targeting = 1
+windup_seconds = 0.3

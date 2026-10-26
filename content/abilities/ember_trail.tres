@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="2_ab"]
+[ext_resource type="Resource" path="res://content/abilities/ember_trail_burn.tres" id="3_burn"]
+
+[sub_resource type="Resource" id="Resource_zone"]
+script = ExtResource("1_fx")
+kind = 17
+applies = 2
+duration_seconds = 2.0
+zone_ability = ExtResource("3_burn")
+zone_tick_seconds = 0.5
+
+[resource]
+script = ExtResource("2_ab")
+id = &"ember_trail"
+display_name = "Ember Trail"
+description = "Passive: every tile the hound runs over while fighting burns for 2 s."
+max_range = 0
+on_gcd = false
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_zone")])
+targeting = 3

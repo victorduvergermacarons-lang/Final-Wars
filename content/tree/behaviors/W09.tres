@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_m7qie"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_6kgll"]
+[ext_resource type="Resource" path="res://content/buffs/ice_spikes_chill.tres" id="3_5pgnn"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_ebr4x"]
+
+[sub_resource type="Resource" id="Resource_65jkp"]
+script = ExtResource("1_m7qie")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+
+[sub_resource type="Resource" id="Resource_jd22h"]
+script = ExtResource("1_m7qie")
+kind = 4
+buff = ExtResource("3_5pgnn")
+
+[resource]
+script = ExtResource("4_ebr4x")
+id = &"W09"
+max_range = 4
+mana_cost = 15.0
+ranged = true
+effects = Array[ExtResource("1_m7qie")]([SubResource("Resource_65jkp"), SubResource("Resource_jd22h")])
+targeting = 3
+area_radius = 1
+telegraph_seconds = 0.4

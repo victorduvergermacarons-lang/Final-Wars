@@ -15,6 +15,14 @@ extends Resource
 @export var accuracy: float = 0.0
 @export var evasion: float = 0.0
 @export var jump: float = 0.0
+@export_group("Mastery")
+@export var fire_mastery: float = 0.0
+@export var earth_mastery: float = 0.0
+@export var water_mastery: float = 0.0
+@export var air_mastery: float = 0.0
+@export var sword_mastery: float = 0.0
+@export var bow_mastery: float = 0.0
+@export var hammer_mastery: float = 0.0
 
 
 func get_stat(id: Stat.Id) -> float:

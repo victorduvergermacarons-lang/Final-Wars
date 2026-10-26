@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 ContentDB="*res://autoload/content_db.gd"
 Net="*res://autoload/net.gd"
+Audio="*res://autoload/audio.gd"
 
 [display]
 
@@ -31,8 +32,13 @@ window/stretch/mode="canvas_items"
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
+[gui]
+
+timers/tooltip_delay_sec=0.15
+
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-textures/canvas_textures/default_texture_filter=0
+2d/snap/snap_2d_transforms_to_pixel=true

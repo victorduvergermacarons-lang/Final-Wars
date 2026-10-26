@@ -8,7 +8,7 @@ var hero: Hero
 
 func before_each() -> void:
 	rules = CombatRules.new()
-	hero = F.hero_with([F.item(&"sword", EquipSlot.Id.MAIN_HAND, {}, {Stat.Id.HP: 20})])
+	hero = F.hero_with([F.item(&"sword", EquipSlot.Type.MAIN_HAND, {}, {Stat.Id.HP: 20})])
 
 
 func _types(events: Array) -> Array:
@@ -74,3 +74,13 @@ func test_zero_or_negative_xp_is_ignored() -> void:
 	assert_eq(Leveling.add_xp(hero, 0, rules).size(), 0)
 	assert_eq(Leveling.add_xp(hero, -10, rules).size(), 0)
 	assert_eq(hero.xp, 0.0)
+
+
+func test_xp_multiplier_by_enemy_level() -> void:
+	assert_eq(Leveling.xp_level_multiplier(3, 3, rules), 1.0, "same level")
+	assert_almost_eq(Leveling.xp_level_multiplier(1, 3, rules), 1.2, 0.001, "+10% per level above")
+	assert_almost_eq(Leveling.xp_level_multiplier(1, 9, rules), 1.5, 0.001, "bonus capped at +50%")
+	assert_eq(Leveling.xp_level_multiplier(3, 1, rules), 1.0, "two levels below: full XP")
+	assert_almost_eq(Leveling.xp_level_multiplier(4, 1, rules), 0.8, 0.001, "three below: -20%")
+	assert_almost_eq(Leveling.xp_level_multiplier(6, 1, rules), 0.4, 0.001)
+	assert_almost_eq(Leveling.xp_level_multiplier(20, 1, rules), 0.2, 0.001, "never below 20%")

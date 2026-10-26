@@ -1,7 +1,7 @@
 class_name SlotButton
 extends Control
-## One action bar slot: click to use, right-click to clear, drag to move,
-## drop an ability from the spellbook onto it. Draws its own cooldown sweep.
+## One action bar slot: click to use, right-click to clear, drag to move (or off
+## the bar to clear), drop an ability from the spellbook onto it. Draws its own cooldown sweep.
 
 const SIZE := Vector2(56, 56)
 const TINTS := {
@@ -17,6 +17,9 @@ const TINTS := {
 var index := 0
 var hud: Hud
 var _font: Font
+## What this slot held when a drag from it started (cleared when dropped off the bar).
+var _dragged_entry: StringName = &""
+var _dragging := false
 
 
 func _init(p_index: int, p_hud: Hud) -> void:
@@ -31,13 +34,26 @@ func _init(p_index: int, p_hud: Hud) -> void:
 func _process(_delta: float) -> void:
 	queue_redraw()
 	var ability := _ability()
-	tooltip_text = _tooltip(ability) if ability != null else "Empty slot. Drag an ability here from the Spellbook (P)."
+	var item := _item()
+	if item != null:
+		tooltip_text = "%s\n%s" % [item.display_name, item.description]
+	else:
+		tooltip_text = _tooltip(ability) if ability != null else "Empty slot. Drag an ability from the Spellbook (P) or a potion from your bag."
+
+
+## For item slots, the consumable (else null).
+func _item() -> ItemDef:
+	var id := hud.client.action_bar.slots[index]
+	return ContentDB.items.get(ActionBarModel.item_id_of(id)) if ActionBarModel.is_item_slot(id) else null
 
 
 func _ability() -> AbilityDef:
 	var id := hud.client.action_bar.slots[index]
 	if id == &"":
 		return null
+	if ActionBarModel.is_item_slot(id):
+		var item := _item()
+		return item.use_ability if item != null else null
 	var hero: Hero = hud.session.local_hero()
 	var known := hero.find_ability(id) if hero != null else null
 	return known if known != null else ContentDB.abilities.get(id)
@@ -49,18 +65,26 @@ func _draw() -> void:
 	var hero: Hero = hud.session.local_hero()
 	var now: float = hud.session.now()
 	var usable := Targeting.Usability.UNAVAILABLE
-	if ability != null and hero != null:
+	var item := _item()
+	var held := hero.bag.count_of(item) if item != null and hero != null else 0
+	if item != null and hero != null:
+		usable = Targeting.Usability.UNAVAILABLE if held == 0 else (
+				Targeting.Usability.READY if hero.cooldowns.can_use(ability, now) else Targeting.Usability.COOLDOWN)
+	elif ability != null and hero != null:
 		usable = Targeting.usability(hero, ability, hud.session.get_actor(hud.client.target_id),
-				hud.session.grid(), hud.session.rules(), now)
+				hud.session.grid(), hud.session.rules(), now, hud.session.actors())
 	draw_rect(rect, TINTS[usable] if ability != null else Color(0.1, 0.1, 0.12, 0.8))
 	var hovered := hud.bind_mode and hud.hovered_slot == index
 	draw_rect(rect, Color(1, 0.85, 0.2) if hovered else Color(0.5, 0.5, 0.55), false, 2.0 if hovered else 1.0)
 	if ability != null:
 		var name := ability.display_name if ability.display_name != "" else String(ability.id)
+		if item != null:
+			name = item.display_name.trim_prefix("Minor ")
+			_text(str(held), Vector2(size.x - 14, size.y - 20), 12, Color(1, 1, 0.7))
 		_text(name.left(8), Vector2(4, size.y - 8), 11, Color.WHITE)
 		if hero != null:
-			var cd := hero.cooldowns.ability_remaining(ability.id, now)
-			var frac := hero.cooldowns.ability_fraction(ability.id, now)
+			var cd := hero.cooldowns.ability_remaining(ability.cooldown_key(), now)
+			var frac := hero.cooldowns.ability_fraction(ability.cooldown_key(), now)
 			if ability.on_gcd:
 				frac = maxf(frac, hero.cooldowns.gcd_fraction(now))
 			if frac > 0.0:
@@ -93,8 +117,14 @@ static func _tooltip(a: AbilityDef) -> String:
 	var facts: PackedStringArray = []
 	if a.mana_cost > 0:
 		facts.append("%d mana" % a.mana_cost)
-	if a.max_range > 0:
-		facts.append("range %d" % a.max_range)
+	match a.shape:
+		AbilityDef.Shape.FRONT:
+			facts.append("hits the tile in front" if a.max_range == 1 else "hits %d tiles ahead" % a.max_range)
+		AbilityDef.Shape.LINE:
+			facts.append("flies %d tiles ahead, stops at the first enemy" % a.max_range)
+		_:
+			if a.max_range > 0:
+				facts.append("range %d" % a.max_range)
 	if a.cooldown_seconds > 0:
 		facts.append("%ss cooldown" % a.cooldown_seconds)
 	if not facts.is_empty():
@@ -116,24 +146,52 @@ func _notification(what: int) -> void:
 		hud.hovered_slot = index
 	elif what == NOTIFICATION_MOUSE_EXIT and hud.hovered_slot == index:
 		hud.hovered_slot = -1
+	elif what == NOTIFICATION_DRAG_END and _dragging:
+		_dragging = false
+		if not get_viewport().gui_is_drag_successful():
+			drop_off_bar()
+
+
+## A drag from this slot ended outside any slot: the ability leaves the bar.
+func drop_off_bar() -> void:
+	var bar := hud.client.action_bar
+	if bar.slots[index] == _dragged_entry and _dragged_entry != &"":
+		bar.clear(index)
+	_dragged_entry = &""
 
 
 func _get_drag_data(_at: Vector2) -> Variant:
 	if hud.client.action_bar.slots[index] == &"":
 		return null
 	var preview := Label.new()
-	preview.text = String(_ability().display_name)
+	preview.text = _item().display_name if _item() != null else String(_ability().display_name)
 	set_drag_preview(preview)
+	_dragging = true
+	_dragged_entry = hud.client.action_bar.slots[index]
 	return {"slot": index}
 
 
 func _can_drop_data(_at: Vector2, data: Variant) -> bool:
-	return typeof(data) == TYPE_DICTIONARY and (data.has("slot") or data.has("ability"))
+	if typeof(data) != TYPE_DICTIONARY:
+		return false
+	if data.has("item_from"):
+		return _dragged_consumable(data) != null
+	return data.has("slot") or data.has("ability")
+
+
+## A usable item dragged from the bag, or null.
+func _dragged_consumable(data: Dictionary) -> ItemDef:
+	if data.get("item_from") != ItemSlotView.Kind.BAG:
+		return null
+	var item: ItemDef = hud.session.local_hero().bag.item_at(data.index)
+	return item if item != null and item.use_ability != null else null
 
 
 func _drop_data(_at: Vector2, data: Variant) -> void:
 	var bar := hud.client.action_bar
-	if data.has("slot"):
+	if data.has("item_from"):
+		bar.assign(index, ActionBarModel.item_entry(_dragged_consumable(data).id))
+	elif data.has("slot"):
 		bar.swap(data.slot, index)
 	else:
 		bar.assign(index, data.ability)

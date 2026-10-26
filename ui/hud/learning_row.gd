@@ -1,0 +1,34 @@
+class_name LearningRow
+extends HBoxContainer
+## The learning slot with a label: what's being learned and its AP. Used in the
+## inventory window and on the character sheet.
+
+var hud: Hud
+var _label: Label
+
+
+func _init(p_hud: Hud) -> void:
+	hud = p_hud
+	add_child(ItemSlotView.new(hud, ItemSlotView.Kind.LEARNING, 0))
+	_label = Label.new()
+	_label.add_theme_font_size_override("font_size", 17)
+	_label.add_theme_color_override("font_color", Color(UiPalette.BLUE))
+	_label.custom_minimum_size = Vector2(200, 0)
+	add_child(_label)
+
+
+func _process(_delta: float) -> void:
+	if is_visible_in_tree() and hud.session != null:
+		_label.text = text_for(hud.session.local_hero())
+
+
+## "Learning: Fire Punch, AP 10 / 20", or a hint when the slot is empty.
+static func text_for(hero: Hero) -> String:
+	var item := hero.active_learning_item() if hero != null else null
+	if item == null:
+		return "Learning: nothing.\nDrop a scroll or your\nweapon here."
+	var ability := item.tree_ability()
+	if ability == null:
+		return "Learning: %s" % item.display_name
+	var auto := "\n(from your weapon)" if hero.learning_automatically() else ""
+	return "Learning: %s\nAP %d / %d%s" % [ability.display_name, hero.ap.get(ability.id, 0), ability.ap_to_master, auto]

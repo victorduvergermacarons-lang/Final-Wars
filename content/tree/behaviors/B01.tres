@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_msc73"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_lumge"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_mog4x"]
+
+[sub_resource type="Resource" id="Resource_5t2rf"]
+script = ExtResource("1_msc73")
+base_amount = -1.0
+sheet_scaling = true
+power = 0.9
+
+[resource]
+script = ExtResource("3_mog4x")
+id = &"B01"
+max_range = 5
+ranged = true
+effects = Array[ExtResource("1_msc73")]([SubResource("Resource_5t2rf")])
+targeting = 1

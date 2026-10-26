@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_aoctk"]
+[ext_resource type="Resource" path="res://content/buffs/flow_state.tres" id="2_6crgi"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="3_qjea0"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_0x0df"]
+
+[sub_resource type="Resource" id="Resource_wdko4"]
+script = ExtResource("1_aoctk")
+kind = 4
+buff = ExtResource("2_6crgi")
+
+[resource]
+script = ExtResource("4_0x0df")
+id = &"W03"
+target = 2
+max_range = 3
+mana_cost = 10.0
+effects = Array[ExtResource("1_aoctk")]([SubResource("Resource_wdko4")])
+targeting = 1

@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_c0puj"]
+[ext_resource type="Resource" path="res://content/abilities/grizzly_cleave.tres" id="2_cfysi"]
+[ext_resource type="Resource" path="res://content/abilities/charge.tres" id="3_egrjn"]
+[ext_resource type="Resource" path="res://content/loot/old_grizzlehide.tres" id="4_y03np"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="5_jpkl3"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="6_sx854"]
+
+[sub_resource type="Resource" id="Resource_3ndvn"]
+script = ExtResource("6_sx854")
+hp = 2000.0
+phys_atk = 26.0
+phys_def = 25.0
+mag_def = 15.0
+accuracy = 5.0
+jump = 2.0
+
+[resource]
+script = ExtResource("5_jpkl3")
+id = &"old_grizzlehide"
+display_name = "Old Grizzlehide"
+level = 5
+stats = SubResource("Resource_3ndvn")
+abilities = Array[ExtResource("1_c0puj")]([ExtResource("2_cfysi"), ExtResource("3_egrjn")])
+leash_radius = 12
+combat_step_seconds = 1.0
+reaction_seconds = 0.3
+xp_reward = 400
+ap_reward = 10
+loot = ExtResource("4_y03np")
+respawn_seconds = 300.0
+elite = true
+patrol_step_seconds = 0.8
+weight = 2

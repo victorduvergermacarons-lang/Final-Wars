@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="CreatureArtDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/creature_art_def.gd" id="1_art"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/salamander_hound-idle.png" id="2_idle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/salamander_hound-run.png" id="3_run"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/salamander_hound-bite.png" id="4_bite"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/salamander_hound-pounce.png" id="5_pounce"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/salamander_hound-death.png" id="6_death"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/no_shadow/salamander_hound-idle.png" id="7_fidle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/no_shadow/salamander_hound-run.png" id="8_frun"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/no_shadow/salamander_hound-bite.png" id="9_fbite"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/no_shadow/salamander_hound-pounce.png" id="10_fpounce"]
+[ext_resource type="Texture2D" path="res://assets/creatures/salamander_hound/no_shadow/salamander_hound-death.png" id="11_fdeath"]
+
+[resource]
+script = ExtResource("1_art")
+sheets = {
+"idle": ExtResource("2_idle"),
+"run": ExtResource("3_run"),
+"bite": ExtResource("4_bite"),
+"pounce": ExtResource("5_pounce"),
+"death": ExtResource("6_death")
+}
+flash_sheets = {
+"idle": ExtResource("7_fidle"),
+"run": ExtResource("8_frun"),
+"bite": ExtResource("9_fbite"),
+"pounce": ExtResource("10_fpounce"),
+"death": ExtResource("11_fdeath")
+}
+frame_size = Vector2i(48, 48)
+rows = PackedStringArray("sw", "se", "nw", "ne")
+feet = Vector2(24, 33)
+head_y = 11.0
+fps = {
+"bite": 20.0,
+"death": 10.0,
+"idle": 10.0,
+"pounce": 10.0
+}
+run_frames_per_tile = 4
+looping = PackedStringArray("idle", "run")
+timed_abilities = {
+&"hound_bite": ["bite", 6],
+&"cinder_pounce": ["pounce", 6]
+}
+recovery_frames = {
+"bite": 1
+}
+corpse_seconds = 4.0
+fade_seconds = 1.0
+flash_seconds = 0.1

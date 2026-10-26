@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_nopo4"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_yllmt"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_s1yua"]
+
+[sub_resource type="Resource" id="Resource_y2ci2"]
+script = ExtResource("2_yllmt")
+
+[sub_resource type="Resource" id="Resource_8h47o"]
+script = ExtResource("1_nopo4")
+base_amount = 12.0
+scaling = Array[ExtResource("2_yllmt")]([SubResource("Resource_y2ci2")])
+
+[resource]
+script = ExtResource("3_s1yua")
+id = &"grizzly_cleave"
+display_name = "Cleave"
+description = "A sweeping swipe at the tile in front and the two beside it."
+shape = 3
+cooldown_seconds = 2.5
+max_height_difference = 2
+effects = Array[ExtResource("1_nopo4")]([SubResource("Resource_8h47o")])
+targeting = 2
+aim = 1
+line_shape = 2
+windup_seconds = 0.4

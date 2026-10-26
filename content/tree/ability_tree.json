@@ -1,0 +1,8165 @@
+{
+	"source": "design/Ability_Tree.xlsx",
+	"tiers": [
+		{
+			"tier": 1,
+			"mastery": 0
+		},
+		{
+			"tier": 2,
+			"mastery": 150
+		},
+		{
+			"tier": 3,
+			"mastery": 350
+		},
+		{
+			"tier": 4,
+			"mastery": 600
+		},
+		{
+			"tier": 5,
+			"mastery": 900
+		}
+	],
+	"trees": [
+		{
+			"name": "Fire",
+			"item_type": "Scroll",
+			"mastery_stat": "Fire Mastery",
+			"focus": "Pure DPS",
+			"branches": [
+				"Flame Martial",
+				"Fire Blasts",
+				"Advanced Fire"
+			],
+			"abilities": 21
+		},
+		{
+			"name": "Earth",
+			"item_type": "Scroll",
+			"mastery_stat": "Earth Mastery",
+			"focus": "Tanking + reshaping terrain",
+			"branches": [
+				"Stone Guard",
+				"Terraform",
+				"Specialty Bending"
+			],
+			"abilities": 20
+		},
+		{
+			"name": "Water",
+			"item_type": "Scroll",
+			"mastery_stat": "Water Mastery",
+			"focus": "Healing + buffing",
+			"branches": [
+				"Healing",
+				"Currents",
+				"Blessings",
+				"Ice"
+			],
+			"abilities": 23
+		},
+		{
+			"name": "Air",
+			"item_type": "Scroll",
+			"mastery_stat": "Air Mastery",
+			"focus": "Crowd control",
+			"branches": [
+				"Winds",
+				"Breath",
+				"Flight"
+			],
+			"abilities": 21
+		},
+		{
+			"name": "Sword",
+			"item_type": "Sword",
+			"mastery_stat": "Sword Mastery",
+			"focus": "Melee DPS",
+			"branches": [
+				"Blade",
+				"Guard",
+				"Footwork"
+			],
+			"abilities": 20
+		},
+		{
+			"name": "Bow",
+			"item_type": "Bow",
+			"mastery_stat": "Bow Mastery",
+			"focus": "Ranged DPS",
+			"branches": [
+				"Marksman",
+				"Survival",
+				"Volley"
+			],
+			"abilities": 20
+		},
+		{
+			"name": "Hammer",
+			"item_type": "Hammer",
+			"mastery_stat": "Hammer Mastery",
+			"focus": "Melee AoE",
+			"branches": [
+				"Smash",
+				"Quake",
+				"Juggernaut"
+			],
+			"abilities": 20
+		}
+	],
+	"abilities": [
+		{
+			"id": "F01",
+			"name": "Fire Punch",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Ember Fist Scroll",
+			"effect": "Quick flaming jab on an adjacent enemy.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. Locks on; can't miss.",
+			"mastery_required_text": "Fire Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+5 Fire Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "ember_fist_scroll",
+			"cooldown": 2.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "manual",
+				"seconds": 1.0,
+				"taps": [
+					[
+						0.7,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.9,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Designer's bar: both zones at the very end."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F02",
+			"name": "Fire Kick",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Cinder Kick Scroll",
+			"effect": "Flaming kick on an adjacent enemy; applies a short burn.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. Locks on; the burn always applies.",
+			"mastery_required_text": "Fire Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+5 Fire Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "cinder_kick_scroll",
+			"cooldown": 4.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.2,
+				"taps": [
+					[
+						0.85,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						1.05,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: a late snap like Fire Punch, a little longer (bigger hit plus a burn)."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F03",
+			"name": "Fire Dart",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Spark Scroll",
+			"effect": "Small bolt of flame, range 4.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at an enemy within 4. Fast bolt at any angle; hits the first unit in its path. Very hard to dodge.",
+			"mastery_required_text": "Fire Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+5 Fire Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "spark_scroll",
+			"cooldown": 2.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.8,
+				"taps": [
+					[
+						0.5,
+						0.25
+					]
+				],
+				"crits": [
+					[
+						0.65,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: quick projectile, short bar, late snap. The dart flies when you press."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F04",
+			"name": "Sun Warrior's Breath",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "Self buff",
+			"item_type": "Scroll",
+			"taught_by": "Sun Warrior's Breath Scroll",
+			"effect": "Your next 3 fire abilities deal bonus damage, and you regain 10% of your Mana over 10s.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Fire Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+5 Fire Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "sun_warriors_breath_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: an instant self-buff off the GCD."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F05",
+			"name": "Flame Dash",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "Mobility",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of Burning Feet",
+			"effect": "Dash up to 3 tiles on flaming feet, burning the tiles behind you. Charges: 1, +1 per 300 Fire Mastery.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile up to 3 away in one of 8 directions. You dash in a straight line and stop early at walls, units or ledges you can't climb.",
+			"mastery_required_text": "Fire Mastery 150",
+			"prerequisites_text": "Fire Kick",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+10 Fire Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "scroll_of_burning_feet",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a dash (instants never have one)."
+			},
+			"prerequisites": {
+				"abilities": [
+					"F02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F06",
+			"name": "Fire Whip",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Lash of Embers Scroll",
+			"effect": "Lash a straight line of 3 tiles.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. Instant 3-tile line; hits every enemy in it.",
+			"mastery_required_text": "Fire Mastery 150",
+			"prerequisites_text": "Fire Punch",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+10 Fire Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "lash_of_embers_scroll",
+			"cooldown": 6.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.05,
+						0.35
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: a longer wind-up for a piercing line, late snap."
+			},
+			"prerequisites": {
+				"abilities": [
+					"F01"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F07",
+			"name": "Fireball",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "AoE damage",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of the Fireball",
+			"effect": "Range 5; explodes on all tiles within 1 of the target.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5. The 3x3 blast area flashes for 0.4s before impact; step out to dodge.",
+			"mastery_required_text": "Fire Mastery 150",
+			"prerequisites_text": "Fire Dart",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+10 Fire Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "scroll_of_the_fireball",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.0,
+				"taps": [
+					[
+						1.45,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.7,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: big spell, long bar, one late beat. The 0.4 s area warning still follows the press."
+			},
+			"prerequisites": {
+				"abilities": [
+					"F03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F08",
+			"name": "Burning Ground",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "AoE damage",
+			"item_type": "Scroll",
+			"taught_by": "Scorched Earth Scroll",
+			"effect": "Set a 3x3 area ablaze for 6s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 4. Zone appears instantly; enemies burn only while standing in it.",
+			"mastery_required_text": "Fire Mastery 150",
+			"prerequisites_text": "Fire Dart",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+10 Fire Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "scorched_earth_scroll",
+			"cooldown": 14.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.0,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: late snap; power scales the burn per second."
+			},
+			"prerequisites": {
+				"abilities": [
+					"F03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F09",
+			"name": "Blazing Combo",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Blazing Fist Scroll",
+			"effect": "Three-hit combo; the last hit knocks the target back 1 tile.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. The final hit pushes it directly away from you (snapped to 8 directions).",
+			"mastery_required_text": "Fire Mastery 150",
+			"prerequisites_text": "Fire Punch; Fire Kick",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+10 Fire Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "blazing_fist_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.0,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: late snap. Planned: three taps, one per hit, once bars take several inputs."
+			},
+			"prerequisites": {
+				"abilities": [
+					"F01",
+					"F02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F10",
+			"name": "Flame Wheel",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "AoE damage",
+			"item_type": "Scroll",
+			"taught_by": "Wheel of Flame Scroll",
+			"effect": "Spinning kick hitting every adjacent enemy; bonus damage for each Flame Dash charge spent in the last 5s.",
+			"targeting": "Self",
+			"targeting_details": "Hits all 8 tiles around you.",
+			"mastery_required_text": "Fire Mastery 350",
+			"prerequisites_text": "Flame Dash",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+15 Fire Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "wheel_of_flame_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F11",
+			"name": "Jet Propulsion",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "Mobility",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of Rising Jets",
+			"effect": "Fly on fire jets for 3s, ignoring height and gaps.",
+			"targeting": "Self",
+			"targeting_details": "No target; move freely while it lasts.",
+			"mastery_required_text": "Fire Mastery 350",
+			"prerequisites_text": "Flame Dash",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+15 Fire Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "scroll_of_rising_jets",
+			"cooldown": 25.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F12",
+			"name": "Fire Stream",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Firestream Scroll",
+			"effect": "Channel a 4-tile line of fire for 2s.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at any angle. The beam covers the 4 tiles along that line; you can slowly rotate it while channeling.",
+			"mastery_required_text": "Fire Mastery 350",
+			"prerequisites_text": "Fireball",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+15 Fire Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "firestream_scroll",
+			"cooldown": 12.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F07"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F13",
+			"name": "Heat Wave",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "Debuff",
+			"item_type": "Scroll",
+			"taught_by": "Shimmering Heat Scroll",
+			"effect": "3-tile cone that lowers enemy Magic Defense for 8s.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. Cone covers the tiles in front of you.",
+			"mastery_required_text": "Fire Mastery 350",
+			"prerequisites_text": "Burning Ground",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+15 Fire Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "shimmering_heat_scroll",
+			"cooldown": 16.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F08"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F14",
+			"name": "Breath of Fire",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "AoE damage",
+			"item_type": "Scroll",
+			"taught_by": "Dragon's Breath Scroll",
+			"effect": "Exhale a 4-tile cone of fire.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. 4-tile cone in front of you.",
+			"mastery_required_text": "Fire Mastery 350",
+			"prerequisites_text": "Fire Whip; Heat Wave",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+15 Fire Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "dragons_breath_scroll",
+			"cooldown": 14.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F06",
+					"F13"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F15",
+			"name": "Phoenix Kick",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "AoE damage",
+			"item_type": "Scroll",
+			"taught_by": "Phoenix Scroll",
+			"effect": "Leap to an enemy within 4 tiles and crash down on every tile within 1.",
+			"targeting": "Targeted",
+			"targeting_details": "Pick an enemy within 4. You land on a free tile next to it; the AoE centers on you.",
+			"mastery_required_text": "Fire Mastery 600",
+			"prerequisites_text": "Flame Wheel",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+25 Fire Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "phoenix_scroll",
+			"cooldown": 18.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F16",
+			"name": "Inferno",
+			"tree": "Fire",
+			"branch": "Fire Blasts",
+			"role": "AoE damage",
+			"item_type": "Scroll",
+			"taught_by": "Inferno Codex",
+			"effect": "Firestorm over a 5x5 area for 4s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 6. The 5x5 area is outlined for 0.75s before it ignites.",
+			"mastery_required_text": "Fire Mastery 600",
+			"prerequisites_text": "Fire Stream; Breath of Fire",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+25 Fire Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "inferno_codex",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F12",
+					"F14"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F17",
+			"name": "Lightning Bolt",
+			"tree": "Fire",
+			"branch": "Advanced Fire",
+			"role": "Burst damage",
+			"item_type": "Scroll",
+			"taught_by": "Storm-Fire Scroll",
+			"effect": "1s charge, then a range-8 strike with doubled crit chance.",
+			"targeting": "Targeted",
+			"targeting_details": "Pick an enemy within 8. Lightning can't miss, but the 1s charge can be interrupted, and it fails if the target breaks line of sight.",
+			"mastery_required_text": "Fire Mastery 600",
+			"prerequisites_text": "Fire Stream; Air Mastery 350",
+			"scales_with_text": "Fire Mastery, Magic Atk, Crit Rate",
+			"mastery_contribution": "+25 Fire Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "storm_fire_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				},
+				{
+					"stat": "crit_rate"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F12"
+				],
+				"mastery": [
+					{
+						"tree": "Air",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "F18",
+			"name": "Combustion Blast",
+			"tree": "Fire",
+			"branch": "Advanced Fire",
+			"role": "Burst damage",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of the Third Eye",
+			"effect": "Telegraphed for 1s, range 10; huge explosion within 1 tile.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 10. The marker is visible to enemies for 1s, then explodes.",
+			"mastery_required_text": "Fire Mastery 600",
+			"prerequisites_text": "Fireball",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+25 Fire Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "scroll_of_the_third_eye",
+			"cooldown": 24.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F07"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F19",
+			"name": "Lightning Redirection",
+			"tree": "Fire",
+			"branch": "Advanced Fire",
+			"role": "Counter",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of Redirected Lightning",
+			"effect": "For 1.5s, absorb the next enemy spell and fire it back as lightning.",
+			"targeting": "Self",
+			"targeting_details": "Timed counter. The next enemy spell that would hit you within 1.5s is sent back at its caster (can't miss).",
+			"mastery_required_text": "Fire Mastery 900",
+			"prerequisites_text": "Lightning Bolt",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+50 Fire Mastery when learned, +4.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "scroll_of_redirected_lightning",
+			"cooldown": 30.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 4.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F17"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F20",
+			"name": "Blue Fire",
+			"tree": "Fire",
+			"branch": "Advanced Fire",
+			"role": "Self buff",
+			"item_type": "Scroll",
+			"taught_by": "Azure Flame Codex",
+			"effect": "15s: fire damage +30% and burns ignore half of Magic Defense.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Fire Mastery 900",
+			"prerequisites_text": "Inferno",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+50 Fire Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "azure_flame_codex",
+			"cooldown": 90.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F16"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "F21",
+			"name": "Solar Zenith",
+			"tree": "Fire",
+			"branch": "Flame Martial",
+			"role": "Self buff",
+			"item_type": "Scroll",
+			"taught_by": "Codex of the Zenith Sun",
+			"effect": "12s: all fire ability cooldowns are halved.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Fire Mastery 900",
+			"prerequisites_text": "Phoenix Kick; Inferno",
+			"scales_with_text": "Fire Mastery, Magic Atk",
+			"mastery_contribution": "+50 Fire Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "codex_of_the_zenith_sun",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Fire"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"F15",
+					"F16"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E01",
+			"name": "Rock Throw",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Pebble Scroll",
+			"effect": "Hurl a rock, range 4.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at an enemy within 4. The rock arcs over low obstacles and lands on that tile after 0.3s; misses if the target moved.",
+			"mastery_required_text": "Earth Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Earth Mastery, Phys Atk",
+			"mastery_contribution": "+5 Earth Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "pebble_scroll",
+			"cooldown": 3.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.6,
+				"taps": [
+					[
+						1.1,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Earth: one heavy beat, a wide window late in a long bar."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E02",
+			"name": "Stone Skin",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Self buff",
+			"item_type": "Scroll",
+			"taught_by": "Granite Skin Scroll",
+			"effect": "Gain Physical Defense for 10s.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Earth Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+5 Earth Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "granite_skin_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E03",
+			"name": "Raise Pillar",
+			"tree": "Earth",
+			"branch": "Terraform",
+			"role": "Terrain",
+			"item_type": "Scroll",
+			"taught_by": "Pillar Scroll",
+			"effect": "Raise a tile 1 height level for 15s (2 levels at 500 Earth Mastery).",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 3. Any unit on it is lifted with the tile.",
+			"mastery_required_text": "Earth Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Earth Mastery",
+			"mastery_contribution": "+5 Earth Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "pillar_scroll",
+			"cooldown": 6.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: terrain (timing has nothing to scale yet)."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E04",
+			"name": "Seismic Stomp",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Taunt",
+			"item_type": "Scroll",
+			"taught_by": "Stomp Scroll",
+			"effect": "Taunt adjacent enemies for 4s.",
+			"targeting": "Self",
+			"targeting_details": "Taunts every enemy on the 8 tiles around you.",
+			"mastery_required_text": "Earth Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+5 Earth Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "stomp_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a taunt."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E05",
+			"name": "Earth Wall",
+			"tree": "Earth",
+			"branch": "Terraform",
+			"role": "Terrain",
+			"item_type": "Scroll",
+			"taught_by": "Bulwark Scroll",
+			"effect": "Raise a 3-tile wall (+2 height) that blocks movement and line of sight for 12s. +1 length per 300 Earth Mastery.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 4. The wall rises crosswise to the direction you're facing; skips tiles occupied by units.",
+			"mastery_required_text": "Earth Mastery 150",
+			"prerequisites_text": "Raise Pillar",
+			"scales_with_text": "Earth Mastery",
+			"mastery_contribution": "+10 Earth Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "bulwark_scroll",
+			"cooldown": 15.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: terrain wall."
+			},
+			"prerequisites": {
+				"abilities": [
+					"E03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E06",
+			"name": "Sinkhole",
+			"tree": "Earth",
+			"branch": "Terraform",
+			"role": "Terrain / CC",
+			"item_type": "Scroll",
+			"taught_by": "Sinkhole Scroll",
+			"effect": "Lower a tile 1 level; an enemy on it is rooted for 2s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 4. 0.3s rumble, then whoever stands on it is rooted.",
+			"mastery_required_text": "Earth Mastery 150",
+			"prerequisites_text": "Raise Pillar",
+			"scales_with_text": "Earth Mastery",
+			"mastery_contribution": "+10 Earth Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "sinkhole_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E07",
+			"name": "Boulder Shield",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Shield",
+			"item_type": "Scroll",
+			"taught_by": "Boulder Scroll",
+			"effect": "Absorb shield on yourself; size scales with Earth Mastery.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Earth Mastery 150",
+			"prerequisites_text": "Stone Skin",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+10 Earth Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "boulder_scroll",
+			"cooldown": 18.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E08",
+			"name": "Rumbling Taunt",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Taunt",
+			"item_type": "Scroll",
+			"taught_by": "Rumble Scroll",
+			"effect": "Taunt all enemies within 2 tiles for 5s.",
+			"targeting": "Self",
+			"targeting_details": "All enemies within 2 tiles.",
+			"mastery_required_text": "Earth Mastery 150",
+			"prerequisites_text": "Seismic Stomp",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+10 Earth Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "rumble_scroll",
+			"cooldown": 15.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E04"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E09",
+			"name": "Earth Ramp",
+			"tree": "Earth",
+			"branch": "Terraform",
+			"role": "Terrain",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of the Stone Path",
+			"effect": "Shape a ramp so allies can climb up to 3 height levels.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 3 and a direction; the ramp builds from there.",
+			"mastery_required_text": "Earth Mastery 150",
+			"prerequisites_text": "Raise Pillar",
+			"scales_with_text": "Earth Mastery",
+			"mastery_contribution": "+10 Earth Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "scroll_of_the_stone_path",
+			"cooldown": 12.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E10",
+			"name": "Fortress Stance",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Damage reduction",
+			"item_type": "Scroll",
+			"taught_by": "Fortress Scroll",
+			"effect": "Take 40% less damage for 6s but cannot move.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Earth Mastery 350",
+			"prerequisites_text": "Boulder Shield; Rumbling Taunt",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+15 Earth Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "fortress_scroll",
+			"cooldown": 30.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 1.6,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E07",
+					"E08"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E11",
+			"name": "Earthquake",
+			"tree": "Earth",
+			"branch": "Terraform",
+			"role": "AoE / CC",
+			"item_type": "Scroll",
+			"taught_by": "Quake Scroll",
+			"effect": "3x3 damage and slow; shuffles tile heights by ±1.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5. Cracks show the 3x3 area for 0.5s first.",
+			"mastery_required_text": "Earth Mastery 350",
+			"prerequisites_text": "Sinkhole",
+			"scales_with_text": "Earth Mastery, Phys Atk",
+			"mastery_contribution": "+15 Earth Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "quake_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E06"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E12",
+			"name": "Trench",
+			"tree": "Earth",
+			"branch": "Terraform",
+			"role": "Terrain",
+			"item_type": "Scroll",
+			"taught_by": "Trench Scroll",
+			"effect": "Carve a 4-tile trench 2 levels deep.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a start tile within 3 and a direction; carves 4 tiles.",
+			"mastery_required_text": "Earth Mastery 350",
+			"prerequisites_text": "Sinkhole",
+			"scales_with_text": "Earth Mastery",
+			"mastery_contribution": "+15 Earth Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "trench_scroll",
+			"cooldown": 18.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E06"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E13",
+			"name": "Seismic Sense",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Utility",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of Seismic Sight",
+			"effect": "Reveal hidden enemies and traps within 6 tiles for 10s.",
+			"targeting": "Self",
+			"targeting_details": "Radius 6 around you.",
+			"mastery_required_text": "Earth Mastery 350",
+			"prerequisites_text": "Seismic Stomp",
+			"scales_with_text": "Earth Mastery",
+			"mastery_contribution": "+15 Earth Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "scroll_of_seismic_sight",
+			"cooldown": 30.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 1.6,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E04"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E14",
+			"name": "Earth Armor",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Self buff",
+			"item_type": "Scroll",
+			"taught_by": "Stone Armor Codex",
+			"effect": "Encase yourself in rock for 15s: large Physical Defense boost, steps 50% slower.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Earth Mastery 350",
+			"prerequisites_text": "Boulder Shield",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+15 Earth Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "stone_armor_codex",
+			"cooldown": 40.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 1.6,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E07"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E15",
+			"name": "Metalbending",
+			"tree": "Earth",
+			"branch": "Specialty Bending",
+			"role": "Debuff / CC",
+			"item_type": "Scroll",
+			"taught_by": "Iron Will Scroll",
+			"effect": "Bend an enemy's armor: lower its Physical Defense and pull it 2 tiles toward you.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 4. Pulls it toward you along a straight tile line; stops at obstacles.",
+			"mastery_required_text": "Earth Mastery 600",
+			"prerequisites_text": "Earth Armor",
+			"scales_with_text": "Earth Mastery, Phys Atk",
+			"mastery_contribution": "+25 Earth Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "iron_will_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E14"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E16",
+			"name": "Sandstorm",
+			"tree": "Earth",
+			"branch": "Specialty Bending",
+			"role": "AoE debuff",
+			"item_type": "Scroll",
+			"taught_by": "Desert Wind Scroll",
+			"effect": "4x4 storm for 6s; enemies inside lose Accuracy.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5; 4x4 area.",
+			"mastery_required_text": "Earth Mastery 600",
+			"prerequisites_text": "Earthquake; Air Mastery 350",
+			"scales_with_text": "Earth Mastery",
+			"mastery_contribution": "+25 Earth Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "desert_wind_scroll",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E11"
+				],
+				"mastery": [
+					{
+						"tree": "Air",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "E17",
+			"name": "Lavabending",
+			"tree": "Earth",
+			"branch": "Specialty Bending",
+			"role": "Terrain / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Molten Core Codex",
+			"effect": "Turn a 3x3 area into lava for 8s; it burns and blocks movement.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 4. The 3x3 area glows for 0.5s before turning to lava.",
+			"mastery_required_text": "Earth Mastery 600",
+			"prerequisites_text": "Trench; Fire Mastery 350",
+			"scales_with_text": "Earth Mastery, Magic Atk",
+			"mastery_contribution": "+25 Earth Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "molten_core_codex",
+			"cooldown": 35.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E12"
+				],
+				"mastery": [
+					{
+						"tree": "Fire",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "E18",
+			"name": "Mountain's Stand",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Party protection",
+			"item_type": "Scroll",
+			"taught_by": "Mountain Codex",
+			"effect": "8s: absorb 50% of the damage dealt to allies within 2 tiles.",
+			"targeting": "Self",
+			"targeting_details": "Aura covering allies within 2 tiles of you.",
+			"mastery_required_text": "Earth Mastery 600",
+			"prerequisites_text": "Fortress Stance",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+25 Earth Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "mountain_codex",
+			"cooldown": 60.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E19",
+			"name": "Living Fortress",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Party protection",
+			"item_type": "Scroll",
+			"taught_by": "Citadel Codex",
+			"effect": "Ring the party in stone walls for 10s; allies inside take 30% less damage.",
+			"targeting": "Self",
+			"targeting_details": "Walls form in a ring around you; allies inside at cast time are protected.",
+			"mastery_required_text": "Earth Mastery 900",
+			"prerequisites_text": "Mountain's Stand; Earth Wall",
+			"scales_with_text": "Earth Mastery, Phys Def",
+			"mastery_contribution": "+50 Earth Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "citadel_codex",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E18",
+					"E05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "E20",
+			"name": "Tectonic Shift",
+			"tree": "Earth",
+			"branch": "Terraform",
+			"role": "Terrain / AoE",
+			"item_type": "Scroll",
+			"taught_by": "Tectonic Codex",
+			"effect": "Reshape a 7x7 area, raising and lowering tiles and knocking enemies off their footing.",
+			"targeting": "Ground",
+			"targeting_details": "Centered on a tile within 3. 1s rumble telegraph.",
+			"mastery_required_text": "Earth Mastery 900",
+			"prerequisites_text": "Earthquake; Trench",
+			"scales_with_text": "Earth Mastery, Phys Atk",
+			"mastery_contribution": "+50 Earth Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "tectonic_codex",
+			"cooldown": 90.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Earth"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"E11",
+					"E12"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W01",
+			"name": "Healing Touch",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Heal",
+			"item_type": "Scroll",
+			"taught_by": "Mender's Scroll",
+			"effect": "Heal yourself or an ally within 2 tiles.",
+			"targeting": "Targeted",
+			"targeting_details": "Yourself or an ally within 2. Can't miss.",
+			"mastery_required_text": "Water Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+5 Water Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "menders_scroll",
+			"cooldown": 3.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.5,
+						1.25
+					]
+				],
+				"notes": "Water: a hold. Timing power scales the heal."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W02",
+			"name": "Water Whip",
+			"tree": "Water",
+			"branch": "Currents",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "River Lash Scroll",
+			"effect": "Lash an enemy within 3 tiles.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 3. Locks on.",
+			"mastery_required_text": "Water Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+5 Water Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "river_lash_scroll",
+			"cooldown": 2.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "manual",
+				"seconds": 3.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.75,
+						2.0
+					]
+				],
+				"notes": "Designer's bar: hold 2 s, ending 0.25 s before the bar."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W03",
+			"name": "Flow State",
+			"tree": "Water",
+			"branch": "Blessings",
+			"role": "Buff",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of the Current",
+			"effect": "You or an ally gain Haste for 30s.",
+			"targeting": "Targeted",
+			"targeting_details": "Yourself or an ally within 3.",
+			"mastery_required_text": "Water Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+5 Water Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "scroll_of_the_current",
+			"cooldown": 20.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a buff (timing has nothing to scale yet)."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W04",
+			"name": "Frost Shard",
+			"tree": "Water",
+			"branch": "Ice",
+			"role": "Damage / CC",
+			"item_type": "Scroll",
+			"taught_by": "Frost Shard Scroll",
+			"effect": "Range 4; damages and slows the target for 2s.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at an enemy within 4. Fast shard at any angle; hits the first unit in its path.",
+			"mastery_required_text": "Water Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+5 Water Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "frost_shard_scroll",
+			"cooldown": 4.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.4,
+						0.85
+					]
+				],
+				"notes": "Water: a short hold; the shard flies when you let go."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W05",
+			"name": "Soothing Mist",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Heal over time",
+			"item_type": "Scroll",
+			"taught_by": "Mist Scroll",
+			"effect": "Heal you or an ally within 3 tiles over 12s.",
+			"targeting": "Targeted",
+			"targeting_details": "Yourself or an ally within 4.",
+			"mastery_required_text": "Water Mastery 150",
+			"prerequisites_text": "Healing Touch",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+10 Water Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "mist_scroll",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.5,
+						1.75
+					]
+				],
+				"notes": "Water: a long hold for a long heal; power scales the total healing."
+			},
+			"prerequisites": {
+				"abilities": [
+					"W01"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W06",
+			"name": "Water Pulse",
+			"tree": "Water",
+			"branch": "Currents",
+			"role": "Damage / CC",
+			"item_type": "Scroll",
+			"taught_by": "Wave Scroll",
+			"effect": "A wave down a 3-tile line that damages and pushes enemies back 1 tile.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. 3-tile line; pushes enemies along that direction.",
+			"mastery_required_text": "Water Mastery 150",
+			"prerequisites_text": "Water Whip",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+10 Water Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "wave_scroll",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.5,
+						1.25
+					]
+				],
+				"notes": "Water: a hold building the wave."
+			},
+			"prerequisites": {
+				"abilities": [
+					"W02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W07",
+			"name": "Leeching Tide",
+			"tree": "Water",
+			"branch": "Currents",
+			"role": "Damage / Self heal",
+			"item_type": "Scroll",
+			"taught_by": "Leech Tide Scroll",
+			"effect": "Damage an enemy within 3 tiles and heal yourself for 50% of the damage dealt.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 3. The heal applies to you automatically.",
+			"mastery_required_text": "Water Mastery 150",
+			"prerequisites_text": "Water Whip",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+10 Water Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "leech_tide_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.75,
+						1.5
+					]
+				],
+				"notes": "Water: a hold; the drain heals you half the (scaled) damage."
+			},
+			"prerequisites": {
+				"abilities": [
+					"W02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W08",
+			"name": "Tidal Blessing",
+			"tree": "Water",
+			"branch": "Blessings",
+			"role": "Buff",
+			"item_type": "Scroll",
+			"taught_by": "Tidal Scroll",
+			"effect": "You or an ally gain Physical and Magic Defense for 45s.",
+			"targeting": "Targeted",
+			"targeting_details": "Yourself or an ally within 3.",
+			"mastery_required_text": "Water Mastery 150",
+			"prerequisites_text": "Flow State",
+			"scales_with_text": "Water Mastery, Magic Def",
+			"mastery_contribution": "+10 Water Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "tidal_scroll",
+			"cooldown": 25.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_def"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a buff (timing has nothing to scale yet)."
+			},
+			"prerequisites": {
+				"abilities": [
+					"W03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W09",
+			"name": "Ice Spikes",
+			"tree": "Water",
+			"branch": "Ice",
+			"role": "AoE damage / CC",
+			"item_type": "Scroll",
+			"taught_by": "Glacier Scroll",
+			"effect": "Spikes erupt in a 3x3 area: damage and slow for 3s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 4. Spikes erupt in the 3x3 area after 0.4s.",
+			"mastery_required_text": "Water Mastery 150",
+			"prerequisites_text": "Frost Shard",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+10 Water Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "glacier_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.75,
+						1.5
+					]
+				],
+				"notes": "Water: a hold. The 0.4 s area warning still follows the release."
+			},
+			"prerequisites": {
+				"abilities": [
+					"W04"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W10",
+			"name": "Spirit Water",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Big heal",
+			"item_type": "Scroll",
+			"taught_by": "Spirit Oasis Scroll",
+			"effect": "Large heal on you or an ally; also removes one debuff.",
+			"targeting": "Targeted",
+			"targeting_details": "Yourself or an ally within 3.",
+			"mastery_required_text": "Water Mastery 350",
+			"prerequisites_text": "Soothing Mist",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+15 Water Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "spirit_oasis_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W11",
+			"name": "Water Jet",
+			"tree": "Water",
+			"branch": "Currents",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Pressure Jet Scroll",
+			"effect": "High-pressure jet that pierces every enemy in a 5-tile line.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at any angle. Instant piercing jet along a 5-tile line.",
+			"mastery_required_text": "Water Mastery 350",
+			"prerequisites_text": "Water Pulse",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+15 Water Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "pressure_jet_scroll",
+			"cooldown": 12.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W06"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W12",
+			"name": "Water Shield",
+			"tree": "Water",
+			"branch": "Blessings",
+			"role": "Shield",
+			"item_type": "Scroll",
+			"taught_by": "Bubble Ward Scroll",
+			"effect": "Absorb shield on you or an ally for 20s; when it breaks it splashes damage on adjacent enemies.",
+			"targeting": "Targeted",
+			"targeting_details": "Yourself or an ally within 3.",
+			"mastery_required_text": "Water Mastery 350",
+			"prerequisites_text": "Tidal Blessing",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+15 Water Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "bubble_ward_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W08"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W13",
+			"name": "Ice Prison",
+			"tree": "Water",
+			"branch": "Ice",
+			"role": "CC",
+			"item_type": "Scroll",
+			"taught_by": "Frozen Tomb Scroll",
+			"effect": "Freeze an enemy for 2s; frozen enemies take 25% more damage.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 4. 0.5s cast; fails if the target breaks line of sight.",
+			"mastery_required_text": "Water Mastery 350",
+			"prerequisites_text": "Ice Spikes",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+15 Water Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "frozen_tomb_scroll",
+			"cooldown": 20.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W09"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W14",
+			"name": "Revive",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Resurrection",
+			"item_type": "Scroll",
+			"taught_by": "Scroll of Second Life",
+			"effect": "Resurrect a fallen ally at 30% HP; usable in combat.",
+			"targeting": "Targeted",
+			"targeting_details": "Fallen ally within 3. 2s cast, interrupted by damage.",
+			"mastery_required_text": "Water Mastery 350",
+			"prerequisites_text": "Spirit Water",
+			"scales_with_text": "Water Mastery",
+			"mastery_contribution": "+15 Water Mastery when learned, +4.0 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "scroll_of_second_life",
+			"cooldown": 120.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 4.0,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W15",
+			"name": "Tidal Wave",
+			"tree": "Water",
+			"branch": "Currents",
+			"role": "AoE damage / CC",
+			"item_type": "Scroll",
+			"taught_by": "Tsunami Codex",
+			"effect": "A 3-tile-wide wave rolls 5 tiles, damaging and pushing enemies.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. The wave visibly rolls at walking speed; enemies can step sideways out of it.",
+			"mastery_required_text": "Water Mastery 600",
+			"prerequisites_text": "Water Jet",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+25 Water Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "tsunami_codex",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W11"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W16",
+			"name": "Rising Tide",
+			"tree": "Water",
+			"branch": "Blessings",
+			"role": "Party buff",
+			"item_type": "Scroll",
+			"taught_by": "Rising Tide Scroll",
+			"effect": "You and allies within 3 tiles gain Crit Rate and Haste for 60s.",
+			"targeting": "Self",
+			"targeting_details": "You and allies within 3 tiles at the moment of casting.",
+			"mastery_required_text": "Water Mastery 600",
+			"prerequisites_text": "Water Shield",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+25 Water Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "rising_tide_scroll",
+			"cooldown": 45.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W12"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W17",
+			"name": "Healing Rain",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "AoE heal",
+			"item_type": "Scroll",
+			"taught_by": "Monsoon Scroll",
+			"effect": "3x3 zone that heals allies inside for 10s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5; 3x3 zone.",
+			"mastery_required_text": "Water Mastery 600",
+			"prerequisites_text": "Spirit Water",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+25 Water Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "monsoon_scroll",
+			"cooldown": 25.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W18",
+			"name": "Steam Veil",
+			"tree": "Water",
+			"branch": "Ice",
+			"role": "Party defense / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Steam Scroll",
+			"effect": "4x4 scalding fog for 10s: allies gain Evasion, enemies take damage over time.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5; 4x4 zone.",
+			"mastery_required_text": "Water Mastery 600",
+			"prerequisites_text": "Ice Prison; Fire Mastery 350",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+25 Water Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "steam_scroll",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W13"
+				],
+				"mastery": [
+					{
+						"tree": "Fire",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "W19",
+			"name": "Bloodbending",
+			"tree": "Water",
+			"branch": "Ice",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Crimson Moon Codex",
+			"effect": "Control an enemy's movement for 3s and damage it each second.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 4. While it lasts, you stand still and steer its steps with your movement keys.",
+			"mastery_required_text": "Water Mastery 600",
+			"prerequisites_text": "Ice Prison",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+25 Water Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "crimson_moon_codex",
+			"cooldown": 60.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W13"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W20",
+			"name": "Octopus Form",
+			"tree": "Water",
+			"branch": "Currents",
+			"role": "Self buff / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Eight Arms Scroll",
+			"effect": "10s: eight water tentacles block projectiles and lash adjacent enemies automatically.",
+			"targeting": "Self",
+			"targeting_details": "Tentacles automatically hit adjacent enemies and block incoming projectiles.",
+			"mastery_required_text": "Water Mastery 600",
+			"prerequisites_text": "Water Jet; Water Shield",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+25 Water Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "eight_arms_scroll",
+			"cooldown": 45.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W11",
+					"W12"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W21",
+			"name": "Full Moon",
+			"tree": "Water",
+			"branch": "Blessings",
+			"role": "Self buff",
+			"item_type": "Scroll",
+			"taught_by": "Full Moon Codex",
+			"effect": "30s: all water damage, healing and buffs are 30% stronger.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Water Mastery 900",
+			"prerequisites_text": "Rising Tide",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+50 Water Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "full_moon_codex",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W16"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W22",
+			"name": "Ocean Spirit",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Self buff",
+			"item_type": "Scroll",
+			"taught_by": "Ocean Spirit Codex",
+			"effect": "20s: 40% of all water damage you deal heals you or the lowest-HP ally within 3 tiles.",
+			"targeting": "Self",
+			"targeting_details": "Bonus healing goes to you or the lowest-HP ally within 3 automatically.",
+			"mastery_required_text": "Water Mastery 900",
+			"prerequisites_text": "Healing Rain; Leeching Tide",
+			"scales_with_text": "Water Mastery, Magic Atk",
+			"mastery_contribution": "+50 Water Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "ocean_spirit_codex",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W17",
+					"W07"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W23",
+			"name": "Tidal Resurgence",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Mass resurrection",
+			"item_type": "Scroll",
+			"taught_by": "Codex of Returning Tides",
+			"effect": "Resurrect all fallen allies within 3 tiles at 20% HP.",
+			"targeting": "Self",
+			"targeting_details": "All fallen allies within 3 tiles. 3s cast.",
+			"mastery_required_text": "Water Mastery 900",
+			"prerequisites_text": "Revive; Healing Rain",
+			"scales_with_text": "Water Mastery",
+			"mastery_contribution": "+50 Water Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "codex_of_returning_tides",
+			"cooldown": 600.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Water"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"W14",
+					"W17"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A01",
+			"name": "Air Palm",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Open Palm Scroll",
+			"effect": "Light damage and knock an adjacent enemy back 1 tile.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. Pushes it directly away from you (snapped to 8 directions).",
+			"mastery_required_text": "Air Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+5 Air Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "open_palm_scroll",
+			"cooldown": 4.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.8,
+				"taps": [
+					[
+						0.2,
+						0.25
+					]
+				],
+				"crits": [
+					[
+						0.3,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Air: quick, early beat."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A02",
+			"name": "Gust",
+			"tree": "Air",
+			"branch": "Breath",
+			"role": "Interrupt / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Breeze Scroll",
+			"effect": "Range 3; light damage and interrupts an enemy's cast.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 3. Instant and can't miss, so interrupts are reliable.",
+			"mastery_required_text": "Air Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+5 Air Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "breeze_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: an interrupt must be instant to catch a wind-up."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A03",
+			"name": "Air Step",
+			"tree": "Air",
+			"branch": "Flight",
+			"role": "Mobility",
+			"item_type": "Scroll",
+			"taught_by": "Featherstep Scroll",
+			"effect": "Your next 5 steps have no cooldown.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Air Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Air Mastery",
+			"mastery_contribution": "+5 Air Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "featherstep_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: movement buff off the GCD."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A04",
+			"name": "Wind Snare",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Snaring Wind Scroll",
+			"effect": "Light damage and double an enemy's step cooldown for 4s.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at an enemy within 4. Fast gust at any angle; hits the first unit in its path.",
+			"mastery_required_text": "Air Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+5 Air Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "snaring_wind_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A05",
+			"name": "Air Blast",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Gale Scroll",
+			"effect": "Knock an enemy back 3 tiles; bonus damage if it hits a wall or ledge.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 3. Knockback follows the line from you to it, snapped to 8 directions.",
+			"mastery_required_text": "Air Mastery 150",
+			"prerequisites_text": "Air Palm",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "gale_scroll",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.2,
+				"taps": [
+					[
+						0.3,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.4,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Air: early beat in a slightly longer bar."
+			},
+			"prerequisites": {
+				"abilities": [
+					"A01"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A06",
+			"name": "Vortex",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Vortex Scroll",
+			"effect": "Pull all enemies within 2 tiles of a point toward the center, dealing light damage.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5; enemies within 2 of it are pulled toward it.",
+			"mastery_required_text": "Air Mastery 150",
+			"prerequisites_text": "Wind Snare",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "vortex_scroll",
+			"cooldown": 18.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A04"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A07",
+			"name": "Stolen Breath",
+			"tree": "Air",
+			"branch": "Breath",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Hushing Scroll",
+			"effect": "Light damage and silence an enemy for 2s.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 3.",
+			"mastery_required_text": "Air Mastery 150",
+			"prerequisites_text": "Gust",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "hushing_scroll",
+			"cooldown": 18.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A08",
+			"name": "Glide",
+			"tree": "Air",
+			"branch": "Flight",
+			"role": "Mobility",
+			"item_type": "Scroll",
+			"taught_by": "Glider Scroll",
+			"effect": "For 10s, cross gaps, drop from any height freely and climb 1 extra height level per step.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Air Mastery 150",
+			"prerequisites_text": "Air Step",
+			"scales_with_text": "Air Mastery",
+			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "glider_scroll",
+			"cooldown": 15.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A09",
+			"name": "Air Scooter",
+			"tree": "Air",
+			"branch": "Flight",
+			"role": "Mobility / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Rolling Wind Scroll",
+			"effect": "Step cooldown halved for 12s; moving into an enemy deals light damage and shoves it aside.",
+			"targeting": "Self",
+			"targeting_details": "No target; damage applies to any enemy you step into.",
+			"mastery_required_text": "Air Mastery 150",
+			"prerequisites_text": "Air Step",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "rolling_wind_scroll",
+			"cooldown": 18.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A10",
+			"name": "Tornado",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Twister Scroll",
+			"effect": "A tornado travels 5 tiles, dragging and damaging enemies.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. The tornado travels slowly; enemies can step out of its path.",
+			"mastery_required_text": "Air Mastery 350",
+			"prerequisites_text": "Vortex",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "twister_scroll",
+			"cooldown": 25.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A06"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A11",
+			"name": "Air Sphere",
+			"tree": "Air",
+			"branch": "Breath",
+			"role": "Party defense",
+			"item_type": "Scroll",
+			"taught_by": "Sphere Scroll",
+			"effect": "Reflect projectiles aimed at an ally for 4s; reflected shots deal bonus damage.",
+			"targeting": "Targeted",
+			"targeting_details": "Yourself or an ally within 4.",
+			"mastery_required_text": "Air Mastery 350",
+			"prerequisites_text": "Gust",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "sphere_scroll",
+			"cooldown": 25.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A12",
+			"name": "Suffocate",
+			"tree": "Air",
+			"branch": "Breath",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Vacuum Scroll",
+			"effect": "Channel: stun an enemy for up to 3s, dealing damage each second.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 3. Channel breaks if line of sight breaks.",
+			"mastery_required_text": "Air Mastery 350",
+			"prerequisites_text": "Stolen Breath",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+15 Air Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "vacuum_scroll",
+			"cooldown": 30.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 1.6,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A07"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A13",
+			"name": "Cyclone Spin",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Cyclone Scroll",
+			"effect": "Damage and knock all adjacent enemies back 2 tiles.",
+			"targeting": "Self",
+			"targeting_details": "All 8 tiles around you.",
+			"mastery_required_text": "Air Mastery 350",
+			"prerequisites_text": "Air Blast; Vortex",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "cyclone_scroll",
+			"cooldown": 16.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A05",
+					"A06"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A14",
+			"name": "Wind Walk",
+			"tree": "Air",
+			"branch": "Flight",
+			"role": "Mobility / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Wind Walker Scroll",
+			"effect": "Blink to any tile within 7, ignoring height, with a burst of wind that lightly damages adjacent enemies. 2 charges.",
+			"targeting": "Ground",
+			"targeting_details": "Pick any tile within 7. Instant.",
+			"mastery_required_text": "Air Mastery 350",
+			"prerequisites_text": "Glide",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "wind_walker_scroll",
+			"cooldown": 15.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A08"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A15",
+			"name": "Hurricane",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "AoE CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Hurricane Codex",
+			"effect": "5x5 storm for 6s: enemies are damaged, slowed and randomly shoved.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 6. 0.5s telegraph.",
+			"mastery_required_text": "Air Mastery 600",
+			"prerequisites_text": "Tornado",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "hurricane_codex",
+			"cooldown": 40.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A16",
+			"name": "Updraft",
+			"tree": "Air",
+			"branch": "Breath",
+			"role": "CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Updraft Scroll",
+			"effect": "Launch an enemy into the air for 2s (stunned, untargetable), then slam it down for damage.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 4. 0.3s wind-up.",
+			"mastery_required_text": "Air Mastery 600",
+			"prerequisites_text": "Suffocate",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "updraft_scroll",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A12"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A17",
+			"name": "Storm Front",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "AoE CC / Buff",
+			"item_type": "Scroll",
+			"taught_by": "Storm Front Scroll",
+			"effect": "4x4 zone for 8s: enemies are damaged and slowed, allies gain Haste.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5; 4x4 zone.",
+			"mastery_required_text": "Air Mastery 600",
+			"prerequisites_text": "Tornado; Water Mastery 350",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "storm_front_scroll",
+			"cooldown": 35.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A10"
+				],
+				"mastery": [
+					{
+						"tree": "Water",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "A18",
+			"name": "Pressure Lock",
+			"tree": "Air",
+			"branch": "Breath",
+			"role": "AoE CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Pressure Scroll",
+			"effect": "Root and lightly damage all enemies within 2 tiles for 2s.",
+			"targeting": "Self",
+			"targeting_details": "All enemies within 2 tiles.",
+			"mastery_required_text": "Air Mastery 600",
+			"prerequisites_text": "Suffocate",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "pressure_scroll",
+			"cooldown": 35.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A12"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A19",
+			"name": "Sky Dancer",
+			"tree": "Air",
+			"branch": "Flight",
+			"role": "Mobility",
+			"item_type": "Scroll",
+			"taught_by": "Sky Dancer Codex",
+			"effect": "10s: fly over any terrain and height, and steps have no cooldown.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Air Mastery 600",
+			"prerequisites_text": "Wind Walk",
+			"scales_with_text": "Air Mastery",
+			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "sky_dancer_codex",
+			"cooldown": 40.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A14"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A20",
+			"name": "Weightless",
+			"tree": "Air",
+			"branch": "Flight",
+			"role": "Party mobility",
+			"item_type": "Scroll",
+			"taught_by": "Codex of Weightlessness",
+			"effect": "15s: the whole party glides, ignores height and has step cooldowns halved.",
+			"targeting": "Self",
+			"targeting_details": "You and allies within 4 tiles at the moment of casting.",
+			"mastery_required_text": "Air Mastery 900",
+			"prerequisites_text": "Sky Dancer",
+			"scales_with_text": "Air Mastery",
+			"mastery_contribution": "+50 Air Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "codex_of_weightlessness",
+			"cooldown": 90.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A19"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "A21",
+			"name": "Eye of the Storm",
+			"tree": "Air",
+			"branch": "Winds",
+			"role": "AoE CC / Damage",
+			"item_type": "Scroll",
+			"taught_by": "Eye of the Storm Codex",
+			"effect": "7x7 cyclone: enemies are pulled to the center, damaged and stunned for 2s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 6. 1s swirling telegraph before the pull.",
+			"mastery_required_text": "Air Mastery 900",
+			"prerequisites_text": "Hurricane; Pressure Lock",
+			"scales_with_text": "Air Mastery, Magic Atk",
+			"mastery_contribution": "+50 Air Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "eye_of_the_storm_codex",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Air"
+				},
+				{
+					"stat": "mag_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"A15",
+					"A18"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S01",
+			"name": "Slash",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Damage",
+			"item_type": "Sword",
+			"taught_by": "Rusty Shortsword",
+			"effect": "Basic strike on an adjacent enemy.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy.",
+			"mastery_required_text": "Sword Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+5 Sword Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "rusty_shortsword",
+			"cooldown": 2.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "manual",
+				"seconds": 1.0,
+				"taps": [
+					[
+						0.35,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.45,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Designer's bar: one beat in the middle."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S02",
+			"name": "Thrust",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Damage",
+			"item_type": "Sword",
+			"taught_by": "Militia Rapier",
+			"effect": "Strike an enemy up to 2 tiles away in a straight line.",
+			"targeting": "Skillshot",
+			"targeting_details": "Pick one of 8 directions; hits whoever is on the 2 tiles in that line.",
+			"mastery_required_text": "Sword Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+5 Sword Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "militia_rapier",
+			"cooldown": 4.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S03",
+			"name": "Parry",
+			"tree": "Sword",
+			"branch": "Guard",
+			"role": "Defense",
+			"item_type": "Sword",
+			"taught_by": "Duelist's Sabre",
+			"effect": "Block the next melee hit within 1s.",
+			"targeting": "Self",
+			"targeting_details": "1s block window.",
+			"mastery_required_text": "Sword Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Sword Mastery, Phys Def",
+			"mastery_contribution": "+5 Sword Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "duelists_sabre",
+			"cooldown": 8.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S04",
+			"name": "Lunge",
+			"tree": "Sword",
+			"branch": "Footwork",
+			"role": "Mobility / Damage",
+			"item_type": "Sword",
+			"taught_by": "Traveler's Longsword",
+			"effect": "Step up to 2 tiles and strike.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 3 with an open path. You step to a tile next to it and strike.",
+			"mastery_required_text": "Sword Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+5 Sword Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "travelers_longsword",
+			"cooldown": 8.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a dash then a strike (dashes have no bar)."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S05",
+			"name": "Double Slash",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Damage",
+			"item_type": "Sword",
+			"taught_by": "Twinfang Blade",
+			"effect": "Two quick strikes.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy.",
+			"mastery_required_text": "Sword Mastery 150",
+			"prerequisites_text": "Slash",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+10 Sword Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "twinfang_blade",
+			"cooldown": 5.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S01"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S06",
+			"name": "Riposte",
+			"tree": "Sword",
+			"branch": "Guard",
+			"role": "Counter",
+			"item_type": "Sword",
+			"taught_by": "Riposte Foil",
+			"effect": "Parry; on success, counterattack for heavy damage.",
+			"targeting": "Self",
+			"targeting_details": "Counter fires automatically at whoever hit you.",
+			"mastery_required_text": "Sword Mastery 150",
+			"prerequisites_text": "Parry",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+10 Sword Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "riposte_foil",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S07",
+			"name": "Bleeding Cut",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Damage over time",
+			"item_type": "Sword",
+			"taught_by": "Serrated Cutlass",
+			"effect": "A wound that bleeds for 8s.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy.",
+			"mastery_required_text": "Sword Mastery 150",
+			"prerequisites_text": "Slash",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+10 Sword Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "serrated_cutlass",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S01"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S08",
+			"name": "Piercing Thrust",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Damage",
+			"item_type": "Sword",
+			"taught_by": "Needle Estoc",
+			"effect": "Hit both enemies in a 2-tile line, ignoring some defense.",
+			"targeting": "Skillshot",
+			"targeting_details": "Pick one of 8 directions; hits both tiles in the line.",
+			"mastery_required_text": "Sword Mastery 150",
+			"prerequisites_text": "Thrust",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+10 Sword Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "needle_estoc",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S09",
+			"name": "Feint",
+			"tree": "Sword",
+			"branch": "Footwork",
+			"role": "Debuff",
+			"item_type": "Sword",
+			"taught_by": "Trickster's Blade",
+			"effect": "Lower an enemy's Evasion for 6s.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy.",
+			"mastery_required_text": "Sword Mastery 150",
+			"prerequisites_text": "Lunge",
+			"scales_with_text": "Sword Mastery",
+			"mastery_contribution": "+10 Sword Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "tricksters_blade",
+			"cooldown": 12.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S04"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S10",
+			"name": "Flurry",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Damage",
+			"item_type": "Sword",
+			"taught_by": "Whirling Scimitar",
+			"effect": "Five rapid strikes.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. If it steps away mid-combo, remaining hits miss.",
+			"mastery_required_text": "Sword Mastery 350",
+			"prerequisites_text": "Double Slash",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+15 Sword Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "whirling_scimitar",
+			"cooldown": 12.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S11",
+			"name": "Disarm",
+			"tree": "Sword",
+			"branch": "Guard",
+			"role": "Debuff",
+			"item_type": "Sword",
+			"taught_by": "Guardian's Broadsword",
+			"effect": "Lower an enemy's Physical Attack for 8s.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy.",
+			"mastery_required_text": "Sword Mastery 350",
+			"prerequisites_text": "Riposte",
+			"scales_with_text": "Sword Mastery",
+			"mastery_contribution": "+15 Sword Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "guardians_broadsword",
+			"cooldown": 18.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S06"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S12",
+			"name": "Execute",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Burst damage",
+			"item_type": "Sword",
+			"taught_by": "Headsman's Sword",
+			"effect": "Heavy blow; triple damage on enemies below 25% HP.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. Visible 0.4s wind-up; can be stepped away from.",
+			"mastery_required_text": "Sword Mastery 350",
+			"prerequisites_text": "Bleeding Cut",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+15 Sword Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "headsmans_sword",
+			"cooldown": 15.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S07"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S13",
+			"name": "Blade Dance",
+			"tree": "Sword",
+			"branch": "Footwork",
+			"role": "Mobility / Damage",
+			"item_type": "Sword",
+			"taught_by": "Dancer's Katana",
+			"effect": "Dash 3 tiles, striking every enemy you pass.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile up to 3 away in one of 8 directions; hits every enemy you pass.",
+			"mastery_required_text": "Sword Mastery 350",
+			"prerequisites_text": "Feint",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+15 Sword Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "dancers_katana",
+			"cooldown": 14.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S09"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S14",
+			"name": "Focus Stance",
+			"tree": "Sword",
+			"branch": "Guard",
+			"role": "Self buff",
+			"item_type": "Sword",
+			"taught_by": "Focus Blade",
+			"effect": "Gain Crit Rate for 10s.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Sword Mastery 350",
+			"prerequisites_text": "Parry",
+			"scales_with_text": "Sword Mastery, Crit Rate",
+			"mastery_contribution": "+15 Sword Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "focus_blade",
+			"cooldown": 25.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "crit_rate"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S15",
+			"name": "Thousand Cuts",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Burst damage",
+			"item_type": "Sword",
+			"taught_by": "Thousand-Edge Katana",
+			"effect": "Channel 2s of nonstop strikes.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. Channel ends if it steps away.",
+			"mastery_required_text": "Sword Mastery 600",
+			"prerequisites_text": "Flurry",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+25 Sword Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "thousand_edge_katana",
+			"cooldown": 25.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S16",
+			"name": "Counter Stance",
+			"tree": "Sword",
+			"branch": "Guard",
+			"role": "Counter",
+			"item_type": "Sword",
+			"taught_by": "Mirror Blade",
+			"effect": "4s: automatically counter every melee attack.",
+			"targeting": "Self",
+			"targeting_details": "Counters every melee attacker automatically.",
+			"mastery_required_text": "Sword Mastery 600",
+			"prerequisites_text": "Disarm",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+25 Sword Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "mirror_blade",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S11"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S17",
+			"name": "Shadow Step",
+			"tree": "Sword",
+			"branch": "Footwork",
+			"role": "Mobility",
+			"item_type": "Sword",
+			"taught_by": "Shadowfang",
+			"effect": "Teleport behind an enemy within 4 tiles; your next hit is a guaranteed crit.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 4. You land on the tile behind it (or the nearest free tile).",
+			"mastery_required_text": "Sword Mastery 600",
+			"prerequisites_text": "Blade Dance",
+			"scales_with_text": "Sword Mastery",
+			"mastery_contribution": "+25 Sword Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "shadowfang",
+			"cooldown": 20.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S13"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S18",
+			"name": "Elemental Edge",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Self buff",
+			"item_type": "Sword",
+			"taught_by": "Runeblade",
+			"effect": "10s: sword hits add damage from your highest element.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Sword Mastery 600",
+			"prerequisites_text": "Flurry; any element Mastery 350",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+25 Sword Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "runeblade",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S10"
+				],
+				"mastery": [
+					{
+						"tree": "any_element",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "S19",
+			"name": "Perfect Strike",
+			"tree": "Sword",
+			"branch": "Blade",
+			"role": "Burst damage",
+			"item_type": "Sword",
+			"taught_by": "Masterwork Odachi",
+			"effect": "Guaranteed critical hit with massive damage.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. 0.6s wind-up; can be stepped away from.",
+			"mastery_required_text": "Sword Mastery 900",
+			"prerequisites_text": "Execute; Focus Stance",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+50 Sword Mastery when learned, +4.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "masterwork_odachi",
+			"cooldown": 60.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 4.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S12",
+					"S14"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "S20",
+			"name": "Sword Saint",
+			"tree": "Sword",
+			"branch": "Footwork",
+			"role": "Self buff",
+			"item_type": "Sword",
+			"taught_by": "Saintblade",
+			"effect": "12s: sword cooldowns recover twice as fast.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Sword Mastery 900",
+			"prerequisites_text": "Thousand Cuts; Shadow Step",
+			"scales_with_text": "Sword Mastery, Phys Atk",
+			"mastery_contribution": "+50 Sword Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "saintblade",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Sword"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"S15",
+					"S17"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B01",
+			"name": "Quick Shot",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "Damage",
+			"item_type": "Bow",
+			"taught_by": "Hunter's Shortbow",
+			"effect": "Fast shot, range 5.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 5. Fast arrow that can't miss; blocked by walls.",
+			"mastery_required_text": "Bow Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+5 Bow Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "hunters_shortbow",
+			"cooldown": 2.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "manual",
+				"seconds": 2.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.25,
+						1.5
+					]
+				],
+				"notes": "Designer's bar: hold 1.5 s at the end, ending 0.25 s before the bar. The arrow flies where the cursor points when you let go."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B02",
+			"name": "Aimed Shot",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "Damage",
+			"item_type": "Bow",
+			"taught_by": "Yew Longbow",
+			"effect": "1s draw, range 7, heavy damage.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at an enemy within 7. Direction locks on release after the 1s draw; any angle; hits the first unit in its path.",
+			"mastery_required_text": "Bow Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+5 Bow Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "yew_longbow",
+			"cooldown": 6.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "manual",
+				"seconds": 4.0,
+				"taps": [
+					[
+						0.2,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						0.35,
+						0.1
+					]
+				],
+				"holds": [
+					[
+						1.0,
+						2.75
+					]
+				],
+				"notes": "Designer's bar: a tap at the start (nock), then hold to the end (draw), ending 0.25 s before the bar. Replaces its 1 s draw. Fires where the cursor points when you let go."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B03",
+			"name": "Disengage",
+			"tree": "Bow",
+			"branch": "Survival",
+			"role": "Mobility",
+			"item_type": "Bow",
+			"taught_by": "Ranger's Bow",
+			"effect": "Leap back 2 tiles.",
+			"targeting": "Self",
+			"targeting_details": "Leap 2 tiles directly away from the way you're facing.",
+			"mastery_required_text": "Bow Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Bow Mastery",
+			"mastery_contribution": "+5 Bow Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "rangers_bow",
+			"cooldown": 12.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B04",
+			"name": "Hunter's Mark",
+			"tree": "Bow",
+			"branch": "Survival",
+			"role": "Debuff",
+			"item_type": "Bow",
+			"taught_by": "Tracker's Bow",
+			"effect": "The marked enemy takes extra damage from every source for 15s.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 6.",
+			"mastery_required_text": "Bow Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Bow Mastery",
+			"mastery_contribution": "+5 Bow Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "trackers_bow",
+			"cooldown": 15.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B05",
+			"name": "Multi-Shot",
+			"tree": "Bow",
+			"branch": "Volley",
+			"role": "AoE damage",
+			"item_type": "Bow",
+			"taught_by": "Triple-String Bow",
+			"effect": "Hit up to 3 enemies.",
+			"targeting": "Targeted",
+			"targeting_details": "Your target plus up to 2 more enemies within 5, nearest first.",
+			"mastery_required_text": "Bow Mastery 150",
+			"prerequisites_text": "Quick Shot",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+10 Bow Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "triple_string_bow",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B01"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B06",
+			"name": "Piercing Arrow",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "Damage",
+			"item_type": "Bow",
+			"taught_by": "Piercer Longbow",
+			"effect": "Passes through every enemy in a 6-tile line.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at any angle; pierces every enemy on the 6-tile line.",
+			"mastery_required_text": "Bow Mastery 150",
+			"prerequisites_text": "Aimed Shot",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+10 Bow Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "piercer_longbow",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B07",
+			"name": "Poison Arrow",
+			"tree": "Bow",
+			"branch": "Survival",
+			"role": "Damage over time",
+			"item_type": "Bow",
+			"taught_by": "Viper Bow",
+			"effect": "Poison an enemy for 10s.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 5.",
+			"mastery_required_text": "Bow Mastery 150",
+			"prerequisites_text": "Hunter's Mark",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+10 Bow Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "viper_bow",
+			"cooldown": 8.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.3,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B04"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B08",
+			"name": "Pinning Shot",
+			"tree": "Bow",
+			"branch": "Survival",
+			"role": "CC",
+			"item_type": "Bow",
+			"taught_by": "Pinning Recurve",
+			"effect": "Root an enemy for 2s.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at an enemy within 5. Any angle; the first unit hit is rooted.",
+			"mastery_required_text": "Bow Mastery 150",
+			"prerequisites_text": "Disengage",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+10 Bow Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "pinning_recurve",
+			"cooldown": 14.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B09",
+			"name": "High Ground",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "Self buff",
+			"item_type": "Bow",
+			"taught_by": "Eagle's Perch Bow",
+			"effect": "10s: extra damage and range for each height level above your target.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Bow Mastery 150",
+			"prerequisites_text": "Aimed Shot",
+			"scales_with_text": "Bow Mastery",
+			"mastery_contribution": "+10 Bow Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "eagles_perch_bow",
+			"cooldown": 20.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B10",
+			"name": "Volley",
+			"tree": "Bow",
+			"branch": "Volley",
+			"role": "AoE damage",
+			"item_type": "Bow",
+			"taught_by": "Volley Bow",
+			"effect": "Arrows rain on a 3x3 area.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 7. 0.5s telegraph.",
+			"mastery_required_text": "Bow Mastery 350",
+			"prerequisites_text": "Multi-Shot",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+15 Bow Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "volley_bow",
+			"cooldown": 14.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B11",
+			"name": "Snipe",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "Burst damage",
+			"item_type": "Bow",
+			"taught_by": "Sniper's Greatbow",
+			"effect": "2s draw, range 10.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 10. 2s draw; cancels if the target breaks line of sight.",
+			"mastery_required_text": "Bow Mastery 350",
+			"prerequisites_text": "Piercing Arrow; High Ground",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+15 Bow Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "snipers_greatbow",
+			"cooldown": 20.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B06",
+					"B09"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B12",
+			"name": "Explosive Trap",
+			"tree": "Bow",
+			"branch": "Survival",
+			"role": "Trap",
+			"item_type": "Bow",
+			"taught_by": "Trapper's Bow",
+			"effect": "Place a hidden trap that explodes when an enemy steps on it.",
+			"targeting": "Ground",
+			"targeting_details": "Pick an empty tile within 3. Invisible to enemies.",
+			"mastery_required_text": "Bow Mastery 350",
+			"prerequisites_text": "Pinning Shot",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+15 Bow Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "trappers_bow",
+			"cooldown": 18.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B08"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B13",
+			"name": "Rapid Fire",
+			"tree": "Bow",
+			"branch": "Volley",
+			"role": "Damage",
+			"item_type": "Bow",
+			"taught_by": "Repeater Bow",
+			"effect": "Channel 2s of rapid shots.",
+			"targeting": "Targeted",
+			"targeting_details": "Every arrow goes to your current target; channel ends if line of sight is lost.",
+			"mastery_required_text": "Bow Mastery 350",
+			"prerequisites_text": "Multi-Shot",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+15 Bow Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "repeater_bow",
+			"cooldown": 16.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B14",
+			"name": "Camouflage",
+			"tree": "Bow",
+			"branch": "Survival",
+			"role": "Stealth",
+			"item_type": "Bow",
+			"taught_by": "Shadow Bow",
+			"effect": "Hidden until you attack or 8s pass.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Bow Mastery 350",
+			"prerequisites_text": "Disengage",
+			"scales_with_text": "Bow Mastery",
+			"mastery_contribution": "+15 Bow Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "shadow_bow",
+			"cooldown": 30.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 1.6,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B15",
+			"name": "Rain of Arrows",
+			"tree": "Bow",
+			"branch": "Volley",
+			"role": "AoE damage",
+			"item_type": "Bow",
+			"taught_by": "Rainmaker",
+			"effect": "5x5 barrage for 4s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 8. 0.75s telegraph.",
+			"mastery_required_text": "Bow Mastery 600",
+			"prerequisites_text": "Volley",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+25 Bow Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "rainmaker",
+			"cooldown": 35.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B16",
+			"name": "Wind Arrow",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "CC / Damage",
+			"item_type": "Bow",
+			"taught_by": "Windstring Bow",
+			"effect": "Range 12; knocks the target back 3 tiles.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim at any angle, range 12. Very fast; knockback follows the arrow's path.",
+			"mastery_required_text": "Bow Mastery 600",
+			"prerequisites_text": "Snipe; Air Mastery 350",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+25 Bow Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "windstring_bow",
+			"cooldown": 25.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B11"
+				],
+				"mastery": [
+					{
+						"tree": "Air",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "B17",
+			"name": "Kill Shot",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "Burst damage",
+			"item_type": "Bow",
+			"taught_by": "Executioner's Bow",
+			"effect": "Only usable on enemies below 20% HP; huge damage.",
+			"targeting": "Targeted",
+			"targeting_details": "Enemy within 8 below 20% HP. Can't miss.",
+			"mastery_required_text": "Bow Mastery 600",
+			"prerequisites_text": "Snipe",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+25 Bow Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "executioners_bow",
+			"cooldown": 20.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B11"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B18",
+			"name": "Ricochet",
+			"tree": "Bow",
+			"branch": "Volley",
+			"role": "Damage",
+			"item_type": "Bow",
+			"taught_by": "Ricochet Bow",
+			"effect": "An arrow that bounces between up to 4 enemies.",
+			"targeting": "Targeted",
+			"targeting_details": "Hits your target, then bounces to the nearest enemy within 3 each time.",
+			"mastery_required_text": "Bow Mastery 600",
+			"prerequisites_text": "Rapid Fire",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+25 Bow Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "ricochet_bow",
+			"cooldown": 15.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B13"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B19",
+			"name": "Deadeye",
+			"tree": "Bow",
+			"branch": "Marksman",
+			"role": "Self buff",
+			"item_type": "Bow",
+			"taught_by": "Deadeye Greatbow",
+			"effect": "10s: every shot is a critical hit.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Bow Mastery 900",
+			"prerequisites_text": "Kill Shot; High Ground",
+			"scales_with_text": "Bow Mastery, Crit Rate",
+			"mastery_contribution": "+50 Bow Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "deadeye_greatbow",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "crit_rate"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B17",
+					"B09"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "B20",
+			"name": "Arrowstorm",
+			"tree": "Bow",
+			"branch": "Volley",
+			"role": "AoE damage",
+			"item_type": "Bow",
+			"taught_by": "Stormcaller Bow",
+			"effect": "7x7 barrage for 5s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 8. 1s telegraph.",
+			"mastery_required_text": "Bow Mastery 900",
+			"prerequisites_text": "Rain of Arrows; Ricochet",
+			"scales_with_text": "Bow Mastery, Phys Atk",
+			"mastery_contribution": "+50 Bow Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "stormcaller_bow",
+			"cooldown": 90.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Bow"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"B15",
+					"B18"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H01",
+			"name": "Smash",
+			"tree": "Hammer",
+			"branch": "Smash",
+			"role": "Damage",
+			"item_type": "Hammer",
+			"taught_by": "Iron Mallet",
+			"effect": "Heavy strike on an adjacent enemy.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. 0.3s wind-up; can be stepped away from.",
+			"mastery_required_text": "Hammer Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+5 Hammer Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "iron_mallet",
+			"cooldown": 4.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.2,
+				"taps": [
+					[
+						0.8,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.95,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Hammer: a late heavy beat; replaces its 0.3 s wind-up."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H02",
+			"name": "Ground Slam",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "AoE damage",
+			"item_type": "Hammer",
+			"taught_by": "Quarry Maul",
+			"effect": "Hit all adjacent enemies.",
+			"targeting": "Self",
+			"targeting_details": "All 8 tiles around you.",
+			"mastery_required_text": "Hammer Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+5 Hammer Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "quarry_maul",
+			"cooldown": 8.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.0,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Hammer: a late heavy beat."
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H03",
+			"name": "Brace",
+			"tree": "Hammer",
+			"branch": "Juggernaut",
+			"role": "Self buff",
+			"item_type": "Hammer",
+			"taught_by": "Bulwark Hammer",
+			"effect": "Take 20% less damage for 6s.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Hammer Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Hammer Mastery, Phys Def",
+			"mastery_contribution": "+5 Hammer Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "bulwark_hammer",
+			"cooldown": 20.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.4,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_def"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H04",
+			"name": "Wide Swing",
+			"tree": "Hammer",
+			"branch": "Smash",
+			"role": "AoE damage",
+			"item_type": "Hammer",
+			"taught_by": "Broad Maul",
+			"effect": "Hit 3 tiles in a frontal arc.",
+			"targeting": "Skillshot",
+			"targeting_details": "The 3-tile arc in the direction you're facing.",
+			"mastery_required_text": "Hammer Mastery 0",
+			"prerequisites_text": "—",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+5 Hammer Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "broad_maul",
+			"cooldown": 6.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H05",
+			"name": "Shockwave",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "AoE damage",
+			"item_type": "Hammer",
+			"taught_by": "Shockwave Maul",
+			"effect": "A shockwave travels 4 tiles in a line.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. Travels 4 tiles quickly.",
+			"mastery_required_text": "Hammer Mastery 150",
+			"prerequisites_text": "Ground Slam",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+10 Hammer Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "shockwave_maul",
+			"cooldown": 12.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H06",
+			"name": "Concussive Blow",
+			"tree": "Hammer",
+			"branch": "Smash",
+			"role": "CC",
+			"item_type": "Hammer",
+			"taught_by": "Skullcracker",
+			"effect": "Stun an enemy for 1s.",
+			"targeting": "Targeted",
+			"targeting_details": "Adjacent enemy. 0.3s wind-up; can be stepped away from.",
+			"mastery_required_text": "Hammer Mastery 150",
+			"prerequisites_text": "Smash",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+10 Hammer Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "skullcracker",
+			"cooldown": 14.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H01"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H07",
+			"name": "Leap Slam",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "Mobility / AoE",
+			"item_type": "Hammer",
+			"taught_by": "Wyvern Maul",
+			"effect": "Leap up to 3 tiles and hit every enemy around the landing spot.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 3 to land on; hits everything adjacent to it.",
+			"mastery_required_text": "Hammer Mastery 150",
+			"prerequisites_text": "Ground Slam",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+10 Hammer Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "wyvern_maul",
+			"cooldown": 15.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H02"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H08",
+			"name": "Sweeping Strike",
+			"tree": "Hammer",
+			"branch": "Smash",
+			"role": "AoE CC",
+			"item_type": "Hammer",
+			"taught_by": "Sweeper Maul",
+			"effect": "Frontal arc that knocks enemies back 1 tile.",
+			"targeting": "Skillshot",
+			"targeting_details": "Arc in the direction you're facing; pushes enemies away from you.",
+			"mastery_required_text": "Hammer Mastery 150",
+			"prerequisites_text": "Wide Swing",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+10 Hammer Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "sweeper_maul",
+			"cooldown": 10.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H04"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H09",
+			"name": "Momentum",
+			"tree": "Hammer",
+			"branch": "Juggernaut",
+			"role": "Self buff",
+			"item_type": "Hammer",
+			"taught_by": "Pendulum Hammer",
+			"effect": "10s: each consecutive hit deals more damage (stacks 5 times).",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Hammer Mastery 150",
+			"prerequisites_text": "Brace",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+10 Hammer Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
+			"notes": "",
+			"tier": 2,
+			"mastery_required": 150,
+			"item_id": "pendulum_hammer",
+			"cooldown": 20.0,
+			"mastery_on_learn": 10.0,
+			"mastery_per_use": 0.6,
+			"mastery_cap": 70.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H03"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H10",
+			"name": "Crater",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "Terrain / AoE",
+			"item_type": "Hammer",
+			"taught_by": "Crater Maul",
+			"effect": "Smash a 3x3 area down 1 height level.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 2; 3x3 area.",
+			"mastery_required_text": "Hammer Mastery 350",
+			"prerequisites_text": "Leap Slam",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+15 Hammer Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "crater_maul",
+			"cooldown": 20.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H07"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H11",
+			"name": "Hammer Cyclone",
+			"tree": "Hammer",
+			"branch": "Smash",
+			"role": "AoE damage",
+			"item_type": "Hammer",
+			"taught_by": "Cyclone Hammer",
+			"effect": "Spin, hitting all enemies within 2 tiles.",
+			"targeting": "Self",
+			"targeting_details": "All enemies within 2 tiles.",
+			"mastery_required_text": "Hammer Mastery 350",
+			"prerequisites_text": "Sweeping Strike",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+15 Hammer Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "cyclone_hammer",
+			"cooldown": 16.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H08"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H12",
+			"name": "Armor Crush",
+			"tree": "Hammer",
+			"branch": "Smash",
+			"role": "Debuff",
+			"item_type": "Hammer",
+			"taught_by": "Armorbreaker",
+			"effect": "Lower the Physical Defense of enemies in a frontal arc for 8s.",
+			"targeting": "Skillshot",
+			"targeting_details": "Arc in the direction you're facing.",
+			"mastery_required_text": "Hammer Mastery 350",
+			"prerequisites_text": "Concussive Blow",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+15 Hammer Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "armorbreaker",
+			"cooldown": 18.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H06"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H13",
+			"name": "Tremor",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "AoE CC",
+			"item_type": "Hammer",
+			"taught_by": "Tremor Maul",
+			"effect": "3x3 slow and damage for 6s.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 4; 3x3 zone.",
+			"mastery_required_text": "Hammer Mastery 350",
+			"prerequisites_text": "Shockwave; Earth Mastery 350",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+15 Hammer Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "tremor_maul",
+			"cooldown": 25.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 0.8,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H05"
+				],
+				"mastery": [
+					{
+						"tree": "Earth",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "H14",
+			"name": "Unstoppable",
+			"tree": "Hammer",
+			"branch": "Juggernaut",
+			"role": "Self buff",
+			"item_type": "Hammer",
+			"taught_by": "Unyielding Hammer",
+			"effect": "Immune to crowd control for 5s.",
+			"targeting": "Self",
+			"targeting_details": "No target.",
+			"mastery_required_text": "Hammer Mastery 350",
+			"prerequisites_text": "Momentum",
+			"scales_with_text": "Hammer Mastery",
+			"mastery_contribution": "+15 Hammer Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
+			"notes": "",
+			"tier": 3,
+			"mastery_required": 350,
+			"item_id": "unyielding_hammer",
+			"cooldown": 40.0,
+			"mastery_on_learn": 15.0,
+			"mastery_per_use": 1.6,
+			"mastery_cap": 100.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H09"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H15",
+			"name": "Meteor Leap",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "Mobility / AoE",
+			"item_type": "Hammer",
+			"taught_by": "Meteor Maul",
+			"effect": "Leap up to 5 tiles; massive damage within 2 tiles of landing.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 5. The landing spot is marked for 0.75s while you're airborne.",
+			"mastery_required_text": "Hammer Mastery 600",
+			"prerequisites_text": "Crater",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+25 Hammer Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "meteor_maul",
+			"cooldown": 30.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 2.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H10"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H16",
+			"name": "Earthshatter",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "AoE damage",
+			"item_type": "Hammer",
+			"taught_by": "Earthshatter",
+			"effect": "Shatter a 4-tile cone.",
+			"targeting": "Skillshot",
+			"targeting_details": "Aim one of 8 directions. 4-tile cone after a 0.5s wind-up.",
+			"mastery_required_text": "Hammer Mastery 600",
+			"prerequisites_text": "Shockwave",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+25 Hammer Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "earthshatter",
+			"cooldown": 25.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H05"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H17",
+			"name": "Thunderclap",
+			"tree": "Hammer",
+			"branch": "Smash",
+			"role": "AoE CC",
+			"item_type": "Hammer",
+			"taught_by": "Thunder Hammer",
+			"effect": "Hit all enemies within 2 tiles and slow them.",
+			"targeting": "Self",
+			"targeting_details": "All enemies within 2 tiles.",
+			"mastery_required_text": "Hammer Mastery 600",
+			"prerequisites_text": "Hammer Cyclone; Air Mastery 350",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+25 Hammer Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "thunder_hammer",
+			"cooldown": 25.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H11"
+				],
+				"mastery": [
+					{
+						"tree": "Air",
+						"amount": 350
+					}
+				]
+			}
+		},
+		{
+			"id": "H18",
+			"name": "Juggernaut Charge",
+			"tree": "Hammer",
+			"branch": "Juggernaut",
+			"role": "Mobility / CC",
+			"item_type": "Hammer",
+			"taught_by": "Juggernaut Maul",
+			"effect": "Charge 5 tiles, knocking aside every enemy in the path.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a direction (8-way) up to 5 tiles; stops at walls.",
+			"mastery_required_text": "Hammer Mastery 600",
+			"prerequisites_text": "Unstoppable",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+25 Hammer Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
+			"notes": "",
+			"tier": 4,
+			"mastery_required": 600,
+			"item_id": "juggernaut_maul",
+			"cooldown": 25.0,
+			"mastery_on_learn": 25.0,
+			"mastery_per_use": 1.0,
+			"mastery_cap": 150.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H14"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H19",
+			"name": "Worldbreaker",
+			"tree": "Hammer",
+			"branch": "Quake",
+			"role": "AoE damage",
+			"item_type": "Hammer",
+			"taught_by": "Worldbreaker",
+			"effect": "Huge strike over a 5x5 area.",
+			"targeting": "Ground",
+			"targeting_details": "Pick a tile within 3. 1s wind-up.",
+			"mastery_required_text": "Hammer Mastery 900",
+			"prerequisites_text": "Meteor Leap; Earthshatter",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+50 Hammer Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "worldbreaker",
+			"cooldown": 90.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H15",
+					"H16"
+				],
+				"mastery": []
+			}
+		},
+		{
+			"id": "H20",
+			"name": "Titan's Fury",
+			"tree": "Hammer",
+			"branch": "Juggernaut",
+			"role": "Self buff",
+			"item_type": "Hammer",
+			"taught_by": "Titan's Maul",
+			"effect": "12s: every hammer hit also damages enemies adjacent to the target.",
+			"targeting": "Self",
+			"targeting_details": "No target; extra damage hits enemies next to whatever you strike.",
+			"mastery_required_text": "Hammer Mastery 900",
+			"prerequisites_text": "Juggernaut Charge; Hammer Cyclone",
+			"scales_with_text": "Hammer Mastery, Phys Atk",
+			"mastery_contribution": "+50 Hammer Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
+			"notes": "",
+			"tier": 5,
+			"mastery_required": 900,
+			"item_id": "titans_maul",
+			"cooldown": 120.0,
+			"mastery_on_learn": 50.0,
+			"mastery_per_use": 10.0,
+			"mastery_cap": 200.0,
+			"scales_with": [
+				{
+					"mastery": "Hammer"
+				},
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"prerequisites": {
+				"abilities": [
+					"H18",
+					"H11"
+				],
+				"mastery": []
+			}
+		}
+	],
+	"items": [
+		{
+			"id": "ember_fist_scroll",
+			"name": "Ember Fist Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 1,
+			"ability": "F01"
+		},
+		{
+			"id": "cinder_kick_scroll",
+			"name": "Cinder Kick Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 1,
+			"ability": "F02"
+		},
+		{
+			"id": "spark_scroll",
+			"name": "Spark Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 1,
+			"ability": "F03"
+		},
+		{
+			"id": "sun_warriors_breath_scroll",
+			"name": "Sun Warrior's Breath Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 1,
+			"ability": "F04"
+		},
+		{
+			"id": "scroll_of_burning_feet",
+			"name": "Scroll of Burning Feet",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 2,
+			"ability": "F05"
+		},
+		{
+			"id": "lash_of_embers_scroll",
+			"name": "Lash of Embers Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 2,
+			"ability": "F06"
+		},
+		{
+			"id": "scroll_of_the_fireball",
+			"name": "Scroll of the Fireball",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 2,
+			"ability": "F07"
+		},
+		{
+			"id": "scorched_earth_scroll",
+			"name": "Scorched Earth Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 2,
+			"ability": "F08"
+		},
+		{
+			"id": "blazing_fist_scroll",
+			"name": "Blazing Fist Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 2,
+			"ability": "F09"
+		},
+		{
+			"id": "wheel_of_flame_scroll",
+			"name": "Wheel of Flame Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 3,
+			"ability": "F10"
+		},
+		{
+			"id": "scroll_of_rising_jets",
+			"name": "Scroll of Rising Jets",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 3,
+			"ability": "F11"
+		},
+		{
+			"id": "firestream_scroll",
+			"name": "Firestream Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 3,
+			"ability": "F12"
+		},
+		{
+			"id": "shimmering_heat_scroll",
+			"name": "Shimmering Heat Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 3,
+			"ability": "F13"
+		},
+		{
+			"id": "dragons_breath_scroll",
+			"name": "Dragon's Breath Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 3,
+			"ability": "F14"
+		},
+		{
+			"id": "phoenix_scroll",
+			"name": "Phoenix Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 4,
+			"ability": "F15"
+		},
+		{
+			"id": "inferno_codex",
+			"name": "Inferno Codex",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 4,
+			"ability": "F16"
+		},
+		{
+			"id": "storm_fire_scroll",
+			"name": "Storm-Fire Scroll",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 4,
+			"ability": "F17"
+		},
+		{
+			"id": "scroll_of_the_third_eye",
+			"name": "Scroll of the Third Eye",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 4,
+			"ability": "F18"
+		},
+		{
+			"id": "scroll_of_redirected_lightning",
+			"name": "Scroll of Redirected Lightning",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 5,
+			"ability": "F19"
+		},
+		{
+			"id": "azure_flame_codex",
+			"name": "Azure Flame Codex",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 5,
+			"ability": "F20"
+		},
+		{
+			"id": "codex_of_the_zenith_sun",
+			"name": "Codex of the Zenith Sun",
+			"type": "Scroll",
+			"tree": "Fire",
+			"tier": 5,
+			"ability": "F21"
+		},
+		{
+			"id": "pebble_scroll",
+			"name": "Pebble Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 1,
+			"ability": "E01"
+		},
+		{
+			"id": "granite_skin_scroll",
+			"name": "Granite Skin Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 1,
+			"ability": "E02"
+		},
+		{
+			"id": "pillar_scroll",
+			"name": "Pillar Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 1,
+			"ability": "E03"
+		},
+		{
+			"id": "stomp_scroll",
+			"name": "Stomp Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 1,
+			"ability": "E04"
+		},
+		{
+			"id": "bulwark_scroll",
+			"name": "Bulwark Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 2,
+			"ability": "E05"
+		},
+		{
+			"id": "sinkhole_scroll",
+			"name": "Sinkhole Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 2,
+			"ability": "E06"
+		},
+		{
+			"id": "boulder_scroll",
+			"name": "Boulder Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 2,
+			"ability": "E07"
+		},
+		{
+			"id": "rumble_scroll",
+			"name": "Rumble Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 2,
+			"ability": "E08"
+		},
+		{
+			"id": "scroll_of_the_stone_path",
+			"name": "Scroll of the Stone Path",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 2,
+			"ability": "E09"
+		},
+		{
+			"id": "fortress_scroll",
+			"name": "Fortress Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 3,
+			"ability": "E10"
+		},
+		{
+			"id": "quake_scroll",
+			"name": "Quake Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 3,
+			"ability": "E11"
+		},
+		{
+			"id": "trench_scroll",
+			"name": "Trench Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 3,
+			"ability": "E12"
+		},
+		{
+			"id": "scroll_of_seismic_sight",
+			"name": "Scroll of Seismic Sight",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 3,
+			"ability": "E13"
+		},
+		{
+			"id": "stone_armor_codex",
+			"name": "Stone Armor Codex",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 3,
+			"ability": "E14"
+		},
+		{
+			"id": "iron_will_scroll",
+			"name": "Iron Will Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 4,
+			"ability": "E15"
+		},
+		{
+			"id": "desert_wind_scroll",
+			"name": "Desert Wind Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 4,
+			"ability": "E16"
+		},
+		{
+			"id": "molten_core_codex",
+			"name": "Molten Core Codex",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 4,
+			"ability": "E17"
+		},
+		{
+			"id": "mountain_codex",
+			"name": "Mountain Codex",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 4,
+			"ability": "E18"
+		},
+		{
+			"id": "citadel_codex",
+			"name": "Citadel Codex",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 5,
+			"ability": "E19"
+		},
+		{
+			"id": "tectonic_codex",
+			"name": "Tectonic Codex",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 5,
+			"ability": "E20"
+		},
+		{
+			"id": "menders_scroll",
+			"name": "Mender's Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 1,
+			"ability": "W01"
+		},
+		{
+			"id": "river_lash_scroll",
+			"name": "River Lash Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 1,
+			"ability": "W02"
+		},
+		{
+			"id": "scroll_of_the_current",
+			"name": "Scroll of the Current",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 1,
+			"ability": "W03"
+		},
+		{
+			"id": "frost_shard_scroll",
+			"name": "Frost Shard Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 1,
+			"ability": "W04"
+		},
+		{
+			"id": "mist_scroll",
+			"name": "Mist Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 2,
+			"ability": "W05"
+		},
+		{
+			"id": "wave_scroll",
+			"name": "Wave Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 2,
+			"ability": "W06"
+		},
+		{
+			"id": "leech_tide_scroll",
+			"name": "Leech Tide Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 2,
+			"ability": "W07"
+		},
+		{
+			"id": "tidal_scroll",
+			"name": "Tidal Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 2,
+			"ability": "W08"
+		},
+		{
+			"id": "glacier_scroll",
+			"name": "Glacier Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 2,
+			"ability": "W09"
+		},
+		{
+			"id": "spirit_oasis_scroll",
+			"name": "Spirit Oasis Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 3,
+			"ability": "W10"
+		},
+		{
+			"id": "pressure_jet_scroll",
+			"name": "Pressure Jet Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 3,
+			"ability": "W11"
+		},
+		{
+			"id": "bubble_ward_scroll",
+			"name": "Bubble Ward Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 3,
+			"ability": "W12"
+		},
+		{
+			"id": "frozen_tomb_scroll",
+			"name": "Frozen Tomb Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 3,
+			"ability": "W13"
+		},
+		{
+			"id": "scroll_of_second_life",
+			"name": "Scroll of Second Life",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 3,
+			"ability": "W14"
+		},
+		{
+			"id": "tsunami_codex",
+			"name": "Tsunami Codex",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 4,
+			"ability": "W15"
+		},
+		{
+			"id": "rising_tide_scroll",
+			"name": "Rising Tide Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 4,
+			"ability": "W16"
+		},
+		{
+			"id": "monsoon_scroll",
+			"name": "Monsoon Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 4,
+			"ability": "W17"
+		},
+		{
+			"id": "steam_scroll",
+			"name": "Steam Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 4,
+			"ability": "W18"
+		},
+		{
+			"id": "crimson_moon_codex",
+			"name": "Crimson Moon Codex",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 4,
+			"ability": "W19"
+		},
+		{
+			"id": "eight_arms_scroll",
+			"name": "Eight Arms Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 4,
+			"ability": "W20"
+		},
+		{
+			"id": "full_moon_codex",
+			"name": "Full Moon Codex",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 5,
+			"ability": "W21"
+		},
+		{
+			"id": "ocean_spirit_codex",
+			"name": "Ocean Spirit Codex",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 5,
+			"ability": "W22"
+		},
+		{
+			"id": "codex_of_returning_tides",
+			"name": "Codex of Returning Tides",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 5,
+			"ability": "W23"
+		},
+		{
+			"id": "open_palm_scroll",
+			"name": "Open Palm Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 1,
+			"ability": "A01"
+		},
+		{
+			"id": "breeze_scroll",
+			"name": "Breeze Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 1,
+			"ability": "A02"
+		},
+		{
+			"id": "featherstep_scroll",
+			"name": "Featherstep Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 1,
+			"ability": "A03"
+		},
+		{
+			"id": "snaring_wind_scroll",
+			"name": "Snaring Wind Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 1,
+			"ability": "A04"
+		},
+		{
+			"id": "gale_scroll",
+			"name": "Gale Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 2,
+			"ability": "A05"
+		},
+		{
+			"id": "vortex_scroll",
+			"name": "Vortex Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 2,
+			"ability": "A06"
+		},
+		{
+			"id": "hushing_scroll",
+			"name": "Hushing Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 2,
+			"ability": "A07"
+		},
+		{
+			"id": "glider_scroll",
+			"name": "Glider Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 2,
+			"ability": "A08"
+		},
+		{
+			"id": "rolling_wind_scroll",
+			"name": "Rolling Wind Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 2,
+			"ability": "A09"
+		},
+		{
+			"id": "twister_scroll",
+			"name": "Twister Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 3,
+			"ability": "A10"
+		},
+		{
+			"id": "sphere_scroll",
+			"name": "Sphere Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 3,
+			"ability": "A11"
+		},
+		{
+			"id": "vacuum_scroll",
+			"name": "Vacuum Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 3,
+			"ability": "A12"
+		},
+		{
+			"id": "cyclone_scroll",
+			"name": "Cyclone Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 3,
+			"ability": "A13"
+		},
+		{
+			"id": "wind_walker_scroll",
+			"name": "Wind Walker Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 3,
+			"ability": "A14"
+		},
+		{
+			"id": "hurricane_codex",
+			"name": "Hurricane Codex",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 4,
+			"ability": "A15"
+		},
+		{
+			"id": "updraft_scroll",
+			"name": "Updraft Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 4,
+			"ability": "A16"
+		},
+		{
+			"id": "storm_front_scroll",
+			"name": "Storm Front Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 4,
+			"ability": "A17"
+		},
+		{
+			"id": "pressure_scroll",
+			"name": "Pressure Scroll",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 4,
+			"ability": "A18"
+		},
+		{
+			"id": "sky_dancer_codex",
+			"name": "Sky Dancer Codex",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 4,
+			"ability": "A19"
+		},
+		{
+			"id": "codex_of_weightlessness",
+			"name": "Codex of Weightlessness",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 5,
+			"ability": "A20"
+		},
+		{
+			"id": "eye_of_the_storm_codex",
+			"name": "Eye of the Storm Codex",
+			"type": "Scroll",
+			"tree": "Air",
+			"tier": 5,
+			"ability": "A21"
+		},
+		{
+			"id": "rusty_shortsword",
+			"name": "Rusty Shortsword",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 1,
+			"ability": "S01"
+		},
+		{
+			"id": "militia_rapier",
+			"name": "Militia Rapier",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 1,
+			"ability": "S02"
+		},
+		{
+			"id": "duelists_sabre",
+			"name": "Duelist's Sabre",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 1,
+			"ability": "S03"
+		},
+		{
+			"id": "travelers_longsword",
+			"name": "Traveler's Longsword",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 1,
+			"ability": "S04"
+		},
+		{
+			"id": "twinfang_blade",
+			"name": "Twinfang Blade",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 2,
+			"ability": "S05"
+		},
+		{
+			"id": "riposte_foil",
+			"name": "Riposte Foil",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 2,
+			"ability": "S06"
+		},
+		{
+			"id": "serrated_cutlass",
+			"name": "Serrated Cutlass",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 2,
+			"ability": "S07"
+		},
+		{
+			"id": "needle_estoc",
+			"name": "Needle Estoc",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 2,
+			"ability": "S08"
+		},
+		{
+			"id": "tricksters_blade",
+			"name": "Trickster's Blade",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 2,
+			"ability": "S09"
+		},
+		{
+			"id": "whirling_scimitar",
+			"name": "Whirling Scimitar",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 3,
+			"ability": "S10"
+		},
+		{
+			"id": "guardians_broadsword",
+			"name": "Guardian's Broadsword",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 3,
+			"ability": "S11"
+		},
+		{
+			"id": "headsmans_sword",
+			"name": "Headsman's Sword",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 3,
+			"ability": "S12"
+		},
+		{
+			"id": "dancers_katana",
+			"name": "Dancer's Katana",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 3,
+			"ability": "S13"
+		},
+		{
+			"id": "focus_blade",
+			"name": "Focus Blade",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 3,
+			"ability": "S14"
+		},
+		{
+			"id": "thousand_edge_katana",
+			"name": "Thousand-Edge Katana",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 4,
+			"ability": "S15"
+		},
+		{
+			"id": "mirror_blade",
+			"name": "Mirror Blade",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 4,
+			"ability": "S16"
+		},
+		{
+			"id": "shadowfang",
+			"name": "Shadowfang",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 4,
+			"ability": "S17"
+		},
+		{
+			"id": "runeblade",
+			"name": "Runeblade",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 4,
+			"ability": "S18"
+		},
+		{
+			"id": "masterwork_odachi",
+			"name": "Masterwork Odachi",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 5,
+			"ability": "S19"
+		},
+		{
+			"id": "saintblade",
+			"name": "Saintblade",
+			"type": "Sword",
+			"tree": "Sword",
+			"tier": 5,
+			"ability": "S20"
+		},
+		{
+			"id": "hunters_shortbow",
+			"name": "Hunter's Shortbow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 1,
+			"ability": "B01"
+		},
+		{
+			"id": "yew_longbow",
+			"name": "Yew Longbow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 1,
+			"ability": "B02"
+		},
+		{
+			"id": "rangers_bow",
+			"name": "Ranger's Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 1,
+			"ability": "B03"
+		},
+		{
+			"id": "trackers_bow",
+			"name": "Tracker's Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 1,
+			"ability": "B04"
+		},
+		{
+			"id": "triple_string_bow",
+			"name": "Triple-String Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 2,
+			"ability": "B05"
+		},
+		{
+			"id": "piercer_longbow",
+			"name": "Piercer Longbow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 2,
+			"ability": "B06"
+		},
+		{
+			"id": "viper_bow",
+			"name": "Viper Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 2,
+			"ability": "B07"
+		},
+		{
+			"id": "pinning_recurve",
+			"name": "Pinning Recurve",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 2,
+			"ability": "B08"
+		},
+		{
+			"id": "eagles_perch_bow",
+			"name": "Eagle's Perch Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 2,
+			"ability": "B09"
+		},
+		{
+			"id": "volley_bow",
+			"name": "Volley Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 3,
+			"ability": "B10"
+		},
+		{
+			"id": "snipers_greatbow",
+			"name": "Sniper's Greatbow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 3,
+			"ability": "B11"
+		},
+		{
+			"id": "trappers_bow",
+			"name": "Trapper's Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 3,
+			"ability": "B12"
+		},
+		{
+			"id": "repeater_bow",
+			"name": "Repeater Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 3,
+			"ability": "B13"
+		},
+		{
+			"id": "shadow_bow",
+			"name": "Shadow Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 3,
+			"ability": "B14"
+		},
+		{
+			"id": "rainmaker",
+			"name": "Rainmaker",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 4,
+			"ability": "B15"
+		},
+		{
+			"id": "windstring_bow",
+			"name": "Windstring Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 4,
+			"ability": "B16"
+		},
+		{
+			"id": "executioners_bow",
+			"name": "Executioner's Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 4,
+			"ability": "B17"
+		},
+		{
+			"id": "ricochet_bow",
+			"name": "Ricochet Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 4,
+			"ability": "B18"
+		},
+		{
+			"id": "deadeye_greatbow",
+			"name": "Deadeye Greatbow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 5,
+			"ability": "B19"
+		},
+		{
+			"id": "stormcaller_bow",
+			"name": "Stormcaller Bow",
+			"type": "Bow",
+			"tree": "Bow",
+			"tier": 5,
+			"ability": "B20"
+		},
+		{
+			"id": "iron_mallet",
+			"name": "Iron Mallet",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 1,
+			"ability": "H01"
+		},
+		{
+			"id": "quarry_maul",
+			"name": "Quarry Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 1,
+			"ability": "H02"
+		},
+		{
+			"id": "bulwark_hammer",
+			"name": "Bulwark Hammer",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 1,
+			"ability": "H03"
+		},
+		{
+			"id": "broad_maul",
+			"name": "Broad Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 1,
+			"ability": "H04"
+		},
+		{
+			"id": "shockwave_maul",
+			"name": "Shockwave Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 2,
+			"ability": "H05"
+		},
+		{
+			"id": "skullcracker",
+			"name": "Skullcracker",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 2,
+			"ability": "H06"
+		},
+		{
+			"id": "wyvern_maul",
+			"name": "Wyvern Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 2,
+			"ability": "H07"
+		},
+		{
+			"id": "sweeper_maul",
+			"name": "Sweeper Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 2,
+			"ability": "H08"
+		},
+		{
+			"id": "pendulum_hammer",
+			"name": "Pendulum Hammer",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 2,
+			"ability": "H09"
+		},
+		{
+			"id": "crater_maul",
+			"name": "Crater Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 3,
+			"ability": "H10"
+		},
+		{
+			"id": "cyclone_hammer",
+			"name": "Cyclone Hammer",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 3,
+			"ability": "H11"
+		},
+		{
+			"id": "armorbreaker",
+			"name": "Armorbreaker",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 3,
+			"ability": "H12"
+		},
+		{
+			"id": "tremor_maul",
+			"name": "Tremor Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 3,
+			"ability": "H13"
+		},
+		{
+			"id": "unyielding_hammer",
+			"name": "Unyielding Hammer",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 3,
+			"ability": "H14"
+		},
+		{
+			"id": "meteor_maul",
+			"name": "Meteor Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 4,
+			"ability": "H15"
+		},
+		{
+			"id": "earthshatter",
+			"name": "Earthshatter",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 4,
+			"ability": "H16"
+		},
+		{
+			"id": "thunder_hammer",
+			"name": "Thunder Hammer",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 4,
+			"ability": "H17"
+		},
+		{
+			"id": "juggernaut_maul",
+			"name": "Juggernaut Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 4,
+			"ability": "H18"
+		},
+		{
+			"id": "worldbreaker",
+			"name": "Worldbreaker",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 5,
+			"ability": "H19"
+		},
+		{
+			"id": "titans_maul",
+			"name": "Titan's Maul",
+			"type": "Hammer",
+			"tree": "Hammer",
+			"tier": 5,
+			"ability": "H20"
+		}
+	],
+	"rules": [
+		[
+			"How the tree works"
+		],
+		[
+			"Learning",
+			"Every ability is taught by exactly one named item (Taught By). Scrolls teach bending, weapons teach weapon arts. A hero has a single learning slot: only the item in that slot earns AP toward its ability."
+		],
+		[
+			"Unlocking",
+			"An ability can be learned once you meet its Mastery Required AND have mastered every ability listed in Prerequisites."
+		],
+		[
+			"Hybrids",
+			"Prerequisites like 'Air Mastery 350' mean you also need 350 Mastery in a second tree. These are the cross-element abilities (Lightning, Lavabending, Sandstorm, Steam...)."
+		],
+		[
+			"Scaling",
+			"Damage, healing, shield size, duration and charges scale with the tree's Mastery stat plus the stat in Scales With."
+		],
+		[
+			"Specialist count",
+			"Each tree has 20–23 abilities. A specialist who masters one tree and goes deep in a second (e.g. Fire + Sword) knows about 30."
+		],
+		[
+			"Editing"
+		],
+		[
+			"Add an ability",
+			"Add a row, give it a new ID (e.g. F22), pick Tree and Tier from the dropdowns, and copy the Mastery Required formula down from the row above."
+		],
+		[
+			"Prerequisites",
+			"Write prerequisite ability names separated by semicolons, exactly as spelled in the Ability column."
+		],
+		[
+			"Blue numbers",
+			"Cooldowns are starting values for playtesting — edit freely."
+		],
+		[
+			"Colors",
+			"Row color = tree. Filter by Tree, Branch or Tier with the header arrows."
+		],
+		[
+			"Targeting"
+		],
+		[
+			"Targeted",
+			"Pick a unit; locks on and can't miss. Limits: range, line of sight, and any cast time the target can escape."
+		],
+		[
+			"Skillshot",
+			"Aim at an enemy or a direction; the shot locks on release and travels along a tile line (any angle, or 8-way where noted). Misses if the target moved."
+		],
+		[
+			"Ground",
+			"Pick a tile; the area is telegraphed before it goes off so units can step out."
+		],
+		[
+			"Self",
+			"Centered on or affecting the caster; no aiming."
+		],
+		[
+			"Dodge rule",
+			"A skillshot or telegraph is only dodgeable if its warning time is longer than the step cooldown plus ~0.3s reaction."
+		],
+		[
+			"Mastery growth"
+		],
+		[
+			"On learn",
+			"Mastering an ability (full AP) grants a one-time Mastery bonus in its tree (Mastery on Learn)."
+		],
+		[
+			"Per use",
+			"Each use against an enemy at or near your level adds Mastery per Use, until that ability has contributed its Mastery Cap in total."
+		],
+		[
+			"Defaults",
+			"Tier 1: +5, +0.2, cap 50 | Tier 2: +10, +0.3, cap 70 | Tier 3: +15, +0.4, cap 100 | Tier 4: +25, +0.5, cap 150 | Tier 5: +50, +1, cap 200. Per-use gain is multiplied by cooldown so slow abilities keep pace: x2 for 10–29s, x4 for 30–89s, x10 for 90s+. All values are per row and editable."
+		],
+		[
+			"Pacing",
+			"Tier 1 caps total 200, enough to reach Tier 2 (150). Tiers 1–2 reach Tier 3 (350); Tiers 1–3 reach Tier 4 (600); Tiers 1–4 reach Tier 5 (900). A hero must use a tree's abilities to climb it."
+		]
+	]
+}

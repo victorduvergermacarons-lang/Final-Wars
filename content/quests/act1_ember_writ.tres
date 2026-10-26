@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/sealed_writ.tres" id="4_given"]
+
+[sub_resource type="Resource" id="Resource_o0"]
+script = ExtResource("1_obj")
+kind = 5
+text = "Deliver the writ to Foreman Brannoc"
+npc = &"foreman_brannoc"
+item = ExtResource("4_given")
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_ember_writ"
+title = "The Ember Hand's Writ"
+category = 0
+area = "Greenfields"
+giver = &"sabra_venn"
+turn_in = &"foreman_brannoc"
+prerequisites = Array[StringName]([&"act1_ash_on_the_road"])
+objectives = Array[ExtResource("1_obj")]([SubResource("Resource_o0")])
+given_items = Array[ExtResource("3_item")]([ExtResource("4_given")])
+reward_xp = 150
+reward_gold = 20

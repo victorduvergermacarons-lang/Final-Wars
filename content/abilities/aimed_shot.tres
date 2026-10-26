@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_6t0ht"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_j11vn"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_l6p3p"]
+
+[sub_resource type="Resource" id="Resource_ww1j3"]
+script = ExtResource("2_j11vn")
+
+[sub_resource type="Resource" id="Resource_nwe6c"]
+script = ExtResource("1_6t0ht")
+base_amount = 12.0
+scaling = Array[ExtResource("2_j11vn")]([SubResource("Resource_ww1j3")])
+
+[resource]
+script = ExtResource("3_l6p3p")
+id = &"aimed_shot"
+display_name = "Aimed Shot"
+description = "An arrow that flies 7 tiles and stops at the first enemy."
+shape = 2
+max_range = 7
+cooldown_seconds = 1.5
+ranged = true
+projectile_speed = 14.0
+effects = Array[ExtResource("1_6t0ht")]([SubResource("Resource_nwe6c")])
+ap_to_master = 20

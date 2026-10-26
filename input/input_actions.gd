@@ -21,6 +21,11 @@ const OTHER := {
 	&"release": [KEY_R],
 	&"toggle_spellbook": [KEY_P],
 	&"toggle_character": [KEY_C],
+	&"toggle_inventory": [KEY_B],
+	&"toggle_quest_log": [KEY_L],
+	&"toggle_trees": [KEY_T],
+	&"toggle_console": [KEY_QUOTELEFT],
+	&"interact": [KEY_E],
 }
 
 
@@ -33,6 +38,11 @@ static func is_reserved_key(key: int) -> bool:
 			if table[action].has(key):
 				return true
 	return false
+
+
+## Action name for switching to action bar page p (0-based): Shift + number.
+static func page_action(p: int) -> StringName:
+	return StringName("action_page_%d" % (p + 1))
 
 
 ## Action name for action bar slot i (0-based).
@@ -63,6 +73,14 @@ static func ensure_registered() -> void:
 				var ev := InputEventKey.new()
 				ev.physical_keycode = key
 				InputMap.action_add_event(action, ev)
+	for p in ActionBarModel.PAGE_COUNT:
+		var action := page_action(p)
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+			var ev := InputEventKey.new()
+			ev.physical_keycode = ActionBarModel.DEFAULT_KEYS[p]
+			ev.shift_pressed = true
+			InputMap.action_add_event(action, ev)
 	if not InputMap.has_action(&"select_target"):
 		InputMap.add_action(&"select_target")
 		var click := InputEventMouseButton.new()

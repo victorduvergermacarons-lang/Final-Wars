@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_entry"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="2_table"]
+
+[sub_resource type="Resource" id="Resource_feet"]
+script = ExtResource("1_entry")
+item_id = &"scroll_of_burning_feet"
+chance = 0.04
+
+[sub_resource type="Resource" id="Resource_ground"]
+script = ExtResource("1_entry")
+item_id = &"scorched_earth_scroll"
+chance = 0.04
+
+[resource]
+script = ExtResource("2_table")
+gold_min = 3
+gold_max = 8
+entries = Array[ExtResource("1_entry")]([SubResource("Resource_feet"), SubResource("Resource_ground")])

@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_ab"]
+[ext_resource type="Resource" path="res://content/abilities/sunfire_breath.tres" id="2_breath"]
+[ext_resource type="Resource" path="res://content/abilities/searing_dive.tres" id="3_dive"]
+[ext_resource type="Resource" path="res://content/abilities/talon_rake.tres" id="4_rake"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="5_enemy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="6_stats"]
+[ext_resource type="Resource" path="res://content/loot/sunscale_drake.tres" id="7_loot"]
+[ext_resource type="Resource" path="res://content/creatures/sunscale_drake_art.tres" id="8_art"]
+[ext_resource type="Resource" path="res://content/buffs/drake_grounded.tres" id="9_grounded"]
+[ext_resource type="Resource" path="res://content/buffs/molten_fury.tres" id="10_fury"]
+
+[sub_resource type="Resource" id="Resource_stats"]
+script = ExtResource("6_stats")
+hp = 3000.0
+phys_atk = 22.0
+mag_atk = 24.0
+phys_def = 22.0
+mag_def = 28.0
+accuracy = 5.0
+jump = 2.0
+
+[resource]
+script = ExtResource("5_enemy")
+id = &"sunscale_drake"
+display_name = "Sunscale Drake"
+level = 6
+stats = SubResource("Resource_stats")
+abilities = Array[ExtResource("1_ab")]([ExtResource("2_breath"), ExtResource("3_dive"), ExtResource("4_rake")])
+aggro_radius = 5
+leash_radius = 14
+combat_step_seconds = 1.2
+reaction_seconds = 0.3
+xp_reward = 700
+ap_reward = 12
+loot = ExtResource("7_loot")
+respawn_seconds = 900.0
+elite = true
+weight = 2
+footprint = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)])
+flying = true
+grounded_by_tree = "Air"
+grounded_buff = ExtResource("9_grounded")
+enrage_below = 0.3
+enrage_buff = ExtResource("10_fury")
+art = ExtResource("8_art")

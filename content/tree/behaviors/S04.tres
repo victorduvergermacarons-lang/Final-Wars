@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_a4ipp"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_2osax"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_6wqt1"]
+
+[sub_resource type="Resource" id="Resource_2duvy"]
+script = ExtResource("1_a4ipp")
+kind = 13
+applies = 1
+base_amount = 2.0
+
+[sub_resource type="Resource" id="Resource_3gs4v"]
+script = ExtResource("1_a4ipp")
+base_amount = -1.0
+sheet_scaling = true
+power = 1.1
+
+[resource]
+script = ExtResource("3_6wqt1")
+id = &"S04"
+max_range = 3
+effects = Array[ExtResource("1_a4ipp")]([SubResource("Resource_2duvy"), SubResource("Resource_3gs4v")])
+targeting = 1
+hit_range = 1

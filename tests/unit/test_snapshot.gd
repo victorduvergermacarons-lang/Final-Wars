@@ -2,6 +2,8 @@ extends GutTest
 ## Host world → snapshot → client mirror, and client-side step prediction.
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
+## The Milestone 1 starting kit (sword, staff, shield, holy charm), kept for engine tests.
+const LEGACY_HERO := preload("res://tests/fixtures/legacy_adventurer.tres")
 
 var db
 var world: WorldSim
@@ -21,15 +23,17 @@ func after_all() -> void:
 func before_each() -> void:
 	var zone: ZoneDef = db.zones[&"greenfields"]
 	world = WorldSim.new(zone, db.rules, 7)
-	hero = world.add_hero(db.heroes[&"adventurer"])
+	hero = world.add_hero(LEGACY_HERO)
 	hero.display_name = "Ann"
-	other = world.add_hero(db.heroes[&"adventurer"])
+	other = world.add_hero(LEGACY_HERO)
+	hero.move.place(Vector2i(10, 20)) # open meadow, room to walk up
+	other.move.place(Vector2i(15, 20))
 	mirror = ClientWorld.new(zone, db.rules, db)
 	mirror.local_hero_id = hero.id
 
 
 func _sync() -> void:
-	mirror.apply_snapshot(Snapshot.capture(world))
+	mirror.apply_snapshot(Snapshot.capture(world, hero.id))
 
 
 func test_snapshot_rebuilds_every_actor() -> void:
@@ -39,6 +43,8 @@ func test_snapshot_rebuilds_every_actor() -> void:
 	assert_eq(h.display_name, "Ann")
 	assert_eq(h.tile(), hero.tile())
 	assert_true(h.stats.equals(hero.stats))
+	assert_true(h.base_stats.equals(hero.base_stats))
+	assert_true(h.growth.equals(hero.growth))
 	assert_eq(h.available_abilities().map(func(a): return a.id), [&"strike", &"heal", &"resurrect"])
 	var wolf := mirror.get_actor(world.enemies()[0].id) as Enemy
 	assert_eq(wolf.def.id, &"wolf")
@@ -48,8 +54,8 @@ func test_snapshot_rebuilds_every_actor() -> void:
 func test_snapshot_carries_progress_cooldowns_and_buffs() -> void:
 	hero.ap[&"strike"] = 20
 	hero.mastered[&"heal"] = db.abilities[&"heal"]
-	hero.inventory.append(db.items[&"shield"])
-	world.submit(hero.id, {"type": "equip", "item": &"shield"})
+	hero.bag.add(db.items[&"shield"])
+	world.submit(hero.id, {"type": "equip", "bag_index": hero.bag.index_of(db.items[&"shield"])})
 	world.step()
 	world.submit(hero.id, {"type": "cast", "ability": &"block", "target": hero.id})
 	world.step()
@@ -64,7 +70,7 @@ func test_snapshot_carries_progress_cooldowns_and_buffs() -> void:
 
 func test_snapshot_survives_variant_encoding() -> void:
 	# What actually crosses the wire: encode/decode like an RPC would.
-	var bytes := var_to_bytes(Snapshot.capture(world))
+	var bytes := var_to_bytes(Snapshot.capture(world, hero.id))
 	mirror.apply_snapshot(bytes_to_var(bytes))
 	assert_eq(mirror.local_hero().tile(), hero.tile())
 
@@ -135,3 +141,42 @@ func test_prediction_queue_is_bounded() -> void:
 	assert_true(mirror.predict_step(1, p + Vector2i.UP, mirror.now))
 	assert_true(mirror.predict_step(2, p + Vector2i.UP * 2, mirror.now))
 	assert_false(mirror.predict_step(3, p + Vector2i.UP * 3, mirror.now))
+
+
+func test_facing_is_replicated_and_predicted() -> void:
+	hero.face(Vector2i.LEFT)
+	_sync()
+	assert_eq(mirror.local_hero().facing, Vector2i.LEFT)
+	var seq := mirror.take_seq()
+	mirror.predict_face(seq, Vector2i.RIGHT)
+	_sync() # host hasn't processed it yet
+	assert_eq(mirror.local_hero().facing, Vector2i.RIGHT, "prediction survives the snapshot")
+	world.submit(hero.id, {"type": "face", "dir": Vector2i.RIGHT, "seq": seq})
+	world.step()
+	_sync()
+	assert_eq(mirror.local_hero().facing, Vector2i.RIGHT)
+	assert_eq(mirror.pending_step_count(), 0)
+
+
+func test_other_heroes_private_data_is_not_sent() -> void:
+	other.gold = 500
+	other.bag.add(db.items[&"staff"])
+	var snap := Snapshot.capture(world, hero.id)
+	for d in snap.actors:
+		if d.id == other.id:
+			assert_false(d.has("private"), "no bag, gold, AP or quests for other players")
+			assert_true(d.has("eq"), "equipment and level stay visible")
+		elif d.id == hero.id:
+			assert_true(d.has("private"))
+	hero.gold = 42
+	_sync()
+	assert_eq(mirror.local_hero().gold, 42)
+	assert_eq(mirror.get_actor(other.id).gold, 0, "never received")
+
+
+func test_world_flags_reach_clients() -> void:
+	_sync()
+	assert_eq(mirror.world_flags, {})
+	world.world_flags["grizzlehide_slain"] = true
+	_sync()
+	assert_eq(mirror.world_flags, {"grizzlehide_slain": true})

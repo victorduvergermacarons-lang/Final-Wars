@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+
+[sub_resource type="Resource" id="Resource_scale"]
+script = ExtResource("2_sc")
+
+[sub_resource type="Resource" id="Resource_dmg"]
+script = ExtResource("1_fx")
+base_amount = 5.0
+scaling = Array[ExtResource("2_sc")]([SubResource("Resource_scale")])
+
+[resource]
+script = ExtResource("3_ab")
+id = &"hound_bite"
+display_name = "Bite"
+description = "A quick snap of hot jaws at the hero beside it."
+shape = 1
+cooldown_seconds = 1.6
+max_height_difference = 2
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_dmg")])
+targeting = 1
+windup_seconds = 0.3

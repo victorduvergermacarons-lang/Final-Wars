@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_62vdx"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_oml8x"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_tyira"]
+
+[sub_resource type="Resource" id="Resource_favgx"]
+script = ExtResource("1_62vdx")
+hp = 8.0
+phys_def = 2.0
+
+[sub_resource type="Resource" id="Resource_lvts5"]
+script = ExtResource("1_62vdx")
+hp = 25.0
+phys_def = 12.0
+
+[resource]
+script = ExtResource("2_oml8x")
+id = &"iron_helm"
+display_name = "Iron Helm"
+slot = 0
+price = 30
+stats = SubResource("Resource_lvts5")
+growth = SubResource("Resource_favgx")

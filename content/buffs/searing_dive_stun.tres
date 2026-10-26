@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="1_buff"]
+
+[resource]
+script = ExtResource("1_buff")
+id = &"searing_dive_stun"
+display_name = "Stunned"
+duration_seconds = 1.5
+is_debuff = true
+stuns = true

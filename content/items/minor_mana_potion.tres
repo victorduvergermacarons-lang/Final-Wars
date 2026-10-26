@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_lfhfx"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_72ll0"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_yc7gx"]
+[ext_resource type="Resource" path="res://content/abilities/drink_mana_potion.tres" id="4_enita"]
+
+[sub_resource type="Resource" id="Resource_rerbn"]
+script = ExtResource("1_lfhfx")
+
+[sub_resource type="Resource" id="Resource_1j7eo"]
+script = ExtResource("1_lfhfx")
+
+[resource]
+script = ExtResource("2_72ll0")
+id = &"minor_mana_potion"
+display_name = "Minor Mana Potion"
+description = "Restores 40% of your max Mana. Shares a 30 s cooldown with other potions."
+price = 20
+max_stack = 20
+use_ability = ExtResource("4_enita")
+stats = SubResource("Resource_1j7eo")
+growth = SubResource("Resource_rerbn")

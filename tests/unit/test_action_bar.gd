@@ -97,3 +97,46 @@ func test_keys_are_applied_to_input_map() -> void:
 	assert_eq(events.size(), 1)
 	assert_eq(events[0].physical_keycode, KEY_Q)
 	assert_eq(InputMap.action_get_events(InputActions.slot_action(0)).size(), 1)
+
+
+func test_pages_switch_and_keep_their_own_slots() -> void:
+	var bar := ActionBarModel.new()
+	assert_eq(bar.pages.size(), ActionBarModel.PAGE_COUNT)
+	bar.assign(0, &"strike")
+	bar.set_page(1)
+	assert_eq(bar.page, 1)
+	assert_eq(bar.slots[0], &"", "page 2 starts empty")
+	bar.assign(0, &"fireball")
+	bar.set_page(0)
+	assert_eq(bar.slots[0], &"strike")
+	bar.set_page(-1)
+	assert_eq(bar.page, ActionBarModel.PAGE_COUNT - 1, "wraps around")
+
+
+func test_auto_place_spills_onto_the_next_page() -> void:
+	var bar := ActionBarModel.new()
+	var ids: Array[StringName] = []
+	for i in 12:
+		ids.append(StringName("a%d" % i))
+	bar.auto_place(ids)
+	assert_eq(bar.pages[0].count(&""), 0)
+	assert_eq(bar.pages[1][0], &"a10")
+	assert_eq(bar.pages[1][1], &"a11")
+	bar.auto_place(ids)
+	assert_eq(bar.pages[1].count(&"a10"), 1, "never placed twice")
+
+
+func test_pages_save_and_load_and_old_saves_still_load() -> void:
+	var bar := ActionBarModel.new()
+	bar.assign(2, &"heal")
+	bar.set_page(3)
+	bar.assign(4, &"block")
+	var back := ActionBarModel.new()
+	back.load_dict(JSON.parse_string(JSON.stringify(bar.to_dict())))
+	assert_eq(back.page, 3)
+	assert_eq(back.slots[4], &"block")
+	assert_eq(back.pages[0][2], &"heal")
+	var old := ActionBarModel.new()
+	old.load_dict({"slots": ["strike", "", "heal"], "keys": []})
+	assert_eq(old.page, 0)
+	assert_eq(old.slots[2], &"heal")

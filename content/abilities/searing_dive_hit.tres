@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+[ext_resource type="Resource" path="res://content/buffs/searing_dive_stun.tres" id="4_stun"]
+
+[sub_resource type="Resource" id="Resource_hit_s"]
+script = ExtResource("2_sc")
+stat = 3
+coefficient = 0.9
+
+[sub_resource type="Resource" id="Resource_hit"]
+script = ExtResource("1_fx")
+damage_type = 1
+base_amount = 18.0
+scaling = Array[ExtResource("2_sc")]([SubResource("Resource_hit_s")])
+
+[sub_resource type="Resource" id="Resource_shove"]
+script = ExtResource("1_fx")
+kind = 11
+base_amount = 2.0
+push_aside = true
+
+[sub_resource type="Resource" id="Resource_stun"]
+script = ExtResource("1_fx")
+kind = 4
+buff = ExtResource("4_stun")
+
+[resource]
+script = ExtResource("3_ab")
+id = &"searing_dive_hit"
+display_name = "Searing Dive"
+description = "Hit by a diving Sunscale Drake: burned, shoved out of its lane and stunned."
+max_range = 0
+on_gcd = false
+requires_line_of_sight = false
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_hit"), SubResource("Resource_shove"), SubResource("Resource_stun")])
+targeting = 1

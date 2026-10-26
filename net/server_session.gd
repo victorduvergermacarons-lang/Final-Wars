@@ -8,13 +8,12 @@ var player_name := "Host"
 var _heroes_by_peer := {} # peer id -> hero id
 
 
-func start_hosting(zone: ZoneDef, rules: CombatRules, hero_def: HeroDef, port: int, p_name: String) -> Error:
+func start_hosting(zones: Array, start_zone: StringName, rules: CombatRules, character: Dictionary, port: int) -> Error:
 	var err: Error = Net.host(port)
 	if err != OK:
 		return err
-	start(zone, rules, hero_def, randi())
-	player_name = p_name
-	local_hero().display_name = p_name
+	start(zones, start_zone, rules, character, randi())
+	player_name = local_hero().display_name
 	_heroes_by_peer[1] = local_hero_id
 	Net.handler = self
 	Net.peer_left.connect(_on_peer_left)
@@ -26,16 +25,16 @@ func _exit_tree() -> void:
 		Net.close()
 
 
-func on_join(peer_id: int, p_name: String) -> void:
+## A player joined with their saved character: validate it and bring the hero in.
+func on_join(peer_id: int, character: Dictionary) -> void:
 	if _heroes_by_peer.has(peer_id):
 		return
 	if _heroes_by_peer.size() >= Net.MAX_PLAYERS:
-		Net.send_refused(peer_id, "The game is full.")
+		Net.send_refused(peer_id, "The game is full (%d players)." % Net.MAX_PLAYERS)
 		return
-	var hero := world.add_hero(ContentDB.heroes[&"adventurer"])
-	hero.display_name = p_name.strip_edges().left(16) if not p_name.strip_edges().is_empty() else "Player %d" % hero.id
+	var hero := world.add_saved_hero(character, ContentDB)
 	_heroes_by_peer[peer_id] = hero.id
-	Net.send_welcome(peer_id, hero.id, world.zone.id)
+	Net.send_welcome(peer_id, hero.id, world.zone_of(hero.id).zone.id)
 	events_received.emit([{"type": "joined", "target": hero.id, "name": hero.display_name}])
 
 
@@ -54,9 +53,20 @@ func _on_peer_left(peer_id: int) -> void:
 		events_received.emit([{"type": "left", "target": hero_id, "name": name}])
 
 
+## Each remote player gets a snapshot of their own zone, with their private data,
+## and only the events of that zone.
 func _on_tick(events: Array) -> void:
-	if _heroes_by_peer.size() <= 1:
-		return # nobody to send to
-	Net.broadcast_snapshot(Snapshot.capture(world))
-	if not events.is_empty():
-		Net.broadcast_events(events)
+	for peer_id in _heroes_by_peer:
+		if peer_id == 1:
+			continue
+		var hero_id: int = _heroes_by_peer[peer_id]
+		var sim := world.zone_of(hero_id)
+		if sim == null:
+			continue
+		var snap := Snapshot.capture(sim, hero_id)
+		snap.time_scale = world.time_scale() # so the client's clock runs at the same pace
+		Net.send_snapshot(peer_id, snap)
+		var zone_id := sim.zone.id
+		var theirs := events.filter(func(e): return e.get("zone", zone_id) == zone_id)
+		if not theirs.is_empty():
+			Net.send_events(peer_id, theirs)

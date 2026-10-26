@@ -26,3 +26,5 @@ cooldown_seconds = 2.5
 ranged = true
 effects = Array[ExtResource("1_4xu3l")]([SubResource("Resource_ottl4")])
 ap_to_master = 20
+shape = 2
+projectile_speed = 10.0
