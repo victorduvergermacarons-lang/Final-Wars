@@ -1,6 +1,6 @@
 class_name TimingBarView
 extends Control
-## The local hero's timing bar (TimingBarDef): a big bar with its green and blue
+## The local hero's timing bar (TimingBarDef): a big bar with its green and yellow
 ## zones and a cursor sweeping across it; right-click while the cursor is on a
 ## zone. Drawn under the hero, or above the action bar (the Escape menu's Gameplay
 ## test tab; saved on this computer). After the press it shows the result
@@ -8,6 +8,7 @@ extends Control
 
 enum Place { HERO, ACTION_BAR }
 
+## The bar above the action bar; under the hero it is half as long and half as tall.
 const BAR := Vector2(440, 30)
 ## Space above the bar for the ability's name and the result.
 const LABEL_HEIGHT := 26.0
@@ -17,9 +18,9 @@ const RESULT_SECONDS := 0.8
 const BACK := Color(0.06, 0.06, 0.08, 0.88)
 const EDGE := Color(0.92, 0.92, 0.92)
 const GREEN := Color(0.2, 0.85, 0.3)
-const BLUE := Color(0.25, 0.6, 1.0)
+const YELLOW := Color(1.0, 0.85, 0.15)
 const GRADE_TEXT := {"perfect": "Perfect!", "good": "Good", "miss": "Miss"}
-const GRADE_COLOR := {"perfect": Color(0.45, 0.75, 1.0), "good": Color(0.35, 0.95, 0.45), "miss": Color(0.8, 0.8, 0.8)}
+const GRADE_COLOR := {"perfect": Color(1.0, 0.88, 0.3), "good": Color(0.35, 0.95, 0.45), "miss": Color(0.8, 0.8, 0.8)}
 
 var hud: Hud
 var place: int = Place.HERO # Place
@@ -32,7 +33,7 @@ var _result := {}
 func _init(p_hud: Hud) -> void:
 	hud = p_hud
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	size = Vector2(BAR.x, BAR.y + LABEL_HEIGHT)
+	size = Vector2(_bar_size().x, _bar_size().y + LABEL_HEIGHT)
 	visible = false
 
 
@@ -53,6 +54,7 @@ func _process(_delta: float) -> void:
 	visible = (active or showing_result) and not _shown.is_empty() and hero != null
 	if not visible:
 		return
+	size = Vector2(_bar_size().x, _bar_size().y + LABEL_HEIGHT)
 	position = _place_for(hero).round()
 	# The result fades out over the second half of its time.
 	modulate.a = clampf((_result.until - _real_now()) / RESULT_SECONDS * 2.0, 0.0, 1.0) if showing_result and not active else 1.0
@@ -90,19 +92,19 @@ func _draw() -> void:
 		t = clampf(float(_result.at), 0.0, seconds) if float(_result.at) >= 0.0 else seconds
 
 	var top := LABEL_HEIGHT
-	var rect := Rect2(0, top, BAR.x, BAR.y)
+	var rect := Rect2(0, top, _bar_size().x, _bar_size().y)
 	draw_rect(rect.grow(2), Color.BLACK)
 	draw_rect(rect, BACK)
 	for z in bar.zones:
 		draw_rect(_zone_rect(z, seconds, top), GREEN)
 	for z in bar.crit_zones:
-		draw_rect(_zone_rect(z, seconds, top), BLUE)
+		draw_rect(_zone_rect(z, seconds, top), YELLOW)
 	draw_rect(rect, EDGE, false, 2.0)
 
 	# The cursor: a tall white line with a dark outline, past the bar's edges.
-	var x := t / seconds * BAR.x
-	draw_rect(Rect2(x - 3, top - 7, 6, BAR.y + 14), Color.BLACK)
-	draw_rect(Rect2(x - 1.5, top - 6, 3, BAR.y + 12), Color.WHITE)
+	var x := t / seconds * _bar_size().x
+	draw_rect(Rect2(x - 3, top - 7, 6, _bar_size().y + 14), Color.BLACK)
+	draw_rect(Rect2(x - 1.5, top - 6, 3, _bar_size().y + 12), Color.WHITE)
 
 	var font := get_theme_default_font()
 	var text: String = _shown.name
@@ -113,16 +115,20 @@ func _draw() -> void:
 		color = GRADE_COLOR.get(_result.grade, Color.WHITE)
 		font_size = 22
 	var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-	var pos := Vector2((BAR.x - width) / 2.0, top - 6)
+	var pos := Vector2((_bar_size().x - width) / 2.0, top - 6)
 	draw_string_outline(font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, 5, Color.BLACK)
 	draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
 
 
 func _zone_rect(z: Vector2, seconds: float, top: float) -> Rect2:
-	var from := clampf(z.x / seconds, 0.0, 1.0) * BAR.x
-	var to := clampf((z.x + z.y) / seconds, 0.0, 1.0) * BAR.x
-	return Rect2(from, top, maxf(to - from, 2.0), BAR.y)
+	var from := clampf(z.x / seconds, 0.0, 1.0) * _bar_size().x
+	var to := clampf((z.x + z.y) / seconds, 0.0, 1.0) * _bar_size().x
+	return Rect2(from, top, maxf(to - from, 2.0), _bar_size().y)
 
 
 static func _real_now() -> float:
 	return Time.get_ticks_msec() / 1000.0
+
+
+func _bar_size() -> Vector2:
+	return BAR if place == Place.ACTION_BAR else BAR / 2.0

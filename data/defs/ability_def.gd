@@ -97,7 +97,7 @@ enum LineShape { LINE, CONE, ARC }
 ## moving, a stun or an interrupt ends it.
 @export var channel_seconds: float = 0.0
 @export var channel_tick_seconds: float = 1.0
-## Heroes only: a timing bar (right-click on its green / blue zones) instead of
+## Heroes only: a timing bar (right-click on its green / yellow zones) instead of
 ## going off at once. Like a cast time: the GCD at the start, mana and cooldown
 ## when it goes off; moving, a stun or an interrupt cancels it.
 @export var timing_bar: TimingBarDef = null

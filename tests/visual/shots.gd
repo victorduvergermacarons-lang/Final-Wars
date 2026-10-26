@@ -413,7 +413,7 @@ func _run() -> void:
 	await _shot("37_dive_trail", 1)
 	tz.remove_enemy(dd.id)
 	# 39. Slash's timing bar: under the hero, above the action bar, then a press on
-	# the blue middle ("Perfect!").
+	# the yellow middle ("Perfect!").
 	tz.reset_zone()
 	var dummy: EnemyDef = cd.enemies[&"wolf"].duplicate()
 	dummy.aggro_radius = 0
@@ -424,11 +424,11 @@ func _run() -> void:
 	await _snap_camera(hero)
 	var dw := tz.add_enemy(dummy, base + Vector2i(1, 0))
 	tz.cast(hero, cd.abilities[&"S01"], dw)
-	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.55)
+	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.25)
 	await _shot("39_timing_bar_hero", 1)
 	hud.set_timing_bar_place(TimingBarView.Place.ACTION_BAR)
 	await _shot("39b_timing_bar_action_bar", 1)
-	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 1.0)
+	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.5)
 	hud.input.press_timing_bar()
 	await get_tree().create_timer(0.15).timeout
 	await _shot("39c_timing_bar_perfect", 1)

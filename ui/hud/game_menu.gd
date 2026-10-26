@@ -13,7 +13,7 @@ Click someone, or Tab, to target · Esc: clear the target
 1–9, 0: use the action bar · Shift+1–6 (or < >): switch action bar page
 Hold an aimed ability's key to aim, release to cast · Esc or right-click: cancel
 Timing bar (e.g. Slash): right-click when the cursor is on the green zone for full
-power, on the blue middle for a sure critical strike; moving cancels it
+power, on the yellow middle for a sure critical strike; moving cancels it
 R: release to the graveyard when dead · mouse wheel: zoom
 
 [b]Menus[/b] (the menu book)
@@ -120,7 +120,7 @@ func _speed_tab() -> Control:
 	row.add_child(_speed_box)
 	page.add_child(_button("Reset to ×1", func(): _set_speed(1.0)))
 
-	# Where the timing bar (right-click on its green / blue zones) is drawn.
+	# Where the timing bar (right-click on its green / yellow zones) is drawn.
 	page.add_child(HSeparator.new())
 	var place_row := HBoxContainer.new()
 	place_row.add_theme_constant_override("separation", 10)

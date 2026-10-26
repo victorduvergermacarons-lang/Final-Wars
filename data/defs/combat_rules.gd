@@ -42,7 +42,7 @@ const GAME_SPEED_MAX := 2.0
 
 @export_group("Timing bar")
 ## Power of an ability whose timing bar was missed (pressed outside the green and
-## blue zones, or not at all). Green and blue zones give full power; blue also
+## yellow zones, or not at all). Green and yellow zones give full power; yellow also
 ## makes every hit a critical strike. See TimingBarDef.
 @export var timing_miss_power: float = 0.7
 ## After the bar ends, the host waits this long for a press still on its way from

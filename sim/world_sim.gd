@@ -523,7 +523,7 @@ const TIMING_CLOCK_SLACK := 0.3
 
 
 ## Ends `caster`'s timing bar and casts its ability: full power on a green zone,
-## full power and sure crits on a blue one, rules.timing_miss_power otherwise
+## full power and sure crits on a yellow one, rules.timing_miss_power otherwise
 ## (`at` < 0: no press). Mana and cooldown are paid now, like a cast time.
 func _resolve_timing(caster: Actor, at: float) -> void:
 	var c: Dictionary = caster.casting

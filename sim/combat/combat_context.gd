@@ -12,7 +12,7 @@ var actors := {} # id -> Actor
 ## whoever resolves a cast, projectile or delayed hit; 1 otherwise.
 var damage_bonus: float = 1.0
 ## Every hit of the ability being resolved right now is a critical strike (a
-## timing bar's blue zone). Set like damage_bonus.
+## timing bar's yellow zone). Set like damage_bonus.
 var force_crit: bool = false
 ## The cast being resolved: aimed tile, its 8-way direction from the caster, and
 ## its tiles (area / line). Set by CastResolver.

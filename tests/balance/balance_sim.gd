@@ -228,7 +228,7 @@ static func tree_fight(content, specs: Array, enemy_id: StringName, count: int, 
 
 
 ## The bot's right-click on a timing bar: "good" early in the first green zone
-## (full power, no sure crit), "perfect" in the middle of the first blue zone,
+## (full power, no sure crit), "perfect" in the middle of the first yellow zone,
 ## "miss" never (the bar runs out at miss power).
 static func play_timing_bar(world: WorldSim, h: Hero, skill: String) -> void:
 	var bar: TimingBarDef = h.casting.ability.timing_bar
