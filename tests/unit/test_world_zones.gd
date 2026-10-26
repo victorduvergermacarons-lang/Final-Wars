@@ -23,7 +23,7 @@ func before_each() -> void:
 
 func _walk_to(target: Vector2i) -> void:
 	var sim := world.zone_of(hero.id)
-	var path := Pathfinder.find_path(sim.grid, hero.tile(), target, 2, {}, -1, 10000)
+	var path := Pathfinder.find_path(sim.grid, hero.tile(), target, 2, sim.occupied_tiles(hero), -1, 10000)
 	assert_false(path.is_empty(), "path to %s" % target)
 	for i in range(1, path.size()):
 		world.submit(hero.id, {"type": "step", "to": path[i]})

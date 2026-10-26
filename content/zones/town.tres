@@ -9,6 +9,10 @@
 [ext_resource type="Resource" path="res://content/npcs/rowan.tres" id="5_doncu"]
 [ext_resource type="Resource" path="res://content/npcs/maren.tres" id="6_r84m8"]
 [ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="9_landmark"]
+[ext_resource type="Resource" path="res://content/npcs/guild_board.tres" id="act1_guild_board"]
+[ext_resource type="Resource" path="res://content/npcs/warden_dorne.tres" id="act1_warden_dorne"]
+[ext_resource type="Resource" path="res://content/npcs/sabra_venn.tres" id="act1_sabra_venn"]
+[ext_resource type="Resource" path="res://content/npcs/seer_ilyth.tres" id="act1_seer_ilyth"]
 
 [sub_resource type="Resource" id="Resource_doncu"]
 script = ExtResource("1_vw8t0")
@@ -43,6 +47,30 @@ npc = ExtResource("6_r84m8")
 tile = Vector2i(5, 15)
 facing = Vector2i(0, -1)
 
+[sub_resource type="Resource" id="Spawn_guild_board"]
+script = ExtResource("3_tkbid")
+npc = ExtResource("act1_guild_board")
+tile = Vector2i(3, 7)
+facing = Vector2i(0, 1)
+
+[sub_resource type="Resource" id="Spawn_warden_dorne"]
+script = ExtResource("3_tkbid")
+npc = ExtResource("act1_warden_dorne")
+tile = Vector2i(5, 8)
+facing = Vector2i(0, 1)
+
+[sub_resource type="Resource" id="Spawn_sabra_venn"]
+script = ExtResource("3_tkbid")
+npc = ExtResource("act1_sabra_venn")
+tile = Vector2i(15, 8)
+facing = Vector2i(-1, 0)
+
+[sub_resource type="Resource" id="Spawn_seer_ilyth"]
+script = ExtResource("3_tkbid")
+npc = ExtResource("act1_seer_ilyth")
+tile = Vector2i(9, 14)
+facing = Vector2i(0, 1)
+
 [resource]
 script = ExtResource("3_wnr1j")
 id = &"town"
@@ -70,4 +98,4 @@ graveyards = Array[Vector2i]([Vector2i(3, 3)])
 hero_spawns = Array[Vector2i]([Vector2i(8, 8), Vector2i(9, 8), Vector2i(8, 10), Vector2i(9, 10)])
 edges = Array[ExtResource("1_vw8t0")]([SubResource("Resource_doncu"), SubResource("Resource_to_testing")])
 landmarks = Array[ExtResource("9_landmark")]([SubResource("Resource_sign")])
-npcs = Array[ExtResource("3_tkbid")]([SubResource("Resource_s6khj"), SubResource("Resource_jwu2k"), SubResource("Resource_jijvu")])
+npcs = Array[ExtResource("3_tkbid")]([SubResource("Resource_s6khj"), SubResource("Resource_jwu2k"), SubResource("Resource_jijvu"), SubResource("Spawn_guild_board"), SubResource("Spawn_warden_dorne"), SubResource("Spawn_sabra_venn"), SubResource("Spawn_seer_ilyth")])

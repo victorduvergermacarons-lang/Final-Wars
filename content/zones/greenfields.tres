@@ -11,6 +11,11 @@
 [ext_resource type="Resource" path="res://content/enemies/old_grizzlehide.tres" id="6_xnvoe"]
 [ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="7_r84w6"]
 [ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="9_r84w6"]
+[ext_resource type="Resource" path="res://content/npcs/mine_board.tres" id="act1_mine_board"]
+[ext_resource type="Resource" path="res://content/npcs/foreman_brannoc.tres" id="act1_foreman_brannoc"]
+[ext_resource type="Resource" path="res://content/npcs/ore_caravan.tres" id="act1_ore_caravan"]
+[ext_resource type="Resource" path="res://content/npcs/collapsed_shaft.tres" id="act1_collapsed_shaft"]
+[ext_resource type="Resource" path="res://content/npcs/vael_stone.tres" id="act1_vael_stone"]
 
 [sub_resource type="Resource" id="Resource_r84w6"]
 script = ExtResource("1_ly8hc")
@@ -94,6 +99,36 @@ script = ExtResource("9_r84w6")
 name = "Bandit Camp"
 tile = Vector2i(22, 20)
 
+[sub_resource type="Resource" id="Spawn_mine_board"]
+script = ExtResource("7_r84w6")
+npc = ExtResource("act1_mine_board")
+tile = Vector2i(26, 13)
+facing = Vector2i(0, 1)
+
+[sub_resource type="Resource" id="Spawn_foreman_brannoc"]
+script = ExtResource("7_r84w6")
+npc = ExtResource("act1_foreman_brannoc")
+tile = Vector2i(26, 15)
+facing = Vector2i(-1, 0)
+
+[sub_resource type="Resource" id="Spawn_ore_caravan"]
+script = ExtResource("7_r84w6")
+npc = ExtResource("act1_ore_caravan")
+tile = Vector2i(23, 15)
+facing = Vector2i(-1, 0)
+
+[sub_resource type="Resource" id="Spawn_collapsed_shaft"]
+script = ExtResource("7_r84w6")
+npc = ExtResource("act1_collapsed_shaft")
+tile = Vector2i(28, 12)
+facing = Vector2i(0, 1)
+
+[sub_resource type="Resource" id="Spawn_vael_stone"]
+script = ExtResource("7_r84w6")
+npc = ExtResource("act1_vael_stone")
+tile = Vector2i(2, 27)
+facing = Vector2i(0, 1)
+
 [resource]
 script = ExtResource("3_r51p2")
 id = &"greenfields"
@@ -136,3 +171,4 @@ hero_spawns = Array[Vector2i]([Vector2i(2, 25)])
 enemy_spawns = Array[ExtResource("1_my1eq")]([SubResource("Resource_h7mpn"), SubResource("Resource_hy82k"), SubResource("Resource_hsds2"), SubResource("Resource_5bukq"), SubResource("Resource_v6ewg"), SubResource("Resource_i8j2l"), SubResource("Resource_jj0g2"), SubResource("Resource_ubiko"), SubResource("Resource_nstta"), SubResource("Resource_03101"), SubResource("Resource_ly8hc"), SubResource("Resource_pack0"), SubResource("Resource_pack1"), SubResource("Resource_pack2")])
 landmarks = Array[ExtResource("9_r84w6")]([SubResource("Resource_8bhnn")])
 edges = Array[ExtResource("1_ly8hc")]([SubResource("Resource_r84w6")])
+npcs = Array[ExtResource("7_r84w6")]([SubResource("Spawn_mine_board"), SubResource("Spawn_foreman_brannoc"), SubResource("Spawn_ore_caravan"), SubResource("Spawn_collapsed_shaft"), SubResource("Spawn_vael_stone")])
