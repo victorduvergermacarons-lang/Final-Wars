@@ -20,8 +20,9 @@ const HOLD_START_TOLERANCE := 0.2
 ## Hold accuracy for a sure crit at full power, and at or under which it's a miss.
 const HOLD_PERFECT := 0.95
 const HOLD_MISS := 0.5
-## The rule for hold zones: they end at least this long before the bar.
+## The rule for hold zones: they end 0.2–0.3 s before the bar (checked on import).
 const HOLD_END_GAP := 0.2
+const HOLD_END_GAP_MAX := 0.3
 ## Zone edges count as inside (floating-point sums such as 0.9 + 0.1).
 const EPSILON := 0.0001
 

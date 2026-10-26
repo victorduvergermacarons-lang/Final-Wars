@@ -333,8 +333,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not target.alive:
 				return
 			var max_hp := target.current_stats(ctx.now).hp
-			var amount := AbilityPower.amount(caster, ability, effect, ctx.now, rules) \
-					+ effect.percent_of_max * max_hp
+			var amount := (AbilityPower.amount(caster, ability, effect, ctx.now, rules) \
+					+ effect.percent_of_max * max_hp) * ctx.timing_power
 			var crit := _roll_crit(ctx, effect, caster_stats)
 			if crit:
 				amount *= CombatMath.crit_multiplier(caster_stats.crit_dmg, rules)
@@ -372,7 +372,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 		AbilityEffect.Kind.SHIELD:
 			if effect.buff == null or not target.alive:
 				return
-			var size := AbilityPower.amount(caster, ability, effect, ctx.now, rules)
+			var size := AbilityPower.amount(caster, ability, effect, ctx.now, rules) * ctx.timing_power
 			target.buffs.apply(effect.buff, ctx.now, 0.0, caster.id,
 					{"duration": AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules),
 					"shield": size})
@@ -409,6 +409,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var harmful := effect.kind == AbilityEffect.Kind.DAMAGE_OVER_TIME
 			if harmful:
 				total *= ctx.damage_bonus
+			else:
+				total *= ctx.timing_power
 			var duration := AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules)
 			var ticks := maxf(floorf(duration / maxf(effect.buff.tick_seconds, 0.05)), 1.0)
 			target.buffs.apply(effect.buff, ctx.now, total / ticks, caster.id,

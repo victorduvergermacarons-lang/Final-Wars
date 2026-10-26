@@ -3,18 +3,12 @@
 [ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_h3ta4"]
 [ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_jsstp"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_w155g"]
-[ext_resource type="Script" path="res://data/defs/timing_bar_def.gd" id="4_tmbar"]
 
 [sub_resource type="Resource" id="Resource_6d6di"]
 script = ExtResource("1_h3ta4")
 damage_type = 1
 base_amount = -1.0
 sheet_scaling = true
-
-[sub_resource type="Resource" id="Resource_tmbar"]
-script = ExtResource("4_tmbar")
-seconds = 3.0
-hold_zones = Array[Vector2]([Vector2(0.75, 2.0)])
 
 [resource]
 script = ExtResource("3_w155g")
@@ -24,4 +18,3 @@ mana_cost = 6.0
 ranged = true
 effects = Array[ExtResource("1_h3ta4")]([SubResource("Resource_6d6di")])
 targeting = 1
-timing_bar = SubResource("Resource_tmbar")

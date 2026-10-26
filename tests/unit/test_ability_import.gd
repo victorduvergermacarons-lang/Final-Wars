@@ -34,7 +34,7 @@ func _errors(rows: Array) -> String:
 func test_reads_the_real_sheet() -> void:
 	var book := XlsxReader.read(SHEET)
 	assert_eq(book.error, "")
-	assert_eq(book.order, ["Abilities", "Tiers", "Trees", "Rules & Legend"])
+	assert_eq(book.order, ["Abilities", "Tiers", "Trees", "Rules & Legend", "Timing Rules"])
 	var header: Array = book.sheets.Abilities[0]
 	assert_eq(header[0], "ID")
 	assert_eq(header[5], "Ability")
@@ -100,6 +100,59 @@ func test_validation_errors() -> void:
 	var bad_cd := _row("F01", "A")
 	bad_cd[14] = "soon"
 	assert_string_contains(_errors([bad_cd]), "Cooldown (s) \"soon\" isn't a number")
+
+
+## A workbook whose Abilities tab has the four timing columns; `timing` per row:
+## [status, bar, zones, notes].
+func _timed_book(rows: Array) -> Dictionary:
+	var book := _book([])
+	var table: Array = book.sheets.Abilities
+	table[0] = HEADER + AbilityTreeImporter.TIMING_COLUMNS
+	for i in rows.size():
+		table.append(_row("F%02d" % (i + 1), "Ability %d" % (i + 1)) + rows[i])
+	return book
+
+
+func test_timing_columns() -> void:
+	var result := AbilityTreeImporter.convert(_timed_book([
+		["Manual", "1", "Tap 0.35–0.65; Crit 0.45-0.55", "mid beat"],
+		["Generated (AI, not yet confirmed)", "3,0", "Hold 0,75–2,75", ""],
+		["Generated (AI, not yet confirmed)", "none", "", "instant"],
+		["Not implemented", "", "", ""],
+	]))
+	assert_eq(result.errors, PackedStringArray())
+	var a: Array = result.data.abilities
+	assert_eq(a[0].timing.status, "manual")
+	assert_eq(a[0].timing.seconds, 1.0)
+	assert_eq(a[0].timing.taps, [[0.35, 0.3]])
+	assert_eq(a[0].timing.crits, [[0.45, 0.1]])
+	assert_eq(a[1].timing.holds, [[0.75, 2.0]], "comma decimals")
+	assert_eq(a[2].timing.seconds, 0.0, "none: no bar")
+	assert_eq(a[3].timing.status, "none")
+	assert_false(a[0].has("extra"), "timing columns aren't extras")
+
+
+func test_timing_validation() -> void:
+	var errs := func(timing: Array) -> String:
+		return "\n".join(AbilityTreeImporter.convert(_timed_book([timing])).errors)
+	assert_string_contains(errs.call(["Done", "1", "Tap 0.1–0.2", ""]), "Timing Status \"Done\"")
+	assert_string_contains(errs.call(["Manual", "1", "Tap 0.5–1.2", ""]), "goes past the 1")
+	assert_string_contains(errs.call(["Manual", "1", "Slide 0.1–0.2", ""]), "isn't like")
+	assert_string_contains(errs.call(["Manual", "3", "Hold 0.75–3.0", ""]), "must end 0.2–0.3 s before the bar")
+	assert_string_contains(errs.call(["Manual", "3", "Hold 0.5–2.5", ""]), "must end 0.2–0.3 s before the bar")
+	assert_string_contains(errs.call(["Manual", "1", "", ""]), "no zones")
+	assert_string_contains(errs.call(["Not implemented", "1", "Tap 0.1–0.2", ""]), "Not implemented")
+
+
+func test_the_sheet_gives_the_game_its_bars() -> void:
+	var slash: AbilityDef = ContentDB.abilities[&"S01"]
+	assert_eq(slash.timing_status, "manual")
+	assert_eq(slash.timing_bar.seconds, 1.0)
+	var whip: AbilityDef = ContentDB.abilities[&"W02"]
+	assert_eq(whip.timing_bar.hold_zones, [Vector2(0.75, 2.0)] as Array[Vector2])
+	assert_eq(ContentDB.abilities[&"F05"].timing_status, "generated")
+	assert_null(ContentDB.abilities[&"F05"].timing_bar, "a dash: no bar")
+	assert_eq(ContentDB.abilities[&"F10"].timing_status, "none")
 
 
 func test_missing_column_is_reported() -> void:

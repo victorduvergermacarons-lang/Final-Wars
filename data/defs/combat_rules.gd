@@ -41,6 +41,9 @@ const GAME_SPEED_MAX := 2.0
 @export var gcd_seconds: float = 1.0
 
 @export_group("Timing bar")
+## Off: heroes cast every ability straight away, without its bar (tests of
+## ability effects use it).
+@export var timing_bars_enabled: bool = true
 ## Power of an ability whose timing bar was missed (pressed outside the green and
 ## yellow zones, or not at all). Green and yellow zones give full power; yellow also
 ## makes every hit a critical strike. See TimingBarDef.

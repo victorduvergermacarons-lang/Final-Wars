@@ -514,26 +514,41 @@ and the player right-clicks on its zones.
   - Blue (hold): press right-click as the zone starts and let go as it ends. Rule:
     a hold zone ends 0.2–0.3 s before the end of its bar (`HOLD_END_GAP`; a test
     checks every ability), so letting go on time is part of it. Accuracy = 1 −
-    (how early or late you pressed + how early or late you let go) ÷ the zone's
-    length (`TimingBarDef.hold_accuracy`). 95% or more: a sure crit at full power;
-    50% or less: miss power; in between, power rises steadily from 0.7 to 1
-    (`hold_power`). A press up to 0.2 s early starts the hold (the early part counts
-    as mistiming); earlier, it's a missed tap. Judged when you let go, or at the bar's
-    end if still held.
+	(how early or late you pressed + how early or late you let go) ÷ the zone's
+	length (`TimingBarDef.hold_accuracy`). 95% or more: a sure crit at full power;
+	50% or less: miss power; in between, power rises steadily from 0.7 to 1
+	(`hold_power`). A press up to 0.2 s early starts the hold (the early part counts
+	as mistiming); earlier, it's a missed tap. Judged when you let go, or at the bar's
+	end if still held.
   - A tap anywhere else, a hold that falls short, or no press:
-    `CombatRules.timing_miss_power` (0.7).
+	`CombatRules.timing_miss_power` (0.7).
   - The reward is for good timing; nothing worse than a reduced hit.
-- **Abilities with a bar** (test lengths, not balanced):
-  - Slash: 1 s, green 0.35–0.65 s, yellow 0.45–0.55 s.
-  - Fire Punch: 1 s, both at the end: green 0.7–1.0 s, yellow 0.9–1.0 s.
-  - Water Whip: 3 s, blue hold 0.75–2.75 s.
-  - Planned: only important abilities get long bars, quick ones short bars,
-    instants (dashes, potions) none; each tree gets its own kind of pattern.
+- **Where the bars come from:** `design/Ability_Tree.xlsx` (source of truth since
+  2026-10-26): four columns at the end of the Abilities tab (Timing Status, Timing Bar
+  (s), Timing Zones, Timing Notes) and a **Timing Rules** tab (zones, outcomes, holds,
+  margins, display, how to write the columns, tunable values). The importer reads and
+  checks them (`AbilityTreeImporter._timing`, see `docs/ability-import.md`); TreeContent
+  builds each `TimingBarDef`; `AbilityDef.timing_status` keeps manual / generated / none.
+  Behavior files no longer hold bars. No runtime cost: the import runs offline.
+- **Which abilities** (test lengths, not balanced):
+  - Manual (the user's): Slash 1 s (tap 0.35–0.65, crit 0.45–0.55), Fire Punch 1 s
+    (tap 0.7–1.0, crit 0.9–1.0), Water Whip 3 s (hold 0.75–2.75).
+  - Generated (AI drafts, in the game, to be confirmed), by tree feel: Fire late snaps
+    (F02, F03, F06–F09), Water holds (W01, W04–W07, W09), Air early beats (A01, A05),
+    Earth one heavy late beat (E01), Bow a quick middle beat (B01) and a hold for the
+    draw (B02), Hammer late heavy beats (H01, H02). Instants marked "none": F04, F05,
+    W03, W08, A02, A03, E03, E04, E05, S04 (dashes, interrupts, buffs, taunt, terrain).
+  - The other 113 abilities: Not implemented.
+  - A bar replaces the ability's cast time or wind-up (Aimed Shot's draw, Smash's).
+- **What power scales:** damage (through the damage bonus), and since 2026-10-26
+  healing, heals over time and shields (`CombatContext.timing_power`). Buffs aren't scaled.
+- **Test switch:** `CombatRules.timing_bars_enabled` (on); tests of ability effects turn
+  it off so abilities go off at once.
 - **Rules (a cast kind `timing`):**
   - The GCD starts with the bar; mana and cooldown are paid when it goes off.
   - One press per bar for now: a tap casts the ability at once, a hold when let go.
   - Moving, a stun, an interrupt or the target leaving range cancels it (cooldown
-    not spent).
+	not spent).
   - Enemies cast these abilities without a bar.
 - **Network:** the client measures its presses against the bar as it saw it and
   sends `{"type": "timing_press", "at"}` and, for a hold, `{"type":
@@ -555,8 +570,9 @@ and the player right-clicks on its zones.
 	marks show where the ability's bar starts and ends).
 - **Balance:** the bots tap early in the green zone and hold blue zones exactly.
   The bars make abilities hit later, so some balance targets are pending (the
-  starter and a lone sword vs a Wolf, a caster's mana vs a Wolf, plus the drake
-  from before) until the planned combat pacing pass, which slows the enemies down.
+  starter and a lone sword vs a Wolf, a pair vs 2 Wolves, a caster's mana vs a Wolf,
+  a level-2 caster vs the Shaman, plus the drake from before) until the planned
+  combat pacing pass, which slows the enemies down.
 
 ## Performance (branch `optimised-build-1`, 2026-10-21)
 
@@ -1410,6 +1426,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-26 | Timing design in `design/Ability_Tree.xlsx`: four columns (Timing Status: Manual / Generated (AI, not yet confirmed) / Not implemented; Timing Bar (s); Timing Zones; Timing Notes) and a Timing Rules tab; the sheet is now the source of truth for bars; AI drafts for the other 29 playable abilities, in the game | User request and choices (columns + rules tab; drafts for the 29 and in game; tunable values listed); "choose the best option" for the source: the sheet, since the import runs offline (no lag) and one readable place suits complex multi-input spells later. My choices: the zone syntax (`Tap a–b; Crit a–b; Hold a–b`), the import checks, the 29 drafts by tree feel, instants (dashes, interrupts, buffs, taunt, terrain) get "none", bars replace cast times and wind-ups, timing power now also scales healing and shields, a `timing_bars_enabled` test switch, one more balance target pending (caster vs Shaman). |
 | 2026-10-26 | Holds: a hold zone ends 0.2–0.3 s before its bar; accuracy loses the mistiming at both ends in proportion; 95%+ = crit, 50% or less = miss, power rises steadily in between; Water Whip 3 s | User rule. My choices: accuracy = 1 − (press error + release error) ÷ zone length, so holding past the zone counts too; power 0.7 → 1 linearly from 50% to 95%; a hold still held at the bar's end is judged as let go then; Water Whip keeps its 2 s hold (0.75–2.75 s); held-past and pressed-early parts drawn red, "Let go!" past the zone; results show a hold's percentage. |
 | 2026-10-26 | Timing bar options corrected: under the hero or above the action bar only; steady speed only, as "length follows the ability" or "zones slide to a fixed hit line" (sliding mode and "over the hero" removed). Fire Punch gets a 1 s bar with its zones at the end; Water Whip a 5 s bar with a new blue hold zone (last 2 s) | User correction and request (lengths are for tests, balance ignored). My choices: the hit line sits 0.4 s from the bar's left edge; a hold may start 0.2 s early and needs 90% of its zone held; it's judged on release, or when the zone ends while still held; letting go early = miss power; "Hold!" shows while holding; held part drawn lighter blue; a saved "over the hero" setting reads as under the hero. |
 | 2026-10-26 | Training Dummy in the testing grounds (top-left, behind the entrance) | User request: a mannequin with huge health, no attacks, completely still. My choices: 1,000,000 HP and no defenses (the damage numbers are raw); no Mastery, XP or loot from it (no farming); it lets you out of combat once you walk 6 tiles away; it can't be knocked back; drawn as a straw mannequin; a flag on the enemy data, so more dummies can be added. |

@@ -416,8 +416,8 @@ func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Vari
 
 
 ## Only heroes play timing bars (enemies cast those abilities straight away).
-static func _has_timing_bar(caster: Actor, ability: AbilityDef) -> bool:
-	return caster is Hero and ability.timing_bar != null
+func _has_timing_bar(caster: Actor, ability: AbilityDef) -> bool:
+	return caster is Hero and ability.timing_bar != null and rules.timing_bars_enabled
 
 
 ## Starts a cast time, wind-up, channel or timing bar (see AbilityDef). Cast times
@@ -570,8 +570,10 @@ func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float, power:
 	emit({"type": "timing_result", "source": caster.id, "ability": ability.id,
 			"grade": TimingBarDef.grade_name(grade), "at": at, "accuracy": accuracy})
 	ctx.force_crit = grade == TimingBarDef.Grade.PERFECT
+	ctx.timing_power = power # healing and shields (damage: through the bonus)
 	var r := _finish_cast(caster, ability, get_actor(c.target), c.aim, CastResolver.Pay.COMPLETE, c.bonus * power)
 	ctx.force_crit = false
+	ctx.timing_power = 1.0
 	if r != AbilityResolver.Result.OK:
 		emit({"type": "cast_failed", "source": caster.id, "ability": ability.id,
 				"reason": AbilityResolver.Result.keys()[r].to_lower()})

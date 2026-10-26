@@ -10,6 +10,7 @@ var dummy_def: EnemyDef
 
 
 func before_each() -> void:
+	ContentDB.rules.timing_bars_enabled = false # the dummy, not bars (Fire Punch casts at once)
 	var zone := ZoneDef.new()
 	zone.id = &"plain"
 	var rows: PackedStringArray = []
@@ -28,6 +29,10 @@ func before_each() -> void:
 	hero = world.add_hero(hd)
 	hero.move.place(Vector2i(10, 10))
 	dummy = world.add_enemy(dummy_def, Vector2i(11, 10))
+
+
+func after_each() -> void:
+	ContentDB.rules.timing_bars_enabled = true
 
 
 func _run(seconds: float) -> Array:

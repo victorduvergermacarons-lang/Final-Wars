@@ -114,6 +114,36 @@ func test_moving_cancels_the_bar() -> void:
 		pass_test("the tile behind the hero is blocked here; moving is covered elsewhere")
 
 
+## Healing Touch (a 2 s bar, hold 0.5–1.75) on the hero itself: the healed amount.
+func _heal_with(press_at: float, release_at: float) -> float:
+	hero.hp = 1.0
+	hero.cooldowns = Cooldowns.new()
+	var r := sim.cast(hero, db.abilities[&"W01"], hero)
+	assert_eq(r, AbilityResolver.Result.OK, "Healing Touch starts (%s)" % AbilityResolver.Result.keys()[r])
+	world.step()
+	var events := []
+	events.append_array(world.advance(press_at - (world.now - float(hero.casting.start))))
+	world.submit(hero.id, {"type": "timing_press", "at": press_at})
+	events.append_array(world.step())
+	events.append_array(world.advance(release_at - (world.now - float(hero.casting.start))))
+	world.submit(hero.id, {"type": "timing_release", "at": release_at})
+	events.append_array(world.advance(1.0))
+	for e in events:
+		if e.type == "heal" and e.get("ability", &"") == &"W01":
+			return e.amount / (1.5 if e.get("crit", false) else 1.0)
+	return -1.0
+
+
+func test_timing_scales_healing_too() -> void:
+	sim.remove_enemy(wolf.id) # nothing bites the hero at 1 HP
+	var good := _heal_with(0.5, 1.4) # let go 0.35 s early in a 1.25 s zone: 72%
+	var miss := _heal_with(0.5, 0.9) # held well under half: miss power
+	assert_gt(good, 0.0)
+	assert_gt(miss, 0.0)
+	var accuracy := TimingBarDef.hold_accuracy(db.abilities[&"W01"].timing_bar.hold_zones[0], 0.5, 1.4)
+	assert_almost_eq(miss / good, db.rules.timing_miss_power / TimingBarDef.hold_power(accuracy, db.rules.timing_miss_power), 0.03)
+
+
 func test_fire_punch_zones_are_at_the_end() -> void:
 	var bar: TimingBarDef = db.abilities[&"F01"].timing_bar
 	assert_eq(bar.seconds, 1.0)

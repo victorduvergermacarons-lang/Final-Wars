@@ -31,7 +31,8 @@ of date" until someone runs step 2. That's on purpose.
 
 ## What the import checks
 
-- Every column the game needs is present (extra columns are kept as-is).
+- Every column the game needs is present (extra columns are kept as-is), and the Timing
+  columns read (see below).
 - No duplicate IDs, ability names or teaching items; every ability has a Taught By item.
 - Tiers are whole numbers 1–5; Mastery Required matches the Tiers tab (the Tiers tab wins).
 - Every prerequisite is an ability name spelled exactly as in the Ability column (it
@@ -52,6 +53,27 @@ if you add them; they then override the game's defaults for that ability.
 
 Abilities without behavior data yet are marked unimplemented in the game and can't be
 equipped.
+
+## Timing bars (the four Timing columns)
+
+The sheet is the source of truth for timing bars too. The rules are on its **Timing
+Rules** tab; per ability, at the end of the Abilities tab:
+
+| Column | What to write |
+|---|---|
+| Timing Status | `Manual` (your design), `Generated (AI, not yet confirmed)` (a draft to review) or `Not implemented` |
+| Timing Bar (s) | The bar's length in seconds, or `none` for no bar (an instant) |
+| Timing Zones | Zones separated by `;`: `Tap a–b`, `Crit a–b` or `Hold a–b`, seconds from the bar's start, e.g. `Tap 0.35–0.65; Crit 0.45–0.55` or `Hold 0.75–2.75`. Dots or commas; `-` or `–` |
+| Timing Notes | Free text |
+
+Manual and Generated bars are both used by the game. The import refuses: an unknown
+status, a zone it can't read or that goes past its bar, a hold that doesn't end 0.2–0.3 s
+before the bar, a bar with no zones (or zones with no bar), and a "Not implemented" row
+with a bar. It warns about a crit outside every tap, and about several input zones (the
+game takes one press per bar for now). The behavior files no longer hold bars.
+
+The import runs only when you run the command above, never while playing: the game
+loads the already-converted JSON, so bars cost nothing at runtime.
 
 Item ids are made from the item name (`Scroll of the Fireball` → `scroll_of_the_fireball`).
 Renaming an item changes its id, so characters holding the old one lose it; ability IDs

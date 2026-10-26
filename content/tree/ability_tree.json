@@ -141,6 +141,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "manual",
+				"seconds": 1.0,
+				"taps": [
+					[
+						0.7,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.9,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Designer's bar: both zones at the very end."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -177,6 +195,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.2,
+				"taps": [
+					[
+						0.85,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						1.05,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: a late snap like Fire Punch, a little longer (bigger hit plus a burn)."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -213,6 +249,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.8,
+				"taps": [
+					[
+						0.5,
+						0.25
+					]
+				],
+				"crits": [
+					[
+						0.65,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: quick projectile, short bar, late snap. The dart flies when you press."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -249,6 +303,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: an instant self-buff off the GCD."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -285,6 +347,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a dash (instants never have one)."
+			},
 			"prerequisites": {
 				"abilities": [
 					"F02"
@@ -323,6 +393,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.05,
+						0.35
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: a longer wind-up for a piercing line, late snap."
+			},
 			"prerequisites": {
 				"abilities": [
 					"F01"
@@ -361,6 +449,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.0,
+				"taps": [
+					[
+						1.45,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.7,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: big spell, long bar, one late beat. The 0.4 s area warning still follows the press."
+			},
 			"prerequisites": {
 				"abilities": [
 					"F03"
@@ -399,6 +505,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.0,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: late snap; power scales the burn per second."
+			},
 			"prerequisites": {
 				"abilities": [
 					"F03"
@@ -437,6 +561,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.0,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Fire: late snap. Planned: three taps, one per hit, once bars take several inputs."
+			},
 			"prerequisites": {
 				"abilities": [
 					"F01",
@@ -476,6 +618,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F05"
@@ -514,6 +664,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F05"
@@ -552,6 +710,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F07"
@@ -590,6 +756,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F08"
@@ -628,6 +802,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F06",
@@ -667,6 +849,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F10"
@@ -705,6 +895,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F12",
@@ -747,6 +945,14 @@
 					"stat": "crit_rate"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F12"
@@ -790,6 +996,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F07"
@@ -828,6 +1042,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F17"
@@ -866,6 +1088,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F16"
@@ -904,6 +1134,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"F15",
@@ -943,6 +1181,24 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.6,
+				"taps": [
+					[
+						1.1,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Earth: one heavy beat, a wide window late in a long bar."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -979,6 +1235,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1012,6 +1276,14 @@
 					"mastery": "Earth"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: terrain (timing has nothing to scale yet)."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1048,6 +1320,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a taunt."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1081,6 +1361,14 @@
 					"mastery": "Earth"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: terrain wall."
+			},
 			"prerequisites": {
 				"abilities": [
 					"E03"
@@ -1116,6 +1404,14 @@
 					"mastery": "Earth"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E03"
@@ -1154,6 +1450,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E02"
@@ -1192,6 +1496,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E04"
@@ -1227,6 +1539,14 @@
 					"mastery": "Earth"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E03"
@@ -1265,6 +1585,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E07",
@@ -1304,6 +1632,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E06"
@@ -1339,6 +1675,14 @@
 					"mastery": "Earth"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E06"
@@ -1374,6 +1718,14 @@
 					"mastery": "Earth"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E04"
@@ -1412,6 +1764,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E07"
@@ -1450,6 +1810,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E14"
@@ -1485,6 +1853,14 @@
 					"mastery": "Earth"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E11"
@@ -1528,6 +1904,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E12"
@@ -1571,6 +1955,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E10"
@@ -1609,6 +2001,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E18",
@@ -1648,6 +2048,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"E11",
@@ -1687,6 +2095,19 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.5,
+						1.25
+					]
+				],
+				"notes": "Water: a hold. Timing power scales the heal."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1723,6 +2144,19 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "manual",
+				"seconds": 3.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.75,
+						2.0
+					]
+				],
+				"notes": "Designer's bar: hold 2 s, ending 0.25 s before the bar."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1759,6 +2193,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a buff (timing has nothing to scale yet)."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1795,6 +2237,19 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.4,
+						0.85
+					]
+				],
+				"notes": "Water: a short hold; the shard flies when you let go."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1831,6 +2286,19 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.5,
+						1.75
+					]
+				],
+				"notes": "Water: a long hold for a long heal; power scales the total healing."
+			},
 			"prerequisites": {
 				"abilities": [
 					"W01"
@@ -1869,6 +2337,19 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.5,
+						1.25
+					]
+				],
+				"notes": "Water: a hold building the wave."
+			},
 			"prerequisites": {
 				"abilities": [
 					"W02"
@@ -1907,6 +2388,19 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.75,
+						1.5
+					]
+				],
+				"notes": "Water: a hold; the drain heals you half the (scaled) damage."
+			},
 			"prerequisites": {
 				"abilities": [
 					"W02"
@@ -1945,6 +2439,14 @@
 					"stat": "mag_def"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a buff (timing has nothing to scale yet)."
+			},
 			"prerequisites": {
 				"abilities": [
 					"W03"
@@ -1983,6 +2485,19 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 2.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.75,
+						1.5
+					]
+				],
+				"notes": "Water: a hold. The 0.4 s area warning still follows the release."
+			},
 			"prerequisites": {
 				"abilities": [
 					"W04"
@@ -2021,6 +2536,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W05"
@@ -2059,6 +2582,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W06"
@@ -2097,6 +2628,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W08"
@@ -2135,6 +2674,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W09"
@@ -2170,6 +2717,14 @@
 					"mastery": "Water"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W10"
@@ -2208,6 +2763,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W11"
@@ -2246,6 +2809,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W12"
@@ -2284,6 +2855,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W10"
@@ -2322,6 +2901,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W13"
@@ -2365,6 +2952,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W13"
@@ -2403,6 +2998,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W11",
@@ -2442,6 +3045,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W16"
@@ -2480,6 +3091,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W17",
@@ -2516,6 +3135,14 @@
 					"mastery": "Water"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"W14",
@@ -2555,6 +3182,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.8,
+				"taps": [
+					[
+						0.2,
+						0.25
+					]
+				],
+				"crits": [
+					[
+						0.3,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Air: quick, early beat."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2591,6 +3236,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: an interrupt must be instant to catch a wind-up."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2624,6 +3277,14 @@
 					"mastery": "Air"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: movement buff off the GCD."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2660,6 +3321,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2696,6 +3365,24 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.2,
+				"taps": [
+					[
+						0.3,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.4,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Air: early beat in a slightly longer bar."
+			},
 			"prerequisites": {
 				"abilities": [
 					"A01"
@@ -2734,6 +3421,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A04"
@@ -2772,6 +3467,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A02"
@@ -2807,6 +3510,14 @@
 					"mastery": "Air"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A03"
@@ -2845,6 +3556,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A03"
@@ -2883,6 +3602,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A06"
@@ -2921,6 +3648,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A02"
@@ -2959,6 +3694,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A07"
@@ -2997,6 +3740,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A05",
@@ -3036,6 +3787,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A08"
@@ -3074,6 +3833,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A10"
@@ -3112,6 +3879,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A12"
@@ -3150,6 +3925,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A10"
@@ -3193,6 +3976,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A12"
@@ -3228,6 +4019,14 @@
 					"mastery": "Air"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A14"
@@ -3263,6 +4062,14 @@
 					"mastery": "Air"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A19"
@@ -3301,6 +4108,14 @@
 					"stat": "mag_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"A15",
@@ -3340,6 +4155,24 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "manual",
+				"seconds": 1.0,
+				"taps": [
+					[
+						0.35,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.45,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Designer's bar: one beat in the middle."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3376,6 +4209,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3412,6 +4253,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3448,6 +4297,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": "No bar: a dash then a strike (dashes have no bar)."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3484,6 +4341,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S01"
@@ -3522,6 +4387,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S03"
@@ -3560,6 +4433,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S01"
@@ -3598,6 +4479,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S02"
@@ -3633,6 +4522,14 @@
 					"mastery": "Sword"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S04"
@@ -3671,6 +4568,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S05"
@@ -3706,6 +4611,14 @@
 					"mastery": "Sword"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S06"
@@ -3744,6 +4657,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S07"
@@ -3782,6 +4703,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S09"
@@ -3820,6 +4749,14 @@
 					"stat": "crit_rate"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S03"
@@ -3858,6 +4795,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S10"
@@ -3896,6 +4841,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S11"
@@ -3931,6 +4884,14 @@
 					"mastery": "Sword"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S13"
@@ -3969,6 +4930,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S10"
@@ -4012,6 +4981,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S12",
@@ -4051,6 +5028,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"S15",
@@ -4090,6 +5075,24 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 0.8,
+				"taps": [
+					[
+						0.3,
+						0.25
+					]
+				],
+				"crits": [
+					[
+						0.4,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Bow: quick shot, middle beat."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4126,6 +5129,19 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [],
+				"crits": [],
+				"holds": [
+					[
+						0.25,
+						1.0
+					]
+				],
+				"notes": "Bow: drawing = holding; replaces its 1 s draw. The arrow flies when you let go."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4159,6 +5175,14 @@
 					"mastery": "Bow"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4192,6 +5216,14 @@
 					"mastery": "Bow"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4228,6 +5260,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B01"
@@ -4266,6 +5306,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B02"
@@ -4304,6 +5352,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B04"
@@ -4342,6 +5398,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B03"
@@ -4377,6 +5441,14 @@
 					"mastery": "Bow"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B02"
@@ -4415,6 +5487,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B05"
@@ -4453,6 +5533,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B06",
@@ -4492,6 +5580,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B08"
@@ -4530,6 +5626,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B05"
@@ -4565,6 +5669,14 @@
 					"mastery": "Bow"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B03"
@@ -4603,6 +5715,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B10"
@@ -4641,6 +5761,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B11"
@@ -4684,6 +5812,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B11"
@@ -4722,6 +5858,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B13"
@@ -4760,6 +5904,14 @@
 					"stat": "crit_rate"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B17",
@@ -4799,6 +5951,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"B15",
@@ -4838,6 +5998,24 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.2,
+				"taps": [
+					[
+						0.8,
+						0.3
+					]
+				],
+				"crits": [
+					[
+						0.95,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Hammer: a late heavy beat; replaces its 0.3 s wind-up."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4874,6 +6052,24 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "generated",
+				"seconds": 1.5,
+				"taps": [
+					[
+						1.0,
+						0.4
+					]
+				],
+				"crits": [
+					[
+						1.25,
+						0.1
+					]
+				],
+				"holds": [],
+				"notes": "Hammer: a late heavy beat."
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4910,6 +6106,14 @@
 					"stat": "phys_def"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4946,6 +6150,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4982,6 +6194,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H02"
@@ -5020,6 +6240,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H01"
@@ -5058,6 +6286,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H02"
@@ -5096,6 +6332,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H04"
@@ -5134,6 +6378,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H03"
@@ -5172,6 +6424,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H07"
@@ -5210,6 +6470,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H08"
@@ -5248,6 +6516,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H06"
@@ -5286,6 +6562,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H05"
@@ -5326,6 +6610,14 @@
 					"mastery": "Hammer"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H09"
@@ -5364,6 +6656,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H10"
@@ -5402,6 +6702,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H05"
@@ -5440,6 +6748,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H11"
@@ -5483,6 +6799,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H14"
@@ -5521,6 +6845,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H15",
@@ -5560,6 +6892,14 @@
 					"stat": "phys_atk"
 				}
 			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
 			"prerequisites": {
 				"abilities": [
 					"H18",
