@@ -497,10 +497,10 @@ func _update_casts() -> void:
 						emit({"type": "whiff", "source": a.id, "ability": ability.id, "tile": a.tile()})
 			"timing":
 				if c.has("hold_from"):
-					# Still held when its zone ends: judged as let go right then.
-					var zone: Vector2 = c.hold_zone
-					if now + 0.0001 >= float(c.start) + zone.x + zone.y:
-						_resolve_timing(a, TimingBarDef.judge_hold(zone, c.hold_from, zone.x + zone.y), zone.x + zone.y)
+					# Still held when the bar ends (a release may be on its way): judged
+					# as let go at the bar's end, late by the gap after the zone.
+					if now + 0.0001 >= c.end + rules.timing_press_grace_seconds:
+						_resolve_hold(a, float(c.end) - float(c.start))
 				# No press came (or it was lost on the way): cast at miss power.
 				elif now + 0.0001 >= c.end + rules.timing_press_grace_seconds:
 					_resolve_timing(a, TimingBarDef.Grade.MISS, -1.0)
@@ -537,26 +537,38 @@ func _intent_timing_release(hero: Hero, at: float) -> String:
 	var c: Dictionary = hero.casting
 	if c.is_empty() or c.kind != "timing" or not c.has("hold_from"):
 		return ""
-	at = clampf(at, float(c.hold_from), now - float(c.start) + TIMING_CLOCK_SLACK)
-	_resolve_timing(hero, TimingBarDef.judge_hold(c.hold_zone, c.hold_from, at), at)
+	at = clampf(at, float(c.hold_from), minf(now - float(c.start) + TIMING_CLOCK_SLACK, float(c.end) - float(c.start)))
+	_resolve_hold(hero, at)
 	return ""
+
+
+## Ends a hold let go `release` seconds into the bar: graded and powered by its
+## accuracy (TimingBarDef.hold_accuracy).
+func _resolve_hold(caster: Actor, release: float) -> void:
+	var c: Dictionary = caster.casting
+	var accuracy := TimingBarDef.hold_accuracy(c.hold_zone, c.hold_from, release)
+	_resolve_timing(caster, TimingBarDef.hold_grade(accuracy), release,
+			TimingBarDef.hold_power(accuracy, rules.timing_miss_power), accuracy)
 
 
 const TIMING_CLOCK_SLACK := 0.3
 
 
 ## Ends `caster`'s timing bar and casts its ability: full power for GOOD (a green
-## zone, or a hold held long enough), full power and sure crits for PERFECT (a
-## yellow zone), rules.timing_miss_power for MISS. `at`: where the press (or the
-## hold's release) was, seconds into the bar; < 0: no press. Mana and cooldown are
-## paid now, like a cast time.
-func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float) -> void:
+## zone), full power and sure crits for PERFECT (a yellow zone, or a hold of
+## HOLD_PERFECT accuracy), rules.timing_miss_power for MISS; `power` overrides it
+## (a hold in between). `at`: where the press (or the hold's release) was, seconds
+## into the bar; < 0: no press. `accuracy`: a hold's, for the result (else -1).
+## Mana and cooldown are paid now, like a cast time.
+func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float, power: float = -1.0,
+		accuracy: float = -1.0) -> void:
 	var c: Dictionary = caster.casting
 	var ability: AbilityDef = c.ability
 	caster.casting = {}
-	var power := rules.timing_miss_power if grade == TimingBarDef.Grade.MISS else 1.0
+	if power < 0.0:
+		power = rules.timing_miss_power if grade == TimingBarDef.Grade.MISS else 1.0
 	emit({"type": "timing_result", "source": caster.id, "ability": ability.id,
-			"grade": TimingBarDef.grade_name(grade), "at": at})
+			"grade": TimingBarDef.grade_name(grade), "at": at, "accuracy": accuracy})
 	ctx.force_crit = grade == TimingBarDef.Grade.PERFECT
 	var r := _finish_cast(caster, ability, get_actor(c.target), c.aim, CastResolver.Pay.COMPLETE, c.bonus * power)
 	ctx.force_crit = false

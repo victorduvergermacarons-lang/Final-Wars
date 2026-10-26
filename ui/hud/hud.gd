@@ -524,7 +524,7 @@ func _on_events(events: Array) -> void:
 		match e.type:
 			"timing_result":
 				if e.source == me:
-					timing_bar.show_result(e.grade, e.at)
+					timing_bar.show_result(e.grade, e.at, float(e.get("accuracy", -1.0)))
 			"game_speed":
 				# The host set it in its own rules; a remote client copies it (the host's
 				# own copy is the same object).

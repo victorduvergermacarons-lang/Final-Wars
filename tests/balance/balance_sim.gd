@@ -230,7 +230,7 @@ static func tree_fight(content, specs: Array, enemy_id: StringName, count: int, 
 ## The bot's right-click on a timing bar: "good" early in the first green zone
 ## (full power, no sure crit), "perfect" in the middle of the first yellow zone,
 ## "miss" never (the bar runs out at miss power). With no green zone, "good" presses
-## at the start of the first blue zone and holds it to its end.
+## at the start of the first blue zone and lets go as it ends.
 static func play_timing_bar(world: WorldSim, h: Hero, skill: String) -> void:
 	var bar: TimingBarDef = h.casting.ability.timing_bar
 	var when := -1.0
@@ -239,8 +239,12 @@ static func play_timing_bar(world: WorldSim, h: Hero, skill: String) -> void:
 	elif skill != "miss" and not bar.zones.is_empty():
 		when = bar.zones[0].x + 0.05
 	elif skill != "miss" and not bar.hold_zones.is_empty():
-		when = bar.hold_zones[0].x # then holds: the host ends it with the zone
-	if h.casting.has("hold_from"):
+		when = bar.hold_zones[0].x # then holds it (below)
+	if h.casting.has("hold_from"): # let go as the zone ends
+		var zone: Vector2 = h.casting.hold_zone
+		var held: float = world.now - float(h.casting.start)
+		if held + 0.0001 >= zone.x + zone.y:
+			world.submit(h.id, {"type": "timing_release", "at": held})
 		return
 	var elapsed: float = world.now - float(h.casting.start)
 	if when >= 0.0 and elapsed + 0.0001 >= when:

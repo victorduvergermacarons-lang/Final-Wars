@@ -415,7 +415,7 @@ func _run() -> void:
 	# 39. Timing bars (steady speed: the full bar = 3 s). Slash under the hero and
 	# above the action bar (bar length follows the ability), a press on its yellow
 	# middle, then the scrolling track; Fire Punch (zones at the end); Water Whip's
-	# 5 s bar with its blue hold zone, held.
+	# 3 s bar with its blue hold zone, held.
 	tz.reset_zone()
 	var dummy: EnemyDef = cd.enemies[&"wolf"].duplicate()
 	dummy.aggro_radius = 0
@@ -454,9 +454,9 @@ func _run() -> void:
 	await _shot("39f_fire_punch", 1)
 	hud.set_timing_bar_mode(TimingBarView.Mode.SCROLL)
 	fresh_cast.call(&"W02")
-	await _until(func(): return into.call() >= 3.0)
+	await _until(func(): return into.call() >= 0.75)
 	hud.input.press_timing_bar()
-	await _until(func(): return into.call() >= 4.0)
+	await _until(func(): return into.call() >= 1.75)
 	await _shot("39g_water_whip_hold_scroll", 1)
 	await _until(func(): return hero.casting.is_empty())
 	await get_tree().create_timer(0.1).timeout
@@ -464,10 +464,15 @@ func _run() -> void:
 	hud.set_timing_bar_mode(TimingBarView.Mode.LENGTH)
 	hud.set_timing_bar_place(TimingBarView.Place.BELOW_HERO)
 	fresh_cast.call(&"W02")
-	await _until(func(): return into.call() >= 3.0)
+	await _until(func(): return into.call() >= 0.75)
 	hud.input.press_timing_bar()
-	await _until(func(): return into.call() >= 4.0)
+	await _until(func(): return into.call() >= 1.75)
 	await _shot("39i_water_whip_hold_length", 1)
+	await _until(func(): return into.call() >= 2.9) # held past the zone: "Let go!"
+	await _shot("39j_water_whip_let_go", 1)
+	await _until(func(): return hero.casting.is_empty())
+	await get_tree().create_timer(0.1).timeout
+	await _shot("39k_water_whip_overheld", 1)
 	hero.casting = {}
 	tz.remove_enemy(dw.id)
 	# 40. The Training Dummy by the entrance, after a Slash.
