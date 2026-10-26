@@ -69,8 +69,8 @@ Rules** tab; per ability, at the end of the Abilities tab:
 Manual and Generated bars are both used by the game. The import refuses: an unknown
 status, a zone it can't read or that goes past its bar, a hold that doesn't end 0.2–0.3 s
 before the bar, a bar with no zones (or zones with no bar), and a "Not implemented" row
-with a bar. It warns about a crit outside every tap, and about several input zones (the
-game takes one press per bar for now). The behavior files no longer hold bars.
+with a bar, and input zones that overlap. It warns about a crit outside every tap.
+Several inputs are played in order (a tap then a hold, e.g. Aimed Shot). The behavior files no longer hold bars.
 
 The import runs only when you run the command above, never while playing: the game
 loads the already-converted JSON, so bars cost nothing at runtime.

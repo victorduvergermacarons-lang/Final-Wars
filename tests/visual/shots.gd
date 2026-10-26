@@ -474,6 +474,22 @@ func _run() -> void:
 	await get_tree().create_timer(0.1).timeout
 	await _shot("39k_water_whip_overheld", 1)
 	hero.casting = {}
+	# Aimed Shot (4 s): the tap played (a white mark), the hold under way, and the
+	# arrow's line following the cursor (aimed at the end). The aim preview is set
+	# up as PlayerInput does when the key is pressed (the hero hasn't learned it).
+	hud.set_timing_bar_place(TimingBarView.Place.ACTION_BAR)
+	fresh_cast.call(&"B02")
+	hud.input._aiming = {"ability": cd.abilities[&"B02"], "action": &"", "mouse": Vector2.ZERO,
+			"during_bar": true, "sent_at": session.render_time(), "bar_start": -1.0}
+	await _until(func(): return into.call() >= 0.4)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 1.0)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 2.2)
+	await _shot("39l_aimed_shot_tap_then_hold", 1)
+	hero.casting = {}
+	hud.input.cancel_aiming()
+	hud.set_timing_bar_place(TimingBarView.Place.BELOW_HERO)
 	tz.remove_enemy(dw.id)
 	# 40. The Training Dummy by the entrance, after a Slash.
 	var mannequin: Enemy = tz.enemies().filter(func(e): return e.def.training_dummy)[0]

@@ -18,6 +18,8 @@ var pierce: bool = false
 var hit_ids := {}
 ## Damage bonus fixed at launch (e.g. Kindle).
 var damage_bonus: float = 1.0
+## Every hit is a critical (a timing bar's critical success), fixed at launch.
+var force_crit: bool = false
 
 
 ## How many tiles along the path it has travelled (fractional).

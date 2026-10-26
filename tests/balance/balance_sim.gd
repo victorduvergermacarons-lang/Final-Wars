@@ -227,27 +227,27 @@ static func tree_fight(content, specs: Array, enemy_id: StringName, count: int, 
 			"mana_left_pct": roundi(mana * 100)}
 
 
-## The bot's right-click on a timing bar: "good" early in the first green zone
-## (full power, no sure crit), "perfect" in the middle of the first yellow zone,
-## "miss" never (the bar runs out at miss power). With no green zone, "good" presses
-## at the start of the first blue zone and lets go as it ends.
+## The bot's play on a timing bar, one input at a time (TimingBarDef.inputs): a tap
+## early in its green zone ("good": full power, no sure crit) or in the middle of
+## its first yellow zone ("perfect"); a hold pressed as its zone starts and let go
+## as it ends; "miss" plays nothing (the bar runs out at miss power).
 static func play_timing_bar(world: WorldSim, h: Hero, skill: String) -> void:
-	var bar: TimingBarDef = h.casting.ability.timing_bar
-	var when := -1.0
-	if skill == "perfect" and not bar.crit_zones.is_empty():
-		when = bar.crit_zones[0].x + bar.crit_zones[0].y / 2.0
-	elif skill != "miss" and not bar.zones.is_empty():
-		when = bar.zones[0].x + 0.05
-	elif skill != "miss" and not bar.hold_zones.is_empty():
-		when = bar.hold_zones[0].x # then holds it (below)
-	if h.casting.has("hold_from"): # let go as the zone ends
-		var zone: Vector2 = h.casting.hold_zone
-		var held: float = world.now - float(h.casting.start)
-		if held + 0.0001 >= zone.x + zone.y:
-			world.submit(h.id, {"type": "timing_release", "at": held})
+	var c: Dictionary = h.casting
+	var elapsed: float = world.now - float(c.start)
+	if c.has("hold_from"):
+		var zone: Vector2 = c.hold_zone
+		if elapsed + 0.0001 >= zone.x + zone.y:
+			world.submit(h.id, {"type": "timing_release", "at": elapsed})
 		return
-	var elapsed: float = world.now - float(h.casting.start)
-	if when >= 0.0 and elapsed + 0.0001 >= when:
+	var inputs: Array = (c.ability as AbilityDef).timing_bar.inputs()
+	var i: int = c.get("next_input", 0)
+	if skill == "miss" or i >= inputs.size():
+		return
+	var input: Dictionary = inputs[i]
+	var when: float = input.zone.x if input.kind == "hold" else input.zone.x + 0.05
+	if skill == "perfect" and not input.crits.is_empty():
+		when = input.crits[0].x + input.crits[0].y / 2.0
+	if elapsed + 0.0001 >= when:
 		world.submit(h.id, {"type": "timing_press", "at": elapsed})
 
 

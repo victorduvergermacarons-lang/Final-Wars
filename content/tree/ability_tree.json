@@ -5076,22 +5076,17 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 0.8,
-				"taps": [
+				"status": "manual",
+				"seconds": 2.0,
+				"taps": [],
+				"crits": [],
+				"holds": [
 					[
-						0.3,
-						0.25
+						0.25,
+						1.5
 					]
 				],
-				"crits": [
-					[
-						0.4,
-						0.1
-					]
-				],
-				"holds": [],
-				"notes": "Bow: quick shot, middle beat."
+				"notes": "Designer's bar: hold 1.5 s at the end, ending 0.25 s before the bar. The arrow flies where the cursor points when you let go."
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -5130,17 +5125,27 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 1.5,
-				"taps": [],
-				"crits": [],
-				"holds": [
+				"status": "manual",
+				"seconds": 4.0,
+				"taps": [
 					[
-						0.25,
-						1.0
+						0.2,
+						0.4
 					]
 				],
-				"notes": "Bow: drawing = holding; replaces its 1 s draw. The arrow flies when you let go."
+				"crits": [
+					[
+						0.35,
+						0.1
+					]
+				],
+				"holds": [
+					[
+						1.0,
+						2.75
+					]
+				],
+				"notes": "Designer's bar: a tap at the start (nock), then hold to the end (draw), ending 0.25 s before the bar. Replaces its 1 s draw. Fires where the cursor points when you let go."
 			},
 			"prerequisites": {
 				"abilities": [],

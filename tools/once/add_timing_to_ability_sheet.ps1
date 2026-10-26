@@ -1,9 +1,11 @@
-# One-off (2026-10-26), kept for the record. Run from the project folder:
-#   powershell -File tools/once/add_timing_to_ability_sheet.ps1 -Path (Resolve-Path design/Ability_Tree.xlsx).Path
-# Adds the timing design to design/Ability_Tree.xlsx through Excel (keeps its formatting):
-# four columns on the Abilities tab and a "Timing Rules" tab. ASCII only: dashes in
-# zone ranges are turned into en dashes here.
-param([string]$Path)
+# Writes the timing design into design/Ability_Tree.xlsx through Excel (keeps its
+# formatting): four columns on the Abilities tab and the "Timing Rules" tab (rebuilt
+# each run). Run from the project folder:
+#   powershell -File tools/once/add_timing_to_ability_sheet.ps1 -Path (Resolve-Path design/Ability_Tree.xlsx).Path [-Only B01,B02]
+# First run (2026-10-26): adds the columns and every design below. Once the columns
+# exist, only the rows named in -Only are rewritten (so edits made in the sheet stay).
+# ASCII only: dashes in zone ranges are turned into en dashes here.
+param([string]$Path, [string[]]$Only = @())
 
 $dash = [string][char]0x2013
 $M = "Manual"
@@ -39,8 +41,8 @@ $design = [ordered]@{
   "E04" = @($G, 0, "", "No bar: a taunt.")
   "E05" = @($G, 0, "", "No bar: terrain wall.")
   "S04" = @($G, 0, "", "No bar: a dash then a strike (dashes have no bar).")
-  "B01" = @($G, 0.8, "Tap 0.30-0.55; Crit 0.40-0.50", "Bow: quick shot, middle beat.")
-  "B02" = @($G, 1.5, "Hold 0.25-1.25", "Bow: drawing = holding; replaces its 1 s draw. The arrow flies when you let go.")
+  "B01" = @($M, 2.0, "Hold 0.25-1.75", "Designer's bar: hold 1.5 s at the end, ending 0.25 s before the bar. The arrow flies where the cursor points when you let go.")
+  "B02" = @($M, 4.0, "Tap 0.20-0.60; Crit 0.35-0.45; Hold 1.00-3.75", "Designer's bar: a tap at the start (nock), then hold to the end (draw), ending 0.25 s before the bar. Replaces its 1 s draw. Fires where the cursor points when you let go.")
   "H01" = @($G, 1.2, "Tap 0.80-1.10; Crit 0.95-1.05", "Hammer: a late heavy beat; replaces its 0.3 s wind-up.")
   "H02" = @($G, 1.5, "Tap 1.00-1.40; Crit 1.25-1.35", "Hammer: a late heavy beat.")
 }
@@ -53,7 +55,21 @@ try {
   $ws = $wb.Worksheets.Item("Abilities")
   $rows = $ws.UsedRange.Rows.Count
   $skipColumns = [string]$ws.Cells.Item(1, 21).Text -ne ""
-  if ($skipColumns) { "Abilities columns already there: kept as they are" } else {
+  if ($skipColumns) {
+    $done = 0
+    for ($r = 2; $r -le $rows; $r++) {
+      $id = [string]$ws.Cells.Item($r, 1).Text
+      if ($Only -contains $id -and $design.Contains($id)) {
+        $d = $design[$id]
+        $ws.Cells.Item($r, 21).Value2 = $d[0]
+        if ($d[1] -gt 0) { $ws.Cells.Item($r, 22).Value2 = [double]$d[1] } else { $ws.Cells.Item($r, 22).Value2 = "none" }
+        $ws.Cells.Item($r, 23).Value2 = ([string]$d[2]).Replace("-", $dash)
+        $ws.Cells.Item($r, 24).Value2 = $d[3]
+        $done++
+      }
+    }
+    "Columns already there; rows rewritten: $done"
+  } else {
 
   # Formats of the Notes column (T) for the four new columns.
   [void]$ws.Range("T1:T$rows").Copy()
@@ -125,7 +141,8 @@ try {
   Line "Which abilities" "Important abilities get long bars, quick ones short bars. Instants never have a bar: dashes, interrupts, potions, and for now buffs, taunts and terrain (timing has nothing to scale on them yet)."
   Line "Starting a bar" "The global cooldown starts with the bar. Mana and the ability's cooldown are paid when it goes off. The bar replaces any cast time or wind-up the ability had (Aimed Shot's draw, Smash's wind-up)."
   Line "Cancelling" "Moving, a stun, an interrupt, or a Targeted target leaving range or line of sight cancels the bar; the cooldown is not spent."
-  Line "One input per bar" "For now a bar takes one input: a tap casts the ability at once, a hold casts it when let go. The sheet already accepts several zones per bar (for future complex spells); the game then counts only the first press."
+  Line "Inputs in order" "A bar may ask for several inputs (taps and holds), played in order, one press each (Aimed Shot: a tap, then a hold). A press goes to the next input whose window isn't over; an input skipped or never played counts as a miss. The ability goes off when the last input is played (a tap at once, a hold when let go), or when the bar ends."
+  Line "Aimed abilities" "Skillshots and ground abilities with a bar start their bar as soon as the key is pressed; the affected tiles follow the cursor during the bar, and the ability fires where the cursor points at the last input (a ground target beyond range is pulled back to the edge of the range). Aimed abilities without a bar (Flame Dash, Raise Pillar, Earth Wall) still aim first: hold the key, release to cast."
   Line "Who plays them" "Heroes only. Enemies cast the same abilities straight away, without a bar."
   Gap
 
@@ -142,9 +159,10 @@ try {
   Table @("Miss", "Outside the zones, or no press", "Accuracy 50% or less", "70%", "Normal chance (Crit Rate)")
   Table @("Success", "Inside a green zone", "Accuracy between 50% and 95%", "Tap: 100%. Hold: rises steadily from 70% (at 50%) to 100% (at 95%)", "Normal chance (Crit Rate)")
   Table @("Critical success", "Inside a yellow zone", "Accuracy 95% or more", "100%", "Guaranteed on every hit")
+  Line "Several inputs" "The bar's power is the average of its inputs' powers (a tap 70% or 100%, a hold 70% to 100% by accuracy). Critical success only if every input is perfect (a yellow tap, a 95%+ hold); a miss only if every input is a miss; otherwise a success. The accuracy shown is the inputs' average (a tap counts 100% when hit, 0% when missed)."
   Line "What power scales" "Damage (direct hits, damage over time, burning ground), healing, heals over time and shields. Buff sizes and durations are not scaled."
   Line "Critical hit" "A critical multiplies the amount by 1 + (50 + Crit Damage) / 100, i.e. x1.5 with no Crit Damage."
-  Line "Shown on screen" "Above the bar for 0.8 s: Miss, Good or Perfect!; a hold adds its accuracy, e.g. Good 88%."
+  Line "Shown on screen" "Above the bar for 0.8 s: Miss, Good or Perfect!; a bar with a hold or several inputs adds its accuracy, e.g. Good 88%."
   Gap
 
   Section "Holds"
@@ -172,9 +190,9 @@ try {
   Section "Writing the timing columns (Abilities tab)"
   Line "Timing Status" "Manual (the designer's own), Generated (AI, not yet confirmed) (an AI draft to review), or Not implemented. Manual and Generated designs are both in the game."
   Line "Timing Bar (s)" "The bar's length in seconds, or 'none' for an ability that has no bar (an instant)."
-  Line "Timing Zones" "Zones separated by ';', each 'Tap a~b', 'Crit a~b' or 'Hold a~b', in seconds from the bar's start (for example 'Tap 0.35~0.65; Crit 0.45~0.55' or 'Hold 0.75~2.75'). Dots or commas for decimals; '-' or '~' between the numbers."
+  Line "Timing Zones" "Zones separated by ';', each 'Tap a~b', 'Crit a~b' or 'Hold a~b', in seconds from the bar's start (for example 'Tap 0.35~0.65; Crit 0.45~0.55' or 'Hold 0.75~2.75', or a tap then a hold: 'Tap 0.20~0.60; Crit 0.35~0.45; Hold 1.00~3.75'). Dots or commas for decimals; '-' or '~' between the numbers."
   Line "Timing Notes" "Free text: the idea behind the design."
-  Line "After editing" "Re-import the sheet (docs/ability-import.md). The import checks that every zone is inside its bar, that holds end 0.2~0.3 s before the bar, that crits sit inside a tap, and that the numbers read; it refuses the file otherwise."
+  Line "After editing" "Re-import the sheet (docs/ability-import.md). The import checks that every zone is inside its bar, that holds end 0.2~0.3 s before the bar, that crits sit inside a tap, that inputs don't overlap, and that the numbers read; it refuses the file otherwise."
   Gap
 
   Section "Tunable values (ask to change them)"

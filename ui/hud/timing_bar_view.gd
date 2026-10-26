@@ -115,15 +115,24 @@ func _bar_size() -> Vector2:
 ## or where the result was judged.
 func _shown_time(seconds: float) -> float:
 	var t: float = hud.session.render_time() - float(_shown.start)
-	var press: Dictionary = hud.client.timing_press
-	if float(press.get("start", -1.0)) == float(_shown.start):
-		if not press.get("holding", false):
-			t = float(press.at)
-		elif press.has("release"):
-			t = float(press.release)
+	# Every input played (the last one a tap, or a hold let go): stop where it ended.
+	var presses := _presses()
+	var bar: TimingBarDef = _shown.bar
+	if not presses.is_empty() and int(hud.client.timing_press.get("next", 0)) >= bar.inputs().size():
+		var last: Dictionary = presses.back()
+		if not last.holding:
+			t = float(last.at)
+		elif last.has("release"):
+			t = float(last.release)
 	if not _result.is_empty():
 		t = float(_result.at) if float(_result.at) >= 0.0 else seconds
 	return clampf(t, 0.0, seconds)
+
+
+## The local presses on the bar being shown (PlayerInput keeps them in ClientState).
+func _presses() -> Array:
+	var state: Dictionary = hud.client.timing_press
+	return state.get("presses", []) if float(state.get("start", -1.0)) == float(_shown.start) else []
 
 
 ## Where `time` (seconds into the bar) is drawn when the bar shows time `t`.
@@ -157,21 +166,29 @@ func _draw() -> void:
 		_fill(_span(z.x, z.x + z.y, t, top, s), YELLOW)
 	for z in bar.hold_zones:
 		_fill(_span(z.x, z.x + z.y, t, top, s), BLUE)
-	# What has been held so far: light blue inside the zone, red where it was
-	# mistimed (pressed before the zone, or still held after it).
-	var press: Dictionary = hud.client.timing_press
-	var holding: bool = float(press.get("start", -1.0)) == float(_shown.start) and press.get("holding", false)
-	var over := false # held past the zone's end
-	if holding:
-		var zone: Variant = bar.hold_zone_at(float(press.at))
-		if zone != null:
-			var from := float(press.at)
-			var held_to: float = float(press.get("release", t))
+	# What has been played so far: each hold light blue inside its zone and red where
+	# it was mistimed (pressed before the zone, or still held after it); each tap a
+	# small white mark (more inputs may follow, so the cursor keeps going).
+	var inputs := bar.inputs()
+	var holding := false # a hold in progress
+	var over := false # …held past its zone's end
+	for p in _presses():
+		var input: Dictionary = inputs[int(p.index)]
+		var from := float(p.at)
+		if p.holding:
+			var zone: Vector2 = input.zone
+			var held_to: float = float(p.get("release", t))
 			var zone_end: float = zone.x + zone.y
 			_fill(_span(from, minf(held_to, zone.x), t, top, s), MISTIMED)
 			_fill(_span(maxf(from, zone.x), minf(held_to, zone_end), t, top, s), BLUE_HELD)
 			_fill(_span(zone_end, held_to, t, top, s), MISTIMED)
-			over = held_to > zone_end
+			if not p.has("release"):
+				holding = true
+				over = held_to > zone_end
+		else:
+			var px := _x(from, t)
+			if px >= 0.0 and px <= s.x:
+				draw_rect(Rect2(px - 1, top + 2, 2, s.y - 4), Color(1, 1, 1, 0.8))
 	if mode == Mode.SCROLL:
 		# Where the ability's bar starts and ends, sliding along with the zones.
 		for edge in [0.0, seconds]:
@@ -195,7 +212,7 @@ func _draw() -> void:
 			text += " %d%%" % roundi(float(_result.accuracy) * 100.0) # a hold's accuracy
 		color = GRADE_COLOR.get(_result.grade, Color.WHITE)
 		font_size = 22
-	elif holding and not press.has("release"):
+	elif holding:
 		text = "Let go!" if over else "Hold!"
 		color = MISTIMED if over else BLUE_HELD
 	var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x

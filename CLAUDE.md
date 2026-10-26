@@ -532,21 +532,41 @@ and the player right-clicks on its zones.
   Behavior files no longer hold bars. No runtime cost: the import runs offline.
 - **Which abilities** (test lengths, not balanced):
   - Manual (the user's): Slash 1 s (tap 0.35–0.65, crit 0.45–0.55), Fire Punch 1 s
-    (tap 0.7–1.0, crit 0.9–1.0), Water Whip 3 s (hold 0.75–2.75).
+    (tap 0.7–1.0, crit 0.9–1.0), Water Whip 3 s (hold 0.75–2.75), Quick Shot 2 s (hold
+    0.25–1.75), Aimed Shot 4 s (tap 0.2–0.6 with crit 0.35–0.45, then hold 1.0–3.75).
   - Generated (AI drafts, in the game, to be confirmed), by tree feel: Fire late snaps
     (F02, F03, F06–F09), Water holds (W01, W04–W07, W09), Air early beats (A01, A05),
-    Earth one heavy late beat (E01), Bow a quick middle beat (B01) and a hold for the
-    draw (B02), Hammer late heavy beats (H01, H02). Instants marked "none": F04, F05,
-    W03, W08, A02, A03, E03, E04, E05, S04 (dashes, interrupts, buffs, taunt, terrain).
+    Earth one heavy late beat (E01), Hammer late heavy beats (H01, H02). Instants
+    marked "none": F04, F05, W03, W08, A02, A03, E03, E04, E05, S04 (dashes,
+    interrupts, buffs, taunt, terrain).
   - The other 113 abilities: Not implemented.
   - A bar replaces the ability's cast time or wind-up (Aimed Shot's draw, Smash's).
+- **Several inputs** (2026-10-26, Aimed Shot first): a bar's inputs (each tap zone with
+  the crits inside it, each hold zone; `TimingBarDef.inputs()`) are played in order,
+  one press each. A press goes to the next input whose window isn't over
+  (`input_for_press`); skipped or unplayed inputs are misses. The ability goes off
+  after the last input (or at the bar's end). Power = the inputs' average; a sure crit
+  only if every input is perfect; MISS only if every input missed (`combine`). The
+  accuracy shown is the average (a tap: 100% hit, 0% missed). Input zones can't
+  overlap (import check).
+- **Aimed abilities aim at the end** (2026-10-26): a skillshot or ground ability with a
+  bar starts its bar as soon as the key is pressed (no aim-then-release); the affected
+  tiles follow the cursor during the bar (`PlayerInput._start_bar_aiming`), each input
+  carries the cursor (`aim` on `timing_press` / `timing_release`), and it fires where
+  the last one pointed. A ground aim beyond range is pulled back to the edge of it
+  (`WorldSim._clamp_aim`), at the start and at each input. A hold still held when the
+  bar ends is let go by the client then, with the final aim. Aimed abilities without a
+  bar keep aim-then-release.
+- **Crits travel:** a critical success is carried by the projectile or delayed hit
+  (lob, telegraphed area) it launches (`Projectile.force_crit`, the pending hit's
+  `force_crit`), like the damage bonus.
 - **What power scales:** damage (through the damage bonus), and since 2026-10-26
   healing, heals over time and shields (`CombatContext.timing_power`). Buffs aren't scaled.
 - **Test switch:** `CombatRules.timing_bars_enabled` (on); tests of ability effects turn
   it off so abilities go off at once.
 - **Rules (a cast kind `timing`):**
   - The GCD starts with the bar; mana and cooldown are paid when it goes off.
-  - One press per bar for now: a tap casts the ability at once, a hold when let go.
+  - A tap that is the last input casts the ability at once, a hold when let go.
   - Moving, a stun, an interrupt or the target leaving range cancels it (cooldown
 	not spent).
   - Enemies cast these abilities without a bar.
@@ -1426,6 +1446,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-26 | Quick Shot: 2 s bar, hold 0.25–1.75. Aimed Shot: 4 s, a tap at the start, then a hold to the end. Aimed abilities (skillshots and ground) with a bar start at the key press and fire where the cursor points at the last input | User request and choices: skillshots and ground both aim at the end; Aimed Shot as tap 0.2–0.6 (yellow 0.35–0.45), pause, hold 1.0–3.75; several inputs average their power, crit only if all are perfect. My choices: holds end 0.25 s early (the user's rule); a press goes to the next input whose window isn't over, skipped inputs are misses; ground aims beyond range are pulled back to its edge; the client lets a hold go at the bar's end with the final aim; crits now travel with projectiles and delayed hits; input zones can't overlap (import check); the level-6 drake target became pending (the group now always wins: the bots' fight plays out differently, not a bug, checked). |
 | 2026-10-26 | Timing design in `design/Ability_Tree.xlsx`: four columns (Timing Status: Manual / Generated (AI, not yet confirmed) / Not implemented; Timing Bar (s); Timing Zones; Timing Notes) and a Timing Rules tab; the sheet is now the source of truth for bars; AI drafts for the other 29 playable abilities, in the game | User request and choices (columns + rules tab; drafts for the 29 and in game; tunable values listed); "choose the best option" for the source: the sheet, since the import runs offline (no lag) and one readable place suits complex multi-input spells later. My choices: the zone syntax (`Tap a–b; Crit a–b; Hold a–b`), the import checks, the 29 drafts by tree feel, instants (dashes, interrupts, buffs, taunt, terrain) get "none", bars replace cast times and wind-ups, timing power now also scales healing and shields, a `timing_bars_enabled` test switch, one more balance target pending (caster vs Shaman). |
 | 2026-10-26 | Holds: a hold zone ends 0.2–0.3 s before its bar; accuracy loses the mistiming at both ends in proportion; 95%+ = crit, 50% or less = miss, power rises steadily in between; Water Whip 3 s | User rule. My choices: accuracy = 1 − (press error + release error) ÷ zone length, so holding past the zone counts too; power 0.7 → 1 linearly from 50% to 95%; a hold still held at the bar's end is judged as let go then; Water Whip keeps its 2 s hold (0.75–2.75 s); held-past and pressed-early parts drawn red, "Let go!" past the zone; results show a hold's percentage. |
 | 2026-10-26 | Timing bar options corrected: under the hero or above the action bar only; steady speed only, as "length follows the ability" or "zones slide to a fixed hit line" (sliding mode and "over the hero" removed). Fire Punch gets a 1 s bar with its zones at the end; Water Whip a 5 s bar with a new blue hold zone (last 2 s) | User correction and request (lengths are for tests, balance ignored). My choices: the hit line sits 0.4 s from the bar's left edge; a hold may start 0.2 s early and needs 90% of its zone held; it's judged on release, or when the zone ends while still held; letting go early = miss power; "Hold!" shows while holding; held part drawn lighter blue; a saved "over the hero" setting reads as under the hero. |

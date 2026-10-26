@@ -142,6 +142,8 @@ func test_timing_validation() -> void:
 	assert_string_contains(errs.call(["Manual", "3", "Hold 0.5–2.5", ""]), "must end 0.2–0.3 s before the bar")
 	assert_string_contains(errs.call(["Manual", "1", "", ""]), "no zones")
 	assert_string_contains(errs.call(["Not implemented", "1", "Tap 0.1–0.2", ""]), "Not implemented")
+	assert_string_contains(errs.call(["Manual", "4", "Tap 0.2–1.2; Hold 1.0–3.75", ""]), "input zones overlap")
+	assert_eq(errs.call(["Manual", "4", "Tap 0.2–0.6; Crit 0.35–0.45; Hold 1.0–3.75", ""]), "", "a tap then a hold")
 
 
 func test_the_sheet_gives_the_game_its_bars() -> void:

@@ -261,6 +261,95 @@ func _whip_again() -> void:
 	_whip()
 
 
+func test_bow_bars() -> void:
+	var quick: TimingBarDef = db.abilities[&"B01"].timing_bar
+	assert_eq(quick.seconds, 2.0)
+	assert_eq(quick.hold_zones, [Vector2(0.25, 1.5)] as Array[Vector2], "hold 1.5 s, ending 0.25 s early")
+	var aimed: TimingBarDef = db.abilities[&"B02"].timing_bar
+	assert_eq(aimed.seconds, 4.0)
+	var inputs := aimed.inputs()
+	assert_eq(inputs.size(), 2, "a tap, then a hold")
+	assert_eq(inputs[0].kind, "tap")
+	assert_eq(inputs[0].zone, Vector2(0.2, 0.4))
+	assert_eq(inputs[0].crits, [Vector2(0.35, 0.1)] as Array[Vector2])
+	assert_eq(inputs[1].kind, "hold")
+	assert_eq(inputs[1].zone, Vector2(1.0, 2.75))
+
+
+func test_inputs_in_order() -> void:
+	var bar: TimingBarDef = db.abilities[&"B02"].timing_bar
+	assert_eq(bar.input_for_press(0, 0.1), 0, "early: still the tap (a miss)")
+	assert_eq(bar.input_for_press(0, 0.4), 0)
+	assert_eq(bar.input_for_press(0, 1.0), 1, "the tap's window is over: it's skipped")
+	assert_eq(bar.input_for_press(1, 3.9), 2, "nothing left")
+	var miss: float = db.rules.timing_miss_power
+	var both := TimingBarDef.combine([TimingBarDef.tap_result(TimingBarDef.Grade.PERFECT, miss),
+			TimingBarDef.hold_result(1.0, miss)])
+	assert_eq(both.grade, TimingBarDef.Grade.PERFECT, "every input perfect: a crit")
+	var one := TimingBarDef.combine([TimingBarDef.missed_input("tap", miss), TimingBarDef.hold_result(1.0, miss)])
+	assert_eq(one.grade, TimingBarDef.Grade.GOOD)
+	assert_almost_eq(one.power, (miss + 1.0) / 2.0, 0.001, "the average")
+	assert_almost_eq(one.accuracy, 0.5, 0.001)
+
+
+## Aimed Shot on the wolf: optional tap at `tap_at` (< 0: none), then the hold.
+func _aimed_shot(tap_at: float) -> Array:
+	assert_eq(sim.cast(hero, db.abilities[&"B02"], null, Vector2(wolf.tile())), AbilityResolver.Result.OK)
+	world.step()
+	var events := []
+	if tap_at >= 0.0:
+		events.append_array(world.advance(tap_at - (world.now - float(hero.casting.start))))
+		world.submit(hero.id, {"type": "timing_press", "at": tap_at})
+		events.append_array(world.step())
+		assert_false(hero.casting.is_empty(), "a tap isn't the last input: the bar goes on")
+	events.append_array(world.advance(1.0 - (world.now - float(hero.casting.start))))
+	world.submit(hero.id, {"type": "timing_press", "at": 1.0})
+	events.append_array(world.step())
+	events.append_array(world.advance(3.75 - (world.now - float(hero.casting.start))))
+	world.submit(hero.id, {"type": "timing_release", "at": 3.75})
+	events.append_array(world.advance(1.0))
+	return events
+
+
+func test_aimed_shot_tap_then_hold() -> void:
+	var events := _aimed_shot(0.4)
+	assert_eq(_result(events).get("grade", ""), "perfect", "a yellow tap and a spot-on hold")
+	var hit := {}
+	for e in events:
+		if e.type == "damage" and e.ability == &"B02":
+			hit = e
+	assert_true(hit.get("crit", false), "a sure crit")
+
+
+func test_skipping_the_tap_halves_the_score() -> void:
+	var events := _aimed_shot(-1.0)
+	var r := _result(events)
+	assert_eq(r.get("grade", ""), "good")
+	assert_almost_eq(float(r.accuracy), 0.5, 0.01, "tap missed (0%), hold perfect (100%)")
+
+
+func test_aimed_bars_fire_where_the_last_input_points() -> void:
+	# Fire Dart (0.8 s, tap 0.5–0.75), started aimed away from the wolf…
+	var away := Vector2(hero.tile() - (wolf.tile() - hero.tile()) * 3)
+	assert_eq(sim.cast(hero, db.abilities[&"F03"], null, away), AbilityResolver.Result.OK)
+	world.step()
+	world.advance(0.55 - (world.now - float(hero.casting.start)))
+	# …and the press points at it: the dart flies at the wolf.
+	world.submit(hero.id, {"type": "timing_press", "at": 0.55, "aim": Vector2(wolf.tile())})
+	var events := world.advance(1.0)
+	assert_true(events.any(func(e): return e.type == "damage" and e.target == wolf.id and e.ability == &"F03"))
+
+
+func test_ground_bars_start_beyond_range_and_land_at_its_edge() -> void:
+	var far := Vector2(hero.tile()) + Vector2(20, 0)
+	assert_eq(sim.cast(hero, db.abilities[&"F07"], null, far), AbilityResolver.Result.OK, "Fireball starts anyway")
+	var aim: Vector2 = hero.casting.aim
+	assert_lte(hero.range_to(Vector2i(aim.round())), db.abilities[&"F07"].max_range, "pulled back into range")
+	assert_gt(aim.x, float(hero.tile().x), "toward where the cursor was")
+
+
 func test_press_intent_shape() -> void:
 	assert_eq(Intents.sanitize({"type": "timing_press", "at": 0.8}).at, 0.8)
 	assert_eq(Intents.sanitize({"type": "timing_press", "at": "now"}), {})
+	assert_eq(Intents.sanitize({"type": "timing_release", "at": 1, "aim": Vector2(3, 4)}).aim, Vector2(3, 4), "an aimed input carries the cursor")
+	assert_eq(Intents.sanitize({"type": "timing_press", "at": 1, "aim": "here"}), {})

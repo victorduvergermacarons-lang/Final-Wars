@@ -349,8 +349,13 @@ static func _timing(cell: Callable, col: Dictionary, where: String, errors: Pack
 	for c in t.crits:
 		if not t.taps.any(func(z): return c[0] >= z[0] - 0.0001 and c[0] + c[1] <= z[0] + z[1] + 0.0001):
 			warnings.append("%s: a Crit zone outside every Tap zone" % where)
-	if t.taps.size() + t.holds.size() > 1:
-		warnings.append("%s: several input zones; the game uses one press per bar for now" % where)
+	# Several inputs are played in order, one press each: their zones can't overlap.
+	var inputs: Array = (t.taps + t.holds).duplicate()
+	inputs.sort_custom(func(x, y): return x[0] < y[0])
+	for i in range(1, inputs.size()):
+		if inputs[i][0] < inputs[i - 1][0] + inputs[i - 1][1] - 0.0001:
+			errors.append("%s: input zones overlap (%s–%s and %s–%s); each input needs its own time" % [where,
+					inputs[i - 1][0], inputs[i - 1][0] + inputs[i - 1][1], inputs[i][0], inputs[i][0] + inputs[i][1]])
 	return t
 
 
