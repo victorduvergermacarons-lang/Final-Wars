@@ -275,6 +275,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				_try_ground(ctx, caster, ability, target, events)
 			if target.is_large():
 				return # a large body (Sunscale Drake) isn't shoved around
+			if target is Enemy and (target as Enemy).def.training_dummy:
+				return # a training dummy stays put
 			var dir := TileGeometry.snap8(Vector2((caster.tile() - target.tile()) if pull else (target.tile() - caster.tile())))
 			if effect.push_along_cast and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.cast_dir

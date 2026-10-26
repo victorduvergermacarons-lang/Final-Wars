@@ -33,6 +33,11 @@ enum Behavior {
 @export var respawn_seconds: float = 30.0
 ## Elites are shown bigger with a gold outline and "Elite" on their name.
 @export var elite: bool = false
+## A training dummy (practice target): never moves, turns or attacks, can't be
+## knocked back or pulled, gives no Mastery, and drops a hero from its threat list
+## once they are past its leash radius (so their combat ends). In the testing
+## grounds it stands by the entrance instead of getting a pen. Drawn as a mannequin.
+@export var training_dummy: bool = false
 ## How far knockbacks and pulls move it (Weight.adjust).
 @export var weight: Weight.Id = Weight.Id.MEDIUM
 ## Played once when the enemy first starts fighting (spotting a hero or being

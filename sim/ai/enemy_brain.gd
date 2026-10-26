@@ -79,6 +79,9 @@ static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Hero:
 
 
 static func _fight(world: WorldSim, enemy: Enemy) -> void:
+	if enemy.def.training_dummy:
+		_stand_as_dummy(world, enemy)
+		return
 	if enemy.threat.is_empty() \
 			or GridModel.distance(enemy.tile(), enemy.home_tile) > enemy.def.leash_radius:
 		_start_evade(world, enemy)
@@ -313,6 +316,18 @@ static func _check_enrage(world: WorldSim, enemy: Enemy) -> void:
 	if enemy.hp < enemy.def.enrage_below * enemy.current_stats(world.now).hp:
 		enemy.buffs.apply(buff, world.now, 0.0, enemy.id, {"duration": 3600.0})
 		world.emit({"type": "enrage", "source": enemy.id, "target": enemy.id, "buff": buff.id})
+
+
+## A training dummy only lets go: heroes who died, left or walked past its leash
+## radius come off its threat list; with nobody left it resets (full health).
+static func _stand_as_dummy(world: WorldSim, enemy: Enemy) -> void:
+	for id in enemy.threat.ids():
+		var hero := world.get_actor(id)
+		if hero == null or not hero.alive \
+				or GridModel.distance(enemy.tile(), hero.tile()) > enemy.def.leash_radius:
+			enemy.threat.remove(id)
+	if enemy.threat.is_empty():
+		_start_evade(world, enemy)
 
 
 static func _start_evade(world: WorldSim, enemy: Enemy) -> void:

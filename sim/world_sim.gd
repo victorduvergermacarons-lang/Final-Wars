@@ -624,7 +624,8 @@ func _credit_mastery(caster: Actor, ability: AbilityDef, events: Array) -> void:
 			continue
 		var t := get_actor(e.get("target", -1))
 		if t is Enemy:
-			levels.append((t as Enemy).level)
+			if not (t as Enemy).def.training_dummy: # practice gives no Mastery
+				levels.append((t as Enemy).level)
 		elif t != null and e.type in ["heal", "buff", "shield"] and hero.in_combat(now):
 			helped = true
 	for e in TreeRules.on_use(hero, ability, levels, helped, rules):

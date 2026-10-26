@@ -29,6 +29,9 @@ const ENTRANCE_WIDTH := 8
 ## The gate back to Millbrook: these columns of the last row.
 const GATE := [3, 4]
 const SHRINE := Vector2i(6, -1) # y: relative to the road (the row above it)
+## Training dummies: the grass corner behind the entrance, west of the first pen's
+## wall (further dummies go 2 rows toward the road each).
+const DUMMY := Vector2i(3, 2)
 
 const LEGEND := {
 	".": "grass", "p": "path", "#": "stone_wall", "b": "bush", "c": "cobble", "x": "cracked",
@@ -38,6 +41,9 @@ const LEGEND := {
 ## Fills `zone` (keeps its id, name, tileset and edges) with pens for `enemies`
 ## (EnemyDefs). `shrine`: the NpcDef of the Reset Shrine (or null).
 static func build(zone: ZoneDef, enemies: Array, shrine: NpcDef = null) -> void:
+	# Training dummies stand by the entrance, not in pens.
+	var dummies: Array = enemies.filter(func(e): return e.training_dummy)
+	enemies = enemies.filter(func(e): return not e.training_dummy)
 	var normal: Array = enemies.filter(func(e): return not e.elite)
 	var bosses: Array = enemies.filter(func(e): return e.elite)
 	var order := func(a, b): return [a.level, String(a.id)] < [b.level, String(b.id)]
@@ -134,6 +140,12 @@ static func build(zone: ZoneDef, enemies: Array, shrine: NpcDef = null) -> void:
 		s.respawn_seconds = zone.enemy_respawn_seconds
 		spawns.append(s)
 		landmarks.append(_landmark("%s (Lv %d)" % [all[i].display_name, all[i].level], Vector2i(xs[i], road - 1)))
+	for i in dummies.size():
+		var s := EnemySpawn.new()
+		s.enemy = dummies[i]
+		s.tile = DUMMY + Vector2i(0, i * 2)
+		s.respawn_seconds = zone.enemy_respawn_seconds
+		spawns.append(s)
 	zone.enemy_spawns = spawns
 	landmarks.append(_landmark("Enemy Testing Grounds", Vector2i(2, road - 1)))
 	if arena_x >= 0:

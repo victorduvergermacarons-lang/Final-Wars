@@ -372,6 +372,15 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   Pens are separated by low stone walls and open onto the road. Today the map is 209×14.
 - **Respawn:** 10 s, from `ZoneDef.enemy_respawn_seconds` (per spawn:
   `EnemySpawn.respawn_seconds`). Grizzlehide doesn't patrol here.
+- **Training Dummy** (2026-10-26, `content/enemies/training_dummy.tres`,
+  `EnemyDef.training_dummy`): a straw mannequin in the grass corner behind the
+  entrance, at (3, 2) (`TestingGrounds.DUMMY`), for practising abilities and timing bars.
+  - HP 1,000,000, no defenses, no attacks, aggro 0; it never moves or turns.
+  - Knockbacks and pulls don't move it.
+  - It gives no XP, AP, loot or Mastery.
+  - Hitting it is a fight (combat rules apply). Walk more than 6 tiles away (its leash
+    radius) and it drops you, so your combat ends; it then resets to full health.
+  - Dummies get no pen or sign; every other enemy still does.
 - **Reset Shrine** (`content/npcs/reset_shrine.tres`, `NpcDef.resets_zone`): talking to
   it runs `WorldSim.reset_zone()`:
   - every enemy goes back to its pen at full health (debug spawns are removed)
@@ -523,12 +532,12 @@ across a big bar, and the player right-clicks while it is on a zone.
   small green cast bar under you. Two options (Escape menu → Gameplay test; saved in
   `user://settings.cfg`):
   - **Where:** under your hero, over your hero (above the name and health bar), or
-    above the action bar. 440×30 above the action bar, half that (220×15) by the hero.
+	above the action bar. 440×30 above the action bar, half that (220×15) by the hero.
   - **Sliding** (default): every bar has that length; the cursor's speed depends on
     the ability. **Steady speed:** the cursor always moves at the same speed and the
-    length follows the ability: the full length = 3 s (`FULL_SECONDS`), so Slash's
-    1 s bar is a third as long, centred. Longer abilities get longer bars, up to the
-    screen's width.
+	length follows the ability: the full length = 3 s (`FULL_SECONDS`), so Slash's
+	1 s bar is a third as long, centred. Longer abilities get longer bars, up to the
+	screen's width.
 - **Balance:** the bots press the green zone. Slash now hits less often, so three
   balance targets are pending (the starter and a lone sword vs a Wolf,
   plus the drake from before) until the planned combat pacing pass, which slows the
@@ -1386,6 +1395,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-26 | Training Dummy in the testing grounds (top-left, behind the entrance) | User request: a mannequin with huge health, no attacks, completely still. My choices: 1,000,000 HP and no defenses (the damage numbers are raw); no Mastery, XP or loot from it (no farming); it lets you out of combat once you walk 6 tiles away; it can't be knocked back; drawn as a straw mannequin; a flag on the enemy data, so more dummies can be added. |
 | 2026-10-26 | Timing bar options: over the hero as a third place; sliding (same length for all) or steady speed (full length = 3 s, shorter abilities shorter, centred) | User request, to compare the two (a scrolling track may follow). My choices: over the hero sits above the name and health bar; steady speed is the second option, sliding stays the default; bars over 3 s grow up to the screen's width. |
 | 2026-10-26 | Slash's bar: 1 s, green 0.3 s, crit zone 0.1 s, both centred; the crit zone is yellow (was blue); under the hero the bar is half as long and half as tall (220×15) | User request. My choices: the zones stay centred (green 0.35–0.65 s, yellow 0.45–0.55 s); "Perfect!" is yellow too; the text keeps its size. |
 | 2026-10-26 | Timing bars, first step: Slash runs a 2 s bar (green 0.5 s in the middle); right-click on green = full power, on blue (its middle) = sure crit, else reduced; the bar under the hero or above the action bar (option) | User brief: rhythm in casting, rewarding good timing; long bars only for important abilities, none for instants; moving cancels; enemies changed later. My choices: miss power 70%; blue 0.1 s wide; one press per bar, which casts at once; the client measures the press and the host judges it (0.25 s grace, 0.3 s slack); GCD at the start, mana and cooldown when it goes off; enemies skip bars; 440×30 bar; the pending balance targets. See **Timing bars**. |

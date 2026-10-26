@@ -614,6 +614,12 @@ func _draw_actor(a: Actor) -> void:
 			if edef.flying and not (a as Enemy).airborne(now):
 				_draw_label(feet + Vector2(0, 22), "Grounded", Color(1, 0.9, 0.4), 11) # knocked out of the air
 			return
+		if edef.training_dummy:
+			_draw_dummy(feet, alpha)
+			_draw_label(body + Vector2(0, -26), a.display_name, Color(1, 0.9, 0.75, alpha))
+			if a.alive:
+				_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
+			return
 		var s := 1.6 if edef.elite else 1.0
 		var diamond := PackedVector2Array([body + Vector2(0, -12) * s, body + Vector2(10, 0) * s,
 				body + Vector2(0, 12) * s, body + Vector2(-10, 0) * s])
@@ -658,6 +664,24 @@ func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
 		var body := plain.get_frame_texture(name, mini(pick.frame, plain.get_frame_count(name) - 1)) if plain != null else tex
 		draw_texture_rect(body, rect, false, Color(FLASH_STRENGTH, FLASH_STRENGTH, FLASH_STRENGTH, color.a))
 	return true
+
+
+## A training dummy: a straw mannequin on a wooden post with a crossbar for arms.
+func _draw_dummy(feet: Vector2, alpha: float) -> void:
+	var wood := Color(0.45, 0.28, 0.14, alpha)
+	var straw := Color(0.86, 0.72, 0.42, alpha)
+	var dark := Color(0.2, 0.12, 0.06, alpha)
+	draw_set_transform(feet + Vector2(0, 1), 0.0, Vector2(1.0, 0.5))
+	draw_circle(Vector2.ZERO, 9, Color(0, 0, 0, 0.3 * alpha)) # shadow
+	draw_set_transform(Vector2.ZERO)
+	draw_line(feet, feet + Vector2(0, -8), wood, 3.0) # post
+	draw_line(feet + Vector2(-11, -18), feet + Vector2(11, -18), wood, 3.0) # arms
+	var torso := Rect2(feet + Vector2(-6, -23), Vector2(12, 16))
+	draw_rect(torso, straw)
+	draw_rect(torso, dark, false, 1.0)
+	draw_line(feet + Vector2(-6, -15), feet + Vector2(6, -15), dark, 1.0) # rope belt
+	draw_circle(feet + Vector2(0, -28), 5, straw) # head
+	draw_arc(feet + Vector2(0, -28), 5, 0, TAU, 16, dark, 1.0)
 
 
 ## A bar under a unit that is casting (yellow), winding up (red) or channelling

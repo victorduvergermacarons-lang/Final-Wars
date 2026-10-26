@@ -37,7 +37,8 @@ func test_every_enemy_type_has_exactly_one_pen() -> void:
 	assert_true(count.has(&"salamander_hound"))
 	var signs := zone.landmarks.map(func(l): return l.name)
 	for s in zone.enemy_spawns:
-		assert_true(signs.has("%s (Lv %d)" % [s.enemy.display_name, s.enemy.level]), "sign for %s" % s.enemy.id)
+		if not s.enemy.training_dummy: # the dummy stands by the entrance, no pen or sign
+			assert_true(signs.has("%s (Lv %d)" % [s.enemy.display_name, s.enemy.level]), "sign for %s" % s.enemy.id)
 
 
 func test_an_enemy_added_later_gets_a_pen() -> void:
@@ -60,6 +61,8 @@ func test_spacing_keeps_every_fight_away_from_the_neighbours() -> void:
 			var d := GridModel.distance(a.tile, b.tile)
 			assert_gte(d, TestingGrounds.reach(a.enemy) + b.enemy.aggro_radius + TestingGrounds.MARGIN,
 					"%s's fight stays out of %s's sight" % [a.enemy.id, b.enemy.id])
+			if b.enemy.training_dummy:
+				continue # a pack call only calls its own kind
 			assert_gte(d, a.enemy.leash_radius + a.enemy.pack_call_radius + TestingGrounds.MARGIN,
 					"%s's call can't reach %s" % [a.enemy.id, b.enemy.id])
 
@@ -107,6 +110,8 @@ func test_walking_the_whole_road_pulls_nobody() -> void:
 ## standing right next to it: no other enemy may join.
 func test_pulling_one_enemy_to_its_leash_never_pulls_another() -> void:
 	for spawn in zone.enemy_spawns:
+		if spawn.enemy.training_dummy:
+			continue # it never moves (test_training_dummy.gd)
 		for dir in [Vector2i(1, 0), Vector2i(-1, 0)]:
 			var sim := WorldSim.new(zone, db.rules, 2)
 			var hero := _strong_hero(sim)

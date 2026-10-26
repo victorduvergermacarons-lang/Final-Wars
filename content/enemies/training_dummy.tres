@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="1_dummy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="2_dummy"]
+
+[sub_resource type="Resource" id="Resource_dummy"]
+script = ExtResource("2_dummy")
+hp = 1000000.0
+
+[resource]
+script = ExtResource("1_dummy")
+id = &"training_dummy"
+display_name = "Training Dummy"
+level = 1
+stats = SubResource("Resource_dummy")
+aggro_radius = 0
+leash_radius = 6
+xp_reward = 0
+ap_reward = 0
+weight = 2
+training_dummy = true

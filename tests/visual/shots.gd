@@ -447,6 +447,16 @@ func _run() -> void:
 	hud.set_timing_bar_place(TimingBarView.Place.BELOW_HERO)
 	hud.set_timing_bar_sliding(true)
 	tz.remove_enemy(dw.id)
+	# 40. The Training Dummy by the entrance, after a Slash.
+	var mannequin: Enemy = tz.enemies().filter(func(e): return e.def.training_dummy)[0]
+	hero.move.place(mannequin.tile() + Vector2i(0, 1))
+	hero.cooldowns = Cooldowns.new()
+	await _snap_camera(hero)
+	tz.cast(hero, cd.abilities[&"S01"], mannequin)
+	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.5)
+	hud.input.press_timing_bar()
+	await get_tree().create_timer(0.2).timeout
+	await _shot("40_training_dummy", 1)
 	# 38. The Escape menu: the message log, then the controls; the quest tracker
 	# folded to its heading.
 	hud.client.target_id = -1

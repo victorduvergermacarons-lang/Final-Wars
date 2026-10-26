@@ -108,6 +108,8 @@ func test_walk_in_fight_everything_and_walk_back() -> void:
 	var reports := []
 	var road: int = _sim().zone.landmarks[0].tile.y + 1
 	for spawn in _sim().zone.enemy_spawns:
+		if spawn.enemy.training_dummy:
+			continue # a practice target: it can't be beaten
 		var enemy: Enemy = _sim().enemies().filter(func(e): return e.spawn_tile == spawn.tile)[0]
 		_debug("heal")
 		if spawn.enemy.elite:
