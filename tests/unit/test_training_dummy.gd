@@ -50,7 +50,7 @@ func test_data() -> void:
 
 
 func test_takes_hits_and_never_moves_or_attacks() -> void:
-	_hit(&"F01") # Fire Punch
+	_hit(&"A01") # Air Palm (no timing bar)
 	assert_lt(dummy.hp, dummy.stats.hp, "it takes the hit")
 	assert_true(hero.in_combat(world.now), "hitting it is a fight (practice under combat rules)")
 	var events := _run(10.0)
@@ -65,7 +65,7 @@ func test_knockbacks_dont_move_it() -> void:
 
 
 func test_walking_away_ends_the_fight_and_it_resets() -> void:
-	_hit(&"F01")
+	_hit(&"A01")
 	assert_true(hero.in_combat(world.now))
 	hero.move.place(Vector2i(11 + dummy_def.leash_radius + 2, 10))
 	_run(0.5)
@@ -80,9 +80,12 @@ func test_no_mastery_from_practice() -> void:
 	h.move.place(Vector2i(10, 11))
 	dummy.move.place(Vector2i(10, 12))
 	var before := Mastery.permanent(h, "Fire")
-	for i in 5:
+	for i in 5: # Fire Punch (the new hero is learning it), tapped on its green zone
 		world.cast(h, ContentDB.abilities[&"F01"], dummy)
+		_run(0.75)
+		world.submit(h.id, {"type": "timing_press", "at": 0.75})
 		_run(2.5)
+	assert_lt(dummy.hp, dummy.stats.hp, "the punches landed")
 	assert_eq(Mastery.permanent(h, "Fire"), before)
 
 

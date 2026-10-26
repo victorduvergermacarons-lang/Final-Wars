@@ -107,11 +107,11 @@ func set_timing_bar_place(place: int) -> void:
 	SettingsStore.save_ui("timing_bar_place", place, settings_path)
 
 
-## Sliding: every timing bar has the same length; off: the length follows the
-## ability (constant cursor speed). Saved.
-func set_timing_bar_sliding(on: bool) -> void:
-	timing_bar.sliding = on
-	SettingsStore.save_ui("timing_bar_sliding", on, settings_path)
+## The timing bar's mode (TimingBarView.Mode: the bar's length follows the ability,
+## or zones slide toward a fixed hit line), and saves the choice.
+func set_timing_bar_mode(mode: int) -> void:
+	timing_bar.mode = mode
+	SettingsStore.save_ui("timing_bar_mode", mode, settings_path)
 
 
 func _build() -> void:
@@ -166,8 +166,10 @@ func _build() -> void:
 	# The local hero's timing bar (right-click on its zones), under the hero or
 	# above the action bar.
 	timing_bar = TimingBarView.new(self)
-	timing_bar.place = int(SettingsStore.load_ui("timing_bar_place", TimingBarView.Place.BELOW_HERO, settings_path))
-	timing_bar.sliding = bool(SettingsStore.load_ui("timing_bar_sliding", true, settings_path))
+	var saved_place := int(SettingsStore.load_ui("timing_bar_place", TimingBarView.Place.BELOW_HERO, settings_path))
+	timing_bar.place = saved_place if saved_place in TimingBarView.Place.values() else TimingBarView.Place.BELOW_HERO
+	var saved_mode := int(SettingsStore.load_ui("timing_bar_mode", TimingBarView.Mode.LENGTH, settings_path))
+	timing_bar.mode = saved_mode if saved_mode in TimingBarView.Mode.values() else TimingBarView.Mode.LENGTH
 	_root.add_child(timing_bar)
 
 	# Bottom-right: which action bar page is shown (Shift+1–6, or the arrows).

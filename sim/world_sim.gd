@@ -27,6 +27,7 @@ extends RefCounted
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
 ##   {"type": "game_speed", "value": float}   (game clock speed, 0.1–2; same rule as debug)
 ##   {"type": "timing_press", "at": float}   (right-click on a timing bar: seconds since it started)
+##   {"type": "timing_release", "at": float}   (right-click let go, ending a hold on a timing bar)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -495,9 +496,14 @@ func _update_casts() -> void:
 					if r != AbilityResolver.Result.OK:
 						emit({"type": "whiff", "source": a.id, "ability": ability.id, "tile": a.tile()})
 			"timing":
+				if c.has("hold_from"):
+					# Still held when its zone ends: judged as let go right then.
+					var zone: Vector2 = c.hold_zone
+					if now + 0.0001 >= float(c.start) + zone.x + zone.y:
+						_resolve_timing(a, TimingBarDef.judge_hold(zone, c.hold_from, zone.x + zone.y), zone.x + zone.y)
 				# No press came (or it was lost on the way): cast at miss power.
-				if now + 0.0001 >= c.end + rules.timing_press_grace_seconds:
-					_resolve_timing(a, -1.0)
+				elif now + 0.0001 >= c.end + rules.timing_press_grace_seconds:
+					_resolve_timing(a, TimingBarDef.Grade.MISS, -1.0)
 			"channel":
 				while not a.casting.is_empty() and now + 0.0001 >= c.next_tick and c.next_tick <= c.end + 0.0001:
 					c.next_tick += ability.channel_tick_seconds
@@ -513,23 +519,41 @@ func _update_casts() -> void:
 ## little clock slack).
 func _intent_timing_press(hero: Hero, at: float) -> String:
 	var c: Dictionary = hero.casting
-	if c.is_empty() or c.kind != "timing":
-		return "" # the bar already ended (cancelled, or no press in time): nothing to say
-	_resolve_timing(hero, minf(at, now - float(c.start) + TIMING_CLOCK_SLACK))
+	if c.is_empty() or c.kind != "timing" or c.has("hold_from"):
+		return "" # the bar already ended (cancelled, or no press in time), or is held: nothing to say
+	at = minf(at, now - float(c.start) + TIMING_CLOCK_SLACK)
+	var bar: TimingBarDef = c.ability.timing_bar
+	var zone: Variant = bar.hold_zone_at(at)
+	if zone != null: # a hold zone: judged when the button is let go (or the zone ends)
+		c.hold_from = at
+		c.hold_zone = zone
+		return ""
+	_resolve_timing(hero, bar.judge(at), at)
+	return ""
+
+
+## Right-click let go, `at` seconds into the bar (as the player saw it).
+func _intent_timing_release(hero: Hero, at: float) -> String:
+	var c: Dictionary = hero.casting
+	if c.is_empty() or c.kind != "timing" or not c.has("hold_from"):
+		return ""
+	at = clampf(at, float(c.hold_from), now - float(c.start) + TIMING_CLOCK_SLACK)
+	_resolve_timing(hero, TimingBarDef.judge_hold(c.hold_zone, c.hold_from, at), at)
 	return ""
 
 
 const TIMING_CLOCK_SLACK := 0.3
 
 
-## Ends `caster`'s timing bar and casts its ability: full power on a green zone,
-## full power and sure crits on a yellow one, rules.timing_miss_power otherwise
-## (`at` < 0: no press). Mana and cooldown are paid now, like a cast time.
-func _resolve_timing(caster: Actor, at: float) -> void:
+## Ends `caster`'s timing bar and casts its ability: full power for GOOD (a green
+## zone, or a hold held long enough), full power and sure crits for PERFECT (a
+## yellow zone), rules.timing_miss_power for MISS. `at`: where the press (or the
+## hold's release) was, seconds into the bar; < 0: no press. Mana and cooldown are
+## paid now, like a cast time.
+func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float) -> void:
 	var c: Dictionary = caster.casting
 	var ability: AbilityDef = c.ability
 	caster.casting = {}
-	var grade := ability.timing_bar.judge(at) if at >= 0.0 else TimingBarDef.Grade.MISS
 	var power := rules.timing_miss_power if grade == TimingBarDef.Grade.MISS else 1.0
 	emit({"type": "timing_result", "source": caster.id, "ability": ability.id,
 			"grade": TimingBarDef.grade_name(grade), "at": at})
@@ -870,6 +894,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_release(hero)
 		"timing_press":
 			reason = _intent_timing_press(hero, intent.get("at", 0.0))
+		"timing_release":
+			reason = _intent_timing_release(hero, intent.get("at", 0.0))
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
 		"accept_quest":

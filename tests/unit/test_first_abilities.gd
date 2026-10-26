@@ -56,6 +56,14 @@ func _a(id: String) -> AbilityDef:
 	return db.abilities[StringName(id)]
 
 
+## Fire Punch through its timing bar, tapped on the green zone (full power).
+func _punch() -> void:
+	world.cast(hero, _a("F01"), foe)
+	world.advance(0.75)
+	world.submit(hero.id, {"type": "timing_press", "at": 0.75})
+	world.step()
+
+
 func _lost(actor: Actor) -> float:
 	return actor.current_stats(world.now).hp - actor.hp
 
@@ -95,7 +103,7 @@ func test_every_first_ability_can_be_cast() -> void:
 
 
 func test_fire_punch_and_slash_hit_an_adjacent_enemy() -> void:
-	world.cast(hero, _a("F01"), foe)
+	_punch()
 	var after_punch := _lost(foe)
 	assert_gt(after_punch, 0.0)
 	world.advance(1.1) # GCD
@@ -115,14 +123,14 @@ func test_fire_kick_burns_over_time() -> void:
 
 
 func test_kindle_boosts_the_next_three_fire_abilities() -> void:
-	world.cast(hero, _a("F01"), foe)
+	_punch()
 	var plain := _lost(foe)
 	world.cast(hero, _a("F04"), hero)
 	assert_true(hero.buffs.has(&"kindled", world.now), "Kindle doesn't use its own charge")
 	for i in 3:
 		world.advance(2.1)
 		var before := _lost(foe)
-		world.cast(hero, _a("F01"), foe)
+		_punch()
 		assert_gt(_lost(foe) - before, plain, "boosted hit %d" % (i + 1))
 	assert_false(hero.buffs.has(&"kindled", world.now), "three charges used")
 

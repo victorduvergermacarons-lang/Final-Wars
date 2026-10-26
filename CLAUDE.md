@@ -128,7 +128,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 
 | ID | Ability | Item | Targeting | Effect (power × tier default) | Mana | CD |
 |----|---------|------|-----------|-------------------------------|------|----|
-| F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent | 1.0 magical | 4 | 2 |
+| F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent, **1 s timing bar** (zones at the end) | 1.0 magical | 4 | 2 |
 | F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent | 0.8 + burn 0.6 over 3 s | 8 | 4 |
 | F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 6 | 2 |
 | F04 | Sun Warrior's Breath | Sun Warrior's Breath Scroll | Self | next 3 Fire casts +30% (20 s), +10% max Mana over 10 s, off GCD | 10 | 20 |
@@ -138,7 +138,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | F08 | Burning Ground | Scorched Earth Scroll | Ground 4, 3×3 zone 6 s | 0.35 per s | 15 | 14 |
 | F09 | Blazing Combo | Blazing Fist Scroll | Targeted, adjacent | 3 × 0.5, knockback 1 | 12 | 10 |
 | W01 | Healing Touch | Mender's Scroll | Targeted ally, 2 | heal 1.0 | 8 | 3 |
-| W02 | Water Whip | River Lash Scroll | Targeted, 3 | 1.0 | 6 | 2 |
+| W02 | Water Whip | River Lash Scroll | Targeted, 3, **5 s timing bar** (hold the last 2 s) | 1.0 | 6 | 2 |
 | W03 | Flow State | Scroll of the Current | Targeted ally, 3 | Haste 30 s | 10 | 20 |
 | W04 | Frost Shard | Frost Shard Scroll | Skillshot, 4, 12 t/s | 0.9 + slow ×1.5 2 s | 8 | 4 |
 | W05 | Soothing Mist | Mist Scroll | Targeted ally, 4 | heal 1.5 over 12 s | 12 | 8 |
@@ -502,46 +502,54 @@ User request. Replaces parts of HUD rule 15 (the button row and the message log)
   (– / +) that hides the list;
   text 15, 260 wide.
 
-## Timing bars (2026-10-26, first step)
+## Timing bars (2026-10-26)
 
 The rhythm part of casting (user brief). A hero's ability with a timing bar
-(`AbilityDef.timing_bar`, a `TimingBarDef`) doesn't go off at once: a cursor sweeps
-across a big bar, and the player right-clicks while it is on a zone.
+(`AbilityDef.timing_bar`, a `TimingBarDef`) doesn't go off at once: the bar runs,
+and the player right-clicks on its zones.
 - **Zones:**
-  - Green: full power.
-  - Yellow (the middle of a green zone): full power and a sure critical strike
-	(`CombatContext.force_crit`).
-  - A press anywhere else, or none: `CombatRules.timing_miss_power` (0.7).
+  - Green: a tap there gives full power.
+  - Yellow (inside a green zone): full power and a sure critical strike
+    (`CombatContext.force_crit`).
+  - Blue (hold): press right-click as it starts (up to 0.2 s early) and hold it
+    through the zone; held for 90% of it or more, full power. Judged when you let
+    go, or when the zone ends if you are still holding.
+  - A tap anywhere else, a hold that falls short, or no press:
+    `CombatRules.timing_miss_power` (0.7).
   - The reward is for good timing; nothing worse than a reduced hit.
-- **Only Slash so far:** a 1 s bar, green 0.35–0.65 s, yellow 0.45–0.55 s. Planned:
-  only important abilities get long bars, quick ones short bars, instants (dashes,
-  potions) none; each tree gets its own kind of pattern (taps, holds…).
+- **Abilities with a bar** (test lengths, not balanced):
+  - Slash: 1 s, green 0.35–0.65 s, yellow 0.45–0.55 s.
+  - Fire Punch: 1 s, both at the end: green 0.7–1.0 s, yellow 0.9–1.0 s.
+  - Water Whip: 5 s, blue hold 3–5 s.
+  - Planned: only important abilities get long bars, quick ones short bars,
+    instants (dashes, potions) none; each tree gets its own kind of pattern.
 - **Rules (a cast kind `timing`):**
   - The GCD starts with the bar; mana and cooldown are paid when it goes off.
-  - One press per bar for now: the press casts the ability at once.
+  - One press per bar for now: a tap casts the ability at once, a hold when it ends.
   - Moving, a stun, an interrupt or the target leaving range cancels it (cooldown
-	not spent).
+    not spent).
   - Enemies cast these abilities without a bar.
-- **Network:** the client measures the press against the bar as it saw it and sends
-  `{"type": "timing_press", "at"}`. The host judges it (`TimingBarDef.judge`), never
-  accepting a moment it hasn't reached (+0.3 s slack). With no press it waits
-  `timing_press_grace_seconds` (0.25) after the bar ends, then casts at miss power.
-  It emits `timing_result` (miss / good / perfect).
+- **Network:** the client measures its presses against the bar as it saw it and
+  sends `{"type": "timing_press", "at"}` and, for a hold, `{"type":
+  "timing_release", "at"}`. The host judges them (`TimingBarDef.judge`,
+  `judge_hold`), never accepting a moment it hasn't reached (+0.3 s slack). With no
+  press it waits `timing_press_grace_seconds` (0.25) after the bar ends, then casts
+  at miss power. It emits `timing_result` (miss / good / perfect).
 - **Display** (`TimingBarView`): the ability's name above the bar (so a wrong key
-  shows at once), then "Perfect!" / "Good" / "Miss" for 0.8 s. Other players see a
-  small green cast bar under you. Two options (Escape menu → Gameplay test; saved in
-  `user://settings.cfg`):
-  - **Where:** under your hero, over your hero (above the name and health bar), or
-	above the action bar. 440×30 above the action bar, half that (220×15) by the hero.
-  - **Sliding** (default): every bar has that length; the cursor's speed depends on
-    the ability. **Steady speed:** the cursor always moves at the same speed and the
-	length follows the ability: the full length = 3 s (`FULL_SECONDS`), so Slash's
-	1 s bar is a third as long, centred. Longer abilities get longer bars, up to the
-	screen's width.
-- **Balance:** the bots press the green zone. Slash now hits less often, so three
-  balance targets are pending (the starter and a lone sword vs a Wolf,
-  plus the drake from before) until the planned combat pacing pass, which slows the
-  enemies down.
+  shows at once; "Hold!" while holding), then "Perfect!" / "Good" / "Miss" for
+  0.8 s. Time always moves at the same speed on screen: the full bar length is 3 s
+  (`FULL_SECONDS`). Other players see a small green cast bar under you. Two options
+  (Escape menu → Gameplay test; saved in `user://settings.cfg`):
+  - **Where:** under your hero (220×15) or above the action bar (440×30).
+  - **Mode:** *length follows the ability* (a cursor sweeps a bar as long as the
+    ability, centred: Slash's 1 s bar is a third of the full length), or *zones
+    slide to a fixed hit line* (the full-length bar is a window on the track: the
+    white hit line sits 0.4 s from the left and the zones slide toward it; thin
+    marks show where the ability's bar starts and ends).
+- **Balance:** the bots tap early in the green zone and hold blue zones to the end.
+  The bars make abilities hit later, so some balance targets are pending (the
+  starter and a lone sword vs a Wolf, a caster's mana vs a Wolf, plus the drake
+  from before) until the planned combat pacing pass, which slows the enemies down.
 
 ## Performance (branch `optimised-build-1`, 2026-10-21)
 
@@ -1395,6 +1403,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-26 | Timing bar options corrected: under the hero or above the action bar only; steady speed only, as "length follows the ability" or "zones slide to a fixed hit line" (sliding mode and "over the hero" removed). Fire Punch gets a 1 s bar with its zones at the end; Water Whip a 5 s bar with a new blue hold zone (last 2 s) | User correction and request (lengths are for tests, balance ignored). My choices: the hit line sits 0.4 s from the bar's left edge; a hold may start 0.2 s early and needs 90% of its zone held; it's judged on release, or when the zone ends while still held; letting go early = miss power; "Hold!" shows while holding; held part drawn lighter blue; a saved "over the hero" setting reads as under the hero. |
 | 2026-10-26 | Training Dummy in the testing grounds (top-left, behind the entrance) | User request: a mannequin with huge health, no attacks, completely still. My choices: 1,000,000 HP and no defenses (the damage numbers are raw); no Mastery, XP or loot from it (no farming); it lets you out of combat once you walk 6 tiles away; it can't be knocked back; drawn as a straw mannequin; a flag on the enemy data, so more dummies can be added. |
 | 2026-10-26 | Timing bar options: over the hero as a third place; sliding (same length for all) or steady speed (full length = 3 s, shorter abilities shorter, centred) | User request, to compare the two (a scrolling track may follow). My choices: over the hero sits above the name and health bar; steady speed is the second option, sliding stays the default; bars over 3 s grow up to the screen's width. |
 | 2026-10-26 | Slash's bar: 1 s, green 0.3 s, crit zone 0.1 s, both centred; the crit zone is yellow (was blue); under the hero the bar is half as long and half as tall (220×15) | User request. My choices: the zones stay centred (green 0.35–0.65 s, yellow 0.45–0.55 s); "Perfect!" is yellow too; the text keeps its size. |

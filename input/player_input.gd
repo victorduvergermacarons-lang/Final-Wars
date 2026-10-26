@@ -164,9 +164,28 @@ func press_timing_bar() -> bool:
 	if float(client.timing_press.get("start", -1.0)) == start:
 		return true
 	var at: float = session.render_time() - start
-	client.timing_press = {"start": start, "at": at}
+	var bar: TimingBarDef = hero.casting.ability.timing_bar
+	# On a blue zone this starts a hold, judged when the button is let go.
+	client.timing_press = {"start": start, "at": at, "holding": bar.hold_zone_at(at) != null}
 	session.send_intent({"type": "timing_press", "at": at})
 	return true
+
+
+## Letting go of right-click during a hold ends it (the host judges how long it was).
+func release_timing_bar() -> void:
+	var press: Dictionary = client.timing_press
+	if not press.get("holding", false) or press.has("release"):
+		return
+	var at: float = session.render_time() - float(press.start)
+	press.release = at
+	session.send_intent({"type": "timing_release", "at": at})
+
+
+func _input(event: InputEvent) -> void:
+	# Letting go of right-click ends a hold, wherever the pointer is (even over the HUD).
+	if session != null and event is InputEventMouseButton and not event.pressed \
+			and event.button_index == MOUSE_BUTTON_RIGHT:
+		release_timing_bar()
 
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was

@@ -114,6 +114,73 @@ func test_moving_cancels_the_bar() -> void:
 		pass_test("the tile behind the hero is blocked here; moving is covered elsewhere")
 
 
+func test_fire_punch_zones_are_at_the_end() -> void:
+	var bar: TimingBarDef = db.abilities[&"F01"].timing_bar
+	assert_eq(bar.seconds, 1.0)
+	assert_eq(bar.judge(0.5), TimingBarDef.Grade.MISS)
+	assert_eq(bar.judge(0.75), TimingBarDef.Grade.GOOD)
+	assert_eq(bar.judge(0.95), TimingBarDef.Grade.PERFECT)
+	assert_eq(bar.judge(1.0), TimingBarDef.Grade.PERFECT, "right up to the bar's end")
+
+
+## Water Whip: a 5 s bar whose last 2 s are a blue hold zone.
+func _whip() -> void:
+	sim.cast(hero, db.abilities[&"W02"], wolf)
+	world.step()
+
+
+func _hold(press_at: float, release_at: float) -> Array:
+	var events := []
+	events.append_array(world.advance(press_at - (world.now - float(hero.casting.start))))
+	world.submit(hero.id, {"type": "timing_press", "at": press_at})
+	events.append_array(world.step())
+	if release_at >= 0.0:
+		events.append_array(world.advance(release_at - (world.now - float(hero.casting.start))))
+		world.submit(hero.id, {"type": "timing_release", "at": release_at})
+	events.append_array(world.advance(3.0))
+	return events
+
+
+static func _grade(events: Array) -> String:
+	for e in events:
+		if e.type == "timing_result":
+			return e.grade
+	return ""
+
+
+func test_water_whip_hold_judging() -> void:
+	var bar: TimingBarDef = db.abilities[&"W02"].timing_bar
+	assert_eq(bar.seconds, 5.0)
+	assert_eq(bar.hold_zones, [Vector2(3.0, 2.0)] as Array[Vector2])
+	assert_null(bar.hold_zone_at(2.0), "too early: just a tap")
+	assert_not_null(bar.hold_zone_at(2.9), "a little early starts the hold")
+	var z := bar.hold_zones[0]
+	assert_eq(TimingBarDef.judge_hold(z, 3.0, 5.0), TimingBarDef.Grade.GOOD)
+	assert_eq(TimingBarDef.judge_hold(z, 3.15, 5.0), TimingBarDef.Grade.GOOD, "90% held is enough")
+	assert_eq(TimingBarDef.judge_hold(z, 3.0, 4.0), TimingBarDef.Grade.MISS, "let go halfway")
+
+
+func test_holding_water_whip_to_the_end_hits_at_full_power() -> void:
+	_whip()
+	assert_eq(hero.casting.get("kind", ""), "timing")
+	var events := _hold(3.0, -1.0) # never let go: judged when the zone ends
+	assert_eq(_grade(events), "good")
+	assert_true(events.any(func(e): return e.type == "damage" and e.target == wolf.id and e.ability == &"W02"))
+
+
+func test_letting_go_early_is_a_miss() -> void:
+	_whip()
+	var events := _hold(3.0, 4.0)
+	assert_eq(_grade(events), "miss")
+	assert_true(events.any(func(e): return e.type == "damage" and e.ability == &"W02"), "still hits, softer")
+
+
+func test_pressing_long_before_the_blue_zone_is_a_missed_tap() -> void:
+	_whip()
+	var events := _hold(1.0, -1.0)
+	assert_eq(_grade(events), "miss")
+
+
 func test_press_intent_shape() -> void:
 	assert_eq(Intents.sanitize({"type": "timing_press", "at": 0.8}).at, 0.8)
 	assert_eq(Intents.sanitize({"type": "timing_press", "at": "now"}), {})

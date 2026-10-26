@@ -8,8 +8,9 @@ var target_id: int = -1
 var aim := {}
 var action_bar := ActionBarModel.new()
 ## The local right-click on the current timing bar, before the host answers:
-## {"start": the bar's start time, "at": seconds into it}. TimingBarView stops the
-## cursor there at once.
+## {"start": the bar's start time, "at": seconds into it, "holding": on a blue
+## (hold) zone, "release": seconds into it when let go}. TimingBarView shows it
+## at once.
 var timing_press := {}
 ## Overhead marker per NPC def id ("!" quest available, "?" turn-in ready). Set by the quest UI.
 var npc_markers := {}

@@ -412,8 +412,10 @@ func _run() -> void:
 	await get_tree().create_timer(0.3).timeout
 	await _shot("37_dive_trail", 1)
 	tz.remove_enemy(dd.id)
-	# 39. Slash's timing bar: under the hero, above the action bar, then a press on
-	# the yellow middle ("Perfect!").
+	# 39. Timing bars (steady speed: the full bar = 3 s). Slash under the hero and
+	# above the action bar (bar length follows the ability), a press on its yellow
+	# middle, then the scrolling track; Fire Punch (zones at the end); Water Whip's
+	# 5 s bar with its blue hold zone, held.
 	tz.reset_zone()
 	var dummy: EnemyDef = cd.enemies[&"wolf"].duplicate()
 	dummy.aggro_radius = 0
@@ -423,29 +425,50 @@ func _run() -> void:
 	hero.cooldowns = Cooldowns.new()
 	await _snap_camera(hero)
 	var dw := tz.add_enemy(dummy, base + Vector2i(1, 0))
-	tz.cast(hero, cd.abilities[&"S01"], dw)
-	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.25)
+	var into := func() -> float: return session.render_time() - float(hero.casting.get("start", 0.0))
+	var fresh_cast := func(id: StringName) -> void:
+		hero.casting = {}
+		hero.cooldowns = Cooldowns.new()
+		hero.mana = hero.current_stats(session.now()).mana
+		tz.cast(hero, cd.abilities[id], dw)
+	hud.set_timing_bar_mode(TimingBarView.Mode.LENGTH)
+	fresh_cast.call(&"S01")
+	await _until(func(): return into.call() >= 0.25)
 	await _shot("39_timing_bar_hero", 1)
 	hud.set_timing_bar_place(TimingBarView.Place.ACTION_BAR)
 	await _shot("39b_timing_bar_action_bar", 1)
-	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.5)
+	await _until(func(): return into.call() >= 0.5)
 	hud.input.press_timing_bar()
 	await get_tree().create_timer(0.15).timeout
 	await _shot("39c_timing_bar_perfect", 1)
-	# Over the hero, then steady speed (a 1 s bar is a third of the length), under
-	# the hero and above the action bar. A fresh Slash for each.
-	for shot in [["39d_timing_bar_over_hero", TimingBarView.Place.ABOVE_HERO, true],
-			["39e_timing_bar_steady_under_hero", TimingBarView.Place.BELOW_HERO, false],
-			["39f_timing_bar_steady_action_bar", TimingBarView.Place.ACTION_BAR, false]]:
+	hud.set_timing_bar_mode(TimingBarView.Mode.SCROLL)
+	for shot in [["39d_timing_bar_scroll_under_hero", TimingBarView.Place.BELOW_HERO],
+			["39e_timing_bar_scroll_action_bar", TimingBarView.Place.ACTION_BAR]]:
 		hud.set_timing_bar_place(shot[1])
-		hud.set_timing_bar_sliding(shot[2])
-		hero.cooldowns = Cooldowns.new()
-		tz.cast(hero, cd.abilities[&"S01"], dw)
-		await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.25)
+		fresh_cast.call(&"S01")
+		await _until(func(): return into.call() >= 0.15)
 		await _shot(shot[0], 1)
-		hero.casting = {}
+	hud.set_timing_bar_mode(TimingBarView.Mode.LENGTH)
+	fresh_cast.call(&"F01")
+	await _until(func(): return into.call() >= 0.5)
+	await _shot("39f_fire_punch", 1)
+	hud.set_timing_bar_mode(TimingBarView.Mode.SCROLL)
+	fresh_cast.call(&"W02")
+	await _until(func(): return into.call() >= 3.0)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 4.0)
+	await _shot("39g_water_whip_hold_scroll", 1)
+	await _until(func(): return hero.casting.is_empty())
+	await get_tree().create_timer(0.1).timeout
+	await _shot("39h_water_whip_held", 1)
+	hud.set_timing_bar_mode(TimingBarView.Mode.LENGTH)
 	hud.set_timing_bar_place(TimingBarView.Place.BELOW_HERO)
-	hud.set_timing_bar_sliding(true)
+	fresh_cast.call(&"W02")
+	await _until(func(): return into.call() >= 3.0)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 4.0)
+	await _shot("39i_water_whip_hold_length", 1)
+	hero.casting = {}
 	tz.remove_enemy(dw.id)
 	# 40. The Training Dummy by the entrance, after a Slash.
 	var mannequin: Enemy = tz.enemies().filter(func(e): return e.def.training_dummy)[0]

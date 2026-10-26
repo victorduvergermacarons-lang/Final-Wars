@@ -12,8 +12,9 @@ E: talk to the person next to you · right-click someone to talk
 Click someone, or Tab, to target · Esc: clear the target
 1–9, 0: use the action bar · Shift+1–6 (or < >): switch action bar page
 Hold an aimed ability's key to aim, release to cast · Esc or right-click: cancel
-Timing bar (e.g. Slash): right-click when the cursor is on the green zone for full
-power, on the yellow middle for a sure critical strike; moving cancels it
+Timing bar (Slash, Fire Punch, Water Whip): right-click on a green zone for full
+power, on a yellow zone for a sure critical strike; on a blue zone press and hold
+right-click until it ends; moving cancels the bar
 R: release to the graveyard when dead · mouse wheel: zoom
 
 [b]Menus[/b] (the menu book)
@@ -131,18 +132,17 @@ func _speed_tab() -> Control:
 	var place := OptionButton.new()
 	place.focus_mode = Control.FOCUS_NONE
 	place.add_item("Under your hero", TimingBarView.Place.BELOW_HERO)
-	place.add_item("Over your hero", TimingBarView.Place.ABOVE_HERO)
 	place.add_item("Above the action bar", TimingBarView.Place.ACTION_BAR)
 	place.select(place.get_item_index(hud.timing_bar.place))
 	place.item_selected.connect(func(i: int): hud.set_timing_bar_place(place.get_item_id(i)))
 	place_row.add_child(place)
-	# Sliding: same length for every ability; off: the length follows the ability.
+	# Both modes move at the same speed (the full bar = FULL_SECONDS).
 	var mode := OptionButton.new()
 	mode.focus_mode = Control.FOCUS_NONE
-	mode.add_item("Sliding: same length for every ability", 1)
-	mode.add_item("Steady speed: length follows the ability (full bar = %d s)" % int(TimingBarView.FULL_SECONDS), 0)
-	mode.select(mode.get_item_index(1 if hud.timing_bar.sliding else 0))
-	mode.item_selected.connect(func(i: int): hud.set_timing_bar_sliding(mode.get_item_id(i) == 1))
+	mode.add_item("Bar length follows the ability (full bar = %d s)" % int(TimingBarView.FULL_SECONDS), TimingBarView.Mode.LENGTH)
+	mode.add_item("Zones slide to a fixed hit line", TimingBarView.Mode.SCROLL)
+	mode.select(mode.get_item_index(hud.timing_bar.mode))
+	mode.item_selected.connect(func(i: int): hud.set_timing_bar_mode(mode.get_item_id(i)))
 	page.add_child(mode)
 	show_speed(hud.session.rules().game_speed)
 	# Dragging sends only on release, so the host isn't flooded while dragging.
