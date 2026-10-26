@@ -43,7 +43,10 @@ func _run_host(port: int, players: int) -> void:
 		_finish(false, "host: could not listen on %d" % port)
 		return
 	var world: World = game.session.world
-	game.session.local_hero().move.place(Vector2i(14, 16)) # out of the guests' way
+	# Beside the Guild Board, out of the guests' way.
+	var town := world.zone(&"town")
+	var board: Npc = town.npcs().filter(func(n): return n.def.id == &"guild_board")[0]
+	game.session.local_hero().move.place(town.find_free_tile_near(board.tile() + Vector2i(0, 1)))
 	# Listen from the start: a quick guest may cast before the others have joined.
 	var casts := {}
 	var zone_hops := {}
@@ -57,6 +60,15 @@ func _run_host(port: int, players: int) -> void:
 	var starts := {}
 	for h in world.heroes().slice(1):
 		starts[h.id] = h.tile()
+	# Co-op: the host takes the board's quest; the guests in town are offered it
+	# and join over the network (once the last one to join is listening).
+	await get_tree().create_timer(1.0).timeout
+	game.session.send_intent({"type": "accept_quest", "npc": board.id, "quest": &"act1_guild_summons"})
+	var joined_quest := {}
+	get_tree().process_frame.connect(func():
+		for h in world.heroes():
+			if QuestLog.is_active(h, &"act1_guild_summons"):
+				joined_quest[h.id] = true)
 	# The host only hears its own zone's events, so watch the world for zone moves.
 	var watch := func():
 		for id in starts:
@@ -84,7 +96,11 @@ func _run_host(port: int, players: int) -> void:
 	if not zone_hops.has(starts.keys()[0]):
 		_finish(false, "host: Guest1 never reached Greenfields")
 		return
-	_finish(true, "host: %d guests joined in town, walked, cast, one went to Greenfields, all left cleanly" % (players - 1))
+	for id in starts.keys().slice(1):
+		if not joined_quest.has(id):
+			_finish(false, "host: a guest in town never joined the shared quest")
+			return
+	_finish(true, "host: %d guests joined in town, walked, cast, one went to Greenfields, the others joined the host's quest, all left cleanly" % (players - 1))
 
 
 func _run_join(port: int, players: int, index: int) -> void:
@@ -105,6 +121,11 @@ func _run_join(port: int, players: int, index: int) -> void:
 		_finish(false, "%s: refused: %s" % [me, ended_reason[0]])
 		return
 	var hero := session.local_hero()
+	# Co-op: when the host accepts a quest, it's offered to us: join it.
+	session.events_received.connect(func(events):
+		for e in events:
+			if e.type == "quest_shared" and e.target == hero.id:
+				session.send_intent({"type": "accept_shared_quest", "quest": e.quest}))
 	var hero_count := func(): return session.actors().filter(func(a): return a is Hero).size()
 	if not await _wait_until(func(): return hero_count.call() == players):
 		_finish(false, "%s: only ever saw %d heroes" % [me, hero_count.call()])
@@ -137,6 +158,9 @@ func _run_join(port: int, players: int, index: int) -> void:
 		_finish(false, "%s: couldn't walk 4 tiles (at %s from %s)" % [me, hero.tile(), start])
 		return
 	await get_tree().create_timer(1.0).timeout # let the host see the final position
+	if index >= 2 and not await _wait_until(func(): return QuestLog.is_active(hero, &"act1_guild_summons")):
+		_finish(false, "%s: never joined the host's quest" % me)
+		return
 	for other in session.actors():
 		if other is Hero and other.id != hero.id and not other.bag.slots.all(func(s): return s == null):
 			_finish(false, "%s: received another player's bag" % me)
