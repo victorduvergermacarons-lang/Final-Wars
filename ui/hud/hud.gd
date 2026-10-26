@@ -537,8 +537,9 @@ func _on_events(events: Array) -> void:
 			"left":
 				client.say("%s left the game." % e.name)
 			"world_flag":
-				if e.get("text", "") != "":
-					client.say(e.text)
+				var announce := ContentDB.dialogue.text("quest.%s.world_flag" % e.get("quest", ""))
+				if announce != "":
+					client.say(announce)
 			"enrage":
 				var who = session.get_actor(e.get("source", -1))
 				var buff: BuffDef = ContentDB.buffs.get(e.get("buff", &""))

@@ -1,0 +1,35 @@
+{
+	"_about": [
+		"Every line of dialogue in the game. Edit the text freely; keep the ids.",
+		"A line is either plain text or {\"text\", \"speaker\", \"next\", \"choices\"}.",
+		"speaker: an NPC id or \"hero\" (the player); left out = whoever you are talking to.",
+		"next: the id of the line that follows (a Continue button). choices: [{\"text\": your answer, \"next\": line id}].",
+		"Ids follow conventions the game looks for: npc.<npc>.greeting, npc.<npc>.greeting.<world flag>,",
+		"quest.<quest>.offer / progress / complete / accepted / declined / failed / world_flag,",
+		"quest.<quest>.accept / decline (your answers), quest.<quest>.interact.<i> / deliver.<i> / escort.<i>,",
+		"quest.<quest>.spot.<i>.<n> (what you find at investigate spot n of objective i).",
+		"A missing line falls back to a short default text."
+	],
+	"lines": {
+		"npc.hilda.greeting": "Welcome to Millbrook, traveler! I buy what you find out there and sell what you'll need to stay alive.",
+		"npc.maren.greeting": "Mind the old graveyard, child. The dead rest easy here — it's the living out east who worry me.",
+		"npc.reset_shrine.greeting": "You lay a hand on the warm stone. Every creature in the testing grounds returns to its pen at full strength, and every lingering effect fades.",
+		"npc.rowan.greeting": "The wolves of Greenfields grow bolder every week. If you can swing a blade, the town could use you.",
+		"npc.rowan.greeting.grizzlehide_slain": "Millbrook owes you, hero. With Grizzlehide gone, the shepherds are back in the fields.",
+		"quest.bandit_camp.complete": "Bandits gone, but they'd been hunting a bear — a huge, scarred one. That's worse news than bandits.",
+		"quest.bandit_camp.offer": "Those wolves were fleeing something. Scouts saw bandits camped at the southern end of Greenfields, across the river. Find their camp (look for the red banner) and break their two brutes.",
+		"quest.bandit_camp.progress": "Cross the river by the bridge nearest the town road; the camp is just past it, under a red banner. Mind the brutes: slow, but they hit like a falling tree.",
+		"quest.beast_of_greenfields.complete": "You actually did it. Greenfields is ours again. Take your pick from the armoury — you've earned it.",
+		"quest.beast_of_greenfields.offer": "Old Grizzlehide. He roams the fields between the river crossings and nothing alone survives him. Gather friends — at least four — and end him.",
+		"quest.beast_of_greenfields.progress": "Grizzlehide walks a loop through the middle of the fields. Don't fight him alone.",
+		"quest.beast_of_greenfields.world_flag": "Bells ring in Millbrook: Old Grizzlehide is dead!",
+		"quest.goblin_fetishes.complete": "Ugh, they still hum. Into the fire they go. Take something for your pains.",
+		"quest.goblin_fetishes.offer": "The goblin shamans on the western hill carve fetishes that sour the wells. Bring me five and I'll see them burned.",
+		"quest.goblin_fetishes.progress": "Five fetishes, child. The shamans keep their distance — corner them or out-shoot them.",
+		"quest.wolves_at_the_gate.complete": "Good work. The shepherds will sleep easier. I may have more for you.",
+		"quest.wolves_at_the_gate.offer": "Wolves have been taking sheep right outside the east gate. Thin the pack: four should teach them.",
+		"quest.wolves_at_the_gate.progress": "Four wolves. They hunt in the fields just past the gate.",
+		"quest.word_to_hilda.complete": "Frost, eh? Thank Maren for telling me. Here, take these for your trouble.",
+		"quest.word_to_hilda.offer": "Hilda at the stall has been asking after my herbs. Tell her the frost got them this year, would you? My knees won't carry me there."
+	}
+}

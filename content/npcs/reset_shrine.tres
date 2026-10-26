@@ -6,6 +6,6 @@
 script = ExtResource("1_npc")
 id = &"reset_shrine"
 display_name = "Reset Shrine"
-greeting = "You lay a hand on the warm stone. Every creature in the testing grounds returns to its pen at full strength, and every lingering effect fades."
-color = Color(0.45, 0.85, 1, 1)
+kind = 2
+faction = 5
 resets_zone = true

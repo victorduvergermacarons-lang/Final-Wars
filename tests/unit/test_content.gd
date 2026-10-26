@@ -148,8 +148,9 @@ func test_sample_quests() -> void:
 
 func test_rowan_greets_differently_after_grizzlehide() -> void:
 	var rowan: NpcDef = db.npcs[&"rowan"]
-	assert_eq(rowan.greeting_for({}), rowan.greeting)
-	assert_ne(rowan.greeting_for({"grizzlehide_slain": true}), rowan.greeting)
+	assert_eq(rowan.greeting_line({}, db.dialogue), "npc.rowan.greeting")
+	assert_eq(rowan.greeting_line({"grizzlehide_slain": true}, db.dialogue), "npc.rowan.greeting.grizzlehide_slain")
+	assert_ne(db.dialogue.text("npc.rowan.greeting.grizzlehide_slain"), db.dialogue.text("npc.rowan.greeting"))
 
 
 func test_bandit_camp_is_marked_and_reachable() -> void:

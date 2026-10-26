@@ -33,14 +33,14 @@ static func show_offer(hud: Hud, npc: Npc, def: QuestDef) -> void:
 
 static func show_progress(hud: Hud, npc: Npc, def: QuestDef) -> void:
 	var hero: Hero = hud.session.local_hero()
-	var said := def.progress_text if def.progress_text != "" else "Come back when it's done."
+	var said := ContentDB.dialogue.text(def.line_id("progress"), "Come back when it's done.")
 	hud.dialogue.set_text("[b]%s[/b]\n%s\n\n%s" % [def.title, said, QuestText.objectives_bbcode(hero, def)])
 	hud.dialogue.clear_options()
 	hud.dialogue.add_option("Back", func(): hud.dialogue.open(npc))
 
 
 static func show_turn_in(hud: Hud, npc: Npc, def: QuestDef) -> void:
-	var said := def.complete_text if def.complete_text != "" else "Well done."
+	var said := ContentDB.dialogue.text(def.line_id("complete"), "Well done.")
 	hud.dialogue.set_text("[b]%s[/b]\n%s\n\n%s" % [def.title, said, QuestText.rewards_bbcode(def)])
 	hud.dialogue.clear_options()
 	var send := func(choice: int):

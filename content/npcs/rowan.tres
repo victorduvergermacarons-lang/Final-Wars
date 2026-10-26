@@ -7,8 +7,3 @@
 script = ExtResource("1_c5qbx")
 id = &"rowan"
 display_name = "Captain Rowan"
-greeting = "The wolves of Greenfields grow bolder every week. If you can swing a blade, the town could use you."
-flag_greetings = {
-"grizzlehide_slain": "Millbrook owes you, hero. With Grizzlehide gone, the shepherds are back in the fields."
-}
-color = Color(0.55, 0.7, 1, 1)

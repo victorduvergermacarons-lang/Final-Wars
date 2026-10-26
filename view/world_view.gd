@@ -589,7 +589,7 @@ func _draw_actor(a: Actor) -> void:
 		_draw_label(body + Vector2(0, -22), "%s  Lv%d" % [a.display_name, (a as Hero).level], Color.WHITE)
 	elif a is Npc:
 		var npc := a as Npc
-		draw_rect(Rect2(body - Vector2(9, 11), Vector2(18, 22)), npc.def.color)
+		draw_rect(Rect2(body - Vector2(9, 11), Vector2(18, 22)), npc.def.color())
 		draw_rect(Rect2(body - Vector2(9, 11), Vector2(18, 22)), Color(0.1, 0.08, 0.02), false, 2.0)
 		_draw_label(body + Vector2(0, -22), npc.display_name, Color(1, 0.95, 0.7))
 		var marker: String = client.npc_markers.get(npc.def.id, "") if client != null else ""

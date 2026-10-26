@@ -44,7 +44,8 @@ static func rewards_bbcode(def: QuestDef) -> String:
 
 ## Offer page: the giver's text, what to do, and what it pays.
 static func offer_bbcode(hero: Hero, def: QuestDef) -> String:
-	return "[b]%s[/b]\n%s\n\n%s\n\n%s" % [def.title, def.offer_text, objectives_bbcode(hero, def), rewards_bbcode(def)]
+	return "[b]%s[/b]\n%s\n\n%s\n\n%s" % [def.title, ContentDB.dialogue.text(def.line_id("offer")),
+			objectives_bbcode(hero, def), rewards_bbcode(def)]
 
 
 ## Tracker for every active quest: title (gold when ready) and objectives.

@@ -167,7 +167,7 @@ func _on_events(events: Array) -> void:
 			"zone_reset":
 				Audio.play(&"world_shrine_reset")
 			"world_flag":
-				if e.get("text", "") != "":
+				if ContentDB.dialogue.has("quest.%s.world_flag" % e.get("quest", "")):
 					Audio.play(&"world_event")
 		if e.get("target", -2) != me:
 			continue

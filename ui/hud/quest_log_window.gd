@@ -87,6 +87,7 @@ func _process(_delta: float) -> void:
 		_details.text = "[color=%s]No quests. Look for [b]![/b] over people in town.[/color]" % QuestText.GREY
 		return
 	var def: QuestDef = ContentDB.quests[selected]
-	_details.text = "[font_size=%d][b]%s[/b][/font_size]\n%s\n\n%s\n\nHand in to: %s\n%s" % [NAME_SIZE, def.title, def.offer_text,
+	_details.text = "[font_size=%d][b]%s[/b][/font_size]\n%s\n\n%s\n\nHand in to: %s\n%s" % [NAME_SIZE, def.title,
+			ContentDB.dialogue.text(def.line_id("offer")),
 			QuestText.objectives_bbcode(hero, def), QuestText.npc_name(def.turn_in_npc()),
 			QuestText.rewards_bbcode(def)]
