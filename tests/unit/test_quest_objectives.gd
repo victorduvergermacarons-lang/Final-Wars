@@ -266,6 +266,7 @@ func test_escort_walks_its_path_waits_for_the_party_and_completes() -> void:
 	_talk(ann, cart)
 	assert_true(cart_npc.escorting, "talking to the cart sets it off")
 	assert_eq(cart_npc.team, Actor.Team.HEROES, "on the heroes' side while escorted")
+	assert_true(AbilityResolver._is_valid_target(ann, ContentDB.abilities[&"W01"], cart_npc), "heroes can heal it")
 	ann.move.place(Vector2i(25, 25)) # far behind
 	_run(1.0) # finishes the step it started
 	var waiting_at := cart_npc.tile()
