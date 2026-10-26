@@ -32,6 +32,7 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 		if row.has("mana_cost"):
 			ability.mana_cost = float(row.mana_cost)
 		ability.sheet = row
+		_apply_timing(ability, row.get("timing", {}))
 		abilities[id] = ability
 
 		var item := ItemDef.new()
@@ -55,3 +56,26 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 		item.teaches = teaches
 		items[item.id] = item
 	return {"abilities": abilities, "items": items}
+
+
+## The timing bar comes from the sheet's timing columns (the importer's "timing"),
+## never from the behavior file: a designed bar (manual or AI-generated) of more
+## than 0 s becomes the ability's TimingBarDef; anything else means no bar.
+static func _apply_timing(ability: AbilityDef, timing: Dictionary) -> void:
+	ability.timing_status = timing.get("status", "none")
+	ability.timing_bar = null
+	if ability.timing_status == "none" or float(timing.get("seconds", 0.0)) <= 0.0:
+		return
+	var bar := TimingBarDef.new()
+	bar.seconds = float(timing.seconds)
+	bar.zones = _zones(timing.get("taps", []))
+	bar.crit_zones = _zones(timing.get("crits", []))
+	bar.hold_zones = _zones(timing.get("holds", []))
+	ability.timing_bar = bar
+
+
+static func _zones(list: Array) -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for z in list:
+		out.append(Vector2(float(z[0]), float(z[1])))
+	return out

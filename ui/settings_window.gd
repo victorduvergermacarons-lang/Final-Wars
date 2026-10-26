@@ -7,6 +7,8 @@ extends PanelContainer
 const LABELS := {"Master": "Master", "Music": "Music", "Ambience": "Ambience", "SFX": "Sound effects", "UI": "Interface"}
 
 var settings_path := SettingsStore.DEFAULT_PATH
+## Inside another window (the Escape menu's Sound tab): no title, no Close, no box.
+var embedded := false
 var sliders := {} # bus -> HSlider
 var _values := {} # bus -> Label
 
@@ -16,10 +18,13 @@ func _ready() -> void:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 8)
 	add_child(box)
-	var title := Label.new()
-	title.text = "Settings"
-	title.add_theme_font_size_override("font_size", 20)
-	box.add_child(title)
+	if embedded:
+		add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	else:
+		var title := Label.new()
+		title.text = "Settings"
+		title.add_theme_font_size_override("font_size", 20)
+		box.add_child(title)
 	var sound := Label.new()
 	sound.text = "Volume"
 	box.add_child(sound)
@@ -48,14 +53,15 @@ func _ready() -> void:
 		box.add_child(row)
 		sliders[bus] = s
 		_values[bus] = value
-	var close := Button.new()
-	close.text = "Close"
-	close.focus_mode = Control.FOCUS_NONE
-	close.pressed.connect(func():
-		save()
-		Audio.play(&"ui_close")
-		visible = false)
-	box.add_child(close)
+	if not embedded:
+		var close := Button.new()
+		close.text = "Close"
+		close.focus_mode = Control.FOCUS_NONE
+		close.pressed.connect(func():
+			save()
+			Audio.play(&"ui_close")
+			visible = false)
+		box.add_child(close)
 	visibility_changed.connect(_refresh)
 
 

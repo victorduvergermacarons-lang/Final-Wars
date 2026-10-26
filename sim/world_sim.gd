@@ -25,6 +25,9 @@ extends RefCounted
 ##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
 ##   {"type": "stop_learning"}
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
+##   {"type": "game_speed", "value": float}   (game clock speed, 0.1–2; same rule as debug)
+##   {"type": "timing_press", "at": float, "aim"?: Vector2}   (right-click on a timing bar: seconds since it started; aimed abilities: the cursor)
+##   {"type": "timing_release", "at": float, "aim"?: Vector2}   (right-click let go, ending a hold on a timing bar)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -254,6 +257,15 @@ func step() -> Array[Dictionary]:
 	return _events
 
 
+## A tick for a sleeping zone (World: no heroes here for a while): the clock
+## moves on and nothing else happens. Everything timed in sim time (respawns,
+## buffs, ground zones, raised terrain) is due on the first real tick after.
+func skip_tick() -> void:
+	tick_count += 1
+	now = tick_count * rules.tick_seconds
+	ctx.now = now
+
+
 ## Where `actor` stood `delay` seconds ago (its current tile if no older record).
 func perceived_tile(actor: Actor, delay: float) -> Vector2i:
 	if delay <= 0.0 or not _history.has(actor.id):
@@ -368,12 +380,12 @@ func can_move(actor: Actor, from: Vector2i, to: Vector2i) -> bool:
 
 
 ## A path for `actor` to `goal` by its own movement rules (see can_move).
-## `goals` / `goal_slack`: end on any of these tiles instead (see Pathfinder).
+## `arrived` (optional, tile -> bool): stop at the first tile it accepts instead.
 func path_for(actor: Actor, goal: Vector2i, blocked: Dictionary, max_expanded: int = 4096,
-		goals: Dictionary = {}, goal_slack: int = 0) -> Array[Vector2i]:
+		arrived := Callable()) -> Array[Vector2i]:
 	var rise := (actor as Enemy).fly_rise(now) if actor is Enemy else -1
 	return Pathfinder.find_path(grid, actor.tile(), goal, StatCalc.jump_levels(actor.current_stats(now)),
-			blocked, -1, max_expanded, rise, actor.footprint if actor.is_large() else [], goals, goal_slack)
+			blocked, -1, max_expanded, rise, actor.footprint if actor.is_large() else [], arrived)
 
 
 ## Resolves an ability and processes any deaths it caused.
@@ -396,24 +408,37 @@ func cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant = null
 
 
 func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
-	var timed := ability.cast_seconds > 0.0 or ability.windup_seconds > 0.0 or ability.channel_seconds > 0.0
+	var timed := ability.cast_seconds > 0.0 or ability.windup_seconds > 0.0 or ability.channel_seconds > 0.0 \
+			or _has_timing_bar(caster, ability)
 	if timed:
 		return _start_timed_cast(caster, ability, target, aim)
 	return _finish_cast(caster, ability, target, aim, CastResolver.Pay.INSTANT)
 
 
-## Starts a cast time, wind-up or channel (see AbilityDef). Cast times only take
-## the GCD now; wind-ups and channels are paid up front.
+## Only heroes play timing bars (enemies cast those abilities straight away).
+func _has_timing_bar(caster: Actor, ability: AbilityDef) -> bool:
+	return caster is Hero and ability.timing_bar != null and rules.timing_bars_enabled
+
+
+## Starts a cast time, wind-up, channel or timing bar (see AbilityDef). Cast times
+## and timing bars only take the GCD now; wind-ups and channels are paid up front.
 func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
+	# A timing bar aimed on the ground starts even with the cursor beyond range (the
+	# final aim comes with the last input, pulled back into range).
+	if _has_timing_bar(caster, ability) and aim != null:
+		aim = _clamp_aim(caster, ability, aim)
 	var r := CastResolver.validate(ctx, caster, ability, target, aim)
 	if r != AbilityResolver.Result.OK:
 		return r
 	var kind := "cast" if ability.cast_seconds > 0.0 else ("windup" if ability.windup_seconds > 0.0 else "channel")
 	var seconds: float = ability.cast_seconds if kind == "cast" else (ability.windup_seconds if kind == "windup" else ability.channel_seconds)
+	if _has_timing_bar(caster, ability):
+		kind = "timing"
+		seconds = ability.timing_bar.seconds
 	var point: Variant = CastResolver.aim_point(caster, target, aim)
 	if point != null:
 		CastResolver._face(caster, point)
-	if kind == "cast":
+	if kind == "cast" or kind == "timing":
 		if ability.on_gcd:
 			caster.cooldowns.trigger_gcd(now, rules.gcd_seconds * caster.buffs.cooldown_multiplier(now))
 	else:
@@ -422,6 +447,9 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 			"kind": kind, "start": now, "end": now + seconds,
 			"next_tick": now + (ability.channel_tick_seconds if kind == "channel" else seconds),
 			"bonus": caster.buffs.damage_dealt_multiplier(ability.tree, now)}
+	if kind == "timing": # the inputs played so far (TimingBarDef.inputs, in order)
+		caster.casting.results = []
+		caster.casting.next_input = 0
 	# A wound-up swipe or lob shows the tiles it will hit (dodge by leaving them).
 	if kind == "windup" and ability.targeting == AbilityDef.TargetingMode.SKILLSHOT and point != null \
 			and ability.projectile_speed <= 0.0:
@@ -433,7 +461,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 			if e.kind == AbilityEffect.Kind.CHARGE_THROUGH:
 				caster.casting.tiles = AbilityResolver.charge_swept(caster, AbilityResolver.charge_lane(ctx, caster,
 						TileGeometry.snap8(point - Vector2(caster.tile())), int(e.base_amount)))
-	if kind != "cast":
+	if kind != "cast" and kind != "timing":
 		caster.buffs.consume_on_cast(ability.tree, now)
 	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
 			"target": caster.casting.target, "end": caster.casting.end})
@@ -474,6 +502,15 @@ func _update_casts() -> void:
 					var r := _finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
 					if r != AbilityResolver.Result.OK:
 						emit({"type": "whiff", "source": a.id, "ability": ability.id, "tile": a.tile()})
+			"timing":
+				# The bar is over (a last press or release may still be on its way):
+				# a hold still held is judged as let go at the bar's end, every input
+				# not played is a miss.
+				if now + 0.0001 >= c.end + rules.timing_press_grace_seconds:
+					var bar_end := float(c.end) - float(c.start)
+					if c.has("hold_from"):
+						_end_hold(a, bar_end)
+					_finish_timing(a, bar_end if not c.results.is_empty() else -1.0)
 			"channel":
 				while not a.casting.is_empty() and now + 0.0001 >= c.next_tick and c.next_tick <= c.end + 0.0001:
 					c.next_tick += ability.channel_tick_seconds
@@ -481,6 +518,127 @@ func _update_casts() -> void:
 				if not a.casting.is_empty() and now + 0.0001 >= c.end:
 					a.casting = {}
 					emit({"type": "channel_end", "source": a.id, "ability": ability.id})
+
+
+## A right-click on the hero's timing bar, `at` seconds after it started as the
+## player saw it (their screen runs a little behind the host, so the client
+## measures it). It can't claim a moment the host hasn't reached yet (beyond a
+## little clock slack).
+func _intent_timing_press(hero: Hero, at: float, aim: Variant = null) -> String:
+	var c: Dictionary = hero.casting
+	if c.is_empty() or c.kind != "timing" or c.has("hold_from"):
+		return "" # the bar already ended (cancelled, or no press in time), or is held: nothing to say
+	_aim_timing_bar(hero, aim)
+	at = minf(at, now - float(c.start) + TIMING_CLOCK_SLACK)
+	var bar: TimingBarDef = c.ability.timing_bar
+	var inputs := bar.inputs()
+	var i := bar.input_for_press(c.next_input, at)
+	_miss_inputs(c, inputs, i) # windows already over
+	if i < inputs.size():
+		var input: Dictionary = inputs[i]
+		c.next_input = i + 1
+		if input.kind == "hold" and TimingBarDef.starts_hold(input, at):
+			c.hold_from = at # judged when the button is let go (or the bar ends)
+			c.hold_zone = input.zone
+			return ""
+		if input.kind == "hold":
+			c.results.append(TimingBarDef.missed_input("hold", rules.timing_miss_power)) # pressed too early
+		else:
+			c.results.append(TimingBarDef.tap_result(TimingBarDef.judge_tap(input, at), rules.timing_miss_power))
+	if c.next_input >= inputs.size():
+		_finish_timing(hero, at)
+	return ""
+
+
+## Right-click let go, `at` seconds into the bar (as the player saw it).
+func _intent_timing_release(hero: Hero, at: float, aim: Variant = null) -> String:
+	var c: Dictionary = hero.casting
+	if c.is_empty() or c.kind != "timing" or not c.has("hold_from"):
+		return ""
+	_aim_timing_bar(hero, aim)
+	at = clampf(at, float(c.hold_from), minf(now - float(c.start) + TIMING_CLOCK_SLACK, float(c.end) - float(c.start)))
+	_end_hold(hero, at)
+	if c.next_input >= c.ability.timing_bar.inputs().size():
+		_finish_timing(hero, at)
+	return ""
+
+
+## The hold in progress, let go `release` seconds into the bar: its result, by
+## accuracy (TimingBarDef.hold_accuracy).
+func _end_hold(caster: Actor, release: float) -> void:
+	var c: Dictionary = caster.casting
+	c.results.append(TimingBarDef.hold_result(TimingBarDef.hold_accuracy(c.hold_zone, c.hold_from, release),
+			rules.timing_miss_power))
+	c.erase("hold_from")
+	c.erase("hold_zone")
+
+
+## Inputs from c.next_input up to (not including) `upto` were never played: misses.
+func _miss_inputs(c: Dictionary, inputs: Array, upto: int) -> void:
+	while c.next_input < mini(upto, inputs.size()):
+		c.results.append(TimingBarDef.missed_input(inputs[c.next_input].kind, rules.timing_miss_power))
+		c.next_input += 1
+
+
+## Every input is played (or the bar is over): the rest are misses, and the ability
+## goes off with the combined result. `at`: the last press or release (< 0: none).
+func _finish_timing(caster: Actor, at: float) -> void:
+	var c: Dictionary = caster.casting
+	var inputs := (c.ability as AbilityDef).timing_bar.inputs()
+	_miss_inputs(c, inputs, inputs.size())
+	var r := TimingBarDef.combine(c.results)
+	_resolve_timing(caster, r.grade, at, r.power, r.accuracy)
+
+
+## Aimed abilities (skillshots, ground) aim where the player's cursor was at their
+## last input: the shot goes where they point when the bar is done. Ground aims
+## beyond range are pulled back to the edge of it.
+func _aim_timing_bar(caster: Actor, aim: Variant) -> void:
+	var c: Dictionary = caster.casting
+	var ability: AbilityDef = c.ability
+	if aim == null or not ability.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]:
+		return
+	c.aim = _clamp_aim(caster, ability, aim)
+	CastResolver._face(caster, c.aim)
+
+
+## `aim` pulled back toward the caster until a ground ability reaches it.
+func _clamp_aim(caster: Actor, ability: AbilityDef, aim: Vector2) -> Vector2:
+	if ability.targeting != AbilityDef.TargetingMode.GROUND:
+		return aim
+	var from := Vector2(caster.tile())
+	var k := 1.0
+	while k > 0.0 and caster.range_to(Vector2i((from + (aim - from) * k).round())) > ability.max_range:
+		k -= 0.05
+	return from + (aim - from) * maxf(k, 0.0)
+
+
+const TIMING_CLOCK_SLACK := 0.3
+
+
+## Ends `caster`'s timing bar and casts its ability: full power for GOOD (a green
+## zone), full power and sure crits for PERFECT (a yellow zone, or a hold of
+## HOLD_PERFECT accuracy), rules.timing_miss_power for MISS; `power` overrides it
+## (a hold in between). `at`: where the press (or the hold's release) was, seconds
+## into the bar; < 0: no press. `accuracy`: a hold's, for the result (else -1).
+## Mana and cooldown are paid now, like a cast time.
+func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float, power: float = -1.0,
+		accuracy: float = -1.0) -> void:
+	var c: Dictionary = caster.casting
+	var ability: AbilityDef = c.ability
+	caster.casting = {}
+	if power < 0.0:
+		power = rules.timing_miss_power if grade == TimingBarDef.Grade.MISS else 1.0
+	emit({"type": "timing_result", "source": caster.id, "ability": ability.id,
+			"grade": TimingBarDef.grade_name(grade), "at": at, "accuracy": accuracy})
+	ctx.force_crit = grade == TimingBarDef.Grade.PERFECT
+	ctx.timing_power = power # healing and shields (damage: through the bonus)
+	var r := _finish_cast(caster, ability, get_actor(c.target), c.aim, CastResolver.Pay.COMPLETE, c.bonus * power)
+	ctx.force_crit = false
+	ctx.timing_power = 1.0
+	if r != AbilityResolver.Result.OK:
+		emit({"type": "cast_failed", "source": caster.id, "ability": ability.id,
+				"reason": AbilityResolver.Result.keys()[r].to_lower()})
 
 
 func cancel_cast(actor: Actor, reason: String) -> void:
@@ -541,8 +699,10 @@ func _update_pending_hits() -> void:
 			continue
 		var events: Array[Dictionary] = []
 		ctx.damage_bonus = h.bonus
+		ctx.force_crit = h.get("force_crit", false)
 		CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
 		ctx.damage_bonus = 1.0
+		ctx.force_crit = false
 		_emit_resolved(events)
 		_credit_mastery(caster, h.ability, events)
 	_pending_hits = waiting
@@ -566,7 +726,8 @@ func _credit_mastery(caster: Actor, ability: AbilityDef, events: Array) -> void:
 			continue
 		var t := get_actor(e.get("target", -1))
 		if t is Enemy:
-			levels.append((t as Enemy).level)
+			if not (t as Enemy).def.training_dummy: # practice gives no Mastery
+				levels.append((t as Enemy).level)
 		elif t != null and e.type in ["heal", "buff", "shield"] and hero.in_combat(now):
 			helped = true
 	for e in TreeRules.on_use(hero, ability, levels, helped, rules):
@@ -727,8 +888,10 @@ func _fly_skillshot(p: Projectile, caster: Actor) -> bool:
 				continue
 			p.hit_ids[a.id] = true
 			ctx.damage_bonus = p.damage_bonus
+			ctx.force_crit = p.force_crit
 			AbilityResolver.apply_effects(ctx, caster, p.ability, a, events)
 			ctx.damage_bonus = 1.0
+			ctx.force_crit = false
 			if not p.pierce:
 				stopped_at = i
 				break
@@ -809,6 +972,10 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1), intent.get("aim"))
 		"release":
 			reason = _intent_release(hero)
+		"timing_press":
+			reason = _intent_timing_press(hero, intent.get("at", 0.0), intent.get("aim"))
+		"timing_release":
+			reason = _intent_timing_release(hero, intent.get("at", 0.0), intent.get("aim"))
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
 		"accept_quest":
@@ -849,6 +1016,15 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 				for e in r.events:
 					emit(e)
 				emit({"type": "debug", "target": hero.id, "ok": r.ok, "text": r.text})
+		"game_speed":
+			# A test setting, allowed when the debug console is (rules are shared by
+			# every zone, so it changes every fight in the world).
+			if debug_content == null:
+				reason = "debug_disabled"
+			else:
+				rules.game_speed = clampf(intent.get("value", 1.0), CombatRules.GAME_SPEED_MIN,
+						CombatRules.GAME_SPEED_MAX)
+				emit({"type": "game_speed", "value": rules.game_speed})
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)

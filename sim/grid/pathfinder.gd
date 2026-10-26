@@ -10,33 +10,30 @@ extends RefCounted
 ## `fly_rise` >= 0: the path of a flier (GridModel.can_fly with that wall rise).
 ## `footprint`: offsets of a large body (Actor.footprint); every tile it covers must
 ## be able to make each step and stay clear of `blocked` (the goal step excepted).
-## `goals`: when not empty, the path ends on whichever of these tiles it reaches
-## first (none of them exempt from `blocked`), and `goal` with `goal_slack` only
-## guides the search: every goal is within `goal_slack` steps of `goal` (a large
-## body heading for the tiles beside its target).
+## `arrived` (optional, tile -> bool): the path ends at the first tile it accepts
+## (e.g. a large body beside its target); `goal` then only guides the search, and
+## no step is exempt from `blocked`.
 static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: int,
 		blocked: Dictionary = {}, max_drop: int = -1, max_expanded: int = 4096, fly_rise: int = -1,
-		footprint: Array = [], goals: Dictionary = {}, goal_slack: int = 0) -> Array[Vector2i]:
+		footprint: Array = [], arrived := Callable()) -> Array[Vector2i]:
 	var body: Array = footprint if not footprint.is_empty() else [Vector2i.ZERO]
 	var empty: Array[Vector2i] = []
-	var any_goal := not goals.is_empty()
-	if not grid.in_bounds(start):
+	if not grid.in_bounds(start) or not grid.in_bounds(goal) \
+			or (not grid.is_walkable(goal) if fly_rise < 0 else grid.blocks_sight(goal)):
 		return empty
-	if not any_goal and (not grid.in_bounds(goal) \
-			or (not grid.is_walkable(goal) if fly_rise < 0 else grid.blocks_sight(goal))):
-		return empty
-	if start == goal or goals.has(start):
+	if start == goal:
 		return [start] as Array[Vector2i]
 
 	var came_from := {start: start}
 	var cost := {start: 0}
 	var heap := _Heap.new()
-	heap.push(maxi(GridModel.distance(start, goal) - goal_slack, 0), start)
+	heap.push(GridModel.distance(start, goal), start)
 	var expanded := 0
 
+	var has_arrived := arrived.is_valid()
 	while not heap.is_empty():
 		var current: Vector2i = heap.pop()
-		if goals.has(current) or (not any_goal and current == goal):
+		if current == goal or (has_arrived and arrived.call(current)):
 			return _rebuild(came_from, start, current)
 		expanded += 1
 		if expanded > max_expanded:
@@ -44,13 +41,13 @@ static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: in
 		for dir in GridModel.DIRECTIONS:
 			var next := current + dir
 			if not _body_fits(grid, current, next, body, jump, max_drop, fly_rise, blocked,
-					not any_goal and next == goal):
+					next == goal and not has_arrived):
 				continue
 			var new_cost: int = cost[current] + 1
 			if not cost.has(next) or new_cost < cost[next]:
 				cost[next] = new_cost
 				came_from[next] = current
-				heap.push(new_cost + maxi(GridModel.distance(next, goal) - goal_slack, 0), next)
+				heap.push(new_cost + GridModel.distance(next, goal), next)
 	return empty
 
 

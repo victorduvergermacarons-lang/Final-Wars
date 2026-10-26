@@ -1,13 +1,16 @@
 class_name AbilityTreeWindow
-extends PanelContainer
-## The ability trees (T): one tab per tree. Each tier is a row with the Mastery it
-## needs; abilities show their state (mastered, learning, learnable, locked, not in
-## the game yet), AP and how much Mastery they have given toward their cap, with
-## lines to their prerequisites. Usable abilities can be dragged onto the action bar.
+extends BookSpread
+## The ability trees (T), across the menu book: one tab per tree. Tiers go left
+## to right, one column each: tiers 1–3 on the left page, 4 and 5 on the right,
+## each headed by the Mastery it needs. Abilities show their state (mastered,
+## learning, learnable, locked, not in the game yet), AP and how much Mastery
+## they have given toward their cap, with lines from their prerequisites. Usable
+## abilities can be dragged onto the action bar.
 
-const NODE_SIZE := Vector2(148, 54)
-const GAP := Vector2(12, 26)
-const ROW_LABEL_W := 118.0
+## Space between nodes; tier columns on the left page (the rest go right).
+const GAP := Vector2(22, 16)
+const LEFT_TIERS := 3
+const TIER_HEADER_H := 40.0
 
 enum State { MASTERED, LEARNING, LEARNABLE, LOCKED, NOT_IN_GAME }
 
@@ -32,26 +35,35 @@ var _shown_key := ""
 
 
 func _init(p_hud: Hud) -> void:
+	super()
 	hud = p_hud
-	var bg := StyleBoxFlat.new()
-	bg.bg_color = Color(0.08, 0.08, 0.11, 0.97)
-	bg.set_content_margin_all(10)
-	bg.set_corner_radius_all(4)
-	add_theme_stylebox_override("panel", bg)
-	var box := VBoxContainer.new()
-	add_child(box)
-	var title := Label.new()
-	title.text = "Ability trees (T) — drag a usable ability onto the action bar"
-	box.add_child(title)
+	left.add_child(BookSpread.title("Ability Trees"))
 	_tabs = TabBar.new()
 	for t in Mastery.TREES:
 		_tabs.add_tab(t)
 	_tabs.tab_changed.connect(func(i): show_tree(Mastery.TREES[i]))
-	box.add_child(_tabs)
-	_header = Label.new()
-	box.add_child(_header)
+	# All seven trees show (no scroll arrows): a little smaller than page text.
+	_tabs.clip_tabs = false
+	_tabs.add_theme_font_size_override("font_size", 17)
+	left.add_child(_tabs)
+	_header = BookSpread.note("")
+	_header.add_theme_color_override("font_color", UiPalette.INK)
+	right.add_child(_header)
 	_canvas = _Canvas.new(self)
-	box.add_child(_canvas)
+	add_child(_canvas)
+
+
+## The pages' headings go on top; the tree fills both pages below them.
+func lay_out(left_rect: Rect2, right_rect: Rect2) -> void:
+	super.lay_out(left_rect, right_rect)
+	var top := roundf(maxf(left.position.y + left.get_combined_minimum_size().y,
+			right.position.y + right.get_combined_minimum_size().y) + 10.0)
+	var bottom := right.position.y + right.size.y
+	var geometry := [Rect2(left_rect.position.x, top, left_rect.size.x, bottom - top),
+			Rect2(right_rect.position.x, top, right_rect.size.x, bottom - top)]
+	if geometry != _canvas.pages:
+		_canvas.pages = geometry
+		_shown_key = "" # rebuild at the new size
 
 
 func show_tree(t: String) -> void:
@@ -74,11 +86,9 @@ func _process(_delta: float) -> void:
 	if key == _shown_key:
 		return
 	_shown_key = key
-	var thresholds: PackedStringArray = []
-	for tier in range(1, 6):
-		thresholds.append(str(int(ContentDB.tree.tier_mastery.get(tier, 0))))
-	_header.text = "%s Mastery: %d (unlocks tiers)%s   ·   Tiers need %s" % [tree_name, floori(permanent),
-			"  + %d from gear (power only)" % floori(gear) if gear >= 1.0 else "", " / ".join(thresholds)]
+	# Each tier column shows what it needs; this is what you have.
+	_header.text = "%s Mastery: %d%s" % [tree_name, floori(permanent),
+			"  (+%d from gear, power only)" % floori(gear) if gear >= 1.0 else ""]
 	_canvas.rebuild(hero)
 
 
@@ -119,7 +129,8 @@ static func node_text(hero: Hero, ability: AbilityDef) -> String:
 	var progress: PackedStringArray = []
 	if not hero.is_mastered(ability.id) and (hero.ap.get(ability.id, 0) > 0 or state_of(hero, ability) == State.LEARNING):
 		progress.append("AP %d/%d" % [hero.ap.get(ability.id, 0), ability.ap_to_master])
-	if given.y > 0.0:
+	# Two lines fit a node: while AP shows, the Mastery count stays in the tooltip.
+	if given.y > 0.0 and progress.is_empty():
 		progress.append("Mastery %d/%d" % [floori(given.x), int(given.y)])
 	lines.append(" · ".join(progress) if not progress.is_empty() else STATE_NAMES[state_of(hero, ability)])
 	return "\n".join(lines)
@@ -128,12 +139,14 @@ static func node_text(hero: Hero, ability: AbilityDef) -> String:
 class _Canvas:
 	extends Control
 	var window: AbilityTreeWindow
+	## Where the tree may go on each page, in the window's coordinates.
+	var pages: Array = [Rect2(), Rect2()]
 	var _nodes := {} # ability id -> _Node
 	var _lines: Array = [] # [from Vector2, to Vector2, Color]
 
 	func _init(p_window: AbilityTreeWindow) -> void:
 		window = p_window
-		custom_minimum_size = Vector2(ROW_LABEL_W + 6 * (NODE_SIZE.x + GAP.x), 5 * (NODE_SIZE.y + GAP.y))
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	func rebuild(hero: Hero) -> void:
 		for c in get_children():
@@ -142,26 +155,43 @@ class _Canvas:
 		_lines.clear()
 		var data: AbilityTreeData = ContentDB.tree
 		var by_tier := {}
+		var tallest := 1
 		for id in data.ids(window.tree_name):
 			var row: Dictionary = data.ability(id)
 			if not by_tier.has(row.tier):
 				by_tier[row.tier] = []
 			by_tier[row.tier].append(id)
+			tallest = maxi(tallest, by_tier[row.tier].size())
+		# One column per tier: tiers 1..LEFT_TIERS share the left page, the rest the
+		# right page. Every node the same size; the abilities of a tier go down.
+		var lp: Rect2 = pages[0]
+		var rp: Rect2 = pages[1]
+		var col_l := lp.size.x / LEFT_TIERS
+		var col_r := rp.size.x / (5 - LEFT_TIERS)
+		var row_h := (minf(lp.size.y, rp.size.y) - TIER_HEADER_H) / tallest
+		var node_size := Vector2(maxf(minf(col_l, col_r) - GAP.x, 40.0), maxf(row_h - GAP.y, 30.0)).floor()
 		var permanent := Mastery.permanent(hero, window.tree_name)
 		for tier in range(1, 6):
-			var y := (tier - 1) * (NODE_SIZE.y + GAP.y)
+			var on_left := tier <= LEFT_TIERS
+			var col_w := col_l if on_left else col_r
+			var col_x := lp.position.x + (tier - 1) * col_l if on_left else rp.position.x + (tier - 1 - LEFT_TIERS) * col_r
 			var need := float(data.tier_mastery.get(tier, 0))
+			var open := permanent + 0.0001 >= need
 			var label := Label.new()
-			label.position = Vector2(0, y + 8)
-			label.text = "Tier %d\n%s" % [tier, "open" if permanent + 0.0001 >= need else "needs %d" % int(need)]
-			label.add_theme_color_override("font_color",
-					Color(0.6, 0.9, 0.6) if permanent + 0.0001 >= need else Color(0.75, 0.6, 0.6))
+			label.position = Vector2(roundf(col_x), lp.position.y)
+			label.size = Vector2(roundf(col_w - GAP.x), TIER_HEADER_H)
+			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			label.add_theme_font_size_override("font_size", 14)
+			label.add_theme_constant_override("line_spacing", -2)
+			label.text = "Tier %d\n%s" % [tier, "open" if open else "needs %d" % int(need)]
+			label.add_theme_color_override("font_color", Color(UiPalette.GREEN) if open else Color(UiPalette.RED))
 			add_child(label)
 			var ids: Array = by_tier.get(tier, [])
 			for i in ids.size():
 				var ability: AbilityDef = ContentDB.abilities[StringName(ids[i])]
-				var n := _Node.new(hero, ability)
-				n.position = Vector2(ROW_LABEL_W + i * (NODE_SIZE.x + GAP.x), y)
+				var n := _Node.new(hero, ability, node_size)
+				n.position = Vector2(col_x + (col_w - GAP.x - node_size.x) * 0.5,
+						lp.position.y + TIER_HEADER_H + i * row_h).round()
 				add_child(n)
 				_nodes[ability.id] = n
 		for id in _nodes:
@@ -170,10 +200,13 @@ class _Canvas:
 				var from: _Node = _nodes.get(StringName(pre))
 				if from == null:
 					continue
+				var to: _Node = _nodes[id]
 				var done := hero.is_mastered(StringName(pre))
-				_lines.append([from.position + Vector2(NODE_SIZE.x * 0.5, NODE_SIZE.y),
-						_nodes[id].position + Vector2(NODE_SIZE.x * 0.5, 0),
-						Color(0.85, 0.7, 0.2) if done else Color(0.45, 0.45, 0.5)])
+				# Left to right between tiers; top to bottom within one.
+				var sideways := to.position.x > from.position.x + 1.0
+				_lines.append([from.position + (Vector2(node_size.x, node_size.y * 0.5) if sideways else Vector2(node_size.x * 0.5, node_size.y)),
+						to.position + (Vector2(0, node_size.y * 0.5) if sideways else Vector2(node_size.x * 0.5, 0)),
+						Color(UiPalette.GOLD) if done else UiPalette.INK_SOFT])
 		queue_redraw()
 
 	func _draw() -> void:
@@ -190,15 +223,16 @@ class _Node:
 	var hero: Hero
 	var state: State
 
-	func _init(p_hero: Hero, p_ability: AbilityDef) -> void:
+	func _init(p_hero: Hero, p_ability: AbilityDef, node_size: Vector2) -> void:
 		hero = p_hero
 		ability = p_ability
 		state = AbilityTreeWindow.state_of(hero, ability)
-		size = NODE_SIZE
-		custom_minimum_size = NODE_SIZE
+		size = node_size
+		custom_minimum_size = node_size
 		focus_mode = Control.FOCUS_NONE
-		clip_text = true
-		add_theme_font_size_override("font_size", 12)
+		# Long names wrap onto a second line rather than being cut.
+		autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		add_theme_font_size_override("font_size", 13)
 		text = AbilityTreeWindow.node_text(hero, ability)
 		var color: Color = STATE_COLORS[state]
 		var style := StyleBoxFlat.new()

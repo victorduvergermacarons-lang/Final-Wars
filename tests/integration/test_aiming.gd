@@ -12,6 +12,7 @@ var wolf: Enemy
 
 func before_each() -> void:
 	InputActions.ensure_registered()
+	ContentDB.rules.timing_bars_enabled = false # aiming, not bars (test_timing_bar.gd)
 	session = LocalSession.new()
 	add_child(session)
 	session.start(ContentDB.zones.values(), &"town", ContentDB.rules,
@@ -33,6 +34,7 @@ func before_each() -> void:
 
 
 func after_each() -> void:
+	ContentDB.rules.timing_bars_enabled = true
 	input.free()
 	view.free()
 	session.free()

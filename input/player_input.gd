@@ -117,6 +117,11 @@ func _held_direction() -> Vector2i:
 func _unhandled_input(event: InputEvent) -> void:
 	if session == null:
 		return
+	# A right-click during a timing bar is the press (before anything else uses it).
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT \
+			and press_timing_bar():
+		get_viewport().set_input_as_handled()
+		return
 	if not _aiming.is_empty() and _aim_input(event):
 		get_viewport().set_input_as_handled()
 		return
@@ -146,6 +151,68 @@ func _unhandled_input(event: InputEvent) -> void:
 				use_slot(i, InputActions.slot_action(i))
 				get_viewport().set_input_as_handled()
 				return
+
+
+## Presses the local hero's timing bar, if one is running: sends how far into
+## the bar this is, as seen on this screen (the host judges it), and for an aimed
+## ability where the cursor points. The press goes to the bar's next input, as the
+## host will count it (TimingBarDef.input_for_press). True if a bar was running.
+func press_timing_bar() -> bool:
+	var hero: Hero = session.local_hero()
+	if hero == null or hero.casting.get("kind", "") != "timing":
+		return false
+	var start := float(hero.casting.start)
+	var state: Dictionary = client.timing_press
+	if float(state.get("start", -1.0)) != start:
+		state = {"start": start, "next": 0, "presses": []}
+		client.timing_press = state
+	if _holding(state):
+		return true
+	var bar: TimingBarDef = hero.casting.ability.timing_bar
+	var inputs := bar.inputs()
+	var at: float = session.render_time() - start
+	var i := bar.input_for_press(state.next, at)
+	if i >= inputs.size():
+		return true # every input is played
+	# On a blue zone this starts a hold, judged when the button is let go.
+	state.presses.append({"index": i, "at": at,
+			"holding": inputs[i].kind == "hold" and TimingBarDef.starts_hold(inputs[i], at)})
+	state.next = i + 1
+	session.send_intent(_with_aim({"type": "timing_press", "at": at}))
+	return true
+
+
+## Letting go of right-click during a hold ends it (the host judges how long it was).
+func release_timing_bar() -> void:
+	var state: Dictionary = client.timing_press
+	if not _holding(state):
+		return
+	var hero: Hero = session.local_hero()
+	var at: float = session.render_time() - float(state.start)
+	if hero != null and hero.casting.get("kind", "") == "timing" and float(hero.casting.start) == float(state.start):
+		at = minf(at, hero.casting.ability.timing_bar.seconds)
+	state.presses.back().release = at
+	session.send_intent(_with_aim({"type": "timing_release", "at": at}))
+
+
+## The current bar's last press is a hold not let go yet.
+static func _holding(state: Dictionary) -> bool:
+	var presses: Array = state.get("presses", [])
+	return not presses.is_empty() and presses.back().holding and not presses.back().has("release")
+
+
+## Adds where the cursor points while an aimed ability's bar runs.
+func _with_aim(intent: Dictionary) -> Dictionary:
+	if _aiming.get("during_bar", false):
+		intent.aim = aim_point()
+	return intent
+
+
+func _input(event: InputEvent) -> void:
+	# Letting go of right-click ends a hold, wherever the pointer is (even over the HUD).
+	if session != null and event is InputEventMouseButton and not event.pressed \
+			and event.button_index == MOUSE_BUTTON_RIGHT:
+		release_timing_bar()
 
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was
@@ -180,6 +247,9 @@ func use_item(item_id: StringName) -> void:
 
 func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
+	if AimPreview.is_aimed(ability) and aims_during_bar(ability):
+		_start_bar_aiming(ability)
+		return
 	if AimPreview.is_aimed(ability):
 		start_aiming(ability, key)
 		return
@@ -248,6 +318,43 @@ func start_aiming(ability: AbilityDef, key: StringName = &"") -> void:
 	_update_aim()
 
 
+## An aimed ability with a timing bar starts its bar at once and aims at the end:
+## it fires where the cursor points when the bar is done.
+func aims_during_bar(ability: AbilityDef) -> bool:
+	return ability.timing_bar != null and session.rules().timing_bars_enabled
+
+
+## Starts the bar of an aimed ability: the cast goes now (aimed where the cursor is,
+## for range checks), the affected tiles keep following the cursor while the bar
+## runs, and each input sends the cursor's position (the last one decides).
+func _start_bar_aiming(ability: AbilityDef) -> void:
+	_aiming = {"ability": ability, "action": &"", "mouse": _screen_mouse(), "during_bar": true,
+			"sent_at": session.render_time(), "bar_start": -1.0}
+	_update_aim()
+	var picked := Targeting.pick(session.local_hero(), ability, session.get_actor(client.target_id))
+	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target, "aim": aim_point()})
+
+
+## While an aimed bar runs: keeps the preview, lets a hold still held at the bar's end
+## go (with the final aim), and stops once the bar is over (or never started).
+func _follow_bar_aiming() -> void:
+	var hero: Hero = session.local_hero()
+	var c: Dictionary = hero.casting if hero != null else {}
+	var running: bool = c.get("kind", "") == "timing" and c.get("ability") == _aiming.ability
+	if running:
+		_aiming.bar_start = float(c.start)
+		if render_time_into_bar(c) >= c.ability.timing_bar.seconds:
+			release_timing_bar()
+	elif _aiming.bar_start >= 0.0 or session.render_time() - _aiming.sent_at > 1.0:
+		cancel_aiming() # the bar is over, or the host refused the cast
+		return
+	_update_aim()
+
+
+func render_time_into_bar(c: Dictionary) -> float:
+	return session.render_time() - float(c.start)
+
+
 ## For tests: as if `key` was pressed on a slot holding `ability`.
 func use_slot_ability_for_test(ability: AbilityDef, key: StringName) -> void:
 	use_ability(ability, key)
@@ -267,7 +374,9 @@ func is_aiming() -> bool:
 
 
 func _process(_delta: float) -> void:
-	if not _aiming.is_empty():
+	if _aiming.get("during_bar", false):
+		_follow_bar_aiming()
+	elif not _aiming.is_empty():
 		_update_aim()
 
 
@@ -304,6 +413,8 @@ func _update_aim() -> void:
 
 ## Handles input while aiming. Returns true if the event was used.
 func _aim_input(event: InputEvent) -> bool:
+	if _aiming.get("during_bar", false):
+		return false # the bar's own inputs (right-click) decide; no key fires it
 	var key: StringName = _aiming.action
 	if key != &"" and event.is_action_released(key):
 		fire_aimed()

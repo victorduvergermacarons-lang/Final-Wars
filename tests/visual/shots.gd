@@ -10,25 +10,69 @@ var game: Game
 
 func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(out_dir)
-	# Another window size: launch with --resolution 1920x1080 (and an xvfb screen
-	# that big); resizing the window from here leaves part of the capture black.
-	if not OS.get_cmdline_args().has("--resolution"):
+	# SHOTS_NO_TERRAIN_CACHE=1: redraw every tile every frame (the old way).
+	# SHOTS_COMPARE_CACHE=1: save every shot both ways, to check they match.
+	if OS.get_environment("SHOTS_NO_TERRAIN_CACHE") == "1":
+		WorldView.use_terrain_cache = false
+	# Water holds its first frame and glows stop pulsing, so pictures can be compared.
+	TileArt.freeze_water = true
+	WorldView.freeze_pulses = true
+	# Another window size: launch with --resolution 1920x1080 and
+	# SHOTS_RESOLUTION=1920x1080 (Godot keeps --resolution from the script's
+	# arguments; the screen, or xvfb, must be that big); resizing the window from
+	# here leaves part of the capture black.
+	var wanted := OS.get_environment("SHOTS_RESOLUTION").split("x")
+	if wanted.size() == 2:
+		get_window().size = Vector2i(int(wanted[0]), int(wanted[1]))
+	elif not OS.get_cmdline_args().has("--resolution"):
 		get_window().size = Vector2i(1280, 720)
 	_run.call_deferred()
+
+
+## The view of the map the hero is on. After a move to another map, the old view
+## lingers until the session's next tick swaps it, so this waits for the new one.
+func _view() -> WorldView:
+	while true:
+		var view: WorldView = game.get_node_or_null("WorldView")
+		if view != null and view.is_built_for(game.session.grid()):
+			return view
+		await get_tree().process_frame
+	return null
 
 
 ## Puts the camera on the hero at once (it normally eases toward them).
 func _snap_camera(hero: Hero) -> void:
 	await get_tree().process_frame
-	var view: WorldView = game.get_node("WorldView")
+	var view: WorldView = await _view()
 	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
 
 
 func _shot(name: String, frames: int = 8) -> void:
 	for i in frames:
 		await get_tree().process_frame
-	get_viewport().get_texture().get_image().save_png(out_dir + name + ".png")
+	if OS.get_environment("SHOTS_COMPARE_CACHE") == "1":
+		await _shot_both_ways(name)
+	else:
+		get_viewport().get_texture().get_image().save_png(out_dir + name + ".png")
 	print("shot ", name)
+
+
+## SHOTS_COMPARE_CACHE=1: the world's clock stops, then the same moment is saved
+## with the terrain cache (<name>.png) and redrawing every tile (<name>_full.png).
+## The two must match.
+func _shot_both_ways(name: String) -> void:
+	var view: WorldView = await _view()
+	var session: Node = game.session
+	session.process_mode = Node.PROCESS_MODE_DISABLED
+	for on in [true, false]:
+		view.set_terrain_cache(on)
+		for i in 3:
+			# The camera eases toward the hero; hold it still for both pictures.
+			view.camera.follow(view.actor_screen_pos(game.session.local_hero()), 0.0, true)
+			await get_tree().process_frame
+		get_viewport().get_texture().get_image().save_png(out_dir + name + ("" if on else "_full") + ".png")
+	view.set_terrain_cache(true)
+	session.process_mode = Node.PROCESS_MODE_INHERIT
 
 
 ## Waits (frame by frame, at most 5 s) until `cond` holds.
@@ -72,7 +116,7 @@ func _run() -> void:
 	var wolf: Enemy = fields.enemies().filter(func(e): return e.def.id == &"wolf")[0]
 	hero.move.place(wolf.tile() + Vector2i(0, 1))
 	hero.face(Vector2i.UP)
-	var view: WorldView = game.get_node("WorldView")
+	var view: WorldView = await _view()
 	view._on_events([{"type": "damage", "target": wolf.id, "amount": 31, "crit": false},
 			{"type": "damage", "target": wolf.id, "amount": 62, "crit": true, "flank": "side"},
 			{"type": "miss", "target": hero.id}, {"type": "level_up", "target": hero.id, "level": 4}])
@@ -104,12 +148,40 @@ func _run() -> void:
 	hud.trees_window.show_tree("Fire")
 	await _shot("8_fire_tree")
 	hud._toggle(hud.trees_window)
-	# 8. Inventory and character sheet with the learning slot.
+	# 8. The menu book, one menu across both pages at a time: the inventory with
+	# the learning slot, the character sheet, the spellbook.
 	hud.inventory_window.visible = true
-	hud._character.visible = true
 	await _shot("9_learning_slot")
-	hud.inventory_window.visible = false
-	hud._character.visible = false
+	# Every rarity: Uncommon, Rare and Epic in the bag (tinted), one worn (its border).
+	for id in [&"frostweave_robe", &"rangers_gloves", &"grizzlehide_mantle", &"minor_health_potion"]:
+		hero.bag.add(cd.items[id], 3 if id == &"minor_health_potion" else 1)
+	hero.equip_from_bag(hero.bag.index_of(cd.items[&"rangers_gloves"]))
+	await _shot("9a_inventory_rarities")
+	# Hovering the robe in the bag: the Chest slot glows, and its tooltip (shown
+	# here in a paper panel like the real one, since a screenshot can't hover).
+	hud.hovered_item = cd.items[&"frostweave_robe"]
+	var tip := PanelContainer.new()
+	tip.theme = UiPalette.paper_theme()
+	tip.add_theme_stylebox_override("panel", UiPalette.paper_theme().get_stylebox("panel", "TooltipPanel"))
+	tip.add_child(ItemTooltip.label(cd.items[&"frostweave_robe"], hero, session.rules(), false, session.now()))
+	tip.position = Vector2(700, 120)
+	hud.add_child(tip)
+	await _shot("9a2_hover_robe")
+	tip.get_child(0).free()
+	tip.add_child(ItemTooltip.label(cd.items[&"minor_health_potion"], hero, session.rules(), false, session.now()))
+	tip.reset_size()
+	await _shot("9a3_hover_potion")
+	tip.get_child(0).free()
+	tip.add_child(ItemTooltip.label(cd.items[&"scorched_earth_scroll"], hero, session.rules(), false, session.now()))
+	tip.reset_size()
+	await _shot("9a4_hover_scroll")
+	tip.queue_free()
+	hud.hovered_item = null
+	hud._character.visible = true
+	await _shot("9b_character_sheet")
+	hud._spellbook.visible = true
+	await _shot("9c_spellbook")
+	hud.close_menus()
 	# 9. Debug console after a few commands.
 	hud.console.open()
 	for line in ["help", "spawn wolf 3 2", "mastery water 200"]:
@@ -137,14 +209,16 @@ func _run() -> void:
 	hero.hp = 100.0
 	hero.move.place(Vector2i(17, 15))
 	await _shot("11c_behind_boulder")
-	# 11. Hilda's shop, scrolled.
+	# 11. Hilda's shop (its own sheet) beside the inventory in the menu book.
 	session.world.move_hero(hero.id, &"town", Vector2i(8, 8))
 	var town := session.world.zone(&"town")
 	var hilda: Npc = town.npcs().filter(func(n): return n.def.id == &"hilda")[0]
+	hero.move.place(town.find_free_tile_near(hilda.tile() + Vector2i(0, 1))) # the shop closes from afar
 	hud.vendor_window.open(hilda)
-	hud.vendor_window.visible = true
+	hud.inventory_window.visible = true
 	await _shot("12_shop")
-	hud.vendor_window.visible = false
+	hud.vendor_window.close()
+	hud.close_menus()
 	hud.dialogue.visible = false
 	# 12. Standing right behind an Earth Wall (the wall runs along the grid's y axis).
 	hero.alive = true
@@ -175,7 +249,7 @@ func _run() -> void:
 	# the pond and river, and Millbrook.
 	session.world.move_hero(hero.id, &"greenfields", Vector2i(15, 15))
 	await get_tree().process_frame
-	var gview: WorldView = game.get_node("WorldView")
+	var gview: WorldView = await _view()
 	for i in 3:
 		gview.camera.step_zoom(-1)
 	await _snap_camera(hero)
@@ -202,7 +276,7 @@ func _run() -> void:
 	for i in 4:
 		var w := gf.add_enemy(still, Vector2i(6 + i * 2, 27))
 		w.face(dirs[i])
-	var view4: WorldView = game.get_node("WorldView")
+	var view4: WorldView = await _view()
 	view4.camera.step_zoom(1)
 	await _snap_camera(hero)
 	await _shot("18_wolf_facings")
@@ -245,7 +319,7 @@ func _run() -> void:
 	# 20. Salamander Hounds facing each way, one flashing, one dead.
 	var calm_hound: EnemyDef = cd.enemies[&"salamander_hound"].duplicate()
 	calm_hound.aggro_radius = 0
-	var view5: WorldView = game.get_node("WorldView")
+	var view5: WorldView = await _view()
 	view5.camera.step_zoom(1)
 	var row: Array = []
 	for i in 4:
@@ -338,4 +412,105 @@ func _run() -> void:
 	await get_tree().create_timer(0.3).timeout
 	await _shot("37_dive_trail", 1)
 	tz.remove_enemy(dd.id)
+	# 39. Timing bars (steady speed: the full bar = 3 s). Slash under the hero and
+	# above the action bar (bar length follows the ability), a press on its yellow
+	# middle, then the scrolling track; Fire Punch (zones at the end); Water Whip's
+	# 3 s bar with its blue hold zone, held.
+	tz.reset_zone()
+	var dummy: EnemyDef = cd.enemies[&"wolf"].duplicate()
+	dummy.aggro_radius = 0
+	dummy.abilities = [] as Array[AbilityDef]
+	dummy.howl_ability = null
+	hero.move.place(base)
+	hero.cooldowns = Cooldowns.new()
+	await _snap_camera(hero)
+	var dw := tz.add_enemy(dummy, base + Vector2i(1, 0))
+	var into := func() -> float: return session.render_time() - float(hero.casting.get("start", 0.0))
+	var fresh_cast := func(id: StringName) -> void:
+		hero.casting = {}
+		hero.cooldowns = Cooldowns.new()
+		hero.mana = hero.current_stats(session.now()).mana
+		tz.cast(hero, cd.abilities[id], dw)
+	hud.set_timing_bar_mode(TimingBarView.Mode.LENGTH)
+	fresh_cast.call(&"S01")
+	await _until(func(): return into.call() >= 0.25)
+	await _shot("39_timing_bar_hero", 1)
+	hud.set_timing_bar_place(TimingBarView.Place.ACTION_BAR)
+	await _shot("39b_timing_bar_action_bar", 1)
+	await _until(func(): return into.call() >= 0.5)
+	hud.input.press_timing_bar()
+	await get_tree().create_timer(0.15).timeout
+	await _shot("39c_timing_bar_perfect", 1)
+	hud.set_timing_bar_mode(TimingBarView.Mode.SCROLL)
+	for shot in [["39d_timing_bar_scroll_under_hero", TimingBarView.Place.BELOW_HERO],
+			["39e_timing_bar_scroll_action_bar", TimingBarView.Place.ACTION_BAR]]:
+		hud.set_timing_bar_place(shot[1])
+		fresh_cast.call(&"S01")
+		await _until(func(): return into.call() >= 0.15)
+		await _shot(shot[0], 1)
+	hud.set_timing_bar_mode(TimingBarView.Mode.LENGTH)
+	fresh_cast.call(&"F01")
+	await _until(func(): return into.call() >= 0.5)
+	await _shot("39f_fire_punch", 1)
+	hud.set_timing_bar_mode(TimingBarView.Mode.SCROLL)
+	fresh_cast.call(&"W02")
+	await _until(func(): return into.call() >= 0.75)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 1.75)
+	await _shot("39g_water_whip_hold_scroll", 1)
+	await _until(func(): return hero.casting.is_empty())
+	await get_tree().create_timer(0.1).timeout
+	await _shot("39h_water_whip_held", 1)
+	hud.set_timing_bar_mode(TimingBarView.Mode.LENGTH)
+	hud.set_timing_bar_place(TimingBarView.Place.BELOW_HERO)
+	fresh_cast.call(&"W02")
+	await _until(func(): return into.call() >= 0.75)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 1.75)
+	await _shot("39i_water_whip_hold_length", 1)
+	await _until(func(): return into.call() >= 2.9) # held past the zone: "Let go!"
+	await _shot("39j_water_whip_let_go", 1)
+	await _until(func(): return hero.casting.is_empty())
+	await get_tree().create_timer(0.1).timeout
+	await _shot("39k_water_whip_overheld", 1)
+	hero.casting = {}
+	# Aimed Shot (4 s): the tap played (a white mark), the hold under way, and the
+	# arrow's line following the cursor (aimed at the end). The aim preview is set
+	# up as PlayerInput does when the key is pressed (the hero hasn't learned it).
+	hud.set_timing_bar_place(TimingBarView.Place.ACTION_BAR)
+	fresh_cast.call(&"B02")
+	hud.input._aiming = {"ability": cd.abilities[&"B02"], "action": &"", "mouse": Vector2.ZERO,
+			"during_bar": true, "sent_at": session.render_time(), "bar_start": -1.0}
+	await _until(func(): return into.call() >= 0.4)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 1.0)
+	hud.input.press_timing_bar()
+	await _until(func(): return into.call() >= 2.2)
+	await _shot("39l_aimed_shot_tap_then_hold", 1)
+	hero.casting = {}
+	hud.input.cancel_aiming()
+	hud.set_timing_bar_place(TimingBarView.Place.BELOW_HERO)
+	tz.remove_enemy(dw.id)
+	# 40. The Training Dummy by the entrance, after a Slash.
+	var mannequin: Enemy = tz.enemies().filter(func(e): return e.def.training_dummy)[0]
+	hero.move.place(mannequin.tile() + Vector2i(0, 1))
+	hero.cooldowns = Cooldowns.new()
+	await _snap_camera(hero)
+	tz.cast(hero, cd.abilities[&"S01"], mannequin)
+	await _until(func(): return session.render_time() - float(hero.casting.get("start", 0.0)) >= 0.5)
+	hud.input.press_timing_bar()
+	await get_tree().create_timer(0.2).timeout
+	await _shot("40_training_dummy", 1)
+	# 38. The Escape menu: the message log, then the controls; the quest tracker
+	# folded to its heading.
+	hud.client.target_id = -1
+	hud.game_menu.visible = true
+	await _shot("38_escape_menu_log")
+	hud.game_menu.find_children("*", "TabContainer", true, false)[0].current_tab = 1
+	await _shot("38b_escape_menu_controls")
+	hud.game_menu.find_children("*", "TabContainer", true, false)[0].current_tab = 3
+	await _shot("38d_escape_menu_gameplay_test")
+	hud.game_menu.visible = false
+	hud._fold_tracker(true)
+	await _shot("38c_tracker_folded")
 	get_tree().quit()

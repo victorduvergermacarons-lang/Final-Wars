@@ -17,6 +17,7 @@ var ids := IdSource.new()
 var _zones := {} # id -> WorldSim
 var _hero_zone := {} # hero id -> zone id
 var _last_tile := {} # hero id -> tile last tick (exits trigger on arrival)
+var _empty_since := {} # zone id -> sim time it was last seen without heroes
 
 
 ## `quests`: id -> QuestDef, shared by every zone.
@@ -88,14 +89,32 @@ func intent_ack(hero_id: int) -> int:
 
 
 ## Advances every zone one tick, then moves heroes who arrived on an exit.
+## Zones empty of heroes for `rules.empty_zone_sleep_seconds` only advance their
+## clock (WorldSim.skip_tick), so the CPU goes to the zones people are in.
 func step() -> Array[Dictionary]:
 	var events: Array[Dictionary] = []
 	for id in zone_ids():
-		for e in _zones[id].step():
+		var sim: WorldSim = _zones[id]
+		if is_asleep(id):
+			sim.skip_tick()
+			continue
+		for e in sim.step():
 			e.zone = id
 			events.append(e)
 	events.append_array(_handle_exits())
 	return events
+
+
+## True while zone `id` sleeps: no heroes in it for the configured time. A hero
+## arriving wakes it on the next tick.
+func is_asleep(id: StringName) -> bool:
+	var sim: WorldSim = _zones[id]
+	if rules.empty_zone_sleep_seconds < 0.0 or not sim.heroes().is_empty():
+		_empty_since.erase(id)
+		return false
+	if not _empty_since.has(id):
+		_empty_since[id] = sim.now
+	return sim.now - _empty_since[id] >= rules.empty_zone_sleep_seconds - Cooldowns.EPSILON
 
 
 func advance(seconds: float) -> Array[Dictionary]:
@@ -159,6 +178,13 @@ func _leave_by_edge(sim: WorldSim, hero_id: int, edge: ZoneEdge) -> Array[Dictio
 			return [{"type": "zone_change", "target": hero_id, "from": from, "to": edge.to_zone,
 					"zone": edge.to_zone}]
 	return [{"type": "rejected", "target": hero_id, "intent": "step", "reason": "blocked", "zone": sim.zone.id}]
+
+
+## How fast the sim clock should run against real time: the game speed
+## (`rules.game_speed`, a test setting). The session that drives the ticks applies
+## it; the sim itself only ever sees sim seconds.
+func time_scale() -> float:
+	return rules.game_speed
 
 
 ## Every hero in every zone, by id.

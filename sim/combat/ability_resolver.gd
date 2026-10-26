@@ -275,6 +275,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				_try_ground(ctx, caster, ability, target, events)
 			if target.is_large():
 				return # a large body (Sunscale Drake) isn't shoved around
+			if target is Enemy and (target as Enemy).def.training_dummy:
+				return # a training dummy stays put
 			var dir := TileGeometry.snap8(Vector2((caster.tile() - target.tile()) if pull else (target.tile() - caster.tile())))
 			if effect.push_along_cast and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.cast_dir
@@ -333,8 +335,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not target.alive:
 				return
 			var max_hp := target.current_stats(ctx.now).hp
-			var amount := AbilityPower.amount(caster, ability, effect, ctx.now, rules) \
-					+ effect.percent_of_max * max_hp
+			var amount := (AbilityPower.amount(caster, ability, effect, ctx.now, rules) \
+					+ effect.percent_of_max * max_hp) * ctx.timing_power
 			var crit := _roll_crit(ctx, effect, caster_stats)
 			if crit:
 				amount *= CombatMath.crit_multiplier(caster_stats.crit_dmg, rules)
@@ -372,7 +374,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 		AbilityEffect.Kind.SHIELD:
 			if effect.buff == null or not target.alive:
 				return
-			var size := AbilityPower.amount(caster, ability, effect, ctx.now, rules)
+			var size := AbilityPower.amount(caster, ability, effect, ctx.now, rules) * ctx.timing_power
 			target.buffs.apply(effect.buff, ctx.now, 0.0, caster.id,
 					{"duration": AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules),
 					"shield": size})
@@ -412,6 +414,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var harmful := effect.kind == AbilityEffect.Kind.DAMAGE_OVER_TIME
 			if harmful:
 				total *= ctx.damage_bonus
+			else:
+				total *= ctx.timing_power
 			var duration := AbilityPower.duration(caster, ability, effect.buff.duration_seconds, ctx.now, rules)
 			var ticks := maxf(floorf(duration / maxf(effect.buff.tick_seconds, 0.05)), 1.0)
 			target.buffs.apply(effect.buff, ctx.now, total / ticks, caster.id,
@@ -656,7 +660,7 @@ static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool
 
 
 static func _roll_crit(ctx: CombatContext, effect: AbilityEffect, caster_stats: StatBlock) -> bool:
-	return effect.can_crit and ctx.rng.randf() < CombatMath.crit_chance(caster_stats.crit_rate)
+	return effect.can_crit and (ctx.force_crit or ctx.rng.randf() < CombatMath.crit_chance(caster_stats.crit_rate))
 
 
 ## Healing or buffing someone puts the caster on the threat table of every enemy

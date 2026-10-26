@@ -86,6 +86,23 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(line) != TYPE_STRING or line.length() > 200:
 				return {}
 			out.line = line
+		"game_speed":
+			var value = raw.get("value")
+			if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
+				return {}
+			out.value = clampf(float(value), CombatRules.GAME_SPEED_MIN, CombatRules.GAME_SPEED_MAX)
+		"timing_press", "timing_release":
+			var at = raw.get("at")
+			if (typeof(at) != TYPE_FLOAT and typeof(at) != TYPE_INT) or not is_finite(float(at)):
+				return {}
+			out.at = clampf(float(at), 0.0, 60.0)
+			if raw.has("aim"): # aimed abilities: where the cursor is at this input
+				var aim = raw.aim
+				if typeof(aim) == TYPE_VECTOR2I:
+					aim = Vector2(aim)
+				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
+					return {}
+				out.aim = aim
 		"accept_quest", "turn_in_quest", "abandon_quest":
 			var quest = raw.get("quest")
 			if typeof(quest) != TYPE_STRING and typeof(quest) != TYPE_STRING_NAME:

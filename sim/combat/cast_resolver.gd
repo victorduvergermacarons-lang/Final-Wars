@@ -79,8 +79,10 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 		caster.buffs.consume_on_cast(ability.tree, ctx.now, had)
 	if out.projectile != null:
 		out.projectile.damage_bonus = out.bonus
+		out.projectile.force_crit = ctx.force_crit # a timing bar's critical success
 	if out.pending != null:
 		out.pending.bonus = out.bonus
+		out.pending.force_crit = ctx.force_crit
 	return out
 
 

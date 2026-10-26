@@ -121,6 +121,11 @@ func _run_join(port: int, players: int, index: int) -> void:
 		_finish(false, "%s: couldn't learn from a scroll" % me)
 		return
 	session.send_intent({"type": "cast", "ability": &"W01", "target": hero.id})
+	# Healing Touch runs a timing bar, and moving would cancel it: with no press it
+	# goes off (at miss power) when the bar ends, so wait for that before walking.
+	if not await _wait_until(func(): return heard_cast[0]):
+		_finish(false, "%s: never heard its own cast" % me)
+		return
 	# Walk up until 4 tiles from the start (other guests may be in the way at first).
 	var start := hero.tile()
 	var walked := func():
@@ -130,9 +135,6 @@ func _run_join(port: int, players: int, index: int) -> void:
 		return hero.tile().y <= start.y - 4
 	if not await _wait_until(walked):
 		_finish(false, "%s: couldn't walk 4 tiles (at %s from %s)" % [me, hero.tile(), start])
-		return
-	if not await _wait_until(func(): return heard_cast[0]):
-		_finish(false, "%s: never heard its own cast" % me)
 		return
 	await get_tree().create_timer(1.0).timeout # let the host see the final position
 	for other in session.actors():

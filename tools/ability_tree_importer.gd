@@ -15,6 +15,14 @@ const REQUIRED_COLUMNS := ["ID", "Tree", "Branch", "Tier", "Mastery Required", "
 	"Prerequisites", "Item Type", "Taught By", "Scales With", "Effect", "Targeting",
 	"Targeting Details", "Cooldown (s)", "Mastery on Learn", "Mastery per Use", "Mastery Cap",
 	"Mastery Contribution", "Notes"]
+## Timing bar columns (optional; see the sheet's "Timing Rules" tab). Absent or
+## empty: no timing design.
+const TIMING_COLUMNS := ["Timing Status", "Timing Bar (s)", "Timing Zones", "Timing Notes"]
+## Timing Status values -> the short form in the data file.
+const TIMING_STATUS := {"Manual": "manual", "Generated (AI, not yet confirmed)": "generated",
+	"Not implemented": "none", "": "none"}
+## Timing Zones kinds -> the data file's zone lists.
+const ZONE_KINDS := {"tap": "taps", "crit": "crits", "hold": "holds"}
 ## Optional numeric columns the designer may add later (decision M3-1).
 const OPTIONAL_NUMBERS := {"Base": "base", "Mana Cost": "mana_cost", "Range": "range",
 	"Duration": "duration"}
@@ -127,9 +135,12 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 		a.mastery_per_use = _number(cell.call("Mastery per Use"), where, "Mastery per Use", errors)
 		a.mastery_cap = _number(cell.call("Mastery Cap"), where, "Mastery Cap", errors)
 		a.scales_with = _scales_with(a.scales_with_text, tree_names, where, errors)
+		var timing := _timing(cell, col, where, errors, warnings)
+		if not timing.is_empty():
+			a.timing = timing
 		var extra := {}
 		for h in col:
-			if not REQUIRED_COLUMNS.has(h):
+			if not REQUIRED_COLUMNS.has(h) and not TIMING_COLUMNS.has(h):
 				var v: String = cell.call(h)
 				if OPTIONAL_NUMBERS.has(h):
 					if v != "":
@@ -279,6 +290,73 @@ static func _check_cycles(abilities: Array, by_id: Dictionary, errors: PackedStr
 		if state.get(a.id, 0) == 0 and visit.call(a.id, visit):
 			errors.append("Prerequisites loop back on themselves around %s (%s)" % [a.id, a.name])
 			return
+
+
+## The timing design of one row: {"status": "manual"|"generated"|"none",
+## "seconds": bar length (0 = no bar), "taps"/"crits"/"holds": [[start, length]…],
+## "notes"}; {} when the row has none. Zones are written "Tap 0.35–0.65; Crit
+## 0.45–0.55" or "Hold 0.75–2.75" (seconds from the bar's start; dot or comma
+## decimals; "-" or "–").
+static func _timing(cell: Callable, col: Dictionary, where: String, errors: PackedStringArray,
+		warnings: PackedStringArray) -> Dictionary:
+	var read := func(name: String) -> String: return cell.call(name) if col.has(name) else ""
+	var status_text: String = read.call("Timing Status")
+	var bar_text: String = read.call("Timing Bar (s)")
+	var zones_text: String = read.call("Timing Zones")
+	var notes: String = read.call("Timing Notes")
+	if status_text == "" and bar_text == "" and zones_text == "" and notes == "":
+		return {}
+	if not TIMING_STATUS.has(status_text):
+		errors.append("%s: Timing Status \"%s\" isn't one of %s" % [where, status_text,
+				", ".join(TIMING_STATUS.keys().filter(func(k): return k != ""))])
+		return {}
+	var t := {"status": TIMING_STATUS[status_text], "seconds": 0.0, "taps": [], "crits": [], "holds": [],
+			"notes": notes}
+	var bar := bar_text.replace(",", ".")
+	if bar != "" and bar.to_lower() != "none" and bar != "—" and bar != "-":
+		t.seconds = _number(bar, where, "Timing Bar (s)", errors)
+	var re := RegEx.create_from_string("^(tap|crit|hold)\\s+([0-9]+(?:[.,][0-9]+)?)\\s*[-–—]\\s*([0-9]+(?:[.,][0-9]+)?)\\s*s?$")
+	for part in zones_text.replace("\n", ";").split(";", false):
+		var text := part.strip_edges()
+		if text == "" or text == "—" or text == "-":
+			continue
+		var m := re.search(text.to_lower())
+		if m == null:
+			errors.append("%s: Timing Zones \"%s\" isn't like \"Tap 0.35–0.65\", \"Crit 0.45–0.55\" or \"Hold 0.75–2.75\"" % [where, text])
+			continue
+		var from := m.get_string(2).replace(",", ".").to_float()
+		var to := m.get_string(3).replace(",", ".").to_float()
+		if to <= from:
+			errors.append("%s: Timing Zones \"%s\" ends before it starts" % [where, text])
+			continue
+		if to > t.seconds + 0.0001:
+			errors.append("%s: Timing Zones \"%s\" goes past the %s s bar" % [where, text, t.seconds])
+		t[ZONE_KINDS[m.get_string(1)]].append([from, snappedf(to - from, 0.0001)])
+	var any_zone: bool = not (t.taps.is_empty() and t.crits.is_empty() and t.holds.is_empty())
+	if t.status == "none":
+		if t.seconds > 0.0 or any_zone:
+			errors.append("%s: Timing Status is \"Not implemented\" but it has a bar or zones" % where)
+		return t
+	if t.seconds > 0.0 and not any_zone:
+		errors.append("%s: a %s s timing bar with no zones" % [where, t.seconds])
+	if t.seconds <= 0.0 and any_zone:
+		errors.append("%s: Timing Zones but no Timing Bar (s)" % where)
+	for h in t.holds:
+		var gap: float = t.seconds - (h[0] + h[1])
+		if gap < TimingBarDef.HOLD_END_GAP - 0.0001 or gap > TimingBarDef.HOLD_END_GAP_MAX + 0.0001:
+			errors.append("%s: a hold zone must end %s–%s s before the bar (this one: %s s)" % [where,
+					TimingBarDef.HOLD_END_GAP, TimingBarDef.HOLD_END_GAP_MAX, snappedf(gap, 0.001)])
+	for c in t.crits:
+		if not t.taps.any(func(z): return c[0] >= z[0] - 0.0001 and c[0] + c[1] <= z[0] + z[1] + 0.0001):
+			warnings.append("%s: a Crit zone outside every Tap zone" % where)
+	# Several inputs are played in order, one press each: their zones can't overlap.
+	var inputs: Array = (t.taps + t.holds).duplicate()
+	inputs.sort_custom(func(x, y): return x[0] < y[0])
+	for i in range(1, inputs.size()):
+		if inputs[i][0] < inputs[i - 1][0] + inputs[i - 1][1] - 0.0001:
+			errors.append("%s: input zones overlap (%s–%s and %s–%s); each input needs its own time" % [where,
+					inputs[i - 1][0], inputs[i - 1][0] + inputs[i - 1][1], inputs[i][0], inputs[i][0] + inputs[i][1]])
+	return t
 
 
 static func _rules(table: Array) -> Array:

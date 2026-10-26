@@ -3,9 +3,9 @@ extends RefCounted
 ## Player-facing quest text (BBCode): objectives with progress, rewards, the
 ## on-screen tracker and log messages. Pure functions, so they're testable.
 
-const GOLD := "#ffd75e"
-const GREEN := "#5fe36b"
-const GREY := "#a8a8b0"
+const GOLD := UiPalette.GOLD
+const GREEN := UiPalette.GREEN
+const GREY := UiPalette.GREY
 
 
 ## "Wolves slain: 1/2", or "Talk to Old Maren" (done ones turn green with "(done)").

@@ -86,7 +86,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-148 keys, 0 with a file, 148 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+152 keys, 0 with a file, 152 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -270,6 +270,10 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_sunscale_drake_sunfire_hit` | Sunfire Breath: its ground zone hurts someone standing in it | **missing** |
 | `creature_sunscale_drake_talon_rake` | Talon Rake is used | **missing** |
 | `creature_sunscale_drake_talon_rake_hit` | Talon Rake lands on someone | **missing** |
+| `creature_training_dummy_aggro` | Training Dummy notices a hero and starts a fight | **missing** |
+| `creature_training_dummy_death` | Training Dummy dies | **missing** |
+| `creature_training_dummy_hurt` | Training Dummy takes damage | **missing** |
+| `creature_training_dummy_step` | Training Dummy moves one tile (paws, wings...) | **missing** |
 | `creature_wolf_aggro` | Wolf notices a hero and starts a fight | **missing** |
 | `creature_wolf_bite` | Bite is used | **missing** |
 | `creature_wolf_bite_hit` | Bite lands on someone | **missing** |

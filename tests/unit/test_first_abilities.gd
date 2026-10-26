@@ -27,6 +27,7 @@ func before_each() -> void:
 	rules.out_of_combat_hp_regen_percent = 0.0
 	rules.out_of_combat_mana_regen_percent = 0.0
 	rules.in_combat_mana_regen_percent = 0.0
+	rules.timing_bars_enabled = false # these tests check effects; test_timing_bar.gd checks bars
 	var zone := ZoneDef.new()
 	zone.id = &"arena"
 	var heights: PackedStringArray = []

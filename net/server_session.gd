@@ -63,7 +63,9 @@ func _on_tick(events: Array) -> void:
 		var sim := world.zone_of(hero_id)
 		if sim == null:
 			continue
-		Net.send_snapshot(peer_id, Snapshot.capture(sim, hero_id))
+		var snap := Snapshot.capture(sim, hero_id)
+		snap.time_scale = world.time_scale() # so the client's clock runs at the same pace
+		Net.send_snapshot(peer_id, snap)
 		var zone_id := sim.zone.id
 		var theirs := events.filter(func(e): return e.get("zone", zone_id) == zone_id)
 		if not theirs.is_empty():

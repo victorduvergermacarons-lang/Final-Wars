@@ -7,6 +7,11 @@ var target_id: int = -1
 ## "valid", "point"}; empty otherwise. WorldView highlights the tiles.
 var aim := {}
 var action_bar := ActionBarModel.new()
+## The local right-clicks on the current timing bar, before the host answers:
+## {"start": the bar's start time, "next": the next input to play, "presses":
+## [{"index": the input, "at": seconds into the bar, "holding": a hold started,
+## "release": seconds into the bar when let go}…]}. TimingBarView shows them at once.
+var timing_press := {}
 ## Overhead marker per NPC def id ("!" quest available, "?" turn-in ready). Set by the quest UI.
 var npc_markers := {}
 ## Short-lived error shown mid-screen ("Out of range"), with the time it appeared.
@@ -14,12 +19,19 @@ var error_text := ""
 var error_at := -100.0
 ## Recent short messages for the player (rejections, level-ups…).
 var messages: Array[String] = []
+## Every message this session, oldest first (the Escape menu's Log), up to
+## HISTORY_SIZE.
+var history: Array[String] = []
+const HISTORY_SIZE := 300
 
 
 func say(text: String) -> void:
 	messages.append(text)
 	if messages.size() > 5:
 		messages.pop_front()
+	history.append(text)
+	if history.size() > HISTORY_SIZE:
+		history.pop_front()
 
 
 func error(text: String) -> void:

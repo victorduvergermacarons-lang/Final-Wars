@@ -12,6 +12,11 @@ enum GrowthLimit {
 @export_group("Simulation")
 ## Fixed sim step (20 Hz).
 @export var tick_seconds: float = 0.05
+## A zone with no heroes in it sleeps after this long: only its clock runs, so
+## timers (respawns, buffs, ground zones) still run out, but nothing acts until a
+## hero comes back. The wait lets a fight that was just left settle first
+## (enemies evade and walk home). Negative: zones never sleep.
+@export var empty_zone_sleep_seconds: float = 30.0
 
 @export_group("Movement")
 ## Time to walk across one tile (the travel animation), same for everyone.
@@ -24,9 +29,28 @@ enum GrowthLimit {
 @export var combat_step_min_seconds: float = 0.5
 ## Speed at which the step cooldown is halved (before the floor applies).
 @export var speed_half_point: float = 100.0
+## Game speed (a test setting: the Escape menu's Gameplay test tab). The whole
+## simulation clock runs at this speed (World.time_scale), in and out of combat:
+## walking, steps, cooldowns, wind-ups, projectiles, buffs, regen, respawns, AI.
+## 2 = twice as fast, 0.1 = ten times slower.
+@export_range(0.1, 2.0) var game_speed: float = 1.0
+const GAME_SPEED_MIN := 0.1
+const GAME_SPEED_MAX := 2.0
 
 @export_group("Abilities")
 @export var gcd_seconds: float = 1.0
+
+@export_group("Timing bar")
+## Off: heroes cast every ability straight away, without its bar (tests of
+## ability effects use it).
+@export var timing_bars_enabled: bool = true
+## Power of an ability whose timing bar was missed (pressed outside the green and
+## yellow zones, or not at all). Green and yellow zones give full power; yellow also
+## makes every hit a critical strike. See TimingBarDef.
+@export var timing_miss_power: float = 0.7
+## After the bar ends, the host waits this long for a press still on its way from
+## a client before casting at miss power.
+@export var timing_press_grace_seconds: float = 0.25
 
 @export_group("Line of sight")
 ## An obstacle blocks only if it rises more than this many levels above the

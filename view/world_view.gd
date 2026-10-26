@@ -1,7 +1,17 @@
 class_name WorldView
 extends Node2D
 ## Placeholder renderer: draws the grid and actors from session state, back to
-## front, every frame. Reads only; never changes the world.
+## front. Reads only; never changes the world.
+##
+## Terrain cache (`use_terrain_cache`): the ground is drawn once into chunk nodes
+## under this one (a few depth rows each) and kept by Godot between frames. A
+## chunk is redrawn only when a height in it changes (Raise Pillar, Earth Wall);
+## water animates by itself (TileArt.animated_texture). Each frame this node
+## then draws only what moves (actors, tile highlights) in the usual back-to-
+## front order, and within a box around each of them it draws again, in order,
+## the tiles from that row forward, cut to the box. Inside the boxes the picture
+## is built exactly as a full redraw would build it; outside them the cache
+## already is. Projectiles, labels and bars are drawn on top as before.
 
 const FLOAT_TEXT_SECONDS := 1.2
 const PICK_RADIUS := 26.0
@@ -54,6 +64,21 @@ var _overlay: Array[Callable] = []
 ## overlay, nudged up so no two overlap.
 var _labels: Array = []
 
+## Off: redraw every tile every frame (the old way, kept to compare; the
+## screenshot test compares both with SHOTS_COMPARE_CACHE=1).
+static var use_terrain_cache := true
+## Glows (telegraphs, quest areas) pulse on the real clock; screenshot tests stop it.
+static var freeze_pulses := false
+## Depth rows per terrain chunk.
+const CHUNK_ROWS := 8
+var _chunks: Array[Node2D] = []
+var _terrain_root: Node2D
+var _cache_on := true
+var _grid: GridModel # the map this view was built for
+var _row_index := {} # tile -> its position in its depth row's drawing order
+var _heights_seen := PackedInt32Array()
+var _max_height := 0
+
 
 func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
 	session = p_session
@@ -68,6 +93,7 @@ func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
 			var d := Iso.depth(p)
 			if not _tiles_by_depth.has(d):
 				_tiles_by_depth[d] = []
+			_row_index[p] = _tiles_by_depth[d].size()
 			_tiles_by_depth[d].append(p)
 			_max_depth = maxi(_max_depth, d)
 	for g in zone.graveyards:
@@ -76,17 +102,187 @@ func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
 	camera = PixelCamera.new()
 	add_child(camera)
 	session.events_received.connect(_on_events)
+	_grid = grid
+	if use_terrain_cache and _art != null: # placeholder maps are tiny; drawn in full
+		_build_terrain_cache(grid)
+
+
+## True once the session has moved to another map: this view is being replaced
+## and must not draw the new map's grid with this map's tables.
+func _stale() -> bool:
+	return session == null or session.grid() != _grid
+
+
+func is_built_for(grid: GridModel) -> bool:
+	return grid == _grid and not is_queued_for_deletion()
+
+
+static func _pulse_ms() -> float:
+	return 0.0 if freeze_pulses else float(Time.get_ticks_msec())
+
+
+## Drawing from the terrain cache right now (not a placeholder map, not switched off).
+func _cached() -> bool:
+	return _cache_on and not _chunks.is_empty()
+
+
+## Switches this view between the terrain cache and redrawing every tile (the
+## screenshot test compares both on the same frame).
+func set_terrain_cache(on: bool) -> void:
+	_cache_on = on
+	if _terrain_root != null:
+		_terrain_root.visible = on
+		for chunk in _chunks:
+			chunk.queue_redraw()
 
 
 func _process(delta: float) -> void:
-	if session == null:
+	if _stale():
 		return
 	var hero: Actor = session.local_hero()
 	if hero != null:
 		camera.follow(actor_screen_pos(hero), delta)
 	var t: float = session.render_time()
 	_float_texts = _float_texts.filter(func(f): return t - f.t < FLOAT_TEXT_SECONDS)
+	_update_terrain_cache()
 	queue_redraw()
+
+
+# --- Terrain cache ------------------------------------------------------------
+
+## One chunk node per CHUNK_ROWS depth rows, in drawing order, under this node
+## (z_index −1: drawn before it).
+func _build_terrain_cache(grid: GridModel) -> void:
+	var root := Node2D.new()
+	root.name = "Terrain"
+	_terrain_root = root
+	root.z_index = -1
+	add_child(root)
+	for first in range(0, _max_depth + 1, CHUNK_ROWS):
+		var chunk := Node2D.new()
+		root.add_child(chunk)
+		chunk.draw.connect(_draw_chunk.bind(chunk, first))
+		_chunks.append(chunk)
+	_heights_seen = grid.heights().duplicate()
+	_max_height = _highest(_heights_seen)
+
+
+func _draw_chunk(chunk: Node2D, first: int) -> void:
+	if _stale():
+		return
+	var grid: GridModel = session.grid()
+	for d in range(first, mini(first + CHUNK_ROWS, _max_depth + 1)):
+		for p in _tiles_by_depth.get(d, []):
+			_draw_tile(chunk, grid, p)
+
+
+## Redraws the chunks whose heights changed.
+func _update_terrain_cache() -> void:
+	if _chunks.is_empty():
+		return
+	var grid: GridModel = session.grid()
+	var heights := grid.heights()
+	if heights != _heights_seen:
+		for i in heights.size():
+			if heights[i] != _heights_seen[i]:
+				# The tile, and the ones just behind it (their hidden blocks depend on it).
+				var d := Iso.depth(Vector2i(i % grid.width, i / grid.width))
+				for row in [d - 1, d]:
+					if row >= 0:
+						_chunks[row / CHUNK_ROWS].queue_redraw()
+		_heights_seen = heights.duplicate()
+		_max_height = _highest(_heights_seen)
+
+
+static func _highest(heights: PackedInt32Array) -> int:
+	var m := 0
+	for h in heights:
+		m = maxi(m, h)
+	return m
+
+
+## A screen box holding everything drawn for a tile (blocks from level 0 up, the
+## prop one level above the top, image margins), so a test against it never
+## misses an overlap.
+func _tile_bounds(grid: GridModel, p: Vector2i) -> Rect2:
+	var c := Iso.to_screen(Vector2(p), 0.0)
+	var top := c.y - (grid.height_at(p) + 1) * Iso.LEVEL_H - Iso.TILE_W * 0.5
+	return Rect2(c.x - Iso.TILE_W * 0.5, top, Iso.TILE_W, c.y + Iso.TILE_W * 0.5 - top)
+
+
+## Boxes (screen rects) where something is drawn over the cached terrain, with
+## the first depth row it is drawn on. Overlapping boxes are merged, so no tile
+## piece is drawn twice. [{"rect", "depth", "cover": {tile: true}}]
+func _clusters(items: Array) -> Array:
+	var out: Array = []
+	for item in items:
+		var c := {"rect": _snap_rect(item.rect), "depth": int(item.depth), "cover": {}}
+		var merged := true
+		while merged:
+			merged = false
+			for i in range(out.size() - 1, -1, -1):
+				if out[i].rect.intersects(c.rect):
+					c.rect = c.rect.merge(out[i].rect)
+					c.depth = mini(c.depth, out[i].depth)
+					out.remove_at(i)
+					merged = true
+		out.append(c)
+	return out
+
+
+## Outward to whole art pixels, so clipped tile images stay pixel-exact.
+static func _snap_rect(r: Rect2) -> Rect2:
+	var s := PixelCamera.ART_SCALE
+	var from := (r.position / s).floor() * s
+	var to := (r.end / s).ceil() * s
+	return Rect2(from, to - from)
+
+
+## Fills a cluster's `cover` with every tile from its first depth row on whose
+## drawing overlaps its box: inside the box they are drawn again in order, over
+## what the cluster draws, so the box ends up as the full redraw would paint it.
+func _collect_cover(grid: GridModel, cluster: Dictionary, members: Dictionary) -> void:
+	var rect: Rect2 = cluster.rect
+	var half_w := Iso.TILE_W * 0.5
+	var half_h := Iso.TILE_H * 0.5
+	var u_min := floori((rect.position.x - half_w) / half_w)
+	var u_max := ceili((rect.end.x + half_w) / half_w)
+	var s_min := maxi(cluster.depth, floori((rect.position.y - half_w) / half_h))
+	var s_max := mini(_max_depth, ceili((rect.end.y + half_w + (_max_height + 1) * Iso.LEVEL_H) / half_h))
+	for s in range(s_min, s_max + 1):
+		for u in range(u_min, u_max + 1):
+			if (s + u) & 1:
+				continue
+			var p := Vector2i((s + u) / 2, (s - u) / 2)
+			if grid.in_bounds(p) and _tile_bounds(grid, p).intersects(rect):
+				cluster.cover[p] = true
+				_add_member(members, p)
+
+
+static func _add_member(members: Dictionary, p: Vector2i) -> void:
+	var d := Iso.depth(p)
+	if not members.has(d):
+		members[d] = {}
+	members[d][p] = true
+
+
+## Everything _draw_actor can draw below the overlay (labels and bars come later).
+func _actor_rect(a: Actor) -> Rect2:
+	var feet := actor_screen_pos(a)
+	var r := Rect2(feet - Vector2(34, 46), Vector2(68, 62))
+	if a is Enemy and (a as Enemy).def.art != null:
+		var art := (a as Enemy).def.art
+		var s := PixelCamera.ART_SCALE
+		r = r.merge(Rect2(feet - art.feet * s, Vector2(art.frame_size) * s))
+	if a.is_large():
+		var e := Vector2(Iso.TILE_W * 1.2 + 2, Iso.TILE_H * 1.2 + 2) # target ellipse
+		r = r.merge(Rect2(feet - e, e * 2))
+	return r
+
+
+func _mark_rect(grid: GridModel, p: Vector2i) -> Rect2:
+	var c := surface_point(grid, p)
+	return Rect2(c - Vector2(Iso.TILE_W * 0.5 + 2, Iso.TILE_H * 0.5 + 2), Vector2(Iso.TILE_W + 4, Iso.TILE_H + 4))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -135,7 +331,7 @@ func actor_at(world_pos: Vector2) -> Actor:
 
 
 func _draw() -> void:
-	if session == null:
+	if _stale():
 		return
 	var grid: GridModel = session.grid()
 	var actors_by_tile := {}
@@ -163,13 +359,16 @@ func _draw() -> void:
 	var marks := _tile_marks()
 	_overlay.clear()
 	_labels.clear()
-	for d in range(_max_depth + 1):
-		# Tiles in one depth row never overlap each other, so each tile can be drawn
-		# with the actors on it, in any order that keeps the constraints above.
-		for p in _row_order(_tiles_by_depth.get(d, []), after):
-			_draw_tile_with_marks(grid, p, quest_areas, marks)
-			for a in actors_by_tile.get(p, []):
-				_draw_actor(a)
+	if not _cached():
+		for d in range(_max_depth + 1):
+			# Tiles in one depth row never overlap each other, so each tile can be drawn
+			# with the actors on it, in any order that keeps the constraints above.
+			for p in _row_order(_tiles_by_depth.get(d, []), after):
+				_draw_tile_with_marks(grid, p, quest_areas, marks)
+				for a in actors_by_tile.get(p, []):
+					_draw_actor(a)
+	else:
+		_draw_over_cache(grid, actors_by_tile, after, quest_areas, marks)
 	_draw_projectiles(grid)
 	_draw_flames(grid)
 	_draw_landmarks(grid)
@@ -178,6 +377,39 @@ func _draw() -> void:
 		f.call()
 	_queue_float_texts()
 	_draw_labels()
+
+
+## With the terrain cached underneath: the same back-to-front pass, limited to
+## the tiles carrying actors or highlights and the tiles that cover them.
+func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictionary, quest_areas: Dictionary,
+		marks: Dictionary) -> void:
+	var members := {} # depth -> {tile: true}: what this pass visits
+	var items := []
+	for p in actors_by_tile:
+		_add_member(members, p)
+		for a in actors_by_tile[p]:
+			items.append({"rect": _actor_rect(a), "depth": Iso.depth(p)})
+	for p in marks.keys() + quest_areas.keys():
+		_add_member(members, p)
+		items.append({"rect": _mark_rect(grid, p), "depth": Iso.depth(p)})
+	var clusters := _clusters(items)
+	for c in clusters:
+		_collect_cover(grid, c, members)
+	var rows := members.keys()
+	rows.sort()
+	for d in rows:
+		var row: Array = members[d].keys()
+		row.sort_custom(func(a, b): return _row_index[a] < _row_index[b])
+		for p in _row_order(row, after):
+			for c in clusters:
+				if c.cover.has(p):
+					_draw_tile(self, grid, p, c.rect)
+			if quest_areas.has(p):
+				_draw_quest_area(grid, p)
+			for color in marks.get(p, []):
+				_draw_tile_mark(grid, p, color)
+			for a in actors_by_tile.get(p, []):
+				_draw_actor(a)
 
 
 static func _must_follow(after: Dictionary, tile: Vector2i, first: Vector2i) -> void:
@@ -211,7 +443,7 @@ static func _row_order(row: Array, after: Dictionary) -> Array:
 
 
 func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary, marks: Dictionary) -> void:
-	_draw_tile(grid, p)
+	_draw_tile(self, grid, p)
 	if quest_areas.has(p):
 		_draw_quest_area(grid, p)
 	for color in marks.get(p, []):
@@ -233,9 +465,11 @@ func _draw_anchor(a: Actor) -> Vector2i:
 	return m.to_tile
 
 
-func _draw_tile(grid: GridModel, p: Vector2i) -> void:
+## Draws a tile on `canvas` (this view, or a terrain chunk); with `clip`, only
+## the part inside that box (tileset maps only).
+func _draw_tile(canvas: CanvasItem, grid: GridModel, p: Vector2i, clip := Rect2()) -> void:
 	if _art != null:
-		_draw_terrain_column(grid, p)
+		_draw_terrain_column(canvas, grid, p, clip)
 		return
 	var h := grid.height_at(p)
 	var walkable := grid.is_walkable(p)
@@ -256,36 +490,49 @@ func _draw_tile(grid: GridModel, p: Vector2i) -> void:
 	var bottom := c + Vector2(0, hh)
 	var left := c + Vector2(-hw, 0)
 	var drop := Vector2(0, h * Iso.LEVEL_H + 6.0)
-	draw_colored_polygon(PackedVector2Array([left, bottom, bottom + drop, left + drop]), top_color.darkened(0.35))
-	draw_colored_polygon(PackedVector2Array([bottom, right, right + drop, bottom + drop]), top_color.darkened(0.5))
-	draw_colored_polygon(PackedVector2Array([top, right, bottom, left]), top_color)
-	draw_polyline(PackedVector2Array([top, right, bottom, left, top]), top_color.darkened(0.2), 1.0)
+	canvas.draw_colored_polygon(PackedVector2Array([left, bottom, bottom + drop, left + drop]), top_color.darkened(0.35))
+	canvas.draw_colored_polygon(PackedVector2Array([bottom, right, right + drop, bottom + drop]), top_color.darkened(0.5))
+	canvas.draw_colored_polygon(PackedVector2Array([top, right, bottom, left]), top_color)
+	canvas.draw_polyline(PackedVector2Array([top, right, bottom, left, top]), top_color.darkened(0.2), 1.0)
 	if _graveyards.has(p):
-		draw_line(c + Vector2(0, -12), c + Vector2(0, 4), Color.WHITE, 2.0)
-		draw_line(c + Vector2(-5, -7), c + Vector2(5, -7), Color.WHITE, 2.0)
+		canvas.draw_line(c + Vector2(0, -12), c + Vector2(0, 4), Color.WHITE, 2.0)
+		canvas.draw_line(c + Vector2(-5, -7), c + Vector2(5, -7), Color.WHITE, 2.0)
 
 
 ## A tiled zone's tile: its stack of blocks, bottom first, then its prop. Blocks
 ## the tiles in front fully cover are skipped (they would be drawn over anyway).
-func _draw_terrain_column(grid: GridModel, p: Vector2i) -> void:
+func _draw_terrain_column(canvas: CanvasItem, grid: GridModel, p: Vector2i, clip := Rect2()) -> void:
 	var h := grid.height_at(p)
 	var front := mini(_front_height(grid, p + Vector2i(1, 0)), _front_height(grid, p + Vector2i(0, 1)))
 	var terrain := _zone.terrain_at(p)
+	# With the terrain cache, water animates by itself (TileArt.animated_texture).
+	var live := _cached()
+	var anim: String = str(_art.data.terrains.get(terrain, {}).get("animation", "")) if live else ""
 	for block in _art.column(terrain, p, h, front, _land_sides(p), session.render_time()):
-		_art.draw(self, block[0], Iso.to_screen(Vector2(p), block[1]))
+		var at := Iso.to_screen(Vector2(p), block[1])
+		if anim != "" and block[1] == h:
+			_art.draw_texture(canvas, _art.animated_texture(anim, p), at, Color.WHITE, clip)
+		else:
+			_art.draw(canvas, block[0], at, Color.WHITE, clip)
 	if _art.data.is_water_terrain(terrain):
-		var sparkle := _art.sparkle_frame(p, session.render_time())
-		if sparkle >= 0:
-			_art.draw(self, sparkle, Iso.to_screen(Vector2(p), h))
+		if live:
+			_art.draw_texture(canvas, _art.sparkle_texture(p), Iso.to_screen(Vector2(p), h), Color.WHITE, clip)
+		else:
+			var sparkle := _art.sparkle_frame(p, session.render_time())
+			if sparkle >= 0:
+				_art.draw(canvas, sparkle, Iso.to_screen(Vector2(p), h))
 	# The prop goes with its tile, so the tiles in front still cover what's behind
 	# a boulder, and a unit behind it is hidden by it.
 	var group := _zone.prop_at(p)
 	if group != "":
-		_art.draw_prop(self, _art.data.pick_prop(group, p), p, h)
+		_art.draw_prop(canvas, _art.data.pick_prop(group, p), p, h, clip)
 	if _graveyards.has(p):
 		var c := Iso.to_screen(Vector2(p), h)
-		draw_line(c + Vector2(0, -12), c + Vector2(0, 4), Color.WHITE, 2.0)
-		draw_line(c + Vector2(-5, -7), c + Vector2(5, -7), Color.WHITE, 2.0)
+		# Drawn as thin boxes so a clip can cut them exactly.
+		for r in [Rect2(c + Vector2(-1, -12), Vector2(2, 16)), Rect2(c + Vector2(-5, -8), Vector2(10, 2))]:
+			var part: Rect2 = r if not clip.has_area() else r.intersection(clip)
+			if part.has_area():
+				canvas.draw_rect(part, Color.WHITE)
 
 
 ## Sides of a water tile that touch land (for shoreline foam); map edges count
@@ -367,6 +614,12 @@ func _draw_actor(a: Actor) -> void:
 			if edef.flying and not (a as Enemy).airborne(now):
 				_draw_label(feet + Vector2(0, 22), "Grounded", Color(1, 0.9, 0.4), 11) # knocked out of the air
 			return
+		if edef.training_dummy:
+			_draw_dummy(feet, alpha)
+			_draw_label(body + Vector2(0, -26), a.display_name, Color(1, 0.9, 0.75, alpha))
+			if a.alive:
+				_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
+			return
 		var s := 1.6 if edef.elite else 1.0
 		var diamond := PackedVector2Array([body + Vector2(0, -12) * s, body + Vector2(10, 0) * s,
 				body + Vector2(0, 12) * s, body + Vector2(-10, 0) * s])
@@ -413,15 +666,37 @@ func _draw_creature(e: Enemy, feet: Vector2, alpha: float) -> bool:
 	return true
 
 
+## A training dummy: a straw mannequin on a wooden post with a crossbar for arms.
+func _draw_dummy(feet: Vector2, alpha: float) -> void:
+	var wood := Color(0.45, 0.28, 0.14, alpha)
+	var straw := Color(0.86, 0.72, 0.42, alpha)
+	var dark := Color(0.2, 0.12, 0.06, alpha)
+	draw_set_transform(feet + Vector2(0, 1), 0.0, Vector2(1.0, 0.5))
+	draw_circle(Vector2.ZERO, 9, Color(0, 0, 0, 0.3 * alpha)) # shadow
+	draw_set_transform(Vector2.ZERO)
+	draw_line(feet, feet + Vector2(0, -8), wood, 3.0) # post
+	draw_line(feet + Vector2(-11, -18), feet + Vector2(11, -18), wood, 3.0) # arms
+	var torso := Rect2(feet + Vector2(-6, -23), Vector2(12, 16))
+	draw_rect(torso, straw)
+	draw_rect(torso, dark, false, 1.0)
+	draw_line(feet + Vector2(-6, -15), feet + Vector2(6, -15), dark, 1.0) # rope belt
+	draw_circle(feet + Vector2(0, -28), 5, straw) # head
+	draw_arc(feet + Vector2(0, -28), 5, 0, TAU, 16, dark, 1.0)
+
+
 ## A bar under a unit that is casting (yellow), winding up (red) or channelling
 ## (blue), filling as it goes.
 func _draw_cast_bar(a: Actor, feet: Vector2, now: float) -> void:
 	var c: Dictionary = a.casting
 	if c.is_empty() or not c.has("end"):
 		return
+	# Your own timing bar is drawn big by the HUD (TimingBarView); others see this one.
+	if c.get("kind", "") == "timing" and a.id == session.local_hero_id:
+		return
 	var span := maxf(float(c.end) - float(c.get("start", c.end)), 0.01)
 	var done := clampf((now - float(c.get("start", now))) / span, 0.0, 1.0)
-	var color: Color = {"cast": Color(1, 0.85, 0.2), "windup": Color(1, 0.3, 0.2), "channel": Color(0.4, 0.7, 1)}.get(
+	var color: Color = {"cast": Color(1, 0.85, 0.2), "windup": Color(1, 0.3, 0.2), "channel": Color(0.4, 0.7, 1),
+			"timing": Color(0.3, 0.9, 0.4)}.get(
 			c.get("kind", "cast"), Color.WHITE)
 	_draw_bar(feet + Vector2(-16, 8), 32, done, color)
 	var ability = c.get("ability")
@@ -635,7 +910,7 @@ func _tile_marks() -> Dictionary:
 				_mark(marks, t, BODY_COLOR)
 	for h in session.telegraphs():
 		var left := clampf(float(h.at) - now, 0.0, 1.5)
-		var c := Color(TELEGRAPH_COLOR, 0.65 - 0.3 * left / 1.5 + 0.1 * sin(Time.get_ticks_msec() / 80.0))
+		var c := Color(TELEGRAPH_COLOR, 0.65 - 0.3 * left / 1.5 + 0.1 * sin(_pulse_ms() / 80.0))
 		for t in h.tiles:
 			_mark(marks, t, c)
 	if client != null and not client.aim.is_empty():
@@ -665,7 +940,7 @@ func _draw_tile_mark(grid: GridModel, p: Vector2i, color: Color) -> void:
 
 func _draw_quest_area(grid: GridModel, p: Vector2i) -> void:
 	var c := surface_point(grid, p)
-	var pulse := 0.5 + 0.2 * sin(Time.get_ticks_msec() / 250.0)
+	var pulse := 0.5 + 0.2 * sin(_pulse_ms() / 250.0)
 	var hw := Iso.TILE_W * 0.5 - 4
 	var hh := Iso.TILE_H * 0.5 - 2
 	draw_colored_polygon(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),

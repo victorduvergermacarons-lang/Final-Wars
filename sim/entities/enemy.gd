@@ -22,8 +22,8 @@ var respawn_at: float = 0.0
 var last_attack_at: float = 0.0
 ## Animated creatures stay put until their attack's recovery frames have played.
 var busy_until: float = 0.0
-## Sim time before which it doesn't search for a path again (the last search failed).
-var path_retry_at: float = -1.0
+## No chase path was found: it doesn't search again before this time.
+var chase_retry_at: float = 0.0
 ## Called into this fight by a pack howl (so it doesn't howl itself).
 var called_by_pack := false
 ## When it last died (host time; clients play the death animation from it).

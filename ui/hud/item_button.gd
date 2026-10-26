@@ -17,10 +17,4 @@ func _init(p_hud: Hud, p_item: ItemDef, label: String) -> void:
 
 
 func _make_custom_tooltip(_for_text: String) -> Object:
-	var label := RichTextLabel.new()
-	label.bbcode_enabled = true
-	label.fit_content = true
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	label.custom_minimum_size = Vector2(300, 0)
-	label.text = ItemTooltip.text(item, hud.session.local_hero(), hud.session.rules(), false)
-	return label
+	return ItemTooltip.label(item, hud.session.local_hero(), hud.session.rules(), false, hud.session.now())

@@ -10,7 +10,8 @@ enum Id {
 }
 
 const NAMES := ["Common", "Uncommon", "Rare", "Epic"]
-const COLORS := [Color(0.92, 0.92, 0.92), Color(0.3, 0.9, 0.35), Color(0.3, 0.55, 1.0), Color(0.72, 0.38, 1.0)]
+## Name colours, chosen to read as ink on the paper menus (UiPalette).
+const COLORS := [Color("341c27"), Color("2e7d32"), Color("1f5fa8"), Color("7b2fa8")]
 
 
 static func color(id: Id) -> Color:

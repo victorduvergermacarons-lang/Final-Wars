@@ -11,9 +11,9 @@ func _init(p_hud: Hud) -> void:
 	hud = p_hud
 	add_child(ItemSlotView.new(hud, ItemSlotView.Kind.LEARNING, 0))
 	_label = Label.new()
-	_label.add_theme_font_size_override("font_size", 12)
-	_label.add_theme_color_override("font_color", ItemSlotView.LEARNING_COLOR)
-	_label.custom_minimum_size = Vector2(130, 0)
+	_label.add_theme_font_size_override("font_size", 17)
+	_label.add_theme_color_override("font_color", Color(UiPalette.BLUE))
+	_label.custom_minimum_size = Vector2(200, 0)
 	add_child(_label)
 
 

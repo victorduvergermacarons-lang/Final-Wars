@@ -17,8 +17,9 @@ any short WAV into the folder `AUDIO_SPEC.md` names for its key (e.g.
 - [ ] "Leave game" back to the menu: the music doesn't cut out or double up.
 
 ## Settings
-- [ ] The main menu and the in-game bar both have a **Settings** button. It opens a
-      window with five sliders: Master, Music, Ambience, Sound effects, Interface.
+- [ ] The main menu has a **Settings** button (right page, under Host / Join). It opens
+      a window with five sliders: Master, Music, Ambience, Sound effects, Interface.
+- [ ] In game, press Esc for the menu: its **Sound** tab has the same five sliders.
 - [ ] Drag Music down: the music gets quieter straight away. All the way left: silent.
 - [ ] Drag Master down: everything gets quieter.
 - [ ] Close the game and start it again: the sliders are where you left them.

@@ -19,6 +19,11 @@ extends RefCounted
 
 ## Seconds without attacking after which a FLANKER strikes head-on.
 const FLANK_PATIENCE := 2.0
+## Chasing: tiles a path search may visit (more than a whole leash area), and
+## how long to wait after one finds nothing before searching again. An
+## unreachable target would otherwise cost a full search every tick.
+const CHASE_SEARCH := 1024
+const CHASE_RETRY_SECONDS := 0.5
 
 
 static func update(world: WorldSim, enemy: Enemy) -> void:
@@ -74,6 +79,9 @@ static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Hero:
 
 
 static func _fight(world: WorldSim, enemy: Enemy) -> void:
+	if enemy.def.training_dummy:
+		_stand_as_dummy(world, enemy)
+		return
 	if enemy.threat.is_empty() \
 			or GridModel.distance(enemy.tile(), enemy.home_tile) > enemy.def.leash_radius:
 		_start_evade(world, enemy)
@@ -242,50 +250,30 @@ static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Va
 	return best
 
 
-## After a failed search for a way to its target, an enemy waits this long before
-## searching again (a full search of a big map is slow).
-const PATH_RETRY_SECONDS := 0.5
-
-
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
 	if not _step_ready(world, enemy) or (enemy.is_large() and enemy.range_to(seen) <= 1):
 		return # a large body is already beside its target
-	if world.now < enemy.path_retry_at:
-		return # no way there a moment ago: don't search the whole map every tick
-	var path: Array[Vector2i]
+	if world.now < enemy.chase_retry_at:
+		return
 	if enemy.is_large():
-		# Its centre can never stand on its target: head for where its body would be
-		# beside it.
-		var goals := beside_goals(enemy, seen)
-		path = world.path_for(enemy, seen, world.occupied_tiles(enemy), 4096, goals, _body_extent(enemy) + 1)
-		if path.size() >= 2:
-			world.try_step(enemy, path[1])
-	else:
-		path = world.path_for(enemy, seen, world.occupied_tiles(enemy))
-		if path.size() > 2:
-			world.try_step(enemy, path[1])
-	if path.is_empty():
-		enemy.path_retry_at = world.now + PATH_RETRY_SECONDS
-
-
-## Centres where a large body would have one of its tiles right next to `target`
-## (4 directions) without covering it.
-static func beside_goals(enemy: Enemy, target: Vector2i) -> Dictionary:
-	var goals := {}
-	for o in enemy.footprint:
-		for dir in GridModel.DIRECTIONS:
-			var c: Vector2i = target + dir - o
-			if not enemy.tiles(c).has(target):
-				goals[c] = true
-	return goals
-
-
-## How far its body reaches from its centre (grid steps).
-static func _body_extent(enemy: Enemy) -> int:
-	var r := 0
-	for o in enemy.footprint:
-		r = maxi(r, GridModel.distance(Vector2i.ZERO, o))
-	return r
+		# A large body can't stand on its target's tile, nor usually fit its body
+		# around it: it heads for any spot with its body beside the target.
+		var beside := func(c: Vector2i) -> bool:
+			for o in enemy.footprint:
+				if TileGeometry.range_distance(c + o, seen) <= 1:
+					return true
+			return false
+		var to_beside := world.path_for(enemy, seen, world.occupied_tiles(enemy), CHASE_SEARCH, beside)
+		if to_beside.size() >= 2:
+			world.try_step(enemy, to_beside[1])
+		elif to_beside.is_empty():
+			enemy.chase_retry_at = world.now + CHASE_RETRY_SECONDS
+		return
+	var path := world.path_for(enemy, seen, world.occupied_tiles(enemy), CHASE_SEARCH)
+	if path.size() > 2:
+		world.try_step(enemy, path[1])
+	elif path.is_empty():
+		enemy.chase_retry_at = world.now + CHASE_RETRY_SECONDS
 
 
 static func _step_ready(world: WorldSim, enemy: Enemy) -> bool:
@@ -328,6 +316,18 @@ static func _check_enrage(world: WorldSim, enemy: Enemy) -> void:
 	if enemy.hp < enemy.def.enrage_below * enemy.current_stats(world.now).hp:
 		enemy.buffs.apply(buff, world.now, 0.0, enemy.id, {"duration": 3600.0})
 		world.emit({"type": "enrage", "source": enemy.id, "target": enemy.id, "buff": buff.id})
+
+
+## A training dummy only lets go: heroes who died, left or walked past its leash
+## radius come off its threat list; with nobody left it resets (full health).
+static func _stand_as_dummy(world: WorldSim, enemy: Enemy) -> void:
+	for id in enemy.threat.ids():
+		var hero := world.get_actor(id)
+		if hero == null or not hero.alive \
+				or GridModel.distance(enemy.tile(), hero.tile()) > enemy.def.leash_radius:
+			enemy.threat.remove(id)
+	if enemy.threat.is_empty():
+		_start_evade(world, enemy)
 
 
 static func _start_evade(world: WorldSim, enemy: Enemy) -> void:

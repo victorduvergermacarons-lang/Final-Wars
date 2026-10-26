@@ -17,6 +17,8 @@ var rules: CombatRules
 var content
 var now: float = 0.0
 var tick: int = 0
+## Sim seconds per real second on the host right now (World.time_scale).
+var time_scale: float = 1.0
 var local_hero_id: int = -1
 
 var _actors := {} # id -> Actor
@@ -130,6 +132,7 @@ func _apply_terrain(changes: Array) -> void:
 func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
+	time_scale = snap.get("time_scale", 1.0)
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
 	ground_zones = snap.get("zones", [])
