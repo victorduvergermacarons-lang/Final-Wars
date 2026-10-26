@@ -60,10 +60,15 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 			_walk_home(world, enemy)
 
 
-static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Hero:
-	var best: Hero = null
+## The nearest living hero (or escorted NPC or caravan) it can see within its
+## aggro radius, or null.
+static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Actor:
+	var best: Actor = null
 	var best_dist := 0
-	for hero in world.heroes():
+	var candidates: Array[Actor] = []
+	candidates.append_array(world.heroes())
+	candidates.append_array(world.escortees())
+	for hero in candidates:
 		if not hero.alive:
 			continue
 		var seen := world.perceived_tile(hero, enemy.def.reaction_seconds)

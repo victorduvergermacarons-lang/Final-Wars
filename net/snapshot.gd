@@ -51,6 +51,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		var d := _actor(npc)
 		d.kind = KIND_NPC
 		d.def = npc.def.id
+		d.escort = npc.escorting
 		actors.append(d)
 	var projectiles: Array = world.projectiles().map(func(p): return p.to_dict())
 	return {"tick": world.tick_count, "now": world.now, "zone": world.zone.id, "actors": actors,

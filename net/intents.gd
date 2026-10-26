@@ -103,12 +103,16 @@ static func sanitize(raw: Variant) -> Dictionary:
 				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
 					return {}
 				out.aim = aim
-		"accept_quest", "turn_in_quest", "abandon_quest":
+		"examine":
+			if typeof(raw.get("tile")) != TYPE_VECTOR2I:
+				return {}
+			out.tile = raw.tile
+		"accept_quest", "turn_in_quest", "abandon_quest", "accept_shared_quest":
 			var quest = raw.get("quest")
 			if typeof(quest) != TYPE_STRING and typeof(quest) != TYPE_STRING_NAME:
 				return {}
 			out.quest = StringName(quest)
-			if out.type != "abandon_quest" and not _ints(raw, out, ["npc"], ["choice"]):
+			if out.type in ["accept_quest", "turn_in_quest"] and not _ints(raw, out, ["npc"], ["choice"]):
 				return {}
 		_:
 			return {}
