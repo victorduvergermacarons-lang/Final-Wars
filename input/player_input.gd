@@ -260,13 +260,35 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target})
 
 
-## E: talk to the NPC in front of you, or the nearest one within reach.
+## E: talk to (or use) the NPC or object in front of you, else examine a quest
+## spot beside you, else talk to the nearest one within reach.
 func talk_to_nearest() -> void:
-	var best := talk_target(session)
-	if best == null:
+	var what := interaction(session)
+	if what.is_empty():
 		client.error("There's no one to talk to here")
-		return
-	session.send_intent({"type": "talk", "npc": best.id})
+	elif what.kind == "examine":
+		session.send_intent({"type": "examine", "tile": what.tile})
+	else:
+		session.send_intent({"type": "talk", "npc": what.npc.id})
+
+
+## What E would do: {"kind": "talk", "npc": Npc} or {"kind": "examine", "tile":
+## Vector2i} (an investigate spot within 1 tile), or {} if nothing.
+static func interaction(session) -> Dictionary:
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive:
+		return {}
+	var npc := talk_target(session)
+	if npc != null and npc.covers(hero.front_tile()):
+		return {"kind": "talk", "npc": npc}
+	var best_spot: Variant = null
+	for p in QuestLog.open_spots(hero, ContentDB.quests, session.zone().id):
+		var d := GridModel.distance(hero.tile(), p)
+		if d <= 1 and (best_spot == null or d < GridModel.distance(hero.tile(), best_spot)):
+			best_spot = p
+	if best_spot != null:
+		return {"kind": "examine", "tile": best_spot}
+	return {"kind": "talk", "npc": npc} if npc != null else {}
 
 
 ## The NPC E would talk to: the one in front of the local hero, else the nearest

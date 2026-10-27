@@ -12,6 +12,10 @@ enum Context { TITLE, TOWN, EXPLORE, COMBAT, DUNGEON, BOSS }
 ## The audio file (OGG Vorbis), e.g. "res://audio/music/music_idle_draft.ogg".
 @export_file("*.ogg") var file: String = ""
 @export var contexts: Array[Context] = []
+## Regions this track belongs to (ZoneDef.region). Empty = any region. In a zone
+## of a region with its own track for the context, that track wins; a region
+## without one falls back to the tracks for any region.
+@export var regions: Array[Regions.Id] = []
 @export var loop: bool = true
 ## Mixing level of this track (0 = as mastered).
 @export var volume_db: float = 0.0

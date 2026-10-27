@@ -6,6 +6,7 @@ extends RefCounted
 const GOLD := UiPalette.GOLD
 const GREEN := UiPalette.GREEN
 const GREY := UiPalette.GREY
+const RED := "#a8321e"
 
 
 ## "Wolves slain: 1/2", or "Talk to Old Maren" (done ones turn green with "(done)").
@@ -14,7 +15,8 @@ static func objective_line(hero: Hero, def: QuestDef, i: int) -> String:
 	var n := QuestLog.progress(hero, def, i)
 	var label := o.text if o.text != "" else _default_text(o)
 	var line := label
-	if o.kind == QuestObjective.Kind.KILL or o.kind == QuestObjective.Kind.COLLECT:
+	if o.kind in [QuestObjective.Kind.KILL, QuestObjective.Kind.COLLECT, QuestObjective.Kind.INVESTIGATE] \
+			or (o.kind == QuestObjective.Kind.DELIVER and o.needed() > 1):
 		line = "%s: %d/%d" % [label, n, o.needed()]
 	if n >= o.needed():
 		return "[color=%s]• %s (done)[/color]" % [GREEN, line]
@@ -42,21 +44,53 @@ static func rewards_bbcode(def: QuestDef) -> String:
 	return out
 
 
+## Under a quest offer: its title, main or side and where, what to do, what it pays.
+static func summary_bbcode(hero: Hero, def: QuestDef) -> String:
+	return "[b]%s[/b]  [color=%s]%s[/color]\n%s\n%s" % [def.title, GREY, kind_and_area(def),
+			objectives_bbcode(hero, def), rewards_bbcode(def)]
+
+
+## "Main quest · Greenfields".
+static func kind_and_area(def: QuestDef) -> String:
+	var kind := "Main quest" if def.is_main() else "Side quest"
+	return kind + (" · " + def.area if def.area != "" else "")
+
+
 ## Offer page: the giver's text, what to do, and what it pays.
 static func offer_bbcode(hero: Hero, def: QuestDef) -> String:
-	return "[b]%s[/b]\n%s\n\n%s\n\n%s" % [def.title, def.offer_text, objectives_bbcode(hero, def), rewards_bbcode(def)]
+	return "[b]%s[/b]\n%s\n\n%s\n\n%s" % [def.title, ContentDB.dialogue.text(def.line_id("offer")),
+			objectives_bbcode(hero, def), rewards_bbcode(def)]
 
 
-## Tracker for every active quest: title (gold when ready) and objectives.
+## Tracker for every active quest (main quests first): title (gold when ready)
+## and objectives; failed quests say where to start them again.
 static func tracker_bbcode(hero: Hero, quests: Dictionary) -> String:
 	var blocks: PackedStringArray = []
-	for def in active_quests(hero, quests):
-		if QuestLog.status(hero, def) == QuestLog.Status.READY:
+	for def in tracked_quests(hero, quests):
+		var st := QuestLog.status(hero, def)
+		if st == QuestLog.Status.FAILED:
+			blocks.append("[b]%s[/b]\n[color=%s]• Failed — talk to %s to try again[/color]" % [def.title, RED, npc_name(def.giver)])
+		elif st == QuestLog.Status.READY:
 			var giver := npc_name(def.turn_in_npc())
 			blocks.append("[color=%s][b]%s[/b][/color]\n[color=%s]• Return to %s[/color]" % [GOLD, def.title, GREEN, giver])
 		else:
 			blocks.append("[b]%s[/b]\n%s" % [def.title, objectives_bbcode(hero, def)])
 	return "\n".join(blocks)
+
+
+## Active and failed quests for the tracker and the log: main quests first, then
+## by title.
+static func tracked_quests(hero: Hero, quests: Dictionary) -> Array[QuestDef]:
+	var out: Array[QuestDef] = []
+	for key in hero.quest_state:
+		var def: QuestDef = quests.get(StringName(key))
+		if def != null and (QuestLog.is_active(hero, def.id) or QuestLog.is_failed(hero, def.id)):
+			out.append(def)
+	out.sort_custom(func(a, b):
+		if a.category != b.category:
+			return a.category < b.category
+		return a.title < b.title)
+	return out
 
 
 ## The hero's accepted, not yet handed-in quests, sorted by title.
@@ -97,6 +131,12 @@ static func event_message(e: Dictionary, quests: Dictionary) -> String:
 			return "Quest complete: %s%s" % [title, " (" + ", ".join(parts) + ")" if not parts.is_empty() else ""]
 		"quest_abandoned":
 			return "Quest abandoned: %s" % title
+		"quest_failed":
+			var giver := npc_name(def.giver) if def != null else "its giver"
+			return "Quest failed: %s. Talk to %s to try again." % [title, giver]
+		"delivered":
+			var item: ItemDef = ContentDB.items.get(StringName(str(e.get("item", ""))))
+			return "Delivered %s." % (item.display_name if item != null else "the goods")
 	return ""
 
 
@@ -121,4 +161,12 @@ static func _default_text(o: QuestObjective) -> String:
 		QuestObjective.Kind.REACH:
 			var z: ZoneDef = ContentDB.zones.get(o.zone)
 			return "Explore %s" % (z.display_name if z != null else String(o.zone))
+		QuestObjective.Kind.ESCORT:
+			return "Escort %s" % npc_name(o.npc)
+		QuestObjective.Kind.DELIVER:
+			return "Deliver %s to %s" % [o.item.display_name if o.item != null else "it", npc_name(o.npc)]
+		QuestObjective.Kind.INTERACT:
+			return "Examine %s" % npc_name(o.npc)
+		QuestObjective.Kind.INVESTIGATE:
+			return "Places examined"
 	return ""

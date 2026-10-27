@@ -9,7 +9,6 @@
 [ext_resource type="Resource" path="res://content/enemies/bandit_brute.tres" id="4_xnvoe"]
 [ext_resource type="Resource" path="res://content/enemies/fen_skirmisher.tres" id="5_ly8hc"]
 [ext_resource type="Resource" path="res://content/enemies/old_grizzlehide.tres" id="6_xnvoe"]
-[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="7_r84w6"]
 [ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="9_r84w6"]
 
 [sub_resource type="Resource" id="Resource_r84w6"]

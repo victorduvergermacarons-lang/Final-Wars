@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="ZoneDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="s_zone"]
+[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="s_edge"]
+[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="s_npc_spawn"]
+[ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="s_enemy_spawn"]
+[ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
+[ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
+
+[sub_resource type="Resource" id="edge_0"]
+script = ExtResource("s_edge")
+side = Vector2i(1, 0)
+to_zone = &"enemy_testing"
+offset = -4
+
+[sub_resource type="Resource" id="decor_0"]
+script = ExtResource("s_decor")
+kind = 8
+tile = Vector2i(14, 4)
+label = "Tidereach Shore (music test)"
+
+[resource]
+script = ExtResource("s_zone")
+id = &"tidereach_shore"
+display_name = "Tidereach Shore (test)"
+height_rows = PackedStringArray("000000000111111111", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000000000", "000000000000111111", "000000000000112222", "000000000000112222")
+walk_rows = PackedStringArray("#######...........", "#######...........", "#######........#..", "#######...........", "#######.......#...", "#######...........", "#######.....#.....", "#######...........", "#######...........", "#######...........", "#######...........", "#######.........#.", "#######...........", "#######.....#.....")
+graveyards = Array[Vector2i]([])
+hero_spawns = Array[Vector2i]([Vector2i(15, 6), Vector2i(15, 7), Vector2i(14, 6), Vector2i(14, 7)])
+enemy_spawns = Array[ExtResource("s_enemy_spawn")]([])
+landmarks = Array[ExtResource("s_landmark")]([])
+decor = Array[ExtResource("s_decor")]([SubResource("decor_0")])
+edges = Array[ExtResource("s_edge")]([SubResource("edge_0")])
+npcs = Array[ExtResource("s_npc_spawn")]([])
+tileset = &"iso_basic"
+terrain_rows = PackedStringArray("aaaaffcbbeeeeeeeee", "aaaaffcbbbbbbbbbbb", "aaaaffcbbbbbbbbbbb", "aaagffcbbbbbbbbbbb", "aaaaffcbbbbbbbbbbb", "aaaaffcbbbbbbbbbbb", "aaaaffcbbbbbdddddd", "aaaaffcbbbbbdddddd", "aaaaffcbbbbbbbbbbb", "aagaffcbbbbbbbbbbb", "aaaaffcbbbbbbbbbbb", "aaaafgcbbbbbeeeeee", "aaaaffcbbbbbeeeeee", "aaaaffcbbbbbeeeeee")
+terrain_legend = {
+"a": "deep_water",
+"b": "dirt",
+"c": "light_water",
+"d": "path",
+"e": "rocky_ground",
+"f": "water",
+"g": "water_tall_rocks"
+}
+prop_rows = PackedStringArray("..................", "..................", "...............b..", "..................", "..................", "..................", "............b.....", "..................", "..................", "..................", "..................", "................a.", "..................", "............a.....")
+prop_legend = {
+"a": "grey_boulders",
+"b": "small_rocks"
+}
+sight_rows = PackedStringArray("..................", "..................", "..................", "...#..............", "..................", "..................", "..................", "..................", "..................", "..#...............", "..................", ".....#..........#.", "..................", "............#.....")
+region = 3
+music_context = 2

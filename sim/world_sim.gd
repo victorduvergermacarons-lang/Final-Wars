@@ -8,7 +8,9 @@ extends RefCounted
 ##   {"type": "cast", "ability": StringName, "target": int, "aim": Vector2 (optional)}
 ##       (target -1 = none/self; aim = tile coordinates for skillshots / ground)
 ##   {"type": "release"}
-##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles)
+##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles; also uses objects,
+##       hands over DELIVER items, and sets an escort off)
+##   {"type": "examine", "tile": Vector2i}   (an INVESTIGATE spot within 1 tile)
 ##   {"type": "take_loot", "loot": int}      (loot that didn't fit in the bag)
 ##   {"type": "use_item", "bag_index": int}  (consumables, e.g. potions)
 ##   {"type": "buy", "npc": int, "item": StringName, "count": int}
@@ -21,6 +23,7 @@ extends RefCounted
 ##   {"type": "accept_quest", "npc": int, "quest": StringName}   (from its giver, within TALK_RANGE)
 ##   {"type": "turn_in_quest", "npc": int, "quest": StringName, "choice": int}   (choice: reward index or -1)
 ##   {"type": "abandon_quest", "quest": StringName}
+##   {"type": "accept_shared_quest", "quest": StringName}   (a quest a party member here has)
 ##   {"type": "learn", "bag_index": int}   (a scroll into the learning slot) or
 ##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
 ##   {"type": "stop_learning"}
@@ -81,6 +84,8 @@ const HISTORY_SECONDS := 2.0
 var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
 ## Heroes asking to walk off a map edge this tick: [[hero id, ZoneEdge], ...]; World moves them.
 var _edge_requests: Array = []
+## Released heroes to respawn in another zone (ZoneDef.respawn_zone): hero ids.
+var _respawn_requests: Array = []
 var _events: Array[Dictionary] = []
 
 
@@ -100,6 +105,7 @@ func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSo
 	for spawn in zone.npcs:
 		var npc := Npc.new(_take_id(), spawn.npc, spawn.tile)
 		npc.face(spawn.facing)
+		npc.home_facing = spawn.facing
 		_npcs[npc.id] = npc
 		ctx.add_actor(npc)
 
@@ -161,6 +167,41 @@ func take_edge_requests() -> Array:
 	var out := _edge_requests
 	_edge_requests = []
 	return out
+
+
+## Heroes asked to go to another zone's start (the debug console's goto):
+## [hero id, zone id] pairs, moved by the World.
+var _zone_requests: Array = []
+
+
+func request_zone_move(hero_id: int, zone_id: StringName) -> void:
+	_zone_requests.append([hero_id, zone_id])
+
+
+func take_zone_requests() -> Array:
+	var out := _zone_requests
+	_zone_requests = []
+	return out
+
+
+## Heroes released here who respawn in another zone (World moves them).
+func take_respawn_requests() -> Array:
+	var out := _respawn_requests
+	_respawn_requests = []
+	return out
+
+
+## The graveyard nearest `near` (the hero spawns when the zone has none).
+func nearest_graveyard(near: Vector2i) -> Vector2i:
+	var best := near
+	var best_dist := -1
+	var points := zone.graveyards if not zone.graveyards.is_empty() else zone.hero_spawns
+	for p in points:
+		var d := GridModel.distance(near, p)
+		if best_dist < 0 or d < best_dist:
+			best = p
+			best_dist = d
+	return best
 
 
 ## The exit on `tile`, or null.
@@ -249,6 +290,7 @@ func step() -> Array[Dictionary]:
 		remove_enemy(id)
 	_remove_after_tick.clear()
 	_regen()
+	_update_escorts()
 	_update_quests()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
@@ -978,6 +1020,10 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_timing_release(hero, intent.get("at", 0.0), intent.get("aim"))
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
+		"examine":
+			reason = _intent_examine(hero, intent.get("tile", Vector2i(-99, -99)))
+		"accept_shared_quest":
+			reason = _intent_accept_shared_quest(hero, StringName(intent.get("quest", &"")))
 		"accept_quest":
 			reason = _intent_accept_quest(hero, intent.get("npc", -1), intent.get("quest", &""))
 		"turn_in_quest":
@@ -1112,10 +1158,50 @@ func _intent_talk(hero: Hero, npc_id: int) -> String:
 	emit({"type": "dialogue", "target": hero.id, "npc": npc.id, "def": npc.def.id})
 	if npc.def.resets_zone:
 		reset_zone(hero.id)
-	for h in _quest_sharers(hero, npc.tile()):
+	var sharers := _quest_sharers(hero, npc.tile())
+	for h in sharers:
 		for e in QuestLog.on_talk(h, quests, npc.def.id):
 			emit(e)
+	for pair in QuestLog.deliverable(hero, quests, npc.def.id):
+		for e in QuestLog.deliver(hero, sharers, pair[0], pair[1]):
+			emit(e)
+	_try_start_escort(hero, npc)
 	return ""
+
+
+## Examining an INVESTIGATE spot: it counts for every nearby party member on the
+## quest. Emits "examined" (the line "quest.<id>.spot.<i>.<n>" says what you find).
+func _intent_examine(hero: Hero, tile: Variant) -> String:
+	if not hero.alive:
+		return "dead"
+	if typeof(tile) != TYPE_VECTOR2I or GridModel.distance(hero.tile(), tile) > 1:
+		return "too_far"
+	var spots := QuestLog.spots_at(hero, quests, zone.id, tile)
+	if spots.is_empty():
+		return "nothing_here"
+	for s in spots:
+		var def: QuestDef = s[0]
+		emit({"type": "examined", "target": hero.id, "quest": def.id, "objective": s[1], "spot": s[2],
+				"tile": tile})
+		for h in _quest_sharers(hero, tile):
+			for e in QuestLog.mark_spot(h, def, s[1], s[2]):
+				emit(e)
+	return ""
+
+
+## A quest a party member here already has: accepted without going to its giver
+## (the prompt everyone else gets when someone accepts).
+func _intent_accept_shared_quest(hero: Hero, quest_id: StringName) -> String:
+	var def: QuestDef = quests.get(quest_id)
+	if def == null:
+		return "no_quest"
+	var shared := false
+	for h in heroes():
+		if h != hero and QuestLog.is_active(h, def.id):
+			shared = true
+	if not shared:
+		return "not_shared"
+	return _accept(hero, def)
 
 
 ## Puts this zone back as it started (the testing map's Reset Shrine): every
@@ -1150,10 +1236,24 @@ func _intent_accept_quest(hero: Hero, npc_id: int, quest_id: StringName) -> Stri
 	if def == null:
 		return "no_quest"
 	var reason := _check_quest_npc(hero, npc_id, def.giver)
-	if reason == "":
-		reason = QuestLog.can_accept(hero, def)
 	if reason != "":
 		return reason
+	reason = _accept(hero, def)
+	if reason != "":
+		return reason
+	# The rest of the party here gets the offer too (a prompt; a speech bubble).
+	for h in heroes():
+		if h != hero and QuestLog.can_accept(h, def) == "":
+			emit({"type": "quest_shared", "target": h.id, "source": hero.id, "quest": def.id})
+	return ""
+
+
+func _accept(hero: Hero, def: QuestDef) -> String:
+	var reason := QuestLog.can_accept(hero, def)
+	if reason != "":
+		return reason
+	if not QuestLog.given_items_fit(hero, def):
+		return "bag_full"
 	for e in QuestLog.accept(hero, def):
 		emit(e)
 	return ""
@@ -1173,7 +1273,7 @@ func _intent_turn_in_quest(hero: Hero, npc_id: int, quest_id: StringName, choice
 		emit(e)
 	if def.sets_world_flag != &"" and not world_flags.has(String(def.sets_world_flag)):
 		world_flags[String(def.sets_world_flag)] = true
-		emit({"type": "world_flag", "flag": def.sets_world_flag, "text": def.world_flag_message})
+		emit({"type": "world_flag", "flag": def.sets_world_flag, "quest": def.id})
 	return ""
 
 
@@ -1279,20 +1379,10 @@ func _intent_sell(hero: Hero, npc_id: int, bag_index: int, count: int) -> String
 func _intent_release(hero: Hero) -> String:
 	if hero.alive:
 		return "not_dead"
-	var near := hero.death_tile
-	var best := near
-	var best_dist := -1
-	var points := zone.graveyards if not zone.graveyards.is_empty() else zone.hero_spawns
-	for p in points:
-		var d := GridModel.distance(near, p)
-		if best_dist < 0 or d < best_dist:
-			best = p
-			best_dist = d
 	var stats := hero.current_stats(now)
 	hero.alive = true
 	hero.hp = maxf(roundf(stats.hp * rules.release_fraction), 1.0)
 	hero.mana = roundf(stats.mana * rules.release_fraction)
-	hero.move.place(find_free_tile_near(best))
 	# A fresh start at the graveyard: out of combat, off every threat table.
 	for enemy in enemies():
 		enemy.threat.remove(hero.id)
@@ -1300,6 +1390,10 @@ func _intent_release(hero: Hero) -> String:
 	# Enemies react to where they saw you a moment ago: forget the death spot, or the
 	# enemy that killed you "sees" you there and aggroes on your new self.
 	_history.erase(hero.id)
+	if zone.respawn_zone != &"" and zone.respawn_zone != zone.id:
+		_respawn_requests.append(hero.id) # the World moves it, then announces the release
+		return ""
+	hero.move.place(find_free_tile_near(nearest_graveyard(hero.death_tile)))
 	emit({"type": "release", "target": hero.id, "tile": hero.tile()})
 	return ""
 
@@ -1350,6 +1444,9 @@ func _intent_unequip(hero: Hero, slot: int) -> String:
 # --- Rules applied every tick -----------------------------------------------
 
 func _on_death(actor: Actor) -> void:
+	if actor is Npc:
+		_escort_died(actor as Npc)
+		return
 	if actor is Hero:
 		for enemy in enemies():
 			enemy.threat.remove(actor.id)
@@ -1499,3 +1596,131 @@ static func _sorted(d: Dictionary) -> Array:
 	var ids := d.keys()
 	ids.sort()
 	return ids
+
+
+# --- Escorts ------------------------------------------------------------------
+
+## An escort waits while no party member on its quest is this close.
+const ESCORT_WAIT_RADIUS := 6
+## Seconds per tile an escorted NPC or caravan walks.
+const ESCORT_STEP_SECONDS := 0.7
+## After arriving, it stays this long, then goes back to where it started.
+const ESCORT_HOME_SECONDS := 30.0
+## After dying, it is back where it started this long later.
+const ESCORT_RESPAWN_SECONDS := 5.0
+
+## Escorts under way: npc id -> {"quest", "objective", "next" (waypoint index),
+## "arrived_at" (-1 while walking), "died_at" (-1 while alive)}.
+var _escorts := {}
+
+
+## The escorted NPCs and caravans walking right now (enemies may attack them).
+func escortees() -> Array[Npc]:
+	var out: Array[Npc] = []
+	for id in _sorted(_escorts):
+		var npc: Npc = _npcs.get(id)
+		if npc != null and npc.alive and npc.escorting:
+			out.append(npc)
+	return out
+
+
+## Escort state of the NPC `npc_id` ({} if none): for tests and the debug console.
+func escort_of(npc_id: int) -> Dictionary:
+	return _escorts.get(npc_id, {})
+
+
+## Talking to an escortee of a quest the hero is on sets the escort off.
+func _try_start_escort(hero: Hero, npc: Npc) -> void:
+	if _escorts.has(npc.id) or not npc.alive:
+		return
+	for def in quests.values():
+		var i: int = def.escort_objective()
+		if i < 0 or not QuestLog.is_active(hero, def.id):
+			continue
+		var o: QuestObjective = def.objectives[i]
+		if o.npc != npc.def.id or o.zone != zone.id or QuestLog.progress(hero, def, i) >= 1:
+			continue
+		_escorts[npc.id] = {"quest": def.id, "objective": i, "next": 0, "arrived_at": -1.0, "died_at": -1.0}
+		npc.set_escorting(true)
+		emit({"type": "escort_started", "source": npc.id, "target": hero.id, "quest": def.id})
+		return
+
+
+func _update_escorts() -> void:
+	for id in _sorted(_escorts):
+		var e: Dictionary = _escorts[id]
+		var npc: Npc = _npcs.get(id)
+		var def: QuestDef = quests.get(e.quest)
+		if npc == null or def == null:
+			_escorts.erase(id)
+			continue
+		if e.died_at >= 0.0:
+			if now >= e.died_at + ESCORT_RESPAWN_SECONDS:
+				_end_escort(npc)
+			continue
+		if e.arrived_at >= 0.0:
+			if now >= e.arrived_at + ESCORT_HOME_SECONDS:
+				_end_escort(npc)
+			continue
+		var o: QuestObjective = def.objectives[e.objective]
+		var goal: Vector2i = o.path[e.next]
+		var last: bool = e.next == o.path.size() - 1
+		var d := GridModel.distance(npc.tile(), goal)
+		if not npc.move.is_moving(now) and (d == 0 or (d == 1 and (not last or is_occupied(goal, npc)))):
+			e.next += 1
+			if e.next >= o.path.size():
+				_escort_arrived(npc, def, e)
+			continue
+		if npc.move.is_moving(now) or not _escort_has_company(npc, def):
+			continue # waits for the party
+		var path := path_for(npc, goal, occupied_tiles(npc), 512)
+		if path.size() >= 2:
+			try_step(npc, path[1], ESCORT_STEP_SECONDS)
+
+
+## Whether a living party member on the escort's quest is close enough to follow.
+func _escort_has_company(npc: Npc, def: QuestDef) -> bool:
+	for h in heroes():
+		if h.alive and QuestLog.is_active(h, def.id) and GridModel.distance(h.tile(), npc.tile()) <= ESCORT_WAIT_RADIUS:
+			return true
+	return false
+
+
+func _escort_arrived(npc: Npc, def: QuestDef, e: Dictionary) -> void:
+	e.arrived_at = now
+	npc.set_escorting(false)
+	_drop_from_threat(npc)
+	emit({"type": "escort_arrived", "source": npc.id, "quest": def.id})
+	for h in heroes():
+		if GridModel.distance(h.tile(), npc.tile()) <= QUEST_SHARE_RADIUS:
+			for ev in QuestLog.set_progress(h, def, e.objective, 1):
+				emit(ev)
+
+
+## The escort died: the quest fails for every party member here who is on it;
+## its giver offers it again, and the escortee is back home a little later.
+func _escort_died(npc: Npc) -> void:
+	var e: Dictionary = _escorts.get(npc.id, {})
+	if e.is_empty() or e.died_at >= 0.0:
+		return
+	e.died_at = now
+	npc.set_escorting(false)
+	_drop_from_threat(npc)
+	var def: QuestDef = quests.get(e.quest)
+	emit({"type": "escort_failed", "source": npc.id, "quest": e.quest})
+	for h in heroes():
+		for ev in QuestLog.fail(h, def):
+			emit(ev)
+
+
+func _end_escort(npc: Npc) -> void:
+	_escorts.erase(npc.id)
+	npc.reset_home()
+	if is_occupied(npc.home_tile, npc):
+		npc.move.place(find_free_tile_near(npc.home_tile))
+	emit({"type": "respawn", "target": npc.id})
+
+
+func _drop_from_threat(actor: Actor) -> void:
+	for enemy in enemies():
+		enemy.threat.remove(actor.id)

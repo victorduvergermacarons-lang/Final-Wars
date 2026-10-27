@@ -63,6 +63,8 @@ var _party: VBoxContainer
 var _party_frames := {} # hero id -> UnitFrame
 var inventory_window: InventoryWindow
 var dialogue: DialogueBox
+## Co-op: quests a party member just accepted, offered to you.
+var quest_prompt: QuestPrompt
 var loot_window: LootWindow
 var vendor_window: VendorWindow
 var quest_log: QuestLogWindow
@@ -300,6 +302,11 @@ func _build() -> void:
 	_root.add_child(dialogue)
 	dialogue.opened.connect(_on_dialogue_opened)
 	dialogue.closed.connect(func(): vendor_window.close())
+	quest_prompt = QuestPrompt.new(self)
+	quest_prompt.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	quest_prompt.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	quest_prompt.position.y += 70
+	_root.add_child(quest_prompt)
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -537,8 +544,9 @@ func _on_events(events: Array) -> void:
 			"left":
 				client.say("%s left the game." % e.name)
 			"world_flag":
-				if e.get("text", "") != "":
-					client.say(e.text)
+				var announce := ContentDB.dialogue.text("quest.%s.world_flag" % e.get("quest", ""))
+				if announce != "":
+					client.say(announce)
 			"enrage":
 				var who = session.get_actor(e.get("source", -1))
 				var buff: BuffDef = ContentDB.buffs.get(e.get("buff", &""))
@@ -546,15 +554,28 @@ func _on_events(events: Array) -> void:
 					client.say("%s flies into %s!" % [who.display_name, buff.display_name])
 			"zone_reset":
 				client.say("The shrine glows: every creature returns to its pen and lingering effects fade.")
+			"dialogue":
+				# Someone else's conversation: the rest of the party sees a bubble.
+				var talker: Actor = session.get_actor(e.npc)
+				if talker is Npc and e.get("target", -1) != me:
+					client.bubble(talker.id, ContentDB.dialogue.text(
+							(talker as Npc).def.greeting_line(session.world_flags(), ContentDB.dialogue), "…"))
+			"escort_started", "escort_arrived", "escort_failed":
+				_on_escort_event(e)
 		if e.get("target", -2) != me:
+			continue
+		if e.type == "quest_shared":
+			var from: Actor = session.get_actor(e.get("source", -1))
+			quest_prompt.offer(StringName(e.quest), from.display_name if from != null else "A party member")
+			continue
+		if e.type == "examined":
+			dialogue.open_line("quest.%s.spot.%d.%d" % [e.quest, e.objective, e.spot],
+					"You examine the spot closely.", e.tile)
 			continue
 		var quest_msg := QuestText.event_message(e, ContentDB.quests)
 		if quest_msg != "":
 			client.say(quest_msg)
-			if e.type in ["quest_accepted", "quest_completed"]:
-				var talking := dialogue.current_npc()
-				if dialogue.visible and talking != null:
-					dialogue.open(talking) # back to the main page with fresh options
+			_quest_line_for(e)
 			continue
 		match e.type:
 			"rejected":
@@ -592,6 +613,48 @@ func _on_events(events: Array) -> void:
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:
 					dialogue.open(npc)
+
+
+## What an NPC says when a quest event happens in your conversation with them:
+## accepting, handing in, delivering, using an object.
+func _quest_line_for(e: Dictionary) -> void:
+	var def: QuestDef = ContentDB.quests.get(StringName(str(e.get("quest", ""))))
+	var talking := dialogue.current_npc()
+	if def == null or not dialogue.visible or talking == null:
+		return
+	match e.type:
+		"quest_accepted":
+			QuestDialogue.show_accepted(self, def)
+		"quest_completed":
+			dialogue.open(talking) # back to the main page with fresh options
+		"delivered":
+			dialogue.show_line(def.line_id("deliver.%d" % e.objective), "Thank you. I'll take it from here.")
+		"quest_progress":
+			var o: QuestObjective = def.objectives[e.objective]
+			if o.kind == QuestObjective.Kind.INTERACT and o.npc == talking.def.id \
+					and ContentDB.dialogue.has(def.line_id("interact.%d" % e.objective)):
+				dialogue.show_line(def.line_id("interact.%d" % e.objective), "", Callable(), DialogueLines.HERO)
+
+
+## Escorts: the escortee speaks up (its line in your conversation, a bubble for
+## everyone), and the log says how it went.
+func _on_escort_event(e: Dictionary) -> void:
+	var def: QuestDef = ContentDB.quests.get(StringName(str(e.get("quest", ""))))
+	var npc: Actor = session.get_actor(e.get("source", -1))
+	if def == null or npc == null:
+		return
+	var i := def.escort_objective()
+	match e.type:
+		"escort_started":
+			var said := ContentDB.dialogue.text(def.line_id("escort.%d" % i), "Let's go. Keep close!")
+			client.bubble(npc.id, said)
+			client.say("%s sets off. Keep it safe!" % npc.display_name)
+			if dialogue.visible and dialogue.npc_id == npc.id:
+				dialogue.show_line(def.line_id("escort.%d" % i), said, func(): dialogue.add_option("Goodbye", dialogue.close))
+		"escort_arrived":
+			client.say("%s made it safely." % npc.display_name)
+		"escort_failed":
+			client.error("%s was lost!" % npc.display_name)
 
 
 ## Whether an open window overlaps the quest tracker (then the tracker hides,

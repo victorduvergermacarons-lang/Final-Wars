@@ -58,21 +58,30 @@ func _process(_delta: float) -> void:
 	var hero: Hero = hud.session.local_hero()
 	if hero == null:
 		return
-	var active := QuestText.active_quests(hero, ContentDB.quests)
-	if selected == &"" or not active.any(func(d): return d.id == selected):
-		selected = active[0].id if not active.is_empty() else &""
+	var tracked := QuestText.tracked_quests(hero, ContentDB.quests)
+	if selected == &"" or not tracked.any(func(d): return d.id == selected):
+		selected = tracked[0].id if not tracked.is_empty() else &""
 	var sig := "%s|%s" % [selected, JSON.stringify(hero.quest_state)]
-	for def in active:
+	for def in tracked:
 		sig += "|%d" % [int(QuestLog.is_complete(hero, def))]
 	if sig == _signature:
 		return
 	_signature = sig
 	for c in _list.get_children():
 		c.queue_free()
-	for def in active:
+	# Main quests, then side quests, each under its heading.
+	var heading := -1
+	for def in tracked:
+		if def.category != heading:
+			heading = def.category
+			var h := Label.new()
+			h.text = "Main quests" if def.is_main() else "Side quests"
+			h.add_theme_font_size_override("font_size", 16)
+			h.add_theme_color_override("font_color", UiPalette.LEATHER_DARK)
+			_list.add_child(h)
 		var b := Button.new()
-		var ready := QuestLog.status(hero, def) == QuestLog.Status.READY
-		b.text = def.title + ("  (done)" if ready else "")
+		var st := QuestLog.status(hero, def)
+		b.text = def.title + ("  (done)" if st == QuestLog.Status.READY else ("  (failed)" if st == QuestLog.Status.FAILED else ""))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.focus_mode = Control.FOCUS_NONE
 		b.toggle_mode = true
@@ -82,11 +91,17 @@ func _process(_delta: float) -> void:
 			selected = id
 			_signature = "")
 		_list.add_child(b)
-	_abandon.visible = selected != &""
 	if selected == &"":
-		_details.text = "[color=%s]No quests. Look for [b]![/b] over people in town.[/color]" % QuestText.GREY
+		_abandon.visible = false
+		_details.text = "[color=%s]No quests. Look for [b]![/b] over people and quest boards.[/color]" % QuestText.GREY
 		return
 	var def: QuestDef = ContentDB.quests[selected]
-	_details.text = "[font_size=%d][b]%s[/b][/font_size]\n%s\n\n%s\n\nHand in to: %s\n%s" % [NAME_SIZE, def.title, def.offer_text,
-			QuestText.objectives_bbcode(hero, def), QuestText.npc_name(def.turn_in_npc()),
+	var failed := QuestLog.is_failed(hero, def.id)
+	_abandon.visible = not failed
+	var status := ("[color=%s]Failed — talk to %s to try again.[/color]" % [QuestText.RED, QuestText.npc_name(def.giver)]) \
+			if failed else "Hand in to: %s" % QuestText.npc_name(def.turn_in_npc())
+	_details.text = "[font_size=%d][b]%s[/b][/font_size]\n[color=%s]%s[/color]\n%s\n\n%s\n\n%s\n%s" % [NAME_SIZE, def.title,
+			QuestText.GREY, QuestText.kind_and_area(def),
+			ContentDB.dialogue.text(def.line_id("offer")),
+			QuestText.objectives_bbcode(hero, def), status,
 			QuestText.rewards_bbcode(def)]

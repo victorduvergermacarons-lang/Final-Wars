@@ -30,8 +30,8 @@ func _npc(id: StringName) -> Npc:
 	return null
 
 
-func test_town_has_a_vendor_and_two_quest_givers() -> void:
-	assert_eq(town.npcs().size(), 3)
+func test_town_has_a_vendor_and_quest_givers() -> void:
+	assert_eq(town.npcs().size(), 5, "Hilda, Rowan, Maren, Ilyth the Seer and Healer Wenna")
 	assert_not_null(_npc(&"hilda"))
 	assert_not_null(_npc(&"rowan"))
 	assert_not_null(_npc(&"maren"))
@@ -72,7 +72,7 @@ func test_npcs_are_in_snapshots_and_rebuilt_on_clients() -> void:
 	mirror.local_hero_id = hero.id
 	mirror.apply_snapshot(Snapshot.capture(town, hero.id))
 	var npcs := mirror.actors().filter(func(a): return a is Npc)
-	assert_eq(npcs.size(), 3)
+	assert_eq(npcs.size(), town.npcs().size())
 	assert_eq(npcs.map(func(n): return n.def.id).has(&"maren"), true)
 
 

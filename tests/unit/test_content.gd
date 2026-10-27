@@ -122,7 +122,7 @@ func test_old_grizzlehide_is_a_patrolling_elite() -> void:
 
 
 func test_sample_quests() -> void:
-	assert_eq(db.quests.size(), 5)
+	assert_eq(db.quests.size(), 13, "the 5 Millbrook quests and the 8 of Act I")
 	var chain := [&"wolves_at_the_gate", &"bandit_camp", &"beast_of_greenfields"]
 	for i in range(1, chain.size()):
 		assert_eq(db.quests[chain[i]].prerequisites, [chain[i - 1]] as Array[StringName], "%s follows %s" % [chain[i], chain[i - 1]])
@@ -135,7 +135,7 @@ func test_sample_quests() -> void:
 				assert_true(db.enemies.has(o.enemy), "%s: enemy %s exists" % [q.id, o.enemy])
 			elif o.kind == QuestObjective.Kind.REACH:
 				assert_true(GridModel.from_zone(db.zones[o.zone]).is_walkable(o.tile))
-	assert_eq(kinds.size(), 4, "every objective kind is used")
+	assert_eq(kinds.size(), QuestObjective.Kind.size(), "every objective kind is used")
 	var beast: QuestDef = db.quests[&"beast_of_greenfields"]
 	assert_eq(beast.reward_choices.size(), 3, "item choice")
 	assert_eq(beast.sets_world_flag, &"grizzlehide_slain")
@@ -148,8 +148,9 @@ func test_sample_quests() -> void:
 
 func test_rowan_greets_differently_after_grizzlehide() -> void:
 	var rowan: NpcDef = db.npcs[&"rowan"]
-	assert_eq(rowan.greeting_for({}), rowan.greeting)
-	assert_ne(rowan.greeting_for({"grizzlehide_slain": true}), rowan.greeting)
+	assert_eq(rowan.greeting_line({}, db.dialogue), "npc.rowan.greeting")
+	assert_eq(rowan.greeting_line({"grizzlehide_slain": true}, db.dialogue), "npc.rowan.greeting.grizzlehide_slain")
+	assert_ne(db.dialogue.text("npc.rowan.greeting.grizzlehide_slain"), db.dialogue.text("npc.rowan.greeting"))
 
 
 func test_bandit_camp_is_marked_and_reachable() -> void:

@@ -6,8 +6,8 @@ extends Node
 ##   events. World sounds play at their place in the world view and are heard from
 ##   the local hero (an AudioListener2D on it), so each player hears their own mix.
 ## - the music context: the zone's (town, explore, dungeon), combat while a fight
-##   goes on near the local hero, boss when an elite is in it; the zone's ambience
-##   and bond.
+##   goes on near the local hero, boss when an elite is in it; the zone's region
+##   (its own explore track, if it has one), ambience and bond.
 
 var session
 var client: ClientState
@@ -84,7 +84,7 @@ func _update_music(zone_changed: bool = false) -> void:
 	var zone: ZoneDef = session.zone()
 	if zone == null:
 		return
-	Audio.set_context(music_context(), Audio.bond_for(zone))
+	Audio.set_context(music_context(), Audio.bond_for(zone), zone.region)
 	if zone_changed:
 		Audio.set_ambience(SoundCatalog.ambience_key(zone))
 
@@ -167,7 +167,7 @@ func _on_events(events: Array) -> void:
 			"zone_reset":
 				Audio.play(&"world_shrine_reset")
 			"world_flag":
-				if e.get("text", "") != "":
+				if ContentDB.dialogue.has("quest.%s.world_flag" % e.get("quest", "")):
 					Audio.play(&"world_event")
 		if e.get("target", -2) != me:
 			continue

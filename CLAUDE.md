@@ -16,7 +16,11 @@ Salamander Hound** added (2026-10-20; see those sections and
 (2026-10-20; see its section and `docs/playtest-checklist-sunscale-drake.md`). **Performance
 work** (terrain cache, sleeping empty zones) is on the `optimised-build-1` branch
 (2026-10-21; see **Performance**). **Audio system** and the first music track added
-(2026-10-21; see **Audio**, `AUDIO_SPEC.md` and `docs/playtest-checklist-audio.md`). For the numbers
+(2026-10-21; see **Audio**, `AUDIO_SPEC.md` and `docs/playtest-checklist-audio.md`). **Veyra Act I,
+milestone 1 of 4** (quests and dialogue, branch `feature/v1.2.1`, 2026-10-26): see **Act I: quests
+and dialogue**, `docs/quests-and-dialogue.md` and `docs/playtest-checklist-act1.md`. **Milestone 2 of
+4** (zones, region music, branch `feature/v1.3.1`, 2026-10-27): see **Act I: zones and region music**
+and `docs/playtest-checklist-act1-zones.md`. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -408,6 +412,142 @@ is missing from it.
   fades 10 ms in and 120 ms out.
 - No sound effect or ambience files exist yet: all 152 keys are listed as missing in
   `AUDIO_SPEC.md`.
+
+## Act I: quests and dialogue (milestone 1 of 4, 2026-10-26)
+
+User brief: a playable prototype of Act I of Veyra; this first milestone extends the
+quest system to carry the story and adds dialogue. How to edit: `docs/quests-and-dialogue.md`.
+- **Dialogue file:** every line is in `content/dialogue/act1.json`, by id
+  (`DialogueLines`, `ContentDB.dialogue`). A line is text or {text, speaker, next,
+  choices}. Ids follow conventions: `npc.<npc>.greeting[.<world flag>]`,
+  `quest.<quest>.offer / restart / accept / decline / accepted / declined / progress /
+  complete / failed / world_flag`, `quest.<quest>.interact.<i> / deliver.<i> /
+  escort.<i>`, `quest.<quest>.spot.<i>.<n>`. The Millbrook quests' and NPCs' texts
+  moved there from their .tres files. Content checks: every quest has offer and
+  complete lines, every NPC a greeting, every `next` and choice leads somewhere.
+- **Dialogue box** (`DialogueBox`, bottom centre): a portrait (`PortraitView`: the
+  NPC's `portrait`, else a frame in its faction's colour with its initials; "hero"
+  lines show yours), name and faction, the line, then its choices, Continue, or
+  the main page (quests, shop, Goodbye). Quest pages (`QuestDialogue`) put the
+  objectives and rewards under the NPC's line; the offer's buttons are the file's
+  accept / decline answers.
+- **Quests** (`QuestDef`): main or side (`category`), `area`, `given_items` (handed
+  over on accept, taken back on abandon or failure). Objective kinds added to kill,
+  collect, talk and reach:
+  - **Escort:** talk to the escortee (`NpcDef` with `max_hp`) to set it off along
+    `path`; it walks at 0.7 s per tile, only while a party member on the quest is
+    within 6 tiles; it's on the heroes' side meanwhile (enemies aggro on it,
+    heroes heal it). At the last point the objective is done for party members
+    within 15 tiles; it goes home 30 s later. If it dies, the quest **fails** for
+    everyone on it in the zone (state `failed`, saved), the giver shows "!" again
+    ("(try again)", line `restart`), and it's back home 5 s later.
+  - **Deliver:** talk to `npc` with the items in your bag; they're handed over and
+    party members nearby on the quest get the credit (their own copies of a
+    handed-over item go too).
+  - **Interact:** use an object (`NpcDef` of kind Object) with E.
+  - **Investigate:** examine every spot in `spots` with E (within 1 tile); spots glow
+    (a cyan ring with "?") until examined; each counts once, for party members
+    nearby; which ones were found is saved (`found`).
+- **Co-op:** a quest is the party's: when someone accepts at the giver, everyone else
+  in the zone who can take it gets a prompt (`QuestPrompt`, top of the screen: Join /
+  Not now; `accept_shared_quest`, no need to go to the giver). Progress counts for
+  party members on the quest within 15 tiles (as before). The one who talks sees the
+  dialogue; the others see a speech bubble over the NPC. Each hero's quests save
+  with that hero.
+- **NPCs** (`NpcDef`): `kind` Person / Board / Object / Caravan, `faction` Townsfolk
+  (grey), Floor Guild (blue), Ember Hand (red), Bedrun (ochre), Vael (pale blue), None
+  (wood) (`Factions`). Placeholders are a shape per kind in the faction's colour with
+  the name above (`WorldView._draw_npc`); with `art` set they're drawn like the
+  creatures, so real sprites only need the art. Quest boards are NPCs of kind Board:
+  they give quests and take hand-ins like anyone. "[E] Talk / Read / Use / Examine".
+- **Tracker and log:** main quests first; the log groups Main / Side with each area;
+  failed quests show where to restart them.
+- **Placeholder Act I** (story to be replaced; all lines in the file):
+  - Since milestone 2 (see **Act I: zones and region music**): the Guild Board,
+    Warden Iska Dorne and Sabra Venn are at the Crossing; Ilyth the Seer in Millbrook;
+    the Mine Board, Foreman Hadda Brannoc, the ore caravan (320 HP) and the Collapsed
+    Shaft in Deepcut; the Vael Standing Stone on the Windsteppe.
+  - Main chain:
+    1. The Guild's Summons (board, talk)
+    2. Ash on the East Road (investigate 3 spots)
+    3. The Ember Hand's Writ (deliver)
+    4. Ore for Millbrook (escort, level 2, hand in to Dorne)
+    5. What the Stone Remembers (interact + kill 3 iron wolves, level 3). Sets
+       `act1_complete`.
+  - Side: Bandits on the Ore Road, The Collapsed Shaft, Guild Patrol: The Bridge.
+    Rowan's and Maren's 5 quests are side quests.
+- **Network:** new intents `examine` and `accept_shared_quest`; the escort flag is
+  in each NPC's snapshot. The 4-player check now has the guests in town join the
+  host's quest over the network.
+
+## Act I: zones and region music (milestone 2 of 4, 2026-10-27)
+
+User brief: build or update the Act I zones, small and hand-built, with height used
+for cliffs, ramps and high ground, joined by roads with the Crossing as the hub;
+music by region. Built by `tools/once/make_act1_zones.py` (+ `bake_zone_rows.gd`);
+edit the zone files directly now. Screenshots: `tests/visual/zone_shots.tscn`.
+- **Map** (grid sides; offsets in the zone files):
+  - Millbrook (32×32) south gate (x 8–11) ↔ the Crossing's north gate; Millbrook's
+    east side (rows 1–16) still leads to Greenfields and its north gate to the Enemy
+    Testing Grounds.
+  - The Crossing (40×40): east (rows 18–21) ↔ Road to Deepcut (60×22, rows 9–12) ↔
+    Deepcut (44×40, west gate rows 16–19); west (rows 18–21) ↔ Windsteppe (56×44,
+    rows 20–23).
+  - Tidereach Shore (test, 18×14) ↔ a gate at the west end of the Enemy Testing
+    Grounds (`TestingGrounds.WEST_GATE`, opened when the zone has a west edge).
+  - Greenfields' map and the testing grounds' layout are unchanged (Greenfields lost
+    its Act I NPCs).
+- **Millbrook:** farming village on the river (x 24–25): grey upstream (south, from
+  the Crossing), clear below the mill pond; thatched houses, fields, the Village Well
+  on the green, the orchard on high ground with a rocky crest, the Healer's Hut
+  (Healer Wenna) with Millbrook's graveyard.
+- **The Crossing:** Floor Guild Hall (Dorne), Guild Board, market stalls with two
+  vendors (Tamsin Reed: Hilda's stock; Odo the Apothecary: potions), the Crossed Keys
+  Inn (Innkeeper Bram, Sabra Venn), the Graveyard Shrine on a knoll, a rocky hill and
+  a ridge; the grey stream crosses it toward Millbrook.
+- **Road to Deepcut:** grass to red earth between rising canyon walls, the Lookout
+  Ledge (a Bandit Brute), two wolves, the grey stream along the south.
+- **Deepcut:** red canyon town: Mine Entrance in the cliff north of the mine yard,
+  ore carts, Foreman Brannoc, Steward's Office on a terrace (Steward Orrin Marl),
+  Mine Board, the tailings pond and polluted stream, Miners' Row, the Collapsed
+  Shaft in the spur's face. Two Salamander Hounds by the canyon gate (the escort's
+  danger). The escort now runs from the mine yard to the canyon gate.
+- **Windsteppe:** rolling steppe (heights 0–2), dry patches, Grey Ridge (4 high),
+  Tsaga's Camp (gers, Elder Tsaga, a dry well, a cairn, a herd), a south camp,
+  cairns, the Vael Standing Stone on its hill, six **iron wolves** patrolling in
+  three packs.
+- **Iron Wolf** (`content/enemies/iron_wolf.tres`): level 3, HP 320, PhysAtk 16,
+  PhysDef 18, MagDef 6, Evasion 4, leash 12, 0.7 s per tile, 80 XP, 3 AP; the
+  wolf's bite and howl (calls iron wolves); the wolf art recoloured to steel
+  (`iron_wolf_art.tres`).
+- **Placeholder art:** tiles 115–136 recolour existing ones (grey water, red canyon,
+  steppe grass, roofs, red boulders; `tools/once/make_placeholder_tiles.py`).
+  Objects without art are `ZoneDecor` (`ZoneDef.decor`: well, dry well, ger, cairn,
+  cart, animal, shrine, stall, sign, mine, crates, label), drawn by `DecorPainter`
+  as polygons (clipped like tiles for the terrain cache), labels within 12 tiles;
+  they block their tile, gers and mines block sight too. Things set against a cliff
+  go on its north/west side, the faces the camera sees. See `docs/tilesets.md`.
+- **Respawn:** `ZoneDef.respawn_zone`: the Road, Deepcut and the Windsteppe send
+  released heroes to the Crossing's shrine (`World._respawn_elsewhere`, a
+  `zone_change` then a `release` in the Crossing). Millbrook, Greenfields and the
+  testing grounds keep their own graveyards.
+- **Regions** (`Regions`, `ZoneDef.region`): Heartland (Millbrook, the Crossing,
+  Greenfields, testing grounds), Bedrun (the Road, Deepcut), Vael (Windsteppe),
+  Tidereach (the test shore). `MusicTrackDef.regions`: a track for the zone's region
+  wins, else a track for any region; another region's never plays
+  (`Audio.pick_track(ctx, bond, region)`).
+- **Music:** `audio/music/music_explore_tidereach.ogg` ("Water Idle", Vorbis q6 from
+  the uploaded WAV, kept at `art/audio/music_explore_tidereach_master.wav`), explore in
+  Tidereach. Not edited: it doesn't loop cleanly (2.35 s of near-silence at the start,
+  ends at full level). Everything else still plays the draft. Crossfade 1.5 s as before.
+- **Ambience keys:** `ambience_<zone id>`: `ambience_town`, `ambience_crossing`,
+  `ambience_deepcut_road`, `ambience_deepcut`, `ambience_windsteppe`,
+  `ambience_tidereach_shore` (in `AUDIO_SPEC.md`).
+- **Debug console:** `goto <zone>` (a zone's first hero spawn).
+- **Sound keys:** a creature ability shared by several enemies gets keys for each
+  (`creature_wolf_bite` and `creature_iron_wolf_bite`).
+- **Network:** the 4-player check has the guests join Rowan's quest in Millbrook,
+  then Guest1 goes to Greenfields and Guest2 to the Crossing: three zones at once.
 
 ## Enemy Testing Grounds (2026-10-20)
 
@@ -822,13 +962,14 @@ autoload/        net (ENet host/join), content_db (loads .tres), audio (music, s
 sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/
 net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
-content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ audio/ (.tres)
+content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ audio/ (.tres),
+                 dialogue/act1.json (every line of dialogue, by id)
 audio/           music/ (OGG), ambience/ (OGG), sfx/<category>/ (WAV); see AUDIO_SPEC.md
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
 assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
-view/            world view, iso tile renderer, actor views, camera
+view/            world view, iso tile renderer, actor views, camera, decor painter (placeholder objects)
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
 				 inventory, character sheet, spellbook, ability trees, dialogue, vendor, loot,
 				 quest log, tracker)
@@ -841,7 +982,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio), ability import, tilesets
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones), ability import, tilesets, quests and dialogue
 ```
 
 ### Build order (milestone 1)
@@ -1508,6 +1649,32 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-27 | Act I milestone 2 of 4: zones (Millbrook rebuilt, the Crossing, Road to Deepcut, Deepcut, Windsteppe), region music, the Tidereach track | User brief ("list every decision"). See **Act I: zones and region music**. My decisions are in the next rows. |
+| 2026-10-27 | Branch `feature/v1.3.1` from `main` after milestone 1's merge | User correction of the brief's branch name (first given as `feature/act1-m2-zones`, renamed before any commit); merged at the end. |
+| 2026-10-27 | Zone size: 32–60 tiles across, not 2–3 minutes' walk | At the current walking speed (5 tiles/s) 2–3 minutes would be 600–900 tiles; "small and hand-built" and the existing maps (30×30) point the other way. The zones take 10–15 s to cross straight, longer along the roads and around cliffs. To revisit with the walking speed. |
+| 2026-10-27 | Zones built from hand-placed shapes by a script, then baked | `tools/once/make_act1_zones.py` (like the earlier `make_tiled_zones.py`): houses, roads, rivers, cliffs and camps placed by coordinates, written as ordinary zone files. |
+| 2026-10-27 | Regions: Heartland (Millbrook, the Crossing, Greenfields, testing grounds), Bedrun (the Road, Deepcut), Vael (Windsteppe), Tidereach (test shore) | Bedrun runs the mines; the felt tents, cairns and the Vael stone make the steppe Vael's. No Act I zone is Ashkara. |
+| 2026-10-27 | A region's own track wins; tracks with no region are the fallback; other regions' tracks never play | The draft (no region) plays wherever a region has no track. The water track is explore only: a Tidereach town would play town music. |
+| 2026-10-27 | Tidereach track not edited; its loop problem reported | The brief: tell rather than edit. Measured: 2.35 s of near-silence at the start, about −26 dB at the very end. The WAV master is kept in `art/audio/` like the earlier MP3. |
+| 2026-10-27 | Tidereach test zone, west of the Enemy Testing Grounds (plus a `goto` debug command) | Walking in and out shows the crossfade between regions; off the testing grounds so the Act I map stays as briefed. `goto` reaches every zone for playtests. |
+| 2026-10-27 | Respawn: zones beyond the Crossing send released heroes to its shrine; Millbrook, Greenfields and the testing grounds keep their graveyards | "The graveyard shrine where players respawn". Millbrook's graveyard sits by the healer's hut. |
+| 2026-10-27 | Act I's people moved to where the brief puts them | Guild Board, Dorne, Sabra → the Crossing (guild hall, inn); Mine Board, Brannoc, caravan, Collapsed Shaft → Deepcut; Vael stone → Windsteppe, its quest now kills iron wolves (level 3). The escort runs through Deepcut to the canyon gate past two Salamander Hounds (the Ember Hand's fire hounds), since an escort stays in one zone. Lines naming old places rewritten in `act1.json`. |
+| 2026-10-27 | New people: Healer Wenna (Millbrook), Tamsin Reed and Odo the Apothecary (vendors), Innkeeper Bram (the Crossing), Steward Orrin Marl (Deepcut), Elder Tsaga (Windsteppe) | Talk only, apart from the two vendors (Tamsin: Hilda's stock; Odo: potions). Wenna mentions the grey river (for quest 1-05). |
+| 2026-10-27 | Iron wolves: level 3, the wolf's bite and howl, steel recolour of the wolf art | HP 320, PhysDef 18 (iron hide), 80 XP. Packs of two on patrol loops. |
+| 2026-10-27 | Placeholder tiles are recolours; objects are shapes with labels (`ZoneDecor`) | The brief allows simple shapes. Recolours keep the tile style; shapes are drawn as clipped polygons so the terrain cache still draws exactly. Labels show within 12 tiles to avoid clutter. |
+| 2026-10-27 | Test changes forced by the new layout | Tests that used Millbrook's old tiles read them from the map now; the aiming test plays on open ground at the Crossing; the testing-grounds walkthrough hero is level 15 (12 lost to the Bandit Brute once the extra zones changed the random draws). |
+| 2026-10-26 | Veyra Act I, milestone 1 of 4: quest system extended for the story, and dialogue | User brief ("make sensible decisions, list them"). See **Act I: quests and dialogue**. My decisions are in the next rows. |
+| 2026-10-26 | Branch `feature/v1.2.1` from `main`, fast-forwarded to `claude/godot-2d-coop-rpg-5nvase` | `main` was still at Milestone 1, without the quest system this extends; `main` is an ancestor of the working branch, so the new branch holds both and the pull request into `main` carries everything since. |
+| 2026-10-26 | One JSON file of lines, by id convention; existing texts moved into it | JSON over .tres: readable and editable in any text editor. Conventions (`npc.<id>.greeting`, `quest.<id>.offer`…) mean quests and NPCs need no extra fields; a missing line falls back to a short default. The world-flag announcement moved there too (`quest.<id>.world_flag`). |
+| 2026-10-26 | Quest boards and objects are NPCs (kind Board / Object) | They give quests, take hand-ins and are used with E like anyone, with no new system. |
+| 2026-10-26 | Escort rules | Mine: it sets off when a party member on the quest talks to it; 0.7 s per tile; it waits while no one on the quest is within 6 tiles; on the heroes' side while walking (enemies aggro on it, heroes heal it); arrival credits party members within 15 tiles; home 30 s after arriving, 5 s after dying. A failure fails the quest for every hero on it in that zone; heroes in other zones keep it active. |
+| 2026-10-26 | Failed quests restart from the giver with fresh progress | A failed quest is saved as failed and shown in the tracker and log; the giver offers it again with its `restart` line. Handed-over items are taken back on failure (and on abandon). |
+| 2026-10-26 | Deliver: one hand-over credits the party nearby; their copies go | Each party member gets the item on accepting; when anyone delivers, the others' copies are no longer needed. |
+| 2026-10-26 | Investigate: E within 1 tile of a glowing spot; each spot once; found spots saved | E prefers the NPC in front of you, then a spot beside you, then the nearest NPC. |
+| 2026-10-26 | Co-op accept: a prompt to the party in the same zone, Join from anywhere in it | "The others get the quest prompt too": sent when someone accepts (not when they merely open the offer), only to those who can take it (prerequisites, level). A player joining the session at that very moment can miss it; the giver still offers it. |
+| 2026-10-26 | Speech bubbles: the NPC's greeting over it for 4 s (70 characters), for the other players | The talker's later lines stay private (the dialogue is client-side); the escortee's setting-off line shows as a bubble for everyone. |
+| 2026-10-26 | Placeholder look: a shape per kind (person, board, wagon, block) in the faction's colour; portraits are a coloured frame with initials | Faction colours: Floor Guild blue, Ember Hand red, Bedrun ochre, Vael pale blue, townsfolk grey, objects wood. An NPC with `art` is drawn by the same creature code as the wolves (idle and walk). |
+| 2026-10-26 | Placeholder Act I story and placement | Mine, to exercise every objective kind: 5 main quests (Guild summons, scorched places, Ember Hand writ, ore caravan, Vael stone) and 3 side quests from the two boards, on the existing maps (Millbrook and Greenfields; no new zone). The 5 Millbrook quests become side quests. |
 | 2026-10-26 | Quick Shot: 2 s bar, hold 0.25–1.75. Aimed Shot: 4 s, a tap at the start, then a hold to the end. Aimed abilities (skillshots and ground) with a bar start at the key press and fire where the cursor points at the last input | User request and choices: skillshots and ground both aim at the end; Aimed Shot as tap 0.2–0.6 (yellow 0.35–0.45), pause, hold 1.0–3.75; several inputs average their power, crit only if all are perfect. My choices: holds end 0.25 s early (the user's rule); a press goes to the next input whose window isn't over, skipped inputs are misses; ground aims beyond range are pulled back to its edge; the client lets a hold go at the bar's end with the final aim; crits now travel with projectiles and delayed hits; input zones can't overlap (import check); the level-6 drake target became pending (the group now always wins: the bots' fight plays out differently, not a bug, checked). |
 | 2026-10-26 | Timing design in `design/Ability_Tree.xlsx`: four columns (Timing Status: Manual / Generated (AI, not yet confirmed) / Not implemented; Timing Bar (s); Timing Zones; Timing Notes) and a Timing Rules tab; the sheet is now the source of truth for bars; AI drafts for the other 29 playable abilities, in the game | User request and choices (columns + rules tab; drafts for the 29 and in game; tunable values listed); "choose the best option" for the source: the sheet, since the import runs offline (no lag) and one readable place suits complex multi-input spells later. My choices: the zone syntax (`Tap a–b; Crit a–b; Hold a–b`), the import checks, the 29 drafts by tree feel, instants (dashes, interrupts, buffs, taunt, terrain) get "none", bars replace cast times and wind-ups, timing power now also scales healing and shields, a `timing_bars_enabled` test switch, one more balance target pending (caster vs Shaman). |
 | 2026-10-26 | Holds: a hold zone ends 0.2–0.3 s before its bar; accuracy loses the mistiming at both ends in proportion; 95%+ = crit, 50% or less = miss, power rises steadily in between; Water Whip 3 s | User rule. My choices: accuracy = 1 − (press error + release error) ÷ zone length, so holding past the zone counts too; power 0.7 → 1 linearly from 50% to 95%; a hold still held at the bar's end is judged as let go then; Water Whip keeps its 2 s hold (0.75–2.75 s); held-past and pressed-early parts drawn red, "Let go!" past the zone; results show a hold's percentage. |

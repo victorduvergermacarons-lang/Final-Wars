@@ -23,7 +23,7 @@ func before_each() -> void:
 
 func _walk_to(target: Vector2i) -> void:
 	var sim := world.zone_of(hero.id)
-	var path := Pathfinder.find_path(sim.grid, hero.tile(), target, 2, {}, -1, 10000)
+	var path := Pathfinder.find_path(sim.grid, hero.tile(), target, 2, sim.occupied_tiles(hero), -1, 10000)
 	assert_false(path.is_empty(), "path to %s" % target)
 	for i in range(1, path.size()):
 		world.submit(hero.id, {"type": "step", "to": path[i]})
@@ -43,9 +43,14 @@ func test_ids_are_unique_across_zones() -> void:
 			seen[id] = true
 
 
+## Millbrook's east edge (to Greenfields): its last column.
+func _east() -> int:
+	return world.zone(&"town").grid.width - 1
+
+
 func test_walking_off_the_edge_moves_the_hero() -> void:
-	_walk_to(Vector2i(17, 12))
-	world.submit(hero.id, {"type": "step", "to": Vector2i(18, 12)})
+	_walk_to(Vector2i(_east(), 12))
+	world.submit(hero.id, {"type": "step", "to": Vector2i(_east() + 1, 12)})
 	var events := world.advance(0.3)
 	assert_eq(world.zone_of(hero.id).zone.id, &"greenfields")
 	assert_eq(hero.tile(), Vector2i(0, 25), "on the very edge of the next map, same row + offset")
@@ -62,15 +67,15 @@ func test_walking_off_the_edge_moves_the_hero() -> void:
 
 func test_any_edge_tile_works_and_back_again() -> void:
 	for row in [1, 5, 16]:
-		_walk_to(Vector2i(17, row))
-		world.submit(hero.id, {"type": "step", "to": Vector2i(18, row)})
+		_walk_to(Vector2i(_east(), row))
+		world.submit(hero.id, {"type": "step", "to": Vector2i(_east() + 1, row)})
 		world.advance(0.3)
 		assert_eq(world.zone_of(hero.id).zone.id, &"greenfields", "row %d" % row)
 		assert_eq(hero.tile(), Vector2i(0, row + 13))
 		world.submit(hero.id, {"type": "step", "to": Vector2i(-1, row + 13)})
 		world.advance(0.3)
 		assert_eq(world.zone_of(hero.id).zone.id, &"town")
-		assert_eq(hero.tile(), Vector2i(17, row))
+		assert_eq(hero.tile(), Vector2i(_east(), row))
 
 
 func test_edges_without_a_neighbour_are_walls() -> void:
@@ -83,9 +88,9 @@ func test_edges_without_a_neighbour_are_walls() -> void:
 
 
 func test_edges_are_refused_in_combat() -> void:
-	_walk_to(Vector2i(17, 9))
+	_walk_to(Vector2i(_east(), 9))
 	hero.combat_until = world.now + 100.0
-	world.submit(hero.id, {"type": "step", "to": Vector2i(18, 9)})
+	world.submit(hero.id, {"type": "step", "to": Vector2i(_east() + 1, 9)})
 	var events := world.advance(0.3)
 	assert_eq(world.zone_of(hero.id).zone.id, &"town")
 	assert_true(events.any(func(e): return e.type == "rejected" and e.reason == "in_combat"))

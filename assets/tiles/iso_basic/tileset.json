@@ -120,11 +120,34 @@
   {"id": 111, "name": "Light water, foam both left edges", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false, "shore": ["w", "s"], "drop": 4},
   {"id": 112, "name": "Light water, foam both right edges", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false, "shore": ["n", "e"], "drop": 4},
   {"id": 113, "name": "Light water, foam all edges", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false, "shore": ["n", "w", "e", "s"], "drop": 4},
-  {"id": 114, "name": "Purple crystal", "category": "rock", "kind": "block", "walkable": false, "blocks_sight": false}
+  {"id": 114, "name": "Purple crystal", "category": "rock", "kind": "block", "walkable": false, "blocks_sight": false},
+  {"id": 115, "name": "Grey water, streaks (placeholder: recolour of tile 86)", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false, "drop": 4},
+  {"id": 116, "name": "Grey water, ripple (placeholder: recolour of tile 87)", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false, "drop": 4},
+  {"id": 117, "name": "Grey water, swell (placeholder: recolour of tile 88)", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false, "drop": 4},
+  {"id": 118, "name": "Grey water, rings (placeholder: recolour of tile 89)", "category": "water", "kind": "block", "walkable": false, "blocks_sight": false, "drop": 4},
+  {"id": 119, "name": "Red rocky ground 1 (placeholder: recolour of tile 11)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 120, "name": "Red rocky ground 2 (placeholder: recolour of tile 12)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 121, "name": "Red rocky ground 3 (placeholder: recolour of tile 13)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 122, "name": "Red earth 1 (placeholder: recolour of tile 0)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 123, "name": "Red earth 2 (placeholder: recolour of tile 2)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 124, "name": "Red earth 3 (placeholder: recolour of tile 5)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 125, "name": "Red stone (placeholder: recolour of tile 63)", "category": "rock", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 126, "name": "Steppe grass 1 (placeholder: recolour of tile 22)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 127, "name": "Steppe grass 2 (placeholder: recolour of tile 23)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 128, "name": "Steppe grass 3 (placeholder: recolour of tile 24)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 129, "name": "Dry steppe 1 (placeholder: recolour of tile 37)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 130, "name": "Dry steppe 2 (placeholder: recolour of tile 38)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 131, "name": "Thatch roof (placeholder: recolour of tile 25)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 132, "name": "Slate roof (placeholder: recolour of tile 63)", "category": "rock", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 133, "name": "Red tile roof (placeholder: recolour of tile 61)", "category": "rock", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 134, "name": "Red rock pillar (placeholder: recolour of tile 55)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": true},
+  {"id": 135, "name": "Red boulder (placeholder: recolour of tile 57)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": true},
+  {"id": 136, "name": "Red rock (placeholder: recolour of tile 54)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": false}
  ],
  "animations": {
   "sparkle": {"frames": [82, 83, 84, 85], "fps": 6},
-  "ripple": {"frames": [86, 87, 88, 89], "fps": 6}
+  "ripple": {"frames": [86, 87, 88, 89], "fps": 6},
+  "grey_ripple": {"frames": [115, 116, 117, 118], "fps": 6}
  },
  "terrains": {
   "dirt": {"tiles": [0, 1, 2, 4, 5, 6, 8, 9, 10, [7, 0.3], [3, 0.3]]},
@@ -149,7 +172,17 @@
   "water_tall_rocks": {"tiles": [72, 73, 74, 79, 80, 81]},
   "crystal": {"tiles": [114], "fill": "cobble"},
   "rocky_ground": {"tiles": [11, 12, 13, [61, 0.6], [63, 0.6]], "fill": "cobble"},
-  "stone_wall": {"tiles": [63], "fill": "cobble", "walkable": false}
+  "stone_wall": {"tiles": [63], "fill": "cobble", "walkable": false},
+  "grey_water": {"tiles": [115, 116, 117, 118], "animation": "grey_ripple"},
+  "red_stone": {"tiles": [125]},
+  "red_wall": {"tiles": [125], "walkable": false},
+  "red_rock": {"tiles": [119, 120, 121], "fill": "red_stone"},
+  "red_earth": {"tiles": [122, 123, 124], "fill": "red_stone"},
+  "steppe": {"tiles": [126, 127, 128], "fill": "dirt"},
+  "steppe_dry": {"tiles": [129, 130], "fill": "dirt"},
+  "roof_thatch": {"tiles": [131], "fill": "cobble", "walkable": false},
+  "roof_slate": {"tiles": [132], "fill": "cobble", "walkable": false},
+  "roof_red": {"tiles": [133], "fill": "red_stone", "walkable": false}
  },
  "props": {
   "flowers": {"tiles": [41, 44, 46, 47, [42, 0.5]]},
@@ -158,6 +191,8 @@
   "stump": {"tiles": [52]},
   "small_rocks": {"tiles": [53, 54, 58, 62, 67]},
   "brown_boulders": {"tiles": [55, 56, 57, 59, 60]},
-  "grey_boulders": {"tiles": [64, 65, 68]}
+  "grey_boulders": {"tiles": [64, 65, 68]},
+  "red_boulders": {"tiles": [134, 135]},
+  "red_rocks": {"tiles": [136]}
  }
 }
