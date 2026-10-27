@@ -1,8 +1,9 @@
 extends GutTest
 ## Act I on the shipped content: where everything stands, and the whole main
 ## chain played by a party of two on the host World with real intents (the second
-## hero joins through the co-op prompt): the Guild Board's summons, the scorched
-## places, the Ember Hand's writ, the ore caravan escort, the Vael stone.
+## hero joins through the co-op prompt), across the zones: the Guild Board's
+## summons (the Crossing), the scorched places (Greenfields), the Ember Hand's writ
+## (to Deepcut), the ore caravan escort (Deepcut), the Vael stone (Windsteppe).
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
 const MAIN := [&"act1_guild_summons", &"act1_ash_on_the_road", &"act1_ember_writ", &"act1_ore_for_millbrook",
@@ -135,11 +136,12 @@ func test_act1_quests_are_main_and_side_with_areas_and_lines() -> void:
 
 func test_act1_main_chain_in_coop() -> void:
 	# 1. The Guild Board's summons; Bob joins through the prompt.
+	_place(bob, &"crossing", Vector2i(17, 20)) # quest offers reach the party in the same zone
 	var events := _accept(ann, MAIN[0])
 	assert_true(events.any(func(e): return e.type == "quest_shared" and e.target == bob.id), "Bob is offered it")
 	_send(bob, {"type": "accept_shared_quest", "quest": MAIN[0]})
-	_place(bob, &"town", ann.tile())
-	_talk(ann, &"town", &"warden_dorne")
+	_place(bob, &"crossing", ann.tile())
+	_talk(ann, &"crossing", &"warden_dorne")
 	for h in [ann, bob]:
 		assert_eq(QuestLog.status(h, db.quests[MAIN[0]]), QuestLog.Status.READY, "%s: Dorne found" % h.display_name)
 		_turn_in(h, MAIN[0])
@@ -162,51 +164,52 @@ func test_act1_main_chain_in_coop() -> void:
 	for h in [ann, bob]:
 		_accept(h, MAIN[2])
 		assert_eq(h.bag.count_of(db.items[&"sealed_writ"]), 1, "Sabra hands %s the writ" % h.display_name)
-	_place(bob, &"greenfields", _npc(&"greenfields", &"foreman_brannoc").tile())
-	events = _talk(ann, &"greenfields", &"foreman_brannoc")
+	_place(bob, &"deepcut", _npc(&"deepcut", &"foreman_brannoc").tile())
+	events = _talk(ann, &"deepcut", &"foreman_brannoc")
 	assert_true(events.any(func(e): return e.type == "delivered"))
 	for h in [ann, bob]:
 		assert_eq(h.bag.count_of(db.items[&"sealed_writ"]), 0, "%s's writ is delivered" % h.display_name)
 		_turn_in(h, MAIN[2])
 		assert_true(QuestLog.is_done(h, MAIN[2]))
 
-	# 4. Ore for Millbrook: the party walks the caravan to the town road.
+	# 4. Ore for Millbrook: the party walks the caravan to Deepcut's canyon gate.
 	for h in [ann, bob]:
 		_accept(h, MAIN[3])
-	var fields := world.zone(&"greenfields")
-	for enemy in fields.enemies(): # a quiet road (the escort's dangers are tested elsewhere)
+	var deepcut := world.zone(&"deepcut")
+	for enemy in deepcut.enemies(): # a quiet road (the escort's dangers are tested elsewhere)
 		enemy.respawn_at = 1.0e9
 		enemy.die()
 		enemy.state = Enemy.State.DEAD
-	var cart := _npc(&"greenfields", &"ore_caravan")
-	_talk(ann, &"greenfields", &"ore_caravan")
+	var cart := _npc(&"deepcut", &"ore_caravan")
+	_talk(ann, &"deepcut", &"ore_caravan")
 	assert_true(cart.escorting, "it sets off")
 	var arrived := false
 	for i in 3000:
 		for h in [ann, bob]:
-			_place(h, &"greenfields", cart.tile() + Vector2i(1, 2)) # following it
+			_place(h, &"deepcut", cart.tile() + Vector2i(1, 2)) # following it
 		if world.step().any(func(e): return e.type == "escort_arrived"):
 			arrived = true
 			break
-	assert_true(arrived, "the caravan reaches the Millbrook road (at %s)" % cart.tile())
+	assert_true(arrived, "the caravan reaches the canyon gate (at %s)" % cart.tile())
 	for h in [ann, bob]:
 		assert_eq(QuestLog.status(h, db.quests[MAIN[3]]), QuestLog.Status.READY)
 		_turn_in(h, MAIN[3])
-		assert_true(QuestLog.is_done(h, MAIN[3]), "handed in to Dorne in Millbrook")
+		assert_true(QuestLog.is_done(h, MAIN[3]), "handed in to Dorne at the Crossing")
 
-	# 5. What the Stone Remembers: the stone, then three wolves.
+	# 5. What the Stone Remembers: the stone on the Windsteppe, then three iron wolves.
 	for h in [ann, bob]:
 		_accept(h, MAIN[4])
-	_place(bob, &"greenfields", _npc(&"greenfields", &"vael_stone").tile())
-	_talk(ann, &"greenfields", &"vael_stone")
+	_place(bob, &"windsteppe", _npc(&"windsteppe", &"vael_stone").tile())
+	_talk(ann, &"windsteppe", &"vael_stone")
 	var q5: QuestDef = db.quests[MAIN[4]]
+	var steppe := world.zone(&"windsteppe")
 	assert_eq(QuestLog.progress(bob, q5, 0), 1, "the stone counts for Bob beside it")
 	for i in 3:
-		var wolf: Enemy = fields.add_enemy(db.enemies[&"wolf"], fields.find_free_tile_near(ann.tile() + Vector2i(2, 0)))
+		var wolf: Enemy = steppe.add_enemy(db.enemies[&"iron_wolf"], steppe.find_free_tile_near(ann.tile() + Vector2i(2, 0)))
 		wolf.threat.add(ann.id, 1.0)
 		var hits: Array[Dictionary] = []
-		AbilityResolver.deal_damage(fields.ctx, ann, wolf, &"S01", 9999.0, false, hits)
-		fields._emit_resolved(hits)
+		AbilityResolver.deal_damage(steppe.ctx, ann, wolf, &"S01", 9999.0, false, hits)
+		steppe._emit_resolved(hits)
 	for h in [ann, bob]:
 		assert_eq(QuestLog.status(h, q5), QuestLog.Status.READY, "%s: stone touched and wolves gone" % h.display_name)
 	events = _turn_in(ann, MAIN[4])

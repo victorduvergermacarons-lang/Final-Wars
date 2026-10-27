@@ -26,6 +26,7 @@ var rng := RandomNumberGenerator.new()
 var current_track: MusicTrackDef = null
 var context: int = -1
 var bond: float = 1.0
+var region: int = -1
 var _players: Array[AudioStreamPlayer] = []
 var _active := 0 # index of the player fading in / playing
 ## Per player: fade level 0..1 and where it is heading.
@@ -156,9 +157,12 @@ func _load_tracks() -> void:
 				tracks.append(t)
 
 
-## The track for `ctx` at zone bond `p_bond`, following the fallbacks; null for
-## silence. `keep` (out) is set when the context says to keep the current music.
-func pick_track(ctx: int, p_bond: float = 1.0) -> Dictionary:
+## The track for `ctx` at zone bond `p_bond` in region `p_region` (Regions.Id,
+## -1 = none, e.g. the title screen), following the fallbacks; null for silence.
+## "keep" is set when the context says to keep the current music.
+## At each step a track of the zone's region wins over tracks for any region
+## (MusicTrackDef.regions empty); another region's track never plays.
+func pick_track(ctx: int, p_bond: float = 1.0, p_region: int = -1) -> Dictionary:
 	var tried := {}
 	var queue := [ctx]
 	while not queue.is_empty():
@@ -168,17 +172,25 @@ func pick_track(ctx: int, p_bond: float = 1.0) -> Dictionary:
 		if tried.has(c):
 			continue
 		tried[c] = true
-		var found := _track_for(c, p_bond)
+		var found := _track_for(c, p_bond, p_region)
 		if found != null:
 			return {"keep": false, "track": found}
 		queue.append_array(config.fallbacks.get(c, []))
 	return {"keep": false, "track": null}
 
 
-func _track_for(ctx: int, p_bond: float) -> MusicTrackDef:
+func _track_for(ctx: int, p_bond: float, p_region: int) -> MusicTrackDef:
+	if p_region >= 0:
+		var own := _track_among(ctx, p_bond, func(t: MusicTrackDef): return t.regions.has(p_region))
+		if own != null:
+			return own
+	return _track_among(ctx, p_bond, func(t: MusicTrackDef): return t.regions.is_empty())
+
+
+func _track_among(ctx: int, p_bond: float, allowed: Callable) -> MusicTrackDef:
 	var normal: MusicTrackDef = null
 	for t in tracks:
-		if not t.contexts.has(ctx):
+		if not t.contexts.has(ctx) or not allowed.call(t):
 			continue
 		if t.drained and p_bond < config.drained_bond_below:
 			return t # the zone is drained: its drained variant wins
@@ -188,11 +200,13 @@ func _track_for(ctx: int, p_bond: float) -> MusicTrackDef:
 
 
 ## Switches the music to the context `ctx` (MusicTrackDef.Context) at zone bond
-## `p_bond` (0..1; low picks drained variants). Same track: nothing happens.
-func set_context(ctx: int, p_bond: float = 1.0) -> void:
+## `p_bond` (0..1; low picks drained variants) in region `p_region` (Regions.Id,
+## -1 = none). Same track: nothing happens.
+func set_context(ctx: int, p_bond: float = 1.0, p_region: int = -1) -> void:
 	context = ctx
 	bond = p_bond
-	var pick := pick_track(ctx, p_bond)
+	region = p_region
+	var pick := pick_track(ctx, p_bond, p_region)
 	if pick.keep:
 		return
 	_switch_to(pick.track)

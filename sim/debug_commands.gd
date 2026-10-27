@@ -12,6 +12,7 @@ const HELP := """Commands:
   master <ability>             master an ability (id like F07 or a name like "Fireball")
   spawn <enemy> [level] [n]    spawn n enemies (default 1) at a level (default theirs) next to you
   heal                         full HP and Mana, cooldowns reset
+  goto <zone>                  go to a zone's start (town, crossing, deepcut_road, deepcut, windsteppe, greenfields, enemy_testing, tidereach_shore)
   gold <n>                     set your gold"""
 
 ## Stats that scale with an enemy's level when spawned above or below its own.
@@ -46,12 +47,28 @@ static func run(world: WorldSim, hero: Hero, line: String, content) -> Dictionar
 			hero.mana = hero.current_stats(world.now).mana
 			hero.cooldowns = Cooldowns.new()
 			return _ok("Healed; cooldowns reset.")
+		"goto":
+			return _goto(world, hero, args, content)
 		"gold":
 			if args.size() != 1 or not args[0].is_valid_int():
 				return _fail("Usage: gold <n>")
 			hero.gold = clampi(int(args[0]), 0, CharacterData.MAX_GOLD)
 			return _ok("Gold: %d" % hero.gold)
 	return _fail("Unknown command '%s'. Type help." % cmd)
+
+
+static func _goto(world: WorldSim, hero: Hero, args: Array, content) -> Dictionary:
+	if args.size() != 1:
+		return _fail("Usage: goto <zone>")
+	var id := StringName(args[0].to_lower())
+	if not content.zones.has(id):
+		var ids: Array = content.zones.keys()
+		ids.sort()
+		return _fail("No zone '%s'. Zones: %s" % [args[0], ", ".join(ids)])
+	if hero.in_combat(world.now):
+		return _fail("Not while in combat.")
+	world.request_zone_move(hero.id, id)
+	return _ok("Going to %s." % content.zones[id].display_name)
 
 
 static func _level(world: WorldSim, hero: Hero, args: Array) -> Dictionary:

@@ -76,7 +76,7 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_eq(reloaded.slots, game.client.action_bar.slots)
 
 	# Talking to Hilda opens the dialogue box; walking away closes it.
-	hero.move.place(Vector2i(7, 7))
+	hero.move.place(Vector2i(12, 11))
 	hero.face(Vector2i.UP)
 	input.talk_to_nearest()
 	await wait_physics_frames(6)
@@ -104,7 +104,7 @@ func test_solo_game_runs_with_hud() -> void:
 	slot.drop_off_bar()
 	assert_eq(game.client.action_bar.slots[6], &"", "dragged off the bar")
 
-	hero.move.place(Vector2i(14, 16))
+	hero.move.place(Vector2i(22, 18))
 	await wait_process_frames(2)
 	assert_false(hud.dialogue.visible, "closed after walking away")
 	assert_false(hud.vendor_window.visible, "shop closes with the conversation")
@@ -112,7 +112,8 @@ func test_solo_game_runs_with_hud() -> void:
 	# Captain Rowan offers a quest ("!"); accept it through the dialogue buttons.
 	await wait_process_frames(1)
 	assert_eq(game.client.npc_markers.get(&"rowan"), "!", "Rowan has a quest")
-	hero.move.place(Vector2i(11, 9))
+	hero.move.place(Vector2i(10, 27))
+	hero.face(Vector2i.RIGHT)
 	assert_eq((PlayerInput.talk_target(session) as Npc).def.id, &"rowan", "the [E] Talk prompt shows on Rowan")
 	input.talk_to_nearest()
 	await wait_physics_frames(6)
@@ -128,13 +129,13 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_true(QuestLog.is_active(hero, &"wolves_at_the_gate"))
 	assert_string_contains(hud._tracker.text, "Wolves at the Gate", "tracked on screen")
 	assert_eq(game.client.npc_markers.get(&"rowan", ""), "", "no more to offer until it's done")
-	hero.move.place(Vector2i(14, 16))
+	hero.move.place(Vector2i(22, 18))
 	await wait_process_frames(2)
 
 	# Walking off the town's east edge switches the map.
 	var old_view := game.get_node("WorldView")
-	hero.move.place(Vector2i(17, 9))
-	session.send_intent({"type": "step", "to": Vector2i(18, 9)})
+	hero.move.place(Vector2i(31, 9))
+	session.send_intent({"type": "step", "to": Vector2i(32, 9)})
 	await wait_physics_frames(30)
 	assert_eq(session.zone().id, &"greenfields")
 	var new_view := game.get_node_or_null("WorldView")

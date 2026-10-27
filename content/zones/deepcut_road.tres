@@ -1,0 +1,100 @@
+[gd_resource type="Resource" script_class="ZoneDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="s_zone"]
+[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="s_edge"]
+[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="s_npc_spawn"]
+[ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="s_enemy_spawn"]
+[ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
+[ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
+[ext_resource type="Resource" path="res://content/enemies/bandit_brute.tres" id="enemy_bandit_brute"]
+[ext_resource type="Resource" path="res://content/enemies/wolf.tres" id="enemy_wolf"]
+
+[sub_resource type="Resource" id="edge_0"]
+script = ExtResource("s_edge")
+side = Vector2i(-1, 0)
+to_zone = &"crossing"
+offset = 9
+
+[sub_resource type="Resource" id="edge_1"]
+script = ExtResource("s_edge")
+side = Vector2i(1, 0)
+to_zone = &"deepcut"
+offset = 7
+
+[sub_resource type="Resource" id="enemy_spawn_0"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_wolf")
+tile = Vector2i(10, 4)
+
+[sub_resource type="Resource" id="enemy_spawn_1"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_wolf")
+tile = Vector2i(13, 14)
+
+[sub_resource type="Resource" id="enemy_spawn_2"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_bandit_brute")
+tile = Vector2i(26, 3)
+
+[sub_resource type="Resource" id="landmark_0"]
+script = ExtResource("s_landmark")
+name = "Lookout Ledge"
+tile = Vector2i(28, 3)
+
+[sub_resource type="Resource" id="decor_0"]
+script = ExtResource("s_decor")
+kind = 4
+tile = Vector2i(44, 13)
+label = "Abandoned Ore Cart"
+
+[sub_resource type="Resource" id="decor_1"]
+script = ExtResource("s_decor")
+kind = 10
+tile = Vector2i(45, 13)
+
+[sub_resource type="Resource" id="decor_2"]
+script = ExtResource("s_decor")
+kind = 8
+tile = Vector2i(3, 8)
+label = "The Crossing"
+
+[sub_resource type="Resource" id="decor_3"]
+script = ExtResource("s_decor")
+kind = 8
+tile = Vector2i(56, 8)
+label = "Deepcut"
+
+[resource]
+script = ExtResource("s_zone")
+id = &"deepcut_road"
+display_name = "Road to Deepcut"
+height_rows = PackedStringArray("111111111111111133333333333333555555555555555666666666666666", "111111111111111133333333333333555555555555555666666666666666", "001111111100000133300033333333333335555555555666600000000000", "000000000000000000000000333333333330000000000000000000000000", "000000000000000000000000333333333330000000000000000000000000", "000000000000000000000000000002200000000000000000000000000000", "000000000000000000000000000001100000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "000000000000000000000000000000000000000000000000000000000000", "111111111111111133333333333333555555555555555666666666666666", "111111111111111133333333333333555555555555555666666666666666")
+walk_rows = PackedStringArray("################............................................", "################............................................", "..########.....#............................................", ".................................#..........................", "............................................................", ".....#.......#....#...........................#.............", "...........#........................#...............#.#.....", "......................................................#.....", "...#.........................................#..........#.#.", ".................#...................................#...#..", "............................................................", "............................................................", ".................................................#..........", ".......#....................................##.........#....", "....#..#.........#..............#...................#.......", "................................................#...........", "..........#.......................................#.........", "############################################################", "############################################################", "............................................................", "################............................................", "################............................................")
+graveyards = Array[Vector2i]([])
+respawn_zone = &"crossing"
+hero_spawns = Array[Vector2i]([Vector2i(2, 10), Vector2i(2, 11)])
+enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("enemy_spawn_0"), SubResource("enemy_spawn_1"), SubResource("enemy_spawn_2")])
+landmarks = Array[ExtResource("s_landmark")]([SubResource("landmark_0")])
+decor = Array[ExtResource("s_decor")]([SubResource("decor_0"), SubResource("decor_1"), SubResource("decor_2"), SubResource("decor_3")])
+edges = Array[ExtResource("s_edge")]([SubResource("edge_0"), SubResource("edge_1")])
+npcs = Array[ExtResource("s_npc_spawn")]([])
+tileset = &"iso_basic"
+terrain_rows = PackedStringArray("aaaaaaaaaaaaaaaaffffffffffffffffffffffffffffffffffffffffffff", "aaaaaaaaaaaaaaaaffffffffffffffffffffffffffffffffffffffffffff", "bbaaaaaaaabbbbbafffbbbfffffffffffffffffffffffffffeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbbbbefffffffffffeeeeeeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbbbbefffffffffffeeeeeeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbbbbbeeeeeffeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbbbbbeeeeeffeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbddddddddddddddddddddeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbddddddddddddddddddddeeeeeeeeeeeeeeeeeeee", "dbbbbbbbbbbbbbbbbbbbddbbbeeebbeeeeeeeeddeeeeeeeeeeeeeeeeeeed", "ddddddddddddddddddddddbbbeebbbbeeeeeeedddddddddddddddddddddd", "ddddddddddddddddddddddbbbbbbbbbeeeeeeedddddddddddddddddddddd", "dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeed", "bbbbbbbbbbbbbbbbbbbbbbbbbeebbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "bbbbbbbbbbbbbbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "bbbbbbbbbbbbbbbbbbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "aaaaaaaaaaaaaaaaffffffffffffffffffffffffffffffffffffffffffff", "aaaaaaaaaaaaaaaaffffffffffffffffffffffffffffffffffffffffffff")
+terrain_legend = {
+"a": "bush",
+"b": "grass",
+"c": "grey_water",
+"d": "path",
+"e": "red_earth",
+"f": "red_rock"
+}
+prop_rows = PackedStringArray("............................................................", "............................................................", "............................................................", "..a..............................b..........................", ".................aa.........................................", ".....d.......d....d...........................c.............", ".a.........d........................c...............c.c.....", "......................................................c.....", ".......a....a................................c............c.", "...........a.....d...................................c...c..", "............................................................", "............................................................", ".................................................c..........", ".......d...............................................c....", "....d..d........ad..............c...................c.......", "................................................c...........", "...a......d.......................................c.........", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................")
+prop_legend = {
+"a": "flowers",
+"b": "red_boulders",
+"c": "red_rocks",
+"d": "small_rocks"
+}
+sight_rows = PackedStringArray("............................................................", "............................................................", "............................................................", ".................................#..........................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................", "............................................................")
+region = 1
+music_context = 2

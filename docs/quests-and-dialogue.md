@@ -16,7 +16,7 @@ or a block with more to it:
 
 ```json
 "npc.warden_dorne.greeting": {
-	"text": "Iska Dorne, Warden of the Floor Guild's Millbrook post.",
+	"text": "Iska Dorne, Warden of the Floor Guild hall here at the Crossing.",
 	"choices": [
 		{"text": "What is the Floor Guild?", "next": "npc.warden_dorne.about_guild"},
 		{"text": "Who are the Ember Hand?", "next": "npc.warden_dorne.about_ember"}

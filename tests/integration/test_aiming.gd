@@ -9,26 +9,38 @@ var input: PlayerInput
 var hero: Hero
 var wolf: Enemy
 
+## The test plays on open, flat ground east of the Crossing's square; tiles are
+## given relative to it.
+const AREA := Vector2i(22, 10)
+
+
+static func _t(x: int, y: int) -> Vector2i:
+	return Vector2i(x, y) + AREA
+
+
+static func _a(x: float, y: float) -> Vector2:
+	return Vector2(x, y) + Vector2(AREA)
+
 
 func before_each() -> void:
 	InputActions.ensure_registered()
 	ContentDB.rules.timing_bars_enabled = false # aiming, not bars (test_timing_bar.gd)
 	session = LocalSession.new()
 	add_child(session)
-	session.start(ContentDB.zones.values(), &"town", ContentDB.rules,
+	session.start(ContentDB.zones.values(), &"crossing", ContentDB.rules,
 			CharacterData.new_character("Aimer", ContentDB.heroes[&"adventurer"]))
 	hero = session.local_hero()
 	client = ClientState.new()
 	InputActions.apply_action_bar_keys(client.action_bar)
 	view = WorldView.new()
 	add_child(view)
-	view.setup(session, client, ContentDB.zones[&"town"])
+	view.setup(session, client, ContentDB.zones[&"crossing"])
 	input = PlayerInput.new()
 	add_child(input)
 	input.setup(session, client, view)
-	hero.move.place(Vector2i(5, 8))
+	hero.move.place(_t(5, 8))
 	hero.face(Vector2i.RIGHT)
-	wolf = session.zone_sim().add_enemy(ContentDB.enemies[&"wolf"], Vector2i(8, 8))
+	wolf = session.zone_sim().add_enemy(ContentDB.enemies[&"wolf"], _t(8, 8))
 	hero.bag.add(ContentDB.items[&"spark_scroll"])
 	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"spark_scroll"]))
 
@@ -48,11 +60,11 @@ func _preview(id: StringName, aim: Vector2) -> Array:
 
 func test_screen_to_tile_round_trip() -> void:
 	for h in [0, 1, 3]:
-		var t := Vector2(7, 4)
+		var t := _a(7, 4)
 		var back := Iso.from_screen(Iso.to_screen(t, h), h)
 		assert_almost_eq(back.x, t.x, 0.001)
 		assert_almost_eq(back.y, t.y, 0.001)
-	var tile := Vector2i(6, 9)
+	var tile := _t(6, 9)
 	var screen := Iso.to_screen(Vector2(tile), session.grid().height_at(tile))
 	assert_eq(view.tile_at(screen), tile, "the tile under the cursor")
 
@@ -65,15 +77,15 @@ func test_aimed_abilities_need_no_target() -> void:
 
 
 func test_previews_show_the_exact_tiles() -> void:
-	assert_eq(_preview(&"F03", Vector2(12, 8)), [Vector2i(6, 8), Vector2i(7, 8), Vector2i(8, 8)],
+	assert_eq(_preview(&"F03", _a(12, 8)), [_t(6, 8), _t(7, 8), _t(8, 8)],
 			"a dart stops at the first enemy")
-	assert_eq(_preview(&"F06", Vector2(9, 12)), [Vector2i(6, 9), Vector2i(7, 10), Vector2i(8, 11)],
+	assert_eq(_preview(&"F06", _a(9, 12)), [_t(6, 9), _t(7, 10), _t(8, 11)],
 			"the whip snaps to 8 directions")
-	assert_eq(_preview(&"F07", Vector2(8, 8)).size(), 9, "a 3x3 blast")
-	var wall := _preview(&"E05", Vector2(5, 11))
-	assert_eq(wall, [Vector2i(4, 11), Vector2i(5, 11), Vector2i(6, 11)], "a wall across the aim")
+	assert_eq(_preview(&"F07", _a(8, 8)).size(), 9, "a 3x3 blast")
+	var wall := _preview(&"E05", _a(5, 11))
+	assert_eq(wall, [_t(4, 11), _t(5, 11), _t(6, 11)], "a wall across the aim")
 	assert_eq(hero.facing, Vector2i.RIGHT, "previewing doesn't turn the hero")
-	assert_eq(_preview(&"F05", Vector2(5, 11)), [Vector2i(5, 9), Vector2i(5, 10), Vector2i(5, 11)], "the dash path")
+	assert_eq(_preview(&"F05", _a(5, 11)), [_t(5, 9), _t(5, 10), _t(5, 11)], "the dash path")
 
 
 func test_hold_to_aim_and_release_to_cast() -> void:
@@ -108,17 +120,17 @@ func test_out_of_range_ground_aim_is_shown_as_invalid() -> void:
 	hero.bag.add(ContentDB.items[&"scroll_of_the_fireball"])
 	TreeRules.master(hero, ContentDB.abilities[&"F07"])
 	var p := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ContentDB.abilities[&"F07"],
-			Vector2(14, 8), null, session.now())
+			_a(14, 8), null, session.now())
 	assert_eq(p.result, AbilityResolver.Result.OUT_OF_RANGE)
 
 
 func test_telegraphs_and_zones_reach_the_view() -> void:
 	var sim := session.zone_sim()
 	TreeRules.master(hero, ContentDB.abilities[&"F08"])
-	sim.cast(hero, ContentDB.abilities[&"F08"], null, Vector2(8, 8))
+	sim.cast(hero, ContentDB.abilities[&"F08"], null, _a(8, 8))
 	TreeRules.master(hero, ContentDB.abilities[&"F07"])
 	hero.cooldowns = Cooldowns.new()
-	sim.cast(hero, ContentDB.abilities[&"F07"], null, Vector2(8, 6))
+	sim.cast(hero, ContentDB.abilities[&"F07"], null, _a(8, 6))
 	var marks := view._tile_marks()
-	assert_true(marks.has(Vector2i(8, 8)), "burning ground")
-	assert_true(marks.has(Vector2i(8, 6)), "fireball telegraph")
+	assert_true(marks.has(_t(8, 8)), "burning ground")
+	assert_true(marks.has(_t(8, 6)), "fireball telegraph")

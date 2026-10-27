@@ -21,11 +21,17 @@ extends Resource
 @export var walk_rows: PackedStringArray = []
 ## Where released heroes respawn (nearest one wins).
 @export var graveyards: Array[Vector2i] = []
+## Zones without a graveyard of their own send released heroes to another zone's
+## (e.g. the Crossing's shrine); "" = respawn in this zone.
+@export var respawn_zone: StringName = &""
 @export var hero_spawns: Array[Vector2i] = []
 @export var enemy_spawns: Array[EnemySpawn] = []
 @export var exits: Array[ZoneExit] = []
 ## Named places drawn on the map.
 @export var landmarks: Array[ZoneLandmark] = []
+## Placeholder objects (wells, tents, carts…) drawn as shapes with labels; they
+## block their tile (baked into walk_rows / sight_rows for tiled zones).
+@export var decor: Array[ZoneDecor] = []
 ## Map sides that lead into other zones (walk off the edge).
 @export var edges: Array[ZoneEdge] = []
 @export var npcs: Array[NpcSpawn] = []
@@ -40,6 +46,8 @@ extends Resource
 ## '#' blocks line of sight; empty = nothing does (only height). Baked for tiled zones.
 @export var sight_rows: PackedStringArray = []
 
+## The region the zone is in (picks its explore music; see MusicTrackDef.regions).
+@export var region: Regions.Id = Regions.Id.HEARTLAND
 @export_group("Audio")
 ## Which music plays here (SoundDirector switches to combat/boss music in fights).
 @export var music_context: MusicTrackDef.Context = MusicTrackDef.Context.EXPLORE
@@ -78,6 +86,19 @@ func prop_at(p: Vector2i) -> String:
 	return str(prop_legend.get(prop_rows[p.y][p.x], ""))
 
 
+## The decor object on tile `p`, or null.
+func decor_at(p: Vector2i) -> ZoneDecor:
+	if _decor_by_tile.size() != decor.size():
+		_decor_by_tile.clear()
+		for d in decor:
+			if d != null:
+				_decor_by_tile[d.tile] = d
+	return _decor_by_tile.get(p)
+
+
+var _decor_by_tile := {}
+
+
 ## The terrain kind at `p` ("" outside the map or without a terrain layer).
 func terrain_at(p: Vector2i) -> String:
 	if p.y < 0 or p.y >= terrain_rows.size() or p.x < 0 or p.x >= terrain_rows[p.y].length():
@@ -104,6 +125,10 @@ func bake_walkability(ts: TilesetData) -> void:
 				var prop := ts.pick_prop(group, p)
 				walkable = walkable and ts.is_walkable(prop)
 				blocks = blocks or ts.blocks_sight(prop)
+			var d := decor_at(p)
+			if d != null:
+				walkable = walkable and not d.blocks_walk()
+				blocks = blocks or d.blocks_sight()
 			wrow += "." if walkable else "#"
 			srow += "#" if blocks else "."
 		walk.append(wrow)
@@ -177,6 +202,16 @@ func validate() -> PackedStringArray:
 	for p in graveyards + hero_spawns:
 		if p.x < 0 or p.y < 0 or p.x >= w or p.y >= height_rows.size():
 			errors.append("%s: point %s out of bounds" % [id, p])
+	var decor_tiles := {}
+	for d in decor:
+		if d == null:
+			errors.append("%s: empty decor entry" % id)
+		elif d.tile.x < 0 or d.tile.y < 0 or d.tile.x >= w or d.tile.y >= height_rows.size():
+			errors.append("%s: decor %s out of bounds" % [id, d.tile])
+		elif decor_tiles.has(d.tile):
+			errors.append("%s: two decor objects on %s" % [id, d.tile])
+		else:
+			decor_tiles[d.tile] = true
 	for n in npcs:
 		if n == null or n.npc == null:
 			errors.append("%s: NPC spawn without an NPC" % id)

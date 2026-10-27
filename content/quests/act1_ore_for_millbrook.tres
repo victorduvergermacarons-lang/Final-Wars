@@ -6,17 +6,17 @@
 [sub_resource type="Resource" id="Resource_o0"]
 script = ExtResource("1_obj")
 kind = 4
-text = "Escort the ore caravan to the Millbrook road"
+text = "Escort the ore caravan to the canyon gate"
 npc = &"ore_caravan"
-zone = &"greenfields"
-path = Array[Vector2i]([Vector2i(20, 13), Vector2i(13, 12), Vector2i(11, 15), Vector2i(1, 15)])
+zone = &"deepcut"
+path = Array[Vector2i]([Vector2i(24, 18), Vector2i(12, 18), Vector2i(6, 17)])
 
 [resource]
 script = ExtResource("2_quest")
 id = &"act1_ore_for_millbrook"
 title = "Ore for Millbrook"
 category = 0
-area = "Greenfields"
+area = "Deepcut"
 giver = &"foreman_brannoc"
 turn_in = &"warden_dorne"
 prerequisites = Array[StringName]([&"act1_ember_writ"])

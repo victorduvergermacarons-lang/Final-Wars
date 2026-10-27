@@ -20,6 +20,8 @@ func before_each() -> void:
 	session = game.session
 	hud = game.get_node("Hud")
 	me = session.local_hero()
+	_go_to_crossing(me)
+	await wait_physics_frames(3)
 	await wait_process_frames(2)
 
 
@@ -34,9 +36,15 @@ func _npc(id: StringName) -> Npc:
 	return null
 
 
+## Act I's Guild Board and Warden Dorne are at the Crossing: the test plays there.
+func _go_to_crossing(h: Hero) -> void:
+	if session.world.zone_of(h.id).zone.id != &"crossing":
+		session.world.move_hero(h.id, &"crossing", Vector2i(17, 20))
+
+
 func _beside(h: Hero, npc: Npc) -> void:
-	var town := session.world.zone(&"town")
-	h.move.place(town.find_free_tile_near(npc.tile()))
+	var sim := session.world.zone(&"crossing")
+	h.move.place(sim.find_free_tile_near(npc.tile()))
 
 
 func _talk(id: StringName) -> void:
@@ -77,7 +85,7 @@ func test_a_quest_board_offers_quests_with_the_files_answers() -> void:
 	assert_eq(box.speaker_name(), "Guild Board")
 	assert_true(box.press("! The Guild's Summons"), str(box.option_labels()))
 	assert_eq(box.line_id, "quest.act1_guild_summons.offer")
-	assert_string_contains(box.text(), "Main quest · Millbrook")
+	assert_string_contains(box.text(), "Main quest · The Crossing")
 	assert_eq(box.option_labels(), ["Take the notice", "Leave it pinned"] as Array[String])
 	box.press("Take the notice")
 	await wait_physics_frames(4)
@@ -91,6 +99,7 @@ func test_a_quest_board_offers_quests_with_the_files_answers() -> void:
 
 func test_coop_bubble_and_quest_prompt() -> void:
 	var bob := session.world.add_saved_hero(CharacterData.new_character("Bob", ContentDB.heroes[&"adventurer"]), ContentDB)
+	_go_to_crossing(bob)
 	var board := _npc(&"guild_board")
 	_beside(bob, board)
 	session.world.submit(bob.id, {"type": "talk", "npc": board.id})
@@ -103,7 +112,7 @@ func test_coop_bubble_and_quest_prompt() -> void:
 	assert_true(hud.quest_prompt.visible, "the quest is offered to me too")
 	assert_eq(hud.quest_prompt.current_quest(), &"act1_guild_summons")
 	assert_string_contains(hud.quest_prompt._text.text, "Bob")
-	me.move.place(Vector2i(16, 16)) # far from the board: Join works anyway
+	me.move.place(Vector2i(30, 20)) # far from the board: Join works anyway
 	hud.quest_prompt._join()
 	await wait_physics_frames(3)
 	await wait_process_frames(2)

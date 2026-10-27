@@ -84,6 +84,8 @@ const HISTORY_SECONDS := 2.0
 var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
 ## Heroes asking to walk off a map edge this tick: [[hero id, ZoneEdge], ...]; World moves them.
 var _edge_requests: Array = []
+## Released heroes to respawn in another zone (ZoneDef.respawn_zone): hero ids.
+var _respawn_requests: Array = []
 var _events: Array[Dictionary] = []
 
 
@@ -165,6 +167,41 @@ func take_edge_requests() -> Array:
 	var out := _edge_requests
 	_edge_requests = []
 	return out
+
+
+## Heroes asked to go to another zone's start (the debug console's goto):
+## [hero id, zone id] pairs, moved by the World.
+var _zone_requests: Array = []
+
+
+func request_zone_move(hero_id: int, zone_id: StringName) -> void:
+	_zone_requests.append([hero_id, zone_id])
+
+
+func take_zone_requests() -> Array:
+	var out := _zone_requests
+	_zone_requests = []
+	return out
+
+
+## Heroes released here who respawn in another zone (World moves them).
+func take_respawn_requests() -> Array:
+	var out := _respawn_requests
+	_respawn_requests = []
+	return out
+
+
+## The graveyard nearest `near` (the hero spawns when the zone has none).
+func nearest_graveyard(near: Vector2i) -> Vector2i:
+	var best := near
+	var best_dist := -1
+	var points := zone.graveyards if not zone.graveyards.is_empty() else zone.hero_spawns
+	for p in points:
+		var d := GridModel.distance(near, p)
+		if best_dist < 0 or d < best_dist:
+			best = p
+			best_dist = d
+	return best
 
 
 ## The exit on `tile`, or null.
@@ -1342,20 +1379,10 @@ func _intent_sell(hero: Hero, npc_id: int, bag_index: int, count: int) -> String
 func _intent_release(hero: Hero) -> String:
 	if hero.alive:
 		return "not_dead"
-	var near := hero.death_tile
-	var best := near
-	var best_dist := -1
-	var points := zone.graveyards if not zone.graveyards.is_empty() else zone.hero_spawns
-	for p in points:
-		var d := GridModel.distance(near, p)
-		if best_dist < 0 or d < best_dist:
-			best = p
-			best_dist = d
 	var stats := hero.current_stats(now)
 	hero.alive = true
 	hero.hp = maxf(roundf(stats.hp * rules.release_fraction), 1.0)
 	hero.mana = roundf(stats.mana * rules.release_fraction)
-	hero.move.place(find_free_tile_near(best))
 	# A fresh start at the graveyard: out of combat, off every threat table.
 	for enemy in enemies():
 		enemy.threat.remove(hero.id)
@@ -1363,6 +1390,10 @@ func _intent_release(hero: Hero) -> String:
 	# Enemies react to where they saw you a moment ago: forget the death spot, or the
 	# enemy that killed you "sees" you there and aggroes on your new self.
 	_history.erase(hero.id)
+	if zone.respawn_zone != &"" and zone.respawn_zone != zone.id:
+		_respawn_requests.append(hero.id) # the World moves it, then announces the release
+		return ""
+	hero.move.place(find_free_tile_near(nearest_graveyard(hero.death_tile)))
 	emit({"type": "release", "target": hero.id, "tile": hero.tile()})
 	return ""
 

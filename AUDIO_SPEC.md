@@ -48,6 +48,12 @@ The first word of a key picks its folder. The file name is the key plus `.wav`
   and change the name, file, contexts (title, town, explore, combat, dungeon, boss)
   and whether it loops. A track marked **drained** is used instead when a zone's
   bond is low (a hook for later; no drained tracks yet).
+- **Region music:** every zone belongs to a region (Heartland, Bedrun, Vael,
+  Tidereach, Ashkara). A track's data file can list `regions`: it then plays only
+  in zones of those regions, and wins there over the tracks for any region. A
+  region without its own track for the context gets the any-region track (today
+  the draft). Name region tracks `music_<context>_<region>.ogg`, e.g.
+  `music_explore_bedrun.ogg`.
 - **Ambience:** `ambience_<zone>.ogg` (keys below).
 
 ## Loudness targets
@@ -74,6 +80,7 @@ cut through.
 | File | Plays for | Notes |
 |------|-----------|-------|
 | `audio/music/music_idle_draft.ogg` | title screen, town (and, until they have their own, explore and dungeon) | first draft; converted from the MP3 (kept in `art/audio/`). The MP3 started with 43 ms of silence and ended at full level, so the loop clicked: the OGG has the silence trimmed, a 10 ms fade-in and a 120 ms fade-out. |
+| `audio/music/music_explore_tidereach.ogg` | explore in Tidereach zones (none in Act I: hear it on the Tidereach Shore test map, west of the Enemy Testing Grounds, or with the debug command `goto tidereach_shore`) | "Water Idle", converted from the uploaded WAV (kept in `art/audio/music_explore_tidereach_master.wav`) to OGG Vorbis quality 6, not edited otherwise. **It doesn't loop cleanly yet:** it starts with 2.35 s of near-silence (−80 to −63 dB) and ends at full level (about −26 dB RMS in the last 50 ms, no fade), so every loop drops from full volume into that 2.35 s gap. A version that ends on the material it starts with (or with the lead-in trimmed) would loop seamlessly. |
 
 Combat and boss music: until those tracks exist, fights keep the current music.
 
@@ -86,7 +93,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-152 keys, 0 with a file, 152 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+172 keys, 0 with a file, 172 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -133,8 +140,16 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `footstep_grass` | a hero steps on grass | **missing** |
 | `footstep_meadow` | a hero steps on meadow | **missing** |
 | `footstep_path` | a hero steps on path | **missing** |
+| `footstep_red_earth` | a hero steps on red earth | **missing** |
+| `footstep_red_rock` | a hero steps on red rock | **missing** |
+| `footstep_red_stone` | a hero steps on red stone | **missing** |
 | `footstep_rocky_dirt` | a hero steps on rocky dirt | **missing** |
 | `footstep_rocky_ground` | a hero steps on rocky ground | **missing** |
+| `footstep_slab` | a hero steps on slab | **missing** |
+| `footstep_steppe` | a hero steps on steppe | **missing** |
+| `footstep_steppe_dry` | a hero steps on steppe dry | **missing** |
+| `footstep_tall_grass` | a hero steps on tall grass | **missing** |
+| `footstep_tilled` | a hero steps on tilled | **missing** |
 
 ### Weapons: Sword, Bow and Hammer arts (audio/sfx/weapons)
 
@@ -240,6 +255,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_goblin_shaman_shadow_bolt` | Shadow Bolt is used | **missing** |
 | `creature_goblin_shaman_shadow_bolt_hit` | Shadow Bolt lands on someone | **missing** |
 | `creature_goblin_shaman_step` | Goblin Shaman moves one tile (paws, wings...) | **missing** |
+| `creature_iron_wolf_aggro` | Iron Wolf notices a hero and starts a fight | **missing** |
+| `creature_iron_wolf_bite` | Bite is used | **missing** |
+| `creature_iron_wolf_bite_hit` | Bite lands on someone | **missing** |
+| `creature_iron_wolf_death` | Iron Wolf dies | **missing** |
+| `creature_iron_wolf_howl` | Howl is used | **missing** |
+| `creature_iron_wolf_hurt` | Iron Wolf takes damage | **missing** |
+| `creature_iron_wolf_step` | Iron Wolf moves one tile (paws, wings...) | **missing** |
 | `creature_old_grizzlehide_aggro` | Old Grizzlehide notices a hero and starts a fight | **missing** |
 | `creature_old_grizzlehide_charge` | Charge is used | **missing** |
 | `creature_old_grizzlehide_charge_hit` | Charge lands on someone | **missing** |
@@ -286,8 +308,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 | Key | Plays when | File |
 |-----|-----------|------|
+| `ambience_crossing` | background loop in The Crossing (Ambience bus, OGG) | **missing** |
+| `ambience_deepcut` | background loop in Deepcut (Ambience bus, OGG) | **missing** |
+| `ambience_deepcut_road` | background loop in Road to Deepcut (Ambience bus, OGG) | **missing** |
 | `ambience_enemy_testing` | background loop in Enemy Testing Grounds (Ambience bus, OGG) | **missing** |
 | `ambience_greenfields` | background loop in Greenfields (Ambience bus, OGG) | **missing** |
+| `ambience_tidereach_shore` | background loop in Tidereach Shore (test) (Ambience bus, OGG) | **missing** |
 | `ambience_town` | background loop in Millbrook (Ambience bus, OGG) | **missing** |
+| `ambience_windsteppe` | background loop in Windsteppe (Ambience bus, OGG) | **missing** |
 
 <!-- sound keys end -->
