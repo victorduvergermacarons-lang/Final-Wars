@@ -59,6 +59,18 @@ SPECS = [
     (55, dict(hue=0.025, sat=1.4, sat_add=0.15), {"name": "Red rock pillar", "category": "rock", "kind": "prop", "walkable": False, "blocks_sight": True}),
     (57, dict(hue=0.025, sat=1.4, sat_add=0.15), {"name": "Red boulder", "category": "rock", "kind": "prop", "walkable": False, "blocks_sight": True}),
     (54, dict(hue=0.025, sat=1.4, sat_add=0.15), {"name": "Red rock", "category": "rock", "kind": "prop", "walkable": False, "blocks_sight": False}),
+    # The Silent Shaft (milestone 4): dark mine rock, rock turned grey, Sunstone
+    # seams glowing gold (untouched) and grey (mined out).
+    (11, dict(hue=0.07, sat=0.35, val=0.62), {"name": "Mine floor 1", "category": "ground"}),
+    (12, dict(hue=0.07, sat=0.35, val=0.62), {"name": "Mine floor 2", "category": "ground"}),
+    (13, dict(hue=0.07, sat=0.35, val=0.62), {"name": "Mine floor 3", "category": "ground"}),
+    (63, dict(hue=0.07, sat=0.3, val=0.5), {"name": "Mine stone", "category": "rock"}),
+    (11, dict(hue=0.6, sat=0.08, val=0.6), {"name": "Grey rock 1", "category": "ground"}),
+    (12, dict(hue=0.6, sat=0.08, val=0.6), {"name": "Grey rock 2", "category": "ground"}),
+    (114, dict(hue=0.12, sat=1.0, sat_add=0.35, val=1.2), {"name": "Sunstone seam", "category": "rock", "walkable": False}),
+    (114, dict(sat=0.06, val=0.6), {"name": "Spent seam", "category": "rock", "walkable": False}),
+    (54, dict(hue=0.12, sat=1.0, sat_add=0.45, val=1.25), {"name": "Sunstone cluster", "category": "rock", "kind": "prop", "walkable": False, "blocks_sight": False}),
+    (54, dict(sat=0.05, val=0.7), {"name": "Grey cluster", "category": "rock", "kind": "prop", "walkable": False, "blocks_sight": False}),
 ]
 
 cat = json.load(open(folder + "/tileset.json"))
@@ -89,6 +101,16 @@ cat["terrains"].update({
     "roof_slate": {"tiles": t("Slate roof"), "fill": "cobble", "walkable": False},
     "roof_red": {"tiles": t("Red tile roof"), "fill": "red_stone", "walkable": False},
 })
+cat["terrains"].update({
+    "mine_floor": {"tiles": t("Mine floor 1", "Mine floor 2", "Mine floor 3"), "fill": "mine_stone"},
+    "mine_stone": {"tiles": t("Mine stone")},
+    "mine_wall": {"tiles": t("Mine stone"), "walkable": False},
+    "grey_rock": {"tiles": t("Grey rock 1", "Grey rock 2"), "fill": "mine_stone"},
+    "sunstone": {"tiles": t("Sunstone seam"), "fill": "mine_stone", "walkable": False},
+    "spent_seam": {"tiles": t("Spent seam"), "fill": "mine_stone", "walkable": False},
+})
+cat["props"]["sunstone_clusters"] = {"tiles": t("Sunstone cluster")}
+cat["props"]["grey_clusters"] = {"tiles": t("Grey cluster")}
 cat["props"]["red_boulders"] = {"tiles": t("Red rock pillar", "Red boulder")}
 cat["props"]["red_rocks"] = {"tiles": t("Red rock")}
 def dump(cat):

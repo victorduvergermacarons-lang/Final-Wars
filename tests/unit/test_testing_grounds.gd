@@ -33,6 +33,10 @@ func test_every_enemy_type_has_exactly_one_pen() -> void:
 	for s in zone.enemy_spawns:
 		count[s.enemy.id] = count.get(s.enemy.id, 0) + 1
 	for id in db.enemies:
+		var e: EnemyDef = db.enemies[id]
+		if e.dungeon_boss or e.immobile: # the Foreman and his Heart fight only in their encounter
+			assert_eq(count.get(id, 0), 0, "%s has no pen" % id)
+			continue
 		assert_eq(count.get(id, 0), 1, "%s has a pen" % id)
 	assert_true(count.has(&"salamander_hound"))
 	var signs := zone.landmarks.map(func(l): return l.name)
@@ -49,7 +53,8 @@ func test_an_enemy_added_later_gets_a_pen() -> void:
 	z.id = &"t"
 	TestingGrounds.build(z, db.enemies.values() + [extra])
 	assert_true(z.enemy_spawns.any(func(s): return s.enemy == extra))
-	assert_eq(z.enemy_spawns.size(), db.enemies.size() + 1)
+	var penned: Array = db.enemies.values().filter(func(e): return not e.dungeon_boss and not e.immobile)
+	assert_eq(z.enemy_spawns.size(), penned.size() + 1)
 
 
 func test_spacing_keeps_every_fight_away_from_the_neighbours() -> void:

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AudioConfig" load_steps=13 format=3]
+[gd_resource type="Resource" script_class="AudioConfig" load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://data/defs/audio_config.gd" id="1_cfg"]
 [ext_resource type="Script" path="res://data/defs/sfx_def.gd" id="2_sfx"]
@@ -53,6 +53,36 @@ script = ExtResource("2_sfx")
 key = &"world_event"
 ducks_music = true
 
+[sub_resource type="Resource" id="duck_10"]
+script = ExtResource("2_sfx")
+key = &"creature_foreman_phase"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_11"]
+script = ExtResource("2_sfx")
+key = &"creature_foreman_enrage"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_12"]
+script = ExtResource("2_sfx")
+key = &"creature_grey_heart_break"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_13"]
+script = ExtResource("2_sfx")
+key = &"world_party_wipe"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_14"]
+script = ExtResource("2_sfx")
+key = &"world_act_complete"
+ducks_music = true
+
+[sub_resource type="Resource" id="duck_15"]
+script = ExtResource("2_sfx")
+key = &"creature_foreman_mine_cart_charge"
+ducks_music = true
+
 [resource]
 script = ExtResource("1_cfg")
-sfx = Array[ExtResource("2_sfx")]([SubResource("duck_0"), SubResource("duck_1"), SubResource("duck_2"), SubResource("duck_3"), SubResource("duck_4"), SubResource("duck_5"), SubResource("duck_6"), SubResource("duck_7"), SubResource("duck_8"), SubResource("duck_9")])
+sfx = Array[ExtResource("2_sfx")]([SubResource("duck_0"), SubResource("duck_1"), SubResource("duck_2"), SubResource("duck_3"), SubResource("duck_4"), SubResource("duck_5"), SubResource("duck_6"), SubResource("duck_7"), SubResource("duck_8"), SubResource("duck_9"), SubResource("duck_10"), SubResource("duck_11"), SubResource("duck_12"), SubResource("duck_13"), SubResource("duck_14"), SubResource("duck_15")])

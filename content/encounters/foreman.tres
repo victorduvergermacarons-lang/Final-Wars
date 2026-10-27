@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="BossEncounterDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/boss_encounter_def.gd" id="1_enc"]
+[ext_resource type="Resource" path="res://content/enemies/foreman.tres" id="2_boss"]
+[ext_resource type="Resource" path="res://content/enemies/grey_heart.tres" id="3_heart"]
+[ext_resource type="Resource" path="res://content/enemies/grey_husk.tres" id="4_adds"]
+[ext_resource type="Resource" path="res://content/abilities/grey_heart_pulse.tres" id="5_pulse"]
+[ext_resource type="Resource" path="res://content/buffs/foreman_fury.tres" id="6_fury"]
+[ext_resource type="Resource" path="res://content/npcs/caedan_shaft.tres" id="7_caedan"]
+
+[resource]
+script = ExtResource("1_enc")
+boss = ExtResource("2_boss")
+heart = ExtResource("3_heart")
+phase_at = Array[float]([0.6, 0.25])
+pulse_seconds = Array[float]([0.0, 11.0, 8.0])
+adds = ExtResource("4_adds")
+adds_per_pulse = Array[int]([0, 2, 1])
+max_adds = 4
+grey_tiles_per_pulse = Array[int]([0, 6, 8])
+grey_zone = ExtResource("5_pulse")
+grey_seconds = 12.0
+enrage_buff = ExtResource("6_fury")
+boss_floor = 0.05
+victory_npc = ExtResource("7_caedan")
+victory_tile = Vector2i(50, 15)

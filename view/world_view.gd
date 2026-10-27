@@ -622,6 +622,14 @@ func _draw_actor(a: Actor) -> void:
 			if a.alive:
 				_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
 			return
+		if edef.look == EnemyDef.Look.CRYSTAL:
+			_draw_crystal(a as Enemy, feet, alpha)
+			_draw_label(feet + Vector2(0, -78), "%s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.85, 0.45, alpha))
+			if a.alive:
+				_draw_bar(feet + Vector2(-20, -70), 40, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
+				if (a as Enemy).invulnerable:
+					_draw_label(feet + Vector2(0, 18), "Shielded by the Foreman", Color(0.8, 0.8, 0.85), 11)
+			return
 		var s := 1.6 if edef.elite else 1.0
 		var diamond := PackedVector2Array([body + Vector2(0, -12) * s, body + Vector2(10, 0) * s,
 				body + Vector2(0, 12) * s, body + Vector2(-10, 0) * s])
@@ -636,6 +644,36 @@ func _draw_actor(a: Actor) -> void:
 		var max_hp := a.current_stats(now).hp
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))
 		_draw_cast_bar(a, feet, now)
+
+
+## The Grey Heart (EnemyDef.Look.CRYSTAL): a cracked crystal of black-gold
+## Sunstone leaking grey smoke, pulsing slowly. Shielded (invulnerable) it shows
+## a pale ring; once it can be hurt, its gold cracks glow brighter.
+func _draw_crystal(e: Enemy, feet: Vector2, alpha: float) -> void:
+	var t := _pulse_ms() / 1000.0
+	var glow := 0.5 + 0.5 * sin(t * 2.4)
+	var open := not e.invulnerable
+	_draw_ellipse(feet, 26, 12, Color(0, 0, 0, 0.35 * alpha), 6.0)
+	var top := feet + Vector2(0, -64)
+	var shard := PackedVector2Array([top, feet + Vector2(16, -40), feet + Vector2(12, -6), feet + Vector2(0, 2),
+			feet + Vector2(-12, -6), feet + Vector2(-16, -40)])
+	draw_colored_polygon(shard, Color(0.08, 0.07, 0.06, alpha))
+	var face := PackedVector2Array([top, feet + Vector2(16, -40), feet + Vector2(12, -6), feet + Vector2(0, 2)])
+	draw_colored_polygon(face, Color(0.2, 0.17, 0.1, alpha))
+	var gold := Color(1.0, 0.78, 0.2, alpha * (0.55 + (0.45 if open else 0.25) * glow))
+	for crack in [[Vector2(0, -60), Vector2(-5, -42), Vector2(3, -30), Vector2(-2, -10)],
+			[Vector2(10, -40), Vector2(5, -26), Vector2(9, -12)], [Vector2(-12, -34), Vector2(-7, -20)]]:
+		var pts := PackedVector2Array()
+		for p in crack:
+			pts.append(feet + p)
+		draw_polyline(pts, gold, 2.0 if open else 1.5)
+	shard.append(shard[0])
+	draw_polyline(shard, Color(0.55, 0.45, 0.2, alpha), 1.5)
+	for i in 3: # grey smoke rising and fading
+		var k := fmod(t * 0.35 + i / 3.0, 1.0)
+		draw_circle(top + Vector2(sin(t + i * 2.0) * 6.0, -k * 30.0), 4.0 + k * 7.0, Color(0.55, 0.55, 0.58, (1.0 - k) * 0.45 * alpha))
+	if e.invulnerable and e.alive:
+		_draw_ellipse(feet + Vector2(0, -28), 26, 40, Color(0.8, 0.82, 0.9, 0.35 * alpha), 2.0)
 
 
 ## Draws an animated creature standing on `feet`; false if it has nothing to show.
@@ -908,6 +946,12 @@ func _on_events(events: Array) -> void:
 				_float(e.target, "+%d mana" % e.amount, Color(0.45, 0.6, 1), t)
 			"miss":
 				_float(e.target, "Miss", Color(0.8, 0.8, 0.8), t)
+			"immune":
+				_float(e.target, "Immune", Color(0.8, 0.82, 0.9), t)
+			"boss_phase":
+				_float(e.source, "Phase %d!" % e.phase, Color(1, 0.6, 0.3), t)
+			"heart_pulse":
+				_float(e.source, "Pulse!", Color(0.75, 0.75, 0.8), t)
 			"whiff":
 				_float(e.source, "Whiff", Color(0.75, 0.75, 0.75), t)
 			"level_up":

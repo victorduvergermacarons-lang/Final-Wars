@@ -198,6 +198,7 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	elif a is Enemy:
 		(a as Enemy).state = d.state as Enemy.State
 		(a as Enemy).died_at = d.get("died_at", -1.0)
+		(a as Enemy).invulnerable = d.get("invulnerable", false)
 		(a as Enemy).level = d.get("level", (a as Enemy).def.level)
 	elif a is Npc:
 		(a as Npc).set_escorting(d.get("escort", false))

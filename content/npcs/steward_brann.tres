@@ -7,3 +7,4 @@ script = ExtResource("1_npc")
 id = &"steward_brann"
 display_name = "Steward Brann"
 faction = 3
+gone_after_flag = &"brann_descended"

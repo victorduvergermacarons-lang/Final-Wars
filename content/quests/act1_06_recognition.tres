@@ -24,3 +24,4 @@ objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0")])
 reward_xp = 450
 reward_gold = 60
 reward_choice_ids = Array[StringName]([&"sun_warriors_breath_scroll", &"scroll_of_the_current", &"travelers_longsword"])
+sets_world_flag = &"brann_descended"

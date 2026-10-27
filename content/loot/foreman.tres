@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_entry"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="2_table"]
+[ext_resource type="Resource" path="res://content/items/sunstone_shard.tres" id="item_sunstone_shard"]
+
+[sub_resource type="Resource" id="Resource_e0"]
+script = ExtResource("1_entry")
+item_id = &"wave_scroll"
+chance = 0.3
+
+[sub_resource type="Resource" id="Resource_e1"]
+script = ExtResource("1_entry")
+item_id = &"lash_of_embers_scroll"
+chance = 0.3
+
+[sub_resource type="Resource" id="Resource_e2"]
+script = ExtResource("1_entry")
+item_id = &"mist_scroll"
+chance = 0.3
+
+[sub_resource type="Resource" id="Resource_e3"]
+script = ExtResource("1_entry")
+item = ExtResource("item_sunstone_shard")
+chance = 1
+
+[resource]
+script = ExtResource("2_table")
+gold_min = 80
+gold_max = 140
+entries = Array[ExtResource("1_entry")]([SubResource("Resource_e0"), SubResource("Resource_e1"), SubResource("Resource_e2"), SubResource("Resource_e3")])

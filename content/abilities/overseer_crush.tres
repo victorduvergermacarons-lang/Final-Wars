@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+
+[sub_resource type="Resource" id="Resource_s0_0"]
+script = ExtResource("2_sc")
+
+[sub_resource type="Resource" id="Resource_fx0"]
+script = ExtResource("1_fx")
+base_amount = 16.0
+scaling = Array[ExtResource("2_sc")]([SubResource("Resource_s0_0")])
+
+[resource]
+script = ExtResource("3_ab")
+id = &"overseer_crush"
+display_name = "Overseer's Crush"
+description = "A heavy two-handed blow from the old shift overseer."
+shape = 1
+cooldown_seconds = 2.6
+max_height_difference = 2
+targeting = 1
+windup_seconds = 0.6
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_fx0")])

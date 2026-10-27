@@ -188,7 +188,7 @@
 		"quest.act1_side_pins_on_the_map.progress": "Visit each site, then pin it on the map in the hall.",
 		"quest.act1_side_shift_bell.accept": "Answer the bell",
 		"quest.act1_side_shift_bell.accepted": "The chalk is fresh. Shaft Seven is the old opening in the spur, just north of the street.",
-		"quest.act1_side_shift_bell.complete": "Ostrik is alive? Good man. He'll be telling everyone about silent rock, I suppose. Pay it no mind; men say odd things after a night in the dark.",
+		"quest.act1_side_shift_bell.complete": "Out. Daylight. Sun bless you. Take the shift's pay, it was owed me anyway. And remember what I told you: the rock went silent first.",
 		"quest.act1_side_shift_bell.decline": "Leave it",
 		"quest.act1_side_shift_bell.declined": "Somewhere below, a bell rings on, very faintly.",
 		"quest.act1_side_shift_bell.interact.0": {
@@ -220,6 +220,57 @@
 		"quest.wolves_at_the_gate.offer": "Wolves have been taking sheep right outside the east gate. Thin the pack: four should teach them.",
 		"quest.wolves_at_the_gate.progress": "Four wolves. They hunt in the fields just past the gate.",
 		"quest.word_to_hilda.complete": "Frost, eh? Thank Ottilie for telling me. Here, take these for your trouble.",
-		"quest.word_to_hilda.offer": "Hilda at the stall has been asking after my herbs. Tell her the frost got them this year, would you? My knees won't carry me there."
+		"quest.word_to_hilda.offer": "Hilda at the stall has been asking after my herbs. Tell her the frost got them this year, would you? My knees won't carry me there.",
+		"quest.act1_06_recognition.world_flag": "Word comes up from Deepcut: Steward Brann went down into the deep seams after the silent miners, alone. He has not come back up.",
+		"quest.act1_07_the_silent_shaft.offer": "The deep seams went silent three days ago. Then Steward Brann went down after his miners, alone, and the silence took him too. I can't order anyone into that dark. I'm asking. The mine entrance is in Deepcut's yard. Take friends: three of you at the least.",
+		"quest.act1_07_the_silent_shaft.accept": "We'll go down",
+		"quest.act1_07_the_silent_shaft.decline": "Not yet",
+		"quest.act1_07_the_silent_shaft.accepted": "Sun keep you. I'll follow as soon as the Steward's office gives up the shaft keys.",
+		"quest.act1_07_the_silent_shaft.declined": "I understand. I'll be here, if you change your mind.",
+		"quest.act1_07_the_silent_shaft.progress": "Still here? The mine entrance is in Deepcut's yard, just north of the street. Go carefully, and go together.",
+		"quest.act1_07_the_silent_shaft.talk.3": {
+			"text": "By the Sun. Was that... was that Brann? I've known him twenty years. He kept my ledgers. He sent me a jar of honey every midwinter. He...",
+			"next": "quest.act1_07_the_silent_shaft.talk.3.b"
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.b": {
+			"text": "That Heart was Sunstone. Our Sunstone. Every well we dug, every wagon of grain, every draught of medicine was paid for with what comes out of this rock. And this is what it does to the people who dig it.",
+			"next": "quest.act1_07_the_silent_shaft.talk.3.c"
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.c": {
+			"text": "The Guild can't mend this. The Guild is part of it. There are people who saw it long before I did: the Ember Hand. I've been listening to them for a while. I think it's time I did more than listen.",
+			"choices": [
+				{
+					"text": "The Ember Hand set fire hounds on Deepcut's road.",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.hounds"
+				},
+				{
+					"text": "What would you have us do?",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.ask"
+				}
+			]
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.hounds": {
+			"text": "Some of them did, yes. A hand that burns is still a hand. I would rather it burned the right things, and it will, with people like you beside it.",
+			"next": "quest.act1_07_the_silent_shaft.talk.3.ask"
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.ask": {
+			"text": "Come with me. Not as Guild volunteers: as the Ember Hand. We find where the grey begins, and we put it out. Will you?",
+			"choices": [
+				{
+					"text": "We're with you.",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.done"
+				},
+				{
+					"text": "For now. Show us the truth.",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.done"
+				}
+			]
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.done": "Then it's done. Take what you need from the Guild's stores; you won't be going back to them. Speak to me again when you're ready to leave this place.",
+		"quest.act1_07_the_silent_shaft.complete": "Here: these were the Guild's. Let them do some good now. Come, the lift is waiting. The Crossing first, and then we begin.",
+		"quest.act1_07_the_silent_shaft.world_flag": "Far below Deepcut, a cracked crystal falls silent. The Floor Guild has lost its founder to the Ember Hand.",
+		"npc.caedan_shaft.greeting": "I came down as soon as they gave me the keys. I... give me a moment.",
+		"npc.maren_voss.greeting.act1_complete": "You're back. They say the deep seams are quiet now, and the Prince won't speak of what he saw down there. Whatever you do next... I hope it's the right thing.",
+		"npc.caedan_ashvale.greeting.brann_descended": "Brann went down alone. Of course he did; he never asked anyone to do what he wouldn't. I should have gone with him."
 	}
 }

@@ -24,6 +24,7 @@ extends RefCounted
 ##   {"type": "turn_in_quest", "npc": int, "quest": StringName, "choice": int}   (choice: reward index or -1)
 ##   {"type": "abandon_quest", "quest": StringName}
 ##   {"type": "accept_shared_quest", "quest": StringName}   (a quest a party member here has)
+##   {"type": "finish_act", "quest": StringName}   (end-of-act screen closed: back to the quest's return zone)
 ##   {"type": "learn", "bag_index": int}   (a scroll into the learning slot) or
 ##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
 ##   {"type": "stop_learning"}
@@ -247,6 +248,14 @@ func add_enemy(def: EnemyDef, tile: Vector2i) -> Enemy:
 	return enemy
 
 
+## NPCs the story has moved on (NpcDef.gone_after_flag set in the world flags).
+func _remove_gone_npcs() -> void:
+	for npc in npcs():
+		if npc.def.gone_after_flag != &"" and world_flags.has(String(npc.def.gone_after_flag)):
+			_npcs.erase(npc.id)
+			ctx.actors.erase(npc.id)
+
+
 func remove_enemy(id: int) -> void:
 	_enemies.erase(id)
 	ctx.actors.erase(id)
@@ -323,6 +332,7 @@ func step() -> Array[Dictionary]:
 	_regen()
 	_update_escorts()
 	_update_wipe()
+	_remove_gone_npcs()
 	_update_quests()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
@@ -452,6 +462,32 @@ func intent_ack(hero_id: int) -> int:
 
 func emit(event: Dictionary) -> void:
 	_events.append(event)
+	_record(event)
+
+
+## Keeps each hero's records (Hero.records) from the events of their deeds.
+func _record(e: Dictionary) -> void:
+	match e.type:
+		"damage":
+			var by: Hero = _heroes.get(e.get("source", -1))
+			if by != null and _enemies.has(e.get("target", -1)):
+				by.records.damage += float(e.get("amount", 0.0))
+		"heal":
+			var by: Hero = _heroes.get(e.get("source", -1))
+			if by != null:
+				by.records.healing += float(e.get("amount", 0.0))
+		"death":
+			var who: Hero = _heroes.get(e.get("target", -1))
+			if who != null:
+				who.records.deaths += 1
+		"kill":
+			var who: Hero = _heroes.get(e.get("target", -1))
+			if who != null:
+				who.records.kills += 1
+		"quest_completed":
+			var who: Hero = _heroes.get(e.get("target", -1))
+			if who != null:
+				who.records.quests += 1
 
 
 # --- Shared actions (used by intents and EnemyBrain) -----------------------------
@@ -1117,6 +1153,14 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_examine(hero, intent.get("tile", Vector2i(-99, -99)))
 		"accept_shared_quest":
 			reason = _intent_accept_shared_quest(hero, StringName(intent.get("quest", &"")))
+		"finish_act":
+			var def: QuestDef = quests.get(StringName(intent.get("quest", &"")))
+			if def == null or def.ends_act <= 0 or not QuestLog.is_done(hero, def.id):
+				reason = "no_quest"
+			elif hero.in_combat(now):
+				reason = "in_combat"
+			elif def.return_zone != &"" and def.return_zone != zone.id:
+				request_zone_move(hero.id, def.return_zone)
 		"accept_quest":
 			reason = _intent_accept_quest(hero, intent.get("npc", -1), intent.get("quest", &""))
 		"turn_in_quest":
@@ -1375,7 +1419,22 @@ func _intent_turn_in_quest(hero: Hero, npc_id: int, quest_id: StringName, choice
 	if def.sets_world_flag != &"" and not world_flags.has(String(def.sets_world_flag)):
 		world_flags[String(def.sets_world_flag)] = true
 		emit({"type": "world_flag", "flag": def.sets_world_flag, "quest": def.id})
+	if def.ends_act > 0:
+		if not hero.records.acts.has(def.ends_act):
+			hero.records.acts.append(def.ends_act)
+		emit({"type": "act_complete", "target": hero.id, "act": def.ends_act, "quest": def.id,
+				"party": party_records()})
 	return ""
+
+
+## Every hero here (the party) and their records, for the end-of-act screen.
+func party_records() -> Array:
+	var out := []
+	for h in heroes():
+		out.append({"id": h.id, "name": h.display_name, "level": h.level, "kills": h.records.kills,
+				"damage": roundi(h.records.damage), "healing": roundi(h.records.healing),
+				"deaths": h.records.deaths, "quests": h.records.quests})
+	return out
 
 
 ## "" if `hero` is alive and within talking range of NPC actor `npc_id`, whose type is `npc_def_id`.

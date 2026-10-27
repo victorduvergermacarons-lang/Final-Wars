@@ -49,6 +49,8 @@ static func build(zone: ZoneDef, enemies: Array, shrine: NpcDef = null) -> void:
 	# Training dummies stand by the entrance, not in pens.
 	var dummies: Array = enemies.filter(func(e): return e.training_dummy)
 	enemies = enemies.filter(func(e): return not e.training_dummy)
+	# A dungeon boss and its heart only make sense in their encounter (BossEncounter).
+	enemies = enemies.filter(func(e): return not e.dungeon_boss and not e.immobile)
 	var normal: Array = enemies.filter(func(e): return not e.elite)
 	var bosses: Array = enemies.filter(func(e): return e.elite)
 	var order := func(a, b): return [a.level, String(a.id)] < [b.level, String(b.id)]

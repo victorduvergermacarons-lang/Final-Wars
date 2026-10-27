@@ -112,7 +112,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(raw.get("tile")) != TYPE_VECTOR2I:
 				return {}
 			out.tile = raw.tile
-		"accept_quest", "turn_in_quest", "abandon_quest", "accept_shared_quest":
+		"accept_quest", "turn_in_quest", "abandon_quest", "accept_shared_quest", "finish_act":
 			var quest = raw.get("quest")
 			if typeof(quest) != TYPE_STRING and typeof(quest) != TYPE_STRING_NAME:
 				return {}

@@ -84,7 +84,7 @@ func _update_music(zone_changed: bool = false) -> void:
 	var zone: ZoneDef = session.zone()
 	if zone == null:
 		return
-	Audio.set_context(music_context(), Audio.bond_for(zone), zone.region)
+	Audio.set_context(music_context(), Audio.bond_for(zone), zone.region, zone.id)
 	if zone_changed:
 		Audio.set_ambience(SoundCatalog.ambience_key(zone))
 
@@ -162,6 +162,26 @@ func _on_events(events: Array) -> void:
 				var r = _actor(e.source)
 				if r is Enemy:
 					_play_on(SoundCatalog.creature_key(r.def.id, "enrage"), r)
+			"boss_phase":
+				var b = _actor(e.source)
+				if b is Enemy:
+					_play_on(SoundCatalog.creature_key(b.def.id, "phase"), b)
+			"boss_reset":
+				var b = _actor(e.source)
+				if b is Enemy:
+					_play_on(SoundCatalog.creature_key(b.def.id, "reset"), b)
+			"heart_pulse":
+				var h = _actor(e.source)
+				if h is Enemy:
+					_play_on(SoundCatalog.creature_key(h.def.id, "pulse"), h)
+			"boss_defeated":
+				var h = _actor(e.get("heart", -1))
+				if h is Enemy:
+					_play_on(SoundCatalog.creature_key(h.def.id, "break"), h)
+			"party_wipe":
+				Audio.play(&"world_party_wipe")
+			"wipe_respawn":
+				Audio.play(&"world_wipe_respawn")
 			"level_up":
 				_play_on(&"world_level_up", _actor(e.target))
 			"zone_reset":
@@ -177,6 +197,12 @@ func _on_events(events: Array) -> void:
 				Audio.play(&"world_mastered")
 			"release":
 				Audio.play(&"world_release")
+			"dungeon_enter":
+				Audio.play(&"world_dungeon_enter")
+			"lift":
+				Audio.play(&"world_lift")
+			"act_complete":
+				Audio.play(&"world_act_complete")
 			"buy", "sell":
 				Audio.play(&"ui_coins")
 			"equip", "unequip":

@@ -54,6 +54,10 @@ The first word of a key picks its folder. The file name is the key plus `.wav`
   region without its own track for the context gets the any-region track (today
   the draft). Name region tracks `music_<context>_<region>.ogg`, e.g.
   `music_explore_bedrun.ogg`.
+- **Zone music:** a track's data file can also list `zones` (e.g. a dungeon's own
+  theme): it plays only there and wins over region tracks. A track may be listed
+  before its file exists: until the file is in `audio/music/`, the game falls back
+  as if it weren't there.
 - **Ambience:** `ambience_<zone>.ogg` (keys below).
 
 ## Loudness targets
@@ -82,6 +86,13 @@ cut through.
 | `audio/music/music_idle_draft.ogg` | title screen, town (and, until they have their own, explore and dungeon) | first draft; converted from the MP3 (kept in `art/audio/`). The MP3 started with 43 ms of silence and ended at full level, so the loop clicked: the OGG has the silence trimmed, a 10 ms fade-in and a 120 ms fade-out. |
 | `audio/music/music_explore_tidereach.ogg` | explore in Tidereach zones (none in Act I: hear it on the Tidereach Shore test map, west of the Enemy Testing Grounds, or with the debug command `goto tidereach_shore`) | "Water Idle", converted from the uploaded WAV (kept in `art/audio/music_explore_tidereach_master.wav`) to OGG Vorbis quality 6, not edited otherwise. **It doesn't loop cleanly yet:** it starts with 2.35 s of near-silence (−80 to −63 dB) and ends at full level (about −26 dB RMS in the last 50 ms, no fade), so every loop drops from full volume into that 2.35 s gap. A version that ends on the material it starts with (or with the lead-in trimmed) would loop seamlessly. |
 
+### Waiting for their file (listed in `content/audio/music/`)
+
+| File | Plays for | Until then |
+|------|-----------|------------|
+| `audio/music/music_dungeon_silentshaft.ogg` | exploring the Silent Shaft (Act I's dungeon, quest 1-07) | the draft (dungeon → explore → town) |
+| `audio/music/music_boss_foreman.ogg` | the fight with the Foreman and the Grey Heart (an elite fighting within 12 tiles of you) | whatever is playing (boss → combat → keep) |
+
 Combat and boss music: until those tracks exist, fights keep the current music.
 
 ## Sound keys
@@ -93,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-186 keys, 0 with a file, 186 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+224 keys, 0 with a file, 224 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -114,16 +125,21 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 | Key | Plays when | File |
 |-----|-----------|------|
+| `world_act_complete` | an act of the story ends (the end-of-act screen opens) | **missing** |
+| `world_dungeon_enter` | your party enters a dungeon (its own copy) | **missing** |
 | `world_event` | a world event is announced (the bells of Millbrook) | **missing** |
 | `world_health_potion_cast` | Health Potion is used | **missing** |
 | `world_hero_death` | a hero dies | **missing** |
 | `world_level_up` | a hero levels up | **missing** |
+| `world_lift` | a mine lift rattles along its shaft (you ride it) | **missing** |
 | `world_mana_potion_cast` | Mana Potion is used | **missing** |
 | `world_mastered` | a hero masters an ability | **missing** |
 | `world_miss` | an attack misses | **missing** |
+| `world_party_wipe` | the whole party has fallen in a dungeon | **missing** |
 | `world_release` | a hero releases to a graveyard | **missing** |
 | `world_shrine_reset` | the Reset Shrine resets the testing grounds | **missing** |
 | `world_whiff` | an attack hits nothing | **missing** |
+| `world_wipe_respawn` | the fallen party wakes at the dungeon's entrance | **missing** |
 | `world_zone_enter` | you walk into another map | **missing** |
 
 ### Footsteps (audio/sfx/footsteps)
@@ -138,7 +154,9 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `footstep_dirt` | a hero steps on dirt | **missing** |
 | `footstep_ford` | a hero steps on ford | **missing** |
 | `footstep_grass` | a hero steps on grass | **missing** |
+| `footstep_grey_rock` | a hero steps on grey rock | **missing** |
 | `footstep_meadow` | a hero steps on meadow | **missing** |
+| `footstep_mine_floor` | a hero steps on mine floor | **missing** |
 | `footstep_path` | a hero steps on path | **missing** |
 | `footstep_red_earth` | a hero steps on red earth | **missing** |
 | `footstep_red_rock` | a hero steps on red rock | **missing** |
@@ -257,12 +275,42 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_fen_skirmisher_quick_slash` | Quick Slash is used | **missing** |
 | `creature_fen_skirmisher_quick_slash_hit` | Quick Slash lands on someone | **missing** |
 | `creature_fen_skirmisher_step` | Fen Skirmisher moves one tile (paws, wings...) | **missing** |
+| `creature_foreman_aggro` | The Foreman notices a hero and starts a fight | **missing** |
+| `creature_foreman_death` | The Foreman dies | **missing** |
+| `creature_foreman_enrage` | The Foreman enrages (Grey Fury, phase 3) | **missing** |
+| `creature_foreman_ground_slam` | Ground Slam is used | **missing** |
+| `creature_foreman_ground_slam_hit` | Ground Slam lands on someone | **missing** |
+| `creature_foreman_hurt` | The Foreman takes damage | **missing** |
+| `creature_foreman_mine_cart_charge` | Mine-Cart Charge is used | **missing** |
+| `creature_foreman_mine_cart_charge_hit` | Mine-Cart Charge lands on someone | **missing** |
+| `creature_foreman_phase` | The Foreman enters a new phase of the fight (phases 2 and 3) | **missing** |
+| `creature_foreman_pick_hammer` | Pick-Hammer is used | **missing** |
+| `creature_foreman_pick_hammer_hit` | Pick-Hammer lands on someone | **missing** |
+| `creature_foreman_reset` | The Foreman goes back to the start of its phase (after a party wipe) | **missing** |
+| `creature_foreman_step` | The Foreman moves one tile (paws, wings...) | **missing** |
 | `creature_goblin_shaman_aggro` | Goblin Shaman notices a hero and starts a fight | **missing** |
 | `creature_goblin_shaman_death` | Goblin Shaman dies | **missing** |
 | `creature_goblin_shaman_hurt` | Goblin Shaman takes damage | **missing** |
 | `creature_goblin_shaman_shadow_bolt` | Shadow Bolt is used | **missing** |
 | `creature_goblin_shaman_shadow_bolt_hit` | Shadow Bolt lands on someone | **missing** |
 | `creature_goblin_shaman_step` | Goblin Shaman moves one tile (paws, wings...) | **missing** |
+| `creature_grey_heart_aggro` | The Grey Heart notices a hero and starts a fight | **missing** |
+| `creature_grey_heart_break` | The Grey Heart breaks and the fight is won | **missing** |
+| `creature_grey_heart_death` | The Grey Heart dies | **missing** |
+| `creature_grey_heart_hurt` | The Grey Heart takes damage | **missing** |
+| `creature_grey_heart_pulse` | The Grey Heart pulses: adds climb out, the floor turns grey | **missing** |
+| `creature_grey_husk_aggro` | Grey Husk notices a hero and starts a fight | **missing** |
+| `creature_grey_husk_death` | Grey Husk dies | **missing** |
+| `creature_grey_husk_hollow_rake` | Hollow Rake is used | **missing** |
+| `creature_grey_husk_hollow_rake_hit` | Hollow Rake lands on someone | **missing** |
+| `creature_grey_husk_hurt` | Grey Husk takes damage | **missing** |
+| `creature_grey_husk_step` | Grey Husk moves one tile (paws, wings...) | **missing** |
+| `creature_grey_overseer_aggro` | Grey Overseer notices a hero and starts a fight | **missing** |
+| `creature_grey_overseer_death` | Grey Overseer dies | **missing** |
+| `creature_grey_overseer_hurt` | Grey Overseer takes damage | **missing** |
+| `creature_grey_overseer_overseer_s_crush` | Overseer's Crush is used | **missing** |
+| `creature_grey_overseer_overseer_s_crush_hit` | Overseer's Crush lands on someone | **missing** |
+| `creature_grey_overseer_step` | Grey Overseer moves one tile (paws, wings...) | **missing** |
 | `creature_human_husk_aggro` | Human Husk notices a hero and starts a fight | **missing** |
 | `creature_human_husk_death` | Human Husk dies | **missing** |
 | `creature_human_husk_hollow_rake` | Hollow Rake is used | **missing** |
@@ -327,6 +375,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `ambience_deepcut_road` | background loop in Road to Deepcut (Ambience bus, OGG) | **missing** |
 | `ambience_enemy_testing` | background loop in Enemy Testing Grounds (Ambience bus, OGG) | **missing** |
 | `ambience_greenfields` | background loop in Greenfields (Ambience bus, OGG) | **missing** |
+| `ambience_silent_shaft` | background loop in The Silent Shaft (Ambience bus, OGG) | **missing** |
 | `ambience_tidereach_shore` | background loop in Tidereach Shore (test) (Ambience bus, OGG) | **missing** |
 | `ambience_town` | background loop in Millbrook (Ambience bus, OGG) | **missing** |
 | `ambience_windsteppe` | background loop in Windsteppe (Ambience bus, OGG) | **missing** |

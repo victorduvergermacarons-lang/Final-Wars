@@ -37,6 +37,10 @@ enum Category {
 ## World flag the host sets when anyone turns this in ("" = none). Its
 ## announcement is the line "quest.<id>.world_flag".
 @export var sets_world_flag: StringName = &""
+## Handing it in finishes this act (0 = none): the hero's records note it, and the
+## end-of-act screen shows the party's stats, then sends them to `return_zone`.
+@export var ends_act: int = 0
+@export var return_zone: StringName = &""
 
 
 func turn_in_npc() -> StringName:

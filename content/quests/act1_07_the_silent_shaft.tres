@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+[ext_resource type="Resource" path="res://content/items/minor_mana_potion.tres" id="item_minor_mana_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 3
+text = "Ride the lift down to the deep seams"
+zone = &"silent_shaft"
+tile = Vector2i(26, 21)
+radius = 3
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("1_obj")
+kind = 3
+text = "Find where the silence comes from"
+zone = &"silent_shaft"
+tile = Vector2i(49, 15)
+radius = 2
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("1_obj")
+kind = 0
+text = "Break the Grey Heart"
+enemy = &"grey_heart"
+
+[sub_resource type="Resource" id="Objective_3"]
+script = ExtResource("1_obj")
+kind = 2
+text = "Speak with Prince Caedan"
+npc = &"caedan_shaft"
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_07_the_silent_shaft"
+title = "1-07 The Silent Shaft"
+category = 0
+area = "The Silent Shaft"
+giver = &"caedan_ashvale"
+turn_in = &"caedan_shaft"
+prerequisites = Array[StringName]([&"act1_06_recognition"])
+min_level = 8
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2"), SubResource("Objective_3")])
+reward_xp = 2200
+reward_gold = 120
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion"), ExtResource("item_minor_mana_potion"), ExtResource("item_minor_mana_potion"), ExtResource("item_minor_mana_potion")])
+reward_choice_ids = Array[StringName]([&"scroll_of_the_fireball", &"glacier_scroll", &"bulwark_scroll"])
+sets_world_flag = &"act1_complete"
+ends_act = 1
+return_zone = &"crossing"

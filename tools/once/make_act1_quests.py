@@ -1,5 +1,5 @@
-# One-off (kept for the record): writes the Act I quests of milestone 3 (1-01 to
-# 1-06 and three side quests) as content/quests/<id>.tres. Their lines are in
+# One-off (kept for the record): writes the Act I quests of milestones 3 and 4
+# (1-01 to 1-07 and three side quests) as content/quests/<id>.tres. Their lines are in
 # content/dialogue/act1.json. Edit the .tres files directly now; running this
 # again overwrites them. Usage: python3 tools/once/make_act1_quests.py <project>
 import sys
@@ -14,7 +14,7 @@ def v2(p):
 
 
 def quest(qid, title, category, area, giver, objectives, xp, gold, turn_in="", prereq=(), min_level=1,
-          given=(), items=(), choices=(), flag=""):
+          given=(), items=(), choices=(), flag="", ends_act=0, return_zone=""):
     """objectives: dicts with kind, text and the kind's fields (count, enemy, item, npc,
     zone, tile, radius, path, spots). items/given: (item id, count) of plain .tres items;
     choices: ids of ability-tree items (built at load)."""
@@ -73,6 +73,8 @@ def quest(qid, title, category, area, giver, objectives, xp, gold, turn_in="", p
         res.append("reward_choice_ids = Array[StringName]([%s])" % ", ".join('&"%s"' % c for c in choices))
     if flag:
         res.append('sets_world_flag = &"%s"' % flag)
+    if ends_act:
+        res += ["ends_act = %d" % ends_act, 'return_zone = &"%s"' % return_zone]
     text = '[gd_resource type="Resource" script_class="QuestDef" format=3]\n\n' + "\n".join(ext) + "\n\n"
     text += "\n\n".join(subs) + "\n\n" + "\n".join(res) + "\n"
     with open("%s/content/quests/%s.tres" % (root, qid), "w") as f:
@@ -124,7 +126,7 @@ quest(Q05, "1-05 Fever in Millbrook", MAIN, "Millbrook", "guild_board", [
 quest(Q06, "1-06 Recognition", MAIN, "The Crossing", "maren_voss", [
     {"kind": "talk", "text": "Hear out Prince Caedan Ashvale", "npc": "caedan_ashvale"},
 ], xp=450, gold=60, turn_in="caedan_ashvale", prereq=[Q03, Q04, Q05], min_level=6,
-    choices=["sun_warriors_breath_scroll", "scroll_of_the_current", "travelers_longsword"])
+    choices=["sun_warriors_breath_scroll", "scroll_of_the_current", "travelers_longsword"], flag="brann_descended")
 
 quest("act1_side_the_white_death", "The White Death", SIDE, "Windsteppe", "saran", [
     {"kind": "collect", "text": "Iron wolf pelts", "count": 4, "item": "iron_wolf_pelt"},
@@ -136,7 +138,7 @@ quest("act1_side_shift_bell", "Shift Bell", SIDE, "Deepcut", "mine_board", [
     {"kind": "interact", "text": "Rubble cleared from the collapsed shaft", "npc": "collapsed_shaft"},
     {"kind": "kill", "text": "Husks put down", "count": 3, "enemy": "human_husk"},
     {"kind": "talk", "text": "Bring Miner Ostrik out", "npc": "trapped_miner"},
-], xp=350, gold=45, turn_in="steward_brann", prereq=[Q04], min_level=6, items=[("minor_health_potion", 2)])
+], xp=350, gold=45, turn_in="trapped_miner", prereq=[Q04], min_level=6, items=[("minor_health_potion", 2)])
 
 quest("act1_side_pins_on_the_map", "Pins on the Map", SIDE, "The Crossing", "guild_board", [
     {"kind": "reach", "text": "Millbrook's grey river visited", "zone": "town", "tile": (22, 20), "radius": 2},
@@ -146,3 +148,14 @@ quest("act1_side_pins_on_the_map", "Pins on the Map", SIDE, "The Crossing", "gui
     {"kind": "reach", "text": "Deepcut's tailings pond visited", "zone": "deepcut", "tile": (32, 21), "radius": 2},
     {"kind": "interact", "text": "Every site marked on the Guild Map", "npc": "guild_map"},
 ], xp=500, gold=40, turn_in="maren_voss", prereq=[Q06], min_level=7, items=[("minor_mana_potion", 2)])
+
+quest("act1_07_the_silent_shaft", "1-07 The Silent Shaft", MAIN, "The Silent Shaft", "caedan_ashvale", [
+    {"kind": "reach", "text": "Ride the lift down to the deep seams", "zone": "silent_shaft", "tile": (26, 21),
+     "radius": 3},
+    {"kind": "reach", "text": "Find where the silence comes from", "zone": "silent_shaft", "tile": (49, 15), "radius": 2},
+    {"kind": "kill", "text": "Break the Grey Heart", "enemy": "grey_heart"},
+    {"kind": "talk", "text": "Speak with Prince Caedan", "npc": "caedan_shaft"},
+], xp=2200, gold=120, turn_in="caedan_shaft", prereq=[Q06], min_level=8,
+    items=[("minor_health_potion", 3), ("minor_mana_potion", 3)],
+    choices=["scroll_of_the_fireball", "glacier_scroll", "bulwark_scroll"], flag="act1_complete", ends_act=1,
+    return_zone="crossing")

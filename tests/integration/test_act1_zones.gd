@@ -60,7 +60,8 @@ func _edge_tiles(z: ZoneDef, side: Vector2i) -> Array:
 func test_every_zone_has_its_region_and_music() -> void:
 	var expect := {&"town": Regions.Id.HEARTLAND, &"crossing": Regions.Id.HEARTLAND, &"greenfields": Regions.Id.HEARTLAND,
 			&"enemy_testing": Regions.Id.HEARTLAND, &"deepcut_road": Regions.Id.BEDRUN, &"deepcut": Regions.Id.BEDRUN,
-			&"windsteppe": Regions.Id.VAEL, &"tidereach_shore": Regions.Id.TIDEREACH}
+			&"windsteppe": Regions.Id.VAEL, &"tidereach_shore": Regions.Id.TIDEREACH,
+			&"silent_shaft": Regions.Id.BEDRUN}
 	assert_eq(db.zones.size(), expect.size(), "every zone is listed here")
 	for id in expect:
 		assert_eq(db.zones[id].region, expect[id], "%s is in %s" % [id, Regions.display_name(expect[id])])
@@ -68,6 +69,7 @@ func test_every_zone_has_its_region_and_music() -> void:
 		assert_eq(db.zones[id].music_context, MusicTrackDef.Context.TOWN, "%s is a town" % id)
 	for id in [&"deepcut_road", &"windsteppe", &"tidereach_shore"]:
 		assert_eq(db.zones[id].music_context, MusicTrackDef.Context.EXPLORE, "%s is the open road" % id)
+	assert_eq(db.zones[&"silent_shaft"].music_context, MusicTrackDef.Context.DUNGEON, "the Silent Shaft is a dungeon")
 	var keys := SoundCatalog.new(db).keys()
 	for k in [&"ambience_town", &"ambience_crossing", &"ambience_deepcut", &"ambience_deepcut_road",
 			&"ambience_windsteppe", &"ambience_tidereach_shore"]:

@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_ability"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="2_enemy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="3_stats"]
+[ext_resource type="Resource" path="res://content/abilities/husk_rake.tres" id="ab_husk_rake"]
+
+[sub_resource type="Resource" id="Resource_stats"]
+script = ExtResource("3_stats")
+hp = 220.0
+phys_atk = 18.0
+phys_def = 10.0
+mag_def = 18.0
+jump = 1.0
+
+[resource]
+script = ExtResource("2_enemy")
+id = &"grey_husk"
+display_name = "Grey Husk"
+level = 8
+stats = SubResource("Resource_stats")
+abilities = Array[ExtResource("1_ability")]([ExtResource("ab_husk_rake")])
+aggro_radius = 4
+leash_radius = 14
+combat_step_seconds = 1.2
+reaction_seconds = 0.5
+xp_reward = 25
+ap_reward = 1
+weight = 1
