@@ -23,7 +23,7 @@ func start(zones: Array, start_zone: StringName, rules: CombatRules, character: 
 	if OS.is_debug_build():
 		world.enable_debug(ContentDB)
 	local_hero_id = world.add_saved_hero(character, ContentDB).id
-	_zone_id = zone().id
+	_zone_id = zone_sim().key
 
 
 ## The zone the local hero is in.
@@ -57,8 +57,8 @@ func _physics_process(delta: float) -> void:
 		_accumulator -= tick
 		var events := world.step()
 		_on_tick(events)
-		if zone().id != _zone_id:
-			_zone_id = zone().id
+		if zone_sim().key != _zone_id: # a dungeon copy counts as its own zone
+			_zone_id = zone_sim().key
 			zone_changed.emit(zone())
 		var mine := events.filter(func(e): return e.get("zone", _zone_id) == _zone_id)
 		if not mine.is_empty():

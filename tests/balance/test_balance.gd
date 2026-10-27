@@ -123,3 +123,16 @@ func test_sunscale_drake_needs_a_group() -> void:
 	assert_eq(group.win_rate, 0.0, "it beats a level-7 group of four every time: " + str(group))
 	var l10 := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 10)
 	assert_gt(l10.win_rate, 0.0, "a level-10 group can win: " + str(l10))
+
+
+## The Silent Shaft's boss (milestone 4): built for three or four players at about
+## level 10 (where Act I's quests leave a party). Bots never dodge the slams, the
+## charge or the grey ground and never taunt back, so real groups should do better.
+func test_the_foreman_is_a_fight_for_a_group() -> void:
+	var four := BalanceSim.boss_average(db, [S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], RUNS, 10)
+	assert_gte(four.win_rate, 0.3, "a level-10 group of four often wins: " + str(four))
+	var three := BalanceSim.boss_average(db, [S.L5_TANK, S.L5_FIRE, S.L5_HEALER], RUNS, 10)
+	assert_gt(three.win_rate, 0.0, "a level-10 group of three can win: " + str(three))
+	assert_lt(three.win_rate, 1.0, "but not every time: " + str(three))
+	var solo := BalanceSim.boss_average(db, [S.L5_TANK], RUNS, 10)
+	assert_eq(solo.win_rate, 0.0, "a lone hero (testing setting only) can't: " + str(solo))

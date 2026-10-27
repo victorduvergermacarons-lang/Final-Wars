@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_ability"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="2_enemy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="3_stats"]
+[ext_resource type="Resource" path="res://content/loot/foreman.tres" id="4_loot"]
+[ext_resource type="Resource" path="res://content/abilities/foreman_slam.tres" id="ab_foreman_slam"]
+[ext_resource type="Resource" path="res://content/abilities/foreman_charge.tres" id="ab_foreman_charge"]
+[ext_resource type="Resource" path="res://content/abilities/foreman_pick.tres" id="ab_foreman_pick"]
+
+[sub_resource type="Resource" id="Resource_stats"]
+script = ExtResource("3_stats")
+hp = 800.0
+phys_atk = 16.0
+phys_def = 18.0
+mag_def = 22.0
+accuracy = 8.0
+jump = 2.0
+
+[resource]
+script = ExtResource("2_enemy")
+id = &"foreman"
+display_name = "The Foreman"
+level = 10
+stats = SubResource("Resource_stats")
+abilities = Array[ExtResource("1_ability")]([ExtResource("ab_foreman_slam"), ExtResource("ab_foreman_charge"), ExtResource("ab_foreman_pick")])
+loot = ExtResource("4_loot")
+leash_radius = 16
+aggro_radius = 5
+combat_step_seconds = 1.1
+reaction_seconds = 0.35
+xp_reward = 900
+ap_reward = 14
+respawn_seconds = 1e+09
+elite = true
+dungeon_boss = true
+weight = 2

@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_ability"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="2_enemy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="3_stats"]
+[ext_resource type="Resource" path="res://content/loot/grey_overseer.tres" id="4_loot"]
+[ext_resource type="Resource" path="res://content/abilities/overseer_crush.tres" id="ab_overseer_crush"]
+
+[sub_resource type="Resource" id="Resource_stats"]
+script = ExtResource("3_stats")
+hp = 760.0
+phys_atk = 24.0
+phys_def = 18.0
+mag_def = 26.0
+jump = 1.0
+
+[resource]
+script = ExtResource("2_enemy")
+id = &"grey_overseer"
+display_name = "Grey Overseer"
+level = 9
+stats = SubResource("Resource_stats")
+abilities = Array[ExtResource("1_ability")]([ExtResource("ab_overseer_crush")])
+loot = ExtResource("4_loot")
+aggro_radius = 4
+leash_radius = 8
+combat_step_seconds = 1.3
+reaction_seconds = 0.45
+xp_reward = 320
+ap_reward = 6
+respawn_seconds = 1e+09
+weight = 2

@@ -133,6 +133,7 @@ func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
 	time_scale = snap.get("time_scale", 1.0)
+	rules.dungeon_testing = snap.get("dungeon_testing", rules.dungeon_testing)
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
 	ground_zones = snap.get("zones", [])
@@ -197,6 +198,7 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	elif a is Enemy:
 		(a as Enemy).state = d.state as Enemy.State
 		(a as Enemy).died_at = d.get("died_at", -1.0)
+		(a as Enemy).invulnerable = d.get("invulnerable", false)
 		(a as Enemy).level = d.get("level", (a as Enemy).def.level)
 	elif a is Npc:
 		(a as Npc).set_escorting(d.get("escort", false))

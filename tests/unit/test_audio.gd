@@ -229,3 +229,30 @@ func test_walking_between_regions_crossfades() -> void:
 	assert_almost_eq(audio.music_fade(), 1.0, 0.001, "same region again: no restart")
 	audio.set_context(explore, 1.0, Regions.Id.HEARTLAND)
 	assert_eq(audio.current_track, draft, "and back")
+
+
+func test_a_zones_own_track_wins_there_and_plays_nowhere_else() -> void:
+	var draft: MusicTrackDef = audio.pick_track(MusicTrackDef.Context.DUNGEON).track
+	var shaft := _track(&"shaft_theme", [MusicTrackDef.Context.DUNGEON])
+	shaft.zones.assign([&"silent_shaft"])
+	audio.tracks.append(shaft)
+	assert_eq(audio.pick_track(MusicTrackDef.Context.DUNGEON, 1.0, Regions.Id.BEDRUN, &"silent_shaft").track, shaft)
+	assert_eq(audio.pick_track(MusicTrackDef.Context.DUNGEON, 1.0, Regions.Id.BEDRUN, &"deepcut").track, draft,
+			"another zone keeps the fallback")
+
+
+func test_a_track_without_its_file_falls_back() -> void:
+	var dungeon: MusicTrackDef = audio.tracks.filter(func(x): return x.id == &"dungeon_silentshaft")[0]
+	var boss: MusicTrackDef = audio.tracks.filter(func(x): return x.id == &"boss_foreman")[0]
+	assert_eq(dungeon.contexts, [MusicTrackDef.Context.DUNGEON] as Array[MusicTrackDef.Context])
+	assert_eq(boss.contexts, [MusicTrackDef.Context.BOSS] as Array[MusicTrackDef.Context])
+	assert_eq(dungeon.file, "res://audio/music/music_dungeon_silentshaft.ogg")
+	assert_eq(boss.file, "res://audio/music/music_boss_foreman.ogg")
+	if ResourceLoader.exists(dungeon.file):
+		pass_test("the Silent Shaft's track has arrived")
+		return
+	var draft: MusicTrackDef = audio.tracks.filter(func(x): return x.id == &"idle_draft")[0]
+	assert_eq(audio.pick_track(MusicTrackDef.Context.DUNGEON, 1.0, Regions.Id.BEDRUN, &"silent_shaft").track, draft,
+			"no file yet: the draft plays in the Silent Shaft")
+	assert_true(audio.pick_track(MusicTrackDef.Context.BOSS, 1.0, Regions.Id.BEDRUN, &"silent_shaft").keep,
+			"no boss file yet: the music carries on")

@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 6
+text = "Rubble cleared from the collapsed shaft"
+npc = &"collapsed_shaft"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("1_obj")
+kind = 0
+text = "Husks put down"
+count = 3
+enemy = &"human_husk"
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("1_obj")
+kind = 2
+text = "Bring Miner Ostrik out"
+npc = &"trapped_miner"
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_side_shift_bell"
+title = "Shift Bell"
+category = 1
+area = "Deepcut"
+giver = &"mine_board"
+turn_in = &"trapped_miner"
+prerequisites = Array[StringName]([&"act1_04_grain_for_deepcut"])
+min_level = 6
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2")])
+reward_xp = 350
+reward_gold = 45
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion")])

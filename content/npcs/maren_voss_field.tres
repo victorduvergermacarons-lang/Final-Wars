@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="NpcDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/npc_def.gd" id="1_npc"]
+
+[resource]
+script = ExtResource("1_npc")
+id = &"maren_voss_field"
+display_name = "Maren Voss"
+faction = 1

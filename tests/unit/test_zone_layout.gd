@@ -1,16 +1,25 @@
 extends GutTest
 ## Every zone stays playable whatever its tiles look like: the places gameplay
 ## needs (spawns, NPCs, graveyards, patrol routes, landmarks, map edges) are
-## walkable and reachable on foot (Jump 2) from where heroes start.
+## walkable and reachable on foot (Jump 2) from where heroes start, riding the
+## map's lifts (exits within the same map) where it has them.
 
 const JUMP := 2
 
 
-func _reachable(grid: GridModel, start: Vector2i) -> Dictionary:
+func _reachable(grid: GridModel, start: Vector2i, z: ZoneDef = null) -> Dictionary:
+	var lifts := {}
+	if z != null:
+		for e in z.exits:
+			if e.to_zone == &"" or e.to_zone == z.id:
+				lifts[e.tile] = e.to_tile
 	var seen := {start: true}
 	var queue: Array[Vector2i] = [start]
 	while not queue.is_empty():
 		var p: Vector2i = queue.pop_front()
+		if lifts.has(p) and not seen.has(lifts[p]):
+			seen[lifts[p]] = true
+			queue.append(lifts[p])
 		for d in GridModel.DIRECTIONS:
 			var n: Vector2i = p + d
 			if not seen.has(n) and grid.can_step(p, n, JUMP):
@@ -39,11 +48,23 @@ func _places(z: ZoneDef) -> Dictionary:
 func test_every_place_is_walkable_and_reachable() -> void:
 	for z: ZoneDef in ContentDB.zones.values():
 		var grid := GridModel.from_zone(z)
-		var reach := _reachable(grid, z.hero_spawns[0])
+		var reach := _reachable(grid, z.hero_spawns[0], z)
 		var places := _places(z)
 		for p in places:
 			assert_true(grid.is_walkable(p), "%s: %s at %s is walkable" % [z.id, places[p], p])
 			assert_true(reach.has(p), "%s: %s at %s can be reached" % [z.id, places[p], p])
+
+
+func test_exits_and_lifts_are_reachable_and_land_on_walkable_tiles() -> void:
+	for z: ZoneDef in ContentDB.zones.values():
+		var grid := GridModel.from_zone(z)
+		var reach := _reachable(grid, z.hero_spawns[0], z)
+		for e in z.exits:
+			assert_true(reach.has(e.tile), "%s: exit at %s can be reached" % [z.id, e.tile])
+			var dest: ZoneDef = z if e.to_zone == &"" else ContentDB.zones.get(e.to_zone)
+			assert_not_null(dest, "%s: exit to %s leads somewhere" % [z.id, e.to_zone])
+			if dest != null:
+				assert_true(GridModel.from_zone(dest).is_walkable(e.to_tile), "%s: exit at %s lands on walkable ground" % [z.id, e.tile])
 
 
 func test_linked_edges_can_be_reached() -> void:

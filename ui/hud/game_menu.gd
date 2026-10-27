@@ -52,6 +52,7 @@ var _shown_lines := -1
 var _bind: Button
 var _speed_slider: HSlider
 var _speed_box: SpinBox
+var _dungeon_testing: CheckBox
 ## The Sound tab: a volume slider per audio bus, saved per player.
 var sound: SettingsWindow
 
@@ -151,6 +152,16 @@ func _speed_tab() -> Control:
 	mode.select(mode.get_item_index(hud.timing_bar.mode))
 	mode.item_selected.connect(func(i: int): hud.set_timing_bar_mode(mode.get_item_id(i)))
 	page.add_child(mode)
+	# Dungeons: the smallest party allowed in (CombatRules.min_dungeon_party).
+	page.add_child(HSeparator.new())
+	_dungeon_testing = CheckBox.new()
+	_dungeon_testing.focus_mode = Control.FOCUS_NONE
+	_dungeon_testing.text = "Dungeon testing: enter dungeons with any party size (the real game needs %d players)" \
+			% hud.session.rules().dungeon_min_party
+	_dungeon_testing.set_pressed_no_signal(hud.session.rules().dungeon_testing)
+	_dungeon_testing.toggled.connect(func(on: bool):
+		hud.session.send_intent({"type": "dungeon_testing", "on": on}))
+	page.add_child(_dungeon_testing)
 	show_speed(hud.session.rules().game_speed)
 	# Dragging sends only on release, so the host isn't flooded while dragging.
 	_speed_slider.value_changed.connect(func(v: float): _speed_box.set_value_no_signal(v))
@@ -159,6 +170,12 @@ func _speed_tab() -> Control:
 			_set_speed(_speed_slider.value))
 	_speed_box.value_changed.connect(_set_speed)
 	return page
+
+
+## Shows the dungeon testing setting without sending it.
+func show_dungeon_testing(on: bool) -> void:
+	if _dungeon_testing != null:
+		_dungeon_testing.set_pressed_no_signal(on)
 
 
 ## Shows `value` without sending it (the host's answer, or the value on opening).

@@ -12,22 +12,60 @@
 	],
 	"lines": {
 		"npc.apothecary_odo.greeting": "Draughts for the body, draughts for the mind. Odo's tinctures never curdle. Well. Rarely.",
-		"npc.elder_tsaga.greeting": "The wind told me you were coming, stranger. The wells are dry, the iron wolves are bold, and the stones are restless. Sit by the fire.",
-		"npc.healer_wenna.greeting": "Wenna Ashby, healer. Sit if you're bleeding. And don't drink from the river — it's run grey upstream for weeks, and nobody will tell me why.",
-		"npc.innkeeper_bram.greeting": "Welcome to the Crossed Keys! Every road in the Heartland ends at my door sooner or later. Mind the Bedrun lads, they sing.",
-		"npc.steward_marl.greeting": "Orrin Marl, steward of Deepcut. The mine pays the town, the town pays the Guild, and the stream pays for all of it. Don't drink it.",
-		"npc.trader_tamsin.greeting": "Tamsin Reed. Scrolls, blades, boots: whatever comes up the roads, I sell it on.",
+		"npc.caedan_ashvale.greeting": "Caedan Ashvale. Please, no bowing: the Guild has members, not princes. Have you eaten? Harrow keeps a pot on for anyone who walks in.",
 		"npc.collapsed_shaft.greeting": "Old timbers and loose rock choke the shaft mouth. Cold air sighs out of the gaps.",
-		"npc.foreman_brannoc.greeting": "Hadda Brannoc, foreman of this Bedrun crew. If you're not here to dig or to help, you're in the way.",
+		"npc.elder_tsaga.greeting": "The wind told me you were coming, stranger. The wells are dry, the iron wolves are bold, and the stones are restless. Sit by the fire.",
+		"npc.grain_caravan.greeting": "A Guild grain wagon, sacks stacked high under a blue tarpaulin. The drover is waiting for an escort.",
 		"npc.guild_board.greeting": "The Guild Board. Notices from the Floor Guild are pinned in neat rows, each stamped with a blue seal.",
+		"npc.guild_map.greeting": "The Guild's great map of the Heartland. Blue pins mark every mission done this season; there are a lot of them.",
+		"npc.guild_quartermaster.greeting": "Quartermaster Harrow. Guild kit, scrolls and blades: members pay less than the market. Mostly.",
+		"npc.healer_wenna.greeting": "Wenna Ashby, healer. Sit if you're bleeding. And don't drink from the river — it's run grey upstream for weeks, and nobody will tell me why.",
 		"npc.hilda.greeting": "Welcome to Millbrook, traveler! I buy what you find out there and sell what you'll need to stay alive.",
+		"npc.innkeeper_bram.greeting": "Welcome to the Crossed Keys! Every road in the Heartland ends at my door sooner or later. Mind the Bedrun lads, they sing.",
 		"npc.maren.greeting": "Mind the old graveyard, child. The dead rest easy here — it's the living out east who worry me.",
+		"npc.maren_voss.about_caedan": {
+			"text": "He founded the Guild with his own coin. He walks the fever wards himself and remembers every volunteer's name.",
+			"next": "npc.maren_voss.about_caedan_2"
+		},
+		"npc.maren_voss.about_caedan_2": "He believes there's no hurt in Veyra that enough willing hands can't mend. Most days, so do I.",
+		"npc.maren_voss.greeting": {
+			"text": "You came! Welcome to the Crossing. Every road in the Heartland ends here sooner or later, and so does every trouble.",
+			"choices": [
+				{
+					"text": "Tell me about Prince Caedan.",
+					"next": "npc.maren_voss.about_caedan"
+				}
+			]
+		},
+		"npc.maren_voss_field.about_fighting": {
+			"text": "You face your mouse pointer, and your abilities sit on the bar at the bottom: keys 1 to 0. Some run a timing bar: right-click on the green for a full hit, on the yellow for a sure crit.",
+			"next": "npc.maren_voss_field.about_fighting_2"
+		},
+		"npc.maren_voss_field.about_fighting_2": "When something winds up, step aside. Never stand in a red mark. And if you do fall, release: you'll wake by the healer's hut, none the worse but your pride.",
+		"npc.maren_voss_field.about_guild": {
+			"text": "Prince Caedan's idea. Folk from every town, sworn to mend what's broken: wells, roads, bridges, fevers. We go where we're needed.",
+			"next": "npc.maren_voss_field.about_guild_2"
+		},
+		"npc.maren_voss_field.about_guild_2": "We've done a great deal of good already. More than anyone hoped. The ledgers say so, anyway.",
+		"npc.maren_voss_field.greeting": {
+			"text": "Maren Voss, of the Floor Guild. Easy, now: I'm here to help, not to count your turnips.",
+			"choices": [
+				{
+					"text": "What is the Floor Guild?",
+					"next": "npc.maren_voss_field.about_guild"
+				},
+				{
+					"text": "How do I fight?",
+					"next": "npc.maren_voss_field.about_fighting"
+				}
+			]
+		},
 		"npc.mine_board.greeting": "The Mine Board, nailed to a pit-prop. Bedrun work notices in ochre chalk, some half rubbed out by rain.",
-		"npc.ore_caravan.greeting": "A Bedrun ore wagon, axles groaning under its load. The drover keeps one eye on the canyon rim.",
 		"npc.reset_shrine.greeting": "You lay a hand on the warm stone. Every creature in the testing grounds returns to its pen at full strength, and every lingering effect fades.",
 		"npc.rowan.greeting": "The wolves of Greenfields grow bolder every week. If you can swing a blade, the town could use you.",
 		"npc.rowan.greeting.grizzlehide_slain": "Millbrook owes you, hero. With Grizzlehide gone, the shepherds are back in the fields.",
 		"npc.sabra_venn.greeting": "Sabra Venn, of the Ember Hand. Warm day, isn't it? Warmer down in Deepcut, I hear.",
+		"npc.saran.greeting": "Saran, of Tsaga's clan. If you've come about the wolves, you're welcome. If you've come about the herds, you're welcome too, but there's little left to see.",
 		"npc.seer_ilyth.about_vael": "We were here before the roads. We listen to the old stones, and lately they have been loud.",
 		"npc.seer_ilyth.greeting": {
 			"text": "The Vael remember what the land forgets. Sit, if you like. Or walk on: the stones will wait.",
@@ -38,15 +76,22 @@
 				}
 			]
 		},
+		"npc.steward_brann.greeting": "Steward Brann. I keep Deepcut's ledgers. The mine pays the town, the town pays the Guild, and the Sunstone pays for all of it. Don't drink from the stream.",
+		"npc.trader_tamsin.greeting": "Tamsin Reed. Scrolls, blades, boots: whatever comes up the roads, I sell it on.",
+		"npc.trapped_miner.greeting": {
+			"text": "Ostrik, Shaft Seven. You got me out. I won't forget it.",
+			"next": "npc.trapped_miner.greeting_2"
+		},
+		"npc.trapped_miner.greeting_2": "Rock talks, you know. Always. Creaks, ticks, groans. Before the fall it went silent. Not quiet: silent. Then it came down.",
 		"npc.vael_stone.greeting": "A standing stone, taller than a man, carved with spirals worn almost smooth. It is warm to the touch.",
 		"npc.warden_dorne.about_ember": "Fire-priests from the south. They pay well and smile too much. Mind what you sign for them.",
 		"npc.warden_dorne.about_guild": {
 			"text": "We keep the roads, the bridges and the ledgers. Dull work, until something burns.",
 			"next": "npc.warden_dorne.about_guild_2"
 		},
-		"npc.warden_dorne.about_guild_2": "And lately something has been burning.",
+		"npc.warden_dorne.about_guild_2": "And lately the roads have been busier than the ledgers can explain.",
 		"npc.warden_dorne.greeting": {
-			"text": "Iska Dorne, Warden of the Floor Guild hall here at the Crossing. If the board sent you, you're the help I asked for.",
+			"text": "Iska Dorne, Warden of the Floor Guild hall. If you've come to sign the ledger, you're in the right place.",
 			"choices": [
 				{
 					"text": "What is the Floor Guild?",
@@ -58,60 +103,109 @@
 				}
 			]
 		},
-		"npc.warden_dorne.greeting.act1_complete": "The stone, the caravan, the Ember Hand's paper... you've seen more of this than anyone. The Guild won't forget it.",
-		"quest.act1_ash_on_the_road.accept": "I'll take a look",
-		"quest.act1_ash_on_the_road.accepted": "The places glow to a careful eye. Look for them, and examine each one.",
-		"quest.act1_ash_on_the_road.complete": "Ash in circles, a red wax seal, and the smell of oil. That's no lightning. That's the Ember Hand.",
-		"quest.act1_ash_on_the_road.decline": "Not today",
-		"quest.act1_ash_on_the_road.declined": "When you're ready, then. The ash isn't going anywhere.",
-		"quest.act1_ash_on_the_road.offer": "Travellers talk of scorched ground along the road through Greenfields: grass burnt in circles, no campfire anywhere near. Go and look at three of those places. Tell me what you find.",
-		"quest.act1_ash_on_the_road.progress": "Three scorched places. They're marked if you know how to look.",
-		"quest.act1_ash_on_the_road.spot.0.0": {
+		"npc.well_diggers.greeting": "We're the diggers. Point us at dry ground and keep the wolves off our backs.",
+		"quest.act1_01_guild_comes_to_millbrook.accept": "I'll clear the fields",
+		"quest.act1_01_guild_comes_to_millbrook.accepted": "Over the south bridge, then. Let them come to you, and step aside when they lunge. I'll shout if you do something foolish.",
+		"quest.act1_01_guild_comes_to_millbrook.complete": "That's how it's done: clean, quick, nobody trampled. The Floor Guild is taking applicants at the Crossing, down the south road. Come and find me there. I'll put your name forward myself.",
+		"quest.act1_01_guild_comes_to_millbrook.decline": "Not yet",
+		"quest.act1_01_guild_comes_to_millbrook.declined": "Fair enough. They'll still be there. That's rather the trouble.",
+		"quest.act1_01_guild_comes_to_millbrook.offer": "Wolves came down off the hills last night, and the boars followed them into the south fields. The Guild sent me to see how Millbrook copes. Show me. Drive them off the fields beyond the south bridge, three wolves and two boars, and I'll be watching.",
+		"quest.act1_01_guild_comes_to_millbrook.progress": "Still a few in the fields. Face them, hit them, and don't stand where they're about to be.",
+		"quest.act1_02_applicants_wanted.accept": "Sign me up",
+		"quest.act1_02_applicants_wanted.accepted": "Dorne's at the hall door; Harrow keeps the stores along the north wall. Don't let her talk you into the big boots.",
+		"quest.act1_02_applicants_wanted.complete": "There. You're one of us. Now, three trials, in any order you like: wells for the Windsteppe clans (that one's mine to give), grain for the miners of Deepcut, and a fever in Millbrook. The last two are on the Guild Board.",
+		"quest.act1_02_applicants_wanted.decline": "Give me a moment",
+		"quest.act1_02_applicants_wanted.declined": "Take your time. The ink won't dry.",
+		"quest.act1_02_applicants_wanted.offer": "The Guild takes anyone willing, but there's a ledger for everything. Register with Warden Dorne at the hall door and draw a kit from Quartermaster Harrow. Then I'll have real work for you.",
+		"quest.act1_02_applicants_wanted.progress": "Dorne first, then the quartermaster.",
+		"quest.act1_02_applicants_wanted.talk.0": "Name? Village? Good. You're in the ledger now, on probation. Everyone starts on probation, even the Prince did.",
+		"quest.act1_02_applicants_wanted.talk.1": "One Guild kit: a bedroll, a bandage, a blue armband. Wear the armband. People treat you kindly when they see it.",
+		"quest.act1_03_wells_for_the_windsteppe.accept": "I'll guard the diggers",
+		"quest.act1_03_wells_for_the_windsteppe.accepted": "The crew's waiting where the track leaves the Crossing, on the steppe side. Talk to them when you're ready to go.",
+		"quest.act1_03_wells_for_the_windsteppe.complete": "Water. Real water, in the old well! My grandmother would have wept. The herds are still dying, mind: it's the cold that takes them now. Winter came early and hard. But you did what you came for, and the clan won't forget it.",
+		"quest.act1_03_wells_for_the_windsteppe.decline": "Not now",
+		"quest.act1_03_wells_for_the_windsteppe.declined": "The wells will keep. The herds won't.",
+		"quest.act1_03_wells_for_the_windsteppe.escort.0": {
+			"speaker": "well_diggers",
+			"text": "Picks up, lads! Keep the Guild folk in sight. I'm not losing a hand to a wolf for one well."
+		},
+		"quest.act1_03_wells_for_the_windsteppe.failed": "The wolves got the diggers. Maren will find another crew.",
+		"quest.act1_03_wells_for_the_windsteppe.offer": "The clans on the Windsteppe have lost their wells to the drought, and their herds are thinning. The Guild has hired a digging crew. Walk them out to Tsaga's Camp, where the iron wolves have grown bold, and see the wells sunk. Saran will meet you there.",
+		"quest.act1_03_wells_for_the_windsteppe.progress": "Are the diggers through? And the wolves: they've been at the herds every night.",
+		"quest.act1_03_wells_for_the_windsteppe.restart": "Another crew volunteered: braver than the first, or they haven't heard. Will you walk them out?",
+		"quest.act1_04_grain_for_deepcut.accept": "Take the notice",
+		"quest.act1_04_grain_for_deepcut.accepted": "The notice bears the Guild's blue seal. The wagon waits at the Crossing end of the Road to Deepcut; tell the drover when you're ready.",
+		"quest.act1_04_grain_for_deepcut.complete": "Grain, and all of it! The Guild is generous. The mine owners will keep it in the company store, of course, for fairness, and sell it on at a fair price. Triple, I'd guess, this season. That's how it's done here. You did your part. Don't look at me like that.",
+		"quest.act1_04_grain_for_deepcut.decline": "Leave it pinned",
+		"quest.act1_04_grain_for_deepcut.declined": "The notice flutters on its pin.",
+		"quest.act1_04_grain_for_deepcut.escort.0": {
+			"speaker": "grain_caravan",
+			"text": "Grain for Deepcut! Stay by the wheels, friend. They say the road has teeth this season."
+		},
+		"quest.act1_04_grain_for_deepcut.failed": "The wagon's been burned and the grain scattered across the road.",
+		"quest.act1_04_grain_for_deepcut.offer": "RELIEF: A grain wagon is bound for Deepcut, where the miners' families have had a lean season. Escort required: bandits reported on the road. Report to Steward Brann on arrival. (Floor Guild)",
+		"quest.act1_04_grain_for_deepcut.progress": "The wagon? Bring it all the way. The road's longer than it looks.",
+		"quest.act1_04_grain_for_deepcut.restart": "RELIEF (posted again): A second grain wagon has been loaded. Escort required. (Floor Guild)",
+		"quest.act1_05_fever_in_millbrook.accept": "Take the notice",
+		"quest.act1_05_fever_in_millbrook.accepted": "Three stoppered draughts hang behind the notice in a cloth bag, with a note: 'For Wenna. Ask Odo for more hands.'",
+		"quest.act1_05_fever_in_millbrook.complete": "Deepcut's mine. Of course it is. And the Guild sent them grain only this month. Well. The fever's breaking, thanks to you and Odo. That's what matters today, isn't it?",
+		"quest.act1_05_fever_in_millbrook.decline": "Leave it pinned",
+		"quest.act1_05_fever_in_millbrook.declined": "The notice flutters on its pin.",
+		"quest.act1_05_fever_in_millbrook.deliver.1": "Odo's draughts! Bless him. Half the street is burning up, and every one of them drank from the river. It runs grey, you know, upstream. Follow it, if you want to know where the sickness starts.",
+		"quest.act1_05_fever_in_millbrook.offer": "URGENT: Fever in Millbrook. Healers needed. Odo the Apothecary, at the Crossing market, has supplies. Bring them to Healer Wenna, and find what is making the village sick. (Floor Guild)",
+		"quest.act1_05_fever_in_millbrook.progress": "The draughts are helping. But if it's the river, they'll be sick again by spring.",
+		"quest.act1_05_fever_in_millbrook.spot.2.0": {
 			"speaker": "hero",
-			"text": "A ring of burnt grass, perfectly round. In the middle, a scrap of red wax."
+			"text": "The river runs grey here, a dull shine like wet slate. Dead minnows drift in the reeds."
 		},
-		"quest.act1_ash_on_the_road.spot.0.1": {
+		"quest.act1_05_fever_in_millbrook.spot.3.0": {
 			"speaker": "hero",
-			"text": "Scorched earth by the road. Something heavy was dragged through the ash, toward the east."
+			"text": "The stream beside the road is greyer still. A fine silt coats every stone, and it is warm to the touch."
 		},
-		"quest.act1_ash_on_the_road.spot.0.2": {
+		"quest.act1_05_fever_in_millbrook.spot.4.0": {
 			"speaker": "hero",
-			"text": "Blackened stones, still faintly warm, and a smell of lamp oil."
+			"text": "The grey pours straight out of the tailings pond below the mine. The silt glitters amber in the light, like crushed Sunstone."
 		},
-		"quest.act1_ember_writ.accept": "I'll deliver it",
-		"quest.act1_ember_writ.accepted": "Don't break the seal. It would only upset you.",
-		"quest.act1_ember_writ.complete": "They'll get their answer. Thank you for carrying it, whatever was in it.",
-		"quest.act1_ember_writ.decline": "Find another errand-runner",
-		"quest.act1_ember_writ.declined": "Pity. The Hand remembers its friends... and the others.",
-		"quest.act1_ember_writ.deliver.0": "An Ember Hand seal. Of course. They want my ore, and they want it cheap.",
-		"quest.act1_ember_writ.offer": "You've been poking around the burnt fields, haven't you? Let's be friends. Take this writ to Foreman Brannoc at the Deepcut mine, east along the Road to Deepcut. She'll want what's in it.",
-		"quest.act1_ember_writ.progress": "The Ember Hand sent you? Then you've got something for me.",
-		"quest.act1_guild_summons.accept": "Take the notice",
-		"quest.act1_guild_summons.complete": "You came. Good. Here's for your boots; you'll wear them out soon enough.",
-		"quest.act1_guild_summons.decline": "Leave it pinned",
-		"quest.act1_guild_summons.offer": "SUMMONS: Capable hands wanted by the Floor Guild. Report to Warden Dorne at the Guild Hall, here at the Crossing. Pay on arrival.",
-		"quest.act1_ore_for_millbrook.accept": "I'll guard the caravan",
-		"quest.act1_ore_for_millbrook.accepted": "Talk to the drover when you're ready to roll. It won't go faster than you can follow.",
-		"quest.act1_ore_for_millbrook.complete": "Bedrun ore out of Deepcut, and not one coin paid to the Ember Hand. Brannoc owes you, and frankly so do I.",
-		"quest.act1_ore_for_millbrook.decline": "Not yet",
-		"quest.act1_ore_for_millbrook.escort.0": {
-			"speaker": "ore_caravan",
-			"text": "Hup! Stay close, the wolves smell the mules from a mile off."
-		},
-		"quest.act1_ore_for_millbrook.failed": "The caravan's lost. Brannoc will want to try again.",
-		"quest.act1_ore_for_millbrook.offer": "That writ says the Hand will buy our ore at the mine mouth, or we'll find the road unsafe. Well, I'd rather sell to Millbrook. Walk my caravan down the street to the canyon gate, and keep the Hand's fire hounds off it.",
-		"quest.act1_ore_for_millbrook.progress": "My caravan. Is it out of the canyon yet?",
-		"quest.act1_ore_for_millbrook.restart": "The wagon's patched and the drover's sober. Shall we try the road again?",
-		"quest.act1_what_the_stone_remembers.accept": "I'll go to the stone",
-		"quest.act1_what_the_stone_remembers.complete": "Then the Ember Hand is waking something under the Heartland. This is only the first page of it. Rest; we will need you.",
-		"quest.act1_what_the_stone_remembers.decline": "Another time",
-		"quest.act1_what_the_stone_remembers.interact.0": {
+		"quest.act1_05_fever_in_millbrook.talk.0": "Fever in Millbrook? I'll send both my apprentices tonight. Tell Wenna the willow bark is the strong batch: half a spoon, no more.",
+		"quest.act1_06_recognition.accept": "Lead the way",
+		"quest.act1_06_recognition.accepted": "He's at the hall steps. Stand up straight. He hates that, so he'll like you for it.",
+		"quest.act1_06_recognition.complete": "I won't pretend it's all mended. Word came this morning: the miners in Deepcut's deep seams have gone silent. Not striking. Silent. They don't answer when called. I need people I trust to go down and find out why. Will you? (Act I continues in 1-07, The Silent Shaft.)",
+		"quest.act1_06_recognition.decline": "In a moment",
+		"quest.act1_06_recognition.declined": "Don't keep him long. He'd never say so, but he notices.",
+		"quest.act1_06_recognition.offer": "Three missions, three successes. The ledgers are delighted with you. Come to the hall: the Prince himself has asked to meet our newest members.",
+		"quest.act1_06_recognition.progress": "Go on. He's waiting for you, of all people.",
+		"quest.act1_06_recognition.talk.0": "So you're the ones. Wells on the steppe, bread in Deepcut, medicine in Millbrook. Do you know how rare that is, people who simply go and do the good thing?",
+		"quest.act1_side_pins_on_the_map.accept": "Take the notice",
+		"quest.act1_side_pins_on_the_map.accepted": "A bundle of blue pins is tied to the notice.",
+		"quest.act1_side_pins_on_the_map.complete": "You marked them all? Let me see. Hm. They do line up, don't they, along the mine roads. It's only that the roads are where people live, I'm sure. I'm sure.",
+		"quest.act1_side_pins_on_the_map.decline": "Leave it pinned",
+		"quest.act1_side_pins_on_the_map.declined": "The notice flutters on its pin.",
+		"quest.act1_side_pins_on_the_map.interact.4": {
 			"speaker": "hero",
-			"text": "Warmth runs up your arm. For a moment you see figures in red robes, pouring oil into the earth, and the stone glowing back at them."
+			"text": "You push in the last pin and step back. Millbrook's river, the steppe wells, the Deepcut road, the tailings pond: every pin sits on a Sunstone road. Every single one."
 		},
-		"quest.act1_what_the_stone_remembers.offer": "The fires on the road lead toward an old Vael stone on the Windsteppe, west of the Crossing. Lay your hand on it, and drive off the iron wolves that prowl around it. The stone will tell you what it saw.",
-		"quest.act1_what_the_stone_remembers.progress": "Have you touched the stone? Have the wolves gone?",
-		"quest.act1_what_the_stone_remembers.world_flag": "End of Act I (prototype): the Vael stone has spoken. Something stirs beneath the Heartland.",
+		"quest.act1_side_pins_on_the_map.offer": "SURVEY: Confirm every site the Guild has relieved this season, Millbrook's river, Tsaga's Camp, the Deepcut road and the Deepcut works, and mark them on the great map in the hall. (Floor Guild)",
+		"quest.act1_side_pins_on_the_map.progress": "Visit each site, then pin it on the map in the hall.",
+		"quest.act1_side_shift_bell.accept": "Answer the bell",
+		"quest.act1_side_shift_bell.accepted": "The chalk is fresh. Shaft Seven is the old opening in the spur, just north of the street.",
+		"quest.act1_side_shift_bell.complete": "Out. Daylight. Sun bless you. Take the shift's pay, it was owed me anyway. And remember what I told you: the rock went silent first.",
+		"quest.act1_side_shift_bell.decline": "Leave it",
+		"quest.act1_side_shift_bell.declined": "Somewhere below, a bell rings on, very faintly.",
+		"quest.act1_side_shift_bell.interact.0": {
+			"speaker": "hero",
+			"text": "You heave timbers aside until a gap opens. A voice calls up from the dark: 'Here! Here, for the love of the Sun!'"
+		},
+		"quest.act1_side_shift_bell.offer": "SHIFT BELL: Shaft Seven has rung its bell. Men trapped below. Volunteers wanted to clear the rubble. Things have been seen walking near the old workings: go armed. (Steward Brann)",
+		"quest.act1_side_shift_bell.progress": "Is the shaft clear? Those things by the workings are drifters, nothing more. Probably.",
+		"quest.act1_side_shift_bell.talk.2": "You came down for me? The others went quiet before the rock did. I swear it: the rock was silent before it fell.",
+		"quest.act1_side_the_white_death.accept": "I'll help",
+		"quest.act1_side_the_white_death.accepted": "The iron wolves run in packs on the open steppe. Take their pelts; they'd take ours.",
+		"quest.act1_side_the_white_death.complete": "The gers will hold the heat now. We'll live to the thaw, most of us. The elders say the spirits went quiet the year the new mine road came through. I don't know what that means. Neither do they.",
+		"quest.act1_side_the_white_death.decline": "Not now",
+		"quest.act1_side_the_white_death.declined": "Then may the wind be kind to you. It hasn't been to us.",
+		"quest.act1_side_the_white_death.deliver.1": "Oats and dried meat. Kind. The steppe spirits have gone quiet, stranger. All winter we have sung to them, and nothing sings back. The elders have never known it. Not once.",
+		"quest.act1_side_the_white_death.offer": "The cold is killing what's left of the herds, and the clan with them. Bring me iron wolf pelts to line the gers, four will do, and take these stores to Elder Tsaga. The Guild sent them; she'll want them from Guild hands.",
+		"quest.act1_side_the_white_death.progress": "Four pelts, and the stores to Tsaga.",
 		"quest.bandit_camp.complete": "Bandits gone, but they'd been hunting a bear — a huge, scarred one. That's worse news than bandits.",
 		"quest.bandit_camp.offer": "Those wolves were fleeing something. Scouts saw bandits camped at the southern end of Greenfields, across the river. Find their camp (look for the red banner) and break their two brutes.",
 		"quest.bandit_camp.progress": "Cross the river by the bridge nearest the town road; the camp is just past it, under a red banner. Mind the brutes: slow, but they hit like a falling tree.",
@@ -122,22 +216,61 @@
 		"quest.goblin_fetishes.complete": "Ugh, they still hum. Into the fire they go. Take something for your pains.",
 		"quest.goblin_fetishes.offer": "The goblin shamans on the western hill carve fetishes that sour the wells. Bring me five and I'll see them burned.",
 		"quest.goblin_fetishes.progress": "Five fetishes, child. The shamans keep their distance — corner them or out-shoot them.",
-		"quest.side_bandits_on_the_ore_road.complete": "Both of them? You're worth your weight in copper. Here.",
-		"quest.side_bandits_on_the_ore_road.offer": "BOUNTY: two bandit brutes waylay ore wagons south of the camp. Break them. Payment from Foreman Brannoc.",
-		"quest.side_bandits_on_the_ore_road.progress": "Those brutes still about? They're south, by the red banner.",
-		"quest.side_collapsed_shaft.complete": "Noted on the board: Shaft Seven is breathing. You add a chalk mark under the notice.",
-		"quest.side_collapsed_shaft.interact.0": {
-			"speaker": "hero",
-			"text": "You press your ear to the rocks. Far below, something knocks, slow and steady, like a heartbeat."
-		},
-		"quest.side_collapsed_shaft.offer": "NOTICE: Shaft Seven collapsed in the spring. Someone check whether it is still breathing. (The shaft, not the miners. Probably.)",
-		"quest.side_guild_patrol.complete": "Bridge standing, river flowing. Dull is good. Thank you.",
-		"quest.side_guild_patrol.offer": "PATROL: Walk to the north bridge in Greenfields and back. Report anything odd to Warden Dorne.",
-		"quest.side_guild_patrol.progress": "The north bridge, then back to me.",
 		"quest.wolves_at_the_gate.complete": "Good work. The shepherds will sleep easier. I may have more for you.",
 		"quest.wolves_at_the_gate.offer": "Wolves have been taking sheep right outside the east gate. Thin the pack: four should teach them.",
 		"quest.wolves_at_the_gate.progress": "Four wolves. They hunt in the fields just past the gate.",
-		"quest.word_to_hilda.complete": "Frost, eh? Thank Maren for telling me. Here, take these for your trouble.",
-		"quest.word_to_hilda.offer": "Hilda at the stall has been asking after my herbs. Tell her the frost got them this year, would you? My knees won't carry me there."
+		"quest.word_to_hilda.complete": "Frost, eh? Thank Ottilie for telling me. Here, take these for your trouble.",
+		"quest.word_to_hilda.offer": "Hilda at the stall has been asking after my herbs. Tell her the frost got them this year, would you? My knees won't carry me there.",
+		"quest.act1_06_recognition.world_flag": "Word comes up from Deepcut: Steward Brann went down into the deep seams after the silent miners, alone. He has not come back up.",
+		"quest.act1_07_the_silent_shaft.offer": "The deep seams went silent three days ago. Then Steward Brann went down after his miners, alone, and the silence took him too. I can't order anyone into that dark. I'm asking. The mine entrance is in Deepcut's yard. Take friends: three of you at the least.",
+		"quest.act1_07_the_silent_shaft.accept": "We'll go down",
+		"quest.act1_07_the_silent_shaft.decline": "Not yet",
+		"quest.act1_07_the_silent_shaft.accepted": "Sun keep you. I'll follow as soon as the Steward's office gives up the shaft keys.",
+		"quest.act1_07_the_silent_shaft.declined": "I understand. I'll be here, if you change your mind.",
+		"quest.act1_07_the_silent_shaft.progress": "Still here? The mine entrance is in Deepcut's yard, just north of the street. Go carefully, and go together.",
+		"quest.act1_07_the_silent_shaft.talk.3": {
+			"text": "By the Sun. Was that... was that Brann? I've known him twenty years. He kept my ledgers. He sent me a jar of honey every midwinter. He...",
+			"next": "quest.act1_07_the_silent_shaft.talk.3.b"
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.b": {
+			"text": "That Heart was Sunstone. Our Sunstone. Every well we dug, every wagon of grain, every draught of medicine was paid for with what comes out of this rock. And this is what it does to the people who dig it.",
+			"next": "quest.act1_07_the_silent_shaft.talk.3.c"
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.c": {
+			"text": "The Guild can't mend this. The Guild is part of it. There are people who saw it long before I did: the Ember Hand. I've been listening to them for a while. I think it's time I did more than listen.",
+			"choices": [
+				{
+					"text": "The Ember Hand set fire hounds on Deepcut's road.",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.hounds"
+				},
+				{
+					"text": "What would you have us do?",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.ask"
+				}
+			]
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.hounds": {
+			"text": "Some of them did, yes. A hand that burns is still a hand. I would rather it burned the right things, and it will, with people like you beside it.",
+			"next": "quest.act1_07_the_silent_shaft.talk.3.ask"
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.ask": {
+			"text": "Come with me. Not as Guild volunteers: as the Ember Hand. We find where the grey begins, and we put it out. Will you?",
+			"choices": [
+				{
+					"text": "We're with you.",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.done"
+				},
+				{
+					"text": "For now. Show us the truth.",
+					"next": "quest.act1_07_the_silent_shaft.talk.3.done"
+				}
+			]
+		},
+		"quest.act1_07_the_silent_shaft.talk.3.done": "Then it's done. Take what you need from the Guild's stores; you won't be going back to them. Speak to me again when you're ready to leave this place.",
+		"quest.act1_07_the_silent_shaft.complete": "Here: these were the Guild's. Let them do some good now. Come, the lift is waiting. The Crossing first, and then we begin.",
+		"quest.act1_07_the_silent_shaft.world_flag": "Far below Deepcut, a cracked crystal falls silent. The Floor Guild has lost its founder to the Ember Hand.",
+		"npc.caedan_shaft.greeting": "I came down as soon as they gave me the keys. I... give me a moment.",
+		"npc.maren_voss.greeting.act1_complete": "You're back. They say the deep seams are quiet now, and the Prince won't speak of what he saw down there. Whatever you do next... I hope it's the right thing.",
+		"npc.caedan_ashvale.greeting.brann_descended": "Brann went down alone. Of course he did; he never asked anyone to do what he wouldn't. I should have gone with him."
 	}
 }

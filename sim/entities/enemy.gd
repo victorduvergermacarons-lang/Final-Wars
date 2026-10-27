@@ -34,6 +34,14 @@ var level: int = 1
 var temporary := false
 ## Seconds from death to respawn for this one (< 0 = its type's respawn_seconds).
 var respawn_seconds := -1.0
+## Takes no damage (a boss's heart before its last phase).
+var invulnerable := false
+## Can't be brought below this much health (a boss its heart keeps alive); 0 = none.
+var min_hp := 0.0
+## The party size it is scaled for (CombatRules "Party size"): its max HP, its
+## damage and its kill XP grow with it.
+var party_size := 1
+var damage_scale := 1.0
 
 
 ## Flying and not knocked down (EnemyDef.grounded_buff).
@@ -66,6 +74,25 @@ func combat_step_cooldown(rules: CombatRules, now: float) -> float:
 	if def.combat_step_seconds > 0.0:
 		return def.combat_step_seconds
 	return super(rules, now)
+
+
+## Whether it grows with the party (elites are built for groups; dummies never change).
+func scales_with_party() -> bool:
+	return (not def.elite or def.dungeon_boss) and not def.training_dummy
+
+
+## Scales it for `heroes` heroes: max HP from its type's, keeping the share of
+## health it has; harder hits. Called while it isn't fighting.
+func set_party_size(heroes: int, rules: CombatRules) -> void:
+	var n := clampi(heroes, 1, rules.party_max_size) if rules.party_scaling and scales_with_party() else 1
+	if n == party_size:
+		return
+	var share := hp / maxf(stats.hp, 1.0)
+	party_size = n
+	stats.hp = roundf(def.stats.hp * rules.party_hp_multiplier(n))
+	damage_scale = rules.party_damage_multiplier(n)
+	if alive:
+		hp = maxf(roundf(stats.hp * share), 1.0)
 
 
 ## Keeps the threat table so WorldSim can split XP; WorldSim clears it after.

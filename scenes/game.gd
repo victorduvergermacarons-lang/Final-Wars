@@ -109,6 +109,7 @@ func _build_client(zone: ZoneDef) -> void:
 	add_child(hud)
 	hud.setup(session, client, input, settings_path)
 	hud.leave_requested.connect(func(): ended.emit("Your hero is saved."))
+	hud.act_completed.connect(func(_act): save_now()) # Act I complete: saved at once
 	var sound := SoundDirector.new()
 	sound.name = "SoundDirector"
 	add_child(sound)

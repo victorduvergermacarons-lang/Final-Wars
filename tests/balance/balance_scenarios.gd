@@ -55,3 +55,13 @@ const ROWS := [
 	["pair vs Grizzlehide [5]", [L5_TANK, L5_HEALER], &"old_grizzlehide", 1, 5],
 	["group of 4 vs Grizzlehide [5]", [L5_TANK, L5_FIRE, L5_HEALER, L5_ARCHER], &"old_grizzlehide", 1, 5],
 ]
+
+## The Foreman and the Grey Heart (the Silent Shaft, quest 1-07): [label, heroes, hero level].
+const FOREMAN_ROWS := [
+	["solo vs the Foreman [10]", [L5_TANK], 10],
+	["pair vs the Foreman [10]", [L5_TANK, L5_HEALER], 10],
+	["three vs the Foreman [10]", [L5_TANK, L5_FIRE, L5_HEALER], 10],
+	["four vs the Foreman [10]", [L5_TANK, L5_FIRE, L5_HEALER, L5_ARCHER], 10],
+	["three vs the Foreman [11]", [L5_TANK, L5_FIRE, L5_HEALER], 11],
+	["four vs the Foreman [9]", [L5_TANK, L5_FIRE, L5_HEALER, L5_ARCHER], 9],
+]

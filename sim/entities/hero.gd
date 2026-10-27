@@ -9,6 +9,10 @@ var level: int = 1
 var gold: int = 0
 ## Per-quest progress, saved with the character (filled in by the quest system).
 var quest_state := {}
+## What this hero has done, for the end-of-act screen (saved with the character):
+## kills, damage (dealt to enemies), healing, deaths, quests (handed in), and
+## acts (the acts finished, e.g. [1]).
+var records := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests": 0, "acts": []}
 ## Client copy of loot waiting for this hero (filled from the host's snapshot).
 var pending_loot: Array = []
 var xp: float = 0.0

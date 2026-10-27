@@ -155,6 +155,29 @@ const GAME_SPEED_MAX := 2.0
 ## Melee attacks from directly behind can't miss.
 @export var behind_never_misses: bool = true
 
+@export_group("Party size")
+## Enemies grow with the number of heroes in their zone (1-4): more health and
+## harder hits, and a kill's XP grows the same, so each hero earns what a solo
+## hero would. Elites (built for groups) and training dummies don't scale.
+@export var party_scaling: bool = true
+## Extra max HP per hero beyond the first (0.7: 1.7x for two, 3.1x for four).
+@export var party_hp_per_extra_hero: float = 0.7
+## Extra damage dealt per hero beyond the first (0.1: 1.3x for four).
+@export var party_damage_per_extra_hero: float = 0.1
+## The largest party scaled for.
+@export var party_max_size: int = 4
+
+@export_group("Dungeons")
+## The smallest party that may enter a dungeon.
+@export var dungeon_min_party: int = 3
+## The "testing" setting: a party of one may enter (on by default in debug builds,
+## a toggle in the Escape menu's Gameplay test page).
+@export var dungeon_testing: bool = false
+## A dungeon copy nobody is in closes after this long (a new one opens next time).
+@export var dungeon_close_seconds: float = 60.0
+## After a party wipe (everyone inside dead), everyone stands up at the entrance this long after.
+@export var wipe_respawn_seconds: float = 3.0
+
 @export_group("XP by level")
 ## Each level the enemy is above you: +this percent XP, up to the cap.
 @export var xp_bonus_percent_per_level_above: float = 10.0
@@ -164,3 +187,18 @@ const GAME_SPEED_MAX := 2.0
 ## …losing this percent per level from there, down to the floor.
 @export var xp_penalty_percent_per_level: float = 20.0
 @export var xp_floor_percent: float = 20.0
+
+
+## The smallest party allowed into a dungeon right now.
+func min_dungeon_party() -> int:
+	return 1 if dungeon_testing else dungeon_min_party
+
+
+## Max HP multiplier for an enemy facing `heroes` heroes.
+func party_hp_multiplier(heroes: int) -> float:
+	return 1.0 + party_hp_per_extra_hero * (clampi(heroes, 1, party_max_size) - 1)
+
+
+## Damage multiplier for an enemy facing `heroes` heroes.
+func party_damage_multiplier(heroes: int) -> float:
+	return 1.0 + party_damage_per_extra_hero * (clampi(heroes, 1, party_max_size) - 1)

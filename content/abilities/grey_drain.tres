@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
+[ext_resource type="Resource" path="res://content/buffs/greyed.tres" id="4_greyed"]
+
+[sub_resource type="Resource" id="Resource_fx0"]
+script = ExtResource("1_fx")
+kind = 4
+buff = ExtResource("4_greyed")
+
+[resource]
+script = ExtResource("3_ab")
+id = &"grey_drain"
+display_name = "Grey Ground"
+description = "The grey creeps over the stone: whoever stands on it is slowed and drained of mana."
+max_range = 0
+on_gcd = false
+requires_line_of_sight = false
+targeting = 1
+effects = Array[ExtResource("1_fx")]([SubResource("Resource_fx0")])

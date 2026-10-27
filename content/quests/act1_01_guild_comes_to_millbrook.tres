@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 0
+text = "Wolves driven off the fields"
+count = 3
+enemy = &"wolf"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("1_obj")
+kind = 0
+text = "Boars driven off the fields"
+count = 2
+enemy = &"boar"
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_01_guild_comes_to_millbrook"
+title = "1-01 The Guild Comes to Millbrook"
+category = 0
+area = "Millbrook"
+giver = &"maren_voss_field"
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1")])
+reward_xp = 120
+reward_gold = 15
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion")])
+reward_choice_ids = Array[StringName]([&"pebble_scroll", &"open_palm_scroll", &"hunters_shortbow"])

@@ -34,6 +34,7 @@ static func capture(hero: Hero) -> Dictionary:
 		"quests": hero.quest_state.duplicate(true),
 		"learning": String(hero.learning_item.id) if hero.learning_item != null else "",
 		"mastery_contrib": _contrib_out(hero.mastery_contrib),
+		"records": hero.records.duplicate(true),
 	}
 
 
@@ -98,6 +99,7 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 			if ability != null and ability.is_tree_ability():
 				var cap := float(ability.sheet.get("mastery_cap", 0.0))
 				hero.mastery_contrib[ability.id] = clampf(_float(contrib[key], 0.0), 0.0, cap + float(ability.sheet.get("mastery_on_learn", 0.0)))
+	hero.records = records_in(data.get("records"))
 	# The learning slot: a scroll (held there, not in the bag) or a worn weapon.
 	var learning: ItemDef = content.items.get(StringName(_renamed(data.get("learning", ""))))
 	if learning != null and learning.tree_ability() != null:
@@ -119,6 +121,24 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	hero.hp = hero.stats.hp
 	hero.mana = hero.stats.mana
 	return hero
+
+
+## A hero's records from saved data, clamped (see Hero.records).
+static func records_in(raw) -> Dictionary:
+	var out := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests": 0, "acts": []}
+	if typeof(raw) != TYPE_DICTIONARY:
+		return out
+	for key in ["kills", "deaths", "quests"]:
+		out[key] = clampi(_int(raw.get(key), 0), 0, 1_000_000_000)
+	for key in ["damage", "healing"]:
+		out[key] = clampf(_float(raw.get(key), 0.0), 0.0, 1.0e15)
+	var acts = raw.get("acts")
+	if typeof(acts) == TYPE_ARRAY:
+		for a in acts:
+			var n := _int(a, 0)
+			if n > 0 and n < 100 and not out.acts.has(n):
+				out.acts.append(n)
+	return out
 
 
 static func _has_tree_item(hero: Hero) -> bool:

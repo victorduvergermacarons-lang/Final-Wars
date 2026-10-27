@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_entry"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="2_table"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+[ext_resource type="Resource" path="res://content/items/minor_mana_potion.tres" id="item_minor_mana_potion"]
+[ext_resource type="Resource" path="res://content/items/sunstone_shard.tres" id="item_sunstone_shard"]
+
+[sub_resource type="Resource" id="Resource_e0"]
+script = ExtResource("1_entry")
+item_id = &"leech_tide_scroll"
+chance = 0.35
+
+[sub_resource type="Resource" id="Resource_e1"]
+script = ExtResource("1_entry")
+item_id = &"blazing_fist_scroll"
+chance = 0.35
+
+[sub_resource type="Resource" id="Resource_e2"]
+script = ExtResource("1_entry")
+item_id = &"tidal_scroll"
+chance = 0.35
+
+[sub_resource type="Resource" id="Resource_e3"]
+script = ExtResource("1_entry")
+item = ExtResource("item_minor_health_potion")
+chance = 1
+
+[sub_resource type="Resource" id="Resource_e4"]
+script = ExtResource("1_entry")
+item = ExtResource("item_minor_mana_potion")
+chance = 1
+
+[sub_resource type="Resource" id="Resource_e5"]
+script = ExtResource("1_entry")
+item = ExtResource("item_sunstone_shard")
+chance = 1
+
+[resource]
+script = ExtResource("2_table")
+gold_min = 25
+gold_max = 45
+entries = Array[ExtResource("1_entry")]([SubResource("Resource_e0"), SubResource("Resource_e1"), SubResource("Resource_e2"), SubResource("Resource_e3"), SubResource("Resource_e4"), SubResource("Resource_e5")])

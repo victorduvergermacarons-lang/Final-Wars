@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_ability"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="2_enemy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="3_stats"]
+
+[sub_resource type="Resource" id="Resource_stats"]
+script = ExtResource("3_stats")
+hp = 150.0
+phys_def = 10.0
+mag_def = 10.0
+
+[resource]
+script = ExtResource("2_enemy")
+id = &"grey_heart"
+display_name = "The Grey Heart"
+level = 10
+stats = SubResource("Resource_stats")
+abilities = Array[ExtResource("1_ability")]([])
+aggro_radius = 0
+leash_radius = 99
+xp_reward = 0
+respawn_seconds = 1e+09
+immobile = true
+look = 1
+weight = 2

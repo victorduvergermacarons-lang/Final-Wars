@@ -4,7 +4,7 @@ extends SceneTree
 ## writes them back into the files, so the copies on disk match.
 ## Usage: godot --headless --path . -s res://tools/once/bake_zone_rows.gd
 
-const ZONES := ["town", "crossing", "deepcut_road", "deepcut", "windsteppe", "tidereach_shore"]
+const ZONES := ["town", "crossing", "deepcut_road", "deepcut", "windsteppe", "tidereach_shore", "silent_shaft"]
 
 
 func _init() -> void:

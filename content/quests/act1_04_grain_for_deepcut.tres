@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 4
+text = "Escort the grain wagon to Deepcut's end of the road"
+npc = &"grain_caravan"
+zone = &"deepcut_road"
+path = Array[Vector2i]([Vector2i(19, 10), Vector2i(21, 7), Vector2i(37, 8), Vector2i(40, 10), Vector2i(55, 10)])
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_04_grain_for_deepcut"
+title = "1-04 Grain for Deepcut"
+category = 0
+area = "Road to Deepcut"
+giver = &"guild_board"
+turn_in = &"steward_brann"
+prerequisites = Array[StringName]([&"act1_02_applicants_wanted"])
+min_level = 3
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0")])
+reward_xp = 450
+reward_gold = 40
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion")])
+reward_choice_ids = Array[StringName]([&"cinder_kick_scroll", &"stomp_scroll", &"yew_longbow"])

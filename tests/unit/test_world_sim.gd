@@ -40,6 +40,7 @@ func _item(id: StringName, slot: EquipSlot.Type, teaches: Array[AbilityDef]) -> 
 
 func before_each() -> void:
 	rules = CombatRules.new()
+	rules.party_scaling = false # exact numbers here; party scaling has its own tests
 	var zone := ZoneDef.new()
 	zone.id = &"test"
 	var heights: PackedStringArray = []
