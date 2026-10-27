@@ -8,11 +8,12 @@ extends RefCounted
 ## fight); enemies near an escort's path are moved out of the way for the walk
 ## and come back after. Used by tests/integration/test_act1_playthrough.gd.
 
-## Every Act I quest of milestone 3, in the order the test plays them.
+## Every Act I quest, in the order the test plays them (1-07 last: the Silent
+## Shaft, the dungeon, and the end of the act).
 const ORDER := [&"act1_01_guild_comes_to_millbrook", &"act1_02_applicants_wanted",
 		&"act1_03_wells_for_the_windsteppe", &"act1_side_the_white_death", &"act1_04_grain_for_deepcut",
 		&"act1_side_shift_bell", &"act1_05_fever_in_millbrook", &"act1_06_recognition",
-		&"act1_side_pins_on_the_map"]
+		&"act1_side_pins_on_the_map", &"act1_07_the_silent_shaft"]
 const LOOP_LIMIT := 400
 
 var db
@@ -23,11 +24,15 @@ var problem := ""
 ## XP earned per quest by the first hero: [quest id, from kills, from the reward, level after, kills].
 var log: Array = []
 var kills := 0
+## The last "act_complete" event (the last hero to hand in: the end-of-act screen's data).
+var act_end := {}
 
 
 func _init(p_db, size: int, seed: int = 11) -> void:
 	db = p_db
-	world = World.new(db.zones.values(), db.rules, seed, &"town", db.quests)
+	world = World.new(db.zones.values(), db.rules.duplicate(), seed, &"town", db.quests)
+	# Dungeons need three; a smaller party plays with the testing setting.
+	world.rules.dungeon_testing = size < world.rules.dungeon_min_party
 	for i in size:
 		party.append(world.add_saved_hero(CharacterData.new_character("Hero%d" % (i + 1), db.heroes[&"adventurer"]), db))
 
@@ -60,9 +65,12 @@ func zone_of_enemy(enemy_id: StringName) -> StringName:
 	return &""
 
 
-## Puts hero `h` on (or next to) `near` in zone `zone_id`.
+## Puts hero `h` on (or next to) `near` in zone `zone_id` (a dungeon: the party's
+## copy, entered through its door as players do).
 func place(h: Hero, zone_id: StringName, near: Vector2i) -> void:
-	if world.zone_of(h.id).zone.id != zone_id:
+	if world.is_dungeon(zone_id):
+		zone_id = enter_dungeon(zone_id)
+	if world.zone_of(h.id).key != zone_id:
 		world.move_hero(h.id, zone_id, near)
 	var sim := world.zone(zone_id)
 	var free := not sim.is_occupied(near, h) and sim.grid.is_walkable(near)
@@ -73,6 +81,34 @@ func place(h: Hero, zone_id: StringName, near: Vector2i) -> void:
 func gather(zone_id: StringName, near: Vector2i) -> void:
 	for h in party:
 		place(h, zone_id, near)
+
+
+## Walks the whole party through the door of dungeon `def_id` (an exit tile in
+## another zone) unless it is already inside; returns the party's copy's key.
+func enter_dungeon(def_id: StringName) -> StringName:
+	var key := world.instance_key(def_id, leader().id)
+	for h in party:
+		if world.zone_of(h.id).key == key:
+			continue
+		var door := _door_to(def_id)
+		world.move_hero(h.id, door[0], world.zone(door[0]).find_free_tile_near(door[1] + Vector2i(0, 1)))
+		world.step()
+		h.move.place(door[1])
+		var events := world.step()
+		if world.zone_of(h.id).key != key:
+			problem = "%s couldn't enter %s: %s" % [h.display_name, def_id,
+					events.filter(func(e): return e.type == "rejected" and e.target == h.id)]
+			return key
+	return key
+
+
+## [zone id, tile] of the exit that leads into `def_id`.
+func _door_to(def_id: StringName) -> Array:
+	for z in db.zones.values():
+		for e in z.exits:
+			if e.to_zone == def_id:
+				return [z.id, e.tile]
+	return [&"", Vector2i.ZERO]
 
 
 func send(h: Hero, intent: Dictionary) -> Array[Dictionary]:
@@ -104,6 +140,7 @@ func play(id: StringName) -> bool:
 	var giver := npc(giver_zone, def.giver)
 	gather(giver_zone, giver.tile())
 	var events := send(leader(), {"type": "accept_quest", "npc": giver.id, "quest": id})
+	act_end = {}
 	for h in party.slice(1):
 		if not events.any(func(e): return e.type == "quest_shared" and e.target == h.id):
 			return _fail("%s wasn't offered %s" % [h.display_name, id])
@@ -125,6 +162,9 @@ func play(id: StringName) -> bool:
 		place(h, turn_zone, turn_npc.tile())
 		var choice := 0 if not def.reward_choices.is_empty() else -1
 		var done := send(h, {"type": "turn_in_quest", "npc": turn_npc.id, "quest": id, "choice": choice})
+		for e in done:
+			if e.type == "act_complete" and e.target == h.id: # the last hero's screen: everyone has handed in
+				act_end = e
 		if not QuestLog.is_done(h, id):
 			var why := done.filter(func(e): return e.type == "rejected" and e.target == h.id)
 			return _fail("%s couldn't hand in %s: %s" % [h.display_name, id, why])
@@ -136,6 +176,10 @@ func _objective(def: QuestDef, i: int) -> bool:
 	var o := def.objectives[i]
 	match o.kind:
 		QuestObjective.Kind.KILL:
+			var zid := zone_of_enemy(o.enemy)
+			if zid != &"" and world.zone(zid).encounter != null \
+					and world.zone(zid).encounter.def.heart.id == o.enemy:
+				return _beat_boss(world.zone(zid))
 			return _kill_until(o.enemy, func(): return _all_have(def, i))
 		QuestObjective.Kind.COLLECT:
 			var source := _dropper_of(o.item, def.id)
@@ -209,6 +253,48 @@ func _kill_until(enemy_id: StringName, done: Callable) -> bool:
 		kills += 1
 		world.step()
 	return _fail("gave up killing %s" % enemy_id)
+
+
+## A boss encounter, short-cut like the other fights but through its phases: the
+## party brings the boss down to each phase's threshold, then breaks the Heart
+## once it opens (phase 3). The party is on both tables, so the kill counts for all.
+func _beat_boss(sim: WorldSim) -> bool:
+	var enc := sim.encounter
+	var boss := enc.boss(sim)
+	var heart := enc.heart(sim)
+	gather(sim.key, boss.tile() + Vector2i(-3, 0))
+	world.step()
+	for h in party:
+		boss.threat.add(h.id, 1.0)
+	boss.state = Enemy.State.COMBAT
+	world.step()
+	for f in [enc.def.phase_at[0] - 0.01, enc.def.phase_at[1] - 0.01]:
+		var hits: Array[Dictionary] = []
+		AbilityResolver.deal_damage(sim.ctx, leader(), boss, &"S01", boss.hp - roundf(boss.stats.hp * f), false, hits)
+		sim._emit_resolved(hits)
+		world.step()
+	if enc.phase != 3 or heart.invulnerable:
+		return _fail("the boss stayed in phase %d" % enc.phase)
+	for h in party:
+		heart.threat.add(h.id, 1.0)
+	var hits: Array[Dictionary] = []
+	AbilityResolver.deal_damage(sim.ctx, leader(), heart, &"S01", heart.hp + 1.0, false, hits)
+	sim._emit_resolved(hits)
+	kills += 2
+	world.step()
+	if not enc.defeated:
+		return _fail("the Heart didn't end the fight")
+	return true
+
+
+## Closes the end-of-act screen for every hero (the finish_act intent), as the
+## button does; true when they are all back in `zone_id`.
+func finish_act(quest_id: StringName, zone_id: StringName) -> bool:
+	for h in party:
+		world.submit(h.id, Intents.sanitize({"type": "finish_act", "quest": quest_id}))
+	world.step()
+	world.step()
+	return party.all(func(h): return world.zone_of(h.id).key == zone_id)
 
 
 ## Starts the escort and walks the party beside it until it arrives. Enemies near

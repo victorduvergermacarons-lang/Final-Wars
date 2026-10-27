@@ -67,6 +67,7 @@ func update(sim: WorldSim) -> void:
 		if phase == 3 and def.enrage_buff != null:
 			b.buffs.apply(def.enrage_buff, sim.now, 0.0, b.id, {"duration": 3600.0})
 			sim.emit({"type": "enrage", "source": b.id, "target": b.id, "buff": def.enrage_buff.id})
+	h.invulnerable = phase < 3 # opens the moment phase 3 begins
 	var every: float = def.for_phase(def.pulse_seconds, phase, 0.0)
 	if every > 0.0 and sim.now >= _next_pulse:
 		_next_pulse = sim.now + every
@@ -147,9 +148,10 @@ func _victory(sim: WorldSim, b: Enemy, h: Enemy) -> void:
 			add.respawn_at = sim.now
 	_adds.clear()
 	sim.remove_ground_zones_from(h.id)
+	var arrived := -1
 	if def.victory_npc != null:
-		sim.add_npc(def.victory_npc, def.victory_tile, Vector2i.DOWN)
-	sim.emit({"type": "boss_defeated", "source": b.id, "heart": h.id})
+		arrived = sim.add_npc(def.victory_npc, def.victory_tile, Vector2i.DOWN).id
+	sim.emit({"type": "boss_defeated", "source": b.id, "heart": h.id, "npc": arrived})
 
 
 ## A party wipe: the boss goes back to the start of its current phase (not full

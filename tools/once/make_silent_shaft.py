@@ -157,7 +157,7 @@ enemy("foreman", "The Foreman", 10,
       {"hp": 800, "phys_atk": 16, "phys_def": 18, "mag_def": 22, "accuracy": 8, "jump": 2},
       ["foreman_slam", "foreman_charge", "foreman_pick"],
       ["leash_radius = 16", "aggro_radius = 5", "combat_step_seconds = 1.1", "reaction_seconds = 0.35",
-       "xp_reward = 1100", "ap_reward = 14", "respawn_seconds = 1e+09", "elite = true", "dungeon_boss = true",
+       "xp_reward = 900", "ap_reward = 14", "respawn_seconds = 1e+09", "elite = true", "dungeon_boss = true",
        "weight = 2"], "foreman")
 enemy("grey_heart", "The Grey Heart", 10,
       {"hp": 150, "phys_def": 10, "mag_def": 10},

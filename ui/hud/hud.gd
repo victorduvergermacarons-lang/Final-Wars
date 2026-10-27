@@ -3,6 +3,8 @@ extends CanvasLayer
 
 ## The player clicked "Leave game" (save and return to the main menu).
 signal leave_requested
+## An act of the story ended for the local hero (Game saves the character then).
+signal act_completed(act: int)
 ## In-game HUD: unit frames, action bar (with keybind mode), the menu book, the
 ## shop sheet, the quest tracker, death panel, mid-screen errors, and the Escape
 ## menu (message log, controls, keybinds, leave game).
@@ -67,6 +69,9 @@ var inventory_window: InventoryWindow
 var dialogue: DialogueBox
 ## Co-op: quests a party member just accepted, offered to you.
 var quest_prompt: QuestPrompt
+## "End of Act I": the party's records, then back to the Crossing.
+var act_end: ActEndScreen
+var _act_end_pending := {}
 var loot_window: LootWindow
 var vendor_window: VendorWindow
 var quest_log: QuestLogWindow
@@ -329,9 +334,15 @@ func _build() -> void:
 	game_menu.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	game_menu.grow_vertical = Control.GROW_DIRECTION_BOTH
 	_root.add_child(game_menu)
+	act_end = ActEndScreen.new(self)
+	_root.add_child(act_end)
 
 
 func _process(_delta: float) -> void:
+	if not _act_end_pending.is_empty() and not dialogue.visible:
+		close_menus()
+		act_end.open(_act_end_pending)
+		_act_end_pending = {}
 	_update_book()
 	var hero: Hero = session.local_hero()
 	if hero == null:
@@ -429,6 +440,14 @@ func _escape() -> bool:
 		return false
 	game_menu.visible = true
 	return true
+
+
+## The NPC who comes in when a boss encounter ends (its BossEncounterDef).
+func _victory_npc_id(_e: Dictionary) -> StringName:
+	var zone: ZoneDef = session.zone()
+	if zone != null and zone.encounter != null and zone.encounter.victory_npc != null:
+		return zone.encounter.victory_npc.id
+	return &""
 
 
 ## Dragging the quest tracker by its heading; it stays on screen.
@@ -545,8 +564,6 @@ func _on_events(events: Array) -> void:
 				session.rules().dungeon_testing = e.on
 				game_menu.show_dungeon_testing(e.on)
 				client.say("Dungeon testing %s." % ("on: any party size may enter" if e.on else "off"))
-			"party_wipe":
-				client.say("Your party has fallen. Everyone wakes at the entrance…")
 			"lift":
 				if e.target == me:
 					client.say("The lift rattles along its shaft.")
@@ -573,6 +590,13 @@ func _on_events(events: Array) -> void:
 							(talker as Npc).def.greeting_line(session.world_flags(), ContentDB.dialogue), "…"))
 			"escort_started", "escort_arrived", "escort_failed":
 				_on_escort_event(e)
+			"boss_defeated":
+				client.say("The Grey Heart shatters, and the Foreman falls with it. Footsteps on the stair: someone is coming down.")
+				var npc_def: NpcDef = ContentDB.npcs.get(_victory_npc_id(e))
+				if npc_def != null:
+					client.bubble(int(e.get("npc", -1)), ContentDB.dialogue.text("npc.%s.greeting" % npc_def.id, "…"))
+			"party_wipe":
+				client.say("Your party has fallen. Everyone wakes at the entrance…")
 		if e.get("target", -2) != me:
 			continue
 		if e.type == "quest_shared":
@@ -594,6 +618,10 @@ func _on_events(events: Array) -> void:
 					client.error(REASONS[e.reason] % int(e.get("need", 3)))
 				elif e.reason != "not_ready":
 					client.error(REASONS.get(e.reason, String(e.reason).capitalize()))
+			"act_complete":
+				_act_end_pending = e # opens once the hand-in conversation is over
+				client.say("%s is complete." % ActEndScreen.TITLES.get(int(e.act), "Act %d" % int(e.act)))
+				act_completed.emit(int(e.act))
 			"level_up":
 				client.say("You reached level %d!" % e.level)
 			"mastered":

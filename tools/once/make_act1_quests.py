@@ -155,7 +155,7 @@ quest("act1_07_the_silent_shaft", "1-07 The Silent Shaft", MAIN, "The Silent Sha
     {"kind": "reach", "text": "Find where the silence comes from", "zone": "silent_shaft", "tile": (49, 15), "radius": 2},
     {"kind": "kill", "text": "Break the Grey Heart", "enemy": "grey_heart"},
     {"kind": "talk", "text": "Speak with Prince Caedan", "npc": "caedan_shaft"},
-], xp=2200, gold=120, turn_in="caedan_shaft", prereq=[Q06], min_level=8,
+], xp=1200, gold=120, turn_in="caedan_shaft", prereq=[Q06], min_level=8,
     items=[("minor_health_potion", 3), ("minor_mana_potion", 3)],
     choices=["scroll_of_the_fireball", "glacier_scroll", "bulwark_scroll"], flag="act1_complete", ends_act=1,
     return_zone="crossing")
