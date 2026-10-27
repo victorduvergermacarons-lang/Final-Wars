@@ -317,8 +317,6 @@ func step() -> Array[Dictionary]:
 	_update_party_scale()
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
-	if encounter != null:
-		encounter.update(self)
 	_update_casts()
 	_update_projectiles()
 	_update_pending_hits()
@@ -330,6 +328,8 @@ func step() -> Array[Dictionary]:
 		remove_enemy(id)
 	_remove_after_tick.clear()
 	_regen()
+	if encounter != null:
+		encounter.update(self) # after regen: a reset boss never heals past its phase
 	_update_escorts()
 	_update_wipe()
 	_remove_gone_npcs()

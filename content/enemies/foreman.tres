@@ -10,9 +10,9 @@
 
 [sub_resource type="Resource" id="Resource_stats"]
 script = ExtResource("3_stats")
-hp = 2400.0
-phys_atk = 30.0
-phys_def = 26.0
+hp = 800.0
+phys_atk = 16.0
+phys_def = 18.0
 mag_def = 22.0
 accuracy = 8.0
 jump = 2.0

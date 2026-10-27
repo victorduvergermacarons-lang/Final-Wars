@@ -114,15 +114,15 @@ BUFF, DASH_TO, ZONE = 4, 13, 17
 
 # --- Abilities ------------------------------------------------------------------------
 ability("foreman_pick", "Pick-Hammer", "A crushing swing of the Foreman's pick-hammer at whoever holds his eye.",
-        [{"lines": ["base_amount = 22.0"], "scaling": [(0, 1.0)]}],
+        [{"lines": ["base_amount = 8.0"], "scaling": [(0, 0.6)]}],
         ["shape = 1", "cooldown_seconds = 2.4", "max_height_difference = 2", "targeting = 1", "windup_seconds = 0.5"])
 ability("foreman_slam", "Ground Slam", "Marks a 3-by-3 square of floor, then brings the hammer down on it.",
-        [{"lines": ["base_amount = 30.0"], "scaling": [(0, 1.1)]}],
+        [{"lines": ["base_amount = 12.0"], "scaling": [(0, 0.6)]}],
         ["shape = 1", "max_range = 3", "cooldown_seconds = 8.0", "requires_line_of_sight = false",
          "max_height_difference = 3", "targeting = 3", "area_radius = 1", "telegraph_seconds = 1.8"])
 ability("foreman_charge", "Mine-Cart Charge", "Marks a tile 2-5 away, then barrels there and tramples whoever stands on it.",
         [{"lines": ["kind = 13", "applies = 1", "base_amount = 5.0"]},
-         {"lines": ["base_amount = 18.0"], "scaling": [(0, 1.0)]}],
+         {"lines": ["base_amount = 8.0"], "scaling": [(0, 0.6)]}],
         ["shape = 1", "min_range = 2", "max_range = 5", "cooldown_seconds = 15.0", "max_height_difference = 2",
          "targeting = 3", "windup_seconds = 1.1"])
 ability("grey_drain", "Grey Ground", "The grey creeps over the stone: whoever stands on it is slowed and drained of mana.",
@@ -141,8 +141,8 @@ ability("overseer_crush", "Overseer's Crush", "A heavy two-handed blow from the 
 # --- Buffs ------------------------------------------------------------------------------
 buff("greyed", "Greyed", ["duration_seconds = 1.0", "step_cooldown_multiplier = 1.5", "mana_regen_percent = -3.0",
                           "is_debuff = true"])
-buff("foreman_fury", "Grey Fury", ["duration_seconds = 3600.0", "cooldown_multiplier = 0.7",
-                                   "damage_dealt_multiplier = 1.3"])
+buff("foreman_fury", "Grey Fury", ["duration_seconds = 3600.0", "cooldown_multiplier = 0.85",
+                                   "damage_dealt_multiplier = 1.15"])
 
 # --- Loot -------------------------------------------------------------------------------
 loot("grey_overseer", (25, 45), [("leech_tide_scroll", 0.35), ("blazing_fist_scroll", 0.35), ("tidal_scroll", 0.35),
@@ -154,18 +154,18 @@ loot("foreman", (80, 140), [("wave_scroll", 0.3), ("lash_of_embers_scroll", 0.3)
 # --- Enemies ------------------------------------------------------------------------------
 # Party size grows them (CombatRules "Party size"); numbers are for one hero.
 enemy("foreman", "The Foreman", 10,
-      {"hp": 2400, "phys_atk": 30, "phys_def": 26, "mag_def": 22, "accuracy": 8, "jump": 2},
+      {"hp": 800, "phys_atk": 16, "phys_def": 18, "mag_def": 22, "accuracy": 8, "jump": 2},
       ["foreman_slam", "foreman_charge", "foreman_pick"],
       ["leash_radius = 16", "aggro_radius = 5", "combat_step_seconds = 1.1", "reaction_seconds = 0.35",
        "xp_reward = 1100", "ap_reward = 14", "respawn_seconds = 1e+09", "elite = true", "dungeon_boss = true",
        "weight = 2"], "foreman")
 enemy("grey_heart", "The Grey Heart", 10,
-      {"hp": 700, "phys_def": 10, "mag_def": 10},
+      {"hp": 150, "phys_def": 10, "mag_def": 10},
       [],
       ["aggro_radius = 0", "leash_radius = 99", "xp_reward = 0", "respawn_seconds = 1e+09", "immobile = true",
        "look = 1", "weight = 2"])
 enemy("grey_husk", "Grey Husk", 8,
-      {"hp": 220, "phys_atk": 18, "phys_def": 10, "mag_def": 18, "jump": 1},
+      {"hp": 90, "phys_atk": 12, "phys_def": 6, "mag_def": 12, "jump": 1},
       ["husk_rake"],
       ["aggro_radius = 4", "leash_radius = 14", "combat_step_seconds = 1.2", "reaction_seconds = 0.5",
        "xp_reward = 25", "ap_reward = 1", "weight = 1"])
@@ -204,10 +204,10 @@ script = ExtResource("1_enc")
 boss = ExtResource("2_boss")
 heart = ExtResource("3_heart")
 phase_at = Array[float]([0.6, 0.25])
-pulse_seconds = Array[float]([0.0, 11.0, 8.0])
+pulse_seconds = Array[float]([0.0, 12.0, 9.0])
 adds = ExtResource("4_adds")
-adds_per_pulse = Array[int]([0, 2, 1])
-max_adds = 4
+adds_per_pulse = Array[int]([0, 1, 0])
+max_adds = 2
 grey_tiles_per_pulse = Array[int]([0, 6, 8])
 grey_zone = ExtResource("5_pulse")
 grey_seconds = 12.0
