@@ -11,6 +11,8 @@ extends RefCounted
 ##   rows road, road+1          the road (heroes walk it without aggroing anyone)
 ##   row road+2                 grass verge
 ##   last row                   hedge, with the gate back to Millbrook at the west end
+##   west end (column 0)        hedge; with a west edge linked (the Tidereach test
+##                              shore), a gate at rows WEST_GATE
 ## The entrance (spawn point, graveyard, Reset Shrine) is at the west end; elites
 ## (bosses) get their own arena behind a hedge at the far east end.
 ##
@@ -28,6 +30,9 @@ const SPAWN_ROW := 3
 const ENTRANCE_WIDTH := 8
 ## The gate back to Millbrook: these columns of the last row.
 const GATE := [3, 4]
+## The west gate (to the Tidereach music test shore): these rows of column 0,
+## opened only when the zone has an edge on that side.
+const WEST_GATE := [2, 3]
 const SHRINE := Vector2i(6, -1) # y: relative to the road (the row above it)
 ## Training dummies: the grass corner behind the entrance, west of the first pen's
 ## wall (further dummies go 2 rows toward the road each).
@@ -98,6 +103,10 @@ static func build(zone: ZoneDef, enemies: Array, shrine: NpcDef = null) -> void:
 	for gx in GATE:
 		_put(terrain, Vector2i(gx, depth - 1), "p")
 		_put(heights, Vector2i(gx, depth - 1), "0")
+	if zone.edges.any(func(e): return e != null and e.side == Vector2i.LEFT):
+		for gy in WEST_GATE:
+			_put(terrain, Vector2i(0, gy), "p")
+			_put(heights, Vector2i(0, gy), "0")
 	# Low stone walls between pens, from the back hedge to the row before the open front.
 	for i in range(1, all.size()):
 		var wall_x: int = (xs[i - 1] + xs[i]) / 2

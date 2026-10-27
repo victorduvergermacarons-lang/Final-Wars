@@ -31,7 +31,7 @@ func _npc(id: StringName) -> Npc:
 
 
 func test_town_has_a_vendor_and_quest_givers() -> void:
-	assert_eq(town.npcs().size(), 7, "Hilda, Rowan, Maren and Act I's Guild Board, Dorne, Sabra and Ilyth")
+	assert_eq(town.npcs().size(), 5, "Hilda, Rowan, Maren, Ilyth the Seer and Healer Wenna")
 	assert_not_null(_npc(&"hilda"))
 	assert_not_null(_npc(&"rowan"))
 	assert_not_null(_npc(&"maren"))

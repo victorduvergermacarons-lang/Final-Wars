@@ -142,6 +142,8 @@ func _handle_exits() -> Array[Dictionary]:
 		var sim: WorldSim = _zones[id]
 		for req in sim.take_edge_requests():
 			events.append_array(_leave_by_edge(sim, req[0], req[1]))
+		for hero_id in sim.take_respawn_requests():
+			events.append_array(_respawn_elsewhere(sim, hero_id))
 	for hero in heroes():
 		var sim := zone_of(hero.id)
 		var tile := hero.tile()
@@ -178,6 +180,20 @@ func _leave_by_edge(sim: WorldSim, hero_id: int, edge: ZoneEdge) -> Array[Dictio
 			return [{"type": "zone_change", "target": hero_id, "from": from, "to": edge.to_zone,
 					"zone": edge.to_zone}]
 	return [{"type": "rejected", "target": hero_id, "intent": "step", "reason": "blocked", "zone": sim.zone.id}]
+
+
+## A hero released in a zone without its own graveyard respawns at the graveyard
+## of the zone it names (ZoneDef.respawn_zone), e.g. the Crossing's shrine.
+func _respawn_elsewhere(sim: WorldSim, hero_id: int) -> Array[Dictionary]:
+	var dest: WorldSim = _zones.get(sim.zone.respawn_zone)
+	if dest == null or sim.get_actor(hero_id) == null:
+		return []
+	var from := sim.zone.id
+	var spawn: Vector2i = dest.zone.hero_spawns[0] if not dest.zone.hero_spawns.is_empty() else Vector2i.ZERO
+	move_hero(hero_id, dest.zone.id, dest.nearest_graveyard(spawn))
+	var hero := dest.get_actor(hero_id)
+	return [{"type": "zone_change", "target": hero_id, "from": from, "to": dest.zone.id, "zone": dest.zone.id},
+			{"type": "release", "target": hero_id, "tile": hero.tile(), "zone": dest.zone.id}]
 
 
 ## How fast the sim clock should run against real time: the game speed

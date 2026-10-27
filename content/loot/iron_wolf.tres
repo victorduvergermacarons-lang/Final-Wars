@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_02cov"]
+[ext_resource type="Resource" path="res://content/items/wolf_pelt.tres" id="2_spih2"]
+[ext_resource type="Resource" path="res://content/items/wolf_fang.tres" id="3_2bfmr"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="4_8n375"]
+[ext_resource type="Resource" path="res://content/items/frostweave_robe.tres" id="5_kjlyx"]
+[ext_resource type="Resource" path="res://content/items/acolytes_leggings.tres" id="6_lf5wd"]
+
+[sub_resource type="Resource" id="Resource_qypvb"]
+script = ExtResource("1_02cov")
+item = ExtResource("2_spih2")
+chance = 0.6
+
+[sub_resource type="Resource" id="Resource_kjlyx"]
+script = ExtResource("1_02cov")
+item = ExtResource("3_2bfmr")
+chance = 0.3
+max_count = 2
+
+[sub_resource type="Resource" id="Resource_tm0j1"]
+script = ExtResource("1_02cov")
+item = ExtResource("5_kjlyx")
+chance = 0.02
+
+[sub_resource type="Resource" id="Resource_wkepy"]
+script = ExtResource("1_02cov")
+item = ExtResource("6_lf5wd")
+chance = 0.02
+
+[sub_resource type="Resource" id="Resource_2bfmr"]
+script = ExtResource("1_02cov")
+item_id = &"wave_scroll"
+chance = 0.02
+
+[sub_resource type="Resource" id="Resource_8n375"]
+script = ExtResource("1_02cov")
+item_id = &"blazing_fist_scroll"
+chance = 0.02
+
+[resource]
+script = ExtResource("4_8n375")
+gold_min = 3
+gold_max = 9
+entries = Array[ExtResource("1_02cov")]([SubResource("Resource_qypvb"), SubResource("Resource_kjlyx"), SubResource("Resource_tm0j1"), SubResource("Resource_wkepy"), SubResource("Resource_2bfmr"), SubResource("Resource_8n375")])

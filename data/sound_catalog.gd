@@ -59,6 +59,9 @@ var abilities := {}
 var enemies := {}
 ## Key -> what it is for (for the spec), grouped by category in keys().
 var _keys := {}
+## Creature ability id -> the enemy ids that use it (the wolf and the iron wolf
+## share a bite): each gets its own keys.
+var _users := {}
 
 
 ## `content`: ContentDB (or anything with abilities, items, enemies, zones, tilesets).
@@ -73,8 +76,10 @@ func _init(content) -> void:
 			own.append(e.howl_ability)
 		for a in own:
 			_add_ability(a, "creature_%s" % id, false)
+			_add_user(a, id)
 		# A passive trail is never "used": it only has a _hit key.
 		_add_ability(e.trail_ability, "creature_%s" % id, true)
+		_add_user(e.trail_ability, id)
 	for a in _sorted(content.abilities.values()):
 		if a.is_tree_ability() and a.implemented:
 			_add_ability(a, TREE_PREFIX.get(a.tree, "world"), false)
@@ -82,6 +87,21 @@ func _init(content) -> void:
 		if item.use_ability != null and not abilities.has(item.use_ability.id):
 			_add_ability(item.use_ability, "world", false)
 	_collect_keys(content)
+
+
+## Records `enemy_id` as a user of `a` and of the abilities it is made of.
+func _add_user(a: AbilityDef, enemy_id: StringName) -> void:
+	if a == null:
+		return
+	var list: Array = _users.get(a.id, [])
+	if list.has(enemy_id):
+		return
+	list.append(enemy_id)
+	_users[a.id] = list
+	for e in a.effects:
+		if e != null:
+			_add_user(e.zone_ability, enemy_id)
+			_add_user(e.pass_ability, enemy_id)
 
 
 static func _sorted(list: Array) -> Array:
@@ -184,14 +204,15 @@ func _collect_keys(content) -> void:
 		_keys[StringName(k)] = WORLD_KEYS[k]
 	for id in abilities:
 		var info: Dictionary = abilities[id]
-		var c := cast_key(id)
-		if c != &"":
-			_keys[c] = "%s is used" % info.label
-		var h := hit_key(id)
-		if h != &"":
-			_keys[h] = "%s lands on someone" % info.label if not info.sub \
-					else ("%s: its ground zone hurts someone standing in it" % info.label if info.part == "zone" \
-					else "%s hits someone in its path" % info.label)
+		for user in _users.get(id, [&""]):
+			var c := cast_key(id, user)
+			if c != &"":
+				_keys[c] = "%s is used" % info.label
+			var h := hit_key(id, user)
+			if h != &"":
+				_keys[h] = "%s lands on someone" % info.label if not info.sub \
+						else ("%s: its ground zone hurts someone standing in it" % info.label if info.part == "zone" \
+						else "%s hits someone in its path" % info.label)
 	for id in enemies:
 		var e: EnemyDef = enemies[id]
 		for ev in CREATURE_EVENTS:

@@ -94,7 +94,7 @@ func test_walk_in_fight_everything_and_walk_back() -> void:
 	world = World.new(db.zones.values(), db.rules, 7, &"town")
 	world.enable_debug(db)
 	hero = world.add_saved_hero(CharacterData.new_character("Tester", db.heroes[&"adventurer"]), db)
-	_debug("level 12")
+	_debug("level 15") # (12 was a coin flip against the Bandit Brute once more zones changed the random draws)
 	_debug("master W01")
 	_debug("master W02")
 	_debug("heal")

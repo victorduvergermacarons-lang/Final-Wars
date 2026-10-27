@@ -10,7 +10,7 @@ func before_all() -> void:
 
 func test_basic_tileset_loads_and_validates() -> void:
 	assert_not_null(basic, "found by scanning assets/tiles")
-	assert_eq(basic.tiles.size(), 115)
+	assert_eq(basic.tiles.size(), 137, "115 drawn tiles + 22 placeholder recolours")
 	assert_eq(Array(basic.validate()), [])
 	assert_eq(basic.cell_size, Vector2i(32, 32))
 	assert_eq(basic.level_height, 8, "a block's side is 8 art px")

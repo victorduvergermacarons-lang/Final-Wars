@@ -86,7 +86,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-152 keys, 0 with a file, 152 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+172 keys, 0 with a file, 172 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -133,8 +133,16 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `footstep_grass` | a hero steps on grass | **missing** |
 | `footstep_meadow` | a hero steps on meadow | **missing** |
 | `footstep_path` | a hero steps on path | **missing** |
+| `footstep_red_earth` | a hero steps on red earth | **missing** |
+| `footstep_red_rock` | a hero steps on red rock | **missing** |
+| `footstep_red_stone` | a hero steps on red stone | **missing** |
 | `footstep_rocky_dirt` | a hero steps on rocky dirt | **missing** |
 | `footstep_rocky_ground` | a hero steps on rocky ground | **missing** |
+| `footstep_slab` | a hero steps on slab | **missing** |
+| `footstep_steppe` | a hero steps on steppe | **missing** |
+| `footstep_steppe_dry` | a hero steps on steppe dry | **missing** |
+| `footstep_tall_grass` | a hero steps on tall grass | **missing** |
+| `footstep_tilled` | a hero steps on tilled | **missing** |
 
 ### Weapons: Sword, Bow and Hammer arts (audio/sfx/weapons)
 
@@ -240,6 +248,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_goblin_shaman_shadow_bolt` | Shadow Bolt is used | **missing** |
 | `creature_goblin_shaman_shadow_bolt_hit` | Shadow Bolt lands on someone | **missing** |
 | `creature_goblin_shaman_step` | Goblin Shaman moves one tile (paws, wings...) | **missing** |
+| `creature_iron_wolf_aggro` | Iron Wolf notices a hero and starts a fight | **missing** |
+| `creature_iron_wolf_bite` | Bite is used | **missing** |
+| `creature_iron_wolf_bite_hit` | Bite lands on someone | **missing** |
+| `creature_iron_wolf_death` | Iron Wolf dies | **missing** |
+| `creature_iron_wolf_howl` | Howl is used | **missing** |
+| `creature_iron_wolf_hurt` | Iron Wolf takes damage | **missing** |
+| `creature_iron_wolf_step` | Iron Wolf moves one tile (paws, wings...) | **missing** |
 | `creature_old_grizzlehide_aggro` | Old Grizzlehide notices a hero and starts a fight | **missing** |
 | `creature_old_grizzlehide_charge` | Charge is used | **missing** |
 | `creature_old_grizzlehide_charge_hit` | Charge lands on someone | **missing** |
@@ -286,8 +301,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 | Key | Plays when | File |
 |-----|-----------|------|
+| `ambience_crossing` | background loop in The Crossing (Ambience bus, OGG) | **missing** |
+| `ambience_deepcut` | background loop in Deepcut (Ambience bus, OGG) | **missing** |
+| `ambience_deepcut_road` | background loop in Road to Deepcut (Ambience bus, OGG) | **missing** |
 | `ambience_enemy_testing` | background loop in Enemy Testing Grounds (Ambience bus, OGG) | **missing** |
 | `ambience_greenfields` | background loop in Greenfields (Ambience bus, OGG) | **missing** |
+| `ambience_tidereach_shore` | background loop in Tidereach Shore (test) (Ambience bus, OGG) | **missing** |
 | `ambience_town` | background loop in Millbrook (Ambience bus, OGG) | **missing** |
+| `ambience_windsteppe` | background loop in Windsteppe (Ambience bus, OGG) | **missing** |
 
 <!-- sound keys end -->

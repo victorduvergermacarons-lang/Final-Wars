@@ -27,6 +27,8 @@ const HERO_COLORS := [Color(0.25, 0.5, 1.0), Color(0.2, 0.85, 0.45), Color(1.0, 
 const ENEMY_COLOR := Color(0.85, 0.2, 0.2)
 ## Quest-area value for an investigate spot (see _quest_area_tiles).
 const SPOT := "spot"
+## Placeholder objects show their labels within this many tiles of your hero.
+const DECOR_LABEL_TILES := 12
 ## Tile highlights: aiming (valid / can't), enemy telegraphs, ground zones.
 const AIM_COLOR := Color(0.2, 0.6, 1.0, 0.6)
 const AIM_BAD_COLOR := Color(1.0, 0.25, 0.2, 0.55)
@@ -374,6 +376,7 @@ func _draw() -> void:
 	_draw_projectiles(grid)
 	_draw_flames(grid)
 	_draw_landmarks(grid)
+	_draw_decor_labels(grid)
 	_draw_talk_prompt()
 	for f in _overlay:
 		f.call()
@@ -528,6 +531,9 @@ func _draw_terrain_column(canvas: CanvasItem, grid: GridModel, p: Vector2i, clip
 	var group := _zone.prop_at(p)
 	if group != "":
 		_art.draw_prop(canvas, _art.data.pick_prop(group, p), p, h, clip)
+	var decor := _zone.decor_at(p)
+	if decor != null:
+		DecorPainter.draw(canvas, decor, Iso.to_screen(Vector2(p), h), clip)
 	if _graveyards.has(p):
 		var c := Iso.to_screen(Vector2(p), h)
 		# Drawn as thin boxes so a clip can cut them exactly.
@@ -1028,6 +1034,17 @@ func _draw_landmarks(grid: GridModel) -> void:
 		draw_colored_polygon(PackedVector2Array([base + Vector2(1, -34), base + Vector2(18, -29),
 				base + Vector2(1, -24)]), Color(0.75, 0.2, 0.15))
 		_draw_label(base + Vector2(0, -40), lm.name, Color(1, 0.85, 0.3), 14)
+
+
+## Labels of the placeholder objects near the local hero (all of them would crowd
+## the screen).
+func _draw_decor_labels(grid: GridModel) -> void:
+	var hero: Actor = session.local_hero()
+	for d in _zone.decor:
+		if d.label == "" or (hero != null and GridModel.distance(hero.tile(), d.tile) > DECOR_LABEL_TILES):
+			continue
+		var base := Iso.to_screen(Vector2(d.tile), grid.height_at(d.tile))
+		_draw_label(base + Vector2(0, -DecorPainter.top(d) - 6), d.label, Color(0.95, 0.92, 0.82), 11)
 
 
 ## "[E] Talk" over the townsperson E would talk to ("[E] Use" on objects,

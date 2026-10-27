@@ -5,6 +5,8 @@ extends Node
 ## Exits 0 if this side saw what it expected.
 
 const TIMEOUT := 25.0
+## The quest the host shares with the guests in town.
+const QUEST := &"wolves_at_the_gate"
 
 var _waited := 0.0
 
@@ -43,10 +45,10 @@ func _run_host(port: int, players: int) -> void:
 		_finish(false, "host: could not listen on %d" % port)
 		return
 	var world: World = game.session.world
-	# Beside the Guild Board, out of the guests' way.
+	# Beside Captain Rowan (by the south gate), out of the guests' way.
 	var town := world.zone(&"town")
-	var board: Npc = town.npcs().filter(func(n): return n.def.id == &"guild_board")[0]
-	game.session.local_hero().move.place(town.find_free_tile_near(board.tile() + Vector2i(0, 1)))
+	var board: Npc = town.npcs().filter(func(n): return n.def.id == &"rowan")[0]
+	game.session.local_hero().move.place(town.find_free_tile_near(board.tile() + Vector2i(-1, 0)))
 	# Listen from the start: a quick guest may cast before the others have joined.
 	var casts := {}
 	var zone_hops := {}
@@ -60,21 +62,22 @@ func _run_host(port: int, players: int) -> void:
 	var starts := {}
 	for h in world.heroes().slice(1):
 		starts[h.id] = h.tile()
-	# Co-op: the host takes the board's quest; the guests in town are offered it
+	# Co-op: the host takes Rowan's quest; the guests in town are offered it
 	# and join over the network (once the last one to join is listening).
 	await get_tree().create_timer(1.0).timeout
-	game.session.send_intent({"type": "accept_quest", "npc": board.id, "quest": &"act1_guild_summons"})
+	game.session.send_intent({"type": "accept_quest", "npc": board.id, "quest": QUEST})
 	var joined_quest := {}
 	get_tree().process_frame.connect(func():
 		for h in world.heroes():
-			if QuestLog.is_active(h, &"act1_guild_summons"):
+			if QuestLog.is_active(h, QUEST):
 				joined_quest[h.id] = true)
-	# The host only hears its own zone's events, so watch the world for zone moves.
+	# The host only hears its own zone's events, so watch the world for zone moves:
+	# Guest1 goes to Greenfields, Guest2 to the Crossing, while the host stays in town.
 	var watch := func():
 		for id in starts:
 			var sim: WorldSim = world.zone_of(id)
-			if sim != null and sim.zone.id == &"greenfields":
-				zone_hops[id] = true
+			if sim != null and sim.zone.id != &"town":
+				zone_hops[id] = sim.zone.id
 	get_tree().process_frame.connect(watch)
 	var all_done := func():
 		for id in starts:
@@ -93,14 +96,17 @@ func _run_host(port: int, players: int) -> void:
 	if not stuck.is_empty():
 		_finish(false, "host: an enemy still lists a departed hero")
 		return
-	if not zone_hops.has(starts.keys()[0]):
+	if zone_hops.get(starts.keys()[0]) != &"greenfields":
 		_finish(false, "host: Guest1 never reached Greenfields")
+		return
+	if players >= 3 and zone_hops.get(starts.keys()[1]) != &"crossing":
+		_finish(false, "host: Guest2 never reached the Crossing")
 		return
 	for id in starts.keys().slice(1):
 		if not joined_quest.has(id):
 			_finish(false, "host: a guest in town never joined the shared quest")
 			return
-	_finish(true, "host: %d guests joined in town, walked, cast, one went to Greenfields, the others joined the host's quest, all left cleanly" % (players - 1))
+	_finish(true, "host: %d guests joined in town, walked, cast, one went to Greenfields and one to the Crossing (three zones at once), the others joined the host's quest, all left cleanly" % (players - 1))
 
 
 func _run_join(port: int, players: int, index: int) -> void:
@@ -158,15 +164,19 @@ func _run_join(port: int, players: int, index: int) -> void:
 		_finish(false, "%s: couldn't walk 4 tiles (at %s from %s)" % [me, hero.tile(), start])
 		return
 	await get_tree().create_timer(1.0).timeout # let the host see the final position
-	if index >= 2 and not await _wait_until(func(): return QuestLog.is_active(hero, &"act1_guild_summons")):
+	if index >= 2 and not await _wait_until(func(): return QuestLog.is_active(hero, QUEST)):
 		_finish(false, "%s: never joined the host's quest" % me)
 		return
 	for other in session.actors():
 		if other is Hero and other.id != hero.id and not other.bag.slots.all(func(s): return s == null):
 			_finish(false, "%s: received another player's bag" % me)
 			return
-	if index == 1:
-		# Walk off the town's east edge: the client must switch maps.
+	if index == 1 or index == 2:
+		# Guest1 walks off the town's east edge (Greenfields), Guest2 off its south
+		# gate (the Crossing): the client must switch maps.
+		var w: int = session.grid().width
+		var edge := Vector2i(w - 1, 9) if index == 1 else Vector2i(9, session.grid().depth - 1)
+		var beyond := edge + (Vector2i.RIGHT if index == 1 else Vector2i.DOWN)
 		var switched := [false]
 		session.zone_changed.connect(func(_z): switched[0] = true)
 		var toward_exit := func():
@@ -174,10 +184,10 @@ func _run_join(port: int, players: int, index: int) -> void:
 				return true
 			var t := session.render_time()
 			if not hero.move.is_moving(t):
-				if hero.tile() == Vector2i(17, 9):
-					session.send_intent({"type": "step", "to": Vector2i(18, 9)})
+				if hero.tile() == edge:
+					session.send_intent({"type": "step", "to": beyond})
 					return false
-				var path := Pathfinder.find_path(session.grid(), hero.tile(), Vector2i(17, 9), 2,
+				var path := Pathfinder.find_path(session.grid(), hero.tile(), edge, 2,
 						{}, -1, 5000)
 				if path.size() >= 2:
 					session.send_intent({"type": "step", "to": path[1]})
@@ -187,10 +197,16 @@ func _run_join(port: int, players: int, index: int) -> void:
 			return
 		await get_tree().create_timer(0.5).timeout
 		hero = session.local_hero()
-		var wolves := session.actors().filter(func(a): return a is Enemy).size()
-		if session.zone().id != &"greenfields" or wolves == 0 or hero == null:
-			_finish(false, "%s: after the exit: zone %s, %d wolves" % [me, session.zone().id, wolves])
-			return
+		if index == 1:
+			var wolves := session.actors().filter(func(a): return a is Enemy).size()
+			if session.zone().id != &"greenfields" or wolves == 0 or hero == null:
+				_finish(false, "%s: after the exit: zone %s, %d wolves" % [me, session.zone().id, wolves])
+				return
+		else:
+			var board := session.actors().filter(func(a): return a is Npc and a.def.id == &"guild_board")
+			if session.zone().id != &"crossing" or board.is_empty() or hero == null:
+				_finish(false, "%s: after the gate: zone %s, Guild Board seen: %s" % [me, session.zone().id, not board.is_empty()])
+				return
 		await get_tree().create_timer(0.5).timeout
 	game.save_now()
 	var saved := game.store.load_character(me)
