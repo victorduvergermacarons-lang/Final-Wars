@@ -169,6 +169,21 @@ func take_edge_requests() -> Array:
 	return out
 
 
+## Heroes asked to go to another zone's start (the debug console's goto):
+## [hero id, zone id] pairs, moved by the World.
+var _zone_requests: Array = []
+
+
+func request_zone_move(hero_id: int, zone_id: StringName) -> void:
+	_zone_requests.append([hero_id, zone_id])
+
+
+func take_zone_requests() -> Array:
+	var out := _zone_requests
+	_zone_requests = []
+	return out
+
+
 ## Heroes released here who respawn in another zone (World moves them).
 func take_respawn_requests() -> Array:
 	var out := _respawn_requests

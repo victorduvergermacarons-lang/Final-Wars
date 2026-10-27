@@ -461,14 +461,16 @@ def deepcut():
     m.rect(0, 24, 34, 25, "grey_water", 0)
     m.rect(33, 22, 38, 28, "grey_water", 0)
     m.rect(17, 24, 18, 25, "slab", 0)  # footbridge to the huts
-    # The mine yard and the main street to the mine.
+    # The mine yard and the main street. The mine is cut into a cliff north of the
+    # yard (a cliff face the camera sees: entrances in the east wall would face away).
     m.rect(30, 12, 37, 21, "cracked", 0)
     m.road([(0, 17), (36, 17)], 2)
-    m.add_decor("mine", 38, 17, "Mine Entrance")
-    m.put(38, 18, "red_rock", 6)
-    for p in [(35, 14), (36, 20), (32, 13)]:
-        m.add_decor("cart", p[0], p[1], "Ore Cart" if p == (35, 14) else "")
-    m.add_decor("crates", 37, 14)
+    m.rect(31, 3, 37, 9, "red_rock", 6)
+    m.road([(34, 11), (34, 16)], 2)
+    m.add_decor("mine", 34, 10, "Mine Entrance")
+    for p in [(32, 12), (37, 13), (36, 20)]:
+        m.add_decor("cart", p[0], p[1], "Ore Cart" if p == (32, 12) else "")
+    m.add_decor("crates", 37, 11)
     # The steward's office on its terrace (north), with a ramp down to the street.
     m.rect(6, 4, 17, 11, "red_stone", 2)
     m.rect(11, 12, 12, 12, "red_stone", 1)
@@ -482,15 +484,13 @@ def deepcut():
     for box in [(8, 29, 10, 31), (12, 32, 14, 34), (20, 32, 22, 34), (24, 32, 26, 34)]:
         m.house(*box, roof="roof_red", height=3)
     m.landmarks.append(("Miners' Row", 19, 30))
-    # A side shaft in the south-east cliff.
-    m.add_decor("mine", 32, 35)  # the Collapsed Shaft (its object stands in front)
-    m.put(32, 36, "red_rock", 6)
-    m.rect(31, 29, 34, 34, "red_earth", 1)
     # High ground: a spur of the north wall with a ramp, over the street.
     m.rect(22, 2, 28, 8, "red_rock", 4)
     m.rect(24, 9, 25, 9, "red_rock", 3)
     m.rect(24, 10, 25, 10, "red_rock", 2)
     m.rect(24, 11, 25, 11, "red_rock", 1)
+    # The Collapsed Shaft: an old side entrance in the spur's south face.
+    m.add_decor("mine", 27, 9)  # its object (the quest's) stands in front
     m.scatter("red_boulders", 0.08, ["red_rock"], 53)
     m.scatter("red_rocks", 0.04, ["red_earth", "cracked"], 55)
     for y in range(m.d):
@@ -503,9 +503,9 @@ def deepcut():
     # People.
     m.npc("steward_marl", 11, 10, DOWN)
     m.npc("mine_board", 14, 15, DOWN)
-    m.npc("foreman_brannoc", 34, 16, LEFT)
+    m.npc("foreman_brannoc", 33, 14, RIGHT)
     m.npc("ore_caravan", 31, 19, LEFT)
-    m.npc("collapsed_shaft", 32, 34, DOWN)
+    m.npc("collapsed_shaft", 27, 10, DOWN)
     m.spawns += [(3, 17), (3, 18), (4, 17), (4, 18)]
     m.edge(LEFT, "deepcut_road", -7)
     return m

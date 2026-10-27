@@ -144,6 +144,13 @@ func _handle_exits() -> Array[Dictionary]:
 			events.append_array(_leave_by_edge(sim, req[0], req[1]))
 		for hero_id in sim.take_respawn_requests():
 			events.append_array(_respawn_elsewhere(sim, hero_id))
+		for req in sim.take_zone_requests():
+			var dest: WorldSim = _zones.get(req[1])
+			if dest != null and sim.get_actor(req[0]) != null and dest != sim:
+				var spawn: Vector2i = dest.zone.hero_spawns[0] if not dest.zone.hero_spawns.is_empty() else Vector2i.ZERO
+				move_hero(req[0], dest.zone.id, spawn)
+				events.append({"type": "zone_change", "target": req[0], "from": sim.zone.id, "to": dest.zone.id,
+						"zone": dest.zone.id})
 	for hero in heroes():
 		var sim := zone_of(hero.id)
 		var tile := hero.tile()

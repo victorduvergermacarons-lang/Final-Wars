@@ -33,10 +33,10 @@ def recolour(src, hue=None, sat=1.0, val=1.0, hue_shift=0.0, sat_add=0.0):
 # (source tile, transform, catalog fields)
 SPECS = [
     # Grey, polluted river water (Millbrook upstream, the Deepcut stream).
-    (86, dict(hue=0.1, sat=0.0, sat_add=0.1, val=0.8), {"name": "Grey water, streaks", "category": "water", "walkable": False, "drop": 4}),
-    (87, dict(hue=0.1, sat=0.0, sat_add=0.1, val=0.8), {"name": "Grey water, ripple", "category": "water", "walkable": False, "drop": 4}),
-    (88, dict(hue=0.1, sat=0.0, sat_add=0.1, val=0.8), {"name": "Grey water, swell", "category": "water", "walkable": False, "drop": 4}),
-    (89, dict(hue=0.1, sat=0.0, sat_add=0.1, val=0.8), {"name": "Grey water, rings", "category": "water", "walkable": False, "drop": 4}),
+    (86, dict(sat=0.28, val=0.9), {"name": "Grey water, streaks", "category": "water", "walkable": False, "drop": 4}),
+    (87, dict(sat=0.28, val=0.9), {"name": "Grey water, ripple", "category": "water", "walkable": False, "drop": 4}),
+    (88, dict(sat=0.28, val=0.9), {"name": "Grey water, swell", "category": "water", "walkable": False, "drop": 4}),
+    (89, dict(sat=0.28, val=0.9), {"name": "Grey water, rings", "category": "water", "walkable": False, "drop": 4}),
     # Red canyon ground and rock (Deepcut, the road).
     (11, dict(hue=0.025, sat=1.5, sat_add=0.15, val=0.95), {"name": "Red rocky ground 1", "category": "ground"}),
     (12, dict(hue=0.025, sat=1.5, sat_add=0.15, val=0.95), {"name": "Red rocky ground 2", "category": "ground"}),
