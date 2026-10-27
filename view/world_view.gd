@@ -583,7 +583,8 @@ func _draw_actor(a: Actor) -> void:
 	var body := feet + Vector2(0, -14)
 	var alpha := 0.45 if a.evading else 1.0
 	var animated := (a is Enemy and (a as Enemy).def.art != null) or (a is Npc and (a as Npc).def.art != null)
-	if a.alive and not animated: # animated creatures show their facing themselves
+	var still := a is Enemy and (a as Enemy).def.immobile # the Grey Heart faces nowhere
+	if a.alive and not animated and not still: # animated creatures show their facing themselves
 		_draw_facing(feet, a.facing, Color(1, 1, 1, 0.85 * alpha))
 	if a is Hero:
 		var color: Color = HERO_COLORS[(a.id - 1) % HERO_COLORS.size()]

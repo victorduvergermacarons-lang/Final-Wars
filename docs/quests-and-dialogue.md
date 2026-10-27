@@ -69,6 +69,9 @@ text). What it holds:
 - `objectives`, `given_items` (handed over on accept, e.g. a letter to deliver)
 - rewards: `reward_xp`, `reward_gold`, `reward_items`, `reward_choices`
 - `sets_world_flag` (optional, once per world)
+- `ends_act` and `return_zone` (optional): handing it in ends that act of the story; the
+  End of Act screen shows the party's records, then sends them to `return_zone`
+  (1-07: act 1, the Crossing)
 
 Objective kinds:
 
@@ -89,6 +92,9 @@ Each is a file in `content/npcs/`: `id`, `display_name`, `kind` (Person, Board,
 Object, Caravan), `faction` (Townsfolk, Floor Guild, Ember Hand, Bedrun, Vael,
 None). A caravan or anyone escorted needs `max_hp` (and may have defenses).
 Place them in a zone's `npcs` list (zone file, with a tile and facing).
+`gone_after_flag` (optional): they leave the world once that world flag is set
+(Steward Brann, after 1-06). Someone who appears when a boss falls is the
+encounter's `victory_npc` (`content/encounters/`), like Caedan in the Silent Shaft.
 
 Until they have art, they're drawn as a shape for their kind in their faction's
 colour, with their name above, and their portrait is a frame in that colour with

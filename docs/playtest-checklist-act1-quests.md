@@ -48,7 +48,7 @@ Expect about level 10 after everything here, before 1-07 The Silent Shaft (miles
 ## Shift Bell (side, level 6; from the Mine Board after 1-04)
 - [ ] Clear the rubble at the **Collapsed Shaft** (E), put down **3 Human Husks**
       (slow, heavy hitters), talk to **Miner Ostrik**: "the rock was silent before it
-      fell". Hand in to Brann.
+      fell". Hand it in to Ostrik (since milestone 4: Brann leaves Deepcut after 1-06).
 
 ## 1-05 Fever in Millbrook (level 3; from the Guild Board)
 - [ ] You get 3 **Fever Draughts**. Talk to **Odo the Apothecary** (Crossing market),
@@ -62,7 +62,7 @@ Expect about level 10 after everything here, before 1-07 The Silent Shaft (miles
 - [ ] Maren sends you to **Prince Caedan Ashvale** at the hall steps. He thanks you,
       then asks for volunteers: Deepcut's deep-seam miners "have gone silent".
       Rewards include a choice of Sun Warrior's Breath, Scroll of the Current or the
-      Traveler's Longsword. (1-07 The Silent Shaft comes in milestone 4.)
+      Traveler's Longsword. Then 1-07 The Silent Shaft: see `playtest-checklist-act1-full.md`.
 
 ## Pins on the Map (side, level 7; from the Guild Board after 1-06)
 - [ ] Visit Millbrook's grey river, Tsaga's Camp, the ambush on the Road to Deepcut
