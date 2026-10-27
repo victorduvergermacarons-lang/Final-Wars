@@ -21,6 +21,6 @@ turn_in = &"caedan_ashvale"
 prerequisites = Array[StringName]([&"act1_03_wells_for_the_windsteppe", &"act1_04_grain_for_deepcut", &"act1_05_fever_in_millbrook"])
 min_level = 6
 objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0")])
-reward_xp = 350
+reward_xp = 450
 reward_gold = 60
 reward_choice_ids = Array[StringName]([&"sun_warriors_breath_scroll", &"scroll_of_the_current", &"travelers_longsword"])

@@ -123,7 +123,7 @@ quest(Q05, "1-05 Fever in Millbrook", MAIN, "Millbrook", "guild_board", [
 
 quest(Q06, "1-06 Recognition", MAIN, "The Crossing", "maren_voss", [
     {"kind": "talk", "text": "Hear out Prince Caedan Ashvale", "npc": "caedan_ashvale"},
-], xp=350, gold=60, turn_in="caedan_ashvale", prereq=[Q03, Q04, Q05], min_level=6,
+], xp=450, gold=60, turn_in="caedan_ashvale", prereq=[Q03, Q04, Q05], min_level=6,
     choices=["sun_warriors_breath_scroll", "scroll_of_the_current", "travelers_longsword"])
 
 quest("act1_side_the_white_death", "The White Death", SIDE, "Windsteppe", "saran", [
@@ -145,4 +145,4 @@ quest("act1_side_pins_on_the_map", "Pins on the Map", SIDE, "The Crossing", "gui
      "radius": 2},
     {"kind": "reach", "text": "Deepcut's tailings pond visited", "zone": "deepcut", "tile": (32, 21), "radius": 2},
     {"kind": "interact", "text": "Every site marked on the Guild Map", "npc": "guild_map"},
-], xp=400, gold=40, turn_in="maren_voss", prereq=[Q06], min_level=7, items=[("minor_mana_potion", 2)])
+], xp=500, gold=40, turn_in="maren_voss", prereq=[Q06], min_level=7, items=[("minor_mana_potion", 2)])

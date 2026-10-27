@@ -54,6 +54,6 @@ turn_in = &"maren_voss"
 prerequisites = Array[StringName]([&"act1_06_recognition"])
 min_level = 7
 objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2"), SubResource("Objective_3"), SubResource("Objective_4")])
-reward_xp = 400
+reward_xp = 500
 reward_gold = 40
 reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_mana_potion"), ExtResource("item_minor_mana_potion")])
