@@ -1,5 +1,10 @@
 # Playtest checklist: Act I quests and dialogue
 
+> **Since milestone 3 the placeholder story below is gone:** the real Act I quests
+> (1-01 to 1-06 and three side quests) replaced it; play them with
+> `docs/playtest-checklist-act1-quests.md`. The dialogue box, co-op prompt, bubbles and
+> placeholder-look checks here still apply, with those quests.
+
 For a non-programmer. Tick each box; if something looks wrong, note what you did and
 what you saw. The story is a placeholder (every line is in
 `content/dialogue/act1.json`, ready to rewrite). If a step needs a higher level, open
