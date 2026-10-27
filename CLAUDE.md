@@ -18,7 +18,9 @@ work** (terrain cache, sleeping empty zones) is on the `optimised-build-1` branc
 (2026-10-21; see **Performance**). **Audio system** and the first music track added
 (2026-10-21; see **Audio**, `AUDIO_SPEC.md` and `docs/playtest-checklist-audio.md`). **Veyra Act I,
 milestone 1 of 4** (quests and dialogue, branch `feature/v1.2.1`, 2026-10-26): see **Act I: quests
-and dialogue**, `docs/quests-and-dialogue.md` and `docs/playtest-checklist-act1.md`. For the numbers
+and dialogue**, `docs/quests-and-dialogue.md` and `docs/playtest-checklist-act1.md`. **Milestone 2 of
+4** (zones, region music, branch `feature/v1.3.1`, 2026-10-27): see **Act I: zones and region music**
+and `docs/playtest-checklist-act1-zones.md`. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -461,23 +463,91 @@ quest system to carry the story and adds dialogue. How to edit: `docs/quests-and
 - **Tracker and log:** main quests first; the log groups Main / Side with each area;
   failed quests show where to restart them.
 - **Placeholder Act I** (story to be replaced; all lines in the file):
-  - Millbrook: Guild Board (3,7), Warden Iska Dorne (5,8), Sabra Venn (15,8), Ilyth
-    the Seer (9,14).
-  - Greenfields: Bedrun camp with the Mine Board (26,13), Foreman Hadda Brannoc
-    (26,15) and the ore caravan (23,15, 320 HP); the Collapsed Shaft (28,12); the
-    Vael Standing Stone (2,27).
+  - Since milestone 2 (see **Act I: zones and region music**): the Guild Board,
+    Warden Iska Dorne and Sabra Venn are at the Crossing; Ilyth the Seer in Millbrook;
+    the Mine Board, Foreman Hadda Brannoc, the ore caravan (320 HP) and the Collapsed
+    Shaft in Deepcut; the Vael Standing Stone on the Windsteppe.
   - Main chain:
     1. The Guild's Summons (board, talk)
     2. Ash on the East Road (investigate 3 spots)
     3. The Ember Hand's Writ (deliver)
     4. Ore for Millbrook (escort, level 2, hand in to Dorne)
-    5. What the Stone Remembers (interact + kill 3 wolves, level 2). Sets
+    5. What the Stone Remembers (interact + kill 3 iron wolves, level 3). Sets
        `act1_complete`.
   - Side: Bandits on the Ore Road, The Collapsed Shaft, Guild Patrol: The Bridge.
     Rowan's and Maren's 5 quests are side quests.
 - **Network:** new intents `examine` and `accept_shared_quest`; the escort flag is
   in each NPC's snapshot. The 4-player check now has the guests in town join the
   host's quest over the network.
+
+## Act I: zones and region music (milestone 2 of 4, 2026-10-27)
+
+User brief: build or update the Act I zones, small and hand-built, with height used
+for cliffs, ramps and high ground, joined by roads with the Crossing as the hub;
+music by region. Built by `tools/once/make_act1_zones.py` (+ `bake_zone_rows.gd`);
+edit the zone files directly now. Screenshots: `tests/visual/zone_shots.tscn`.
+- **Map** (grid sides; offsets in the zone files):
+  - Millbrook (32×32) south gate (x 8–11) ↔ the Crossing's north gate; Millbrook's
+    east side (rows 1–16) still leads to Greenfields and its north gate to the Enemy
+    Testing Grounds.
+  - The Crossing (40×40): east (rows 18–21) ↔ Road to Deepcut (60×22, rows 9–12) ↔
+    Deepcut (44×40, west gate rows 16–19); west (rows 18–21) ↔ Windsteppe (56×44,
+    rows 20–23).
+  - Tidereach Shore (test, 18×14) ↔ a gate at the west end of the Enemy Testing
+    Grounds (`TestingGrounds.WEST_GATE`, opened when the zone has a west edge).
+  - Greenfields' map and the testing grounds' layout are unchanged (Greenfields lost
+    its Act I NPCs).
+- **Millbrook:** farming village on the river (x 24–25): grey upstream (south, from
+  the Crossing), clear below the mill pond; thatched houses, fields, the Village Well
+  on the green, the orchard on high ground with a rocky crest, the Healer's Hut
+  (Healer Wenna) with Millbrook's graveyard.
+- **The Crossing:** Floor Guild Hall (Dorne), Guild Board, market stalls with two
+  vendors (Tamsin Reed: Hilda's stock; Odo the Apothecary: potions), the Crossed Keys
+  Inn (Innkeeper Bram, Sabra Venn), the Graveyard Shrine on a knoll, a rocky hill and
+  a ridge; the grey stream crosses it toward Millbrook.
+- **Road to Deepcut:** grass to red earth between rising canyon walls, the Lookout
+  Ledge (a Bandit Brute), two wolves, the grey stream along the south.
+- **Deepcut:** red canyon town: Mine Entrance in the cliff north of the mine yard,
+  ore carts, Foreman Brannoc, Steward's Office on a terrace (Steward Orrin Marl),
+  Mine Board, the tailings pond and polluted stream, Miners' Row, the Collapsed
+  Shaft in the spur's face. Two Salamander Hounds by the canyon gate (the escort's
+  danger). The escort now runs from the mine yard to the canyon gate.
+- **Windsteppe:** rolling steppe (heights 0–2), dry patches, Grey Ridge (4 high),
+  Tsaga's Camp (gers, Elder Tsaga, a dry well, a cairn, a herd), a south camp,
+  cairns, the Vael Standing Stone on its hill, six **iron wolves** patrolling in
+  three packs.
+- **Iron Wolf** (`content/enemies/iron_wolf.tres`): level 3, HP 320, PhysAtk 16,
+  PhysDef 18, MagDef 6, Evasion 4, leash 12, 0.7 s per tile, 80 XP, 3 AP; the
+  wolf's bite and howl (calls iron wolves); the wolf art recoloured to steel
+  (`iron_wolf_art.tres`).
+- **Placeholder art:** tiles 115–136 recolour existing ones (grey water, red canyon,
+  steppe grass, roofs, red boulders; `tools/once/make_placeholder_tiles.py`).
+  Objects without art are `ZoneDecor` (`ZoneDef.decor`: well, dry well, ger, cairn,
+  cart, animal, shrine, stall, sign, mine, crates, label), drawn by `DecorPainter`
+  as polygons (clipped like tiles for the terrain cache), labels within 12 tiles;
+  they block their tile, gers and mines block sight too. Things set against a cliff
+  go on its north/west side, the faces the camera sees. See `docs/tilesets.md`.
+- **Respawn:** `ZoneDef.respawn_zone`: the Road, Deepcut and the Windsteppe send
+  released heroes to the Crossing's shrine (`World._respawn_elsewhere`, a
+  `zone_change` then a `release` in the Crossing). Millbrook, Greenfields and the
+  testing grounds keep their own graveyards.
+- **Regions** (`Regions`, `ZoneDef.region`): Heartland (Millbrook, the Crossing,
+  Greenfields, testing grounds), Bedrun (the Road, Deepcut), Vael (Windsteppe),
+  Tidereach (the test shore). `MusicTrackDef.regions`: a track for the zone's region
+  wins, else a track for any region; another region's never plays
+  (`Audio.pick_track(ctx, bond, region)`).
+- **Music:** `audio/music/music_explore_tidereach.ogg` ("Water Idle", Vorbis q6 from
+  the uploaded WAV, kept at `art/audio/music_explore_tidereach_master.wav`), explore in
+  Tidereach. Not edited: it doesn't loop cleanly (2.35 s of near-silence at the start,
+  ends at full level). Everything else still plays the draft. Crossfade 1.5 s as before.
+- **Ambience keys:** `ambience_<zone id>`: `ambience_town`, `ambience_crossing`,
+  `ambience_deepcut_road`, `ambience_deepcut`, `ambience_windsteppe`,
+  `ambience_tidereach_shore` (in `AUDIO_SPEC.md`).
+- **Debug console:** `goto <zone>` (a zone's first hero spawn).
+- **Sound keys:** a creature ability shared by several enemies gets keys for each
+  (`creature_wolf_bite` and `creature_iron_wolf_bite`).
+- **Network:** the 4-player check has the guests join Rowan's quest in Millbrook,
+  then Guest1 goes to Greenfields and Guest2 to the Crossing: three zones at once.
 
 ## Enemy Testing Grounds (2026-10-20)
 
@@ -899,7 +969,7 @@ assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
 assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
-view/            world view, iso tile renderer, actor views, camera
+view/            world view, iso tile renderer, actor views, camera, decor painter (placeholder objects)
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
 				 inventory, character sheet, spellbook, ability trees, dialogue, vendor, loot,
 				 quest log, tracker)
@@ -912,7 +982,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I), ability import, tilesets, quests and dialogue
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones), ability import, tilesets, quests and dialogue
 ```
 
 ### Build order (milestone 1)
@@ -1579,6 +1649,20 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-27 | Act I milestone 2 of 4: zones (Millbrook rebuilt, the Crossing, Road to Deepcut, Deepcut, Windsteppe), region music, the Tidereach track | User brief ("list every decision"). See **Act I: zones and region music**. My decisions are in the next rows. |
+| 2026-10-27 | Branch `feature/v1.3.1` from `main` after milestone 1's merge | User correction of the brief's branch name (first given as `feature/act1-m2-zones`, renamed before any commit); merged at the end. |
+| 2026-10-27 | Zone size: 32–60 tiles across, not 2–3 minutes' walk | At the current walking speed (5 tiles/s) 2–3 minutes would be 600–900 tiles; "small and hand-built" and the existing maps (30×30) point the other way. The zones take 10–15 s to cross straight, longer along the roads and around cliffs. To revisit with the walking speed. |
+| 2026-10-27 | Zones built from hand-placed shapes by a script, then baked | `tools/once/make_act1_zones.py` (like the earlier `make_tiled_zones.py`): houses, roads, rivers, cliffs and camps placed by coordinates, written as ordinary zone files. |
+| 2026-10-27 | Regions: Heartland (Millbrook, the Crossing, Greenfields, testing grounds), Bedrun (the Road, Deepcut), Vael (Windsteppe), Tidereach (test shore) | Bedrun runs the mines; the felt tents, cairns and the Vael stone make the steppe Vael's. No Act I zone is Ashkara. |
+| 2026-10-27 | A region's own track wins; tracks with no region are the fallback; other regions' tracks never play | The draft (no region) plays wherever a region has no track. The water track is explore only: a Tidereach town would play town music. |
+| 2026-10-27 | Tidereach track not edited; its loop problem reported | The brief: tell rather than edit. Measured: 2.35 s of near-silence at the start, about −26 dB at the very end. The WAV master is kept in `art/audio/` like the earlier MP3. |
+| 2026-10-27 | Tidereach test zone, west of the Enemy Testing Grounds (plus a `goto` debug command) | Walking in and out shows the crossfade between regions; off the testing grounds so the Act I map stays as briefed. `goto` reaches every zone for playtests. |
+| 2026-10-27 | Respawn: zones beyond the Crossing send released heroes to its shrine; Millbrook, Greenfields and the testing grounds keep their graveyards | "The graveyard shrine where players respawn". Millbrook's graveyard sits by the healer's hut. |
+| 2026-10-27 | Act I's people moved to where the brief puts them | Guild Board, Dorne, Sabra → the Crossing (guild hall, inn); Mine Board, Brannoc, caravan, Collapsed Shaft → Deepcut; Vael stone → Windsteppe, its quest now kills iron wolves (level 3). The escort runs through Deepcut to the canyon gate past two Salamander Hounds (the Ember Hand's fire hounds), since an escort stays in one zone. Lines naming old places rewritten in `act1.json`. |
+| 2026-10-27 | New people: Healer Wenna (Millbrook), Tamsin Reed and Odo the Apothecary (vendors), Innkeeper Bram (the Crossing), Steward Orrin Marl (Deepcut), Elder Tsaga (Windsteppe) | Talk only, apart from the two vendors (Tamsin: Hilda's stock; Odo: potions). Wenna mentions the grey river (for quest 1-05). |
+| 2026-10-27 | Iron wolves: level 3, the wolf's bite and howl, steel recolour of the wolf art | HP 320, PhysDef 18 (iron hide), 80 XP. Packs of two on patrol loops. |
+| 2026-10-27 | Placeholder tiles are recolours; objects are shapes with labels (`ZoneDecor`) | The brief allows simple shapes. Recolours keep the tile style; shapes are drawn as clipped polygons so the terrain cache still draws exactly. Labels show within 12 tiles to avoid clutter. |
+| 2026-10-27 | Test changes forced by the new layout | Tests that used Millbrook's old tiles read them from the map now; the aiming test plays on open ground at the Crossing; the testing-grounds walkthrough hero is level 15 (12 lost to the Bandit Brute once the extra zones changed the random draws). |
 | 2026-10-26 | Veyra Act I, milestone 1 of 4: quest system extended for the story, and dialogue | User brief ("make sensible decisions, list them"). See **Act I: quests and dialogue**. My decisions are in the next rows. |
 | 2026-10-26 | Branch `feature/v1.2.1` from `main`, fast-forwarded to `claude/godot-2d-coop-rpg-5nvase` | `main` was still at Milestone 1, without the quest system this extends; `main` is an ancestor of the working branch, so the new branch holds both and the pull request into `main` carries everything since. |
 | 2026-10-26 | One JSON file of lines, by id convention; existing texts moved into it | JSON over .tres: readable and editable in any text editor. Conventions (`npc.<id>.greeting`, `quest.<id>.offer`…) mean quests and NPCs need no extra fields; a missing line falls back to a short default. The world-flag announcement moved there too (`quest.<id>.world_flag`). |

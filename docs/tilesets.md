@@ -97,3 +97,45 @@ diamonds.
 Drawing: each tile is a column of blocks, bottom first, then its prop. Rows are
 drawn back to front, and characters are fitted into the order so the tiles in
 front of them, props included, cover them.
+
+## Placeholder tiles (Act I zones)
+
+Tiles 115–136 of `iso_basic` are recolours of existing tiles, made by
+`tools/once/make_placeholder_tiles.py` until real art exists: grey polluted water
+(`grey_water`, animated), red canyon ground and rock (`red_earth`, `red_rock`,
+`red_stone`, `red_wall`), cold steppe grass (`steppe`, `steppe_dry`), roofs
+(`roof_thatch`, `roof_slate`, `roof_red`: not walkable) and red boulders
+(`red_boulders`, `red_rocks`). Their catalog names say what they recolour. Real
+tiles can replace the images under the same ids, or new terrains can be added
+and the zones' legends pointed at them.
+
+## Placeholder objects (decor)
+
+Things the tileset has no art for (wells, felt tents, cairns, ore carts, herd
+animals, the graveyard shrine, market stalls, signs, mine entrances, crates) are
+`ZoneDecor` entries in a zone's `decor` list: a kind, a tile, an optional label
+and colour. They are drawn as simple shapes (`view/decor_painter.gd`), with the
+label shown when your hero is within 12 tiles, and they block their tile (gers
+and mine entrances block line of sight too); ContentDB bakes that into
+`walk_rows`/`sight_rows` like props. A `LABEL` decor is only a name (e.g. on a
+building's roof). When art exists, a kind can be drawn from it instead, without
+touching the maps.
+
+Mine entrances and other things set against a cliff must sit at the foot of a
+cliff on its north or west side (smaller x or y): only those faces are turned
+toward the camera.
+
+## Zone regions and respawning
+
+A zone names its `region` (Heartland, Bedrun, Vael, Tidereach, Ashkara), which
+picks its explore music (see AUDIO_SPEC.md), and may name a `respawn_zone`:
+heroes released there come back at that zone's graveyard (the Crossing's shrine
+for the roads and towns beyond it).
+
+## The Act I maps
+
+`tools/once/make_act1_zones.py` built Millbrook, the Crossing, the Road to
+Deepcut, Deepcut, the Windsteppe and the Tidereach test shore from hand-placed
+shapes (houses, roads, rivers, cliffs, ramps, camps), then
+`tools/once/bake_zone_rows.gd` baked their walk and sight rows. Edit the zone
+files directly now; running the script again would overwrite hand edits.

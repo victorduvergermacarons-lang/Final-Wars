@@ -48,6 +48,12 @@ The first word of a key picks its folder. The file name is the key plus `.wav`
   and change the name, file, contexts (title, town, explore, combat, dungeon, boss)
   and whether it loops. A track marked **drained** is used instead when a zone's
   bond is low (a hook for later; no drained tracks yet).
+- **Region music:** every zone belongs to a region (Heartland, Bedrun, Vael,
+  Tidereach, Ashkara). A track's data file can list `regions`: it then plays only
+  in zones of those regions, and wins there over the tracks for any region. A
+  region without its own track for the context gets the any-region track (today
+  the draft). Name region tracks `music_<context>_<region>.ogg`, e.g.
+  `music_explore_bedrun.ogg`.
 - **Ambience:** `ambience_<zone>.ogg` (keys below).
 
 ## Loudness targets
@@ -74,6 +80,7 @@ cut through.
 | File | Plays for | Notes |
 |------|-----------|-------|
 | `audio/music/music_idle_draft.ogg` | title screen, town (and, until they have their own, explore and dungeon) | first draft; converted from the MP3 (kept in `art/audio/`). The MP3 started with 43 ms of silence and ended at full level, so the loop clicked: the OGG has the silence trimmed, a 10 ms fade-in and a 120 ms fade-out. |
+| `audio/music/music_explore_tidereach.ogg` | explore in Tidereach zones (none in Act I: hear it on the Tidereach Shore test map, west of the Enemy Testing Grounds, or with the debug command `goto tidereach_shore`) | "Water Idle", converted from the uploaded WAV (kept in `art/audio/music_explore_tidereach_master.wav`) to OGG Vorbis quality 6, not edited otherwise. **It doesn't loop cleanly yet:** it starts with 2.35 s of near-silence (−80 to −63 dB) and ends at full level (about −26 dB RMS in the last 50 ms, no fade), so every loop drops from full volume into that 2.35 s gap. A version that ends on the material it starts with (or with the lead-in trimmed) would loop seamlessly. |
 
 Combat and boss music: until those tracks exist, fights keep the current music.
 
