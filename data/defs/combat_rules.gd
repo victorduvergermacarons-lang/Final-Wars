@@ -167,6 +167,17 @@ const GAME_SPEED_MAX := 2.0
 ## The largest party scaled for.
 @export var party_max_size: int = 4
 
+@export_group("Dungeons")
+## The smallest party that may enter a dungeon.
+@export var dungeon_min_party: int = 3
+## The "testing" setting: a party of one may enter (on by default in debug builds,
+## a toggle in the Escape menu's Gameplay test page).
+@export var dungeon_testing: bool = false
+## A dungeon copy nobody is in closes after this long (a new one opens next time).
+@export var dungeon_close_seconds: float = 60.0
+## After a party wipe (everyone inside dead), everyone stands up at the entrance this long after.
+@export var wipe_respawn_seconds: float = 3.0
+
 @export_group("XP by level")
 ## Each level the enemy is above you: +this percent XP, up to the cap.
 @export var xp_bonus_percent_per_level_above: float = 10.0
@@ -176,6 +187,11 @@ const GAME_SPEED_MAX := 2.0
 ## …losing this percent per level from there, down to the floor.
 @export var xp_penalty_percent_per_level: float = 20.0
 @export var xp_floor_percent: float = 20.0
+
+
+## The smallest party allowed into a dungeon right now.
+func min_dungeon_party() -> int:
+	return 1 if dungeon_testing else dungeon_min_party
 
 
 ## Max HP multiplier for an enemy facing `heroes` heroes.

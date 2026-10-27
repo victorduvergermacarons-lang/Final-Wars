@@ -133,6 +133,7 @@ func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
 	time_scale = snap.get("time_scale", 1.0)
+	rules.dungeon_testing = snap.get("dungeon_testing", rules.dungeon_testing)
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
 	ground_zones = snap.get("zones", [])

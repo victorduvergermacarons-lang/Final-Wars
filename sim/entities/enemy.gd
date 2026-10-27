@@ -34,6 +34,10 @@ var level: int = 1
 var temporary := false
 ## Seconds from death to respawn for this one (< 0 = its type's respawn_seconds).
 var respawn_seconds := -1.0
+## Takes no damage (a boss's heart before its last phase).
+var invulnerable := false
+## Can't be brought below this much health (a boss its heart keeps alive); 0 = none.
+var min_hp := 0.0
 ## The party size it is scaled for (CombatRules "Party size"): its max HP, its
 ## damage and its kill XP grow with it.
 var party_size := 1
@@ -74,7 +78,7 @@ func combat_step_cooldown(rules: CombatRules, now: float) -> float:
 
 ## Whether it grows with the party (elites are built for groups; dummies never change).
 func scales_with_party() -> bool:
-	return not def.elite and not def.training_dummy
+	return (not def.elite or def.dungeon_boss) and not def.training_dummy
 
 
 ## Scales it for `heroes` heroes: max HP from its type's, keeping the share of

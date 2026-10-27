@@ -38,6 +38,13 @@ enum Behavior {
 ## once they are past its leash radius (so their combat ends). In the testing
 ## grounds it stands by the entrance instead of getting a pen. Drawn as a mannequin.
 @export var training_dummy: bool = false
+## Never moves, turns or attacks by itself (a boss's heart: its encounter drives it).
+@export var immobile: bool = false
+## A dungeon boss: scales with the party like any enemy, although elite.
+@export var dungeon_boss: bool = false
+## Placeholder look until it has art.
+enum Look { DIAMOND, CRYSTAL }
+@export var look: Look = Look.DIAMOND
 ## How far knockbacks and pulls move it (Weight.adjust).
 @export var weight: Weight.Id = Weight.Id.MEDIUM
 ## Played once when the enemy first starts fighting (spotting a hero or being

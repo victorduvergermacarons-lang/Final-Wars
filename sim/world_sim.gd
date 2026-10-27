@@ -29,6 +29,7 @@ extends RefCounted
 ##   {"type": "stop_learning"}
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
 ##   {"type": "game_speed", "value": float}   (game clock speed, 0.1–2; same rule as debug)
+##   {"type": "dungeon_testing", "on": bool}   (dungeons open to parties of one; same rule)
 ##   {"type": "timing_press", "at": float, "aim"?: Vector2}   (right-click on a timing bar: seconds since it started; aimed abilities: the cursor)
 ##   {"type": "timing_release", "at": float, "aim"?: Vector2}   (right-click let go, ending a hold on a timing bar)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
@@ -84,6 +85,8 @@ const HISTORY_SECONDS := 2.0
 var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
 ## Heroes asking to walk off a map edge this tick: [[hero id, ZoneEdge], ...]; World moves them.
 var _edge_requests: Array = []
+## Its key in the World: the zone's id, or "<id>@<party>" for a dungeon copy.
+var key: StringName = &""
 ## Released heroes to respawn in another zone (ZoneDef.respawn_zone): hero ids.
 var _respawn_requests: Array = []
 var _events: Array[Dictionary] = []
@@ -93,6 +96,7 @@ var _events: Array[Dictionary] = []
 func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSource = null) -> void:
 	ids = p_ids if p_ids != null else IdSource.new()
 	zone = p_zone
+	key = zone.id
 	rules = p_rules
 	grid = GridModel.from_zone(zone)
 	var rng := RandomNumberGenerator.new()
@@ -107,11 +111,9 @@ func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSo
 		enemy.patrol = spawn.patrol.duplicate()
 		enemy.respawn_seconds = spawn.respawn_seconds
 	for spawn in zone.npcs:
-		var npc := Npc.new(_take_id(), spawn.npc, spawn.tile)
-		npc.face(spawn.facing)
-		npc.home_facing = spawn.facing
-		_npcs[npc.id] = npc
-		ctx.add_actor(npc)
+		add_npc(spawn.npc, spawn.tile, spawn.facing)
+	if zone.encounter != null:
+		encounter = BossEncounter.new(zone.encounter, self)
 
 
 # --- Actors -----------------------------------------------------------------
@@ -216,6 +218,28 @@ func exit_at(tile: Vector2i) -> ZoneExit:
 	return null
 
 
+func add_npc(def: NpcDef, tile: Vector2i, facing: Vector2i = Vector2i.DOWN) -> Npc:
+	var npc := Npc.new(_take_id(), def, find_free_tile_near(tile) if is_occupied(tile) else tile)
+	npc.face(facing)
+	npc.home_facing = facing
+	_npcs[npc.id] = npc
+	ctx.add_actor(npc)
+	return npc
+
+
+## A ground zone owned by `source` (an encounter's greyed tiles): applies
+## `zone_ability` to whoever stands on `tiles` every `tick` seconds until `until`.
+func add_ground_zone(source: int, tiles: Array, ability: AbilityDef, zone_ability: AbilityDef, tick: float,
+		until: float) -> void:
+	ctx.requests.append({"type": "zone", "source": source, "tiles": tiles, "ability": ability,
+			"zone_ability": zone_ability, "tick": tick, "until": until, "bonus": 1.0})
+	_handle_requests()
+
+
+func remove_ground_zones_from(source: int) -> void:
+	_ground_zones = _ground_zones.filter(func(z): return z.source != source)
+
+
 func add_enemy(def: EnemyDef, tile: Vector2i) -> Enemy:
 	var enemy := Enemy.new(_take_id(), def, tile)
 	_enemies[enemy.id] = enemy
@@ -284,6 +308,8 @@ func step() -> Array[Dictionary]:
 	_update_party_scale()
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
+	if encounter != null:
+		encounter.update(self)
 	_update_casts()
 	_update_projectiles()
 	_update_pending_hits()
@@ -296,6 +322,7 @@ func step() -> Array[Dictionary]:
 	_remove_after_tick.clear()
 	_regen()
 	_update_escorts()
+	_update_wipe()
 	_update_quests()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
@@ -311,6 +338,58 @@ func _update_party_scale() -> void:
 	for enemy in enemies():
 		if enemy.state != Enemy.State.COMBAT:
 			enemy.set_party_size(n, rules)
+
+
+# --- Dungeons: party wipes ---------------------------------------------------------
+
+## When the wipe began (everyone here dead), or -1.
+var _wipe_at := -1.0
+## The boss fight of this map (ZoneDef.encounter), if any.
+var encounter: BossEncounter = null
+
+
+## A dungeon party wipe: everyone in it is dead at once. After
+## rules.wipe_respawn_seconds everyone stands up at the entrance (half health and
+## mana, like a release), enemies forget them, and the boss goes back to the start
+## of its current phase.
+func _update_wipe() -> void:
+	if not zone.dungeon:
+		return
+	var all := heroes()
+	if all.is_empty() or all.any(func(h): return h.alive):
+		_wipe_at = -1.0
+		return
+	if _wipe_at < 0.0:
+		_wipe_at = now
+		emit({"type": "party_wipe"})
+		return
+	if now - _wipe_at < rules.wipe_respawn_seconds - Cooldowns.EPSILON:
+		return
+	_wipe_at = -1.0
+	var entrance: Vector2i = zone.graveyards[0] if not zone.graveyards.is_empty() else zone.hero_spawns[0]
+	for hero in all:
+		var stats := hero.current_stats(now)
+		hero.alive = true
+		hero.hp = maxf(roundf(stats.hp * rules.release_fraction), 1.0)
+		hero.mana = roundf(stats.mana * rules.release_fraction)
+		hero.combat_until = 0.0
+		hero.casting = {}
+		hero.move.place(find_free_tile_near(entrance))
+		_history.erase(hero.id)
+	for enemy in enemies():
+		for hero in all:
+			enemy.threat.remove(hero.id)
+	if encounter != null:
+		encounter.on_wipe(self)
+	emit({"type": "wipe_respawn", "tile": entrance})
+
+
+## Starts this zone's clock at `tick` (a dungeon copy made mid-game: heroes carry
+## cooldowns and buffs in world time).
+func sync_clock(tick: int) -> void:
+	tick_count = tick
+	now = tick_count * rules.tick_seconds
+	ctx.now = now
 
 
 ## A tick for a sleeping zone (World: no heroes here for a while): the clock
@@ -1085,6 +1164,14 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 				rules.game_speed = clampf(intent.get("value", 1.0), CombatRules.GAME_SPEED_MIN,
 						CombatRules.GAME_SPEED_MAX)
 				emit({"type": "game_speed", "value": rules.game_speed})
+		"dungeon_testing":
+			# The "testing" dungeon setting (parties of one may enter): a test setting
+			# like the game speed, shared by every zone.
+			if debug_content == null:
+				reason = "debug_disabled"
+			else:
+				rules.dungeon_testing = intent.get("on", false)
+				emit({"type": "dungeon_testing", "on": rules.dungeon_testing})
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)
@@ -1601,7 +1688,7 @@ func _regen() -> void:
 		var mana_pct := rules.in_combat_mana_regen_percent if fighting else rules.out_of_combat_mana_regen_percent
 		mana_pct += a.buffs.mana_regen_percent(now)
 		a.hp = minf(a.hp + s.hp * hp_pct / 100.0 * dt, s.hp)
-		a.mana = minf(a.mana + s.mana * mana_pct / 100.0 * dt, s.mana)
+		a.mana = clampf(a.mana + s.mana * mana_pct / 100.0 * dt, 0.0, s.mana) # greyed ground drains it
 
 
 func _take_id() -> int:

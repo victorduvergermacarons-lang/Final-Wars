@@ -40,6 +40,8 @@ const REASONS := {
 	"prerequisite": "You need to finish an earlier quest first",
 	"quest_not_ready": "That quest isn't finished yet",
 	"choose_reward": "Choose a reward first",
+	"dungeon_needs_quest": "You need the quest for this place first",
+	"dungeon_party_too_small": "You need a party of %d to go in",
 }
 
 var session
@@ -539,6 +541,15 @@ func _on_events(events: Array) -> void:
 				session.rules().game_speed = e.value
 				game_menu.show_speed(e.value)
 				client.say("Game speed: ×%s." % GameMenu.speed_text(e.value))
+			"dungeon_testing":
+				session.rules().dungeon_testing = e.on
+				game_menu.show_dungeon_testing(e.on)
+				client.say("Dungeon testing %s." % ("on: any party size may enter" if e.on else "off"))
+			"party_wipe":
+				client.say("Your party has fallen. Everyone wakes at the entrance…")
+			"lift":
+				if e.target == me:
+					client.say("The lift rattles along its shaft.")
 			"joined":
 				client.say("%s joined the game." % e.name)
 			"left":
@@ -579,7 +590,9 @@ func _on_events(events: Array) -> void:
 			continue
 		match e.type:
 			"rejected":
-				if e.reason != "not_ready":
+				if e.reason == "dungeon_party_too_small":
+					client.error(REASONS[e.reason] % int(e.get("need", 3)))
+				elif e.reason != "not_ready":
 					client.error(REASONS.get(e.reason, String(e.reason).capitalize()))
 			"level_up":
 				client.say("You reached level %d!" % e.level)

@@ -27,6 +27,8 @@ const CHASE_RETRY_SECONDS := 0.5
 
 
 static func update(world: WorldSim, enemy: Enemy) -> void:
+	if enemy.def.immobile and enemy.state != Enemy.State.DEAD:
+		return # its encounter decides when it fights
 	match enemy.state:
 		Enemy.State.DEAD:
 			if enemy.temporary:

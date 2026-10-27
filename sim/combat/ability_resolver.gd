@@ -467,11 +467,17 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 				deal_damage(ctx, target, source, &"reflect", roundf(amount * counter.reflect), false, events)
 			if counter.negate:
 				return
+	if target is Enemy and (target as Enemy).invulnerable:
+		events.append({"type": "immune", "source": source.id if source != null else -1, "target": target.id,
+				"ability": ability_id})
+		return
 	if source is Enemy:
 		amount *= (source as Enemy).damage_scale # stronger against a bigger party
 	var taken := maxf(roundf(amount * target.buffs.damage_taken_multiplier(ctx.now)), ctx.rules.min_damage)
 	var through := target.buffs.absorb(taken)
 	var dmg := minf(through, target.hp)
+	if target is Enemy and (target as Enemy).min_hp > 0.0:
+		dmg = clampf(dmg, 0.0, maxf(target.hp - (target as Enemy).min_hp, 0.0)) # held up by its heart
 	target.hp -= dmg
 	target.buffs.wake()
 	var e := {"type": "damage", "source": source.id if source != null else -1, "target": target.id,

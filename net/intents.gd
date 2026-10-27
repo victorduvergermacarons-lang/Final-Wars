@@ -91,6 +91,11 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
 				return {}
 			out.value = clampf(float(value), CombatRules.GAME_SPEED_MIN, CombatRules.GAME_SPEED_MAX)
+		"dungeon_testing":
+			var on = raw.get("on")
+			if typeof(on) != TYPE_BOOL:
+				return {}
+			out.on = on
 		"timing_press", "timing_release":
 			var at = raw.get("at")
 			if (typeof(at) != TYPE_FLOAT and typeof(at) != TYPE_INT) or not is_finite(float(at)):
