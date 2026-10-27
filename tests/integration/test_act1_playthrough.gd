@@ -10,7 +10,7 @@ const ContentDBScript := preload("res://autoload/content_db.gd")
 const FINAL_LEVEL := [9, 11]
 ## How many of Act1Playthrough.ORDER are played (all of them: the level checks
 ## apply once every quest is in).
-const PLAYED := 4
+const PLAYED := 5
 
 
 func _quests() -> Array:
