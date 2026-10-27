@@ -106,8 +106,10 @@ func test_events_carry_their_zone() -> void:
 func test_snapshot_only_contains_the_viewers_zone() -> void:
 	var snap := Snapshot.capture(world.zone_of(hero.id), hero.id)
 	assert_eq(snap.zone, &"town")
-	assert_eq(snap.actors.filter(func(d): return d.kind == Snapshot.KIND_ENEMY).size(), 0,
-			"no wolves from Greenfields in the town snapshot")
+	var town_enemies: Array = world.zone(&"town").enemies().map(func(e): return e.id)
+	var seen: Array = snap.actors.filter(func(d): return d.kind == Snapshot.KIND_ENEMY)
+	assert_eq(seen.size(), town_enemies.size(), "Millbrook's own raiders (quest 1-01) and nothing else")
+	assert_true(seen.all(func(d): return town_enemies.has(d.id)), "no wolves from Greenfields in the town snapshot")
 	assert_eq(snap.actors.filter(func(d): return d.kind == Snapshot.KIND_HERO).size(), 1)
 
 

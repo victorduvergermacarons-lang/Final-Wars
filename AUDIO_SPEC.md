@@ -93,7 +93,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-172 keys, 0 with a file, 172 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+186 keys, 0 with a file, 186 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -243,6 +243,14 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_bandit_brute_death` | Bandit Brute dies | **missing** |
 | `creature_bandit_brute_hurt` | Bandit Brute takes damage | **missing** |
 | `creature_bandit_brute_step` | Bandit Brute moves one tile (paws, wings...) | **missing** |
+| `creature_boar_aggro` | Boar notices a hero and starts a fight | **missing** |
+| `creature_boar_death` | Boar dies | **missing** |
+| `creature_boar_gore` | Gore is used | **missing** |
+| `creature_boar_gore_hit` | Gore lands on someone | **missing** |
+| `creature_boar_hurt` | Boar takes damage | **missing** |
+| `creature_boar_step` | Boar moves one tile (paws, wings...) | **missing** |
+| `creature_boar_tusk_charge` | Tusk Charge is used | **missing** |
+| `creature_boar_tusk_charge_hit` | Tusk Charge lands on someone | **missing** |
 | `creature_fen_skirmisher_aggro` | Fen Skirmisher notices a hero and starts a fight | **missing** |
 | `creature_fen_skirmisher_death` | Fen Skirmisher dies | **missing** |
 | `creature_fen_skirmisher_hurt` | Fen Skirmisher takes damage | **missing** |
@@ -255,6 +263,12 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_goblin_shaman_shadow_bolt` | Shadow Bolt is used | **missing** |
 | `creature_goblin_shaman_shadow_bolt_hit` | Shadow Bolt lands on someone | **missing** |
 | `creature_goblin_shaman_step` | Goblin Shaman moves one tile (paws, wings...) | **missing** |
+| `creature_human_husk_aggro` | Human Husk notices a hero and starts a fight | **missing** |
+| `creature_human_husk_death` | Human Husk dies | **missing** |
+| `creature_human_husk_hollow_rake` | Hollow Rake is used | **missing** |
+| `creature_human_husk_hollow_rake_hit` | Hollow Rake lands on someone | **missing** |
+| `creature_human_husk_hurt` | Human Husk takes damage | **missing** |
+| `creature_human_husk_step` | Human Husk moves one tile (paws, wings...) | **missing** |
 | `creature_iron_wolf_aggro` | Iron Wolf notices a hero and starts a fight | **missing** |
 | `creature_iron_wolf_bite` | Bite is used | **missing** |
 | `creature_iron_wolf_bite_hit` | Bite lands on someone | **missing** |

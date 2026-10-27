@@ -99,7 +99,11 @@ func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSo
 	rng.seed = rng_seed
 	ctx = CombatContext.new(grid, rules, rng)
 	for spawn in zone.enemy_spawns:
-		var enemy := add_enemy(spawn.enemy, spawn.tile)
+		var def := spawn.enemy
+		if spawn.level > 0 and spawn.level != def.level:
+			def = DebugCommands.at_level(def, spawn.level)
+		var enemy := add_enemy(def, spawn.tile)
+		enemy.level = def.level
 		enemy.patrol = spawn.patrol.duplicate()
 		enemy.respawn_seconds = spawn.respawn_seconds
 	for spawn in zone.npcs:
@@ -277,6 +281,7 @@ func step() -> Array[Dictionary]:
 		_handle_intent(entry[0], entry[1])
 	for hero in heroes():
 		_take_pending_step(hero)
+	_update_party_scale()
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
 	_update_casts()
@@ -297,6 +302,15 @@ func step() -> Array[Dictionary]:
 	_record_history()
 	ctx.record_positions()
 	return _events
+
+
+## Enemies not fighting are scaled for the heroes in this zone (CombatRules
+## "Party size"); one in a fight keeps the size it started with.
+func _update_party_scale() -> void:
+	var n := heroes().size()
+	for enemy in enemies():
+		if enemy.state != Enemy.State.COMBAT:
+			enemy.set_party_size(n, rules)
 
 
 ## A tick for a sleeping zone (World: no heroes here for a while): the clock
@@ -1462,7 +1476,9 @@ func _on_death(actor: Actor) -> void:
 				for e in QuestLog.on_kill(h, quests, enemy.def.id):
 					emit(e)
 		if not earners.is_empty():
-			var share := float(enemy.def.xp_reward) / earners.size()
+			# Scaled for a party, it gives XP for the party: each hero who fought it gets
+			# what a solo hero would (unscaled, the XP is shared as before).
+			var share := float(enemy.def.xp_reward) * mini(earners.size(), enemy.party_size) / earners.size()
 			for h in earners:
 				emit({"type": "kill", "target": h.id, "enemy": enemy.def.id})
 				var xp := share * Leveling.xp_level_multiplier(h.level, enemy.level, rules)

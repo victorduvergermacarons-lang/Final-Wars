@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_effect"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_scaling"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ability"]
+
+[sub_resource type="Resource" id="Resource_scale"]
+script = ExtResource("2_scaling")
+
+[sub_resource type="Resource" id="Resource_hit"]
+script = ExtResource("1_effect")
+base_amount = 10.0
+scaling = Array[ExtResource("2_scaling")]([SubResource("Resource_scale")])
+
+[resource]
+script = ExtResource("3_ability")
+id = &"husk_rake"
+display_name = "Hollow Rake"
+description = "A slow, heavy swipe from something that used to be a miner."
+shape = 1
+cooldown_seconds = 2.8
+max_height_difference = 2
+effects = Array[ExtResource("1_effect")]([SubResource("Resource_hit")])
+targeting = 1
+windup_seconds = 0.6

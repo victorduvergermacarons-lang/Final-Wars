@@ -467,6 +467,8 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 				deal_damage(ctx, target, source, &"reflect", roundf(amount * counter.reflect), false, events)
 			if counter.negate:
 				return
+	if source is Enemy:
+		amount *= (source as Enemy).damage_scale # stronger against a bigger party
 	var taken := maxf(roundf(amount * target.buffs.damage_taken_multiplier(ctx.now)), ctx.rules.min_damage)
 	var through := target.buffs.absorb(taken)
 	var dmg := minf(through, target.hp)

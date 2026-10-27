@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_npc")
-id = &"steward_marl"
-display_name = "Steward Orrin Marl"
-faction = 3
+id = &"saran"
+display_name = "Saran"
+faction = 4

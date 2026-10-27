@@ -122,7 +122,7 @@ func test_old_grizzlehide_is_a_patrolling_elite() -> void:
 
 
 func test_sample_quests() -> void:
-	assert_eq(db.quests.size(), 13, "the 5 Millbrook quests and the 8 of Act I")
+	assert_eq(db.quests.size(), 14, "the 5 Millbrook quests and the 9 of Act I")
 	var chain := [&"wolves_at_the_gate", &"bandit_camp", &"beast_of_greenfields"]
 	for i in range(1, chain.size()):
 		assert_eq(db.quests[chain[i]].prerequisites, [chain[i - 1]] as Array[StringName], "%s follows %s" % [chain[i], chain[i - 1]])

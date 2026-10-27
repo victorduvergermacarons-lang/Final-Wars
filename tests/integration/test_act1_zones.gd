@@ -104,7 +104,7 @@ func test_the_zones_have_what_the_brief_asks_for() -> void:
 	assert_gte(decor.call(&"deepcut", ZoneDecor.Kind.MINE), 1, "a mine entrance")
 	assert_gte(decor.call(&"deepcut", ZoneDecor.Kind.CART), 3, "ore carts")
 	assert_gt(terrain.call(&"deepcut", "grey_water"), 40, "the polluted stream")
-	for n in [&"mine_board", &"steward_marl", &"foreman_brannoc"]:
+	for n in [&"mine_board", &"steward_brann", &"collapsed_shaft"]:
 		assert_true(npcs.call(&"deepcut").has(n), "Deepcut has %s" % n)
 	# Windsteppe: gers, cairns, dry wells, herds, iron wolves.
 	assert_gte(decor.call(&"windsteppe", ZoneDecor.Kind.GER), 6, "felt tents")
@@ -214,7 +214,7 @@ func test_quest_progress_needs_the_party_in_the_same_zone() -> void:
 	var bob := _hero("Bob")
 	for h in [ann, bob]:
 		h.level = 4
-		QuestLog.accept(h, db.quests[&"act1_what_the_stone_remembers"])
+		QuestLog.accept(h, db.quests[&"act1_03_wells_for_the_windsteppe"])
 	world.move_hero(ann.id, &"windsteppe", Vector2i(30, 16))
 	world.move_hero(bob.id, &"crossing", Vector2i(17, 20))
 	var steppe := world.zone(&"windsteppe")
@@ -223,7 +223,7 @@ func test_quest_progress_needs_the_party_in_the_same_zone() -> void:
 	var hits: Array[Dictionary] = []
 	AbilityResolver.deal_damage(steppe.ctx, ann, wolf, &"S01", 9999.0, false, hits)
 	steppe._emit_resolved(hits)
-	var q: QuestDef = db.quests[&"act1_what_the_stone_remembers"]
+	var q: QuestDef = db.quests[&"act1_03_wells_for_the_windsteppe"]
 	assert_eq(QuestLog.progress(ann, q, 1), 1, "Ann's kill counts for Ann")
 	assert_eq(QuestLog.progress(bob, q, 1), 0, "not for Bob, two zones away")
 

@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 4
+text = "Escort the well-diggers to Tsaga's Camp"
+npc = &"well_diggers"
+zone = &"windsteppe"
+path = Array[Vector2i]([Vector2i(40, 21), Vector2i(28, 22), Vector2i(21, 22), Vector2i(17, 23)])
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("1_obj")
+kind = 0
+text = "Iron wolves driven off"
+count = 4
+enemy = &"iron_wolf"
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_03_wells_for_the_windsteppe"
+title = "1-03 Wells for the Windsteppe"
+category = 0
+area = "Windsteppe"
+giver = &"maren_voss"
+turn_in = &"saran"
+prerequisites = Array[StringName]([&"act1_02_applicants_wanted"])
+min_level = 3
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1")])
+reward_xp = 400
+reward_gold = 40
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion")])
+reward_choice_ids = Array[StringName]([&"breeze_scroll", &"frost_shard_scroll", &"travelers_longsword"])

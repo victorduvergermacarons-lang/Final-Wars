@@ -78,43 +78,53 @@ func test_dialogue_shows_the_speaker_and_follows_choices() -> void:
 	assert_false(box.visible)
 
 
+## Ready for the Guild's trials: 1-01 and 1-02 done, level 3 (the board's quests).
+func _ready_for_trials(h: Hero) -> void:
+	for id in [&"act1_01_guild_comes_to_millbrook", &"act1_02_applicants_wanted"]:
+		h.quest_state[String(id)] = {"state": "done"}
+	h.level = 3
+
+
 func test_a_quest_board_offers_quests_with_the_files_answers() -> void:
+	_ready_for_trials(me)
+	await wait_physics_frames(3)
 	assert_eq(hud.client.npc_markers.get(&"guild_board", ""), "!", "the board shows !")
 	await _talk(&"guild_board")
 	var box := hud.dialogue
 	assert_eq(box.speaker_name(), "Guild Board")
-	assert_true(box.press("! The Guild's Summons"), str(box.option_labels()))
-	assert_eq(box.line_id, "quest.act1_guild_summons.offer")
-	assert_string_contains(box.text(), "Main quest · The Crossing")
+	assert_true(box.press("! 1-04 Grain for Deepcut"), str(box.option_labels()))
+	assert_eq(box.line_id, "quest.act1_04_grain_for_deepcut.offer")
+	assert_string_contains(box.text(), "Main quest · Road to Deepcut")
 	assert_eq(box.option_labels(), ["Take the notice", "Leave it pinned"] as Array[String])
 	box.press("Take the notice")
 	await wait_physics_frames(4)
 	await wait_process_frames(2)
-	assert_true(QuestLog.is_active(me, &"act1_guild_summons"))
-	assert_string_contains(hud._tracker.text, "Report to Warden Dorne", "on the tracker")
-	await _talk(&"warden_dorne")
-	await wait_process_frames(2)
-	assert_eq(hud.client.npc_markers.get(&"warden_dorne", ""), "?", "Dorne waits for the hand-in")
+	assert_true(QuestLog.is_active(me, &"act1_04_grain_for_deepcut"))
+	assert_string_contains(hud._tracker.text, "Escort the grain wagon", "on the tracker")
+	assert_eq(hud.client.npc_markers.get(&"guild_board", ""), "!", "the board still has 1-05 to give")
 
 
 func test_coop_bubble_and_quest_prompt() -> void:
 	var bob := session.world.add_saved_hero(CharacterData.new_character("Bob", ContentDB.heroes[&"adventurer"]), ContentDB)
 	_go_to_crossing(bob)
+	for h in [me, bob]:
+		_ready_for_trials(h)
 	var board := _npc(&"guild_board")
 	_beside(bob, board)
 	session.world.submit(bob.id, {"type": "talk", "npc": board.id})
 	await wait_physics_frames(3)
 	assert_true(hud.client.live_bubbles().has(board.id), "I see a bubble over the board Bob reads")
 	assert_false(hud.dialogue.visible, "Bob's conversation isn't mine")
-	session.world.submit(bob.id, {"type": "accept_quest", "npc": board.id, "quest": &"act1_guild_summons"})
+	session.world.submit(bob.id, {"type": "accept_quest", "npc": board.id, "quest": &"act1_05_fever_in_millbrook"})
 	await wait_physics_frames(3)
 	await wait_process_frames(2)
 	assert_true(hud.quest_prompt.visible, "the quest is offered to me too")
-	assert_eq(hud.quest_prompt.current_quest(), &"act1_guild_summons")
+	assert_eq(hud.quest_prompt.current_quest(), &"act1_05_fever_in_millbrook")
 	assert_string_contains(hud.quest_prompt._text.text, "Bob")
 	me.move.place(Vector2i(30, 20)) # far from the board: Join works anyway
 	hud.quest_prompt._join()
 	await wait_physics_frames(3)
 	await wait_process_frames(2)
-	assert_true(QuestLog.is_active(me, &"act1_guild_summons"), "joined")
+	assert_true(QuestLog.is_active(me, &"act1_05_fever_in_millbrook"), "joined")
+	assert_eq(me.bag.count_of(ContentDB.items[&"fever_draught"]), 3, "with the draughts to deliver")
 	assert_false(hud.quest_prompt.visible)

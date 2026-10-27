@@ -20,7 +20,9 @@ work** (terrain cache, sleeping empty zones) is on the `optimised-build-1` branc
 milestone 1 of 4** (quests and dialogue, branch `feature/v1.2.1`, 2026-10-26): see **Act I: quests
 and dialogue**, `docs/quests-and-dialogue.md` and `docs/playtest-checklist-act1.md`. **Milestone 2 of
 4** (zones, region music, branch `feature/v1.3.1`, 2026-10-27): see **Act I: zones and region music**
-and `docs/playtest-checklist-act1-zones.md`. For the numbers
+and `docs/playtest-checklist-act1-zones.md`. **Milestone 3 of 4** (the Act I quests 1-01 to
+1-06 and three side quests, party-size scaling, branch `feature/act1-m3-quests`, 2026-10-27): see
+**Act I: the Floor Guild quests** and `docs/playtest-checklist-act1-quests.md`. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -462,20 +464,10 @@ quest system to carry the story and adds dialogue. How to edit: `docs/quests-and
   they give quests and take hand-ins like anyone. "[E] Talk / Read / Use / Examine".
 - **Tracker and log:** main quests first; the log groups Main / Side with each area;
   failed quests show where to restart them.
-- **Placeholder Act I** (story to be replaced; all lines in the file):
-  - Since milestone 2 (see **Act I: zones and region music**): the Guild Board,
-    Warden Iska Dorne and Sabra Venn are at the Crossing; Ilyth the Seer in Millbrook;
-    the Mine Board, Foreman Hadda Brannoc, the ore caravan (320 HP) and the Collapsed
-    Shaft in Deepcut; the Vael Standing Stone on the Windsteppe.
-  - Main chain:
-    1. The Guild's Summons (board, talk)
-    2. Ash on the East Road (investigate 3 spots)
-    3. The Ember Hand's Writ (deliver)
-    4. Ore for Millbrook (escort, level 2, hand in to Dorne)
-    5. What the Stone Remembers (interact + kill 3 iron wolves, level 3). Sets
-       `act1_complete`.
-  - Side: Bandits on the Ore Road, The Collapsed Shaft, Guild Patrol: The Bridge.
-    Rowan's and Maren's 5 quests are side quests.
+- **The placeholder Act I** of this milestone (the Guild's Summons, Ash on the East
+  Road, the Ember Hand's Writ, Ore for Millbrook, What the Stone Remembers, three side
+  quests) was replaced by the real one in milestone 3: see **Act I: the Floor Guild
+  quests**. Rowan's and Old Ottilie's 5 Millbrook quests stay, as side quests.
 - **Network:** new intents `examine` and `accept_shared_quest`; the escort flag is
   in each NPC's snapshot. The 4-player check now has the guests in town join the
   host's quest over the network.
@@ -548,6 +540,71 @@ edit the zone files directly now. Screenshots: `tests/visual/zone_shots.tscn`.
   (`creature_wolf_bite` and `creature_iron_wolf_bite`).
 - **Network:** the 4-player check has the guests join Rowan's quest in Millbrook,
   then Guest1 goes to Greenfields and Guest2 to the Crossing: three zones at once.
+
+## Act I: the Floor Guild quests (milestone 3 of 4, 2026-10-27)
+
+User brief: Act I, "The Floor Guild" (levels 1–12, about 2–3 hours): the party earns a
+place in the Floor Guild through three relief missions; each succeeds on paper, but
+the suffering returns, and every one traces back to a Sunstone mine or supply road.
+Prince Caedan Ashvale, the Guild's founder, is sincere. Quests written by
+`tools/once/make_act1_quests.py` (edit the .tres files now); every line in
+`content/dialogue/act1.json`. Checklist: `docs/playtest-checklist-act1-quests.md`.
+- **Quests** (`content/quests/act1_*.tres`; level, giver → hand-in, objectives):
+
+  | Quest | Lv | Giver → hand-in | Objectives | XP |
+  |-------|----|-----------------|------------|----|
+  | 1-01 The Guild Comes to Millbrook | 1 | Maren Voss (Millbrook) | kill 3 wolves, 2 boars in the south fields | 120 |
+  | 1-02 Applicants Wanted | 2 | Maren Voss (Crossing) | talk to Warden Dorne, Quartermaster Harrow | 150 |
+  | 1-03 Wells for the Windsteppe | 3 | Maren → Saran | escort the Well-Digging Crew to Tsaga's Camp; kill 4 iron wolves | 400 |
+  | 1-04 Grain for Deepcut | 3 | Guild Board → Steward Brann | escort the Guild Grain Wagon down the Road to Deepcut | 450 |
+  | 1-05 Fever in Millbrook | 3 | Guild Board → Healer Wenna | talk to Odo; deliver 3 Fever Draughts to Wenna; examine the grey river in Millbrook, on the Road and in Deepcut | 450 |
+  | 1-06 Recognition | 6 | Maren → Caedan | talk to Caedan (after 1-03, 1-04, 1-05); leads to 1-07 (milestone 4) | 450 |
+  | The White Death (side) | 4 | Saran | collect 4 iron wolf pelts (quest drop, 60%); deliver Winter Stores to Elder Tsaga | 300 |
+  | Shift Bell (side) | 6 | Mine Board → Brann | use the Collapsed Shaft; kill 3 Human Husks; talk to Miner Ostrik | 350 |
+  | Pins on the Map (side) | 7 | Guild Board → Maren | reach 4 troubled sites; use the Guild Map | 500 |
+
+  Escorts fail if the escortee dies and restart from the giver (milestone 1 rules).
+- **Rewards:** gold, potions, and a choice of one item per main quest teaching an
+  implemented tier-1 ability; across the act every tree comes up (Fire: Spark, Cinder
+  Kick, Sun Warrior's Breath; Water: River Lash, Frost Shard, the Current; Earth:
+  Pebble, Stomp, Pillar; Air: Open Palm, Breeze, Featherstep; Sword: Traveler's
+  Longsword; Bow: Hunter's Shortbow, Yew Longbow; Hammer: Iron Mallet, Quarry Maul).
+- **Missing tier-1 abilities** (not implemented, so not rewarded): E02 Stone Skin
+  (Granite Skin Scroll), A04 Wind Snare (Snaring Wind Scroll), S02 Thrust (Militia
+  Rapier), S03 Parry (Duelist's Sabre), B03 Disengage (Ranger's Bow), B04 Hunter's
+  Mark (Tracker's Bow), H03 Brace (Bulwark Hammer), H04 Wide Swing (Broad Maul).
+- **Levels:** the quests' XP plus their required kills take a party to level 10
+  (`tests/integration/test_act1_playthrough.gd`: solo 4,770 XP, a party of four 4,578
+  each, in the measured run; the curve itself is unchanged, 100 × level). The Silent
+  Shaft has to give about 2,100 XP more to reach 12. Rowan's and Ottilie's Millbrook
+  quests are extra (about 1,060 XP).
+- **People** (new): Maren Voss (two placements, `maren_voss_field` by Millbrook's
+  south bridge and `maren_voss` at the Guild Hall), Prince Caedan Ashvale and
+  Quartermaster Ilse Harrow (the Guild vendor: Iron Helm, Swift Boots, potions and the
+  20 implemented tier-1 scrolls and weapons) at the hall, the Guild Map (a board), Saran
+  and the Well-Digging Crew (260 HP) on the Windsteppe, the Guild Grain Wagon (420 HP)
+  on the Road to Deepcut, Miner Ostrik in Deepcut. Renamed: Steward Orrin Marl → Steward
+  Brann; Old Maren → Old Ottilie (id `maren` kept). Gone: Foreman Brannoc, the ore
+  caravan, the Sealed Writ. Sabra, Ilyth and the Vael stone stay as people to talk to.
+- **Enemies:** Boar (level 2: HP 240, PhysAtk 12, PhysDef 10; Gore 7 + PhysAtk, 0.4 s
+  wind-up; Tusk Charge, a 1 s telegraphed rush 2–3 tiles, 8 + PhysAtk) and Human Husk
+  (level 7: HP 420, PhysAtk 22, PhysDef 14, MagDef 24, heavy, 1.3 s per tile; Hollow
+  Rake 10 + PhysAtk, 0.6 s wind-up; drops Sunstone Shards). Placeholder diamonds until
+  art. `EnemySpawn.level` places an enemy at another level (±15% per level): road
+  wolves 3, road Bandit Brutes 5 (two ambushes beside the road), iron wolves 4–5,
+  Deepcut's hounds 6.
+- **Party size** (`CombatRules` "Party size"): enemies grow with the heroes in their
+  zone (1–4): +70% max HP and +10% damage per extra hero (×3.1 HP and ×1.3 damage for
+  four); a kill's XP grows the same, so every hero who fought earns a solo share
+  (`share = xp × min(fighters, party size) / fighters`). Scaled while not fighting (a
+  fight keeps the size it began with; a hurt enemy keeps its share of health).
+  Elites and training dummies don't scale. Tests of exact numbers switch it off
+  (`party_scaling`).
+- **Dialogue:** `quest.<id>.talk.<i>` lines: what the person of a Talk objective says
+  when you come to them for it.
+- **Test:** `Act1Playthrough` (`tests/integration/act1_playthrough.gd`) plays every
+  quest in order through intents, for one hero and for a party of four who join each
+  quest through the co-op prompt; kills are short-cut, escorts are walked.
 
 ## Enemy Testing Grounds (2026-10-20)
 
@@ -982,7 +1039,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones), ability import, tilesets, quests and dialogue
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests), ability import, tilesets, quests and dialogue
 ```
 
 ### Build order (milestone 1)
@@ -1649,6 +1706,21 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-10-27 | Act I milestone 3 of 4: quests 1-01 to 1-06, three side quests, party-size scaling | User brief ("list every decision"). See **Act I: the Floor Guild quests**. My decisions are in the next rows. |
+| 2026-10-27 | The placeholder Act I quests, the foreman, the ore caravan and the writ are removed | The brief's quests replace them; Sabra, Ilyth and the Vael stone stay as people to talk to. Rowan's and Ottilie's Millbrook quests stay. |
+| 2026-10-27 | Maren Voss stands in two places (two NPC files): Millbrook for 1-01, the Guild Hall for 1-02 on | The brief has her in both. NPCs don't move between zones yet; per-player NPC visibility would be new machinery. The village's old woman, "Old Maren", is now "Old Ottilie" so the names don't clash. |
+| 2026-10-27 | Steward Orrin Marl becomes Steward Brann; Dorne is the Guild's registrar; Harrow is the Guild vendor; Caedan always stands at the hall | Reuse of milestone 2's people. Caedan "arrives" in the dialogue; a scripted entrance would need staging tools (milestone 4 or later). |
+| 2026-10-27 | Turn-ins: 1-03 Saran, 1-04 Brann, 1-05 Healer Wenna, 1-06 Caedan, sides as in the table | "Then Saran", "then Steward Brann" read as the hand-in. 1-05's hand-in to Wenna lets you tell her where the fever comes from. |
+| 2026-10-27 | Objectives where the brief leaves room | 1-01: 3 wolves + 2 boars in Millbrook's south fields (static spawns, no scripted wave); 1-02: two talks; 1-03: one escortee for the whole crew (an escort has one NPC) plus 4 iron wolves; 1-05: Odo, then three draughts to Wenna, then three single-spot investigations, one per zone, upstream; Shift Bell: rubble, 3 Husks, the miner; Pins: reach 4 sites, then the map (in any order). |
+| 2026-10-27 | Levels: 1-03, 1-04, 1-05 at 3; 1-06 and Shift Bell at 6; Pins at 7 | So the chain flows with the XP it gives; the playthrough test checks each quest can be taken when reached. |
+| 2026-10-27 | XP: quest rewards tuned (120 to 500), the curve unchanged | A party doing everything listed reaches level 10 (solo 4,770, party 4,578 each in the measured run); the dungeon needs about 2,100 more for 12. The optional Millbrook quests add about 1,060. |
+| 2026-10-27 | Party size = heroes in the enemy's zone; +70% HP, +10% damage per extra hero; XP scales the same; elites and dummies excluded | "Scale enemy health and damage with party size". The zone is where help can come from. Elites are already built for groups (the drake and Grizzlehide targets assume four). XP grows so a party levels like a solo hero. A fight keeps its size; idle enemies rescale and keep their share of health. |
+| 2026-10-27 | New placeholder enemies: Boar (level 2) and Human Husk (level 7) | Boars charge like a small Grizzlehide; Husks are slow, hit hard and shrug off magic, and drop Sunstone Shards (a hint). Their loot follows the tier-2 rule for enemy drops. |
+| 2026-10-27 | Spawns can set a level (`EnemySpawn.level`) | So one enemy type serves several zones' level ranges (road wolves 3, iron wolves 4–5, road brutes 5, Deepcut's hounds 6). |
+| 2026-10-27 | Rewards: one choice per main quest from all seven trees' implemented tier-1 items; side quests give gold and potions | Only implemented abilities. Missing tier-1 abilities listed in the section. |
+| 2026-10-27 | The Guild vendor is a new Quartermaster at the hall | "Sells starter gear and tier 1 scrolls": helm, boots, potions, the 20 implemented tier-1 scrolls and weapons. Tamsin and Odo keep their stalls. |
+| 2026-10-27 | Talk objectives can have their own line, `quest.<id>.talk.<i>` | So Dorne, Harrow, Odo, Caedan and Ostrik say something about the quest instead of their greeting. |
+| 2026-10-27 | Commits: the quests were written together, then committed one by one as the playthrough test covered each | Quest data and lines are one file each; each per-quest commit adds that quest to the scripted playthrough once it passed. |
 | 2026-10-27 | Act I milestone 2 of 4: zones (Millbrook rebuilt, the Crossing, Road to Deepcut, Deepcut, Windsteppe), region music, the Tidereach track | User brief ("list every decision"). See **Act I: zones and region music**. My decisions are in the next rows. |
 | 2026-10-27 | Branch `feature/v1.3.1` from `main` after milestone 1's merge | User correction of the brief's branch name (first given as `feature/act1-m2-zones`, renamed before any commit); merged at the end. |
 | 2026-10-27 | Zone size: 32–60 tiles across, not 2–3 minutes' walk | At the current walking speed (5 tiles/s) 2–3 minutes would be 600–900 tiles; "small and hand-built" and the existing maps (30×30) point the other way. The zones take 10–15 s to cross straight, longer along the roads and around cliffs. To revisit with the walking speed. |
