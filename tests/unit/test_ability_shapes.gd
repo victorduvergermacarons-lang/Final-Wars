@@ -35,6 +35,7 @@ func _hero_with(abilities: Array[AbilityDef]) -> Hero:
 
 func before_each() -> void:
 	rules = CombatRules.new()
+	rules.party_scaling = false # exact numbers here; party scaling has its own tests
 	var zone := ZoneDef.new()
 	zone.id = &"flat"
 	var rows: PackedStringArray = []
