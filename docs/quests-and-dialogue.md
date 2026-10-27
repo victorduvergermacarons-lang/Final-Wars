@@ -51,6 +51,7 @@ points at a line that doesn't exist.
 | `quest.<quest>.failed` | Shown when the quest fails (escort lost) |
 | `quest.<quest>.world_flag` | Announced to everyone when the quest sets its world flag |
 | `quest.<quest>.interact.<i>` | Using the object of objective `i` |
+| `quest.<quest>.talk.<i>` | What the person of a Talk objective `i` says when you come to them for it |
 | `quest.<quest>.deliver.<i>` | Handing over the items of objective `i` |
 | `quest.<quest>.escort.<i>` | The escorted NPC or caravan setting off |
 | `quest.<quest>.spot.<i>.<n>` | What you find at investigate spot `n` of objective `i` |

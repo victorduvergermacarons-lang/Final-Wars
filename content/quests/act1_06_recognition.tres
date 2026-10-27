@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 2
+text = "Hear out Prince Caedan Ashvale"
+npc = &"caedan_ashvale"
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_06_recognition"
+title = "1-06 Recognition"
+category = 0
+area = "The Crossing"
+giver = &"maren_voss"
+turn_in = &"caedan_ashvale"
+prerequisites = Array[StringName]([&"act1_03_wells_for_the_windsteppe", &"act1_04_grain_for_deepcut", &"act1_05_fever_in_millbrook"])
+min_level = 6
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0")])
+reward_xp = 350
+reward_gold = 60
+reward_choice_ids = Array[StringName]([&"sun_warriors_breath_scroll", &"scroll_of_the_current", &"travelers_longsword"])

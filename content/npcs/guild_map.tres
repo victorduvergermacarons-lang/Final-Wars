@@ -4,10 +4,7 @@
 
 [resource]
 script = ExtResource("1_npc")
-id = &"ore_caravan"
-display_name = "Bedrun Ore Caravan"
-kind = 3
-faction = 3
-max_hp = 320.0
-phys_def = 20.0
-mag_def = 10.0
+id = &"guild_map"
+display_name = "Guild Map"
+kind = 1
+faction = 1

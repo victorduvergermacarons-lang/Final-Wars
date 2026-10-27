@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="LootTable" format=3]
+
+[ext_resource type="Script" path="res://data/defs/loot_entry.gd" id="1_entry"]
+[ext_resource type="Script" path="res://data/defs/loot_table.gd" id="2_table"]
+[ext_resource type="Resource" path="res://content/items/boar_tusk.tres" id="item_boar_tusk"]
+
+[sub_resource type="Resource" id="Resource_e0"]
+script = ExtResource("1_entry")
+item = ExtResource("item_boar_tusk")
+chance = 0.6
+
+[sub_resource type="Resource" id="Resource_e1"]
+script = ExtResource("1_entry")
+item_id = &"lash_of_embers_scroll"
+chance = 0.02
+
+[sub_resource type="Resource" id="Resource_e2"]
+script = ExtResource("1_entry")
+item_id = &"mist_scroll"
+chance = 0.02
+
+[resource]
+script = ExtResource("2_table")
+gold_min = 2
+gold_max = 6
+entries = Array[ExtResource("1_entry")]([SubResource("Resource_e0"), SubResource("Resource_e1"), SubResource("Resource_e2")])

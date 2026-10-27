@@ -7,10 +7,10 @@
 [ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
 [ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
 [ext_resource type="Resource" path="res://content/npcs/collapsed_shaft.tres" id="npc_collapsed_shaft"]
-[ext_resource type="Resource" path="res://content/npcs/foreman_brannoc.tres" id="npc_foreman_brannoc"]
 [ext_resource type="Resource" path="res://content/npcs/mine_board.tres" id="npc_mine_board"]
-[ext_resource type="Resource" path="res://content/npcs/ore_caravan.tres" id="npc_ore_caravan"]
-[ext_resource type="Resource" path="res://content/npcs/steward_marl.tres" id="npc_steward_marl"]
+[ext_resource type="Resource" path="res://content/npcs/steward_brann.tres" id="npc_steward_brann"]
+[ext_resource type="Resource" path="res://content/npcs/trapped_miner.tres" id="npc_trapped_miner"]
+[ext_resource type="Resource" path="res://content/enemies/human_husk.tres" id="enemy_human_husk"]
 [ext_resource type="Resource" path="res://content/enemies/salamander_hound.tres" id="enemy_salamander_hound"]
 
 [sub_resource type="Resource" id="edge_0"]
@@ -21,7 +21,7 @@ offset = -7
 
 [sub_resource type="Resource" id="npc_spawn_0"]
 script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_steward_marl")
+npc = ExtResource("npc_steward_brann")
 tile = Vector2i(11, 10)
 facing = Vector2i(0, 1)
 
@@ -33,31 +33,42 @@ facing = Vector2i(0, 1)
 
 [sub_resource type="Resource" id="npc_spawn_2"]
 script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_foreman_brannoc")
-tile = Vector2i(33, 14)
-facing = Vector2i(1, 0)
+npc = ExtResource("npc_collapsed_shaft")
+tile = Vector2i(27, 10)
+facing = Vector2i(0, 1)
 
 [sub_resource type="Resource" id="npc_spawn_3"]
 script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_ore_caravan")
-tile = Vector2i(31, 19)
-facing = Vector2i(-1, 0)
-
-[sub_resource type="Resource" id="npc_spawn_4"]
-script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_collapsed_shaft")
-tile = Vector2i(27, 10)
+npc = ExtResource("npc_trapped_miner")
+tile = Vector2i(25, 10)
 facing = Vector2i(0, 1)
 
 [sub_resource type="Resource" id="enemy_spawn_0"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_salamander_hound")
 tile = Vector2i(6, 21)
+level = 6
 
 [sub_resource type="Resource" id="enemy_spawn_1"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_salamander_hound")
 tile = Vector2i(10, 22)
+level = 6
+
+[sub_resource type="Resource" id="enemy_spawn_2"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(22, 12)
+
+[sub_resource type="Resource" id="enemy_spawn_3"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(26, 13)
+
+[sub_resource type="Resource" id="enemy_spawn_4"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(29, 11)
 
 [sub_resource type="Resource" id="landmark_0"]
 script = ExtResource("s_landmark")
@@ -116,11 +127,11 @@ walk_rows = PackedStringArray(".........#.......#.....#....##..#...#....#..", ".
 graveyards = Array[Vector2i]([])
 respawn_zone = &"crossing"
 hero_spawns = Array[Vector2i]([Vector2i(3, 17), Vector2i(3, 18), Vector2i(4, 17), Vector2i(4, 18)])
-enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("enemy_spawn_0"), SubResource("enemy_spawn_1")])
+enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("enemy_spawn_0"), SubResource("enemy_spawn_1"), SubResource("enemy_spawn_2"), SubResource("enemy_spawn_3"), SubResource("enemy_spawn_4")])
 landmarks = Array[ExtResource("s_landmark")]([SubResource("landmark_0")])
 decor = Array[ExtResource("s_decor")]([SubResource("decor_0"), SubResource("decor_1"), SubResource("decor_2"), SubResource("decor_3"), SubResource("decor_4"), SubResource("decor_5"), SubResource("decor_6"), SubResource("decor_7")])
 edges = Array[ExtResource("s_edge")]([SubResource("edge_0")])
-npcs = Array[ExtResource("s_npc_spawn")]([SubResource("npc_spawn_0"), SubResource("npc_spawn_1"), SubResource("npc_spawn_2"), SubResource("npc_spawn_3"), SubResource("npc_spawn_4")])
+npcs = Array[ExtResource("s_npc_spawn")]([SubResource("npc_spawn_0"), SubResource("npc_spawn_1"), SubResource("npc_spawn_2"), SubResource("npc_spawn_3")])
 tileset = &"iso_basic"
 terrain_rows = PackedStringArray("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "eedaaaaaddddddddddddddeeeeeeedddddddddddddee", "eedaaaaaaddddddaddddddeeeeeeeddeeeeeeedeeeee", "eedaaaffffffffffffddddeeeeeeeddeeeeeeedeeeee", "eedaaaffgggggfffffddddeeeeeeeddeeeeeeedeeeee", "eedaaaffgggggfffffddddeeeeeeeddeeeeeeedeeeee", "eeddaaffgggggfffffddddeeeeeeeddeeeeeeedeeeee", "eedddaffgggggfffffaaaaeeeeeeeddeeeeeeeaeeeee", "eeddddffffffffffffaaaaaaeeaadddeeeeeeeaeeeee", "eeddddffffffffffffaaaaaaeeaaddddddaaaaaeeeee", "eeddddffffffffffffaaaaaaeeadddddddccaaaeeeee", "eedddadddddffdaaaaaaaaaaddddddaaaaccaaaeeeee", "eeddaaaadddccaaaaaaaaaadddddddaaaaccaaaeeeee", "eedaaaaaaaaaaaaaaaaaaaddddddddaaaaccaaaeeeee", "eedaaaaaaaaaaaaaaaaaadddddddddaaaaccaaaeeeee", "cccaaaaaaaaaaaaaaaaaadddddddddaaaaccaaaeeeee", "ccccccccccccccccccccccccccccccccccccccaeeeee", "ccccccccccccccccccccccccccccccccccccccdeeeee", "cccddddddddddddaadddddddddddddaaaaaaaadeeeee", "eedddddddddddddaddddddddddddddaaaaaaaadeeeee", "eedddddddddddddaddddddddddddddaaaaaaaadeeeee", "eedddddddddddddddddddddddddddddddbbbbbbeeeee", "eedddddddaaaaddddddddddddddddddddbbbbbbeeeee", "bbbbbbbbbbbbbbbbbhhbbbbbbbbbbbbbbbbbbbbeeeee", "bbbbbbbbbbbbbbbbbhhbbbbbbbbbbbbbbbbbbbbeeeee", "eeadddddaaaaaadddccddddddddddddddbbbbbbeeeee", "eeadddddaaaaaadddccddddddddddddddbbbbbbeeeee", "eedddddddddddddddcdddddddddddddddbbbbbbeeeee", "eeddddddgggddddddcddddddddddddddddddaaaeeeee", "eeddddddgggddddddccccccccccccddddddaaaaeeeee", "eeddddddgggddddddddddddddddddddddddddaaeeeee", "eeddddddddddgggdddddgggdgggdddddddddddaeeeee", "eeddddddddddgggdddddgggdgggdddddddddddaeeeee", "eeddddddddddgggdddddgggdgggddddddddddddeeeee", "eedddddddddddddddddddddddddddddddddddddeeeee", "eedddddddaaadddddddaaaaaaaaddddddddddddeeeee", "eedddddddddddddddddaaaaaaaadddddddddddddaaee", "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
 terrain_legend = {

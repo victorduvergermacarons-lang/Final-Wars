@@ -631,9 +631,13 @@ func _quest_line_for(e: Dictionary) -> void:
 			dialogue.show_line(def.line_id("deliver.%d" % e.objective), "Thank you. I'll take it from here.")
 		"quest_progress":
 			var o: QuestObjective = def.objectives[e.objective]
-			if o.kind == QuestObjective.Kind.INTERACT and o.npc == talking.def.id \
-					and ContentDB.dialogue.has(def.line_id("interact.%d" % e.objective)):
+			if o.npc != talking.def.id:
+				return
+			if o.kind == QuestObjective.Kind.INTERACT and ContentDB.dialogue.has(def.line_id("interact.%d" % e.objective)):
 				dialogue.show_line(def.line_id("interact.%d" % e.objective), "", Callable(), DialogueLines.HERO)
+			elif o.kind == QuestObjective.Kind.TALK and ContentDB.dialogue.has(def.line_id("talk.%d" % e.objective)):
+				# What the person says when the quest sends you to them (their own words).
+				dialogue.show_line(def.line_id("talk.%d" % e.objective), "")
 
 
 ## Escorts: the escortee speaks up (its line in your conversation, a bubble for
