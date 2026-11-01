@@ -157,3 +157,11 @@ func test_telegraphs_and_zones_reach_the_view() -> void:
 	var outlined := session.telegraphs().filter(func(h): return h.get("outline", PackedVector2Array()).size() > 2)
 	assert_eq(outlined.size(), 1, "the fireball's circle is telegraphed")
 	assert_true(_inside(outlined[0].outline, _a(8, 6)))
+
+
+func test_an_aimed_bar_ability_pressed_while_dead_does_nothing() -> void:
+	ContentDB.rules.timing_bars_enabled = true
+	hero.die()
+	input.use_slot_ability_for_test(ContentDB.abilities[&"F03"], &"action_slot_1")
+	assert_false(input.is_aiming(), "no aiming while dead (and no error)")
+	assert_true(client.aim.is_empty())

@@ -177,7 +177,7 @@ static func _holding(state: Dictionary) -> bool:
 
 ## Adds where the cursor points while an aimed ability's bar runs.
 func _with_aim(intent: Dictionary) -> Dictionary:
-	if _aiming.get("during_bar", false):
+	if _aiming.get("during_bar", false) and session.local_hero() != null and session.local_hero().alive:
 		intent.aim = aim_point()
 	return intent
 
@@ -331,6 +331,8 @@ func _start_bar_aiming(ability: AbilityDef) -> void:
 	_aiming = {"ability": ability, "action": &"", "mouse": _screen_mouse(), "during_bar": true,
 			"sent_at": session.render_time(), "bar_start": -1.0}
 	_update_aim()
+	if _aiming.is_empty():
+		return # nothing to aim (the hero is dead)
 	var picked := Targeting.pick(session.local_hero(), ability, session.get_actor(client.target_id))
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target, "aim": aim_point()})
 
