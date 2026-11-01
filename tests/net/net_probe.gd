@@ -118,6 +118,8 @@ func _run_join(port: int, players: int, index: int) -> void:
 		_finish(false, "%s: could not start client" % me)
 		return
 	var session: ClientSession = game.session
+	session.send_delay = float(OS.get_environment("NETCHECK_DELAY")) if OS.get_environment("NETCHECK_DELAY") != "" else 0.0
+	var predicted_error := [0.0]
 	var ended_reason := [""]
 	session.ended.connect(func(r): ended_reason[0] = r)
 	if not await _wait_until(func(): return session.local_hero() != null or ended_reason[0] != ""):
@@ -153,16 +155,33 @@ func _run_join(port: int, players: int, index: int) -> void:
 	if not await _wait_until(func(): return heard_cast[0]):
 		_finish(false, "%s: never heard its own cast" % me)
 		return
-	# Walk up until 4 tiles from the start (other guests may be in the way at first).
+	# Free movement: walk each of the 8 screen directions (predicted on this
+	# machine), stop, and check this machine and the host agree on where we are.
 	var start := hero.tile()
-	var walked := func():
-		var t := session.render_time()
-		if not hero.move.is_moving(t) and hero.tile().y > start.y - 4:
-			session.send_intent({"type": "step", "to": hero.tile() + Vector2i.UP})
-		return hero.tile().y <= start.y - 4
-	if not await _wait_until(walked):
-		_finish(false, "%s: couldn't walk 4 tiles (at %s from %s)" % [me, hero.tile(), start])
+	for dir in [Vector2i(0, -1), Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 1),
+			Vector2i(-1, 1), Vector2i(-1, 0), Vector2i(-1, -1)]:
+		var from := hero.move.pos
+		for i in 6: # 0.3 s: one move intent per tick while the key is held
+			session.send_intent({"type": "move", "dir": dir, "face": 0.0})
+			await get_tree().create_timer(0.05).timeout
+		if hero.move.pos.distance_to(from) < 0.2:
+			# Someone may stand in the way; only fail if nothing moved at all.
+			print("%s: blocked walking %s" % [me, dir])
+	session.send_intent({"type": "move", "dir": Vector2i.ZERO, "face": 0.0})
+	await get_tree().create_timer(0.6 + session.send_delay * 2.0).timeout
+	var error := hero.move.pos.distance_to(session.mirror.last_host_pos)
+	if error > 0.25:
+		_finish(false, "%s: predicted %s but the host says %s (%.2f tiles apart)" % [me, hero.move.pos, session.mirror.last_host_pos, error])
 		return
+	# Then up the screen for 1.5 s, at least 3 tiles from the start.
+	for i in 30:
+		session.send_intent({"type": "move", "dir": Vector2i(0, -1), "face": 0.0})
+		await get_tree().create_timer(0.05).timeout
+	session.send_intent({"type": "move", "dir": Vector2i.ZERO, "face": 0.0})
+	if GridModel.distance(start, hero.tile()) < 3:
+		_finish(false, "%s: couldn't walk away from %s (at %s)" % [me, start, hero.tile()])
+		return
+	predicted_error[0] = error
 	await get_tree().create_timer(1.0).timeout # let the host see the final position
 	if index >= 2 and not await _wait_until(func(): return QuestLog.is_active(hero, QUEST)):
 		_finish(false, "%s: never joined the host's quest" % me)
@@ -214,4 +233,4 @@ func _run_join(port: int, players: int, index: int) -> void:
 		_finish(false, "%s: save from the joined client is incomplete" % me)
 		return
 	game.store.delete(me)
-	_finish(true, "%s: walked %s -> %s, sees %d heroes, saved its own hero" % [me, start, hero.tile(), players])
+	_finish(true, "%s: walked 8 directions and on (%s -> %s), prediction within %.2f tiles of the host%s, sees %d heroes, saved its own hero" % [me, start, hero.tile(), predicted_error[0], " (%d ms delay)" % roundi(session.send_delay * 1000.0) if session.send_delay > 0.0 else "", players])

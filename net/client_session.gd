@@ -97,11 +97,16 @@ func send_intent(intent: Dictionary) -> void:
 	var seq := mirror.take_seq()
 	intent = intent.duplicate()
 	intent.seq = seq
-	if intent.get("type") == "step":
+	if intent.get("type") == "move":
+		mirror.predict_move(seq, intent.get("dir", Vector2i.ZERO), float(intent.get("face", 0.0)))
+	elif intent.get("type") == "step":
 		mirror.predict_step(seq, intent.to, render_time())
 	elif intent.get("type") == "face":
 		mirror.predict_face(seq, intent.dir)
-	Net.send_intent(intent)
+	if send_delay > 0.0:
+		_delayed.append([_clock() + send_delay, intent])
+	else:
+		Net.send_intent(intent)
 
 
 # --- Read-only view of the world (same API as LocalSession) -----------------------
@@ -116,6 +121,25 @@ func rules() -> CombatRules:
 
 func now() -> float:
 	return mirror.now
+
+
+## The local hero is predicted on the sim's tick rate (ClientWorld.predict_tick).
+var _predict_acc := 0.0
+## Testing: hold every intent this long before sending it (a slow connection).
+var send_delay := 0.0
+var _delayed: Array = [] # [send_at, intent]
+
+
+func _physics_process(delta: float) -> void:
+	while not _delayed.is_empty() and _delayed[0][0] <= _clock():
+		Net.send_intent(_delayed.pop_front()[1])
+	if mirror == null:
+		return
+	_predict_acc += delta * mirror.time_scale
+	var tick := mirror.rules.tick_seconds
+	while _predict_acc >= tick:
+		_predict_acc -= tick
+		mirror.predict_tick(render_time())
 
 
 func render_time() -> float:

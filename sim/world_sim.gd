@@ -554,9 +554,28 @@ func perceived_facing(actor: Actor, delay: float) -> Vector2i:
 	return _perceived(actor, delay, 2, actor.facing)
 
 
-func _perceived(actor: Actor, delay: float, field: int, current: Vector2i) -> Vector2i:
+## Where `actor` was `delay` seconds ago, exactly (enemies aiming late; hits that
+## forgive a hero's network delay: a dodge on their own screen counts).
+func perceived_pos(actor: Actor, delay: float) -> Vector2:
+	if delay <= 0.0 or not _history.has(actor.id):
+		return actor.move.pos
+	return _perceived(actor, delay, 3, actor.move.pos)
+
+
+## Every position `actor` held in the last `window` seconds (the newest last).
+func positions_within(actor: Actor, window: float) -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	if _history.has(actor.id):
+		for e in _history[actor.id]:
+			if e[0] >= now - window - Cooldowns.EPSILON:
+				out.append(e[3])
+	out.append(actor.move.pos)
+	return out
+
+
+func _perceived(actor: Actor, delay: float, field: int, current: Variant) -> Variant:
 	var when := now - delay
-	var best := current
+	var best: Variant = current
 	var entries: Array = _history[actor.id]
 	for i in range(entries.size() - 1, -1, -1):
 		best = entries[i][field]
@@ -570,7 +589,7 @@ func _record_history() -> void:
 		if not _history.has(hero.id):
 			_history[hero.id] = []
 		var entries: Array = _history[hero.id]
-		entries.append([now, hero.tile(), hero.facing])
+		entries.append([now, hero.tile(), hero.facing, hero.move.pos])
 		while not entries.is_empty() and entries[0][0] < now - HISTORY_SECONDS:
 			entries.pop_front()
 

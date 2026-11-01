@@ -5,8 +5,8 @@ extends Node
 
 ## Free movement: the held keys give one of 8 directions on screen (W = up the
 ## screen), sent with the mouse's angle as a `move` intent whenever either
-## changes, and again every KEEPALIVE_SECONDS while walking.
-const KEEPALIVE_SECONDS := 0.5
+## changes, and every sim tick while walking (each predicted tick then has its
+## own input number to reconcile against; see ClientWorld.predict_tick).
 ## The facing angle is resent once the mouse has turned this far (radians).
 const ANGLE_STEP := 0.05
 const TAB_RANGE := 12
@@ -48,8 +48,9 @@ func _physics_process(_delta: float) -> void:
 	if view != null and is_inside_tree():
 		angle = mouse_angle(hero, view.get_global_mouse_position())
 	var t: float = session.render_time()
+	var tick: float = session.rules().tick_seconds
 	if _held != _sent_dir or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
-			or (_held != Vector2i.ZERO and t - _sent_at >= KEEPALIVE_SECONDS):
+			or (_held != Vector2i.ZERO and t - _sent_at >= tick - 0.001):
 		_send_move(_held, angle)
 
 

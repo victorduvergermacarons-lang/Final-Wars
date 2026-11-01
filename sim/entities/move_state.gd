@@ -44,6 +44,17 @@ var draw_h := 0.0
 var prev_draw_h := 0.0
 ## Total distance walked (tiles): run animations and footsteps for free movers.
 var odometer := 0.0
+## Clients only. Other actors are drawn INTERP_DELAY behind the newest snapshot,
+## between buffered snapshots ([time, pos, height]), so uneven arrival never shows.
+const INTERP_DELAY := 0.1
+const MAX_SAMPLES := 8
+var buffered := false
+var samples: Array = []
+## Clients only: the local hero's prediction error after a correction, faded out
+## over SMOOTH_SECONDS from `offset_time` so a correction never pops.
+const SMOOTH_SECONDS := 0.1
+var smooth_offset := Vector2.ZERO
+var offset_time := 0.0
 ## Set by place(): the sim takes the ground height from the new tile next tick.
 var just_placed := true
 
@@ -154,10 +165,17 @@ func progress(now: float) -> float:
 	return clampf((now - start_time) / duration, 0.0, 1.0)
 
 
-## Where to draw it at time `t`: along the glide, or between the last two ticks.
+## Where to draw it at time `t`: along the glide, from the snapshot buffer (other
+## actors on a client), or between the last two ticks (plus a fading correction).
 func position_at(t: float) -> Vector2:
 	if gliding or (duration > 0.0 and t < start_time + duration):
 		return from_point.lerp(to_point, clampf((t - start_time) / maxf(duration, 0.0001), 0.0, 1.0))
+	if buffered and samples.size() >= 2:
+		return _sampled(t - INTERP_DELAY, 1)
+	return _ticked(t) + _fading_offset(t)
+
+
+func _ticked(t: float) -> Vector2:
 	var span := time - prev_time
 	if span <= 0.0:
 		return pos
@@ -165,8 +183,35 @@ func position_at(t: float) -> Vector2:
 	return prev_pos.lerp(pos, clampf((t - time) / span, 0.0, 1.0))
 
 
+func _fading_offset(t: float) -> Vector2:
+	if smooth_offset == Vector2.ZERO:
+		return Vector2.ZERO
+	return smooth_offset * clampf(1.0 - (t - offset_time) / SMOOTH_SECONDS, 0.0, 1.0)
+
+
+## Interpolates field `i` (1 = position, 2 = height) of the snapshot buffer at
+## time `at`; past the newest sample it holds (positions extrapolate a little).
+func _sampled(at: float, i: int) -> Variant:
+	var first: Array = samples[0]
+	if at <= first[0]:
+		return first[i]
+	for k in range(samples.size() - 1):
+		var a: Array = samples[k]
+		var b: Array = samples[k + 1]
+		if at <= b[0]:
+			var span: float = b[0] - a[0]
+			var w := clampf((at - a[0]) / span, 0.0, 1.0) if span > 0.0 else 1.0
+			return a[i].lerp(b[i], w) if i == 1 else lerpf(a[i], b[i], w)
+	var last: Array = samples.back()
+	if i == 1:
+		return last[1] + vel * minf(at - last[0], INTERP_DELAY)
+	return last[i]
+
+
 ## The height to draw at time `t` (levels): smoothed steps, or a fall.
 func height_at_time(t: float) -> float:
+	if buffered and samples.size() >= 2 and not gliding:
+		return _sampled(t - INTERP_DELAY, 2)
 	var span := time - prev_time
 	if span <= 0.0:
 		return draw_h
@@ -180,7 +225,8 @@ func can_start_step(in_combat: bool, cooldowns: Cooldowns, now: float) -> bool:
 
 
 func to_dict() -> Dictionary:
-	var d := {"pos": pos, "vel": vel, "z": z, "h": draw_h, "free": free, "r": radius, "odo": odometer}
+	var d := {"pos": pos, "vel": vel, "z": z, "vz": vz, "g": ground_h, "ff": fall_from, "h": draw_h,
+			"free": free, "r": radius, "odo": odometer}
 	if gliding or duration > 0.0:
 		d.glide = [from_point, to_point, start_time, duration]
 	return d
@@ -197,6 +243,9 @@ func apply_dict(d: Dictionary, now: float) -> void:
 	pos = fresh.pos
 	vel = fresh.vel
 	z = fresh.z
+	vz = fresh.vz
+	ground_h = fresh.ground_h
+	fall_from = fresh.fall_from
 	draw_h = fresh.draw_h
 	odometer = fresh.odometer
 	free = fresh.free
@@ -206,6 +255,11 @@ func apply_dict(d: Dictionary, now: float) -> void:
 	to_point = fresh.to_point
 	start_time = fresh.start_time
 	duration = fresh.duration
+	just_placed = false
+	if buffered:
+		samples.append([now, pos, draw_h])
+		while samples.size() > MAX_SAMPLES:
+			samples.pop_front()
 
 
 static func from_dict(d: Dictionary) -> MoveState:
@@ -214,6 +268,9 @@ static func from_dict(d: Dictionary) -> MoveState:
 	m.prev_pos = m.pos
 	m.vel = d.get("vel", Vector2.ZERO)
 	m.z = d.get("z", 0.0)
+	m.vz = d.get("vz", 0.0)
+	m.ground_h = d.get("g", 0)
+	m.fall_from = d.get("ff", 0)
 	m.draw_h = d.get("h", 0.0)
 	m.odometer = d.get("odo", 0.0)
 	m.prev_draw_h = m.draw_h

@@ -102,7 +102,8 @@ func test_the_mirror_moves_smoothly_between_snapshots() -> void:
 	world.step()
 	_sync()
 	var m := mirror.get_actor(other.id).move
-	var mid := m.position_at(mirror.now + db.rules.tick_seconds * 0.5)
+	# Drawn MoveState.INTERP_DELAY behind the newest snapshot (see test_prediction.gd).
+	var mid := m.position_at(mirror.now + MoveState.INTERP_DELAY - db.rules.tick_seconds * 0.5)
 	assert_almost_eq(mid.x, (before.x + m.pos.x) / 2.0, 0.001, "half way between the two snapshots")
 	assert_almost_eq(mid.y, (before.y + m.pos.y) / 2.0, 0.001)
 

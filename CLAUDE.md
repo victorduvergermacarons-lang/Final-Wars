@@ -726,9 +726,25 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
   - Terrain friction (`friction` on a tileset terrain) lowers acceleration (ice); none set.
   - Enemies and NPCs still step tile to tile (gliding between centres, 0.4 s per tile out
     of combat) until phase 5. Abilities still resolve on tiles until phases 3–4.
-  - Clients draw everyone between the last two snapshots; prediction comes in phase 2.
   - Balance targets that assumed tile steps are pending until phase 6.
   - Screenshots: `tests/visual/free_move_shots.tscn`.
+- **Phase 2 (done): networking.**
+  - Input: a `move` intent every sim tick while a key is held (and whenever the
+    direction or the mouse angle changes), each with its own sequence number.
+  - **Prediction** (`ClientWorld.predict_move` / `predict_tick`, driven by
+    `ClientSession` at the sim's tick rate): the local hero moves at once with the same
+    `Mover` as the host, remembering the input each tick used. On each snapshot it takes
+    the host's position after the acknowledged input and replays the later ticks; a
+    difference under 1.5 tiles fades out over 0.1 s (`MoveState.smooth_offset`), a bigger
+    one (a teleport) snaps. A forced move (knockback, glide) is left to the host.
+  - **Interpolation:** everyone else is drawn 0.1 s behind the newest snapshot, between
+    buffered snapshots (`MoveState.samples`, `INTERP_DELAY`), so uneven arrival never shows.
+  - The host keeps 2 s of exact positions per hero (`perceived_pos`, `positions_within`)
+    for enemies' reaction delay and for forgiving hits (phase 3).
+  - Network check: guests walk all 8 directions, stop, and must agree with the host
+    within 0.25 tiles; `NETCHECK_DELAY=0.1` holds every guest intent 100 ms
+    (`ClientSession.send_delay`). Both pass with 4 players (0.00 tiles apart after settling).
+  - Tests: `tests/unit/test_prediction.gd` (latency simulated by delaying intents).
 
 ## Enemy Testing Grounds (2026-10-20)
 
