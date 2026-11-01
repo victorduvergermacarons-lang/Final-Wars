@@ -7,12 +7,18 @@ extends RefCounted
 
 ## Whether the ability is aimed at a point (hold the key, aim with the mouse).
 static func is_aimed(ability: AbilityDef) -> bool:
+	if ability.hitbox != null:
+		return ability.hitbox.is_aimed()
 	return ability.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]
 
 
 ## Where to aim when the mouse isn't used: the targeted enemy, else straight ahead
 ## at full range.
 static func default_aim(hero: Actor, ability: AbilityDef, target: Actor) -> Vector2:
+	if ability.hitbox != null:
+		if target != null and target.alive and hero.is_hostile_to(target):
+			return target.move.pos
+		return hero.move.pos + hero.facing_vector() * maxf(ability.hitbox.reach, 1.0)
 	if target != null and target.alive and hero.is_hostile_to(target):
 		return Vector2(target.tile())
 	return Vector2(hero.tile() + hero.facing * maxi(ability.max_range, 1))
@@ -30,6 +36,12 @@ static func preview(grid: GridModel, rules: CombatRules, actors: Array, hero: Ac
 	if ability.targeting == AbilityDef.TargetingMode.SELF or ability.target == AbilityDef.TargetType.SELF:
 		on = hero
 	var result := CastResolver.validate(ctx, hero, ability, on, aim if is_aimed(ability) else null)
+	if ability.uses_hitbox():
+		# Free movement: the exact shape it would cover (the host uses the same outline).
+		var tiles: Array[Vector2i] = []
+		if ability.hitbox.shape == HitboxDef.Shape.TARGETED and on != null:
+			tiles.append(on.tile())
+		return {"tiles": tiles, "outline": HitboxResolver.shape_outline(ctx, hero, ability, aim), "result": result}
 	return {"tiles": _tiles(ctx, hero, ability, aim, on), "result": result}
 
 

@@ -18,6 +18,7 @@ jump = 1.0
 
 [resource]
 script = ExtResource("2_enemy")
+move_speed = 2.8
 id = &"boar"
 display_name = "Boar"
 level = 2

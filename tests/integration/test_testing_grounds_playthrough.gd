@@ -28,12 +28,12 @@ func _tick(seconds: float = 0.05) -> Array:
 	return world.advance(seconds)
 
 
-func _walk_to(goal: Vector2i, max_seconds: float = 90.0) -> bool:
+func _walk_to(goal: Vector2i, max_seconds: float = 150.0) -> bool: # the grounds are ~200 tiles long; heroes walk 3 tiles/s
 	var t := 0.0
 	while hero.tile() != goal and t < max_seconds:
 		var sim := _sim()
 		var path := Pathfinder.find_path(sim.grid, hero.tile(), goal, 2, sim.occupied_tiles(hero), -1, 20000)
-		if path.size() >= 2 and hero.move.can_start_step(hero.in_combat(sim.now), hero.cooldowns, sim.now):
+		if path.size() >= 2 and hero.walk_target == null:
 			world.submit(hero.id, {"type": "step", "to": path[1]})
 		_tick()
 		t += 0.05
@@ -72,7 +72,7 @@ func _fight(enemy: Enemy) -> Dictionary:
 			world.submit(hero.id, {"type": "cast", "ability": &"F01", "target": enemy.id})
 		elif d <= 3 and hero.cooldowns.ability_remaining(&"W02", sim.now) <= 0.0 and hero.cooldowns.gcd_remaining(sim.now) <= 0.0:
 			world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": enemy.id})
-		elif hero.move.can_start_step(hero.in_combat(sim.now), hero.cooldowns, sim.now):
+		elif hero.walk_target == null:
 			var goal := enemy.nearest_tile_to(hero.tile())
 			var blocked := sim.occupied_tiles(hero)
 			blocked.erase(goal)

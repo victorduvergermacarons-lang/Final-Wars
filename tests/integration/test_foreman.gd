@@ -85,8 +85,8 @@ func _phases(n: int) -> void:
 	_party(n)
 	var b := _boss()
 	var h := _heart()
-	assert_eq(b.stats.hp, roundf(b.def.stats.hp * rules.party_hp_multiplier(n)), "boss health for %d" % n)
-	assert_eq(h.stats.hp, roundf(h.def.stats.hp * rules.party_hp_multiplier(n)), "heart health for %d" % n)
+	assert_eq(b.stats.hp, roundf(b.def.stats.hp * rules.party_hp_multiplier(n, b.def.party_hp_per_hero)), "boss health for %d" % n)
+	assert_eq(h.stats.hp, roundf(h.def.stats.hp * rules.party_hp_multiplier(n, h.def.party_hp_per_hero)), "heart health for %d" % n)
 	if n > 1:
 		assert_gt(b.stats.hp, b.def.stats.hp, "a dungeon boss scales although it is an elite")
 	assert_almost_eq(b.damage_scale, rules.party_damage_multiplier(n), 0.001)

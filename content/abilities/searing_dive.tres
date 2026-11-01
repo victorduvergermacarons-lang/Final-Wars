@@ -33,3 +33,4 @@ requires_line_of_sight = false
 effects = Array[ExtResource("1_fx")]([SubResource("Resource_charge"), SubResource("Resource_trail")])
 targeting = 3
 windup_seconds = 1.0
+dodgeable = true

@@ -20,6 +20,11 @@ func pick(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	if not attack.is_empty():
 		attack.dir = dir
 		return attack
+	if actor.move.free and not actor.move.gliding and actor.move.is_moving(t):
+		# Free movement: the run cycle follows the distance walked, so the feet
+		# match the ground at any speed and in any direction.
+		var cycle := maxi(art.frame_count("run"), 1)
+		return {"anim": "run", "dir": dir, "frame": int(actor.move.odometer * art.run_frames_per_tile) % cycle}
 	if actor.move.is_moving(t):
 		var n := maxi(art.frame_count("run"), 1)
 		# One run cycle can span several tiles; which part of it a step plays

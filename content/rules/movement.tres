@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MovementDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/movement_def.gd" id="1_move"]
+
+[resource]
+script = ExtResource("1_move")
+walk_speed = 3.0
+combat_speed_factor = 1.0
+accel_time = 0.1
+decel_time = 0.08
+hero_radius = 0.3
+npc_radius = 0.3
+fall_min_levels = 2
+gravity = 40.0
+fall_carry = 0.6
+fall_damage_above = 3
+fall_damage_percent_per_level = 10.0
+fall_damage_max_percent = 60.0
+fall_damage_can_kill = false
+step_smooth_rate = 8.0
+substep = 0.2

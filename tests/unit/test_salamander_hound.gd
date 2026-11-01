@@ -47,7 +47,7 @@ func test_data_and_art() -> void:
 	var bite: AbilityDef = ContentDB.abilities[&"hound_bite"]
 	var pounce: AbilityDef = ContentDB.abilities[&"cinder_pounce"]
 	assert_almost_eq(bite.windup_seconds, 0.3, 0.001, "jaws on frame 6 at 20 fps")
-	assert_almost_eq(pounce.windup_seconds, 0.6, 0.001, "springs on frame 6 at 10 fps")
+	assert_almost_eq(pounce.windup_seconds, 6.0 / 9.0, 0.001, "springs on frame 6 at 9 fps")
 	assert_eq(pounce.cooldown_seconds, 8.0)
 
 
@@ -57,23 +57,24 @@ func test_pounce_marks_the_tile_beside_the_hero_then_lands_and_burns() -> void:
 	assert_eq(hound.casting.get("ability").id, &"cinder_pounce", "pounces from 3 tiles")
 	var marks: Array = world.pending_hits()
 	assert_eq(marks.size(), 1, "the landing is telegraphed")
-	var tiles: Array = marks[0].tiles
-	assert_true(tiles.has(Vector2i(3, 10)), "lands beside the hero, on its own side")
-	assert_true(tiles.has(Vector2i(2, 10)), "the hero stands on the mark")
-	assert_eq(tiles.size(), 5, "the landing tile and its four neighbours")
+	var mark: PackedVector2Array = marks[0].outline
+	assert_true(Geometry2D.is_point_in_polygon(Vector2(2.8, 10), mark), "lands beside the hero, on its own side")
+	assert_true(Geometry2D.is_point_in_polygon(hero.move.pos, mark), "the hero stands on the mark")
+	assert_false(Geometry2D.is_point_in_polygon(Vector2(0.6, 10), mark), "a circle around the landing spot")
 	var hp := hero.hp
-	_run(0.65)
+	_run(0.75)
 	assert_lt(hero.hp, hp, "burned for staying on the mark")
-	assert_eq(hound.tile(), Vector2i(3, 10), "leapt next to its prey")
+	assert_lt(hound.move.to_point.distance_to(hero.move.pos), 1.0, "leaps next to its prey")
+	assert_gt(hound.move.to_point.x, hero.move.pos.x, "on its own side")
 
 
 func test_stepping_off_the_mark_dodges_the_pounce() -> void:
 	var hound := world.add_enemy(hound_def, Vector2i(5, 10))
 	world.step()
 	assert_eq(hound.casting.get("ability").id, &"cinder_pounce")
-	hero.move.place(Vector2i(2, 11)) # one step sideways: diagonal to the landing tile
+	hero.move.place(Vector2(2, 11.6)) # half a second sideways: off the mark
 	var hp := hero.hp
-	var events := _run(0.65)
+	var events := _run(0.75)
 	assert_eq(hero.hp, hp, "no damage off the marker")
 	assert_false(events.any(func(e): return e.type == "damage" and e.target == hero.id))
 

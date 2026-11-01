@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Multi-process network check: a headless host and PLAYERS-1 headless clients on
-# localhost. Usage: tests/net/run_net_check.sh   (env: GODOT, PORT, PLAYERS=4)
+# localhost. Usage: tests/net/run_net_check.sh   (env: GODOT, PORT, PLAYERS=4,
+# NETCHECK_DELAY=0.1 to hold every guest intent 100 ms: a slow connection)
 set -uo pipefail
 cd "$(dirname "$0")/../.."
 GODOT="${GODOT:-godot}"

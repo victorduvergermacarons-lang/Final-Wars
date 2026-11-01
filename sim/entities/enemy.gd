@@ -68,12 +68,13 @@ func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.Z
 	spawn_tile = p_spawn
 	home_tile = p_spawn
 	move.place(p_spawn)
+	move.radius = def.collider_radius
+	# Free movement (phase 5): enemies walk like heroes; immobile ones and dummies stand.
+	move.free = not def.immobile and not def.training_dummy
 
 
-func combat_step_cooldown(rules: CombatRules, now: float) -> float:
-	if def.combat_step_seconds > 0.0:
-		return def.combat_step_seconds
-	return super(rules, now)
+func base_move_speed(rules: CombatRules) -> float:
+	return def.move_speed if def.move_speed > 0.0 else rules.movement.walk_speed
 
 
 ## Whether it grows with the party (elites are built for groups; dummies never change).
@@ -89,7 +90,7 @@ func set_party_size(heroes: int, rules: CombatRules) -> void:
 		return
 	var share := hp / maxf(stats.hp, 1.0)
 	party_size = n
-	stats.hp = roundf(def.stats.hp * rules.party_hp_multiplier(n))
+	stats.hp = roundf(def.stats.hp * rules.party_hp_multiplier(n, def.party_hp_per_hero))
 	damage_scale = rules.party_damage_multiplier(n)
 	if alive:
 		hp = maxf(roundf(stats.hp * share), 1.0)
@@ -117,3 +118,4 @@ func reset_at_spawn() -> void:
 	patrol_index = 0
 	cooldowns = Cooldowns.new()
 	move.place(spawn_tile)
+	Navigator.stop(self)

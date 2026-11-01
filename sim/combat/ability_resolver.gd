@@ -277,6 +277,9 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				return # a large body (Sunscale Drake) isn't shoved around
 			if target is Enemy and (target as Enemy).def.training_dummy:
 				return # a training dummy stays put
+			if ctx.continuous:
+				_shove(ctx, caster, ability, effect, target, pull, events)
+				return
 			var dir := TileGeometry.snap8(Vector2((caster.tile() - target.tile()) if pull else (target.tile() - caster.tile())))
 			if effect.push_along_cast and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.cast_dir
@@ -307,6 +310,15 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 		AbilityEffect.Kind.DASH_TO:
 			if not caster.alive:
 				return
+			if ctx.continuous:
+				# Toward the aim (or the target), stopping beside whatever is in the way.
+				var want := float(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now))
+				var to_aim := caster.move.pos.distance_to(ctx.cast_point)
+				var r := Hitbox.slide(ctx, caster, ctx.cast_vec, minf(want, to_aim), 0.12)
+				ctx.cast_tiles = r.path
+				events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
+						"from": MoveState.tile_of(r.from), "to": MoveState.tile_of(r.end), "end": r.end})
+				return
 			var dir := ctx.cast_dir
 			if dir == Vector2i.ZERO:
 				dir = TileGeometry.snap8(Vector2(caster.facing))
@@ -318,6 +330,18 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 					"from": r.from, "to": r.end})
 
 		AbilityEffect.Kind.LEAP, AbilityEffect.Kind.BLINK:
+			if ctx.continuous:
+				var spot := ctx.cast_point
+				if not caster.alive or Hitbox.free_spot(ctx, caster, spot) != "":
+					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": MoveState.tile_of(spot)})
+					return
+				caster.casting = {}
+				caster.move.begin(spot, ctx.now, 0.35 if effect.kind == AbilityEffect.Kind.LEAP else 0.0)
+				if effect.kind == AbilityEffect.Kind.BLINK:
+					caster.move.place(spot)
+				events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
+						"from": caster.tile(), "to": MoveState.tile_of(spot), "end": spot})
+				return
 			var to := ctx.cast_aim
 			if not caster.alive or not ctx.grid.in_bounds(to) or not ctx.grid.is_walkable(to) or _occupied(ctx, to, caster):
 				events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": to})
@@ -491,6 +515,36 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 		target.die()
 		target.casting = {}
 		events.append({"type": "death", "source": source.id if source != null else -1, "target": target.id})
+
+
+## Free movement: a knockback or pull slides the unit along the line from the
+## caster (any angle; or along the cast for waves), with collisions; being
+## stopped by a wall, ledge or unit hurts (and the unit hit, if an enemy).
+static func _shove(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect, target: Actor,
+		pull: bool, events: Array[Dictionary]) -> void:
+	var away := target.move.pos - caster.move.pos
+	var dir := (-away if pull else away).normalized() if away.length() > 0.001 else ctx.cast_vec
+	if effect.push_along_cast:
+		dir = ctx.cast_vec
+	if effect.push_aside:
+		dir = ctx.cast_vec.orthogonal() * (1.0 if ctx.cast_vec.orthogonal().dot(away) >= 0.0 else -1.0)
+	var dist := float(Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now), target.weight))
+	if effect.push_aside and ctx.push_tiles > 0:
+		dist = float(ctx.push_tiles)
+	if pull:
+		dist = minf(dist, maxf(away.length() - caster.move.radius - target.move.radius - 0.05, 0.0))
+	if dist <= 0.0:
+		return
+	var r := Hitbox.slide(ctx, target, dir, dist, 0.15)
+	events.append({"type": "pushed" if not pull else "pulled", "source": caster.id, "target": target.id,
+			"ability": ability.id, "from": MoveState.tile_of(r.from), "to": MoveState.tile_of(r.end),
+			"end": r.end, "stopped_by": r.stopped_by})
+	if r.stopped_by != "" and r.end.distance_to(r.from) < dist - 0.05:
+		var impact := effect.impact_damage if effect.impact_damage > 0.0 else ctx.rules.collision_damage
+		_impact(ctx, caster, ability, target, impact, events)
+		var hit: Actor = r.blocker
+		if hit != null and hit != caster and caster.is_hostile_to(hit) and not hit.evading:
+			_impact(ctx, caster, ability, hit, impact, events)
 
 
 ## Slides a unit up to `tiles` along an 8-way `dir` (knockback, pull, dash),

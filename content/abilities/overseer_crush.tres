@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="AbilityDef" format=3]
 
+[ext_resource type="Script" path="res://data/defs/hitbox_def.gd" id="hb_script"]
 [ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
 [ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
@@ -12,6 +13,12 @@ script = ExtResource("1_fx")
 base_amount = 16.0
 scaling = Array[ExtResource("2_sc")]([SubResource("Resource_s0_0")])
 
+[sub_resource type="Resource" id="Resource_hitbox"]
+script = ExtResource("hb_script")
+shape = 2
+reach = 1.4
+angle = 90.0
+
 [resource]
 script = ExtResource("3_ab")
 id = &"overseer_crush"
@@ -21,5 +28,7 @@ shape = 1
 cooldown_seconds = 2.6
 max_height_difference = 2
 targeting = 1
-windup_seconds = 0.6
+windup_seconds = 0.7
 effects = Array[ExtResource("1_fx")]([SubResource("Resource_fx0")])
+hitbox = SubResource("Resource_hitbox")
+dodgeable = true

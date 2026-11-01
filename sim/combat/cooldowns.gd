@@ -12,7 +12,6 @@ var _abilities := {} # StringName -> Vector2(start, duration)
 ## Abilities with charges: key -> [Vector2(start, duration) per recharging charge].
 var _charges := {}
 var _gcd := Vector2.ZERO
-var _step := Vector2.ZERO
 
 
 ## Whether `ability` is off its own cooldown (or has a charge left, when
@@ -72,21 +71,9 @@ func gcd_fraction(now: float) -> float:
 	return _fraction(_gcd, now)
 
 
-func can_step(now: float) -> bool:
-	return step_remaining(now) <= 0.0
-
-
 ## Starts only the GCD (a cast time holds it while casting).
 func trigger_gcd(now: float, seconds: float) -> void:
 	_gcd = Vector2(now, seconds)
-
-
-func trigger_step(now: float, duration: float) -> void:
-	_step = Vector2(now, duration)
-
-
-func step_remaining(now: float) -> float:
-	return _remaining(_step, now)
 
 
 ## Plain-data form for replication.
@@ -100,7 +87,6 @@ func to_dict() -> Dictionary:
 	return {
 		"abilities": abilities,
 		"gcd": [_gcd.x, _gcd.y],
-		"step": [_step.x, _step.y],
 		"charges": charges,
 	}
 
@@ -112,8 +98,6 @@ static func from_dict(d: Dictionary) -> Cooldowns:
 		c._abilities[StringName(id)] = Vector2(abilities[id][0], abilities[id][1])
 	var gcd: Array = d.get("gcd", [0.0, 0.0])
 	c._gcd = Vector2(gcd[0], gcd[1])
-	var step: Array = d.get("step", [0.0, 0.0])
-	c._step = Vector2(step[0], step[1])
 	var charges: Dictionary = d.get("charges", {})
 	for id in charges:
 		c._charges[StringName(id)] = charges[id].map(func(t): return Vector2(t[0], t[1]))

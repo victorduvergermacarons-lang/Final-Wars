@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="AbilityDef" format=3]
 
+[ext_resource type="Script" path="res://data/defs/hitbox_def.gd" id="hb_script"]
 [ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fucek"]
 [ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_kiqmj"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_5dxmu"]
@@ -14,14 +15,23 @@ damage_type = 1
 base_amount = 10.0
 scaling = Array[ExtResource("2_kiqmj")]([SubResource("Resource_iurmd")])
 
+[sub_resource type="Resource" id="Resource_hitbox"]
+script = ExtResource("hb_script")
+shape = 5
+reach = 5.0
+speed = 7.0
+size = 0.3
+
 [resource]
 script = ExtResource("3_5dxmu")
 id = &"shadow_bolt"
 display_name = "Shadow Bolt"
 shape = 2
 max_range = 5
-cooldown_seconds = 2.5
+cooldown_seconds = 3.0
 ranged = true
 projectile_speed = 9.0
 effects = Array[ExtResource("1_fucek")]([SubResource("Resource_87a2n")])
 targeting = 2
+hitbox = SubResource("Resource_hitbox")
+dodgeable = true

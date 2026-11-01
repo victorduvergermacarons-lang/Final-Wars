@@ -151,19 +151,18 @@ func test_root_blocks_steps_but_not_abilities() -> void:
 	assert_false(_damaged(_cast(&"stab")).is_empty(), "can still attack")
 	world.advance(2.1)
 	world.submit(hero.id, {"type": "step", "to": Vector2i(5, 6)})
-	world.step()
+	world.advance(0.5)
 	assert_eq(hero.tile(), Vector2i(5, 6), "free again")
 
 
-func test_slow_multiplies_the_combat_step_cooldown() -> void:
+func test_slow_divides_the_move_speed() -> void:
+	# Free movement: a slow's step multiplier now divides speed (×2 = half speed).
+	hero.combat_until = world.now + 100
+	var normal := Mover.speed_of(hero, rules, world.now)
 	var slow := _buff(&"slow", 10.0)
 	slow.step_cooldown_multiplier = 2.0
 	hero.buffs.apply(slow, world.now)
-	hero.combat_until = world.now + 100
-	world.submit(hero.id, {"type": "step", "to": Vector2i(5, 6)})
-	world.step()
-	var normal := hero.combat_step_cooldown(rules, world.now)
-	assert_almost_eq(hero.cooldowns.step_remaining(world.now), normal * 2.0, 0.06)
+	assert_almost_eq(Mover.speed_of(hero, rules, world.now), normal / 2.0, 0.001)
 
 
 # --- Heal over time ----------------------------------------------------------------

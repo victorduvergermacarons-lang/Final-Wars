@@ -16,6 +16,8 @@ jump = 2.0
 
 [resource]
 script = ExtResource("4_ojpk2")
+move_speed = 3.4
+collider_radius = 0.3
 id = &"fen_skirmisher"
 display_name = "Fen Skirmisher"
 level = 4

@@ -16,6 +16,8 @@ jump = 1.0
 
 [resource]
 script = ExtResource("2_enemy")
+move_speed = 1.85
+collider_radius = 0.45
 id = &"human_husk"
 display_name = "Human Husk"
 level = 7

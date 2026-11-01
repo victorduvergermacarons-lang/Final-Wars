@@ -104,7 +104,7 @@ func test_walking_the_whole_road_pulls_nobody() -> void:
 	hero.move.place(Vector2i(1, road))
 	for x in range(2, zone.get_width() - 1):
 		sim.submit(hero.id, {"type": "step", "to": Vector2i(x, road)})
-		for i in 5:
+		for i in 8: # a tile takes 1/3 s at walking speed
 			sim.step()
 	assert_eq(hero.tile().x, zone.get_width() - 2, "walked to the far end")
 	for e in sim.enemies():
@@ -125,10 +125,13 @@ func test_pulling_one_enemy_to_its_leash_never_pulls_another() -> void:
 			var spot: Vector2i = spawn.tile + Vector2i(0, 1)
 			var farthest := 0
 			var evaded := false
+			var walled := false # the hero's lane ended (a pen wall): it can't pull further
 			for k in spawn.enemy.leash_radius + 4:
 				var next: Vector2i = spot + dir
 				if sim.grid.is_walkable(next):
 					spot = next
+				else:
+					walled = true
 				hero.move.place(sim.find_free_tile_near(spot))
 				for i in 30:
 					sim.step()
@@ -136,7 +139,8 @@ func test_pulling_one_enemy_to_its_leash_never_pulls_another() -> void:
 				if target.state != Enemy.State.COMBAT:
 					evaded = true
 					break
-			assert_true(evaded or farthest >= spawn.enemy.leash_radius - 3,
+			var stuck_beside := walled and target.move.pos.distance_to(hero.move.pos) < 1.6
+			assert_true(evaded or farthest >= spawn.enemy.leash_radius - 3 or stuck_beside,
 					"%s was really pulled %s (%d tiles)" % [spawn.enemy.id, dir, farthest])
 			for e in sim.enemies():
 				if e != target:

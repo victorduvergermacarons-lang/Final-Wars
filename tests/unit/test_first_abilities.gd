@@ -299,9 +299,59 @@ func test_gust_interrupts_a_cast() -> void:
 	assert_true(foe.casting.is_empty())
 
 
-func test_air_step_gives_five_free_steps() -> void:
+func test_air_step_is_a_burst_of_speed() -> void:
+	var before := Mover.speed_of(hero, world.rules, world.now)
 	world.cast(hero, _a("A03"), hero)
 	assert_true(hero.buffs.has(&"air_step", world.now))
+	assert_almost_eq(Mover.speed_of(hero, world.rules, world.now) / before, 1.4, 0.01, "+40% speed")
+	world.advance(4.1)
+	assert_almost_eq(Mover.speed_of(hero, world.rules, world.now), before, 0.001, "for 4 s")
+
+
+## Free movement, phase 4: every implemented ability's shape (docs/FREE_MOVEMENT_PLAN.md §6).
+func test_each_ability_has_the_planned_hitbox() -> void:
+	var H := HitboxDef.Shape
+	var want := {"F01": H.TARGETED, "F02": H.TARGETED, "F03": H.PROJECTILE, "F04": H.NONE, "F05": H.DASH,
+		"F06": H.RECT, "F07": H.CIRCLE, "F08": H.TILES, "F09": H.TARGETED, "W01": H.TARGETED,
+		"W02": H.TARGETED, "W03": H.TARGETED, "W04": H.PROJECTILE, "W05": H.TARGETED, "W06": H.RECT,
+		"W07": H.TARGETED, "W08": H.TARGETED, "W09": H.TILES, "A01": H.TARGETED, "A02": H.TARGETED,
+		"A03": H.NONE, "A05": H.TARGETED, "E01": H.LOB, "E03": H.TILES, "E04": H.SELF_CIRCLE,
+		"E05": H.TILES, "S01": H.CONE, "S04": H.DASH, "B01": H.TARGETED, "B02": H.PROJECTILE,
+		"H01": H.CONE, "H02": H.SELF_CIRCLE}
+	assert_eq(want.size(), FIRST.size())
+	for id in FIRST:
+		var hb: HitboxDef = _a(id).hitbox
+		assert_not_null(hb, id)
+		assert_eq(hb.shape, want[id], "%s is a %s" % [id, hb.shape_name()])
+	assert_eq(_a("S01").hitbox.angle, 100.0)
+	assert_eq(_a("F03").hitbox.speed, 16.0)
+	assert_false(_a("F07").uses_hitbox() == false, "Fireball is a circle in continuous space")
+	assert_false(_a("F08").uses_hitbox(), "Burning Ground stays on the tiles")
+
+
+func test_slash_aims_at_the_mouse_at_any_angle() -> void:
+	foe.move.pos = Vector2(5.8, 5.7) # off the grid line, down-right of the hero
+	world.cast(hero, _a("S01"), null, Vector2(7, 7))
+	assert_gt(_lost(foe), 0.0, "in the cone toward the mouse")
+	world.advance(2.1)
+	var hp := foe.hp
+	world.cast(hero, _a("S01"), null, Vector2(3, 3))
+	assert_eq(foe.hp, hp, "swinging the other way misses")
+
+
+func test_fire_whip_follows_the_mouse() -> void:
+	foe.move.place(Vector2i(7, 6)) # not on any of the 8 directions from (5, 5)
+	world.cast(hero, _a("F06"), null, Vector2(9, 7))
+	assert_gt(_lost(foe), 0.0)
+
+
+func test_knockbacks_slide_in_continuous_space() -> void:
+	foe.move.pos = Vector2(6.0, 5.4)
+	world.cast(hero, _a("A01"), foe)
+	# Where the slide ends (enemies still settle on tile centres until phase 5).
+	var pushed := foe.move.to_point - Vector2(6.0, 5.4)
+	assert_almost_eq(pushed.length(), 1.0, 0.11, "one tile")
+	assert_almost_eq(pushed.angle(), (Vector2(6.0, 5.4) - hero.move.pos).angle(), 0.05, "straight away from the caster")
 
 
 func test_lunge_steps_in_and_strikes() -> void:

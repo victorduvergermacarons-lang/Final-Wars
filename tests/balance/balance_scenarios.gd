@@ -26,14 +26,16 @@ const STARTER_DODGE := {"weapon": "rusty_shortsword", "learning": "ember_fist_sc
 const L4_LUNGE := {"weapon": "travelers_longsword", "mastered": ["S01", "F01", "W01"],
 		"rotation": ["S04", "S01", "F01"], "heal": "W01", "heal_below": 0.45,
 		"mastery": {"Fire": 20, "Water": 15, "Sword": 25}}
+## Level-5 group (Grizzlehide, the drake, the Foreman). Since free movement the
+## damage dealers and the healer dodge telegraphs; the tank holds still and takes them.
 const L5_TANK := {"weapon": "quarry_maul", "armor": ["iron_helm", "grizzlehide_mantle"],
 		"mastered": ["H01", "E04", "W01"], "rotation": ["E04", "H01", "H02"], "mastery": {"Hammer": 30, "Earth": 20}}
 const L5_FIRE := {"mastered": ["F01", "F03", "F02"], "learning": "scroll_of_the_fireball",
-		"armor": ["frostweave_robe"], "rotation": ["F07", "F02", "F03", "F01"], "mastery": {"Fire": 60}}
+		"armor": ["frostweave_robe"], "rotation": ["F07", "F02", "F03", "F01"], "mastery": {"Fire": 60}, "dodge": true}
 const L5_HEALER := {"mastered": ["W01", "W02", "W05"], "armor": ["acolytes_leggings"], "rotation": ["W02"],
-		"heal": "W01", "heal_below": 0.6, "mastery": {"Water": 60}}
+		"heal": "W01", "heal_below": 0.6, "mastery": {"Water": 60}, "dodge": true}
 const L5_ARCHER := {"weapon": "yew_longbow", "mastered": ["B01"], "armor": ["rangers_gloves"],
-		"rotation": ["B02", "B01"], "mastery": {"Bow": 40}}
+		"rotation": ["B02", "B01"], "mastery": {"Bow": 40}, "dodge": true}
 
 ## [label, heroes, enemy, count, hero level]
 const ROWS := [

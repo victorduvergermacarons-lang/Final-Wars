@@ -1,5 +1,6 @@
 extends GutTest
-## Host world → snapshot → client mirror, and client-side step prediction.
+## Host world → snapshot → client mirror: actors, private data, continuous
+## positions and their interpolation, facing.
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
 ## The Milestone 1 starting kit (sword, staff, shield, holy charm), kept for engine tests.
@@ -82,65 +83,37 @@ func test_actors_missing_from_snapshot_are_removed() -> void:
 	assert_null(mirror.get_actor(other.id))
 
 
-func test_predicted_step_moves_immediately() -> void:
-	_sync()
-	var start := hero.tile()
-	var to := start + Vector2i.UP
-	assert_true(mirror.predict_step(mirror.take_seq(), to, mirror.now))
-	assert_eq(mirror.local_hero().tile(), to, "moved before the host knows")
-
-
-func test_unacknowledged_step_survives_a_snapshot() -> void:
-	_sync()
-	var to := hero.tile() + Vector2i.UP
-	mirror.predict_step(mirror.take_seq(), to, mirror.now)
-	world.step() # host hasn't received the intent yet
-	_sync()
-	assert_eq(mirror.local_hero().tile(), to)
-	assert_eq(mirror.pending_step_count(), 1)
-
-
-func test_acknowledged_step_matches_host() -> void:
-	_sync()
-	var to := hero.tile() + Vector2i.UP
-	var seq := mirror.take_seq()
-	mirror.predict_step(seq, to, mirror.now)
-	world.submit(hero.id, {"type": "step", "to": to, "seq": seq})
-	world.step()
-	_sync()
-	assert_eq(hero.tile(), to)
-	assert_eq(mirror.local_hero().tile(), to)
-	assert_eq(mirror.pending_step_count(), 0)
-
-
-func test_rejected_step_snaps_back() -> void:
-	_sync()
-	var start := hero.tile()
-	var to := start + Vector2i.UP
-	var seq := mirror.take_seq()
-	mirror.predict_step(seq, to, mirror.now)
-	# Host refuses (something moved into the tile first).
-	other.move.place(to)
-	world.submit(hero.id, {"type": "step", "to": to, "seq": seq})
-	world.step()
-	_sync()
-	assert_eq(hero.tile(), start)
-	assert_eq(mirror.local_hero().tile(), start, "corrected to the host's position")
-
-
-func test_illegal_steps_are_not_predicted() -> void:
+func test_continuous_positions_replicate() -> void:
+	world.submit(hero.id, {"type": "move", "dir": Vector2i(0, -1), "face": 0.0}) # up the screen
+	world.advance(0.3)
 	_sync()
 	var h := mirror.local_hero()
-	assert_false(mirror.predict_step(1, h.tile() + Vector2i(2, 0), mirror.now), "not adjacent")
-	assert_false(mirror.predict_step(2, other.tile(), mirror.now) and GridModel.distance(h.tile(), other.tile()) == 1)
+	assert_eq(h.move.pos, hero.move.pos, "the exact position, not just the tile")
+	assert_eq(h.move.vel, hero.move.vel)
+	assert_eq(h.tile(), hero.tile())
+	assert_almost_eq(h.facing_angle, hero.facing_angle, 0.0001)
 
 
-func test_prediction_queue_is_bounded() -> void:
+func test_the_mirror_moves_smoothly_between_snapshots() -> void:
+	world.submit(other.id, {"type": "move", "dir": Vector2i(1, 0), "face": 0.0})
+	world.advance(0.3)
 	_sync()
-	var p := hero.tile()
-	assert_true(mirror.predict_step(1, p + Vector2i.UP, mirror.now))
-	assert_true(mirror.predict_step(2, p + Vector2i.UP * 2, mirror.now))
-	assert_false(mirror.predict_step(3, p + Vector2i.UP * 3, mirror.now))
+	var before := mirror.get_actor(other.id).move.pos
+	world.step()
+	_sync()
+	var m := mirror.get_actor(other.id).move
+	# Drawn MoveState.INTERP_DELAY behind the newest snapshot (see test_prediction.gd).
+	var mid := m.position_at(mirror.now + MoveState.INTERP_DELAY - db.rules.tick_seconds * 0.5)
+	assert_almost_eq(mid.x, (before.x + m.pos.x) / 2.0, 0.001, "half way between the two snapshots")
+	assert_almost_eq(mid.y, (before.y + m.pos.y) / 2.0, 0.001)
+
+
+func test_falls_replicate() -> void:
+	hero.move.z = 2.0
+	hero.move.draw_h = 3.0
+	_sync()
+	assert_eq(mirror.local_hero().move.z, 2.0)
+	assert_true(mirror.local_hero().move.falling())
 
 
 func test_facing_is_replicated_and_predicted() -> void:

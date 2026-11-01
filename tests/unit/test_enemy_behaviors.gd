@@ -110,14 +110,16 @@ func test_patrol_walks_the_loop_while_idle() -> void:
 	var route: Array[Vector2i] = [Vector2i(10, 10), Vector2i(13, 10), Vector2i(13, 13)]
 	_setup(EnemyDef.Behavior.MELEE, _ability(AbilityDef.Shape.FRONT, 1, 1.5), Vector2i(10, 10), Vector2i(0, 0),
 			0.5, route)
-	enemy.def.patrol_step_seconds = 0.5
+	enemy.def.patrol_step_seconds = 1.0 # 1.5 tiles a second (EnemyBrain.patrol_pace)
 	var seen := {}
+	var fastest := 0.0
 	for i in 200: # 10 s
 		world.step()
 		seen[enemy.tile()] = true
+		fastest = maxf(fastest, enemy.move.vel.length())
 	assert_true(seen.has(Vector2i(13, 10)) and seen.has(Vector2i(13, 13)), "visited the waypoints")
 	assert_eq(enemy.state, Enemy.State.IDLE)
-	assert_almost_eq(enemy.move.duration, 0.5, 0.001, "walks at the patrol pace")
+	assert_almost_eq(fastest, 1.5, 0.05, "walks at the patrol pace")
 
 
 func test_patroller_leashes_to_where_it_was_pulled_then_resumes() -> void:

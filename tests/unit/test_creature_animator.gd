@@ -86,10 +86,13 @@ func test_dead_creature_shows_nothing_yet() -> void:
 	assert_true(anim.pick(wolf, art, 1.0).is_empty())
 
 
-func test_wolf_glides_over_its_whole_step_in_combat() -> void:
-	wolf.state = Enemy.State.COMBAT
-	assert_eq(world.try_step(wolf, Vector2i(3, 1)), "")
-	assert_almost_eq(wolf.move.duration, wolf.def.combat_step_seconds, 0.001)
+func test_a_running_wolf_plays_its_run_cycle_by_the_ground_covered() -> void:
+	wolf.move.vel = Vector2(3.0, 0.0)
+	wolf.move.odometer = 0.0
+	var a := anim.pick(wolf, art, 1.0)
+	assert_eq(a.anim, "run")
+	wolf.move.odometer = 1.0 / art.run_frames_per_tile # a frame's worth of ground
+	assert_eq(anim.pick(wolf, art, 1.0).frame, (a.frame + 1) % art.frame_count("run"))
 
 
 func test_wolf_stays_put_during_the_bite_and_its_recovery() -> void:

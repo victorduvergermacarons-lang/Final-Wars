@@ -19,13 +19,15 @@ enum GrowthLimit {
 @export var empty_zone_sleep_seconds: float = 30.0
 
 @export_group("Movement")
-## Time to walk across one tile (the travel animation), same for everyone.
-## Out of combat this is the only limit on stepping: there is no step cooldown,
-## the next step can start the moment the previous one arrives.
-@export var walk_tile_seconds: float = 0.2
-## In-combat step cooldown at 0 Speed.
+## Free movement: speeds, acceleration, collisions, falls (content/rules/movement.tres).
+@export var movement: MovementDef = MovementDef.new()
+## Unused since free movement (every unit moves with `movement`); kept so older
+## rules files load.
+@export var walk_tile_seconds: float = 0.4
+## The Speed stat's cap on walking speed: at most base / min times the base pace
+## (Mover.speed_of; 1.5 / 0.5 = ×3). Named after the old step cooldowns.
 @export var combat_step_base_seconds: float = 1.5
-## Speed can never push the in-combat step cooldown below this.
+## See combat_step_base_seconds.
 @export var combat_step_min_seconds: float = 0.5
 ## Speed at which the step cooldown is halved (before the floor applies).
 @export var speed_half_point: float = 100.0
@@ -195,8 +197,10 @@ func min_dungeon_party() -> int:
 
 
 ## Max HP multiplier for an enemy facing `heroes` heroes.
-func party_hp_multiplier(heroes: int) -> float:
-	return 1.0 + party_hp_per_extra_hero * (clampi(heroes, 1, party_max_size) - 1)
+## `per_hero` overrides party_hp_per_extra_hero when >= 0 (EnemyDef.party_hp_per_hero).
+func party_hp_multiplier(heroes: int, per_hero := -1.0) -> float:
+	var each := per_hero if per_hero >= 0.0 else party_hp_per_extra_hero
+	return 1.0 + each * (clampi(heroes, 1, party_max_size) - 1)
 
 
 ## Damage multiplier for an enemy facing `heroes` heroes.

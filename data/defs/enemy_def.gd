@@ -20,7 +20,8 @@ enum Behavior {
 @export var aggro_radius: int = 4
 ## Distance from its spawn point at which it gives up and walks home.
 @export var leash_radius: int = 10
-## Seconds per tile while in combat. 0 = use the Speed stat like heroes do.
+## Unused since free movement (the old seconds per tile in combat; `move_speed`
+## replaced it). Kept so older content files load.
 @export var combat_step_seconds: float = 0.0
 ## How far behind reality this enemy perceives heroes' positions (seconds), for
 ## aggro, chasing and aiming. Lets a hero sidestep an attack. 0 = no delay.
@@ -42,6 +43,10 @@ enum Behavior {
 @export var immobile: bool = false
 ## A dungeon boss: scales with the party like any enemy, although elite.
 @export var dungeon_boss: bool = false
+## Extra max HP per hero beyond the first, for this enemy only (a boss built for
+## groups grows less than the rule, since a party's damage doesn't grow as fast as
+## its size); < 0 = CombatRules.party_hp_per_extra_hero.
+@export var party_hp_per_hero: float = -1.0
 ## Placeholder look until it has art.
 enum Look { DIAMOND, CRYSTAL }
 @export var look: Look = Look.DIAMOND
@@ -59,6 +64,11 @@ enum Look { DIAMOND, CRYSTAL }
 ## large body is hit on, blocks movement on and is reached through every one of
 ## them; it can't be knocked back. Sunscale Drake: a plus of 5.
 @export var footprint: Array[Vector2i] = []
+## Body radius for free movement and hit tests (tiles). The drake's 5-tile plus
+## is one circle of about 1.35.
+@export var collider_radius: float = 0.35
+## Speed in tiles per second (free movement); 0 = the hero walk speed.
+@export var move_speed: float = 0.0
 ## Flies (Sunscale Drake): crosses any walkable tile whatever its height, and
 ## walls, water and other unwalkable tiles up to `fly_over_levels` above it (never
 ## tall props); ground zones (burning ground) don't touch it while airborne.

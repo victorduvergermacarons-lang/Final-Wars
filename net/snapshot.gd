@@ -73,6 +73,7 @@ static func _actor(a: Actor) -> Dictionary:
 		"stats": a.stats.to_dict(),
 		"move": a.move.to_dict(),
 		"facing": a.facing,
+		"angle": a.facing_angle,
 		"cd": a.cooldowns.to_dict(),
 		"buffs": a.buffs.to_dict(),
 		"cast": {} if a.casting.is_empty() else {"ability": a.casting.ability.id, "kind": a.casting.kind,

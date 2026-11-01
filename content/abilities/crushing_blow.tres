@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="AbilityDef" format=3]
 
+[ext_resource type="Script" path="res://data/defs/hitbox_def.gd" id="hb_script"]
 [ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_jik7h"]
 [ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sj2bt"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_f71v0"]
@@ -13,6 +14,12 @@ script = ExtResource("1_jik7h")
 base_amount = 24.0
 scaling = Array[ExtResource("2_sj2bt")]([SubResource("Resource_0wusf")])
 
+[sub_resource type="Resource" id="Resource_hitbox"]
+script = ExtResource("hb_script")
+shape = 2
+reach = 1.6
+angle = 120.0
+
 [resource]
 script = ExtResource("3_f71v0")
 id = &"crushing_blow"
@@ -25,4 +32,6 @@ effects = Array[ExtResource("1_jik7h")]([SubResource("Resource_qepji")])
 targeting = 2
 aim = 1
 line_shape = 2
-windup_seconds = 0.6
+windup_seconds = 0.8
+hitbox = SubResource("Resource_hitbox")
+dodgeable = true
