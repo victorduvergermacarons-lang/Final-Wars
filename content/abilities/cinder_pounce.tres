@@ -43,3 +43,4 @@ area_diamond = true
 aim_beside_target = true
 windup_seconds = 0.6
 hitbox = SubResource("Resource_hitbox")
+dodgeable = true

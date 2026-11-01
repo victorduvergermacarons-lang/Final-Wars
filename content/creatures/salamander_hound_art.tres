@@ -36,7 +36,7 @@ fps = {
 "bite": 20.0,
 "death": 10.0,
 "idle": 10.0,
-"pounce": 10.0
+"pounce": 9.0
 }
 run_frames_per_tile = 4
 looping = PackedStringArray("idle", "run")

@@ -249,60 +249,153 @@ static func bot_turn(world: WorldSim, content, heroes: Array[Hero], specs: Array
 	for i in heroes.size():
 		var h := heroes[i]
 		var spec: Dictionary = specs[i]
-		if h.alive and h.casting.get("kind", "") == "timing":
+		if not h.alive:
+			continue
+		# "dodge": run out of a telegraph (a marked shape or a wind-up aimed at you),
+		# even mid-cast (moving cancels it, as a player would).
+		if spec.get("dodge", false):
+			var away := _dodge_direction(world, h, foes)
+			if away != Vector2.ZERO:
+				# Straight away if there's room, else at an angle (sidestep).
+				var escape: Variant = null
+				for turn in [0.0, PI / 4.0, -PI / 4.0, PI / 2.0, -PI / 2.0]:
+					var tile := MoveState.tile_of(h.move.pos + away.rotated(turn) * 1.8)
+					if world.grid.in_bounds(tile) and world.grid.is_walkable(tile) \
+							and not world.pending_hits().any(func(m): return _marks(m, Vector2(tile))):
+						escape = tile
+						break
+				if escape != null:
+					if h.walk_target == null or Vector2(escape).distance_to(h.walk_target) > 0.5:
+						world.submit(h.id, {"type": "step", "to": escape})
+					continue
+		if h.casting.get("kind", "") == "timing":
 			play_timing_bar(world, h, spec.get("timing", "good"))
-		if not h.alive or not h.casting.is_empty():
+		if not h.casting.is_empty():
 			continue
 		var target: Enemy = foes[0] if focus == null else focus
 		for e in (foes if focus == null else []):
-			if TileGeometry.distance(h.tile(), e.tile()) < TileGeometry.distance(h.tile(), target.tile()):
+			if h.move.pos.distance_to(e.move.pos) < h.move.pos.distance_to(target.move.pos):
 				target = e
-		var delta: Vector2i = target.tile() - h.tile()
-		var face := Vector2i(signi(delta.x), 0) if absi(delta.x) >= absi(delta.y) else Vector2i(0, signi(delta.y))
-		if face != Vector2i.ZERO and face != h.facing:
-			world.submit(h.id, {"type": "face", "dir": face})
 		var hurt := heroes.filter(func(x): return x.alive and x.hp < x.stats.hp * spec.get("heal_below", 0.0))
 		if not hurt.is_empty() and spec.get("heal", "") != "":
 			hurt.sort_custom(func(a, b): return a.hp / a.stats.hp < b.hp / b.stats.hp)
 			world.submit(h.id, {"type": "cast", "ability": StringName(spec.heal), "target": hurt[0].id})
-		# "dodge": step directly away from an enemy winding up at you.
-		if spec.get("dodge", false) and h.walk_target == null:
-			var dodged := false
-			for e in foes:
-				if e.casting.get("kind", "") == "windup" and (e.casting.get("target", -1) == h.id \
-						or e.casting.get("tiles", []).has(h.tile())):
-					var away := TileGeometry.snap8(Vector2(h.tile() - e.tile()))
-					for d in [Vector2i(away.x, 0), Vector2i(0, away.y)]:
-						if d != Vector2i.ZERO and not dodged and world.grid.is_walkable(h.tile() + d) \
-								and not world.is_occupied(h.tile() + d):
-							world.submit(h.id, {"type": "step", "to": h.tile() + d})
-							dodged = true
-			if dodged:
-				continue
 		# Close in when no attack in the rotation reaches (kiters stay at range).
-		var reach := 0
+		var reach := 0.0
 		for id in spec.get("rotation", []):
 			var r: AbilityDef = content.abilities[StringName(id)]
 			if r.target == AbilityDef.TargetType.ENEMY:
-				reach = maxi(reach, r.max_range)
-		if reach > 0 and TileGeometry.distance(h.tile(), target.tile()) > reach and face != Vector2i.ZERO:
-			var next := h.tile() + face
+				reach = maxf(reach, bot_reach(r, h, target))
+		var gap := h.move.pos.distance_to(target.move.pos)
+		# A dodging bot waits out a telegraph instead of walking back into it.
+		if reach > 0.0 and gap > reach - 0.1:
+			var next := target.tile()
 			if pathing:
 				var path := Pathfinder.find_path(world.grid, h.tile(), target.tile(), int(h.stats.jump),
 						world.occupied_tiles(h), -1, 2048, -1, [],
-						func(p: Vector2i): return TileGeometry.distance(p, target.tile()) <= maxi(reach, 1))
+						func(p: Vector2i): return Vector2(p).distance_to(target.move.pos) <= maxf(reach - 0.3, 1.0))
 				if path.size() > 1:
-					next = path[1]
-			world.submit(h.id, {"type": "step", "to": next})
+					next = path[mini(2, path.size() - 1)]
+			# A dodging bot waits rather than walk into a marked shape.
+			var stop_short := h.move.pos + (Vector2(next) - h.move.pos).limit_length(1.0)
+			var marked: bool = spec.get("dodge", false) and world.pending_hits().any(func(m):
+				var c: Actor = world.get_actor(m.get("source", -1))
+				return c != null and h.is_hostile_to(c) and _marks(m, stop_short))
+			if marked:
+				if h.walk_target != null:
+					world.submit(h.id, {"type": "move", "dir": Vector2i.ZERO, "face": 0.0})
+			elif h.walk_target == null or Vector2(next).distance_to(h.walk_target) > 0.5:
+				world.submit(h.id, {"type": "step", "to": next})
+		elif h.walk_target != null and gap <= reach - 0.3:
+			world.submit(h.id, {"type": "move", "dir": Vector2i.ZERO, "face": 0.0}) # close enough: stop
+		h.aim_angle = (target.move.pos - h.move.pos).angle()
 		for id in spec.get("rotation", []):
 			var a: AbilityDef = content.abilities[StringName(id)]
 			var intent := {"type": "cast", "ability": a.id, "target": target.id}
-			if a.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]:
+			if a.uses_hitbox() and a.target == AbilityDef.TargetType.ENEMY and a.hitbox.is_aimed() \
+					and gap > bot_reach(a, h, target):
+				continue # a swing at empty air would only waste the GCD
+			if a.uses_hitbox() and a.hitbox.is_aimed():
+				intent.aim = target.move.pos
+				intent.target = -1
+			elif a.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]:
 				intent.aim = Vector2(target.tile())
 				intent.target = -1
 			elif a.targeting == AbilityDef.TargetingMode.SELF or a.target != AbilityDef.TargetType.ENEMY:
 				intent.target = h.id
 			world.submit(h.id, intent)
+
+
+## How close (centre to centre) a bot must be for `a` to reach `target`.
+static func bot_reach(a: AbilityDef, h: Hero, target: Actor) -> float:
+	var radii := h.move.radius + target.move.radius
+	if a.uses_hitbox():
+		var hb := a.hitbox
+		match hb.shape:
+			HitboxDef.Shape.TARGETED:
+				return hb.reach + radii
+			HitboxDef.Shape.CONE:
+				return hb.reach + target.move.radius * 0.5
+			HitboxDef.Shape.RECT, HitboxDef.Shape.PROJECTILE:
+				return hb.reach
+			HitboxDef.Shape.CIRCLE, HitboxDef.Shape.LOB:
+				return hb.reach + hb.radius * 0.5
+			HitboxDef.Shape.SELF_CIRCLE:
+				return hb.radius + target.move.radius * 0.5
+			HitboxDef.Shape.DASH, HitboxDef.Shape.LEAP:
+				return hb.reach + radii
+	return float(maxi(a.max_range, 1)) + radii * 0.5
+
+
+## Whether a telegraph (pending_hits entry) covers point `p`: its outline, or for
+## tile-based ones (the drake's dive lane) its tiles.
+static func _marks(mark: Dictionary, p: Vector2) -> bool:
+	var poly: PackedVector2Array = mark.get("outline", PackedVector2Array())
+	if poly.size() > 2:
+		return Geometry2D.is_point_in_polygon(p, poly)
+	return Array(mark.get("tiles", [])).has(MoveState.tile_of(p))
+
+
+## Which way to run (unit grid vector) when a telegraph covers the bot, else ZERO:
+## away from the marked shape's centre, or from an enemy winding up at it.
+static func _dodge_direction(world: WorldSim, h: Hero, foes: Array) -> Vector2:
+	for mark in world.pending_hits():
+		var poly: PackedVector2Array = mark.get("outline", PackedVector2Array())
+		var caster: Actor = world.get_actor(mark.get("source", -1))
+		if caster == null or not h.is_hostile_to(caster):
+			continue
+		var covered := false
+		if poly.size() >= 3:
+			covered = Geometry2D.is_point_in_polygon(h.move.pos, poly)
+		else:
+			covered = Array(mark.get("tiles", [])).has(h.tile())
+		if covered:
+			# A shape from the caster (cone, lane): straight away from the caster.
+			# A circle elsewhere: away from its centre.
+			var centre := caster.move.pos
+			if poly.size() >= 3 and poly[0].distance_to(caster.move.pos) > 0.3:
+				centre = Vector2.ZERO
+				for q in poly:
+					centre += q
+				centre /= poly.size()
+			var away := h.move.pos - centre
+			return away.normalized() if away.length() > 0.01 else Vector2.RIGHT
+	# Standing in an enemy's burning ground: step off it, away from its middle.
+	for z in world.ground_zones():
+		var src: Actor = world.get_actor(z.get("source", -1))
+		if src == null or not h.is_hostile_to(src) or not Array(z.tiles).has(h.tile()):
+			continue
+		var centre := Vector2.ZERO
+		for t in z.tiles:
+			centre += Vector2(t)
+		centre /= maxf(z.tiles.size(), 1)
+		var off := h.move.pos - centre
+		return off.normalized() if off.length() > 0.2 else (h.move.pos - src.move.pos).normalized()
+	for e in foes:
+		if e.alive and e.casting.get("kind", "") == "windup" and e.casting.get("target", -1) == h.id:
+			var away: Vector2 = h.move.pos - e.move.pos
+			return away.normalized() if away.length() > 0.01 else Vector2.RIGHT
+	return Vector2.ZERO
 
 
 ## The bot's play on a timing bar, one input at a time (TimingBarDef.inputs): a tap

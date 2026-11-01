@@ -19,7 +19,7 @@ scaling = Array[ExtResource("2_kiqmj")]([SubResource("Resource_iurmd")])
 script = ExtResource("hb_script")
 shape = 5
 reach = 5.0
-speed = 9.0
+speed = 7.0
 size = 0.3
 
 [resource]
@@ -28,9 +28,10 @@ id = &"shadow_bolt"
 display_name = "Shadow Bolt"
 shape = 2
 max_range = 5
-cooldown_seconds = 2.5
+cooldown_seconds = 3.0
 ranged = true
 projectile_speed = 9.0
 effects = Array[ExtResource("1_fucek")]([SubResource("Resource_87a2n")])
 targeting = 2
 hitbox = SubResource("Resource_hitbox")
+dodgeable = true

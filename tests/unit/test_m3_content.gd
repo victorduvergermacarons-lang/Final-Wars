@@ -48,7 +48,7 @@ func test_enemy_abilities_use_milestone_3_targeting() -> void:
 	var blow: AbilityDef = db.abilities[&"crushing_blow"]
 	assert_eq(blow.targeting, AbilityDef.TargetingMode.SKILLSHOT)
 	assert_eq(blow.line_shape, AbilityDef.LineShape.ARC)
-	assert_eq(blow.windup_seconds, 0.6)
+	assert_eq(blow.windup_seconds, 0.8, "long enough to step out (free-movement balance pass)")
 	assert_eq(db.abilities[&"charge"].targeting, AbilityDef.TargetingMode.GROUND)
 
 

@@ -35,3 +35,4 @@ area_radius = 1
 telegraph_seconds = 1.0
 effects = Array[ExtResource("1_fx")]([SubResource("Resource_fx0")])
 hitbox = SubResource("Resource_hitbox")
+dodgeable = true

@@ -281,7 +281,7 @@ static func dodge_warnings(abilities: Array, rules: CombatRules) -> PackedString
 	var move := 1.0 / maxf(rules.movement.walk_speed, 0.1)
 	var limit := move + rules.dodge_reaction_seconds
 	for a in abilities:
-		if a == null or not a.implemented:
+		if a == null or not a.implemented or not a.dodgeable:
 			continue
 		var warn := -1.0
 		if a.uses_hitbox():
@@ -294,6 +294,8 @@ static func dodge_warnings(abilities: Array, rules: CombatRules) -> PackedString
 					warn = a.telegraph_seconds
 				HitboxDef.Shape.CONE, HitboxDef.Shape.RECT, HitboxDef.Shape.DASH, HitboxDef.Shape.LEAP:
 					warn = 0.0
+				_:
+					warn = 0.0 if a.targeting == AbilityDef.TargetingMode.TARGETED else -1.0
 		elif a.targeting == AbilityDef.TargetingMode.SKILLSHOT:
 			if a.arc_seconds > 0.0:
 				warn = a.arc_seconds

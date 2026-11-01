@@ -197,8 +197,10 @@ func min_dungeon_party() -> int:
 
 
 ## Max HP multiplier for an enemy facing `heroes` heroes.
-func party_hp_multiplier(heroes: int) -> float:
-	return 1.0 + party_hp_per_extra_hero * (clampi(heroes, 1, party_max_size) - 1)
+## `per_hero` overrides party_hp_per_extra_hero when >= 0 (EnemyDef.party_hp_per_hero).
+func party_hp_multiplier(heroes: int, per_hero := -1.0) -> float:
+	var each := per_hero if per_hero >= 0.0 else party_hp_per_extra_hero
+	return 1.0 + each * (clampi(heroes, 1, party_max_size) - 1)
 
 
 ## Damage multiplier for an enemy facing `heroes` heroes.

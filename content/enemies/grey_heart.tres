@@ -6,13 +6,14 @@
 
 [sub_resource type="Resource" id="Resource_stats"]
 script = ExtResource("3_stats")
-hp = 150.0
+hp = 300.0
 phys_def = 10.0
 mag_def = 10.0
 
 [resource]
 script = ExtResource("2_enemy")
 collider_radius = 0.6
+party_hp_per_hero = 0.45
 id = &"grey_heart"
 display_name = "The Grey Heart"
 level = 10

@@ -31,5 +31,6 @@ effects = Array[ExtResource("1_nopo4")]([SubResource("Resource_8h47o")])
 targeting = 2
 aim = 1
 line_shape = 2
-windup_seconds = 0.4
+windup_seconds = 0.7
 hitbox = SubResource("Resource_hitbox")
+dodgeable = true

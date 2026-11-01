@@ -40,3 +40,4 @@ effects = Array[ExtResource("1_xtdjm")]([SubResource("Resource_nqxak"), SubResou
 targeting = 3
 windup_seconds = 1.0
 hitbox = SubResource("Resource_hitbox")
+dodgeable = true

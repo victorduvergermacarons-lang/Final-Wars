@@ -93,6 +93,9 @@ enum LineShape { LINE, CONE, ARC }
 ## The hitbox the design spreadsheet gives it (its Hitbox columns), ready for
 ## when the ability is switched to free-movement hitboxes (it becomes `hitbox`).
 var sheet_hitbox: HitboxDef
+## A big enemy attack players are meant to dodge by moving: debug builds warn at
+## load when its warning time (wind-up, telegraph, flight) is too short for that.
+@export var dodgeable: bool = false
 ## Cast time: resolves after this many seconds; moving, a stun or an interrupt
 ## cancels it (mana and cooldown are only spent when it goes off).
 @export var cast_seconds: float = 0.0

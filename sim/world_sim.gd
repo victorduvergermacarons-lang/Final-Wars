@@ -521,8 +521,10 @@ func _separate_units() -> void:
 			var other: Actor = ctx.actors[id]
 			if other == h or not other.alive or (other.move.free and other.id < h.id):
 				continue
-			var fixed: bool = not other.move.free or other.move.gliding
-			Mover.separate_pair(h, other, h.move.gliding, fixed)
+			# A unit mid-attack (cast bar showing) stands firm: no shoving an enemy out of
+			# its own swing.
+			var fixed: bool = not other.move.free or other.move.gliding or not other.casting.is_empty()
+			Mover.separate_pair(h, other, h.move.gliding or (h is Enemy and not h.casting.is_empty()), fixed)
 	for h in list:
 		if not h.move.gliding:
 			Mover.resolve_terrain(h, grid, h is Enemy and (h as Enemy).airborne(now))

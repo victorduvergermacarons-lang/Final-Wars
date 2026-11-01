@@ -10,7 +10,7 @@
 
 [sub_resource type="Resource" id="Resource_stats"]
 script = ExtResource("3_stats")
-hp = 800.0
+hp = 1100.0
 phys_atk = 16.0
 phys_def = 18.0
 mag_def = 22.0
@@ -21,6 +21,7 @@ jump = 2.0
 script = ExtResource("2_enemy")
 move_speed = 2.1
 collider_radius = 0.45
+party_hp_per_hero = 0.45
 id = &"foreman"
 display_name = "The Foreman"
 level = 10

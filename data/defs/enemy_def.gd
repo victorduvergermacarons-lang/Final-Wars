@@ -43,6 +43,10 @@ enum Behavior {
 @export var immobile: bool = false
 ## A dungeon boss: scales with the party like any enemy, although elite.
 @export var dungeon_boss: bool = false
+## Extra max HP per hero beyond the first, for this enemy only (a boss built for
+## groups grows less than the rule, since a party's damage doesn't grow as fast as
+## its size); < 0 = CombatRules.party_hp_per_extra_hero.
+@export var party_hp_per_hero: float = -1.0
 ## Placeholder look until it has art.
 enum Look { DIAMOND, CRYSTAL }
 @export var look: Look = Look.DIAMOND

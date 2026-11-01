@@ -90,7 +90,7 @@ func set_party_size(heroes: int, rules: CombatRules) -> void:
 		return
 	var share := hp / maxf(stats.hp, 1.0)
 	party_size = n
-	stats.hp = roundf(def.stats.hp * rules.party_hp_multiplier(n))
+	stats.hp = roundf(def.stats.hp * rules.party_hp_multiplier(n, def.party_hp_per_hero))
 	damage_scale = rules.party_damage_multiplier(n)
 	if alive:
 		hp = maxf(roundf(stats.hp * share), 1.0)
