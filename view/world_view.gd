@@ -354,9 +354,20 @@ func _draw() -> void:
 		if not actors_by_tile.has(t):
 			actors_by_tile[t] = []
 		actors_by_tile[t].append(a)
+		var other: Vector2i
+		if a.move.free and not a.move.gliding:
+			# Drawn with a tile in front of the one under it: the tiles of that row
+			# in front of its own tile (a wall beside it) must still cover it.
+			other = MoveState.tile_of(a.move.position_at(t_now))
+			if other == t:
+				continue
+			for q in [other + Vector2i(1, 0), other + Vector2i(0, 1)]:
+				if q != t and Iso.depth(q) == Iso.depth(t):
+					_must_follow(after, q, t)
+			continue
 		if not a.move.is_moving(t_now) or a.move.from_tile == a.move.to_tile:
 			continue
-		var other: Vector2i = a.move.from_tile if t == a.move.to_tile else a.move.to_tile
+		other = a.move.from_tile if t == a.move.to_tile else a.move.to_tile
 		if Iso.depth(other) == Iso.depth(t):
 			_must_follow(after, t, other) # a sideways push: both tiles go under it
 		else:
@@ -468,6 +479,8 @@ func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary
 ## it, in front of where it is heading) still hides it. Ties: sideways pushes.
 func _draw_anchor(a: Actor) -> Vector2i:
 	var m := a.move
+	if m.free and not m.gliding:
+		return _free_anchor(a)
 	if not m.is_moving(session.render_time()) or m.from_tile == m.to_tile:
 		return m.to_tile
 	var df := Iso.depth(m.from_tile)
@@ -475,6 +488,23 @@ func _draw_anchor(a: Actor) -> Vector2i:
 	if df != dt:
 		return m.from_tile if df > dt else m.to_tile
 	return m.to_tile
+
+
+## A free mover (moving or standing) is drawn with the frontmost tile its body
+## reaches into that isn't higher than its feet, so flat ground in front of it never
+## covers it; higher tiles in front (walls, cliffs) still do.
+func _free_anchor(a: Actor) -> Vector2i:
+	var grid: GridModel = session.grid()
+	var p: Vector2 = a.move.position_at(session.render_time())
+	var base := MoveState.tile_of(p)
+	var feet := grid.height_at(base) if grid.in_bounds(base) else 0
+	var best := base
+	var r := a.move.radius
+	for off in [Vector2(r, 0), Vector2(0, r), Vector2(r, r) * 0.7071]:
+		var t := MoveState.tile_of(p + off)
+		if t != base and grid.in_bounds(t) and grid.height_at(t) <= feet and Iso.depth(t) > Iso.depth(best):
+			best = t
+	return best
 
 
 ## Draws a tile on `canvas` (this view, or a terrain chunk); with `clip`, only
