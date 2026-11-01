@@ -11,18 +11,11 @@ func before_each() -> void:
 	cd = Cooldowns.new()
 
 
-func test_out_of_combat_has_no_step_cooldown_only_walk_time() -> void:
+func test_a_glide_is_moving_until_it_arrives() -> void:
+	# Free movement has no step cooldown; glides (forced moves) last their time.
 	move.begin(Vector2i(3, 2), 0.0, WALK)
-	cd.trigger_step(0.0, 5.0) # a leftover combat step cooldown must not matter
-	assert_false(move.can_start_step(false, cd, 0.2), "still walking")
-	assert_true(move.can_start_step(false, cd, 0.25), "arrived: step again immediately")
-
-
-func test_in_combat_needs_arrival_and_step_cooldown() -> void:
-	move.begin(Vector2i(3, 2), 0.0, WALK)
-	cd.trigger_step(0.0, 0.5)
-	assert_false(move.can_start_step(true, cd, 0.3), "arrived but step cooldown running")
-	assert_true(move.can_start_step(true, cd, 0.5))
+	assert_true(move.is_moving(0.2), "still gliding")
+	assert_false(move.is_moving(0.25), "arrived")
 
 
 func test_consecutive_steps_chain_tiles() -> void:

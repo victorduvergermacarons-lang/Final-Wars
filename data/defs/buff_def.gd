@@ -36,10 +36,8 @@ extends Resource
 ## Limits damage_dealt_multiplier (and charge use) to one ability tree ("" = all).
 @export var affects_tree: String = ""
 ## Uses before it ends (0 = lasts its whole duration): each qualifying ability
-## cast (Kindle: next 3 fire abilities), or each step for free_steps (Air Step).
+## cast (Kindle: next 3 fire abilities).
 @export var charges: int = 0
-## Steps cost no step cooldown while it lasts (uses a charge per step).
-@export var free_steps: bool = false
 ## Ground zones the bearer makes last this many seconds longer (Molten Fury).
 @export var zone_seconds_bonus: float = 0.0
 

@@ -266,7 +266,7 @@ static func bot_turn(world: WorldSim, content, heroes: Array[Hero], specs: Array
 			hurt.sort_custom(func(a, b): return a.hp / a.stats.hp < b.hp / b.stats.hp)
 			world.submit(h.id, {"type": "cast", "ability": StringName(spec.heal), "target": hurt[0].id})
 		# "dodge": step directly away from an enemy winding up at you.
-		if spec.get("dodge", false) and h.cooldowns.can_step(world.now):
+		if spec.get("dodge", false) and h.walk_target == null:
 			var dodged := false
 			for e in foes:
 				if e.casting.get("kind", "") == "windup" and (e.casting.get("target", -1) == h.id \

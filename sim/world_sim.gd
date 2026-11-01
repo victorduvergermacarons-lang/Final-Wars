@@ -326,6 +326,7 @@ func step() -> Array[Dictionary]:
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
 	_move_enemies()
+	_move_walking_npcs()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].move.update_glide(now)
 	_separate_units()
@@ -436,6 +437,17 @@ func _move_enemies() -> void:
 			enemy.face_angle(m.vel.angle())
 		if enemy.tile() != before and enemy.state == Enemy.State.COMBAT and enemy.def.trail_ability != null:
 			_leave_trail(enemy, before)
+
+
+## Escorted NPCs walk their route like enemies do (Navigator + Mover).
+func _move_walking_npcs() -> void:
+	for id in _sorted(_npcs):
+		var npc: Npc = _npcs[id]
+		if not npc.move.free or not npc.alive:
+			continue
+		Mover.step(npc, Navigator.follow(npc), rules.tick_seconds, grid, rules, now)
+		if npc.move.vel.length() > 0.3:
+			npc.face_angle(npc.move.vel.angle())
 
 
 ## Wish toward the hero's walk target; arrives (and stops) when within this tick's reach.
@@ -676,45 +688,6 @@ func _record(e: Dictionary) -> void:
 
 
 # --- Shared actions (used by intents and EnemyBrain) -----------------------------
-
-## Starts a step if every rule allows it. Returns "" or a rejection reason.
-## `walk_seconds` overrides the walk time (enemy patrols); < 0 = the rules' value.
-func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
-	if not actor.alive:
-		return "dead"
-	var from := actor.tile()
-	if GridModel.distance(from, to) != 1:
-		return "not_adjacent"
-	if not can_move(actor, from, to):
-		return "blocked"
-	for t in actor.tiles(to):
-		if is_occupied(t, actor):
-			return "occupied"
-	if actor.buffs.is_rooted(now):
-		return "rooted"
-	if actor.buffs.is_stunned(now):
-		return "asleep" if actor.buffs.is_asleep(now) else "stunned"
-	# An enemy that just aggroed is fighting even before the end-of-tick update.
-	var in_combat := actor.in_combat(now) or (actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT)
-	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
-		return "not_ready"
-	cancel_cast(actor, "moved") # moving cancels anything with a cast bar: cast, channel, wind-up
-	if not actor is Hero:
-		actor.face(to - from) # heroes face the mouse, not where they walk
-	var step_cd := actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now)
-	if walk_seconds < 0.0:
-		walk_seconds = rules.walk_tile_seconds
-		# Animated creatures glide over their whole step in combat, so their run
-		# cycle covers the ground it shows (no sliding feet).
-		if in_combat and actor is Enemy and (actor as Enemy).def.art != null:
-			walk_seconds = step_cd
-	actor.move.begin(to, now, walk_seconds)
-	if in_combat and not actor.buffs.use_free_step(now):
-		actor.cooldowns.trigger_step(now, step_cd)
-	if actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT and (actor as Enemy).def.trail_ability != null:
-		_leave_trail(actor as Enemy, from)
-	return ""
-
 
 ## A fighting enemy with a trail (Ember Trail) leaves it on the tile it just left.
 func _leave_trail(enemy: Enemy, tile: Vector2i) -> void:
@@ -2091,17 +2064,18 @@ func _update_escorts() -> void:
 		var o: QuestObjective = def.objectives[e.objective]
 		var goal: Vector2i = o.path[e.next]
 		var last: bool = e.next == o.path.size() - 1
-		var d := GridModel.distance(npc.tile(), goal)
-		if not npc.move.is_moving(now) and (d == 0 or (d == 1 and (not last or is_occupied(goal, npc)))):
+		var d := npc.move.pos.distance_to(Vector2(goal))
+		if d <= Navigator.REACHED + 0.05 or (d <= 1.2 and (not last or is_occupied(goal, npc))):
 			e.next += 1
 			if e.next >= o.path.size():
+				Navigator.stop(npc)
 				_escort_arrived(npc, def, e)
 			continue
-		if npc.move.is_moving(now) or not _escort_has_company(npc, def):
-			continue # waits for the party
-		var path := path_for(npc, goal, occupied_tiles(npc), 512)
-		if path.size() >= 2:
-			try_step(npc, path[1], ESCORT_STEP_SECONDS)
+		if not _escort_has_company(npc, def):
+			Navigator.stop(npc) # waits for the party
+			continue
+		npc.move.free = true
+		Navigator.go(self, npc, goal, (1.0 / ESCORT_STEP_SECONDS) / npc.base_move_speed(rules), 0.0, Callable(), 512)
 
 
 ## Whether a living party member on the escort's quest is close enough to follow.
@@ -2141,6 +2115,8 @@ func _escort_died(npc: Npc) -> void:
 
 func _end_escort(npc: Npc) -> void:
 	_escorts.erase(npc.id)
+	Navigator.stop(npc)
+	npc.move.free = false
 	npc.reset_home()
 	if is_occupied(npc.home_tile, npc):
 		npc.move.place(find_free_tile_near(npc.home_tile))

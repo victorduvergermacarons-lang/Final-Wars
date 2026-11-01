@@ -20,7 +20,8 @@ enum Behavior {
 @export var aggro_radius: int = 4
 ## Distance from its spawn point at which it gives up and walks home.
 @export var leash_radius: int = 10
-## Seconds per tile while in combat. 0 = use the Speed stat like heroes do.
+## Unused since free movement (the old seconds per tile in combat; `move_speed`
+## replaced it). Kept so older content files load.
 @export var combat_step_seconds: float = 0.0
 ## How far behind reality this enemy perceives heroes' positions (seconds), for
 ## aggro, chasing and aiming. Lets a hero sidestep an attack. 0 = no delay.

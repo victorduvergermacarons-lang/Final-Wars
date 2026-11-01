@@ -77,12 +77,6 @@ func base_move_speed(rules: CombatRules) -> float:
 	return def.move_speed if def.move_speed > 0.0 else rules.movement.walk_speed
 
 
-func combat_step_cooldown(rules: CombatRules, now: float) -> float:
-	if def.combat_step_seconds > 0.0:
-		return def.combat_step_seconds
-	return super(rules, now)
-
-
 ## Whether it grows with the party (elites are built for groups; dummies never change).
 func scales_with_party() -> bool:
 	return (not def.elite or def.dungeon_boss) and not def.training_dummy

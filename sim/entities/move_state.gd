@@ -218,12 +218,6 @@ func height_at_time(t: float) -> float:
 	return lerpf(prev_draw_h, draw_h, clampf((t - time) / span, 0.0, 1.0))
 
 
-func can_start_step(in_combat: bool, cooldowns: Cooldowns, now: float) -> bool:
-	if is_moving(now):
-		return false
-	return cooldowns.can_step(now) if in_combat else true
-
-
 func to_dict() -> Dictionary:
 	var d := {"pos": pos, "vel": vel, "z": z, "vz": vz, "g": ground_h, "ff": fall_from, "h": draw_h,
 			"free": free, "r": radius, "odo": odometer}

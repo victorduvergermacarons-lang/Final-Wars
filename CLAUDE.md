@@ -787,6 +787,37 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     across ledges. Screenshots `fm5`–`fm7` in `tests/visual/free_move_shots.tscn`.
   - Balance targets the new shapes moved (dodging wind-ups, the hammer alone vs a
     Wolf, the drake vs a level-7 group) are pending until phase 6.
+- **Phase 5 (done): enemies move freely and attack with hitboxes.**
+  - **Navigation** (`Navigator`): A* over the tile graph (the same height, ramp, cliff,
+    large-body and flight rules as before; no squeezing past corners), string-pulled
+    into straight runs, then followed with the heroes' `Mover` (acceleration,
+    collisions, falls). A brain calls `Navigator.go` with a goal tile; it searches
+    again when the goal changes, every 0.5 s, or when the path runs out.
+  - **Speeds** (`EnemyDef.move_speed`, tiles/s): Salamander Hound 3.5, Fen Skirmisher
+    3.4, Wolf 3.25, Iron Wolf 3.1, Boar 2.8, Goblin Shaman and Grizzlehide 2.7, Sunscale
+    Drake 2.5, Foreman 2.1, Husks and the Overseer 1.85, Bandit Brute 1.7 (heroes 3).
+    Patrols walk at `EnemyBrain.patrol_pace`. **Colliders** (`collider_radius`):
+    wolves, hounds, boars 0.35; Shaman and Skirmisher 0.3; Brute, Husks, Overseer,
+    Grizzlehide, Foreman 0.45; the drake 1.35; the Grey Heart 0.6. Free movers push
+    each other apart by weight.
+  - **Attacks** (hitboxes in each ability's .tres, aimed where the enemy saw its target
+    `reaction_seconds` ago; reach checked in continuous space, `EnemyBrain.reaches`):
+    bites, rakes, slashes and swipes are cones (70–120°, 1.2–1.8 tiles; the drake's
+    rake 2.7 and breath 5.3 from its centre); Shadow Bolt a projectile; Grizzlehide's,
+    the boar's and the Foreman's charges are dashes with a telegraphed lane; Cinder
+    Pounce a leap onto a circle beside its prey; the Foreman's Ground Slam a circle of
+    1.5 at the target, telegraphed 1.0 s (was 1.8 s). The drake's Searing Dive stays on
+    its tile lane (`CHARGE_THROUGH`), and Ember Trail on the tiles the hound leaves.
+  - Escorted NPCs walk their route the same way (0.7 s per tile, 1.43 tiles/s).
+  - **Removed:** tile stepping for everyone (`WorldSim.try_step`, step cooldowns, the
+    "free steps" buff field). `combat_step_seconds` and `walk_tile_seconds` stay in
+    the data files unused; `combat_step_base_seconds / combat_step_min_seconds` caps
+    how much the Speed stat can raise walking speed (×3).
+  - Dodge warnings (debug builds, at load) now compare against the time to move a tile
+    plus the reaction time (0.63 s); most enemy wind-ups (0.3–0.6 s) are under it, to
+    be tuned in phase 6.
+  - Network check: Guest3 spawns a Bandit Brute and runs out of its telegraphed swipe
+    over the network (also with `NETCHECK_DELAY=0.1`).
 
 ## Enemy Testing Grounds (2026-10-20)
 

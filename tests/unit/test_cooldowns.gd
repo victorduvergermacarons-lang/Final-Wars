@@ -19,7 +19,6 @@ func before_each() -> void:
 
 func test_everything_ready_initially() -> void:
 	assert_true(cd.can_use(_ability(&"fireball", 8.0), 0.0))
-	assert_true(cd.can_step(0.0))
 	assert_eq(cd.gcd_remaining(0.0), 0.0)
 
 
@@ -67,12 +66,6 @@ func test_fractions_for_ui_sweeps() -> void:
 	assert_eq(cd.ability_fraction(&"unknown", 0.0), 0.0)
 
 
-func test_step_cooldown() -> void:
-	cd.trigger_step(3.0, 0.4)
-	assert_false(cd.can_step(3.2))
-	assert_true(cd.can_step(3.4))
-
-
 func test_accumulated_tick_time_reaches_ready() -> void:
 	var a := _ability(&"a", 1.0)
 	cd.trigger(a, 0.0, GCD)
@@ -84,8 +77,6 @@ func test_accumulated_tick_time_reaches_ready() -> void:
 
 func test_dict_round_trip() -> void:
 	cd.trigger(_ability(&"fireball", 8.0), 1.0, GCD)
-	cd.trigger_step(1.0, 0.5)
 	var copy := Cooldowns.from_dict(cd.to_dict())
 	assert_almost_eq(copy.ability_remaining(&"fireball", 3.0), 6.0, 0.0001)
 	assert_almost_eq(copy.gcd_remaining(1.5), 0.5, 0.0001)
-	assert_almost_eq(copy.step_remaining(1.25), 0.25, 0.0001)

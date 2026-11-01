@@ -115,12 +115,17 @@ func test_its_body_is_a_plus_of_five_tiles() -> void:
 	assert_eq(AbilityResolver._actor_at(world.ctx, Vector2i(10, 11)), d)
 	# A hero can't step into its body.
 	hero.move.place(Vector2i(10, 12))
-	assert_ne(world.try_step(hero, Vector2i(10, 11)), "")
+	world.submit(hero.id, {"type": "step", "to": Vector2i(10, 11)})
+	world.advance(0.6)
+	assert_gte(hero.move.pos.distance_to(d.move.pos), hero.move.radius + d.move.radius - 0.05, "pushed out of its body")
 	# It rakes a hero standing beside an arm.
 	var raker := _drake_with(&"talon_rake", Vector2i(10, 4))
 	hero.move.place(Vector2i(12, 4))
-	world.step()
-	assert_eq(raker.casting.get("ability").id, &"talon_rake")
+	var raked := false
+	for i in 12: # it sees the hero 0.3 s late (reaction)
+		world.step()
+		raked = raked or (not raker.casting.is_empty() and raker.casting.ability.id == &"talon_rake")
+	assert_true(raked, "rakes a hero beside its body")
 
 
 func test_its_body_needs_room_to_move() -> void:

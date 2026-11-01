@@ -24,7 +24,7 @@ static func speed_of(actor: Actor, rules: CombatRules, now: float) -> float:
 	var s := actor.base_move_speed(rules)
 	if actor.in_combat(now):
 		s *= md.combat_speed_factor
-	var stat := actor.current_stats(now).speed
+	var stat := maxf(actor.current_stats(now).speed, 0.0)
 	s *= clampf((rules.speed_half_point + stat) / rules.speed_half_point, 0.25,
 			rules.combat_step_base_seconds / rules.combat_step_min_seconds)
 	var mult := actor.buffs.step_multiplier(now)

@@ -186,6 +186,8 @@ func _run_join(port: int, players: int, index: int) -> void:
 	if index >= 2 and not await _wait_until(func(): return QuestLog.is_active(hero, QUEST)):
 		_finish(false, "%s: never joined the host's quest" % me)
 		return
+	if index == 3 and not await _dodge(session, hero, me):
+		return
 	for other in session.actors():
 		if other is Hero and other.id != hero.id and not other.bag.slots.all(func(s): return s == null):
 			_finish(false, "%s: received another player's bag" % me)
@@ -233,4 +235,41 @@ func _run_join(port: int, players: int, index: int) -> void:
 		_finish(false, "%s: save from the joined client is incomplete" % me)
 		return
 	game.store.delete(me)
-	_finish(true, "%s: walked 8 directions and on (%s -> %s), prediction within %.2f tiles of the host%s, sees %d heroes, saved its own hero" % [me, start, hero.tile(), predicted_error[0], " (%d ms delay)" % roundi(session.send_delay * 1000.0) if session.send_delay > 0.0 else "", players])
+	_finish(true, "%s: walked 8 directions and on (%s -> %s), prediction within %.2f tiles of the host%s, sees %d heroes, saved its own hero%s" % [me, start, hero.tile(), predicted_error[0], " (%d ms delay)" % roundi(session.send_delay * 1000.0) if session.send_delay > 0.0 else "", players, ", dodged a Bandit Brute's telegraphed swipe" if _dodged else ""])
+
+
+var _dodged := false
+
+
+## Free movement: a Bandit Brute (spawned beside us with the debug console) winds
+## up its telegraphed swipe; we run straight away over the network and it misses.
+func _dodge(session: ClientSession, hero: Hero, me: String) -> bool:
+	var windup := [-1]
+	var hit := [false]
+	session.events_received.connect(func(events):
+		for e in events:
+			if e.type == "cast_start" and e.get("kind", "") == "windup" and e.get("ability", &"") == &"crushing_blow":
+				windup[0] = e.source
+			if e.type == "damage" and e.target == hero.id and e.get("ability", &"") == &"crushing_blow":
+				hit[0] = true)
+	session.send_intent({"type": "debug", "line": "spawn bandit_brute 1 1"})
+	if not await _wait_until(func(): return windup[0] >= 0):
+		_finish(false, "%s: no brute ever wound up a swipe at us" % me)
+		return false
+	var brute: Actor = session.get_actor(windup[0])
+	var away: Vector2 = (hero.move.pos - brute.move.pos).normalized()
+	var best := Vector2i.ZERO
+	for dir in [Vector2i(0, -1), Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 1),
+			Vector2i(-1, 1), Vector2i(-1, 0), Vector2i(-1, -1)]:
+		if best == Vector2i.ZERO or Mover.screen_to_grid(dir).dot(away) > Mover.screen_to_grid(best).dot(away):
+			best = dir
+	for i in 24: # 1.2 s: out of the swipe, then out of reach of a slow brute
+		session.send_intent({"type": "move", "dir": best, "face": 0.0})
+		await get_tree().create_timer(0.05).timeout
+	session.send_intent({"type": "move", "dir": Vector2i.ZERO, "face": 0.0})
+	await get_tree().create_timer(0.3).timeout
+	if hit[0]:
+		_finish(false, "%s: ran from the telegraphed swipe but was hit" % me)
+		return false
+	_dodged = true
+	return true

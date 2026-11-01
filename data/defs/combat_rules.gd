@@ -21,14 +21,13 @@ enum GrowthLimit {
 @export_group("Movement")
 ## Free movement: speeds, acceleration, collisions, falls (content/rules/movement.tres).
 @export var movement: MovementDef = MovementDef.new()
-## Free movement replaced stepping for heroes (see `movement`). This is the time
-## a unit still stepping tile to tile (enemies and NPCs, until they move freely)
-## takes for a tile out of combat, about a hero's time at walk speed with its
-## acceleration (1 / 3 tiles/s + 0.07 s).
+## Unused since free movement (every unit moves with `movement`); kept so older
+## rules files load.
 @export var walk_tile_seconds: float = 0.4
-## In-combat step cooldown at 0 Speed.
+## The Speed stat's cap on walking speed: at most base / min times the base pace
+## (Mover.speed_of; 1.5 / 0.5 = ×3). Named after the old step cooldowns.
 @export var combat_step_base_seconds: float = 1.5
-## Speed can never push the in-combat step cooldown below this.
+## See combat_step_base_seconds.
 @export var combat_step_min_seconds: float = 0.5
 ## Speed at which the step cooldown is halved (before the floor applies).
 @export var speed_half_point: float = 100.0
