@@ -55,6 +55,15 @@ func tile() -> Vector2i:
 ## through any of them.
 var footprint: Array[Vector2i] = [Vector2i.ZERO]
 
+## Free-movement navigation (Navigator): smoothed waypoints still to walk, the goal
+## tile they lead to, when to search again, the pace (0..1 of full speed) and how
+## far short of the last waypoint to stop.
+var nav_path: Array[Vector2] = []
+var nav_goal := Vector2i(-9999, -9999)
+var nav_replan_at := 0.0
+var nav_pace := 1.0
+var nav_stop_short := 0.0
+
 
 func is_large() -> bool:
 	return footprint.size() > 1

@@ -325,6 +325,7 @@ func step() -> Array[Dictionary]:
 	_update_party_scale()
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
+	_move_enemies()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].move.update_glide(now)
 	_separate_units()
@@ -406,6 +407,37 @@ func _move_heroes() -> void:
 			hero.face_angle(m.vel.angle())
 
 
+## Moves every free-moving enemy along its path (Navigator) with the heroes'
+## Mover: acceleration, collisions, height rules, flight, falls. Facing follows its
+## movement (attacks turn it toward the target). A fighting enemy with a trail
+## (Ember Trail) leaves it on each tile it leaves.
+func _move_enemies() -> void:
+	var dt := rules.tick_seconds
+	for enemy in enemies():
+		var m := enemy.move
+		if not m.free:
+			continue
+		if not enemy.alive:
+			m.vel = Vector2.ZERO
+			Navigator.stop(enemy)
+			continue
+		var wish := Vector2.ZERO
+		if enemy.casting.is_empty() and now >= enemy.busy_until:
+			wish = Navigator.follow(enemy)
+		else:
+			m.vel = Vector2.ZERO # planted while it attacks
+		var before := enemy.tile()
+		var r := Mover.step(enemy, wish, dt, grid, rules, now, enemy.airborne(now))
+		if r.fell:
+			cancel_cast(enemy, "moved")
+		if r.landed > 0:
+			_land(enemy, r.landed)
+		if m.vel.length() > 0.3 and not m.gliding:
+			enemy.face_angle(m.vel.angle())
+		if enemy.tile() != before and enemy.state == Enemy.State.COMBAT and enemy.def.trail_ability != null:
+			_leave_trail(enemy, before)
+
+
 ## Wish toward the hero's walk target; arrives (and stops) when within this tick's reach.
 func _walk_wish(hero: Hero, dt: float) -> Vector2:
 	var m := hero.move
@@ -463,20 +495,25 @@ func _check_edge(hero: Hero, wish: Vector2) -> void:
 		return
 
 
-## Units don't overlap: heroes push each other apart (the lighter more) and are
-## pushed out of enemies and NPCs (which still step tile to tile), then out of walls.
+## Units don't overlap: free movers (heroes, enemies) push each other apart (the
+## lighter more) and are pushed out of everything else (NPCs, immobile enemies,
+## gliding units), then out of walls.
 func _separate_units() -> void:
-	var list := heroes().filter(func(h): return h.alive)
+	var list: Array[Actor] = []
+	for id in _sorted(ctx.actors):
+		var a: Actor = ctx.actors[id]
+		if a.alive and a.move.free:
+			list.append(a)
 	for h in list:
 		for id in _sorted(ctx.actors):
 			var other: Actor = ctx.actors[id]
-			if other == h or not other.alive or (other is Hero and other.id < h.id):
+			if other == h or not other.alive or (other.move.free and other.id < h.id):
 				continue
-			var fixed: bool = not (other is Hero) or other.move.gliding
+			var fixed: bool = not other.move.free or other.move.gliding
 			Mover.separate_pair(h, other, h.move.gliding, fixed)
 	for h in list:
 		if not h.move.gliding:
-			Mover.resolve_terrain(h, grid)
+			Mover.resolve_terrain(h, grid, h is Enemy and (h as Enemy).airborne(now))
 
 
 # --- Dungeons: party wipes ---------------------------------------------------------
@@ -771,7 +808,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 		caster.casting.next_input = 0
 	# A wound-up swipe or lob shows the tiles it will hit (dodge by leaving them).
 	if kind == "windup" and ability.targeting == AbilityDef.TargetingMode.SKILLSHOT and point != null \
-			and ability.projectile_speed <= 0.0:
+			and ability.projectile_speed <= 0.0 and not ability.uses_hitbox():
 		caster.casting.tiles = [CastResolver.lob_tile(caster.tile(), point, ability.max_range)] \
 				if ability.arc_seconds > 0.0 else CastResolver.skillshot_tiles(ctx, caster, ability, point)
 	# A wound-up charge (Searing Dive) shows its lane.

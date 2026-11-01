@@ -435,17 +435,16 @@ func test_unequip_into_bag_and_back() -> void:
 
 
 func test_aggroed_enemy_does_not_dart_two_tiles() -> void:
-	enemy_def.combat_step_seconds = 0.8
+	# Free movement: an enemy that aggroes runs at its own speed from the start
+	# (accelerating), never faster.
 	_place(a, Vector2i(6, 1)) # 3 tiles away: aggro
-	var step_times: Array[float] = []
-	var last := enemy.tile()
+	var fastest := 0.0
 	for i in 40: # 2 s
 		world.step()
-		if enemy.tile() != last:
-			step_times.append(world.now)
-			last = enemy.tile()
-	assert_gt(step_times.size(), 1)
-	assert_gte(step_times[1] - step_times[0], 0.8 - 0.001, "second step waits for the step cooldown")
+		fastest = maxf(fastest, enemy.move.vel.length())
+	var top := Mover.speed_of(enemy, world.rules, world.now)
+	assert_gt(fastest, 0.0, "it moved")
+	assert_lte(fastest, top + 0.001, "never faster than its speed")
 
 
 func test_combat_ends_as_soon_as_the_enemy_dies() -> void:

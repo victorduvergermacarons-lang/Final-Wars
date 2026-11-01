@@ -18,6 +18,7 @@ jump = 1.0
 
 [resource]
 script = ExtResource("3_y2exg")
+move_speed = 3.25
 id = &"wolf"
 display_name = "Wolf"
 stats = SubResource("Resource_mp7ym")

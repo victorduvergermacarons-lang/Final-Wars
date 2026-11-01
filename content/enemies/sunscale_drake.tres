@@ -23,6 +23,7 @@ jump = 2.0
 
 [resource]
 script = ExtResource("5_enemy")
+move_speed = 2.5
 id = &"sunscale_drake"
 display_name = "Sunscale Drake"
 level = 6

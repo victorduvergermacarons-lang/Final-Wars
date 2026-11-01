@@ -18,6 +18,8 @@ jump = 2.0
 
 [resource]
 script = ExtResource("5_jpkl3")
+move_speed = 2.7
+collider_radius = 0.45
 id = &"old_grizzlehide"
 display_name = "Old Grizzlehide"
 level = 5

@@ -21,6 +21,7 @@ jump = 2.0
 
 [resource]
 script = ExtResource("4_enemy")
+move_speed = 3.5
 id = &"salamander_hound"
 display_name = "Salamander Hound"
 level = 2

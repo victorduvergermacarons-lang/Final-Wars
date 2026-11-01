@@ -69,6 +69,8 @@ func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.Z
 	home_tile = p_spawn
 	move.place(p_spawn)
 	move.radius = def.collider_radius
+	# Free movement (phase 5): enemies walk like heroes; immobile ones and dummies stand.
+	move.free = not def.immobile and not def.training_dummy
 
 
 func base_move_speed(rules: CombatRules) -> float:
@@ -122,3 +124,4 @@ func reset_at_spawn() -> void:
 	patrol_index = 0
 	cooldowns = Cooldowns.new()
 	move.place(spawn_tile)
+	Navigator.stop(self)

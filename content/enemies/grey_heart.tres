@@ -12,6 +12,7 @@ mag_def = 10.0
 
 [resource]
 script = ExtResource("2_enemy")
+collider_radius = 0.6
 id = &"grey_heart"
 display_name = "The Grey Heart"
 level = 10

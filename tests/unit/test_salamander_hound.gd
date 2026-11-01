@@ -57,21 +57,22 @@ func test_pounce_marks_the_tile_beside_the_hero_then_lands_and_burns() -> void:
 	assert_eq(hound.casting.get("ability").id, &"cinder_pounce", "pounces from 3 tiles")
 	var marks: Array = world.pending_hits()
 	assert_eq(marks.size(), 1, "the landing is telegraphed")
-	var tiles: Array = marks[0].tiles
-	assert_true(tiles.has(Vector2i(3, 10)), "lands beside the hero, on its own side")
-	assert_true(tiles.has(Vector2i(2, 10)), "the hero stands on the mark")
-	assert_eq(tiles.size(), 5, "the landing tile and its four neighbours")
+	var mark: PackedVector2Array = marks[0].outline
+	assert_true(Geometry2D.is_point_in_polygon(Vector2(2.8, 10), mark), "lands beside the hero, on its own side")
+	assert_true(Geometry2D.is_point_in_polygon(hero.move.pos, mark), "the hero stands on the mark")
+	assert_false(Geometry2D.is_point_in_polygon(Vector2(0.6, 10), mark), "a circle around the landing spot")
 	var hp := hero.hp
 	_run(0.65)
 	assert_lt(hero.hp, hp, "burned for staying on the mark")
-	assert_eq(hound.tile(), Vector2i(3, 10), "leapt next to its prey")
+	assert_lt(hound.move.to_point.distance_to(hero.move.pos), 1.0, "leaps next to its prey")
+	assert_gt(hound.move.to_point.x, hero.move.pos.x, "on its own side")
 
 
 func test_stepping_off_the_mark_dodges_the_pounce() -> void:
 	var hound := world.add_enemy(hound_def, Vector2i(5, 10))
 	world.step()
 	assert_eq(hound.casting.get("ability").id, &"cinder_pounce")
-	hero.move.place(Vector2i(2, 11)) # one step sideways: diagonal to the landing tile
+	hero.move.place(Vector2(2, 11.6)) # half a second sideways: off the mark
 	var hp := hero.hp
 	var events := _run(0.65)
 	assert_eq(hero.hp, hp, "no damage off the marker")

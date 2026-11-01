@@ -19,6 +19,7 @@ jump = 1.0
 
 [resource]
 script = ExtResource("3_y2exg")
+move_speed = 3.1
 id = &"iron_wolf"
 display_name = "Iron Wolf"
 level = 3

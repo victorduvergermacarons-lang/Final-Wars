@@ -202,9 +202,9 @@ func test_breath_cone_telegraph_matches_the_damage_and_burns() -> void:
 	assert_eq(d.casting.get("ability").id, &"sunfire_breath")
 	var marks: Array = world.pending_hits()
 	assert_eq(marks.size(), 1, "the cone is outlined on the ground")
-	var cone: Array = marks[0].tiles
-	assert_true(cone.has(hero.tile()) and cone.has(beside.tile()))
-	assert_false(cone.has(outside.tile()))
+	var cone: PackedVector2Array = marks[0].outline
+	assert_true(Geometry2D.is_point_in_polygon(hero.move.pos, cone) and Geometry2D.is_point_in_polygon(beside.move.pos, cone))
+	assert_false(Geometry2D.is_point_in_polygon(outside.move.pos, cone))
 	assert_almost_eq(float(marks[0].at) - world.now, 0.8, 0.06, "for 0.8 s")
 	var events := _run(0.85)
 	assert_gt(_damage_to(events, hero, &"sunfire_breath"), 0.0, "in the cone: burned")
@@ -212,7 +212,7 @@ func test_breath_cone_telegraph_matches_the_damage_and_burns() -> void:
 	assert_eq(_damage_to(events, outside, &"sunfire_breath"), 0.0, "outside: untouched")
 	var zones: Array = world.ground_zones()
 	assert_eq(zones.size(), 1, "the cone keeps burning")
-	assert_eq(Array(zones[0].tiles).size(), cone.size(), "on exactly the cone's tiles")
+	assert_eq(Array(zones[0].tiles), Array(Hitbox.tiles_in(world.grid, cone)), "on exactly the cone's tiles")
 	assert_almost_eq(float(zones[0].until) - world.now, 3.0, 0.1, "for 3 s")
 
 

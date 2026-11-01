@@ -294,6 +294,7 @@ func test_ground_zone_spares_units_that_leave() -> void:
 	world.cast(hero, _zone(3.0), null, Vector2(6, 5))
 	world.advance(1.05)
 	foe.move.place(Vector2i(10, 10))
+	foe.move.free = false # it would walk back to its attacker (into the fire)
 	world.advance(2.1)
 	assert_eq(_lost(foe), 10.0, "only the tick while it stood there")
 

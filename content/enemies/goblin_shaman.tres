@@ -16,6 +16,8 @@ jump = 2.0
 
 [resource]
 script = ExtResource("4_2uifa")
+move_speed = 2.7
+collider_radius = 0.3
 id = &"goblin_shaman"
 display_name = "Goblin Shaman"
 level = 2

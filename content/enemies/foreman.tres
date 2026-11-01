@@ -19,6 +19,8 @@ jump = 2.0
 
 [resource]
 script = ExtResource("2_enemy")
+move_speed = 2.1
+collider_radius = 0.45
 id = &"foreman"
 display_name = "The Foreman"
 level = 10

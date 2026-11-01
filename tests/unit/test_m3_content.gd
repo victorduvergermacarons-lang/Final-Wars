@@ -99,11 +99,12 @@ func test_grizzlehide_charge_is_telegraphed_then_rushes_in() -> void:
 	var charge: AbilityDef = db.abilities[&"charge"]
 	assert_eq(world.cast(bear, charge, null, Vector2(5, 5)), AbilityResolver.Result.OK)
 	var marks := world.pending_hits()
-	assert_eq(marks.size(), 1, "the target tile is telegraphed")
-	assert_eq(marks[0].tiles, [Vector2i(5, 5)])
+	assert_eq(marks.size(), 1, "the charge's lane is telegraphed")
+	assert_true(Geometry2D.is_point_in_polygon(Vector2(5.5, 5), marks[0].outline), "up to the hero")
 	var hp := hero.hp
-	world.advance(1.05)
-	assert_eq(bear.tile(), Vector2i(6, 5), "rushed up next to the hero")
+	world.advance(1.3)
+	assert_almost_eq(bear.move.to_point.distance_to(hero.move.pos), bear.move.radius + hero.move.radius, 0.15,
+			"rushed up next to the hero")
 	assert_lt(hero.hp, hp, "and mauled them")
 
 
@@ -171,11 +172,11 @@ func test_brute_telegraphs_its_swipe_and_can_be_dodged() -> void:
 	assert_eq(brute.casting.get("kind", ""), "windup")
 	var marks := world.pending_hits()
 	assert_eq(marks.size(), 1, "the swipe is telegraphed")
-	var tiles: Array = marks[0].tiles
-	tiles.sort()
-	assert_eq(tiles, [Vector2i(5, 4), Vector2i(5, 5), Vector2i(5, 6)], "the tile in front and the two beside it")
+	var swipe: PackedVector2Array = marks[0].outline
+	assert_true(Geometry2D.is_point_in_polygon(hero.move.pos, swipe), "a wide cone over the hero")
+	assert_true(Geometry2D.is_point_in_polygon(hero.move.pos + Vector2(0, 0.8), swipe), "and beside them")
 	var hp := hero.hp
-	hero.move.place(Vector2i(4, 5)) # step back out of the swipe
+	hero.move.place(Vector2(3.8, 5)) # step back out of the swipe
 	world.advance(0.7)
 	assert_eq(hero.hp, hp, "dodged")
 
@@ -189,14 +190,19 @@ func test_brute_swipe_hits_whoever_stays() -> void:
 	assert_lt(hero.hp, hp)
 
 
-func test_melee_enemies_dont_bite_diagonally() -> void:
-	var wolf := _arena(&"wolf", Vector2i(6, 6), Vector2i(5, 5))
+func test_melee_enemies_close_in_before_biting() -> void:
+	var wolf := _arena(&"wolf", Vector2i(7, 7), Vector2i(5, 5))
 	wolf.threat.add(hero.id, 1.0)
 	wolf.state = Enemy.State.COMBAT
 	world.step()
-	assert_true(wolf.casting.is_empty(), "no bite from a diagonal tile")
-	world.advance(1.0)
-	assert_eq(TileGeometry.range_distance(wolf.tile(), hero.tile()), 1, "it steps beside you first")
+	assert_true(wolf.casting.is_empty(), "no bite from 2.8 tiles")
+	var bit := false
+	for i in 30:
+		for e in world.step():
+			if e.type == "cast_start" and e.get("source", -1) == wolf.id:
+				bit = true
+	assert_lt(wolf.move.pos.distance_to(hero.move.pos), 1.35, "it runs up to you")
+	assert_true(bit, "then bites")
 
 
 func test_wolves_never_move_mid_attack() -> void:

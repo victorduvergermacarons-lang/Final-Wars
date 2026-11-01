@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="AbilityDef" format=3]
 
+[ext_resource type="Script" path="res://data/defs/hitbox_def.gd" id="hb_script"]
 [ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_fx"]
 [ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_sc"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_ab"]
@@ -13,6 +14,12 @@ script = ExtResource("1_fx")
 base_amount = 12.0
 scaling = Array[ExtResource("2_sc")]([SubResource("Resource_s0_0")])
 
+[sub_resource type="Resource" id="Resource_hitbox"]
+script = ExtResource("hb_script")
+shape = 4
+reach = 3.0
+radius = 1.5
+
 [resource]
 script = ExtResource("3_ab")
 id = &"foreman_slam"
@@ -25,5 +32,6 @@ requires_line_of_sight = false
 max_height_difference = 3
 targeting = 3
 area_radius = 1
-telegraph_seconds = 1.8
+telegraph_seconds = 1.0
 effects = Array[ExtResource("1_fx")]([SubResource("Resource_fx0")])
+hitbox = SubResource("Resource_hitbox")
