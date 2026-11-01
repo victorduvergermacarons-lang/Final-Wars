@@ -990,13 +990,21 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 ## [{"source", "ability", "tiles", "at"}].
 func pending_hits() -> Array:
 	var out := _pending_hits.map(func(h): return {"source": h.caster, "ability": h.ability.id,
-			"tiles": h.tiles, "at": h.at})
+			"tiles": h.tiles, "at": h.at, "outline": h.get("outline", PackedVector2Array())})
 	# Wind-ups aimed at the ground (Grizzlehide's Charge) or swipes (Crushing Blow,
 	# Cleave) are telegraphed too.
 	for id in _sorted(ctx.actors):
 		var a: Actor = ctx.actors[id]
 		var c: Dictionary = a.casting
 		if c.is_empty() or c.kind != "windup":
+			continue
+		if c.ability.uses_hitbox() and c.ability.hitbox.is_aimed() or (c.ability.hitbox != null \
+				and c.ability.hitbox.shape == HitboxDef.Shape.SELF_CIRCLE):
+			# A free-movement wind-up shows the shape it will hit, aimed where it was aimed.
+			var point: Vector2 = c.aim if c.aim is Vector2 else (Vector2(c.aim) if c.aim is Vector2i \
+					else (get_actor(c.get("target", -1)).move.pos if get_actor(c.get("target", -1)) != null else a.move.pos + a.facing_vector()))
+			out.append({"source": a.id, "ability": c.ability.id, "tiles": [], "at": c.end,
+					"outline": HitboxResolver.shape_outline(ctx, a, c.ability, point)})
 			continue
 		if c.has("tiles"):
 			out.append({"source": a.id, "ability": c.ability.id, "tiles": c.tiles, "at": c.end})
@@ -1019,7 +1027,14 @@ func _update_pending_hits() -> void:
 		var events: Array[Dictionary] = []
 		ctx.damage_bonus = h.bonus
 		ctx.force_crit = h.get("force_crit", false)
-		CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
+		if h.has("circle"):
+			ctx.continuous = true
+			ctx.cast_point = h.circle[0]
+			ctx.cast_vec = (h.circle[0] - caster.move.pos).normalized() if h.circle[0] != caster.move.pos else Vector2.RIGHT
+			HitboxResolver.hit_circle(ctx, caster, h.ability, h.circle[0], h.circle[1], events)
+			ctx.continuous = false
+		else:
+			CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
 		ctx.damage_bonus = 1.0
 		ctx.force_crit = false
 		_emit_resolved(events)
@@ -1170,6 +1185,10 @@ func _update_projectiles() -> void:
 		var caster := get_actor(p.caster_id)
 		if caster == null:
 			continue
+		if p.continuous:
+			if _fly_continuous(p, caster):
+				flying.append(p)
+			continue
 		if p.ability.targeting != AbilityDef.TargetingMode.LEGACY:
 			if _fly_skillshot(p, caster):
 				flying.append(p)
@@ -1194,6 +1213,56 @@ func _update_projectiles() -> void:
 		else:
 			flying.append(p)
 	_projectiles = flying
+
+
+## Moves a free-movement projectile (a PROJECTILE hitbox) along its line,
+## sweeping its round body over the stretch flown since the last tick; the first
+## unit it touches is hit (all of them if it pierces). A hero counts where it was
+## at any moment of the last skillshot_grace_seconds (network delay forgiven).
+## Returns whether it is still flying.
+func _fly_continuous(p: Projectile, caster: Actor) -> bool:
+	var d1 := minf(p.distance_at(now), p.max_dist)
+	var a := p.from + p.dirv * p.checked_dist
+	var b := p.from + p.dirv * d1
+	var hits: Array = []
+	for id in _sorted(ctx.actors):
+		var u: Actor = ctx.actors[id]
+		if p.hit_ids.has(u.id) or not AbilityShapes.affects(caster, p.ability, u):
+			continue
+		var spots: Array[Vector2] = [u.move.pos]
+		if u is Hero:
+			spots = positions_within(u, rules.skillshot_grace_seconds)
+		for spot in spots:
+			if Hitbox.in_capsule(a, b, p.radius, spot, u.move.radius):
+				hits.append([a.distance_to(Geometry2D.get_closest_point_to_segment(spot, a, b)), u])
+				break
+	hits.sort_custom(func(x, y): return x[0] < y[0])
+	p.checked_dist = d1
+	var events: Array[Dictionary] = []
+	for h in hits:
+		var u: Actor = h[1]
+		p.hit_ids[u.id] = true
+		ctx.damage_bonus = p.damage_bonus
+		ctx.force_crit = p.force_crit
+		ctx.continuous = true
+		ctx.cast_vec = p.dirv
+		ctx.cast_point = p.from + p.dirv * p.max_dist
+		AbilityResolver.apply_effects(ctx, caster, p.ability, u, events)
+		ctx.continuous = false
+		ctx.damage_bonus = 1.0
+		ctx.force_crit = false
+		if not p.pierce:
+			emit({"type": "projectile_end", "id": p.id, "tile": u.tile(), "target": u.id})
+			_emit_resolved(events)
+			_credit_mastery(caster, p.ability, events)
+			return false
+	if not events.is_empty():
+		_emit_resolved(events)
+		_credit_mastery(caster, p.ability, events)
+	if p.is_spent(now):
+		emit({"type": "projectile_end", "id": p.id, "tile": MoveState.tile_of(b), "target": -1})
+		return false
+	return true
 
 
 ## Moves a Milestone 3 projectile; returns whether it is still flying.

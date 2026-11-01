@@ -379,6 +379,7 @@ func _draw() -> void:
 					_draw_actor(a)
 	else:
 		_draw_over_cache(grid, actors_by_tile, after, quest_areas, marks)
+	_draw_outlines(grid)
 	_draw_projectiles(grid)
 	_draw_flames(grid)
 	_draw_landmarks(grid)
@@ -818,11 +819,51 @@ func _draw_cast_bar(a: Actor, feet: Vector2, now: float) -> void:
 		_draw_label(feet + Vector2(0, 22), ability.display_name, color, 10)
 
 
+## Hitbox shapes on the ground (free movement): enemy telegraphs in red, brighter
+## as they land, then the local player's aim (blue, red when it can't be cast).
+func _draw_outlines(grid: GridModel) -> void:
+	var now: float = session.now()
+	for h in session.telegraphs():
+		var poly: PackedVector2Array = h.get("outline", PackedVector2Array())
+		if poly.size() >= 3:
+			var left := clampf(float(h.at) - now, 0.0, 1.5)
+			var a := 0.45 - 0.2 * left / 1.5 + 0.08 * sin(_pulse_ms() / 80.0)
+			_draw_ground_poly(grid, poly, Color(TELEGRAPH_COLOR, a))
+	if client != null and not client.aim.is_empty():
+		var poly: PackedVector2Array = client.aim.get("outline", PackedVector2Array())
+		if poly.size() >= 3:
+			_draw_ground_poly(grid, poly, AIM_COLOR if client.aim.valid else AIM_BAD_COLOR)
+
+
+## A grid-space polygon drawn on the ground, each corner at the height of the tile
+## under it.
+func _draw_ground_poly(grid: GridModel, poly: PackedVector2Array, color: Color) -> void:
+	var pts := PackedVector2Array()
+	for q in poly:
+		pts.append(Iso.to_screen(q, grid.height_at(MoveState.tile_of(q))))
+	var fill := Color(color, color.a * 0.45)
+	if Geometry2D.triangulate_polygon(pts).size() > 0:
+		draw_colored_polygon(pts, fill)
+	pts.append(pts[0])
+	draw_polyline(pts, Color(0.05, 0.05, 0.1, 0.6), 3.0)
+	draw_polyline(pts, Color(color.lightened(0.25), minf(color.a + 0.4, 1.0)), 1.5)
+
+
 ## Projectiles: a glowing ball moving along its path at the origin's height.
 ## Heroes' are orange, enemies' purple.
 func _draw_projectiles(grid: GridModel) -> void:
 	var t: float = session.render_time()
 	for p in session.projectiles():
+		if p.has("from"):
+			# Free movement: from its start point along its direction.
+			var at: Vector2 = p.from + p.dirv * clampf((t - p.start) * p.speed, 0.0, p.length)
+			var sp := Iso.to_screen(at, grid.height_at(Vector2i(p.origin))) + Vector2(0, -16)
+			if session.get_actor(p.source) is Enemy:
+				draw_circle(sp, 8, Color(0.6, 0.2, 0.9, 0.5))
+				draw_circle(sp, 5, Color(0.85, 0.6, 1.0))
+			else:
+				_draw_fireball(sp)
+			continue
 		# Straight from where it was cast toward the end of its path (any angle).
 		var dist := clampf((t - p.start) * p.speed, 0.0, p.length + 0.5)
 		var origin := Vector2(p.origin)

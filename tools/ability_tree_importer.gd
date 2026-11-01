@@ -23,6 +23,18 @@ const TIMING_STATUS := {"Manual": "manual", "Generated (AI, not yet confirmed)":
 	"Not implemented": "none", "": "none"}
 ## Timing Zones kinds -> the data file's zone lists.
 const ZONE_KINDS := {"tap": "taps", "crit": "crits", "hold": "holds"}
+## Hitbox columns (free movement; see the "Hitbox Rules" note on the Timing Rules
+## tab). Absent or empty Hitbox Shape: no hitbox (the old tile shapes).
+const HITBOX_COLUMNS := ["Hitbox Shape", "Hitbox Range", "Hitbox Angle", "Hitbox Width", "Hitbox Radius",
+	"Projectile Speed", "Projectile Size", "Pierce"]
+## Which values each shape needs.
+const HITBOX_NEEDS := {"None": [], "Targeted": ["Hitbox Range"], "Cone": ["Hitbox Range", "Hitbox Angle"],
+	"Line": ["Hitbox Range", "Hitbox Width"], "Circle": ["Hitbox Range", "Hitbox Radius"],
+	"Projectile": ["Hitbox Range", "Projectile Speed", "Projectile Size"], "Lob": ["Hitbox Range", "Hitbox Radius"],
+	"Self Circle": ["Hitbox Radius"], "Dash": ["Hitbox Range", "Hitbox Width"], "Leap": ["Hitbox Range"],
+	"Blink": ["Hitbox Range"], "Tiles": ["Hitbox Range"]}
+const HITBOX_KEYS := {"Hitbox Range": "range", "Hitbox Angle": "angle", "Hitbox Width": "width",
+	"Hitbox Radius": "radius", "Projectile Speed": "speed", "Projectile Size": "size"}
 ## Optional numeric columns the designer may add later (decision M3-1).
 const OPTIONAL_NUMBERS := {"Base": "base", "Mana Cost": "mana_cost", "Range": "range",
 	"Duration": "duration"}
@@ -138,9 +150,12 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 		var timing := _timing(cell, col, where, errors, warnings)
 		if not timing.is_empty():
 			a.timing = timing
+		var hitbox := _hitbox(cell, col, where, errors)
+		if not hitbox.is_empty():
+			a.hitbox = hitbox
 		var extra := {}
 		for h in col:
-			if not REQUIRED_COLUMNS.has(h) and not TIMING_COLUMNS.has(h):
+			if not REQUIRED_COLUMNS.has(h) and not TIMING_COLUMNS.has(h) and not HITBOX_COLUMNS.has(h):
 				var v: String = cell.call(h)
 				if OPTIONAL_NUMBERS.has(h):
 					if v != "":
@@ -357,6 +372,39 @@ static func _timing(cell: Callable, col: Dictionary, where: String, errors: Pack
 			errors.append("%s: input zones overlap (%s–%s and %s–%s); each input needs its own time" % [where,
 					inputs[i - 1][0], inputs[i - 1][0] + inputs[i - 1][1], inputs[i][0], inputs[i][0] + inputs[i][1]])
 	return t
+
+
+## {"shape", "range", "angle", ... "pierce"} from the Hitbox columns; {} when the
+## row has no Hitbox Shape. Checks the shape's name, the values it needs, and that
+## no value is negative.
+static func _hitbox(cell: Callable, col: Dictionary, where: String, errors: PackedStringArray) -> Dictionary:
+	var read := func(name: String) -> String: return cell.call(name) if col.has(name) else ""
+	var shape: String = read.call("Hitbox Shape")
+	if shape == "":
+		for name in HITBOX_COLUMNS:
+			if read.call(name) != "":
+				errors.append("%s: %s but no Hitbox Shape" % [where, name])
+				break
+		return {}
+	if not HITBOX_NEEDS.has(shape):
+		errors.append("%s: Hitbox Shape \"%s\" isn't one of %s" % [where, shape, ", ".join(HITBOX_NEEDS.keys())])
+		return {}
+	var h := {"shape": shape}
+	for name in HITBOX_KEYS:
+		var v: String = read.call(name)
+		if v == "":
+			if HITBOX_NEEDS[shape].has(name):
+				errors.append("%s: Hitbox Shape %s needs %s" % [where, shape, name])
+			continue
+		var n := _number(v, where, name, errors)
+		if n < 0.0:
+			errors.append("%s: %s is negative" % [where, name])
+		h[HITBOX_KEYS[name]] = n
+	var pierce: String = read.call("Pierce")
+	if pierce not in ["", "Yes", "No"]:
+		errors.append("%s: Pierce \"%s\" isn't Yes or No" % [where, pierce])
+	h.pierce = pierce == "Yes"
+	return h
 
 
 static func _rules(table: Array) -> Array:

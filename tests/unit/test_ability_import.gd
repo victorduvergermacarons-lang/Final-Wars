@@ -178,3 +178,41 @@ func test_game_loads_the_trees() -> void:
 	assert_eq(tree.ids("Hammer").size(), 20)
 	assert_eq(tree.element_trees().size(), 4)
 	assert_true(tree.items.has(&"ember_fist_scroll"))
+
+
+## A workbook whose one ability row has the Hitbox columns filled with `hitbox`.
+func _hitbox_book(hitbox: Array) -> Dictionary:
+	var book := _book([_row("F01", "Punch") + hitbox])
+	book.sheets.Abilities[0] = HEADER + AbilityTreeImporter.HITBOX_COLUMNS
+	return book
+
+
+func test_hitbox_columns_are_read() -> void:
+	var data: Dictionary = AbilityTreeImporter.convert(_hitbox_book(["Cone", "1.4", "100", "", "", "", "", ""])).data
+	assert_eq(data.abilities[0].hitbox, {"shape": "Cone", "range": 1.4, "angle": 100.0, "pierce": false})
+	data = AbilityTreeImporter.convert(_hitbox_book(["Projectile", "4.5", "", "", "", "16", "0.25", "Yes"])).data
+	var h := HitboxDef.from_data(data.abilities[0].hitbox)
+	assert_eq(h.shape, HitboxDef.Shape.PROJECTILE)
+	assert_eq(h.speed, 16.0)
+	assert_true(h.pierce)
+
+
+func test_hitbox_validation() -> void:
+	var errs := func(hitbox: Array) -> String:
+		return "\n".join(AbilityTreeImporter.convert(_hitbox_book(hitbox)).errors)
+	assert_string_contains(errs.call(["Square", "1", "", "", "", "", "", ""]), "Hitbox Shape \"Square\"")
+	assert_string_contains(errs.call(["Cone", "1.4", "", "", "", "", "", ""]), "needs Hitbox Angle")
+	assert_string_contains(errs.call(["Circle", "-2", "", "", "1", "", "", ""]), "Hitbox Range is negative")
+	assert_string_contains(errs.call(["", "3", "", "", "", "", "", ""]), "no Hitbox Shape")
+	assert_string_contains(errs.call(["Line", "3", "", "1", "", "", "", "Maybe"]), "Pierce \"Maybe\"")
+	assert_eq(errs.call(["None", "", "", "", "", "", "", ""]), "")
+
+
+func test_every_ability_in_the_sheet_has_a_hitbox() -> void:
+	for id in ContentDB.abilities:
+		var a: AbilityDef = ContentDB.abilities[id]
+		if ContentDB.tree.abilities.has(id):
+			assert_not_null(a.sheet_hitbox, "%s has a hitbox in the sheet" % id)
+	assert_eq(ContentDB.abilities[&"S01"].sheet_hitbox.shape, HitboxDef.Shape.CONE)
+	assert_eq(ContentDB.abilities[&"F08"].sheet_hitbox.shape, HitboxDef.Shape.TILES, "burning ground stays on the grid")
+	assert_true(ContentDB.abilities[&"F08"].sheet_hitbox.on_grid())

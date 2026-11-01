@@ -33,6 +33,8 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 			ability.mana_cost = float(row.mana_cost)
 		ability.sheet = row
 		_apply_timing(ability, row.get("timing", {}))
+		if row.has("hitbox"):
+			ability.sheet_hitbox = HitboxDef.from_data(row.hitbox)
 		abilities[id] = ability
 
 		var item := ItemDef.new()

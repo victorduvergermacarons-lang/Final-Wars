@@ -22,6 +22,11 @@ var timing_power: float = 1.0
 var cast_aim := Vector2i.ZERO
 var cast_dir := Vector2i.ZERO
 var cast_tiles: Array = []
+## Free movement: the cast resolves in continuous space (a hitbox), aimed at
+## `cast_point` along `cast_vec` (unit vector); knockbacks and dashes slide.
+var continuous := false
+var cast_point := Vector2.ZERO
+var cast_vec := Vector2.RIGHT
 ## Things only the world can do, queued during resolution and handled by WorldSim
 ## right after: {"type": "terrain"|"zone"|"counter", ...}.
 var requests: Array = []

@@ -28,6 +28,11 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 		return AbilityResolver.Result.CASTER_DEAD
 	if pay_mode == Pay.INSTANT and not caster.casting.is_empty():
 		return AbilityResolver.Result.BUSY
+	if ability.uses_hitbox():
+		var r := HitboxResolver.validate(ctx, caster, ability, target, aim)
+		if r != AbilityResolver.Result.OK or pay_mode == Pay.FREE:
+			return r
+		return AbilityResolver._check_cost(ctx, caster, ability, pay_mode == Pay.INSTANT)
 	match ability.targeting:
 		AbilityDef.TargetingMode.TARGETED:
 			if ability.target == AbilityDef.TargetType.SELF:
@@ -87,6 +92,9 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 
 
 static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, out: Dictionary) -> void:
+	if ability.uses_hitbox():
+		HitboxResolver.resolve(ctx, caster, ability, target, aim, out)
+		return
 	var events: Array[Dictionary] = out.events
 	if ability.targeting == AbilityDef.TargetingMode.TARGETED and ability.target == AbilityDef.TargetType.SELF:
 		target = caster

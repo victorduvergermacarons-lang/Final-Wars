@@ -745,6 +745,30 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     within 0.25 tiles; `NETCHECK_DELAY=0.1` holds every guest intent 100 ms
     (`ClientSession.send_delay`). Both pass with 4 players (0.00 tiles apart after settling).
   - Tests: `tests/unit/test_prediction.gd` (latency simulated by delaying intents).
+- **Phase 3 (done): hitboxes, aim indicators, importer.** The engine is ready; no
+  ability uses it yet (phase 4 switches them over, so play is unchanged).
+  - `HitboxDef` (`AbilityDef.hitbox`): None, Targeted, Cone, Line (rectangle), Circle,
+    Projectile, Lob, Self Circle, Dash, Leap, Blink, and Tiles (stays on the grid:
+    terrain and ground zones). Values in tiles: range, angle, width, radius, projectile
+    speed and size, pierce.
+  - `Hitbox` (geometry against round bodies: grazing counts; ranges edge to edge; line
+    of sight sampled along the segment) and `HitboxResolver` (CastResolver hands over
+    when `AbilityDef.uses_hitbox()`). Cooldowns, GCD, mana, timing bars, crits and
+    threat are unchanged. Projectiles fly in continuous space (a swept circle; heroes
+    count where they were within the 0.1 s grace window). Knockbacks, pulls and dashes
+    slide in continuous space and stop at walls, cliffs and units (`Hitbox.slide`).
+  - Aim indicators: the exact shape follows the mouse (blue, red when it can't be
+    cast); telegraphs with an outline draw in red, brighter as they land
+    (`WorldView._draw_outlines`). Tiles abilities keep the tile preview.
+  - **Spreadsheet:** eight columns at the end of the Abilities tab (Hitbox Shape,
+    Hitbox Range, Hitbox Angle, Hitbox Width, Hitbox Radius, Projectile Speed,
+    Projectile Size, Pierce) and a "Hitbox Rules" note on the Timing Rules tab, filled
+    for all 145 abilities from the plan's tables (`tools/once/fill_hitbox_columns.py`;
+    it patches the file's XML, because openpyxl would drop the cached results of the
+    sheet's formulas, which the importer reads). The importer checks the shape name,
+    the values each shape needs, negatives and Pierce (Yes / No); `TreeContent` keeps
+    each as `AbilityDef.sheet_hitbox` until phase 4 makes it the ability's hitbox.
+  - Tests: `tests/unit/test_hitboxes.gd`, hitbox cases in `test_ability_import.gd`.
 
 ## Enemy Testing Grounds (2026-10-20)
 

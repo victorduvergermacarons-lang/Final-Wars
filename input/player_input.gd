@@ -404,7 +404,8 @@ func _update_aim() -> void:
 	# on the action bar.
 	var bad: bool = p.result in [AbilityResolver.Result.OUT_OF_RANGE, AbilityResolver.Result.NO_LINE_OF_SIGHT,
 			AbilityResolver.Result.INVALID_TARGET]
-	client.aim = {"ability": ability, "tiles": p.tiles, "point": point, "valid": not bad}
+	client.aim = {"ability": ability, "tiles": p.tiles, "point": point, "valid": not bad,
+			"outline": p.get("outline", PackedVector2Array())}
 
 
 ## Handles input while aiming. Returns true if the event was used.
