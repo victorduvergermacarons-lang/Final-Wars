@@ -76,16 +76,30 @@ func test_aimed_abilities_need_no_target() -> void:
 	assert_eq(Targeting.pick(hero, ContentDB.abilities[&"F04"], null).target, hero.id, "self abilities")
 
 
-func test_previews_show_the_exact_tiles() -> void:
-	assert_eq(_preview(&"F03", _a(12, 8)), [_t(6, 8), _t(7, 8), _t(8, 8)],
-			"a dart stops at the first enemy")
-	assert_eq(_preview(&"F06", _a(9, 12)), [_t(6, 9), _t(7, 10), _t(8, 11)],
-			"the whip snaps to 8 directions")
-	assert_eq(_preview(&"F07", _a(8, 8)).size(), 9, "a 3x3 blast")
+func _outline(id: StringName, aim: Vector2) -> PackedVector2Array:
+	return AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ContentDB.abilities[id],
+			aim, null, session.now()).outline
+
+
+func _inside(poly: PackedVector2Array, p: Vector2) -> bool:
+	return Geometry2D.is_point_in_polygon(p, poly)
+
+
+func test_previews_show_the_exact_shape() -> void:
+	var dart := _outline(&"F03", _a(12, 8))
+	assert_true(_inside(dart, _a(8, 8)), "the dart's lane toward the aim")
+	assert_false(_inside(dart, _a(5, 10)), "nothing beside it")
+	var whip := _outline(&"F06", _a(9, 12))
+	assert_true(_inside(whip, _a(5, 8).lerp(_a(9, 12), 0.4)), "the whip follows the mouse at any angle")
+	var blast := _outline(&"F07", _a(8, 8))
+	assert_true(_inside(blast, _a(8, 8)) and _inside(blast, _a(9, 8)), "a circle at the aim")
+	assert_false(_inside(blast, _a(10, 8)))
 	var wall := _preview(&"E05", _a(5, 11))
-	assert_eq(wall, [_t(4, 11), _t(5, 11), _t(6, 11)], "a wall across the aim")
+	assert_eq(wall, [_t(4, 11), _t(5, 11), _t(6, 11)], "a wall across the aim, still on tiles")
 	assert_eq(hero.facing, Vector2i.RIGHT, "previewing doesn't turn the hero")
-	assert_eq(_preview(&"F05", _a(5, 11)), [_t(5, 9), _t(5, 10), _t(5, 11)], "the dash path")
+	var dash := _outline(&"F05", _a(5, 11))
+	assert_true(_inside(dash, _a(5, 10)), "the dash path")
+	assert_false(_inside(dash, _a(5, 12)), "only as far as it dashes")
 
 
 func test_hold_to_aim_and_release_to_cast() -> void:
@@ -116,10 +130,17 @@ func test_escape_cancels_aiming() -> void:
 	assert_eq(hero.cooldowns.ability_remaining(&"F03", session.now()), 0.0, "nothing cast")
 
 
-func test_out_of_range_ground_aim_is_shown_as_invalid() -> void:
+func test_out_of_range_aims_are_pulled_back_or_refused() -> void:
 	hero.bag.add(ContentDB.items[&"scroll_of_the_fireball"])
 	TreeRules.master(hero, ContentDB.abilities[&"F07"])
 	var p := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ContentDB.abilities[&"F07"],
+			_a(14, 8), null, session.now())
+	assert_eq(p.result, AbilityResolver.Result.OK, "a circle aimed too far lands at the edge of its range")
+	assert_true(_inside(p.outline, _a(10, 8)), "5 tiles out")
+	assert_false(_inside(p.outline, _a(14, 8)))
+	# A grid ability (terrain) still refuses an aim out of range.
+	TreeRules.master(hero, ContentDB.abilities[&"E03"])
+	p = AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ContentDB.abilities[&"E03"],
 			_a(14, 8), null, session.now())
 	assert_eq(p.result, AbilityResolver.Result.OUT_OF_RANGE)
 
@@ -133,4 +154,6 @@ func test_telegraphs_and_zones_reach_the_view() -> void:
 	sim.cast(hero, ContentDB.abilities[&"F07"], null, _a(8, 6))
 	var marks := view._tile_marks()
 	assert_true(marks.has(_t(8, 8)), "burning ground")
-	assert_true(marks.has(_t(8, 6)), "fireball telegraph")
+	var outlined := session.telegraphs().filter(func(h): return h.get("outline", PackedVector2Array()).size() > 2)
+	assert_eq(outlined.size(), 1, "the fireball's circle is telegraphed")
+	assert_true(_inside(outlined[0].outline, _a(8, 6)))

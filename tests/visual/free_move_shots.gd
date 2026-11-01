@@ -74,4 +74,18 @@ func _run() -> void:
 		await get_tree().process_frame
 	await get_tree().create_timer(0.3).timeout
 	await _shot("fm4_landed")
+	# Aim indicators (phase 4): Slash's cone and the Fireball's circle toward the
+	# mouse, and an enemy-style telegraph outline.
+	var sim := session.zone_sim()
+	var at := hero.move.pos
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(1, 1))
+	TreeRules.master(hero, ContentDB.abilities[&"F07"])
+	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+	for spec in [["fm5_aim_slash", &"S01", at + Vector2(1.2, 0.9)], ["fm6_aim_fireball", &"F07", at + Vector2(3.0, -1.5)],
+			["fm7_aim_whip", &"F06", at + Vector2(2.0, 2.6)]]:
+		var ab: AbilityDef = ContentDB.abilities[spec[1]]
+		var p := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ab, spec[2], null, session.now())
+		game.client.aim = {"ability": ab, "tiles": p.tiles, "point": spec[2], "valid": true, "outline": p.outline}
+		await _shot(spec[0])
+	game.client.aim = {}
 	get_tree().quit()

@@ -35,6 +35,10 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 		_apply_timing(ability, row.get("timing", {}))
 		if row.has("hitbox"):
 			ability.sheet_hitbox = HitboxDef.from_data(row.hitbox)
+			# Free movement: implemented abilities use their sheet hitbox (a behavior
+			# file may set its own); terrain and ground zones (Tiles) stay on the grid.
+			if ability.implemented and ability.hitbox == null:
+				ability.hitbox = ability.sheet_hitbox
 		abilities[id] = ability
 
 		var item := ItemDef.new()

@@ -769,6 +769,24 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     the values each shape needs, negatives and Pierce (Yes / No); `TreeContent` keeps
     each as `AbilityDef.sheet_hitbox` until phase 4 makes it the ability's hitbox.
   - Tests: `tests/unit/test_hitboxes.gd`, hitbox cases in `test_ability_import.gd`.
+- **Phase 4 (done): all 32 abilities on hitboxes.** Each implemented ability uses its
+  sheet hitbox (`TreeContent`; shapes in the plan's §6 table, checked by
+  `test_each_ability_has_the_planned_hitbox`).
+  - Slash and Smash are mouse-aimed cones (100° and 70°, 1.4 tiles) that swing on the
+    key press, toward the mouse (with a timing bar, the bar starts and the swing goes
+    where the mouse points at the end). Lock-on spells stay targeted, with ranges
+    measured edge to edge.
+  - Fire Dart, Frost Shard and Aimed Shot are projectiles; Fire Whip and Water Pulse
+    are lines; Fireball a circle; Rock Throw a lob; Flame Dash and Lunge dashes;
+    Seismic Stomp and Ground Slam circles around you. Burning Ground, Ice Spikes,
+    Raise Pillar and Earth Wall stay on the tiles.
+  - Aims are the exact mouse point (`PlayerInput.mouse_point`); a circle aimed too far
+    lands at the edge of its range (grid abilities still refuse it).
+  - **Air Step** is now +40% speed for 4 s (the "free steps" no longer exist).
+  - Outlines are drawn flat at the height under their centre, so they don't tear
+    across ledges. Screenshots `fm5`–`fm7` in `tests/visual/free_move_shots.tscn`.
+  - Balance targets the new shapes moved (dodging wind-ups, the hammer alone vs a
+    Wolf, the drake vs a level-7 group) are pending until phase 6.
 
 ## Enemy Testing Grounds (2026-10-20)
 

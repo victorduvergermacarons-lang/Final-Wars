@@ -835,12 +835,17 @@ func _draw_outlines(grid: GridModel) -> void:
 			_draw_ground_poly(grid, poly, AIM_COLOR if client.aim.valid else AIM_BAD_COLOR)
 
 
-## A grid-space polygon drawn on the ground, each corner at the height of the tile
-## under it.
+## A grid-space polygon drawn flat on the ground, at the height under its centre
+## (corners at their own heights tear it apart across ledges).
 func _draw_ground_poly(grid: GridModel, poly: PackedVector2Array, color: Color) -> void:
+	var centre := Vector2.ZERO
+	for q in poly:
+		centre += q
+	centre /= poly.size()
+	var h := grid.height_at(MoveState.tile_of(centre))
 	var pts := PackedVector2Array()
 	for q in poly:
-		pts.append(Iso.to_screen(q, grid.height_at(MoveState.tile_of(q))))
+		pts.append(Iso.to_screen(q, h))
 	var fill := Color(color, color.a * 0.45)
 	if Geometry2D.triangulate_polygon(pts).size() > 0:
 		draw_colored_polygon(pts, fill)

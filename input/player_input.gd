@@ -224,6 +224,10 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	if AimPreview.is_aimed(ability) and aims_during_bar(ability):
 		_start_bar_aiming(ability)
 		return
+	if ability.uses_hitbox() and ability.hitbox.shape == HitboxDef.Shape.CONE:
+		# A melee swing goes off at once toward the mouse (no hold to aim).
+		session.send_intent({"type": "cast", "ability": ability.id, "target": -1, "aim": mouse_point(ability)})
+		return
 	if AimPreview.is_aimed(ability):
 		start_aiming(ability, key)
 		return
@@ -384,10 +388,20 @@ func aim_point() -> Vector2:
 	var enemy := target != null and target.alive and hero.is_hostile_to(target)
 	# Screen position, so the camera following the hero doesn't count as moving.
 	if _screen_mouse().distance_to(_aiming.mouse) < 4.0 and enemy:
-		return Vector2(target.tile())
-	var tile: Variant = view.tile_at(view.get_global_mouse_position())
+		return target.move.pos if ability.uses_hitbox() else Vector2(target.tile())
+	return mouse_point(ability)
+
+
+## Where the mouse points on the ground: the exact point for hitbox abilities
+## (free movement), the tile under it for grid abilities.
+func mouse_point(ability: AbilityDef) -> Vector2:
+	var hero: Hero = session.local_hero()
+	var mouse := view.get_global_mouse_position()
+	var tile: Variant = view.tile_at(mouse)
 	if tile == null:
-		return AimPreview.default_aim(hero, ability, target)
+		return AimPreview.default_aim(hero, ability, session.get_actor(client.target_id))
+	if ability.uses_hitbox():
+		return Iso.from_screen(mouse, session.grid().height_at(tile))
 	return Vector2(tile)
 
 
