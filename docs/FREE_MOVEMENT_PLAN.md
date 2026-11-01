@@ -5,6 +5,13 @@ Status: **approved 2026-11-01** with these changes from the first draft: movemen
 than 3 levels deals fall damage**, and falls follow gravity (§3.3); enemies follow the
 same rules. The other proposals were accepted as written.
 
+**Built 2026-11-01, all six phases.** What changed from this plan while building it (the
+values as built, the decisions and the measured balance are in CLAUDE.md, **Free
+movement**): the drake's Searing Dive stays on its tile lane; big enemy attacks got
+longer telegraphs (§7.2's wind-ups were under the time a hero needs to step out); the
+Foreman's and the drake's numbers were retuned; bosses can grow less with the party
+(`EnemyDef.party_hp_per_hero`). Manual checklist: `docs/playtest-checklist-free-movement.md`.
+
 Veyra moves from a tile-locked game (one actor per tile, a step cooldown per tile,
 abilities that hit tiles) to free movement with continuous positions, smooth
 acceleration, circle colliders and mouse-aimed hitboxes. The tile grid stays as

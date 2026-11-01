@@ -25,7 +25,11 @@ and `docs/playtest-checklist-act1-zones.md`. **Milestone 3 of 4** (the Act I que
 **Act I: the Floor Guild quests** and `docs/playtest-checklist-act1-quests.md`. **Milestone 4 of 4**
 (the Silent Shaft dungeon, the Foreman and the Grey Heart, quest 1-07, the end of Act I, branch
 `feature/act1-m4-silent-shaft`, 2026-10-27): see **Act I: the Silent Shaft** and the full Act I
-checklist `docs/playtest-checklist-act1-full.md`. For the numbers
+checklist `docs/playtest-checklist-act1-full.md`. **Free movement** (branch
+`feature/free-movement`, 2026-11-01, all 6 phases): units move freely instead of tile by tile,
+attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **Free movement**,
+`docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. Tile steps, step
+cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -140,7 +144,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 |----|---------|------|-----------|-------------------------------|------|----|
 | F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent, **1 s timing bar** (zones at the end) | 1.0 magical | 4 | 2 |
 | F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent | 0.8 + burn 0.6 over 3 s | 8 | 4 |
-| F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 6 | 2 |
+| F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 10 | 2 |
 | F04 | Sun Warrior's Breath | Sun Warrior's Breath Scroll | Self | next 3 Fire casts +30% (20 s), +10% max Mana over 10 s, off GCD | 10 | 20 |
 | F05 | Flame Dash | Scroll of Burning Feet | Ground 8-way, 3 | dash 3, trail burns 3 s (0.4/s); charges 1 +1/300 | 10 | 8 |
 | F06 | Fire Whip | Lash of Embers Scroll | Skillshot 8-way line 3, pierce | 1.1 | 10 | 6 |
@@ -158,7 +162,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | W09 | Ice Spikes | Glacier Scroll | Ground 4, 3×3, 0.4 s telegraph | 1.0 + slow ×1.5 3 s | 15 | 10 |
 | A01 | Air Palm | Open Palm Scroll | Targeted, adjacent | 0.6 + knockback 1 | 6 | 4 |
 | A02 | Gust | Breeze Scroll | Targeted, 3 | 0.5 + interrupt, off GCD | 8 | 10 |
-| A03 | Air Step | Featherstep Scroll | Self | 5 free steps (10 s), off GCD | 8 | 10 |
+| A03 | Air Step | Featherstep Scroll | Self | +40% speed for 4 s (free movement), off GCD | 8 | 10 |
 | A05 | Air Blast | Gale Scroll | Targeted, 3 | 0.6 + knockback 3, +25 on impact | 12 | 10 |
 | E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
@@ -252,14 +256,13 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
 - **Stats:** HP 190, PhysAtk 13, MagAtk 14, PhysDef 5, MagDef 12, Evasion 8, Jump 2;
   aggro 5, leash 12; 0.5 s per tile in combat (the fastest enemy), 0.25 s reaction;
   light; 70 XP, 3 AP; 3–8 g, Scroll of Burning Feet 4%, Scorched Earth Scroll 4%.
-- **Bite** (`hound_bite`): Targeted, adjacent, 5 + 1.0×PhysAtk physical, 1.6 s,
-  0.3 s wind-up (from the art).
-- **Cinder Pounce** (`cinder_pounce`): Ground, 8 s. Aims at the free tile beside a
-  hero 1–3 tiles away, on the hound's side (`AbilityDef.aim_beside_target`), and
-  marks that tile plus its four neighbours (`area_diamond`) for its 0.6 s wind-up.
-  Then it leaps onto the tile and deals 10 + 1.0×MagAtk magical (fire) damage to
-  whoever is still on the mark. The hero stands on one arm of the plus, so any step
-  except toward the hound gets out.
+- **Bite** (`hound_bite`): a 70° cone, 1.2 tiles, 5 + 1.0×PhysAtk physical, 2.0 s
+  (1.6 s before free movement), 0.3 s wind-up (from the art).
+- **Cinder Pounce** (`cinder_pounce`): 8 s. Since free movement it leaps onto the point
+  beside a hero 1–3 tiles away, on the hound's side (`AbilityDef.aim_beside_target`),
+  marking a circle of 1.2 tiles there for its 0.67 s wind-up (frame 6 at 9 fps), then
+  deals 10 + 1.0×MagAtk magical (fire) damage to whoever is still in it. Moving about
+  a tile away, except toward the hound, gets out.
 - **Ember Trail** (passive, `EnemyDef.trail_ability` = `ember_trail`): every tile it
   leaves while fighting becomes a 2 s ground zone dealing 2 + 0.15×MagAtk magical
   every 0.5 s (`ember_trail_burn`).
@@ -272,7 +275,7 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
   hit flash). Art data: `content/creatures/salamander_hound_art.tres`, feet (24, 33).
   - idle = the authored loop at 10 fps
   - bite = loop frames 3–9 at 20 fps (jaws on frame 6)
-  - pounce = frames 2–13 at 10 fps (springs on frame 6)
+  - pounce = frames 2–13 at 9 fps (springs on frame 6; was 10 fps until the free-movement balance pass)
   - **Placeholders (art missing):** run reuses frames 0–3, death reuses the
 	crouch (frames 4–10), and NE/NW reuse the SE/SW rows.
 
@@ -290,7 +293,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
     move it.
   - The tiles it covers are outlined faintly on the ground, and its target ring
     surrounds the whole body.
-- **Stats:** HP 3000, PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
+- **Stats:** HP 2200 (3000 until the free-movement balance pass), PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
   leash 14; 1.2 s per tile; 0.3 s reaction; 700 XP, 12 AP; respawn 15 min (10 s in the
   testing grounds); 60–120 g, Fireball / Scorched Earth / Burning Feet scrolls 15% each.
 - **Flight** (`EnemyDef.flying`, `GridModel.can_fly`):
@@ -298,7 +301,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   - It crosses walls, hedges and water up to 1 level above it (`fly_over_levels`),
     but never tiles that block sight.
   - Ground zones don't touch it while airborne.
-- **Talon Rake** (`talon_rake`): Targeted, adjacent, 20 + 1.2×PhysAtk, 2.5 s. The
+- **Talon Rake** (`talon_rake`): a 100° cone of 2.7 tiles from its centre (free movement), 20 + 1.2×PhysAtk, 3.0 s. The
   0.5 s wind-up comes from the art: the talons swing through kick frame 13.
 - **Sunfire Breath** (`sunfire_breath`): skillshot cone, 8-way, 4 tiles, 10 s.
   - It rears back for 0.8 s with the cone outlined.
@@ -649,19 +652,20 @@ Checklist: `docs/playtest-checklist-act1-full.md`.
   `brann_descended`, `NpcDef.gone_after_flag`): he has become the Foreman.
 - **The boss** (`content/encounters/foreman.tres`, `BossEncounterDef`, run by `BossEncounter`):
   - **The Foreman** (level 10 elite, `dungeon_boss`: scales with the party like other enemies;
-    HP 800 solo, PhysAtk 16, PhysDef 18, MagDef 22; heavy; leash 16): Pick-Hammer (Targeted
-    melee, 8 + 0.6×PhysAtk, 2.4 s, 0.5 s wind-up), **Ground Slam** (the 3×3 square around his
-    target, marked red for 1.8 s, 12 + 0.6×PhysAtk, 8 s) and **Mine-Cart Charge** (a tile 2–5 away
-    marked for 1.1 s, then a rush and 8 + 0.6×PhysAtk, 15 s). Threat decides his target: the
+    HP 1100 solo, PhysAtk 16, PhysDef 18, MagDef 22; heavy; leash 16; +45% health per extra hero,
+    `EnemyDef.party_hp_per_hero`): Pick-Hammer (an 80° cone of 1.5 tiles, 14 + 0.75×PhysAtk,
+    2.4 s, 0.7 s wind-up), **Ground Slam** (a circle of 1.5 tiles at his target, marked red for
+    1.0 s, 12 + 0.6×PhysAtk, 8 s) and **Mine-Cart Charge** (a lane 2–5 long marked for 1.1 s, then
+    a rush and 8 + 0.6×PhysAtk, 15 s). Values as of the free-movement balance pass. Threat decides his target: the
     tank holds him (taunts work).
-  - **The Grey Heart** (level 10, 150 HP solo, `immobile`, drawn as a cracked black-gold
+  - **The Grey Heart** (level 10, 300 HP solo, +45% per extra hero, `immobile`, drawn as a cracked black-gold
     crystal leaking smoke, `EnemyDef.Look.CRYSTAL`): fights beside him, shielded ("Immune",
     "Shielded by the Foreman") until phase 3.
   - **Phase 1** (100–60%): slams and charges; tank and spread.
   - **Phase 2** (below 60%): the Heart pulses every 12 s: one Grey Husk climbs out (90 HP solo,
     at most 2) and 6 tiles around the heroes turn grey for 12 s (`greyed`: steps ×1.5, −3% of
     max mana per second).
-  - **Phase 3** (below 25%): the Foreman enrages (**Grey Fury**: +15% damage, cooldowns ×0.85),
+  - **Phase 3** (below 25%): the Foreman enrages (**Grey Fury**: +30% damage, cooldowns ×0.85),
     the Heart opens and pulses every 9 s (8 grey tiles, no husks). He can't fall below 5% while it
     beats. **Breaking the Heart ends the fight:** he falls with it (his kill and XP go to the
     party), adds and grey fade, and Caedan comes down to the chamber door (50, 15).
@@ -696,7 +700,7 @@ Checklist: `docs/playtest-checklist-act1-full.md`.
   `test_the_foreman_is_a_fight_for_a_group`, and `Act1Playthrough` now plays 1-01 to 1-07, the
   end screen and the walk home.
 
-## Free movement (branch `feature/free-movement`, 2026-11-01; in progress)
+## Free movement (branch `feature/free-movement`, 2026-11-01)
 
 User brief: free movement and mouse-aimed attacks instead of the tile grid. Plan, every
 system affected and the phase order: `docs/FREE_MOVEMENT_PLAN.md` (approved with 3 tiles/s
@@ -817,7 +821,35 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     plus the reaction time (0.63 s); most enemy wind-ups (0.3–0.6 s) are under it, to
     be tuned in phase 6.
   - Network check: Guest3 spawns a Bandit Brute and runs out of its telegraphed swipe
-    over the network (also with `NETCHECK_DELAY=0.1`).
+    over the network (also with `NETCHECK_DELAY=0.1`). Since phase 6 it does this in
+    the Enemy Testing Grounds (`goto`), so the brute can't pull other guests into combat.
+- **Phase 6 (done): balance.** Every target in `tests/balance/test_balance.gd` is met and
+  enforced again (the ones pending since the timing bars included); numbers from
+  `tests/balance/balance_report.tscn`.
+  - **Fair telegraphs:** big enemy attacks are `AbilityDef.dodgeable` and give at least
+    0.63 s (a tile at 3 tiles/s plus 0.3 s to react): Crushing Blow 0.8 s; Cleave, Hollow
+    Rake, Overseer's Crush, Pick-Hammer 0.7 s; Cinder Pounce 0.67 s; Shadow Bolt 7 tiles/s
+    (0.71 s over its range); charges 1.0–1.1 s; Ground Slam 1.0 s; breath 0.8 s; dive 1.0 s.
+    Quick bites (wolf, hound, boar, Skirmisher, Talon Rake) stay chip damage. Debug builds
+    warn at load about a dodgeable attack under that time.
+  - **Combat pacing:** Wolf bite 2.5 s (was 2.0), Wolf HP 200 (230); hound bite 2.0 s (1.6);
+    Shadow Bolt 3.0 s (2.5), Goblin Shaman HP 130 (160); Talon Rake 3.0 s (2.5), drake HP
+    2200 (3000); Fire Dart mana 10 (6).
+  - **The Foreman:** HP 1100 (800), Pick-Hammer 14 + 0.75×PhysAtk (8 + 0.6), Grey Fury +30%
+    (+15%), Grey Heart 300 HP (150); both grow +45% health per extra hero instead of +70%
+    (`EnemyDef.party_hp_per_hero`).
+  - A unit mid-attack stands firm: pushes from other units don't move it.
+  - **Bots** (`BalanceSim.bot_turn`) move continuously: close in to each ability's reach
+    (`bot_reach`), aim at positions, never swing at empty air; with "dodge" they run out of
+    telegraph outlines (sidestepping when straight back is blocked), step off burning
+    ground and wait rather than walk into a marked shape. The level-5 group's damage
+    dealers and healer dodge; tanks hold still.
+  - Measured (bots): starter vs a Wolf 9.0 s, 36% HP lost (dodging: 10%); sword, bow or
+    hammer alone win; a pair beats 2 Wolves (70%); a caster spends 64% of its mana on a
+    Wolf and beats the Shaman; heals + dodges beat the Brute (54%), standing still loses;
+    a group of 4 beats Grizzlehide; the drake: level 7 group 0%, level 10 group 83%; the
+    Foreman at level 10: solo 0%, pair 17%, three 83%, four 67%.
+  - Manual checklist: `docs/playtest-checklist-free-movement.md`.
 
 ## Enemy Testing Grounds (2026-10-20)
 
@@ -1142,7 +1174,7 @@ Tune them there; update this table when they change.
 | Staff (main hand, one-handed) | MagAtk +14, Mana +30 | MagAtk 4, Mana 8 |
 | Shield (off hand) | PhysDef +30, HP +30 | PhysDef 3, HP 12 |
 | Holy Charm (accessory) | MagAtk +6, Mana +20, MagDef +5 | MagAtk 2, Mana 6, MagDef 2 |
-| Wolf | HP 230, PhysAtk 12, PhysDef 5, Evasion 5, Jump 1; aggro 4, leash 10; 50 XP; respawn 30 s; 0.65 s/tile; 0.3 s reaction | — |
+| Wolf | HP 200 (free movement; was 230), PhysAtk 12, PhysDef 5, Evasion 5, Jump 1; aggro 4, leash 10; 50 XP; respawn 30 s; 0.65 s/tile; 0.3 s reaction | — |
 
 Growth: 50% of each equipped item's growth per level. XP to next level: 100 × level.
 AP: 10 per level-up to each ability taught by an equipped item.
@@ -1168,7 +1200,7 @@ Ranger's Gloves and the Mantle come from the new enemies and the elite.
 | Enemy | Lv | AI | Stats | Ability | Step / reaction | XP / AP | Drops | Where (Greenfields) |
 |-------|----|----|-------|---------|-----------------|---------|-------|---------------------|
 | Wolf | 1 | Melee | (see above) | Bite | 0.65 s / 0.3 s | 50 / 2 | 2–6 g, pelt, fang, Uncommons 2% | (8,13) (11,24) (5,20) (18,4) |
-| Goblin Shaman | 2 | Kiter | HP 160, MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
+| Goblin Shaman | 2 | Kiter | HP 130 (free movement; was 160), MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
 | Bandit Brute | 3 | Melee | HP 320, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 24 + 2.0×PhysAtk, 3.5 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
 | Fen Skirmisher | 4 | Flanker | HP 220, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.3 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
 | **Old Grizzlehide** (elite) | 5 | Melee, patrols | HP 1400, PhysAtk 26, PhysDef 25, MagDef 15, Acc 5, Jump 2; aggro 4, leash 12 | Cleave: arc, 12 + 1.0×PhysAtk, 2.5 s · Charge: front 2–4 tiles, dashes up to 3 tiles then 15 + 1.0×PhysAtk, 12 s | 1.0 s / 0.3 s (patrol 0.8 s/tile) | 400 / 10 | 30–60 g, Grizzlehide Mantle 25%, Ranger's Gloves 30%; respawn 5 min | loop (8,17) → (12,12) → (22,12) → (20,16), crossing the north bridge |
@@ -1252,7 +1284,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full), ability import, tilesets, quests and dialogue
+docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement), ability import, tilesets, quests and dialogue, the free movement plan
 ```
 
 ### Build order (milestone 1)
@@ -1919,6 +1951,18 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-01 | Free movement: all 6 phases built on `feature/free-movement` | User brief and plan approval (3 tiles/s in and out of combat; drops of more than 3 levels hurt but are allowed; falls under gravity; enemies follow the same rules). See **Free movement** and `docs/FREE_MOVEMENT_PLAN.md`. My decisions are in the next rows. |
+| 2026-11-01 | Branch from the Act I milestone 4 tip, not `main` | `main` didn't have milestones 3 and 4 yet (their pull requests were open). The tags `v0.2-act1-prototype` and `v0.2-grid-final` go on `main` once those merge. |
+| 2026-11-01 | Hitbox columns written into the spreadsheet by patching its XML | openpyxl drops the cached results of the sheet's 193 formulas, which the importer reads. |
+| 2026-11-01 | Slash and Smash are cones that swing on the key press toward the mouse; lock-on spells stay targeted | Plan §6. Out-of-range circles land at the edge of their range (as timing-bar aims already did); terrain abilities still refuse. |
+| 2026-11-01 | Air Step: +40% speed for 4 s | "Free steps" don't exist without step cooldowns (plan §6, to confirm in playtest). |
+| 2026-11-01 | Telegraph outlines drawn flat at the height under their centre | Corners at their own tile heights tore circles apart across ledges. |
+| 2026-11-01 | The drake's Searing Dive stays on its tile lane; Ember Trail and ground zones stay on tiles | The dive's shove-aside and stun rules are written for lanes; it still telegraphs and can be dodged. Terrain and zones are grid abilities by the brief. |
+| 2026-11-01 | Tile stepping removed entirely (`try_step`, step cooldowns, free steps) | The brief: "Remove the per-step movement cooldown". Data fields `combat_step_seconds` and `walk_tile_seconds` stay so old files load. |
+| 2026-11-01 | Big enemy attacks flagged `dodgeable`; quick bites aren't | The brief wants big attacks telegraphed and dodgeable; a 0.3–0.4 s bite stays chip damage like in WoW. |
+| 2026-11-01 | A unit mid-attack can't be pushed by other units | A hero walking into the Brute shoved it out of its own swing. |
+| 2026-11-01 | Bosses can grow less with the party (`EnemyDef.party_hp_per_hero`; the Foreman and Heart +45%) | Four heroes don't deal four times one tank's damage (a healer barely attacks), so +70% made groups worse off than a soloist. |
+| 2026-11-01 | Balance bots dodge where their spec says; the level-5 group's damage dealers and healer do | The M4 notes said real groups would dodge; free movement makes that the fair measure. Tanks hold still. |
 | 2026-10-27 | Act I milestone 4 of 4: dungeon rules, the Silent Shaft, the Foreman and the Grey Heart, quest 1-07, the end of Act I | User brief ("list every decision"). See **Act I: the Silent Shaft**. My decisions are in the next rows. |
 | 2026-10-27 | Branch `feature/act1-m4-silent-shaft` from `feature/act1-m3-quests`, not `main` | `main` doesn't have milestone 3 yet (its pull request is open, not merged), and 1-07 follows 1-06. The pull request into `main` therefore carries milestone 3 too; merging milestone 3's first leaves only milestone 4 in it. |
 | 2026-10-27 | One party = every connected player, so one dungeon copy at a time; copies close 60 s after the last hero leaves | Rule 11 (no party system yet). `World.party_of` is the one place a real party system would change. Closing after a minute lets a hero step out and back without losing progress. |
