@@ -3,11 +3,12 @@ extends Node
 ## Turns the local player's keys and clicks into intents. Only sends intents;
 ## the host decides what actually happens.
 
-## Resend a step that hasn't started yet (blocked, cooldown) at most this often.
-const RESEND_SECONDS := 0.15
-## Send the next held step once the current walk is this far along, so it's
-## buffered on the host and movement doesn't stutter.
-const BUFFER_AT_PROGRESS := 0.6
+## Free movement: the held keys give one of 8 directions on screen (W = up the
+## screen), sent with the mouse's angle as a `move` intent whenever either
+## changes, and again every KEEPALIVE_SECONDS while walking.
+const KEEPALIVE_SECONDS := 0.5
+## The facing angle is resent once the mouse has turned this far (radians).
+const ANGLE_STEP := 0.05
 const TAB_RANGE := 12
 
 var session
@@ -15,12 +16,9 @@ var client: ClientState
 var view: WorldView
 
 var _held := Vector2i.ZERO
-var _walk_after := 0.0
-var _sent_from := Vector2i(-999, -999)
+var _sent_dir := Vector2i(99, 99)
+var _sent_angle := 999.0
 var _sent_at := -999.0
-var _press_order: Array[Vector2i] = []
-var _face_sent := Vector2i.ZERO
-var _face_sent_at := -999.0
 ## Aiming a skillshot or ground ability: {"ability", "action" (key to release, or
 ## &"" when started by clicking the bar: then a left click fires), "mouse" (where
 ## the mouse was when aiming started)}.
@@ -39,79 +37,54 @@ func _physics_process(_delta: float) -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null or not hero.alive:
 		_held = Vector2i.ZERO
+		if _sent_dir != Vector2i.ZERO and hero != null:
+			_send_move(Vector2i.ZERO, _sent_angle if absf(_sent_angle) < 10.0 else hero.facing_angle)
 		return
 	# Typing in a text box (debug console) doesn't walk.
 	var typing := get_viewport().gui_get_focus_owner() is LineEdit if is_inside_tree() else false
-	var dir := Vector2i.ZERO if typing else _held_direction()
-	var t: float = session.render_time()
+	_held = Vector2i.ZERO if typing else held_direction()
+	# Without a view (tests), keep the last angle sent.
+	var angle := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
 	if view != null and is_inside_tree():
-		face_toward(view.get_global_mouse_position())
-	if dir != _held:
-		_on_direction_changed(hero, dir, t)
-	if dir == Vector2i.ZERO or t < _walk_after:
-		return
-	var now: float = session.now()
-	var m := hero.move
-	var next := hero.tile() + dir
-	if m.is_moving(t):
-		# Out of combat, queue the next step so walking is smooth. In combat the
-		# next step waits for the step cooldown anyway; queuing it would turn the
-		# hero back toward it later, even after the player had turned elsewhere.
-		if m.progress(t) >= BUFFER_AT_PROGRESS and _sent_from != hero.tile() and not hero.in_combat(now):
-			_send_step(hero.tile(), next, t)
-		return
-	if hero.in_combat(now) and not hero.cooldowns.can_step(now):
-		return
-	if _sent_from != hero.tile() or t - _sent_at >= RESEND_SECONDS:
-		_send_step(hero.tile(), next, t)
+		angle = mouse_angle(hero, view.get_global_mouse_position())
+	var t: float = session.render_time()
+	if _held != _sent_dir or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
+			or (_held != Vector2i.ZERO and t - _sent_at >= KEEPALIVE_SECONDS):
+		_send_move(_held, angle)
 
 
-## A direction key always walks, straight away (facing follows the mouse, see
-## _face_mouse()).
-func _on_direction_changed(_hero: Hero, dir: Vector2i, t: float) -> void:
-	_held = dir
-	_walk_after = t
+func _send_move(dir: Vector2i, angle: float) -> void:
+	_sent_dir = dir
+	_sent_angle = angle
+	_sent_at = session.render_time()
+	session.send_intent({"type": "move", "dir": dir, "face": angle})
 
 
-## Turns the hero toward a point on the map (world coordinates): the mouse.
-## Sends a face intent only when the facing should change (again after
-## RESEND_SECONDS if the host hasn't turned the hero yet, e.g. right after a step).
+## The grid-space angle from the hero to a point on the map (world coordinates).
+func mouse_angle(hero: Hero, world_pos: Vector2) -> float:
+	var grid: GridModel = session.grid()
+	var at := hero.move.position_at(session.render_time())
+	var off := Iso.from_screen(world_pos, grid.height_at(hero.tile())) - at
+	return off.angle() if off.length() > 0.05 else hero.aim_angle
+
+
+## Turns the hero toward a point on the map (world coordinates): sends the angle
+## right away (the next move intent would carry it anyway).
 func face_toward(world_pos: Vector2) -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null or not hero.alive:
 		return
-	var grid: GridModel = session.grid()
-	var off := Iso.from_screen(world_pos, grid.height_at(hero.tile())) - Vector2(hero.tile())
-	if off.length() < 0.5:
-		return # pointing at the hero itself
-	var dir := Vector2i(int(signf(off.x)), 0) if absf(off.x) >= absf(off.y) else Vector2i(0, int(signf(off.y)))
-	if dir == Vector2i.ZERO or dir == hero.facing:
-		return
-	var t: float = session.render_time()
-	if dir == _face_sent and t - _face_sent_at < RESEND_SECONDS:
-		return
-	_face_sent = dir
-	_face_sent_at = t
-	session.send_intent({"type": "face", "dir": dir})
+	_send_move(_held, mouse_angle(hero, world_pos))
 
 
-func _send_step(from: Vector2i, to: Vector2i, t: float) -> void:
-	_sent_from = from
-	_sent_at = t
-	session.send_intent({"type": "step", "to": to})
-
-
-## The most recently pressed direction that is still held, so rolling from one
-## key to the next turns/walks the new way right away.
-func _held_direction() -> Vector2i:
+## The held keys as one of 8 screen directions (x right, y down; zero if none or
+## opposite keys cancel).
+func held_direction() -> Vector2i:
+	var d := Vector2i.ZERO
 	for action in InputActions.DIRECTIONS:
-		var d: Vector2i = InputActions.DIRECTIONS[action]
-		var pressed := Input.is_action_pressed(action)
-		if pressed and not _press_order.has(d):
-			_press_order.append(d)
-		elif not pressed:
-			_press_order.erase(d)
-	return _press_order.back() if not _press_order.is_empty() else Vector2i.ZERO
+		if Input.is_action_pressed(action):
+			d += InputActions.DIRECTIONS[action]
+	return Vector2i(clampi(d.x, -1, 1), clampi(d.y, -1, 1))
 
 
 func _unhandled_input(event: InputEvent) -> void:

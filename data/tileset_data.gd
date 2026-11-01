@@ -175,6 +175,13 @@ func terrain_walkable(terrain: String) -> bool:
 	return not tr.is_empty() and is_walkable(tr.tiles[0])
 
 
+## How grippy a terrain's floor is for free movement (1 = normal, lower slides:
+## ice). Its "friction" in the catalog; none set one yet.
+func terrain_friction(terrain: String) -> float:
+	var tr: Dictionary = terrains.get(terrain, {})
+	return float(tr.get("friction", 1.0))
+
+
 func terrain_walkability_consistent(terrain: String) -> bool:
 	var tr: Dictionary = terrains.get(terrain, {})
 	if tr.has("walkable"):

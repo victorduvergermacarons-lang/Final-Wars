@@ -19,10 +19,13 @@ enum GrowthLimit {
 @export var empty_zone_sleep_seconds: float = 30.0
 
 @export_group("Movement")
-## Time to walk across one tile (the travel animation), same for everyone.
-## Out of combat this is the only limit on stepping: there is no step cooldown,
-## the next step can start the moment the previous one arrives.
-@export var walk_tile_seconds: float = 0.2
+## Free movement: speeds, acceleration, collisions, falls (content/rules/movement.tres).
+@export var movement: MovementDef = MovementDef.new()
+## Free movement replaced stepping for heroes (see `movement`). This is the time
+## a unit still stepping tile to tile (enemies and NPCs, until they move freely)
+## takes for a tile out of combat, about a hero's time at walk speed with its
+## acceleration (1 / 3 tiles/s + 0.07 s).
+@export var walk_tile_seconds: float = 0.4
 ## In-combat step cooldown at 0 Speed.
 @export var combat_step_base_seconds: float = 1.5
 ## Speed can never push the in-combat step cooldown below this.

@@ -1,5 +1,7 @@
 extends GutTest
-## Direction keys always walk (no turn-only taps); the hero faces the mouse.
+## Free movement keys: WASD give 8 screen-relative directions (W = up the
+## screen), diagonals no faster; the hero faces the mouse in combat and the way it
+## walks otherwise.
 
 var session: LocalSession
 var input: PlayerInput
@@ -27,63 +29,64 @@ func after_each() -> void:
 
 func _enter_combat() -> void:
 	hero.combat_until = 1.0e9
-	hero.cooldowns.trigger_step(session.now(), 30.0) # next step far away
 
 
-func test_a_tap_walks_even_when_facing_elsewhere() -> void:
-	hero.face(Vector2i.UP)
-	var start := hero.tile()
-	Input.action_press(&"move_right")
-	await wait_physics_frames(3)
-	Input.action_release(&"move_right")
-	await wait_physics_frames(20)
-	assert_eq(hero.tile(), start + Vector2i.RIGHT, "walked, no turn-only tap")
+func _held_for(actions: Array, frames: int) -> void:
+	for action in actions:
+		Input.action_press(action)
+	await wait_physics_frames(frames)
+	for action in actions:
+		Input.action_release(action)
 
 
-func test_keys_never_just_turn_in_combat() -> void:
-	_enter_combat()
-	hero.face(Vector2i.UP)
-	var start := hero.tile()
-	Input.action_press(&"move_right")
-	await wait_physics_frames(4)
-	assert_eq(hero.tile(), start, "the step waits for its cooldown")
-	assert_eq(hero.facing, Vector2i.UP, "and the key doesn't turn the hero (the mouse does)")
+func test_w_walks_up_the_screen() -> void:
+	var start := hero.move.pos
+	await _held_for([&"move_up"], 12)
+	var d := hero.move.pos - start
+	assert_gt(d.length(), 0.3, "walked")
+	assert_almost_eq(d.normalized().angle(), Mover.screen_to_grid(Vector2i(0, -1)).angle(), 0.1,
+			"up the screen (grid up-left)")
 
 
-func test_the_newest_held_key_walks() -> void:
-	var start := hero.tile()
-	Input.action_press(&"move_up")
-	Input.action_press(&"move_left") # pressed last
-	await wait_physics_frames(14)
-	Input.action_release(&"move_up")
-	Input.action_release(&"move_left")
+func test_two_keys_make_a_diagonal_no_faster_than_one() -> void:
+	var start := hero.move.pos
+	await _held_for([&"move_up", &"move_right"], 12)
+	var d := hero.move.pos - start
+	assert_almost_eq(d.normalized().angle(), Mover.screen_to_grid(Vector2i(1, -1)).angle(), 0.1, "up-right on screen")
 	await wait_physics_frames(10)
-	assert_eq(hero.tile().y, start.y, "didn't go up")
-	assert_lt(hero.tile().x, start.x, "went left")
+	hero.move.place(start)
+	await wait_physics_frames(4)
+	await _held_for([&"move_up"], 12)
+	var single := hero.move.pos - start
+	assert_almost_eq(d.length(), single.length(), 0.2, "the diagonal isn't faster")
 
 
-func test_hero_faces_the_mouse() -> void:
+func test_opposite_keys_cancel_and_release_stops() -> void:
+	var start := hero.move.pos
+	await _held_for([&"move_left", &"move_right"], 10)
+	assert_lt(hero.move.pos.distance_to(start), 0.05, "left + right: no movement")
+	await _held_for([&"move_down"], 10)
+	await wait_physics_frames(6)
+	assert_eq(hero.move.vel, Vector2.ZERO, "stops once the key is let go")
+
+
+func test_in_combat_the_hero_faces_the_mouse() -> void:
+	_enter_combat()
 	var grid: GridModel = session.grid()
 	var h := grid.height_at(hero.tile())
-	hero.face(Vector2i.UP)
-	input.face_toward(Iso.to_screen(Vector2(hero.tile() + Vector2i(3, 1)), h))
+	input.face_toward(Iso.to_screen(hero.move.pos + Vector2(3, 0), h))
 	await wait_physics_frames(3)
-	assert_eq(hero.facing, Vector2i.RIGHT)
-	input.face_toward(Iso.to_screen(Vector2(hero.tile() + Vector2i(-1, 4)), h))
+	assert_almost_eq(hero.facing_angle, 0.0, 0.05, "toward the mouse")
+	assert_eq(hero.facing, Vector2i.RIGHT, "sprite: nearest diagonal")
+	input.face_toward(Iso.to_screen(hero.move.pos + Vector2(0, 4), h))
 	await wait_physics_frames(3)
+	assert_almost_eq(hero.facing_angle, PI / 2.0, 0.05)
 	assert_eq(hero.facing, Vector2i.DOWN)
-	input.face_toward(Iso.to_screen(Vector2(hero.tile()), h))
-	await wait_physics_frames(3)
-	assert_eq(hero.facing, Vector2i.DOWN, "pointing at the hero itself changes nothing")
 
 
-func test_turning_cancels_a_queued_step() -> void:
-	var sim := session.zone_sim()
-	hero.pending_step = hero.tile() + Vector2i.UP
-	sim.submit(hero.id, {"type": "face", "dir": Vector2i.RIGHT})
-	sim.step()
-	assert_null(hero.pending_step, "the old queued step is dropped")
-	assert_eq(hero.facing, Vector2i.RIGHT)
+func test_out_of_combat_the_hero_faces_where_it_walks() -> void:
+	await _held_for([&"move_down"], 10)
+	assert_almost_eq(hero.facing_angle, Mover.screen_to_grid(Vector2i(0, 1)).angle(), 0.1)
 
 
 func test_shift_number_switches_the_action_bar_page() -> void:

@@ -104,7 +104,7 @@ func test_walking_the_whole_road_pulls_nobody() -> void:
 	hero.move.place(Vector2i(1, road))
 	for x in range(2, zone.get_width() - 1):
 		sim.submit(hero.id, {"type": "step", "to": Vector2i(x, road)})
-		for i in 5:
+		for i in 8: # a tile takes 1/3 s at walking speed
 			sim.step()
 	assert_eq(hero.tile().x, zone.get_width() - 2, "walked to the far end")
 	for e in sim.enemies():

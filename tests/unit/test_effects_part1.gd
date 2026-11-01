@@ -145,16 +145,19 @@ func test_charged_damage_bonus_like_kindle() -> void:
 	assert_eq(_lost(foe), 80.0)
 
 
-func test_free_steps_like_air_step() -> void:
+func test_free_steps_skip_the_step_cooldown_of_tile_steppers() -> void:
+	# The free-steps buff still serves units that step tile to tile (enemies);
+	# heroes move freely and have no step cooldown at all.
 	hero.combat_until = 1.0e9
+	var walk := rules.walk_tile_seconds + 0.05
 	var step := _buff(&"air_step", 30.0, {"free_steps": true, "charges": 2})
 	world.cast(hero, _ability(AbilityEffect.Kind.BUFF, 0, {}, step), hero)
 	assert_eq(world.try_step(hero, Vector2i(5, 4)), "")
-	world.advance(0.25)
+	world.advance(walk)
 	assert_eq(world.try_step(hero, Vector2i(5, 3)), "", "no step cooldown")
-	world.advance(0.25)
+	world.advance(walk)
 	assert_eq(world.try_step(hero, Vector2i(5, 2)), "")
-	world.advance(0.25)
+	world.advance(walk)
 	assert_eq(world.try_step(hero, Vector2i(5, 1)), "not_ready", "charges spent: normal step cooldown")
 
 

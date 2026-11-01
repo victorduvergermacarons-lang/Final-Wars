@@ -68,6 +68,11 @@ func _init(p_id: int = 0, p_def: EnemyDef = null, p_spawn: Vector2i = Vector2i.Z
 	spawn_tile = p_spawn
 	home_tile = p_spawn
 	move.place(p_spawn)
+	move.radius = def.collider_radius
+
+
+func base_move_speed(rules: CombatRules) -> float:
+	return def.move_speed if def.move_speed > 0.0 else rules.movement.walk_speed
 
 
 func combat_step_cooldown(rules: CombatRules, now: float) -> float:

@@ -696,6 +696,40 @@ Checklist: `docs/playtest-checklist-act1-full.md`.
   `test_the_foreman_is_a_fight_for_a_group`, and `Act1Playthrough` now plays 1-01 to 1-07, the
   end screen and the walk home.
 
+## Free movement (branch `feature/free-movement`, 2026-11-01; in progress)
+
+User brief: free movement and mouse-aimed attacks instead of the tile grid. Plan, every
+system affected and the phase order: `docs/FREE_MOVEMENT_PLAN.md` (approved with 3 tiles/s
+everywhere and gravity falls). The grid stays as the world's data (heights, walls, sight,
+terrain abilities, ground zones); units live at continuous positions (tile units, the
+centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre).
+- **Phase 1 (done): hero movement.** `MoveState` holds `pos`, `vel`, a fall (`z`, `vz`),
+  the drawn height, a radius and an odometer; `Mover` moves a unit for one tick.
+  - Values in `content/rules/movement.tres` (`MovementDef`, `CombatRules.movement`):
+    3 tiles/s in and out of combat (`combat_speed_factor` 1.0), full speed in 0.1 s, stop
+    in 0.08 s, hero radius 0.3. Speed stat +1% per point (up to ×3); slows and Haste act
+    through the buffs' step multiplier (×1.5 slow = 2 tiles/s); roots and stuns stop it.
+  - Input: WASD give 8 screen directions (W = up the screen; diagonals no faster), sent
+    as `{"type": "move", "dir": Vector2i (screen), "face": angle}` with the mouse's
+    grid-space angle. In combat the hero faces the mouse, otherwise where it walks;
+    `facing` is the nearest of the 4 grid directions (sprites).
+  - Collisions: unwalkable tiles and the map's outside are solid squares; a tile more
+    than the unit's Jump above is a cliff face; units slide along them. Heroes push each
+    other (the lighter more) and are pushed out of enemies and NPCs.
+  - Drops are always allowed: 1 level is a step down (drawn smoothly); 2+ levels is a
+    fall under gravity (40 levels/s², 60% of the speed carried, no steering, casts
+    cancelled, a shadow on the ground below); more than 3 levels hurts 10% of max HP per
+    extra level, at most 60%, never below 1 HP unless `fall_damage_can_kill`.
+  - `{"type": "step", "to": tile}` walks to a tile's centre (tests, later click-to-move);
+    a cast ends such a walk, a held key cancels a cast bar.
+  - Map edges: pushing against a side that leads somewhere leaves through it.
+  - Terrain friction (`friction` on a tileset terrain) lowers acceleration (ice); none set.
+  - Enemies and NPCs still step tile to tile (gliding between centres, 0.4 s per tile out
+    of combat) until phase 5. Abilities still resolve on tiles until phases 3–4.
+  - Clients draw everyone between the last two snapshots; prediction comes in phase 2.
+  - Balance targets that assumed tile steps are pending until phase 6.
+  - Screenshots: `tests/visual/free_move_shots.tscn`.
+
 ## Enemy Testing Grounds (2026-10-20)
 
 - **Getting there:** a 2-tile gate in Millbrook's north-east hedge at (15–16, 0), with an

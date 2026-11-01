@@ -39,6 +39,7 @@ respawn_seconds = 900.0
 elite = true
 weight = 2
 footprint = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)])
+collider_radius = 1.35
 flying = true
 grounded_by_tree = "Air"
 grounded_buff = ExtResource("9_grounded")

@@ -59,6 +59,11 @@ enum Look { DIAMOND, CRYSTAL }
 ## large body is hit on, blocks movement on and is reached through every one of
 ## them; it can't be knocked back. Sunscale Drake: a plus of 5.
 @export var footprint: Array[Vector2i] = []
+## Body radius for free movement and hit tests (tiles). The drake's 5-tile plus
+## is one circle of about 1.35.
+@export var collider_radius: float = 0.35
+## Speed in tiles per second (free movement); 0 = the hero walk speed.
+@export var move_speed: float = 0.0
 ## Flies (Sunscale Drake): crosses any walkable tile whatever its height, and
 ## walls, water and other unwalkable tiles up to `fly_over_levels` above it (never
 ## tall props); ground zones (burning ground) don't touch it while airborne.

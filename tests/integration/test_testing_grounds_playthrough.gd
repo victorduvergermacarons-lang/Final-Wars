@@ -28,7 +28,7 @@ func _tick(seconds: float = 0.05) -> Array:
 	return world.advance(seconds)
 
 
-func _walk_to(goal: Vector2i, max_seconds: float = 90.0) -> bool:
+func _walk_to(goal: Vector2i, max_seconds: float = 150.0) -> bool: # the grounds are ~200 tiles long; heroes walk 3 tiles/s
 	var t := 0.0
 	while hero.tile() != goal and t < max_seconds:
 		var sim := _sim()

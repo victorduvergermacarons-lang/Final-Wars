@@ -18,8 +18,10 @@ var hp: float = 0.0
 var mana: float = 0.0
 var alive: bool = true
 var move := MoveState.new()
-## Which way the actor faces: one of GridModel.DIRECTIONS. Steps turn the actor;
-## FRONT and LINE abilities aim this way.
+## Which way the actor faces, as an angle in grid space (radians; 0 = grid
+## right, +x). `facing` is the nearest of the four grid directions (sprites pick
+## their diagonal from it; tile-based abilities aim this way).
+var facing_angle := PI / 2.0
 var facing := Vector2i.DOWN
 var cooldowns := Cooldowns.new()
 ## Light characters are knocked back and pulled 1 tile further, heavy ones 1 less.
@@ -115,7 +117,36 @@ func face(dir: Vector2i) -> bool:
 	if not GridModel.DIRECTIONS.has(dir):
 		return false
 	facing = dir
+	facing_angle = Vector2(dir).angle()
 	return true
+
+
+## Turns to face an angle (grid space, radians); `facing` follows to the nearest
+## of the four grid directions.
+func face_angle(angle: float) -> void:
+	facing_angle = wrapf(angle, -PI, PI)
+	facing = Actor.snap4(Vector2.from_angle(facing_angle))
+
+
+## Unit vector the actor faces (grid space).
+func facing_vector() -> Vector2:
+	return Vector2.from_angle(facing_angle)
+
+
+static func snap4(v: Vector2) -> Vector2i:
+	if absf(v.x) >= absf(v.y):
+		return Vector2i(1 if v.x >= 0.0 else -1, 0)
+	return Vector2i(0, 1 if v.y >= 0.0 else -1)
+
+
+## Exact position (tiles, continuous).
+func pos() -> Vector2:
+	return move.pos
+
+
+## Its own speed before buffs and Speed (tiles/s); enemies override it.
+func base_move_speed(rules: CombatRules) -> float:
+	return rules.movement.walk_speed
 
 
 ## The tile directly in front of the actor.

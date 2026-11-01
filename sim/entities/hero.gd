@@ -36,10 +36,18 @@ var mastery_contrib := {}
 var death_tile := Vector2i.ZERO
 ## One buffered step, taken as soon as the current walk arrives, so holding a
 ## direction stays smooth despite network latency.
-var pending_step: Variant = null # Vector2i or null
+var pending_step: Variant = null # unused since free movement (kept for old callers)
+## Free movement input: the grid-space direction the player holds (length 0..1),
+## where the mouse points (grid-space angle; the hero faces it in combat), and an
+## optional point to walk to (a `step` intent: tests, click-to-move).
+var wish := Vector2.ZERO
+var aim_angle := PI / 2.0
+var walk_target: Variant = null
+var walk_deadline := 0.0
 
 
 func _init(p_id: int = 0, p_base: StatBlock = null) -> void:
+	move.free = true
 	super(p_id, Team.HEROES)
 	if p_base != null:
 		base_stats = p_base
@@ -65,6 +73,19 @@ static func from_def(p_id: int, def: HeroDef) -> Hero:
 
 
 ## Puts the def's starting scroll from the bag into the learning slot.
+## Turning a hero (casting toward a target, a face intent) also moves where it
+## aims, so combat facing (which follows aim_angle) keeps the turn.
+func face(dir: Vector2i) -> bool:
+	if not super(dir):
+		return false
+	aim_angle = facing_angle
+	return true
+
+
+func face_angle(angle: float) -> void:
+	super(angle)
+
+
 func give_starting_learning(def: HeroDef) -> void:
 	if def.starting_learning == null:
 		return

@@ -301,10 +301,16 @@ func _unhandled_input(event: InputEvent) -> void:
 func actor_screen_pos(actor: Actor) -> Vector2:
 	var grid: GridModel = session.grid()
 	var m := actor.move
-	var k := m.progress(session.render_time())
-	var tile := Vector2(m.from_tile).lerp(Vector2(m.to_tile), k)
-	var h := lerpf(grid.height_at(m.from_tile), grid.height_at(m.to_tile), k)
-	return Iso.to_screen(tile, h)
+	var t: float = session.render_time()
+	var at := m.position_at(t)
+	var h: float
+	if m.gliding or (m.duration > 0.0 and t < m.start_time + m.duration):
+		# A tile step or a forced move: the height follows the ground along the way.
+		var k := m.progress(t)
+		h = lerpf(grid.height_at(m.from_tile), grid.height_at(m.to_tile), k)
+	else:
+		h = m.height_at_time(t)
+	return Iso.to_screen(at, h)
 
 
 ## The map tile under a point (world coordinates), the highest one drawn there
@@ -348,7 +354,7 @@ func _draw() -> void:
 		if not actors_by_tile.has(t):
 			actors_by_tile[t] = []
 		actors_by_tile[t].append(a)
-		if not a.move.is_moving(t_now):
+		if not a.move.is_moving(t_now) or a.move.from_tile == a.move.to_tile:
 			continue
 		var other: Vector2i = a.move.from_tile if t == a.move.to_tile else a.move.to_tile
 		if Iso.depth(other) == Iso.depth(t):
@@ -461,7 +467,7 @@ func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary
 ## it, in front of where it is heading) still hides it. Ties: sideways pushes.
 func _draw_anchor(a: Actor) -> Vector2i:
 	var m := a.move
-	if not m.is_moving(session.render_time()):
+	if not m.is_moving(session.render_time()) or m.from_tile == m.to_tile:
 		return m.to_tile
 	var df := Iso.depth(m.from_tile)
 	var dt := Iso.depth(m.to_tile)
@@ -582,10 +588,16 @@ func _draw_actor(a: Actor) -> void:
 			_draw_ellipse(feet, 20, 9, Color(1, 0.9, 0.2), 2.0)
 	var body := feet + Vector2(0, -14)
 	var alpha := 0.45 if a.evading else 1.0
+	if a.move.falling():
+		# Falling: its shadow stays on the ground below, so the drop reads clearly.
+		var ground := Iso.to_screen(a.move.position_at(session.render_time()), float(a.move.ground_h))
+		draw_set_transform(ground, 0.0, Vector2(1.0, 0.5))
+		draw_circle(Vector2.ZERO, 11.0, Color(0, 0, 0, 0.35))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	var animated := (a is Enemy and (a as Enemy).def.art != null) or (a is Npc and (a as Npc).def.art != null)
 	var still := a is Enemy and (a as Enemy).def.immobile # the Grey Heart faces nowhere
 	if a.alive and not animated and not still: # animated creatures show their facing themselves
-		_draw_facing(feet, a.facing, Color(1, 1, 1, 0.85 * alpha))
+		_draw_facing(feet, a.facing_vector() if a.move.free else Vector2(a.facing), Color(1, 1, 1, 0.85 * alpha))
 	if a is Hero:
 		var color: Color = HERO_COLORS[(a.id - 1) % HERO_COLORS.size()]
 		if not a.alive:
@@ -853,7 +865,7 @@ func _draw_flames(grid: GridModel) -> void:
 
 
 ## A small arrow on the ground pointing the way the actor faces.
-func _draw_facing(feet: Vector2, facing: Vector2i, color: Color) -> void:
+func _draw_facing(feet: Vector2, facing: Vector2, color: Color) -> void:
 	var d := Iso.to_screen(Vector2(facing), 0.0).normalized()
 	var side := Vector2(-d.y, d.x)
 	draw_colored_polygon(PackedVector2Array([feet + d * 22, feet + d * 12 + side * 6, feet + d * 12 - side * 6]), color)

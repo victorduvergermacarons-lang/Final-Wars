@@ -84,32 +84,9 @@ func predict_face(seq: int, dir: Vector2i) -> bool:
 	return true
 
 
-## Applies a step locally right away if the mirror says it's legal.
-## `t` is the client's estimate of the host clock. Returns true if predicted.
-func predict_step(seq: int, to: Vector2i, t: float) -> bool:
-	var hero := local_hero()
-	if hero == null or not hero.alive or pending_step_count() >= MAX_PENDING_STEPS:
-		return false
-	if not _step_is_legal(hero, to, t):
-		return false
-	var start := maxf(t, hero.move.start_time + hero.move.duration)
-	_pending.append({"seq": seq, "kind": "step", "to": to, "start": start})
-	hero.move.begin(to, start, rules.walk_tile_seconds)
-	return true
-
-
-func _step_is_legal(hero: Hero, to: Vector2i, t: float) -> bool:
-	var from := hero.tile()
-	if GridModel.distance(from, to) != 1:
-		return false
-	if not grid.can_step(from, to, StatCalc.jump_levels(hero.current_stats(t))):
-		return false
-	for a in _actors.values():
-		if a != hero and a.alive and a.covers(to):
-			return false
-	if hero.in_combat(t) and not hero.cooldowns.can_step(t):
-		return false
-	return true
+## Tile steps are no longer predicted (free movement; phase 2 predicts movement).
+func predict_step(_seq: int, _to: Vector2i, _t: float) -> bool:
+	return false
 
 
 ## Puts back the zone's own terrain where earlier changes ended, then applies the
@@ -181,8 +158,9 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	a.alive = d.alive
 	a.evading = d.evading
 	a.combat_until = d.combat_until
-	a.move = MoveState.from_dict(d.move)
+	a.move.apply_dict(d.move, now)
 	a.facing = d.get("facing", Vector2i.DOWN)
+	a.facing_angle = d.get("angle", Vector2(a.facing).angle())
 	a.cooldowns = Cooldowns.from_dict(d.cd)
 	var c: Dictionary = d.get("cast", {})
 	var cast_ability: AbilityDef = content.abilities.get(StringName(c.get("ability", ""))) if not c.is_empty() else null
@@ -237,21 +215,11 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 		h.mastery_contrib[StringName(id)] = float(p.contrib[id])
 
 
-## Host state, then re-apply steps the host hasn't processed yet. If the
-## resulting walk is the same one already showing, keep the local timing so the
-## hero doesn't visibly jump back by the network delay.
+## Host state, then re-apply turns the host hasn't processed yet.
 func _apply_local_hero(h: Hero, d: Dictionary) -> void:
-	var shown := h.move
 	_apply_actor(h, d)
 	var ack: int = d.private.ack if d.has("private") else 0
 	_pending = _pending.filter(func(p): return p.seq > ack)
 	for p in _pending:
-		if not h.alive:
-			break
-		if p.kind == "face":
+		if h.alive and p.kind == "face":
 			h.face(p.dir)
-		elif GridModel.distance(h.tile(), p.to) == 1:
-			h.move.begin(p.to, maxf(p.start, h.move.start_time + h.move.duration), rules.walk_tile_seconds)
-	if h.move.from_tile == shown.from_tile and h.move.to_tile == shown.to_tile:
-		h.move.start_time = shown.start_time
-		h.move.duration = shown.duration

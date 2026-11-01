@@ -98,10 +98,25 @@ func on_zone_changed(new_view: WorldView) -> void:
 
 # --- Footsteps --------------------------------------------------------------------
 
+## Free movers play a footstep every this many tiles walked.
+const STRIDE := 0.6
+var _last_odo := {}
+
 func _footsteps() -> void:
 	var zone: ZoneDef = session.zone()
 	for a in session.actors():
 		if a is Npc or not a.alive:
+			continue
+		if a.move.free and not a.move.gliding:
+			# Free movement: a footstep every STRIDE tiles walked.
+			var odo: float = a.move.odometer
+			var last: float = _last_odo.get(a.id, odo)
+			if odo < last or odo - last >= STRIDE:
+				_last_odo[a.id] = odo
+				if odo > last:
+					_play_on(_footstep_key(a, zone), a)
+			elif not _last_odo.has(a.id):
+				_last_odo[a.id] = odo
 			continue
 		var start: float = a.move.start_time
 		if _last_step.get(a.id, -1.0) == start:
@@ -110,12 +125,13 @@ func _footsteps() -> void:
 		_last_step[a.id] = start
 		if first or not a.move.is_moving(session.render_time()) and a.move.from_tile == a.move.to_tile:
 			continue # just seen, or placed rather than walking
-		var key: StringName
-		if a is Enemy:
-			key = SoundCatalog.creature_key((a as Enemy).def.id, "step")
-		else:
-			key = SoundCatalog.footstep_key(zone.terrain_at(a.tile()) if zone.has_terrain() else "")
-		_play_on(key, a)
+		_play_on(_footstep_key(a, zone), a)
+
+
+func _footstep_key(a: Actor, zone: ZoneDef) -> StringName:
+	if a is Enemy:
+		return SoundCatalog.creature_key((a as Enemy).def.id, "step")
+	return SoundCatalog.footstep_key(zone.terrain_at(a.tile()) if zone.has_terrain() else "")
 
 
 # --- Events -----------------------------------------------------------------------

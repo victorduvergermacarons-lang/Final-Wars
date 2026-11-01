@@ -116,7 +116,13 @@ func terrain_at(p: Vector2i) -> String:
 ## Rebuilds walk_rows and sight_rows from the tileset: a tile is walkable when
 ## its terrain is (all variants of a terrain agree; see validate_terrain) and its
 ## prop, if any, is; it blocks sight when its top block or its prop does.
+## Slippery tiles (a terrain's "friction" below 1 in its tileset), baked with the
+## walk rows: tile -> friction. None today.
+var friction_tiles := {}
+
+
 func bake_walkability(ts: TilesetData) -> void:
+	friction_tiles = {}
 	var walk: PackedStringArray = []
 	var sight: PackedStringArray = []
 	for y in terrain_rows.size():
@@ -126,6 +132,9 @@ func bake_walkability(ts: TilesetData) -> void:
 			var p := Vector2i(x, y)
 			var terrain := terrain_at(p)
 			var walkable := ts.terrain_walkable(terrain)
+			var friction := ts.terrain_friction(terrain)
+			if friction != 1.0:
+				friction_tiles[p] = friction
 			var blocks := ts.blocks_sight(ts.pick(terrain, p))
 			var group := prop_at(p)
 			if group != "":

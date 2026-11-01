@@ -13,6 +13,9 @@ var _walkable := PackedByteArray()
 ## Tiles that block line of sight and projectiles whatever their height (a tall
 ## boulder prop, a rock standing in the river).
 var _sight_blocked := PackedByteArray()
+## Tiles whose floor is slippery (free movement accelerates and stops more slowly
+## there): tile -> friction (1 = normal). Empty on every map today.
+var _friction := {}
 
 
 func _init(p_width: int = 0, p_depth: int = 0, fill_height: int = 0) -> void:
@@ -40,6 +43,8 @@ static func from_zone(zone: ZoneDef) -> GridModel:
 			grid.set_tile(Vector2i(x, y), ZoneDef.parse_height(hrow[x]), wrow[x] == ".")
 			if not zone.sight_rows.is_empty():
 				grid.set_blocks_sight(Vector2i(x, y), zone.sight_rows[y][x] == "#")
+	for t in zone.friction_tiles:
+		grid.set_friction(t, zone.friction_tiles[t])
 	return grid
 
 
@@ -77,6 +82,17 @@ func set_blocks_sight(p: Vector2i, blocks: bool) -> void:
 
 func is_walkable(p: Vector2i) -> bool:
 	return in_bounds(p) and _walkable[_index(p)] == 1
+
+
+func friction_at(p: Vector2i) -> float:
+	return _friction.get(p, 1.0)
+
+
+func set_friction(p: Vector2i, f: float) -> void:
+	if is_equal_approx(f, 1.0):
+		_friction.erase(p)
+	else:
+		_friction[p] = clampf(f, 0.02, 1.0)
 
 
 ## Whether an actor with `jump` can step from `from` to the adjacent tile `to`.
