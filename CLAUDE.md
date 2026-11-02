@@ -537,7 +537,10 @@ edit the zone files directly now. Screenshots: `tests/visual/zone_shots.tscn`.
 - **Music:** `audio/music/music_explore_tidereach.ogg` ("Water Idle", Vorbis q6 from
   the uploaded WAV, kept at `art/audio/music_explore_tidereach_master.wav`), explore in
   Tidereach. Not edited: it doesn't loop cleanly (2.35 s of near-silence at the start,
-  ends at full level). Everything else still plays the draft. Crossfade 1.5 s as before.
+  ends at full level). `audio/music/music_explore_windsteppe.ogg` ("Windsteppe", the user's
+  upload, 2026-11-02): explore in Vael (the Windsteppe); not edited, it loops with a small dip
+  (starts about 10 dB quieter than it ends, no gap). Everything else still plays the draft.
+  Crossfade 1.5 s as before.
 - **Ambience keys:** `ambience_<zone id>`: `ambience_town`, `ambience_crossing`,
   `ambience_deepcut_road`, `ambience_deepcut`, `ambience_windsteppe`,
   `ambience_tidereach_shore` (in `AUDIO_SPEC.md`).
@@ -1951,6 +1954,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-02 | The Windsteppe track plays: a music entry (`explore_windsteppe.tres`, explore, region Vael); the duplicate upload at `audio/music_explore_windsteppe.ogg` deleted | User approval. The upload had no `MusicTrackDef`, so the draft played. Not edited (measured: no silence; the last 0.5 s average −28 dB, the first −38 dB, so a small dip at the loop). |
 | 2026-11-02 | Exports keep text resources as text (`editor/export/convert_text_resources_to_binary=false`); the Windows export preset is committed | User report: the exported Windows build showed a grey world ("Invalid zone: …: empty height_rows" for every tiled zone). Cause measured: Godot 4.7.2's export conversion of `.tres` to binary drops `PackedStringArray` values (reproduced with a two-file project) and script-made defaults (the tree tuning's stat blocks). Not the `.json` files: they were packed. `tests/integration/test_export_zones.gd` exports a pack and loads every zone from it; `docs/exporting.md`. |
 | 2026-11-01 | Free movement: all 6 phases built on `feature/free-movement` | User brief and plan approval (3 tiles/s in and out of combat; drops of more than 3 levels hurt but are allowed; falls under gravity; enemies follow the same rules). See **Free movement** and `docs/FREE_MOVEMENT_PLAN.md`. My decisions are in the next rows. |
 | 2026-11-01 | Branch from the Act I milestone 4 tip, not `main` | `main` didn't have milestones 3 and 4 yet (their pull requests were open). The tags `v0.2-act1-prototype` and `v0.2-grid-final` go on `main` once those merge. |
