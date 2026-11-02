@@ -9,3 +9,6 @@ export_credentials.cfg
 .DS_Store
 Thumbs.db
 *.tmp
+
+# Exports (see export_presets.cfg)
+build/
