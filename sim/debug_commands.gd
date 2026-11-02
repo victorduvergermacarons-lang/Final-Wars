@@ -12,7 +12,7 @@ const HELP := """Commands:
   master <ability>             master an ability (id like F07 or a name like "Fireball")
   spawn <enemy> [level] [n]    spawn n enemies (default 1) at a level (default theirs) next to you
   heal                         full HP and Mana, cooldowns reset
-  goto <zone>                  go to a zone's start (town, crossing, deepcut_road, deepcut, windsteppe, greenfields, enemy_testing, tidereach_shore)
+  goto <zone>                  go to a zone's start (town, crossing, deepcut_road, deepcut, windsteppe, greenfields, enemy_testing, tidereach_shore, silent_shaft)
   gold <n>                     set your gold"""
 
 ## Stats that scale with an enemy's level when spawned above or below its own.

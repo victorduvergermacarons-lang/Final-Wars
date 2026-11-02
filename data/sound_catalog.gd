@@ -39,6 +39,11 @@ const WORLD_KEYS := {
 	"world_event": "a world event is announced (the bells of Millbrook)",
 	"world_miss": "an attack misses",
 	"world_whiff": "an attack hits nothing",
+	"world_dungeon_enter": "your party enters a dungeon (its own copy)",
+	"world_lift": "a mine lift rattles along its shaft (you ride it)",
+	"world_party_wipe": "the whole party has fallen in a dungeon",
+	"world_wipe_respawn": "the fallen party wakes at the dungeon's entrance",
+	"world_act_complete": "an act of the story ends (the end-of-act screen opens)",
 }
 
 const CREATURE_EVENTS := {
@@ -216,12 +221,23 @@ func _collect_keys(content) -> void:
 	for id in enemies:
 		var e: EnemyDef = enemies[id]
 		for ev in CREATURE_EVENTS:
+			if ev == "step" and e.immobile:
+				continue # it never moves
 			_keys[creature_key(id, ev)] = "%s %s" % [e.display_name, CREATURE_EVENTS[ev]]
 		if e.grounded_buff != null:
 			_keys[creature_key(id, "grounded")] = "%s is knocked out of the air" % e.display_name
 		if e.enrage_buff != null:
 			_keys[creature_key(id, "enrage")] = "%s enrages (%s)" % [e.display_name, e.enrage_buff.display_name]
 	_keys[footstep_key("")] = "a hero steps on ground without a known surface"
+	for z in content.zones.values():
+		var enc: BossEncounterDef = z.encounter
+		if enc != null and enc.boss != null and enc.heart != null:
+			_keys[creature_key(enc.boss.id, "phase")] = "%s enters a new phase of the fight (phases 2 and 3)" % enc.boss.display_name
+			if enc.enrage_buff != null:
+				_keys[creature_key(enc.boss.id, "enrage")] = "%s enrages (%s, phase 3)" % [enc.boss.display_name, enc.enrage_buff.display_name]
+			_keys[creature_key(enc.boss.id, "reset")] = "%s goes back to the start of its phase (after a party wipe)" % enc.boss.display_name
+			_keys[creature_key(enc.heart.id, "pulse")] = "%s pulses: adds climb out, the floor turns grey" % enc.heart.display_name
+			_keys[creature_key(enc.heart.id, "break")] = "%s breaks and the fight is won" % enc.heart.display_name
 	for z in content.zones.values():
 		_keys[ambience_key(z)] = "background loop in %s (Ambience bus, OGG)" % z.display_name
 		if not z.has_terrain():

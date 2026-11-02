@@ -84,7 +84,7 @@ func _update_music(zone_changed: bool = false) -> void:
 	var zone: ZoneDef = session.zone()
 	if zone == null:
 		return
-	Audio.set_context(music_context(), Audio.bond_for(zone), zone.region)
+	Audio.set_context(music_context(), Audio.bond_for(zone), zone.region, zone.id)
 	if zone_changed:
 		Audio.set_ambience(SoundCatalog.ambience_key(zone))
 
@@ -98,10 +98,25 @@ func on_zone_changed(new_view: WorldView) -> void:
 
 # --- Footsteps --------------------------------------------------------------------
 
+## Free movers play a footstep every this many tiles walked.
+const STRIDE := 0.6
+var _last_odo := {}
+
 func _footsteps() -> void:
 	var zone: ZoneDef = session.zone()
 	for a in session.actors():
 		if a is Npc or not a.alive:
+			continue
+		if a.move.free and not a.move.gliding:
+			# Free movement: a footstep every STRIDE tiles walked.
+			var odo: float = a.move.odometer
+			var last: float = _last_odo.get(a.id, odo)
+			if odo < last or odo - last >= STRIDE:
+				_last_odo[a.id] = odo
+				if odo > last:
+					_play_on(_footstep_key(a, zone), a)
+			elif not _last_odo.has(a.id):
+				_last_odo[a.id] = odo
 			continue
 		var start: float = a.move.start_time
 		if _last_step.get(a.id, -1.0) == start:
@@ -110,12 +125,13 @@ func _footsteps() -> void:
 		_last_step[a.id] = start
 		if first or not a.move.is_moving(session.render_time()) and a.move.from_tile == a.move.to_tile:
 			continue # just seen, or placed rather than walking
-		var key: StringName
-		if a is Enemy:
-			key = SoundCatalog.creature_key((a as Enemy).def.id, "step")
-		else:
-			key = SoundCatalog.footstep_key(zone.terrain_at(a.tile()) if zone.has_terrain() else "")
-		_play_on(key, a)
+		_play_on(_footstep_key(a, zone), a)
+
+
+func _footstep_key(a: Actor, zone: ZoneDef) -> StringName:
+	if a is Enemy:
+		return SoundCatalog.creature_key((a as Enemy).def.id, "step")
+	return SoundCatalog.footstep_key(zone.terrain_at(a.tile()) if zone.has_terrain() else "")
 
 
 # --- Events -----------------------------------------------------------------------
@@ -162,6 +178,26 @@ func _on_events(events: Array) -> void:
 				var r = _actor(e.source)
 				if r is Enemy:
 					_play_on(SoundCatalog.creature_key(r.def.id, "enrage"), r)
+			"boss_phase":
+				var b = _actor(e.source)
+				if b is Enemy:
+					_play_on(SoundCatalog.creature_key(b.def.id, "phase"), b)
+			"boss_reset":
+				var b = _actor(e.source)
+				if b is Enemy:
+					_play_on(SoundCatalog.creature_key(b.def.id, "reset"), b)
+			"heart_pulse":
+				var h = _actor(e.source)
+				if h is Enemy:
+					_play_on(SoundCatalog.creature_key(h.def.id, "pulse"), h)
+			"boss_defeated":
+				var h = _actor(e.get("heart", -1))
+				if h is Enemy:
+					_play_on(SoundCatalog.creature_key(h.def.id, "break"), h)
+			"party_wipe":
+				Audio.play(&"world_party_wipe")
+			"wipe_respawn":
+				Audio.play(&"world_wipe_respawn")
 			"level_up":
 				_play_on(&"world_level_up", _actor(e.target))
 			"zone_reset":
@@ -177,6 +213,12 @@ func _on_events(events: Array) -> void:
 				Audio.play(&"world_mastered")
 			"release":
 				Audio.play(&"world_release")
+			"dungeon_enter":
+				Audio.play(&"world_dungeon_enter")
+			"lift":
+				Audio.play(&"world_lift")
+			"act_complete":
+				Audio.play(&"world_act_complete")
 			"buy", "sell":
 				Audio.play(&"ui_coins")
 			"equip", "unequip":

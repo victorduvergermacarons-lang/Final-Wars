@@ -1,10 +1,12 @@
 [gd_resource type="Resource" script_class="CombatRules" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://data/defs/combat_rules.gd" id="1_rules"]
+[ext_resource type="Resource" path="res://content/rules/movement.tres" id="2_move"]
 
 [resource]
 script = ExtResource("1_rules")
-walk_tile_seconds = 0.2
+movement = ExtResource("2_move")
+walk_tile_seconds = 0.4
 combat_step_base_seconds = 1.5
 combat_step_min_seconds = 0.5
 speed_half_point = 100.0

@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/iron_wolf_pelt.tres" id="item_iron_wolf_pelt"]
+[ext_resource type="Resource" path="res://content/items/winter_stores.tres" id="item_winter_stores"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 1
+text = "Iron wolf pelts"
+count = 4
+item = ExtResource("item_iron_wolf_pelt")
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("1_obj")
+kind = 5
+text = "Winter stores brought to Elder Tsaga"
+item = ExtResource("item_winter_stores")
+npc = &"elder_tsaga"
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_side_the_white_death"
+title = "The White Death"
+category = 1
+area = "Windsteppe"
+giver = &"saran"
+prerequisites = Array[StringName]([&"act1_03_wells_for_the_windsteppe"])
+min_level = 4
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1")])
+given_items = Array[ExtResource("3_item")]([ExtResource("item_winter_stores")])
+reward_xp = 300
+reward_gold = 30
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion")])

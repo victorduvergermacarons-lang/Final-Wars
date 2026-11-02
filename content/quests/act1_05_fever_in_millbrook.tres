@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/fever_draught.tres" id="item_fever_draught"]
+[ext_resource type="Resource" path="res://content/items/minor_health_potion.tres" id="item_minor_health_potion"]
+[ext_resource type="Resource" path="res://content/items/minor_mana_potion.tres" id="item_minor_mana_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 2
+text = "Ask Odo the Apothecary for healers"
+npc = &"apothecary_odo"
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("1_obj")
+kind = 5
+text = "Fever draughts brought to Healer Wenna"
+count = 3
+item = ExtResource("item_fever_draught")
+npc = &"healer_wenna"
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("1_obj")
+kind = 7
+text = "The grey river examined in Millbrook"
+zone = &"town"
+spots = Array[Vector2i]([Vector2i(23, 27)])
+
+[sub_resource type="Resource" id="Objective_3"]
+script = ExtResource("1_obj")
+kind = 7
+text = "The grey stream examined on the Road to Deepcut"
+zone = &"deepcut_road"
+spots = Array[Vector2i]([Vector2i(34, 16)])
+
+[sub_resource type="Resource" id="Objective_4"]
+script = ExtResource("1_obj")
+kind = 7
+text = "The stream's source found in Deepcut"
+zone = &"deepcut"
+spots = Array[Vector2i]([Vector2i(32, 21)])
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_05_fever_in_millbrook"
+title = "1-05 Fever in Millbrook"
+category = 0
+area = "Millbrook"
+giver = &"guild_board"
+turn_in = &"healer_wenna"
+prerequisites = Array[StringName]([&"act1_02_applicants_wanted"])
+min_level = 3
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2"), SubResource("Objective_3"), SubResource("Objective_4")])
+given_items = Array[ExtResource("3_item")]([ExtResource("item_fever_draught"), ExtResource("item_fever_draught"), ExtResource("item_fever_draught")])
+reward_xp = 450
+reward_gold = 40
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion"), ExtResource("item_minor_mana_potion"), ExtResource("item_minor_mana_potion")])
+reward_choice_ids = Array[StringName]([&"featherstep_scroll", &"pillar_scroll", &"quarry_maul"])

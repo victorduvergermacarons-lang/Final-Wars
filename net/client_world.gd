@@ -84,32 +84,64 @@ func predict_face(seq: int, dir: Vector2i) -> bool:
 	return true
 
 
-## Applies a step locally right away if the mirror says it's legal.
-## `t` is the client's estimate of the host clock. Returns true if predicted.
-func predict_step(seq: int, to: Vector2i, t: float) -> bool:
+## Tile steps aren't predicted (free movement predicts `move` input instead).
+func predict_step(_seq: int, _to: Vector2i, _t: float) -> bool:
+	return false
+
+
+# --- Free movement prediction --------------------------------------------------
+# The local hero moves on this machine at once: every tick it runs the same Mover
+# as the host with the input it has sent, remembering which input each tick used.
+# Each snapshot gives the host's position after the inputs it has processed (ack);
+# the ticks with later inputs are replayed from there. A small difference is
+# faded out on screen (MoveState.smooth_offset); a big one snaps.
+
+## A correction larger than this (tiles) snaps instead of fading.
+const SNAP_DISTANCE := 1.5
+var _wish := Vector2.ZERO
+var _face := PI / 2.0
+var _wish_seq := 0
+var _ticks: Array = [] # [{"seq", "wish", "face"}] predicted since the last snapshot
+## Where the host last said the local hero is (before replaying newer input).
+var last_host_pos := Vector2.ZERO
+
+
+## The player's input as sent (seq): held screen direction and mouse angle.
+func predict_move(seq: int, dir: Vector2i, face: float) -> void:
+	_wish = Mover.screen_to_grid(dir)
+	_face = face
+	_wish_seq = seq
+
+
+## Runs one predicted tick for the local hero at client time `t`.
+func predict_tick(t: float) -> void:
 	var hero := local_hero()
-	if hero == null or not hero.alive or pending_step_count() >= MAX_PENDING_STEPS:
-		return false
-	if not _step_is_legal(hero, to, t):
-		return false
-	var start := maxf(t, hero.move.start_time + hero.move.duration)
-	_pending.append({"seq": seq, "kind": "step", "to": to, "start": start})
-	hero.move.begin(to, start, rules.walk_tile_seconds)
-	return true
+	if hero == null:
+		return
+	hero.move.begin_tick(t)
+	_ticks.append({"seq": _wish_seq, "wish": _wish, "face": _face})
+	while _ticks.size() > 120:
+		_ticks.pop_front()
+	_step_local(hero, _wish, _face, t)
 
 
-func _step_is_legal(hero: Hero, to: Vector2i, t: float) -> bool:
-	var from := hero.tile()
-	if GridModel.distance(from, to) != 1:
-		return false
-	if not grid.can_step(from, to, StatCalc.jump_levels(hero.current_stats(t))):
-		return false
+func _step_local(hero: Hero, wish: Vector2, face: float, t: float) -> void:
+	if not hero.alive or hero.move.gliding:
+		return
+	Mover.step(hero, wish, rules.tick_seconds, grid, rules, t)
 	for a in _actors.values():
-		if a != hero and a.alive and a.covers(to):
-			return false
-	if hero.in_combat(t) and not hero.cooldowns.can_step(t):
-		return false
-	return true
+		if a != hero and a.alive:
+			Mover.separate_pair(hero, a, false, true)
+	Mover.resolve_terrain(hero, grid)
+	if hero.in_combat(t):
+		hero.face_angle(face)
+	elif hero.move.vel.length() > 0.3:
+		hero.face_angle(hero.move.vel.angle())
+
+
+## Predicted ticks waiting for the host (tests).
+func pending_tick_count() -> int:
+	return _ticks.size()
 
 
 ## Puts back the zone's own terrain where earlier changes ended, then applies the
@@ -133,6 +165,7 @@ func apply_snapshot(snap: Dictionary) -> void:
 	tick = snap.tick
 	now = snap.now
 	time_scale = snap.get("time_scale", 1.0)
+	rules.dungeon_testing = snap.get("dungeon_testing", rules.dungeon_testing)
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
 	ground_zones = snap.get("zones", [])
@@ -180,8 +213,10 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	a.alive = d.alive
 	a.evading = d.evading
 	a.combat_until = d.combat_until
-	a.move = MoveState.from_dict(d.move)
+	a.move.buffered = a.id != local_hero_id
+	a.move.apply_dict(d.move, now)
 	a.facing = d.get("facing", Vector2i.DOWN)
+	a.facing_angle = d.get("angle", Vector2(a.facing).angle())
 	a.cooldowns = Cooldowns.from_dict(d.cd)
 	var c: Dictionary = d.get("cast", {})
 	var cast_ability: AbilityDef = content.abilities.get(StringName(c.get("ability", ""))) if not c.is_empty() else null
@@ -197,6 +232,7 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	elif a is Enemy:
 		(a as Enemy).state = d.state as Enemy.State
 		(a as Enemy).died_at = d.get("died_at", -1.0)
+		(a as Enemy).invulnerable = d.get("invulnerable", false)
 		(a as Enemy).level = d.get("level", (a as Enemy).def.level)
 	elif a is Npc:
 		(a as Npc).set_escorting(d.get("escort", false))
@@ -235,21 +271,37 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 		h.mastery_contrib[StringName(id)] = float(p.contrib[id])
 
 
-## Host state, then re-apply steps the host hasn't processed yet. If the
-## resulting walk is the same one already showing, keep the local timing so the
-## hero doesn't visibly jump back by the network delay.
+## Host state, then replay the predicted ticks whose input the host hasn't
+## processed yet; the visible jump (if small) fades out instead of popping.
 func _apply_local_hero(h: Hero, d: Dictionary) -> void:
-	var shown := h.move
+	var m := h.move
+	var shown := m.pos
+	var keep := [m.prev_pos, m.prev_time, m.time, m.prev_draw_h, m.draw_h]
+	var predicted_angle := h.facing_angle
 	_apply_actor(h, d)
+	last_host_pos = m.pos
 	var ack: int = d.private.ack if d.has("private") else 0
 	_pending = _pending.filter(func(p): return p.seq > ack)
 	for p in _pending:
-		if not h.alive:
-			break
-		if p.kind == "face":
+		if h.alive and p.kind == "face":
 			h.face(p.dir)
-		elif GridModel.distance(h.tile(), p.to) == 1:
-			h.move.begin(p.to, maxf(p.start, h.move.start_time + h.move.duration), rules.walk_tile_seconds)
-	if h.move.from_tile == shown.from_tile and h.move.to_tile == shown.to_tile:
-		h.move.start_time = shown.start_time
-		h.move.duration = shown.duration
+	_ticks = _ticks.filter(func(tk): return tk.seq > ack)
+	if not m.free or m.gliding or keep[2] <= 0.0:
+		return # first snapshot, or a forced move the host drives
+	for tk in _ticks:
+		_step_local(h, tk.wish, tk.face, now)
+	if not _ticks.is_empty():
+		h.face_angle(predicted_angle)
+	# Keep drawing on the predicted timeline (same tick times as before); the
+	# difference to the old prediction fades out rather than popping.
+	var error: Vector2 = shown - m.pos
+	m.prev_time = keep[1]
+	m.time = keep[2]
+	m.prev_draw_h = keep[3]
+	if error.length() > SNAP_DISTANCE:
+		m.prev_pos = m.pos
+		m.smooth_offset = Vector2.ZERO
+	else:
+		m.prev_pos = keep[0] - error
+		m.smooth_offset = error
+		m.offset_time = m.time

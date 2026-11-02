@@ -99,7 +99,10 @@ func test_shield_absorbs_then_breaks() -> void:
 func test_stun_stops_steps_and_abilities() -> void:
 	var stun := _ability(AbilityEffect.Kind.BUFF, 0, {}, _buff(&"stun", 2.0, {"stuns": true, "is_debuff": true}))
 	world.cast(hero, stun, hero)
-	assert_eq(world.try_step(hero, Vector2i(5, 4)), "stunned")
+	var at := hero.move.pos
+	_walk_to(Vector2i(5, 4))
+	world.advance(0.5)
+	assert_eq(hero.move.pos, at, "can't move")
 	var hit := _ability(AbilityEffect.Kind.DAMAGE, 10)
 	assert_eq(world.cast(hero, hit, foe), AbilityResolver.Result.STUNNED)
 
@@ -145,17 +148,16 @@ func test_charged_damage_bonus_like_kindle() -> void:
 	assert_eq(_lost(foe), 80.0)
 
 
-func test_free_steps_like_air_step() -> void:
-	hero.combat_until = 1.0e9
-	var step := _buff(&"air_step", 30.0, {"free_steps": true, "charges": 2})
-	world.cast(hero, _ability(AbilityEffect.Kind.BUFF, 0, {}, step), hero)
-	assert_eq(world.try_step(hero, Vector2i(5, 4)), "")
-	world.advance(0.25)
-	assert_eq(world.try_step(hero, Vector2i(5, 3)), "", "no step cooldown")
-	world.advance(0.25)
-	assert_eq(world.try_step(hero, Vector2i(5, 2)), "")
-	world.advance(0.25)
-	assert_eq(world.try_step(hero, Vector2i(5, 1)), "not_ready", "charges spent: normal step cooldown")
+func test_speed_buffs_change_how_fast_you_move() -> void:
+	# Free movement: no step cooldown; slows and hastes act on walking speed.
+	var base := Mover.speed_of(hero, rules, world.now)
+	var quick := _buff(&"quick", 30.0, {"step_cooldown_multiplier": 0.5})
+	world.cast(hero, _ability(AbilityEffect.Kind.BUFF, 0, {}, quick), hero)
+	assert_almost_eq(Mover.speed_of(hero, rules, world.now), base * 2.0, 0.001, "twice as fast")
+	var start := hero.move.pos
+	_walk_to(Vector2i(5, 1))
+	world.advance(0.5)
+	assert_gt(hero.move.pos.distance_to(start), base * 0.5 * 1.5, "covers more ground")
 
 
 func test_cast_time_resolves_later_and_moving_cancels_it() -> void:
@@ -169,7 +171,7 @@ func test_cast_time_resolves_later_and_moving_cancels_it() -> void:
 	hero.cooldowns = Cooldowns.new()
 	world.cast(hero, slow, foe)
 	world.advance(0.5)
-	world.try_step(hero, Vector2i(5, 4))
+	_walk_to(Vector2i(5, 4))
 	world.advance(1.0)
 	assert_eq(_lost(foe), 50.0, "cancelled by moving")
 	assert_eq(hero.mana, 480.0, "no mana spent")
@@ -188,7 +190,7 @@ func test_cast_fails_if_the_target_leaves_range() -> void:
 func test_moving_cancels_a_windup() -> void:
 	var smash := _ability(AbilityEffect.Kind.DAMAGE, 50, {"windup_seconds": 0.3, "max_range": 1})
 	world.cast(hero, smash, foe)
-	assert_eq(world.try_step(hero, Vector2i(5, 4)), "")
+	_walk_to(Vector2i(5, 4))
 	assert_true(hero.casting.is_empty(), "the wind-up is cancelled")
 	world.advance(0.4)
 	assert_eq(_lost(foe), 0.0)
@@ -217,7 +219,7 @@ func test_channel_ticks_and_ends_when_moving() -> void:
 	foe.hp = foe.stats.hp
 	world.cast(hero, beam, foe)
 	world.advance(1.05)
-	world.try_step(hero, Vector2i(5, 4))
+	_walk_to(Vector2i(5, 4))
 	world.advance(3.0)
 	assert_eq(_lost(foe), 10.0, "moving ended it")
 
@@ -261,3 +263,9 @@ func test_mastery_adds_charges() -> void:
 	assert_eq(AbilityResolver.max_charges(hero, dash, world.now), 2)
 	world.cast(hero, dash, foe)
 	assert_eq(world.cast(hero, dash, foe), AbilityResolver.Result.OK)
+
+
+## Starts walking to a tile (the "step" intent: walk to its centre) for one tick.
+func _walk_to(tile: Vector2i) -> void:
+	world.submit(hero.id, {"type": "step", "to": tile})
+	world.step()

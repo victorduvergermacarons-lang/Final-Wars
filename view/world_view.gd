@@ -301,10 +301,16 @@ func _unhandled_input(event: InputEvent) -> void:
 func actor_screen_pos(actor: Actor) -> Vector2:
 	var grid: GridModel = session.grid()
 	var m := actor.move
-	var k := m.progress(session.render_time())
-	var tile := Vector2(m.from_tile).lerp(Vector2(m.to_tile), k)
-	var h := lerpf(grid.height_at(m.from_tile), grid.height_at(m.to_tile), k)
-	return Iso.to_screen(tile, h)
+	var t: float = session.render_time()
+	var at := m.position_at(t)
+	var h: float
+	if m.gliding or (m.duration > 0.0 and t < m.start_time + m.duration):
+		# A tile step or a forced move: the height follows the ground along the way.
+		var k := m.progress(t)
+		h = lerpf(grid.height_at(m.from_tile), grid.height_at(m.to_tile), k)
+	else:
+		h = m.height_at_time(t)
+	return Iso.to_screen(at, h)
 
 
 ## The map tile under a point (world coordinates), the highest one drawn there
@@ -348,9 +354,20 @@ func _draw() -> void:
 		if not actors_by_tile.has(t):
 			actors_by_tile[t] = []
 		actors_by_tile[t].append(a)
-		if not a.move.is_moving(t_now):
+		var other: Vector2i
+		if a.move.free and not a.move.gliding:
+			# Drawn with a tile in front of the one under it: the tiles of that row
+			# in front of its own tile (a wall beside it) must still cover it.
+			other = MoveState.tile_of(a.move.position_at(t_now))
+			if other == t:
+				continue
+			for q in [other + Vector2i(1, 0), other + Vector2i(0, 1)]:
+				if q != t and Iso.depth(q) == Iso.depth(t):
+					_must_follow(after, q, t)
 			continue
-		var other: Vector2i = a.move.from_tile if t == a.move.to_tile else a.move.to_tile
+		if not a.move.is_moving(t_now) or a.move.from_tile == a.move.to_tile:
+			continue
+		other = a.move.from_tile if t == a.move.to_tile else a.move.to_tile
 		if Iso.depth(other) == Iso.depth(t):
 			_must_follow(after, t, other) # a sideways push: both tiles go under it
 		else:
@@ -373,6 +390,7 @@ func _draw() -> void:
 					_draw_actor(a)
 	else:
 		_draw_over_cache(grid, actors_by_tile, after, quest_areas, marks)
+	_draw_outlines(grid)
 	_draw_projectiles(grid)
 	_draw_flames(grid)
 	_draw_landmarks(grid)
@@ -461,13 +479,32 @@ func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary
 ## it, in front of where it is heading) still hides it. Ties: sideways pushes.
 func _draw_anchor(a: Actor) -> Vector2i:
 	var m := a.move
-	if not m.is_moving(session.render_time()):
+	if m.free and not m.gliding:
+		return _free_anchor(a)
+	if not m.is_moving(session.render_time()) or m.from_tile == m.to_tile:
 		return m.to_tile
 	var df := Iso.depth(m.from_tile)
 	var dt := Iso.depth(m.to_tile)
 	if df != dt:
 		return m.from_tile if df > dt else m.to_tile
 	return m.to_tile
+
+
+## A free mover (moving or standing) is drawn with the frontmost tile its body
+## reaches into that isn't higher than its feet, so flat ground in front of it never
+## covers it; higher tiles in front (walls, cliffs) still do.
+func _free_anchor(a: Actor) -> Vector2i:
+	var grid: GridModel = session.grid()
+	var p: Vector2 = a.move.position_at(session.render_time())
+	var base := MoveState.tile_of(p)
+	var feet := grid.height_at(base) if grid.in_bounds(base) else 0
+	var best := base
+	var r := a.move.radius
+	for off in [Vector2(r, 0), Vector2(0, r), Vector2(r, r) * 0.7071]:
+		var t := MoveState.tile_of(p + off)
+		if t != base and grid.in_bounds(t) and grid.height_at(t) <= feet and Iso.depth(t) > Iso.depth(best):
+			best = t
+	return best
 
 
 ## Draws a tile on `canvas` (this view, or a terrain chunk); with `clip`, only
@@ -582,9 +619,16 @@ func _draw_actor(a: Actor) -> void:
 			_draw_ellipse(feet, 20, 9, Color(1, 0.9, 0.2), 2.0)
 	var body := feet + Vector2(0, -14)
 	var alpha := 0.45 if a.evading else 1.0
+	if a.move.falling():
+		# Falling: its shadow stays on the ground below, so the drop reads clearly.
+		var ground := Iso.to_screen(a.move.position_at(session.render_time()), float(a.move.ground_h))
+		draw_set_transform(ground, 0.0, Vector2(1.0, 0.5))
+		draw_circle(Vector2.ZERO, 11.0, Color(0, 0, 0, 0.35))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	var animated := (a is Enemy and (a as Enemy).def.art != null) or (a is Npc and (a as Npc).def.art != null)
-	if a.alive and not animated: # animated creatures show their facing themselves
-		_draw_facing(feet, a.facing, Color(1, 1, 1, 0.85 * alpha))
+	var still := a is Enemy and (a as Enemy).def.immobile # the Grey Heart faces nowhere
+	if a.alive and not animated and not still: # animated creatures show their facing themselves
+		_draw_facing(feet, a.facing_vector() if a.move.free else Vector2(a.facing), Color(1, 1, 1, 0.85 * alpha))
 	if a is Hero:
 		var color: Color = HERO_COLORS[(a.id - 1) % HERO_COLORS.size()]
 		if not a.alive:
@@ -622,6 +666,14 @@ func _draw_actor(a: Actor) -> void:
 			if a.alive:
 				_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
 			return
+		if edef.look == EnemyDef.Look.CRYSTAL:
+			_draw_crystal(a as Enemy, feet, alpha)
+			_draw_label(feet + Vector2(0, -78), "%s  Lv%d" % [a.display_name, (a as Enemy).level], Color(1, 0.85, 0.45, alpha))
+			if a.alive:
+				_draw_bar(feet + Vector2(-20, -70), 40, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
+				if (a as Enemy).invulnerable:
+					_draw_label(feet + Vector2(0, 18), "Shielded by the Foreman", Color(0.8, 0.8, 0.85), 11)
+			return
 		var s := 1.6 if edef.elite else 1.0
 		var diamond := PackedVector2Array([body + Vector2(0, -12) * s, body + Vector2(10, 0) * s,
 				body + Vector2(0, 12) * s, body + Vector2(-10, 0) * s])
@@ -636,6 +688,36 @@ func _draw_actor(a: Actor) -> void:
 		var max_hp := a.current_stats(now).hp
 		_draw_bar(body + Vector2(-14, -20), 28, a.hp / maxf(max_hp, 1.0), Color(0.2, 0.85, 0.3))
 		_draw_cast_bar(a, feet, now)
+
+
+## The Grey Heart (EnemyDef.Look.CRYSTAL): a cracked crystal of black-gold
+## Sunstone leaking grey smoke, pulsing slowly. Shielded (invulnerable) it shows
+## a pale ring; once it can be hurt, its gold cracks glow brighter.
+func _draw_crystal(e: Enemy, feet: Vector2, alpha: float) -> void:
+	var t := _pulse_ms() / 1000.0
+	var glow := 0.5 + 0.5 * sin(t * 2.4)
+	var open := not e.invulnerable
+	_draw_ellipse(feet, 26, 12, Color(0, 0, 0, 0.35 * alpha), 6.0)
+	var top := feet + Vector2(0, -64)
+	var shard := PackedVector2Array([top, feet + Vector2(16, -40), feet + Vector2(12, -6), feet + Vector2(0, 2),
+			feet + Vector2(-12, -6), feet + Vector2(-16, -40)])
+	draw_colored_polygon(shard, Color(0.08, 0.07, 0.06, alpha))
+	var face := PackedVector2Array([top, feet + Vector2(16, -40), feet + Vector2(12, -6), feet + Vector2(0, 2)])
+	draw_colored_polygon(face, Color(0.2, 0.17, 0.1, alpha))
+	var gold := Color(1.0, 0.78, 0.2, alpha * (0.55 + (0.45 if open else 0.25) * glow))
+	for crack in [[Vector2(0, -60), Vector2(-5, -42), Vector2(3, -30), Vector2(-2, -10)],
+			[Vector2(10, -40), Vector2(5, -26), Vector2(9, -12)], [Vector2(-12, -34), Vector2(-7, -20)]]:
+		var pts := PackedVector2Array()
+		for p in crack:
+			pts.append(feet + p)
+		draw_polyline(pts, gold, 2.0 if open else 1.5)
+	shard.append(shard[0])
+	draw_polyline(shard, Color(0.55, 0.45, 0.2, alpha), 1.5)
+	for i in 3: # grey smoke rising and fading
+		var k := fmod(t * 0.35 + i / 3.0, 1.0)
+		draw_circle(top + Vector2(sin(t + i * 2.0) * 6.0, -k * 30.0), 4.0 + k * 7.0, Color(0.55, 0.55, 0.58, (1.0 - k) * 0.45 * alpha))
+	if e.invulnerable and e.alive:
+		_draw_ellipse(feet + Vector2(0, -28), 26, 40, Color(0.8, 0.82, 0.9, 0.35 * alpha), 2.0)
 
 
 ## Draws an animated creature standing on `feet`; false if it has nothing to show.
@@ -767,11 +849,56 @@ func _draw_cast_bar(a: Actor, feet: Vector2, now: float) -> void:
 		_draw_label(feet + Vector2(0, 22), ability.display_name, color, 10)
 
 
+## Hitbox shapes on the ground (free movement): enemy telegraphs in red, brighter
+## as they land, then the local player's aim (blue, red when it can't be cast).
+func _draw_outlines(grid: GridModel) -> void:
+	var now: float = session.now()
+	for h in session.telegraphs():
+		var poly: PackedVector2Array = h.get("outline", PackedVector2Array())
+		if poly.size() >= 3:
+			var left := clampf(float(h.at) - now, 0.0, 1.5)
+			var a := 0.45 - 0.2 * left / 1.5 + 0.08 * sin(_pulse_ms() / 80.0)
+			_draw_ground_poly(grid, poly, Color(TELEGRAPH_COLOR, a))
+	if client != null and not client.aim.is_empty():
+		var poly: PackedVector2Array = client.aim.get("outline", PackedVector2Array())
+		if poly.size() >= 3:
+			_draw_ground_poly(grid, poly, AIM_COLOR if client.aim.valid else AIM_BAD_COLOR)
+
+
+## A grid-space polygon drawn flat on the ground, at the height under its centre
+## (corners at their own heights tear it apart across ledges).
+func _draw_ground_poly(grid: GridModel, poly: PackedVector2Array, color: Color) -> void:
+	var centre := Vector2.ZERO
+	for q in poly:
+		centre += q
+	centre /= poly.size()
+	var h := grid.height_at(MoveState.tile_of(centre))
+	var pts := PackedVector2Array()
+	for q in poly:
+		pts.append(Iso.to_screen(q, h))
+	var fill := Color(color, color.a * 0.45)
+	if Geometry2D.triangulate_polygon(pts).size() > 0:
+		draw_colored_polygon(pts, fill)
+	pts.append(pts[0])
+	draw_polyline(pts, Color(0.05, 0.05, 0.1, 0.6), 3.0)
+	draw_polyline(pts, Color(color.lightened(0.25), minf(color.a + 0.4, 1.0)), 1.5)
+
+
 ## Projectiles: a glowing ball moving along its path at the origin's height.
 ## Heroes' are orange, enemies' purple.
 func _draw_projectiles(grid: GridModel) -> void:
 	var t: float = session.render_time()
 	for p in session.projectiles():
+		if p.has("from"):
+			# Free movement: from its start point along its direction.
+			var at: Vector2 = p.from + p.dirv * clampf((t - p.start) * p.speed, 0.0, p.length)
+			var sp := Iso.to_screen(at, grid.height_at(Vector2i(p.origin))) + Vector2(0, -16)
+			if session.get_actor(p.source) is Enemy:
+				draw_circle(sp, 8, Color(0.6, 0.2, 0.9, 0.5))
+				draw_circle(sp, 5, Color(0.85, 0.6, 1.0))
+			else:
+				_draw_fireball(sp)
+			continue
 		# Straight from where it was cast toward the end of its path (any angle).
 		var dist := clampf((t - p.start) * p.speed, 0.0, p.length + 0.5)
 		var origin := Vector2(p.origin)
@@ -814,7 +941,7 @@ func _draw_flames(grid: GridModel) -> void:
 
 
 ## A small arrow on the ground pointing the way the actor faces.
-func _draw_facing(feet: Vector2, facing: Vector2i, color: Color) -> void:
+func _draw_facing(feet: Vector2, facing: Vector2, color: Color) -> void:
 	var d := Iso.to_screen(Vector2(facing), 0.0).normalized()
 	var side := Vector2(-d.y, d.x)
 	draw_colored_polygon(PackedVector2Array([feet + d * 22, feet + d * 12 + side * 6, feet + d * 12 - side * 6]), color)
@@ -908,6 +1035,12 @@ func _on_events(events: Array) -> void:
 				_float(e.target, "+%d mana" % e.amount, Color(0.45, 0.6, 1), t)
 			"miss":
 				_float(e.target, "Miss", Color(0.8, 0.8, 0.8), t)
+			"immune":
+				_float(e.target, "Immune", Color(0.8, 0.82, 0.9), t)
+			"boss_phase":
+				_float(e.source, "Phase %d!" % e.phase, Color(1, 0.6, 0.3), t)
+			"heart_pulse":
+				_float(e.source, "Pulse!", Color(0.75, 0.75, 0.8), t)
 			"whiff":
 				_float(e.source, "Whiff", Color(0.75, 0.75, 0.75), t)
 			"level_up":

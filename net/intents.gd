@@ -25,6 +25,15 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(raw.get("dir")) != TYPE_VECTOR2I:
 				return {}
 			out.dir = raw.dir
+		"move":
+			# Held direction on screen (8 ways) and the mouse's grid-space angle.
+			if typeof(raw.get("dir")) != TYPE_VECTOR2I:
+				return {}
+			out.dir = Vector2i(clampi(raw.dir.x, -1, 1), clampi(raw.dir.y, -1, 1))
+			var face = raw.get("face", 0.0)
+			if (typeof(face) != TYPE_FLOAT and typeof(face) != TYPE_INT) or not is_finite(float(face)):
+				return {}
+			out.face = wrapf(float(face), -PI, PI)
 		"cast":
 			var ability = raw.get("ability")
 			if typeof(ability) != TYPE_STRING and typeof(ability) != TYPE_STRING_NAME:
@@ -91,6 +100,11 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
 				return {}
 			out.value = clampf(float(value), CombatRules.GAME_SPEED_MIN, CombatRules.GAME_SPEED_MAX)
+		"dungeon_testing":
+			var on = raw.get("on")
+			if typeof(on) != TYPE_BOOL:
+				return {}
+			out.on = on
 		"timing_press", "timing_release":
 			var at = raw.get("at")
 			if (typeof(at) != TYPE_FLOAT and typeof(at) != TYPE_INT) or not is_finite(float(at)):
@@ -107,7 +121,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(raw.get("tile")) != TYPE_VECTOR2I:
 				return {}
 			out.tile = raw.tile
-		"accept_quest", "turn_in_quest", "abandon_quest", "accept_shared_quest":
+		"accept_quest", "turn_in_quest", "abandon_quest", "accept_shared_quest", "finish_act":
 			var quest = raw.get("quest")
 			if typeof(quest) != TYPE_STRING and typeof(quest) != TYPE_STRING_NAME:
 				return {}

@@ -20,7 +20,16 @@ work** (terrain cache, sleeping empty zones) is on the `optimised-build-1` branc
 milestone 1 of 4** (quests and dialogue, branch `feature/v1.2.1`, 2026-10-26): see **Act I: quests
 and dialogue**, `docs/quests-and-dialogue.md` and `docs/playtest-checklist-act1.md`. **Milestone 2 of
 4** (zones, region music, branch `feature/v1.3.1`, 2026-10-27): see **Act I: zones and region music**
-and `docs/playtest-checklist-act1-zones.md`. For the numbers
+and `docs/playtest-checklist-act1-zones.md`. **Milestone 3 of 4** (the Act I quests 1-01 to
+1-06 and three side quests, party-size scaling, branch `feature/act1-m3-quests`, 2026-10-27): see
+**Act I: the Floor Guild quests** and `docs/playtest-checklist-act1-quests.md`. **Milestone 4 of 4**
+(the Silent Shaft dungeon, the Foreman and the Grey Heart, quest 1-07, the end of Act I, branch
+`feature/act1-m4-silent-shaft`, 2026-10-27): see **Act I: the Silent Shaft** and the full Act I
+checklist `docs/playtest-checklist-act1-full.md`. **Free movement** (branch
+`feature/free-movement`, 2026-11-01, all 6 phases): units move freely instead of tile by tile,
+attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **Free movement**,
+`docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. Tile steps, step
+cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
 wording.
@@ -135,7 +144,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 |----|---------|------|-----------|-------------------------------|------|----|
 | F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent, **1 s timing bar** (zones at the end) | 1.0 magical | 4 | 2 |
 | F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent | 0.8 + burn 0.6 over 3 s | 8 | 4 |
-| F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 6 | 2 |
+| F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 10 | 2 |
 | F04 | Sun Warrior's Breath | Sun Warrior's Breath Scroll | Self | next 3 Fire casts +30% (20 s), +10% max Mana over 10 s, off GCD | 10 | 20 |
 | F05 | Flame Dash | Scroll of Burning Feet | Ground 8-way, 3 | dash 3, trail burns 3 s (0.4/s); charges 1 +1/300 | 10 | 8 |
 | F06 | Fire Whip | Lash of Embers Scroll | Skillshot 8-way line 3, pierce | 1.1 | 10 | 6 |
@@ -153,7 +162,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | W09 | Ice Spikes | Glacier Scroll | Ground 4, 3×3, 0.4 s telegraph | 1.0 + slow ×1.5 3 s | 15 | 10 |
 | A01 | Air Palm | Open Palm Scroll | Targeted, adjacent | 0.6 + knockback 1 | 6 | 4 |
 | A02 | Gust | Breeze Scroll | Targeted, 3 | 0.5 + interrupt, off GCD | 8 | 10 |
-| A03 | Air Step | Featherstep Scroll | Self | 5 free steps (10 s), off GCD | 8 | 10 |
+| A03 | Air Step | Featherstep Scroll | Self | +40% speed for 4 s (free movement), off GCD | 8 | 10 |
 | A05 | Air Blast | Gale Scroll | Targeted, 3 | 0.6 + knockback 3, +25 on impact | 12 | 10 |
 | E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
@@ -247,14 +256,13 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
 - **Stats:** HP 190, PhysAtk 13, MagAtk 14, PhysDef 5, MagDef 12, Evasion 8, Jump 2;
   aggro 5, leash 12; 0.5 s per tile in combat (the fastest enemy), 0.25 s reaction;
   light; 70 XP, 3 AP; 3–8 g, Scroll of Burning Feet 4%, Scorched Earth Scroll 4%.
-- **Bite** (`hound_bite`): Targeted, adjacent, 5 + 1.0×PhysAtk physical, 1.6 s,
-  0.3 s wind-up (from the art).
-- **Cinder Pounce** (`cinder_pounce`): Ground, 8 s. Aims at the free tile beside a
-  hero 1–3 tiles away, on the hound's side (`AbilityDef.aim_beside_target`), and
-  marks that tile plus its four neighbours (`area_diamond`) for its 0.6 s wind-up.
-  Then it leaps onto the tile and deals 10 + 1.0×MagAtk magical (fire) damage to
-  whoever is still on the mark. The hero stands on one arm of the plus, so any step
-  except toward the hound gets out.
+- **Bite** (`hound_bite`): a 70° cone, 1.2 tiles, 5 + 1.0×PhysAtk physical, 2.0 s
+  (1.6 s before free movement), 0.3 s wind-up (from the art).
+- **Cinder Pounce** (`cinder_pounce`): 8 s. Since free movement it leaps onto the point
+  beside a hero 1–3 tiles away, on the hound's side (`AbilityDef.aim_beside_target`),
+  marking a circle of 1.2 tiles there for its 0.67 s wind-up (frame 6 at 9 fps), then
+  deals 10 + 1.0×MagAtk magical (fire) damage to whoever is still in it. Moving about
+  a tile away, except toward the hound, gets out.
 - **Ember Trail** (passive, `EnemyDef.trail_ability` = `ember_trail`): every tile it
   leaves while fighting becomes a 2 s ground zone dealing 2 + 0.15×MagAtk magical
   every 0.5 s (`ember_trail_burn`).
@@ -267,7 +275,7 @@ A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, M
   hit flash). Art data: `content/creatures/salamander_hound_art.tres`, feet (24, 33).
   - idle = the authored loop at 10 fps
   - bite = loop frames 3–9 at 20 fps (jaws on frame 6)
-  - pounce = frames 2–13 at 10 fps (springs on frame 6)
+  - pounce = frames 2–13 at 9 fps (springs on frame 6; was 10 fps until the free-movement balance pass)
   - **Placeholders (art missing):** run reuses frames 0–3, death reuses the
 	crouch (frames 4–10), and NE/NW reuse the SE/SW rows.
 
@@ -285,7 +293,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
     move it.
   - The tiles it covers are outlined faintly on the ground, and its target ring
     surrounds the whole body.
-- **Stats:** HP 3000, PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
+- **Stats:** HP 2200 (3000 until the free-movement balance pass), PhysAtk 22, MagAtk 24, PhysDef 22, MagDef 28, Acc 5; aggro 5,
   leash 14; 1.2 s per tile; 0.3 s reaction; 700 XP, 12 AP; respawn 15 min (10 s in the
   testing grounds); 60–120 g, Fireball / Scorched Earth / Burning Feet scrolls 15% each.
 - **Flight** (`EnemyDef.flying`, `GridModel.can_fly`):
@@ -293,7 +301,7 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
   - It crosses walls, hedges and water up to 1 level above it (`fly_over_levels`),
     but never tiles that block sight.
   - Ground zones don't touch it while airborne.
-- **Talon Rake** (`talon_rake`): Targeted, adjacent, 20 + 1.2×PhysAtk, 2.5 s. The
+- **Talon Rake** (`talon_rake`): a 100° cone of 2.7 tiles from its centre (free movement), 20 + 1.2×PhysAtk, 3.0 s. The
   0.5 s wind-up comes from the art: the talons swing through kick frame 13.
 - **Sunfire Breath** (`sunfire_breath`): skillshot cone, 8-way, 4 tiles, 10 s.
   - It rears back for 0.8 s with the cone outlined.
@@ -462,20 +470,10 @@ quest system to carry the story and adds dialogue. How to edit: `docs/quests-and
   they give quests and take hand-ins like anyone. "[E] Talk / Read / Use / Examine".
 - **Tracker and log:** main quests first; the log groups Main / Side with each area;
   failed quests show where to restart them.
-- **Placeholder Act I** (story to be replaced; all lines in the file):
-  - Since milestone 2 (see **Act I: zones and region music**): the Guild Board,
-    Warden Iska Dorne and Sabra Venn are at the Crossing; Ilyth the Seer in Millbrook;
-    the Mine Board, Foreman Hadda Brannoc, the ore caravan (320 HP) and the Collapsed
-    Shaft in Deepcut; the Vael Standing Stone on the Windsteppe.
-  - Main chain:
-    1. The Guild's Summons (board, talk)
-    2. Ash on the East Road (investigate 3 spots)
-    3. The Ember Hand's Writ (deliver)
-    4. Ore for Millbrook (escort, level 2, hand in to Dorne)
-    5. What the Stone Remembers (interact + kill 3 iron wolves, level 3). Sets
-       `act1_complete`.
-  - Side: Bandits on the Ore Road, The Collapsed Shaft, Guild Patrol: The Bridge.
-    Rowan's and Maren's 5 quests are side quests.
+- **The placeholder Act I** of this milestone (the Guild's Summons, Ash on the East
+  Road, the Ember Hand's Writ, Ore for Millbrook, What the Stone Remembers, three side
+  quests) was replaced by the real one in milestone 3: see **Act I: the Floor Guild
+  quests**. Rowan's and Old Ottilie's 5 Millbrook quests stay, as side quests.
 - **Network:** new intents `examine` and `accept_shared_quest`; the escort flag is
   in each NPC's snapshot. The 4-player check now has the guests in town join the
   host's quest over the network.
@@ -548,6 +546,310 @@ edit the zone files directly now. Screenshots: `tests/visual/zone_shots.tscn`.
   (`creature_wolf_bite` and `creature_iron_wolf_bite`).
 - **Network:** the 4-player check has the guests join Rowan's quest in Millbrook,
   then Guest1 goes to Greenfields and Guest2 to the Crossing: three zones at once.
+
+## Act I: the Floor Guild quests (milestone 3 of 4, 2026-10-27)
+
+User brief: Act I, "The Floor Guild" (levels 1–12, about 2–3 hours): the party earns a
+place in the Floor Guild through three relief missions; each succeeds on paper, but
+the suffering returns, and every one traces back to a Sunstone mine or supply road.
+Prince Caedan Ashvale, the Guild's founder, is sincere. Quests written by
+`tools/once/make_act1_quests.py` (edit the .tres files now); every line in
+`content/dialogue/act1.json`. Checklist: `docs/playtest-checklist-act1-quests.md`.
+- **Quests** (`content/quests/act1_*.tres`; level, giver → hand-in, objectives):
+
+  | Quest | Lv | Giver → hand-in | Objectives | XP |
+  |-------|----|-----------------|------------|----|
+  | 1-01 The Guild Comes to Millbrook | 1 | Maren Voss (Millbrook) | kill 3 wolves, 2 boars in the south fields | 120 |
+  | 1-02 Applicants Wanted | 2 | Maren Voss (Crossing) | talk to Warden Dorne, Quartermaster Harrow | 150 |
+  | 1-03 Wells for the Windsteppe | 3 | Maren → Saran | escort the Well-Digging Crew to Tsaga's Camp; kill 4 iron wolves | 400 |
+  | 1-04 Grain for Deepcut | 3 | Guild Board → Steward Brann | escort the Guild Grain Wagon down the Road to Deepcut | 450 |
+  | 1-05 Fever in Millbrook | 3 | Guild Board → Healer Wenna | talk to Odo; deliver 3 Fever Draughts to Wenna; examine the grey river in Millbrook, on the Road and in Deepcut | 450 |
+  | 1-06 Recognition | 6 | Maren → Caedan | talk to Caedan (after 1-03, 1-04, 1-05); leads to 1-07 The Silent Shaft (milestone 4) | 450 |
+  | The White Death (side) | 4 | Saran | collect 4 iron wolf pelts (quest drop, 60%); deliver Winter Stores to Elder Tsaga | 300 |
+  | Shift Bell (side) | 6 | Mine Board → Miner Ostrik | use the Collapsed Shaft; kill 3 Human Husks; talk to Miner Ostrik | 350 |
+  | Pins on the Map (side) | 7 | Guild Board → Maren | reach 4 troubled sites; use the Guild Map | 500 |
+
+  Escorts fail if the escortee dies and restart from the giver (milestone 1 rules).
+- **Rewards:** gold, potions, and a choice of one item per main quest teaching an
+  implemented tier-1 ability; across the act every tree comes up (Fire: Spark, Cinder
+  Kick, Sun Warrior's Breath; Water: River Lash, Frost Shard, the Current; Earth:
+  Pebble, Stomp, Pillar; Air: Open Palm, Breeze, Featherstep; Sword: Traveler's
+  Longsword; Bow: Hunter's Shortbow, Yew Longbow; Hammer: Iron Mallet, Quarry Maul).
+- **Missing tier-1 abilities** (not implemented, so not rewarded): E02 Stone Skin
+  (Granite Skin Scroll), A04 Wind Snare (Snaring Wind Scroll), S02 Thrust (Militia
+  Rapier), S03 Parry (Duelist's Sabre), B03 Disengage (Ranger's Bow), B04 Hunter's
+  Mark (Tracker's Bow), H03 Brace (Bulwark Hammer), H04 Wide Swing (Broad Maul).
+- **Levels:** the quests' XP plus their required kills take a party to level 10
+  (`tests/integration/test_act1_playthrough.gd`: solo 4,770 XP, a party of four 4,578
+  each, in the measured run; the curve itself is unchanged, 100 × level). The Silent
+  Shaft has to give about 2,100 XP more to reach 12. Rowan's and Ottilie's Millbrook
+  quests are extra (about 1,060 XP).
+- **People** (new): Maren Voss (two placements, `maren_voss_field` by Millbrook's
+  south bridge and `maren_voss` at the Guild Hall), Prince Caedan Ashvale and
+  Quartermaster Ilse Harrow (the Guild vendor: Iron Helm, Swift Boots, potions and the
+  20 implemented tier-1 scrolls and weapons) at the hall, the Guild Map (a board), Saran
+  and the Well-Digging Crew (260 HP) on the Windsteppe, the Guild Grain Wagon (420 HP)
+  on the Road to Deepcut, Miner Ostrik in Deepcut. Renamed: Steward Orrin Marl → Steward
+  Brann; Old Maren → Old Ottilie (id `maren` kept). Gone: Foreman Brannoc, the ore
+  caravan, the Sealed Writ. Sabra, Ilyth and the Vael stone stay as people to talk to.
+- **Enemies:** Boar (level 2: HP 240, PhysAtk 12, PhysDef 10; Gore 7 + PhysAtk, 0.4 s
+  wind-up; Tusk Charge, a 1 s telegraphed rush 2–3 tiles, 8 + PhysAtk) and Human Husk
+  (level 7: HP 420, PhysAtk 22, PhysDef 14, MagDef 24, heavy, 1.3 s per tile; Hollow
+  Rake 10 + PhysAtk, 0.6 s wind-up; drops Sunstone Shards). Placeholder diamonds until
+  art. `EnemySpawn.level` places an enemy at another level (±15% per level): road
+  wolves 3, road Bandit Brutes 5 (two ambushes beside the road), iron wolves 4–5,
+  Deepcut's hounds 6.
+- **Party size** (`CombatRules` "Party size"): enemies grow with the heroes in their
+  zone (1–4): +70% max HP and +10% damage per extra hero (×3.1 HP and ×1.3 damage for
+  four); a kill's XP grows the same, so every hero who fought earns a solo share
+  (`share = xp × min(fighters, party size) / fighters`). Scaled while not fighting (a
+  fight keeps the size it began with; a hurt enemy keeps its share of health).
+  Elites and training dummies don't scale. Tests of exact numbers switch it off
+  (`party_scaling`).
+- **Dialogue:** `quest.<id>.talk.<i>` lines: what the person of a Talk objective says
+  when you come to them for it.
+- **Test:** `Act1Playthrough` (`tests/integration/act1_playthrough.gd`) plays every
+  quest in order through intents, for one hero and for a party of four who join each
+  quest through the co-op prompt; kills are short-cut, escorts are walked.
+
+## Act I: the Silent Shaft (milestone 4 of 4, 2026-10-27)
+
+User brief: quest 1-07 and Act I's dungeon; dungeon rules for every dungeon; the boss; the end of
+the act. Content written by `tools/once/make_silent_shaft.py` (enemies, abilities, buffs, loot,
+encounter, the zone) and `tools/once/make_act1_quests.py` (1-07); edit the files directly now.
+Checklist: `docs/playtest-checklist-act1-full.md`.
+- **Dungeon rules (every dungeon, `ZoneDef.dungeon`):**
+  - **Instanced per party:** no copy exists until the party walks in; then the party gets its
+    own (`World.dungeon_instance`, key `<zone>@<party>`, its own enemies, boss and loot). All
+    connected players are one party (rule 11), so for now there is one copy. A copy nobody has
+    been in for `dungeon_close_seconds` (60) closes; the next visit starts fresh. Zones are found
+    by key (`WorldSim.key`); `zone.id` stays the map's id, so clients load the right map.
+  - **Entry** (an exit tile into the dungeon, `ZoneDef.exits`): needs the dungeon's quest
+    (`ZoneDef.requires_quest`, active or done) and a party of `CombatRules.min_dungeon_party()`:
+    `dungeon_min_party` (3) in the real game, 1 with **dungeon testing** (`dungeon_testing`: on
+    in debug builds, a switch in the Escape menu's Gameplay test tab, sent as the
+    `dungeon_testing` intent, allowed where the debug console is). Refused: a red message.
+  - **Party wipe:** when every hero in a dungeon is dead at once, after
+    `wipe_respawn_seconds` (3) everyone stands up at its entrance (the zone's first graveyard)
+    at half health and mana, and enemies forget them. A boss goes back to the start of its
+    current phase, not full health.
+  - **Lifts:** an exit with no `to_zone` (or its own) moves you within the map.
+- **The Silent Shaft** (`content/zones/silent_shaft.tres`, 66×30, region Bedrun, music context
+  dungeon): entered by stepping into Deepcut's mine entrance (34, 11); you arrive at (3, 14).
+  Walls 6 high everywhere but three sections:
+  1. **Upper tunnels** (x 1–20): the entrance (graveyard), an abandoned ore cart and rails,
+     collapsed side drifts, the rock turning grey, four Human Husks (level 8); the **Mine Lift**
+     at (19, 19) rides down to the seams (and back from (24, 21)).
+  2. **Deep seams** (x 23–44): Sunstone seams gold where untouched (east), grey where mined
+     out (west), a worked-out ledge (height 2) and a high seam face (3) with ramps, pillars
+     that break line of sight, four Husks (level 9, one on each height), and the optional
+     **Old Shift Office** (south) with the **Grey Overseer** (level 9, 760 HP; drops tier-2
+     scrolls 35% each, potions, a Sunstone Shard).
+  3. **The Foreman's chamber** (x 47–64): grey floor, gold seams, four pillars, the Foreman
+     before the Grey Heart on its dais.
+  New placeholder tiles 137–146 (mine floor and stone, grey rock, gold and spent seams,
+  Sunstone and grey clusters). Steward Brann leaves Deepcut once 1-06 is handed in (world flag
+  `brann_descended`, `NpcDef.gone_after_flag`): he has become the Foreman.
+- **The boss** (`content/encounters/foreman.tres`, `BossEncounterDef`, run by `BossEncounter`):
+  - **The Foreman** (level 10 elite, `dungeon_boss`: scales with the party like other enemies;
+    HP 1100 solo, PhysAtk 16, PhysDef 18, MagDef 22; heavy; leash 16; +45% health per extra hero,
+    `EnemyDef.party_hp_per_hero`): Pick-Hammer (an 80° cone of 1.5 tiles, 14 + 0.75×PhysAtk,
+    2.4 s, 0.7 s wind-up), **Ground Slam** (a circle of 1.5 tiles at his target, marked red for
+    1.0 s, 12 + 0.6×PhysAtk, 8 s) and **Mine-Cart Charge** (a lane 2–5 long marked for 1.1 s, then
+    a rush and 8 + 0.6×PhysAtk, 15 s). Values as of the free-movement balance pass. Threat decides his target: the
+    tank holds him (taunts work).
+  - **The Grey Heart** (level 10, 300 HP solo, +45% per extra hero, `immobile`, drawn as a cracked black-gold
+    crystal leaking smoke, `EnemyDef.Look.CRYSTAL`): fights beside him, shielded ("Immune",
+    "Shielded by the Foreman") until phase 3.
+  - **Phase 1** (100–60%): slams and charges; tank and spread.
+  - **Phase 2** (below 60%): the Heart pulses every 12 s: one Grey Husk climbs out (90 HP solo,
+    at most 2) and 6 tiles around the heroes turn grey for 12 s (`greyed`: steps ×1.5, −3% of
+    max mana per second).
+  - **Phase 3** (below 25%): the Foreman enrages (**Grey Fury**: +30% damage, cooldowns ×0.85),
+    the Heart opens and pulses every 9 s (8 grey tiles, no husks). He can't fall below 5% while it
+    beats. **Breaking the Heart ends the fight:** he falls with it (his kill and XP go to the
+    party), adds and grey fade, and Caedan comes down to the chamber door (50, 15).
+  - Numbers tuned with bots in the real chamber (`BalanceSim.boss_fight`; see the decisions log).
+- **Quest 1-07 The Silent Shaft** (main, level 8, Caedan at the hall → Caedan in the shaft):
+  ride the lift to the deep seams, find where the silence comes from (the chamber), break the
+  Grey Heart, speak with Caedan. Shaken, he recruits the party into the Ember Hand (a dialogue
+  with choices, `quest.act1_07_the_silent_shaft.talk.3…`). Rewards: 1,200 XP, 120 gold, potions,
+  a choice of Fireball, Glacier or Bulwark scroll. Hand-in sets `act1_complete` (saved by the host)
+  and ends the act (`QuestDef.ends_act` = 1, `return_zone` = crossing).
+- **End of Act I** (`ActEndScreen`): opens after the hand-in conversation, over a dimmed world:
+  the act's name, a line of story, and the party's records (level, enemies defeated, damage
+  dealt, healing done, deaths, quests handed in); its button sends `finish_act` and the host
+  takes the hero to the Crossing. Records are kept per hero (`Hero.records`, from the sim's
+  events) and saved with the character, with the acts finished (`records.acts`: [1]); the
+  character saves the moment the act ends.
+- **Levels:** the scripted playthrough ends Act I at level 12, solo (7,190 XP) and for a party
+  of four (6,934 each), without the dungeon's husks and the Overseer (about 1,500 XP more).
+- **Audio:** tracks `music_dungeon_silentshaft` (dungeon) and `music_boss_foreman` (boss) are
+  listed for the Silent Shaft only (`MusicTrackDef.zones`); a track whose file is missing is
+  skipped, so the draft plays (dungeon → explore → town) and the boss fight keeps the music. New
+  sound keys: the Foreman's, the Heart's, the grey husk's and the Overseer's (generated), plus
+  `creature_foreman_phase` / `_enrage` / `_reset`, `creature_grey_heart_pulse` / `_break`,
+  `world_dungeon_enter`, `world_lift`, `world_party_wipe`, `world_wipe_respawn`,
+  `world_act_complete`, `ambience_silent_shaft`, `footstep_mine_floor`, `footstep_grey_rock`.
+- **Testing grounds:** dungeon bosses and immobile enemies (the Foreman, the Heart) get no pen;
+  the grey husk and the Overseer do.
+- **Debug:** `goto silent_shaft` goes straight into the party's copy.
+- **Tests:** `tests/unit/test_dungeons.gd` (entry rules, testing setting, copies, closing,
+  lifts, wipes), `tests/integration/test_foreman.gd` (phases with 1 and 4 heroes, greyed
+  ground, the wipe reset, threat), `tests/integration/test_act_end_screen.gd`, the balance test
+  `test_the_foreman_is_a_fight_for_a_group`, and `Act1Playthrough` now plays 1-01 to 1-07, the
+  end screen and the walk home.
+
+## Free movement (branch `feature/free-movement`, 2026-11-01)
+
+User brief: free movement and mouse-aimed attacks instead of the tile grid. Plan, every
+system affected and the phase order: `docs/FREE_MOVEMENT_PLAN.md` (approved with 3 tiles/s
+everywhere and gravity falls). The grid stays as the world's data (heights, walls, sight,
+terrain abilities, ground zones); units live at continuous positions (tile units, the
+centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre).
+- **Phase 1 (done): hero movement.** `MoveState` holds `pos`, `vel`, a fall (`z`, `vz`),
+  the drawn height, a radius and an odometer; `Mover` moves a unit for one tick.
+  - Values in `content/rules/movement.tres` (`MovementDef`, `CombatRules.movement`):
+    3 tiles/s in and out of combat (`combat_speed_factor` 1.0), full speed in 0.1 s, stop
+    in 0.08 s, hero radius 0.3. Speed stat +1% per point (up to ×3); slows and Haste act
+    through the buffs' step multiplier (×1.5 slow = 2 tiles/s); roots and stuns stop it.
+  - Input: WASD give 8 screen directions (W = up the screen; diagonals no faster), sent
+    as `{"type": "move", "dir": Vector2i (screen), "face": angle}` with the mouse's
+    grid-space angle. In combat the hero faces the mouse, otherwise where it walks;
+    `facing` is the nearest of the 4 grid directions (sprites).
+  - Collisions: unwalkable tiles and the map's outside are solid squares; a tile more
+    than the unit's Jump above is a cliff face; units slide along them. Heroes push each
+    other (the lighter more) and are pushed out of enemies and NPCs.
+  - Drops are always allowed: 1 level is a step down (drawn smoothly); 2+ levels is a
+    fall under gravity (40 levels/s², 60% of the speed carried, no steering, casts
+    cancelled, a shadow on the ground below); more than 3 levels hurts 10% of max HP per
+    extra level, at most 60%, never below 1 HP unless `fall_damage_can_kill`.
+  - `{"type": "step", "to": tile}` walks to a tile's centre (tests, later click-to-move);
+    a cast ends such a walk, a held key cancels a cast bar.
+  - Map edges: pushing against a side that leads somewhere leaves through it.
+  - Terrain friction (`friction` on a tileset terrain) lowers acceleration (ice); none set.
+  - Enemies and NPCs still step tile to tile (gliding between centres, 0.4 s per tile out
+    of combat) until phase 5. Abilities still resolve on tiles until phases 3–4.
+  - Balance targets that assumed tile steps are pending until phase 6.
+  - Screenshots: `tests/visual/free_move_shots.tscn`.
+- **Phase 2 (done): networking.**
+  - Input: a `move` intent every sim tick while a key is held (and whenever the
+    direction or the mouse angle changes), each with its own sequence number.
+  - **Prediction** (`ClientWorld.predict_move` / `predict_tick`, driven by
+    `ClientSession` at the sim's tick rate): the local hero moves at once with the same
+    `Mover` as the host, remembering the input each tick used. On each snapshot it takes
+    the host's position after the acknowledged input and replays the later ticks; a
+    difference under 1.5 tiles fades out over 0.1 s (`MoveState.smooth_offset`), a bigger
+    one (a teleport) snaps. A forced move (knockback, glide) is left to the host.
+  - **Interpolation:** everyone else is drawn 0.1 s behind the newest snapshot, between
+    buffered snapshots (`MoveState.samples`, `INTERP_DELAY`), so uneven arrival never shows.
+  - The host keeps 2 s of exact positions per hero (`perceived_pos`, `positions_within`)
+    for enemies' reaction delay and for forgiving hits (phase 3).
+  - Network check: guests walk all 8 directions, stop, and must agree with the host
+    within 0.25 tiles; `NETCHECK_DELAY=0.1` holds every guest intent 100 ms
+    (`ClientSession.send_delay`). Both pass with 4 players (0.00 tiles apart after settling).
+  - Tests: `tests/unit/test_prediction.gd` (latency simulated by delaying intents).
+- **Phase 3 (done): hitboxes, aim indicators, importer.** The engine is ready; no
+  ability uses it yet (phase 4 switches them over, so play is unchanged).
+  - `HitboxDef` (`AbilityDef.hitbox`): None, Targeted, Cone, Line (rectangle), Circle,
+    Projectile, Lob, Self Circle, Dash, Leap, Blink, and Tiles (stays on the grid:
+    terrain and ground zones). Values in tiles: range, angle, width, radius, projectile
+    speed and size, pierce.
+  - `Hitbox` (geometry against round bodies: grazing counts; ranges edge to edge; line
+    of sight sampled along the segment) and `HitboxResolver` (CastResolver hands over
+    when `AbilityDef.uses_hitbox()`). Cooldowns, GCD, mana, timing bars, crits and
+    threat are unchanged. Projectiles fly in continuous space (a swept circle; heroes
+    count where they were within the 0.1 s grace window). Knockbacks, pulls and dashes
+    slide in continuous space and stop at walls, cliffs and units (`Hitbox.slide`).
+  - Aim indicators: the exact shape follows the mouse (blue, red when it can't be
+    cast); telegraphs with an outline draw in red, brighter as they land
+    (`WorldView._draw_outlines`). Tiles abilities keep the tile preview.
+  - **Spreadsheet:** eight columns at the end of the Abilities tab (Hitbox Shape,
+    Hitbox Range, Hitbox Angle, Hitbox Width, Hitbox Radius, Projectile Speed,
+    Projectile Size, Pierce) and a "Hitbox Rules" note on the Timing Rules tab, filled
+    for all 145 abilities from the plan's tables (`tools/once/fill_hitbox_columns.py`;
+    it patches the file's XML, because openpyxl would drop the cached results of the
+    sheet's formulas, which the importer reads). The importer checks the shape name,
+    the values each shape needs, negatives and Pierce (Yes / No); `TreeContent` keeps
+    each as `AbilityDef.sheet_hitbox` until phase 4 makes it the ability's hitbox.
+  - Tests: `tests/unit/test_hitboxes.gd`, hitbox cases in `test_ability_import.gd`.
+- **Phase 4 (done): all 32 abilities on hitboxes.** Each implemented ability uses its
+  sheet hitbox (`TreeContent`; shapes in the plan's §6 table, checked by
+  `test_each_ability_has_the_planned_hitbox`).
+  - Slash and Smash are mouse-aimed cones (100° and 70°, 1.4 tiles) that swing on the
+    key press, toward the mouse (with a timing bar, the bar starts and the swing goes
+    where the mouse points at the end). Lock-on spells stay targeted, with ranges
+    measured edge to edge.
+  - Fire Dart, Frost Shard and Aimed Shot are projectiles; Fire Whip and Water Pulse
+    are lines; Fireball a circle; Rock Throw a lob; Flame Dash and Lunge dashes;
+    Seismic Stomp and Ground Slam circles around you. Burning Ground, Ice Spikes,
+    Raise Pillar and Earth Wall stay on the tiles.
+  - Aims are the exact mouse point (`PlayerInput.mouse_point`); a circle aimed too far
+    lands at the edge of its range (grid abilities still refuse it).
+  - **Air Step** is now +40% speed for 4 s (the "free steps" no longer exist).
+  - Outlines are drawn flat at the height under their centre, so they don't tear
+    across ledges. Screenshots `fm5`–`fm7` in `tests/visual/free_move_shots.tscn`.
+  - Balance targets the new shapes moved (dodging wind-ups, the hammer alone vs a
+    Wolf, the drake vs a level-7 group) are pending until phase 6.
+- **Phase 5 (done): enemies move freely and attack with hitboxes.**
+  - **Navigation** (`Navigator`): A* over the tile graph (the same height, ramp, cliff,
+    large-body and flight rules as before; no squeezing past corners), string-pulled
+    into straight runs, then followed with the heroes' `Mover` (acceleration,
+    collisions, falls). A brain calls `Navigator.go` with a goal tile; it searches
+    again when the goal changes, every 0.5 s, or when the path runs out.
+  - **Speeds** (`EnemyDef.move_speed`, tiles/s): Salamander Hound 3.5, Fen Skirmisher
+    3.4, Wolf 3.25, Iron Wolf 3.1, Boar 2.8, Goblin Shaman and Grizzlehide 2.7, Sunscale
+    Drake 2.5, Foreman 2.1, Husks and the Overseer 1.85, Bandit Brute 1.7 (heroes 3).
+    Patrols walk at `EnemyBrain.patrol_pace`. **Colliders** (`collider_radius`):
+    wolves, hounds, boars 0.35; Shaman and Skirmisher 0.3; Brute, Husks, Overseer,
+    Grizzlehide, Foreman 0.45; the drake 1.35; the Grey Heart 0.6. Free movers push
+    each other apart by weight.
+  - **Attacks** (hitboxes in each ability's .tres, aimed where the enemy saw its target
+    `reaction_seconds` ago; reach checked in continuous space, `EnemyBrain.reaches`):
+    bites, rakes, slashes and swipes are cones (70–120°, 1.2–1.8 tiles; the drake's
+    rake 2.7 and breath 5.3 from its centre); Shadow Bolt a projectile; Grizzlehide's,
+    the boar's and the Foreman's charges are dashes with a telegraphed lane; Cinder
+    Pounce a leap onto a circle beside its prey; the Foreman's Ground Slam a circle of
+    1.5 at the target, telegraphed 1.0 s (was 1.8 s). The drake's Searing Dive stays on
+    its tile lane (`CHARGE_THROUGH`), and Ember Trail on the tiles the hound leaves.
+  - Escorted NPCs walk their route the same way (0.7 s per tile, 1.43 tiles/s).
+  - **Removed:** tile stepping for everyone (`WorldSim.try_step`, step cooldowns, the
+    "free steps" buff field). `combat_step_seconds` and `walk_tile_seconds` stay in
+    the data files unused; `combat_step_base_seconds / combat_step_min_seconds` caps
+    how much the Speed stat can raise walking speed (×3).
+  - Dodge warnings (debug builds, at load) now compare against the time to move a tile
+    plus the reaction time (0.63 s); most enemy wind-ups (0.3–0.6 s) are under it, to
+    be tuned in phase 6.
+  - Network check: Guest3 spawns a Bandit Brute and runs out of its telegraphed swipe
+    over the network (also with `NETCHECK_DELAY=0.1`). Since phase 6 it does this in
+    the Enemy Testing Grounds (`goto`), so the brute can't pull other guests into combat.
+- **Phase 6 (done): balance.** Every target in `tests/balance/test_balance.gd` is met and
+  enforced again (the ones pending since the timing bars included); numbers from
+  `tests/balance/balance_report.tscn`.
+  - **Fair telegraphs:** big enemy attacks are `AbilityDef.dodgeable` and give at least
+    0.63 s (a tile at 3 tiles/s plus 0.3 s to react): Crushing Blow 0.8 s; Cleave, Hollow
+    Rake, Overseer's Crush, Pick-Hammer 0.7 s; Cinder Pounce 0.67 s; Shadow Bolt 7 tiles/s
+    (0.71 s over its range); charges 1.0–1.1 s; Ground Slam 1.0 s; breath 0.8 s; dive 1.0 s.
+    Quick bites (wolf, hound, boar, Skirmisher, Talon Rake) stay chip damage. Debug builds
+    warn at load about a dodgeable attack under that time.
+  - **Combat pacing:** Wolf bite 2.5 s (was 2.0), Wolf HP 200 (230); hound bite 2.0 s (1.6);
+    Shadow Bolt 3.0 s (2.5), Goblin Shaman HP 130 (160); Talon Rake 3.0 s (2.5), drake HP
+    2200 (3000); Fire Dart mana 10 (6).
+  - **The Foreman:** HP 1100 (800), Pick-Hammer 14 + 0.75×PhysAtk (8 + 0.6), Grey Fury +30%
+    (+15%), Grey Heart 300 HP (150); both grow +45% health per extra hero instead of +70%
+    (`EnemyDef.party_hp_per_hero`).
+  - A unit mid-attack stands firm: pushes from other units don't move it.
+  - **Bots** (`BalanceSim.bot_turn`) move continuously: close in to each ability's reach
+    (`bot_reach`), aim at positions, never swing at empty air; with "dodge" they run out of
+    telegraph outlines (sidestepping when straight back is blocked), step off burning
+    ground and wait rather than walk into a marked shape. The level-5 group's damage
+    dealers and healer dodge; tanks hold still.
+  - Measured (bots): starter vs a Wolf 9.0 s, 36% HP lost (dodging: 10%); sword, bow or
+    hammer alone win; a pair beats 2 Wolves (70%); a caster spends 64% of its mana on a
+    Wolf and beats the Shaman; heals + dodges beat the Brute (54%), standing still loses;
+    a group of 4 beats Grizzlehide; the drake: level 7 group 0%, level 10 group 83%; the
+    Foreman at level 10: solo 0%, pair 17%, three 83%, four 67%.
+  - Manual checklist: `docs/playtest-checklist-free-movement.md`.
 
 ## Enemy Testing Grounds (2026-10-20)
 
@@ -872,7 +1174,7 @@ Tune them there; update this table when they change.
 | Staff (main hand, one-handed) | MagAtk +14, Mana +30 | MagAtk 4, Mana 8 |
 | Shield (off hand) | PhysDef +30, HP +30 | PhysDef 3, HP 12 |
 | Holy Charm (accessory) | MagAtk +6, Mana +20, MagDef +5 | MagAtk 2, Mana 6, MagDef 2 |
-| Wolf | HP 230, PhysAtk 12, PhysDef 5, Evasion 5, Jump 1; aggro 4, leash 10; 50 XP; respawn 30 s; 0.65 s/tile; 0.3 s reaction | — |
+| Wolf | HP 200 (free movement; was 230), PhysAtk 12, PhysDef 5, Evasion 5, Jump 1; aggro 4, leash 10; 50 XP; respawn 30 s; 0.65 s/tile; 0.3 s reaction | — |
 
 Growth: 50% of each equipped item's growth per level. XP to next level: 100 × level.
 AP: 10 per level-up to each ability taught by an equipped item.
@@ -898,7 +1200,7 @@ Ranger's Gloves and the Mantle come from the new enemies and the elite.
 | Enemy | Lv | AI | Stats | Ability | Step / reaction | XP / AP | Drops | Where (Greenfields) |
 |-------|----|----|-------|---------|-----------------|---------|-------|---------------------|
 | Wolf | 1 | Melee | (see above) | Bite | 0.65 s / 0.3 s | 50 / 2 | 2–6 g, pelt, fang, Uncommons 2% | (8,13) (11,24) (5,20) (18,4) |
-| Goblin Shaman | 2 | Kiter | HP 160, MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
+| Goblin Shaman | 2 | Kiter | HP 130 (free movement; was 160), MagAtk 18, PhysDef 5, MagDef 10, Jump 2; aggro 5 | Shadow Bolt: line 5, 9 tiles/s, 10 + 1.0×MagAtk magical, 2.5 s | 0.9 s / 0.3 s | 70 / 3 | 4–10 g, Frostweave Robe 4%, Acolyte's Leggings 4% | west hill (6,8) (9,6) |
 | Bandit Brute | 3 | Melee | HP 320, PhysAtk 22, PhysDef 15 | Crushing Blow: front, 24 + 2.0×PhysAtk, 3.5 s | 2.0 s / 0.4 s | 90 / 3 | 6–14 g, Greataxe 4% | south-east (20,20) (24,21) |
 | Fen Skirmisher | 4 | Flanker | HP 220, PhysAtk 16, PhysDef 8, Eva 12, Jump 2 | Quick Slash: front, 8 + 1.0×PhysAtk, 1.5 s | 0.6 s / 0.3 s | 100 / 3 | 5–12 g, Ranger's Gloves 3% | plateau (26,5) (23,3) |
 | **Old Grizzlehide** (elite) | 5 | Melee, patrols | HP 1400, PhysAtk 26, PhysDef 25, MagDef 15, Acc 5, Jump 2; aggro 4, leash 12 | Cleave: arc, 12 + 1.0×PhysAtk, 2.5 s · Charge: front 2–4 tiles, dashes up to 3 tiles then 15 + 1.0×PhysAtk, 12 s | 1.0 s / 0.3 s (patrol 0.8 s/tile) | 400 / 10 | 30–60 g, Grizzlehide Mantle 25%, Ranger's Gloves 30%; respawn 5 min | loop (8,17) → (12,12) → (22,12) → (20,16), crossing the north bridge |
@@ -959,10 +1261,10 @@ Input ─► Intent ─► [network] ─► Host WorldSim (validates cooldowns/r
 project.godot, run_tests.sh, .gutconfig.json
 addons/gut/      GUT test framework (vendored)
 autoload/        net (ENet host/join), content_db (loads .tres), audio (music, sound effects, volumes)
-sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/
+sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/ dungeon/
 net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
-content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ rules/ audio/ (.tres),
+content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ encounters/ rules/ audio/ (.tres),
                  dialogue/act1.json (every line of dialogue, by id)
 audio/           music/ (OGG), ambience/ (OGG), sfx/<category>/ (WAV); see AUDIO_SPEC.md
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
@@ -982,7 +1284,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones), ability import, tilesets, quests and dialogue
+docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement), ability import, tilesets, quests and dialogue, the free movement plan
 ```
 
 ### Build order (milestone 1)
@@ -1650,6 +1952,50 @@ F. 15 debug console · 16 docs + playtest checklist.
 | Date | Decision | Notes |
 |------|----------|-------|
 | 2026-11-02 | Exports keep text resources as text (`editor/export/convert_text_resources_to_binary=false`); the Windows export preset is committed | User report: the exported Windows build showed a grey world ("Invalid zone: …: empty height_rows" for every tiled zone). Cause measured: Godot 4.7.2's export conversion of `.tres` to binary drops `PackedStringArray` values (reproduced with a two-file project) and script-made defaults (the tree tuning's stat blocks). Not the `.json` files: they were packed. `tests/integration/test_export_zones.gd` exports a pack and loads every zone from it; `docs/exporting.md`. |
+| 2026-11-01 | Free movement: all 6 phases built on `feature/free-movement` | User brief and plan approval (3 tiles/s in and out of combat; drops of more than 3 levels hurt but are allowed; falls under gravity; enemies follow the same rules). See **Free movement** and `docs/FREE_MOVEMENT_PLAN.md`. My decisions are in the next rows. |
+| 2026-11-01 | Branch from the Act I milestone 4 tip, not `main` | `main` didn't have milestones 3 and 4 yet (their pull requests were open). The tags `v0.2-act1-prototype` and `v0.2-grid-final` go on `main` once those merge. |
+| 2026-11-01 | Hitbox columns written into the spreadsheet by patching its XML | openpyxl drops the cached results of the sheet's 193 formulas, which the importer reads. |
+| 2026-11-01 | Slash and Smash are cones that swing on the key press toward the mouse; lock-on spells stay targeted | Plan §6. Out-of-range circles land at the edge of their range (as timing-bar aims already did); terrain abilities still refuse. |
+| 2026-11-01 | Air Step: +40% speed for 4 s | "Free steps" don't exist without step cooldowns (plan §6, to confirm in playtest). |
+| 2026-11-01 | Telegraph outlines drawn flat at the height under their centre | Corners at their own tile heights tore circles apart across ledges. |
+| 2026-11-01 | The drake's Searing Dive stays on its tile lane; Ember Trail and ground zones stay on tiles | The dive's shove-aside and stun rules are written for lanes; it still telegraphs and can be dodged. Terrain and zones are grid abilities by the brief. |
+| 2026-11-01 | Tile stepping removed entirely (`try_step`, step cooldowns, free steps) | The brief: "Remove the per-step movement cooldown". Data fields `combat_step_seconds` and `walk_tile_seconds` stay so old files load. |
+| 2026-11-01 | Big enemy attacks flagged `dodgeable`; quick bites aren't | The brief wants big attacks telegraphed and dodgeable; a 0.3–0.4 s bite stays chip damage like in WoW. |
+| 2026-11-01 | A unit mid-attack can't be pushed by other units | A hero walking into the Brute shoved it out of its own swing. |
+| 2026-11-01 | Bosses can grow less with the party (`EnemyDef.party_hp_per_hero`; the Foreman and Heart +45%) | Four heroes don't deal four times one tank's damage (a healer barely attacks), so +70% made groups worse off than a soloist. |
+| 2026-11-01 | Balance bots dodge where their spec says; the level-5 group's damage dealers and healer do | The M4 notes said real groups would dodge; free movement makes that the fair measure. Tanks hold still. |
+| 2026-10-27 | Act I milestone 4 of 4: dungeon rules, the Silent Shaft, the Foreman and the Grey Heart, quest 1-07, the end of Act I | User brief ("list every decision"). See **Act I: the Silent Shaft**. My decisions are in the next rows. |
+| 2026-10-27 | Branch `feature/act1-m4-silent-shaft` from `feature/act1-m3-quests`, not `main` | `main` doesn't have milestone 3 yet (its pull request is open, not merged), and 1-07 follows 1-06. The pull request into `main` therefore carries milestone 3 too; merging milestone 3's first leaves only milestone 4 in it. |
+| 2026-10-27 | One party = every connected player, so one dungeon copy at a time; copies close 60 s after the last hero leaves | Rule 11 (no party system yet). `World.party_of` is the one place a real party system would change. Closing after a minute lets a hero step out and back without losing progress. |
+| 2026-10-27 | Entry needs the dungeon's quest (active or done) and the minimum party; the testing setting is on by default in debug builds and is a host-side switch like the game speed | "Minimum party size is a setting... on by default in debug builds". The quest gate keeps the dungeon in the story's order. |
+| 2026-10-27 | Wipe: everyone revives after 3 s at the dungeon's entrance at half health and mana; enemies forget the party; adds and grey tiles vanish | "Everyone respawns at the dungeon entrance". Half, like a release. The boss also resets after a wipe only to its phase's start, and walking home doesn't heal it past that. |
+| 2026-10-27 | Single deaths in a dungeon release to its entrance (its only graveyard); a resurrection still works in place | The usual death rules; only a wipe is special. |
+| 2026-10-27 | Sections joined by a lift (exits within one map), not separate zones | One instance holds the whole dungeon (one party copy, one wipe rule); the lift is the brief's "mine-cart or lift down". |
+| 2026-10-27 | Phases follow the Foreman's health; the Heart is shielded until phase 3 and holds him at 5%; breaking it ends the fight and kills him | "Players must damage the Grey Heart to stop its pulse... Breaking the Heart ends the fight." The 5% floor makes the Heart the only way to win. His kill (and XP, loot) go to his threat table. |
+| 2026-10-27 | Phase 2: one husk per pulse (at most 2) and 6 grey tiles every 12 s; phase 3: 8 grey tiles every 9 s, no husks | First numbers (2 husks per pulse, more grey) killed every bot group; husks in phase 3 kept them off the Heart. Grey tiles slow (×1.5) and drain 3% of max mana per second (both, not either). |
+| 2026-10-27 | The Foreman scales with the party although he is an elite (`EnemyDef.dungeon_boss`); the Heart and the husks scale too | "Health and damage scale with party size". Other elites still don't. |
+| 2026-10-27 | Boss numbers: Foreman HP 800 / PhysAtk 16, Heart 150 (solo, before party scaling), slam 1.8 s telegraph (one step out from beside the target), Grey Fury +15% / ×0.85 | Tuned with bots that never dodge, at level 10: four win about half the time (3 of 6), three a third (2 of 6), a pair 5 of 6 (healer + tank), a lone tank never. The slam can't be dodged by the hero it's centred on (two steps out): the tank takes it, the others spread. |
+| 2026-10-27 | XP: 1-07 gives 1,200 and the Foreman 900, so the act ends at level 12 | Brief M3: Act I is levels 1–12. Measured: solo 7,190 XP, a party of four 6,934 each, without the dungeon's husks. |
+| 2026-10-27 | Steward Brann leaves Deepcut when 1-06 is handed in (`NpcDef.gone_after_flag`, world flag `brann_descended`); Shift Bell is handed in to Miner Ostrik | The brief makes Brann the Foreman. Shift Bell (still open after 1-06 for some) needed another hand-in. 1-06 now announces his descent. |
+| 2026-10-27 | Caedan is a second NPC (`caedan_shaft`) who appears at the chamber door when the Heart breaks; the Ember Hand recruitment is his Talk line with choices | NPCs don't walk between zones; "Caedan arrives" is his appearance, a message and a speech bubble. The choices change nothing yet (both lead to the same answer). |
+| 2026-10-27 | End of Act I: a screen with the party's records after the hand-in conversation, then back to the Crossing by its button; Act I saved per character (`records.acts`) and per world (`act1_complete`) | "Show an End of Act I screen with the party's stats, then return players to the Crossing. Save that Act I is complete." Records (kills, damage, healing, deaths, quests) count from milestone 4 on, so older characters start at 0. |
+| 2026-10-27 | Dungeon and boss music listed for the Silent Shaft only, skipped until their files exist | The keys from the brief; zone-only tracks (`MusicTrackDef.zones`) so another dungeon won't play them. |
+| 2026-10-27 | Dungeon bosses and immobile enemies get no pen in the testing grounds | They need their encounter; a lone Foreman would teach the wrong fight. |
+| 2026-10-27 | Act I milestone 3 of 4: quests 1-01 to 1-06, three side quests, party-size scaling | User brief ("list every decision"). See **Act I: the Floor Guild quests**. My decisions are in the next rows. |
+| 2026-10-27 | The placeholder Act I quests, the foreman, the ore caravan and the writ are removed | The brief's quests replace them; Sabra, Ilyth and the Vael stone stay as people to talk to. Rowan's and Ottilie's Millbrook quests stay. |
+| 2026-10-27 | Maren Voss stands in two places (two NPC files): Millbrook for 1-01, the Guild Hall for 1-02 on | The brief has her in both. NPCs don't move between zones yet; per-player NPC visibility would be new machinery. The village's old woman, "Old Maren", is now "Old Ottilie" so the names don't clash. |
+| 2026-10-27 | Steward Orrin Marl becomes Steward Brann; Dorne is the Guild's registrar; Harrow is the Guild vendor; Caedan always stands at the hall | Reuse of milestone 2's people. Caedan "arrives" in the dialogue; a scripted entrance would need staging tools (milestone 4 or later). |
+| 2026-10-27 | Turn-ins: 1-03 Saran, 1-04 Brann, 1-05 Healer Wenna, 1-06 Caedan, sides as in the table | "Then Saran", "then Steward Brann" read as the hand-in. 1-05's hand-in to Wenna lets you tell her where the fever comes from. |
+| 2026-10-27 | Objectives where the brief leaves room | 1-01: 3 wolves + 2 boars in Millbrook's south fields (static spawns, no scripted wave); 1-02: two talks; 1-03: one escortee for the whole crew (an escort has one NPC) plus 4 iron wolves; 1-05: Odo, then three draughts to Wenna, then three single-spot investigations, one per zone, upstream; Shift Bell: rubble, 3 Husks, the miner; Pins: reach 4 sites, then the map (in any order). |
+| 2026-10-27 | Levels: 1-03, 1-04, 1-05 at 3; 1-06 and Shift Bell at 6; Pins at 7 | So the chain flows with the XP it gives; the playthrough test checks each quest can be taken when reached. |
+| 2026-10-27 | XP: quest rewards tuned (120 to 500), the curve unchanged | A party doing everything listed reaches level 10 (solo 4,770, party 4,578 each in the measured run); the dungeon needs about 2,100 more for 12. The optional Millbrook quests add about 1,060. |
+| 2026-10-27 | Party size = heroes in the enemy's zone; +70% HP, +10% damage per extra hero; XP scales the same; elites and dummies excluded | "Scale enemy health and damage with party size". The zone is where help can come from. Elites are already built for groups (the drake and Grizzlehide targets assume four). XP grows so a party levels like a solo hero. A fight keeps its size; idle enemies rescale and keep their share of health. |
+| 2026-10-27 | New placeholder enemies: Boar (level 2) and Human Husk (level 7) | Boars charge like a small Grizzlehide; Husks are slow, hit hard and shrug off magic, and drop Sunstone Shards (a hint). Their loot follows the tier-2 rule for enemy drops. |
+| 2026-10-27 | Spawns can set a level (`EnemySpawn.level`) | So one enemy type serves several zones' level ranges (road wolves 3, iron wolves 4–5, road brutes 5, Deepcut's hounds 6). |
+| 2026-10-27 | Rewards: one choice per main quest from all seven trees' implemented tier-1 items; side quests give gold and potions | Only implemented abilities. Missing tier-1 abilities listed in the section. |
+| 2026-10-27 | The Guild vendor is a new Quartermaster at the hall | "Sells starter gear and tier 1 scrolls": helm, boots, potions, the 20 implemented tier-1 scrolls and weapons. Tamsin and Odo keep their stalls. |
+| 2026-10-27 | Talk objectives can have their own line, `quest.<id>.talk.<i>` | So Dorne, Harrow, Odo, Caedan and Ostrik say something about the quest instead of their greeting. |
+| 2026-10-27 | Commits: the quests were written together, then committed one by one as the playthrough test covered each | Quest data and lines are one file each; each per-quest commit adds that quest to the scripted playthrough once it passed. |
 | 2026-10-27 | Act I milestone 2 of 4: zones (Millbrook rebuilt, the Crossing, Road to Deepcut, Deepcut, Windsteppe), region music, the Tidereach track | User brief ("list every decision"). See **Act I: zones and region music**. My decisions are in the next rows. |
 | 2026-10-27 | Branch `feature/v1.3.1` from `main` after milestone 1's merge | User correction of the brief's branch name (first given as `feature/act1-m2-zones`, renamed before any commit); merged at the end. |
 | 2026-10-27 | Zone size: 32–60 tiles across, not 2–3 minutes' walk | At the current walking speed (5 tiles/s) 2–3 minutes would be 600–900 tiles; "small and hand-built" and the existing maps (30×30) point the other way. The zones take 10–15 s to cross straight, longer along the roads and around cliffs. To revisit with the walking speed. |

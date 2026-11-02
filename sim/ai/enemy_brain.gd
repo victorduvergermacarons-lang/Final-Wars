@@ -27,6 +27,8 @@ const CHASE_RETRY_SECONDS := 0.5
 
 
 static func update(world: WorldSim, enemy: Enemy) -> void:
+	if enemy.def.immobile and enemy.state != Enemy.State.DEAD:
+		return # its encounter decides when it fights
 	match enemy.state:
 		Enemy.State.DEAD:
 			if enemy.temporary:
@@ -132,7 +134,7 @@ static func _fight_flanker(world: WorldSim, enemy: Enemy, target: Actor, seen: V
 		return
 	var path := _path_to_flank(world, enemy, facing, seen)
 	if path.size() >= 2 and (not at_front or path.size() <= 4):
-		world.try_step(enemy, path[1])
+		Navigator.go(world, enemy, path.back())
 	elif at_front:
 		_try_attack(world, enemy, target, seen) # boxed in: fight head-on
 	else:
@@ -166,7 +168,7 @@ static func _fight_kiter(world: WorldSim, enemy: Enemy, target: Actor, seen: Vec
 		var away := _best_neighbor(world, enemy, func(t: Vector2i) -> float:
 			return -float(GridModel.distance(t, seen)) + 0.01 * GridModel.distance(t, enemy.home_tile))
 		if away != enemy.tile() and GridModel.distance(away, seen) > dist:
-			world.try_step(enemy, away)
+			Navigator.go(world, enemy, away)
 			return
 	var delta := seen - enemy.tile()
 	var lines_up := enemy.def.abilities.any(func(a): return a.targeting == AbilityDef.TargetingMode.LEGACY)
@@ -189,7 +191,7 @@ static func _fight_kiter(world: WorldSim, enemy: Enemy, target: Actor, seen: Vec
 		return line + maxi(d - max_range, 0)
 	var spot := _best_neighbor(world, enemy, score)
 	if spot != enemy.tile() and score.call(spot) < score.call(enemy.tile()):
-		world.try_step(enemy, spot)
+		Navigator.go(world, enemy, spot)
 	elif dist > enemy.def.keep_away_distance + 1:
 		_chase(world, enemy, seen)
 
@@ -201,16 +203,31 @@ enum Attack { CAST, WAITING, OUT_OF_REACH }
 ## face the target when it seems to share a row or column within ability range,
 ## unless `turn` is false.
 static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vector2i, turn: bool = true) -> Attack:
-	# Never start an attack while still walking onto a tile (it would look like
-	# moving mid-attack).
-	if enemy.move.is_moving(world.now):
+	# Never start an attack while being shoved or dashing (a forced glide).
+	if enemy.move.gliding:
 		return Attack.WAITING
 	var delta := seen - enemy.tile()
 	if turn and delta != Vector2i.ZERO and (delta.x == 0 or delta.y == 0) \
 			and GridModel.distance(enemy.tile(), seen) <= _max_range(enemy):
 		enemy.face(Vector2i(signi(delta.x), signi(delta.y)))
 	var result := Attack.OUT_OF_REACH
+	var seen_pos := world.perceived_pos(target, enemy.def.reaction_seconds)
 	for ability in enemy.def.abilities:
+		if ability.uses_hitbox():
+			if not reaches(world, enemy, ability, target, seen_pos):
+				continue
+			result = Attack.WAITING
+			# Aimed where the enemy saw the target (reaction delay), so moving dodges.
+			var point := seen_pos
+			if ability.aim_beside_target:
+				point = _point_beside(enemy, target, seen_pos)
+			var on: Actor = target if ability.hitbox.shape == HitboxDef.Shape.TARGETED else null
+			if CastResolver.validate(world.ctx, enemy, ability, on, point) == AbilityResolver.Result.OK \
+					and world.cast(enemy, ability, on, point) == AbilityResolver.Result.OK:
+				enemy.last_attack_at = world.now
+				Navigator.stop(enemy)
+				return Attack.CAST
+			continue
 		if not AbilityShapes.reaches_tile(world.ctx, enemy, ability, seen):
 			continue
 		result = Attack.WAITING
@@ -229,13 +246,50 @@ static func _try_attack(world: WorldSim, enemy: Enemy, target: Actor, seen: Vect
 			if CastResolver.validate(world.ctx, enemy, ability, on, aim) == AbilityResolver.Result.OK \
 					and world.cast(enemy, ability, on, aim) == AbilityResolver.Result.OK:
 				enemy.last_attack_at = world.now
+				Navigator.stop(enemy)
 				return Attack.CAST
 			continue
 		if AbilityResolver.validate(world.ctx, enemy, ability, target) == AbilityResolver.Result.OK:
 			world.cast(enemy, ability, target)
 			enemy.last_attack_at = world.now
+			Navigator.stop(enemy)
 			return Attack.CAST
 	return result
+
+
+## Whether a hitbox ability would reach a target seen at `seen_pos` from where
+## the enemy stands (continuous distances; a cone a little short of its edge so
+## a hit isn't a graze that misses once the target shifts).
+static func reaches(world: WorldSim, enemy: Enemy, ability: AbilityDef, target: Actor, seen_pos: Vector2) -> bool:
+	var hb := ability.hitbox
+	var d := enemy.move.pos.distance_to(seen_pos)
+	var r := target.move.radius
+	match hb.shape:
+		HitboxDef.Shape.TARGETED:
+			return d - enemy.move.radius - r <= hb.reach and d - enemy.move.radius - r >= hb.min_reach
+		HitboxDef.Shape.CONE:
+			return d <= hb.reach + r * 0.5 \
+					and Hitbox.has_los(world.grid, enemy.move.pos, seen_pos, world.rules.los_height_tolerance)
+		HitboxDef.Shape.RECT, HitboxDef.Shape.PROJECTILE:
+			return d <= hb.reach \
+					and Hitbox.has_los(world.grid, enemy.move.pos, seen_pos, world.rules.los_height_tolerance)
+		HitboxDef.Shape.CIRCLE, HitboxDef.Shape.LOB:
+			return d <= hb.reach + hb.radius * 0.5 and d >= hb.min_reach
+		HitboxDef.Shape.SELF_CIRCLE:
+			return d <= hb.radius + r * 0.5
+		HitboxDef.Shape.DASH, HitboxDef.Shape.LEAP, HitboxDef.Shape.BLINK:
+			return d <= hb.reach + enemy.move.radius + r and d >= hb.min_reach + enemy.move.radius
+		HitboxDef.Shape.NONE:
+			return true
+	return AbilityShapes.reaches_tile(world.ctx, enemy, ability, MoveState.tile_of(seen_pos))
+
+
+## Where a pounce lands: beside the target, on the enemy's side of it.
+static func _point_beside(enemy: Enemy, target: Actor, seen_pos: Vector2) -> Vector2:
+	var away := enemy.move.pos - seen_pos
+	if away.length() < 0.01:
+		away = Vector2.RIGHT
+	return seen_pos + away.normalized() * (enemy.move.radius + target.move.radius + 0.1)
 
 
 ## The free tile beside `seen` nearest the enemy (not its own tile), where a
@@ -256,10 +310,11 @@ static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Va
 
 
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
-	if not _step_ready(world, enemy) or (enemy.is_large() and enemy.range_to(seen) <= 1):
-		return # a large body is already beside its target
-	if world.now < enemy.chase_retry_at:
+	if not _step_ready(world, enemy) or world.now < enemy.chase_retry_at:
 		return
+	var target := world.get_actor(enemy.threat.top()) if not enemy.threat.is_empty() else null
+	var touch := enemy.move.radius + (target.move.radius if target != null else 0.3) + 0.05
+	var found: bool
 	if enemy.is_large():
 		# A large body can't stand on its target's tile, nor usually fit its body
 		# around it: it heads for any spot with its body beside the target.
@@ -268,22 +323,18 @@ static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
 				if TileGeometry.range_distance(c + o, seen) <= 1:
 					return true
 			return false
-		var to_beside := world.path_for(enemy, seen, world.occupied_tiles(enemy), CHASE_SEARCH, beside)
-		if to_beside.size() >= 2:
-			world.try_step(enemy, to_beside[1])
-		elif to_beside.is_empty():
-			enemy.chase_retry_at = world.now + CHASE_RETRY_SECONDS
-		return
-	var path := world.path_for(enemy, seen, world.occupied_tiles(enemy), CHASE_SEARCH)
-	if path.size() > 2:
-		world.try_step(enemy, path[1])
-	elif path.is_empty():
+		found = Navigator.go(world, enemy, seen, 1.0, 0.0, beside, CHASE_SEARCH)
+	else:
+		found = Navigator.go(world, enemy, seen, 1.0, touch, Callable(), CHASE_SEARCH)
+	if not found:
 		enemy.chase_retry_at = world.now + CHASE_RETRY_SECONDS
 
 
+## Whether it can move now (free movement: no step cooldown, only roots, stuns
+## and forced glides stop it).
 static func _step_ready(world: WorldSim, enemy: Enemy) -> bool:
-	return enemy.move.can_start_step(true, enemy.cooldowns, world.now) \
-			and not enemy.buffs.is_rooted(world.now)
+	return not enemy.move.gliding and not enemy.buffs.is_rooted(world.now) \
+			and not enemy.buffs.is_stunned(world.now)
 
 
 ## The neighbouring tile (or the current one) with the lowest `score`, among
@@ -348,29 +399,32 @@ static func _start_evade(world: WorldSim, enemy: Enemy) -> void:
 
 ## Idle with a patrol route: walk to the next waypoint at the patrol pace.
 static func _patrol(world: WorldSim, enemy: Enemy) -> void:
-	if enemy.patrol.is_empty() or enemy.move.is_moving(world.now):
+	if enemy.patrol.is_empty() or enemy.move.gliding:
 		return
 	var goal := enemy.patrol[enemy.patrol_index % enemy.patrol.size()]
-	if enemy.tile() == goal:
+	if enemy.move.pos.distance_to(Vector2(goal)) <= Navigator.REACHED + 0.05:
 		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size()
 		return
-	var path := world.path_for(enemy, goal, world.occupied_tiles(enemy))
-	if path.size() < 2:
+	if not Navigator.go(world, enemy, goal, patrol_pace(enemy)):
 		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size() # unreachable: skip it
-	elif not world.body_blocked(enemy, path[1]):
-		world.try_step(enemy, path[1], enemy.def.patrol_step_seconds)
+
+
+## A patrol's pace (0..1 of its speed): `patrol_step_seconds` set the old tile
+## pace; 1.5 tiles over that time, so a slow patrol stays a walk.
+static func patrol_pace(enemy: Enemy) -> float:
+	var speed := enemy.def.move_speed if enemy.def.move_speed > 0.0 else 3.0
+	var seconds := enemy.def.patrol_step_seconds if enemy.def.patrol_step_seconds > 0.0 else 1.0
+	return clampf(1.5 / (seconds * speed), 0.3, 1.0)
 
 
 static func _walk_home(world: WorldSim, enemy: Enemy) -> void:
-	if enemy.move.is_moving(world.now):
+	if enemy.move.gliding:
 		return
-	if enemy.tile() == enemy.home_tile:
+	if enemy.move.pos.distance_to(Vector2(enemy.home_tile)) <= Navigator.REACHED + 0.05:
 		enemy.state = Enemy.State.IDLE
 		enemy.called_by_pack = false
 		enemy.evading = false
+		Navigator.stop(enemy)
 		return
-	var path := world.path_for(enemy, enemy.home_tile, world.occupied_tiles(enemy))
-	if path.size() >= 2 and not world.body_blocked(enemy, path[1]):
-		world.try_step(enemy, path[1])
-	elif path.is_empty() and not world.body_blocked(enemy, enemy.home_tile):
+	if not Navigator.go(world, enemy, enemy.home_tile) and not world.body_blocked(enemy, enemy.home_tile):
 		enemy.move.place(enemy.home_tile) # stuck: snap home

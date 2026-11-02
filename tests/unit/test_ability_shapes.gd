@@ -35,6 +35,7 @@ func _hero_with(abilities: Array[AbilityDef]) -> Hero:
 
 func before_each() -> void:
 	rules = CombatRules.new()
+	rules.party_scaling = false # exact numbers here; party scaling has its own tests
 	var zone := ZoneDef.new()
 	zone.id = &"flat"
 	var rows: PackedStringArray = []
@@ -181,13 +182,12 @@ func _bite_wolf(reaction: float) -> AbilityDef:
 	return bite
 
 
-func test_enemy_combat_step_overrides_speed() -> void:
-	wolf.def.combat_step_seconds = 0.8
-	assert_eq(wolf.combat_step_cooldown(rules, 0.0), 0.8)
-	assert_almost_eq(hero.combat_step_cooldown(rules, 0.0), rules.combat_step_base_seconds, 0.001)
-	wolf.def.combat_step_seconds = 0.0
-	assert_almost_eq(wolf.combat_step_cooldown(rules, 0.0), rules.combat_step_base_seconds, 0.001,
-			"0 falls back to the Speed formula")
+func test_enemy_move_speed_overrides_the_walking_speed() -> void:
+	wolf.def.move_speed = 3.25
+	assert_almost_eq(Mover.speed_of(wolf, rules, 0.0), 3.25, 0.001)
+	assert_almost_eq(Mover.speed_of(hero, rules, 0.0), rules.movement.walk_speed, 0.001)
+	wolf.def.move_speed = 0.0
+	assert_almost_eq(Mover.speed_of(wolf, rules, 0.0), rules.movement.walk_speed, 0.001, "0 walks like a hero")
 
 
 func test_wolf_chases_faster_than_a_hero_walks_in_combat() -> void:

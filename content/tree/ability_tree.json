@@ -159,6 +159,11 @@
 				"holds": [],
 				"notes": "Designer's bar: both zones at the very end."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -212,6 +217,11 @@
 				],
 				"holds": [],
 				"notes": "Fire: a late snap like Fire Punch, a little longer (bigger hit plus a burn)."
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -267,6 +277,13 @@
 				"holds": [],
 				"notes": "Fire: quick projectile, short bar, late snap. The dart flies when you press."
 			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 4.5,
+				"speed": 16.0,
+				"size": 0.25,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -311,6 +328,10 @@
 				"holds": [],
 				"notes": "No bar: an instant self-buff off the GCD."
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -354,6 +375,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": "No bar: a dash (instants never have one)."
+			},
+			"hitbox": {
+				"shape": "Dash",
+				"range": 3.0,
+				"width": 0.6,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -411,6 +438,12 @@
 				"holds": [],
 				"notes": "Fire: a longer wind-up for a piercing line, late snap."
 			},
+			"hitbox": {
+				"shape": "Line",
+				"range": 3.0,
+				"width": 0.9,
+				"pierce": true
+			},
 			"prerequisites": {
 				"abilities": [
 					"F01"
@@ -466,6 +499,12 @@
 				],
 				"holds": [],
 				"notes": "Fire: big spell, long bar, one late beat. The 0.4 s area warning still follows the press."
+			},
+			"hitbox": {
+				"shape": "Circle",
+				"range": 5.0,
+				"radius": 1.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -523,6 +562,12 @@
 				"holds": [],
 				"notes": "Fire: late snap; power scales the burn per second."
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 4.0,
+				"radius": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F03"
@@ -579,6 +624,11 @@
 				"holds": [],
 				"notes": "Fire: late snap. Planned: three taps, one per hit, once bars take several inputs."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F01",
@@ -626,6 +676,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 1.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F05"
@@ -671,6 +726,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -718,6 +777,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Line",
+				"range": 4.0,
+				"width": 0.8,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F07"
@@ -764,6 +829,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 3.0,
+				"angle": 60.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F08"
@@ -809,6 +880,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 4.0,
+				"angle": 60.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -857,6 +934,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F10"
@@ -902,6 +984,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 6.0,
+				"radius": 2.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -952,6 +1040,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 8.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1004,6 +1097,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Circle",
+				"range": 10.0,
+				"radius": 1.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F07"
@@ -1049,6 +1148,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1096,6 +1199,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"F16"
@@ -1141,6 +1248,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1199,6 +1310,12 @@
 				"holds": [],
 				"notes": "Earth: one heavy beat, a wide window late in a long bar."
 			},
+			"hitbox": {
+				"shape": "Lob",
+				"range": 4.0,
+				"radius": 0.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1243,6 +1360,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1283,6 +1404,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": "No bar: terrain (timing has nothing to scale yet)."
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 3.0,
+				"radius": 0.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -1328,6 +1455,11 @@
 				"holds": [],
 				"notes": "No bar: a taunt."
 			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 1.6,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1368,6 +1500,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": "No bar: terrain wall."
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 4.0,
+				"radius": 0.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1411,6 +1549,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 4.0,
+				"radius": 0.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1458,6 +1602,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E02"
@@ -1504,6 +1652,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 2.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E04"
@@ -1546,6 +1699,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 3.0,
+				"radius": 0.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1592,6 +1751,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1640,6 +1803,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 5.0,
+				"radius": 0.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E06"
@@ -1683,6 +1852,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 3.0,
+				"radius": 0.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E06"
@@ -1725,6 +1900,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 6.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1772,6 +1952,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E07"
@@ -1818,6 +2002,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E14"
@@ -1860,6 +2049,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 5.0,
+				"radius": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -1912,6 +2107,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 4.0,
+				"radius": 0.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E12"
@@ -1963,6 +2164,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 2.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"E10"
@@ -2008,6 +2214,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 3.0,
+				"radius": 0.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2055,6 +2267,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 3.0,
+				"radius": 0.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2108,6 +2326,11 @@
 				],
 				"notes": "Water: a hold. Timing power scales the heal."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 2.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2157,6 +2380,11 @@
 				],
 				"notes": "Designer's bar: hold 2 s, ending 0.25 s before the bar."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2200,6 +2428,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": "No bar: a buff (timing has nothing to scale yet)."
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -2250,6 +2483,13 @@
 				],
 				"notes": "Water: a short hold; the shard flies when you let go."
 			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 4.5,
+				"speed": 12.0,
+				"size": 0.25,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2298,6 +2538,11 @@
 					]
 				],
 				"notes": "Water: a long hold for a long heal; power scales the total healing."
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2350,6 +2595,12 @@
 				],
 				"notes": "Water: a hold building the wave."
 			},
+			"hitbox": {
+				"shape": "Line",
+				"range": 3.0,
+				"width": 1.2,
+				"pierce": true
+			},
 			"prerequisites": {
 				"abilities": [
 					"W02"
@@ -2401,6 +2652,11 @@
 				],
 				"notes": "Water: a hold; the drain heals you half the (scaled) damage."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"W02"
@@ -2446,6 +2702,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": "No bar: a buff (timing has nothing to scale yet)."
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2498,6 +2759,12 @@
 				],
 				"notes": "Water: a hold. The 0.4 s area warning still follows the release."
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 4.0,
+				"radius": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"W04"
@@ -2543,6 +2810,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2590,6 +2862,13 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 5.0,
+				"speed": 14.0,
+				"size": 0.25,
+				"pierce": true
+			},
 			"prerequisites": {
 				"abilities": [
 					"W06"
@@ -2635,6 +2914,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2682,6 +2966,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"W09"
@@ -2724,6 +3013,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2771,6 +3065,13 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 5.0,
+				"speed": 3.0,
+				"size": 1.5,
+				"pierce": true
+			},
 			"prerequisites": {
 				"abilities": [
 					"W11"
@@ -2816,6 +3117,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 3.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2863,6 +3169,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 5.0,
+				"radius": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"W10"
@@ -2908,6 +3220,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 5.0,
+				"radius": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -2960,6 +3278,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"W13"
@@ -3005,6 +3328,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 1.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3053,6 +3381,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"W16"
@@ -3099,6 +3431,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 3.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"W17",
@@ -3142,6 +3479,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 3.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3200,6 +3542,11 @@
 				"holds": [],
 				"notes": "Air: quick, early beat."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3244,6 +3591,11 @@
 				"holds": [],
 				"notes": "No bar: an interrupt must be instant to catch a wind-up."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3284,6 +3636,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": "No bar: movement buff off the GCD."
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -3328,6 +3684,13 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 4.0,
+				"speed": 14.0,
+				"size": 0.25,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -3383,6 +3746,11 @@
 				"holds": [],
 				"notes": "Air: early beat in a slightly longer bar."
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A01"
@@ -3428,6 +3796,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Circle",
+				"range": 5.0,
+				"radius": 2.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3475,6 +3849,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A02"
@@ -3517,6 +3896,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3564,6 +3947,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A03"
@@ -3609,6 +3996,13 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 5.0,
+				"speed": 2.5,
+				"size": 0.6,
+				"pierce": true
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3656,6 +4050,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A02"
@@ -3702,6 +4101,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 3.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A07"
@@ -3747,6 +4151,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 1.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3795,6 +4204,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Blink",
+				"range": 7.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A08"
@@ -3840,6 +4254,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 6.0,
+				"radius": 2.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3887,6 +4307,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A12"
@@ -3932,6 +4357,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 5.0,
+				"radius": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -3984,6 +4415,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 2.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A12"
@@ -4027,6 +4463,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"A14"
@@ -4069,6 +4509,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 4.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4115,6 +4560,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Circle",
+				"range": 6.0,
+				"radius": 3.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4173,6 +4624,12 @@
 				"holds": [],
 				"notes": "Designer's bar: one beat in the middle."
 			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 1.4,
+				"angle": 100.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4216,6 +4673,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Line",
+				"range": 2.0,
+				"width": 0.8,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -4261,6 +4724,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4305,6 +4772,12 @@
 				"holds": [],
 				"notes": "No bar: a dash then a strike (dashes have no bar)."
 			},
+			"hitbox": {
+				"shape": "Dash",
+				"range": 2.0,
+				"width": 0.6,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -4348,6 +4821,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4395,6 +4873,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"S03"
@@ -4440,6 +4922,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4487,6 +4974,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Line",
+				"range": 2.0,
+				"width": 0.8,
+				"pierce": true
+			},
 			"prerequisites": {
 				"abilities": [
 					"S02"
@@ -4529,6 +5022,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4576,6 +5074,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"S05"
@@ -4618,6 +5121,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4665,6 +5173,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"S07"
@@ -4710,6 +5223,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Dash",
+				"range": 3.0,
+				"width": 0.8,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4757,6 +5276,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"S03"
@@ -4802,6 +5325,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4849,6 +5377,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"S11"
@@ -4891,6 +5423,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 4.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4937,6 +5474,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -4989,6 +5530,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"S12",
@@ -5035,6 +5581,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5087,6 +5637,11 @@
 					]
 				],
 				"notes": "Designer's bar: hold 1.5 s at the end, ending 0.25 s before the bar. The arrow flies where the cursor points when you let go."
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 5.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -5147,6 +5702,13 @@
 				],
 				"notes": "Designer's bar: a tap at the start (nock), then hold to the end (draw), ending 0.25 s before the bar. Replaces its 1 s draw. Fires where the cursor points when you let go."
 			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 7.0,
+				"speed": 14.0,
+				"size": 0.3,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -5188,6 +5750,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Dash",
+				"range": 2.0,
+				"width": 0.6,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -5228,6 +5796,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 6.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -5272,6 +5845,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 5.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5319,6 +5897,13 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 6.0,
+				"speed": 14.0,
+				"size": 0.25,
+				"pierce": true
+			},
 			"prerequisites": {
 				"abilities": [
 					"B02"
@@ -5364,6 +5949,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 5.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5411,6 +6001,13 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 5.0,
+				"speed": 14.0,
+				"size": 0.25,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"B03"
@@ -5453,6 +6050,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5500,6 +6101,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Circle",
+				"range": 7.0,
+				"radius": 1.5,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"B05"
@@ -5545,6 +6152,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 10.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5593,6 +6205,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 3.0,
+				"radius": 0.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"B08"
@@ -5639,6 +6257,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 5.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"B05"
@@ -5681,6 +6304,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5728,6 +6355,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 8.0,
+				"radius": 2.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"B10"
@@ -5773,6 +6406,13 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 12.0,
+				"speed": 14.0,
+				"size": 0.25,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5825,6 +6465,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 8.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"B11"
@@ -5870,6 +6515,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 5.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -5917,6 +6567,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"B17",
@@ -5963,6 +6617,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 8.0,
+				"radius": 3.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6021,6 +6681,12 @@
 				"holds": [],
 				"notes": "Hammer: a late heavy beat; replaces its 0.3 s wind-up."
 			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 1.4,
+				"angle": 70.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -6075,6 +6741,11 @@
 				"holds": [],
 				"notes": "Hammer: a late heavy beat."
 			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 1.6,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -6118,6 +6789,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -6163,6 +6838,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 1.6,
+				"angle": 120.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -6206,6 +6887,13 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Projectile",
+				"range": 4.0,
+				"speed": 10.0,
+				"size": 0.5,
+				"pierce": true
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6253,6 +6941,11 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Targeted",
+				"range": 1.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"H01"
@@ -6298,6 +6991,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Leap",
+				"range": 3.0,
+				"radius": 1.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6345,6 +7044,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 1.6,
+				"angle": 120.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"H04"
@@ -6390,6 +7095,10 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6437,6 +7146,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 2.0,
+				"radius": 0.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"H07"
@@ -6482,6 +7197,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 2.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6529,6 +7249,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 1.6,
+				"angle": 120.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"H06"
@@ -6574,6 +7300,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Tiles",
+				"range": 4.0,
+				"radius": 1.0,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6623,6 +7355,10 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "None",
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"H09"
@@ -6668,6 +7404,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Leap",
+				"range": 5.0,
+				"radius": 2.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6715,6 +7457,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 4.0,
+				"angle": 60.0,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"H05"
@@ -6760,6 +7508,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 2.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6812,6 +7565,12 @@
 				"holds": [],
 				"notes": ""
 			},
+			"hitbox": {
+				"shape": "Dash",
+				"range": 5.0,
+				"width": 0.8,
+				"pierce": false
+			},
 			"prerequisites": {
 				"abilities": [
 					"H14"
@@ -6857,6 +7616,12 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Circle",
+				"range": 3.0,
+				"radius": 2.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [
@@ -6904,6 +7669,11 @@
 				"crits": [],
 				"holds": [],
 				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 1.5,
+				"pierce": false
 			},
 			"prerequisites": {
 				"abilities": [

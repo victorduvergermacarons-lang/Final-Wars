@@ -3,6 +3,13 @@ extends RefCounted
 ## The whole game world on the host: one WorldSim per zone, stepped together on a
 ## shared clock, with heroes moving between zones through exit tiles.
 ## Events carry a "zone" key so each player only receives their own zone's events.
+##
+## Dungeons (ZoneDef.dungeon) are instanced per party: none exists until the party
+## enters, then the party gets its own copy (key "<zone>@<party>"), which closes
+## after it has stood empty for rules.dungeon_close_seconds. Entering needs the
+## dungeon's quest and a party of at least rules.min_dungeon_party() (3; 1 with the
+## "testing" setting). Zones are found by key everywhere (a normal zone's key is its
+## id); a WorldSim's `zone.id` stays the map's id (clients load that map).
 
 var rules: CombatRules
 var start_zone: StringName
@@ -14,8 +21,12 @@ var world_flags := {}:
 			sim.world_flags = value
 var ids := IdSource.new()
 
-var _zones := {} # id -> WorldSim
-var _hero_zone := {} # hero id -> zone id
+var _zones := {} # key -> WorldSim (a zone's key is its id; dungeon copies "<id>@<party>")
+var _hero_zone := {} # hero id -> zone key
+var _dungeon_defs := {} # id -> ZoneDef of each dungeon (instanced on entry)
+var _quests := {}
+var _debug_content = null
+var _seed := 0
 var _last_tile := {} # hero id -> tile last tick (exits trigger on arrival)
 var _empty_since := {} # zone id -> sim time it was last seen without heroes
 
@@ -25,8 +36,13 @@ func _init(zone_defs: Array, p_rules: CombatRules, rng_seed: int, p_start_zone: 
 		quests: Dictionary = {}) -> void:
 	rules = p_rules
 	start_zone = p_start_zone
+	_quests = quests
+	_seed = rng_seed
 	var i := 0
 	for z in zone_defs:
+		if z.dungeon:
+			_dungeon_defs[z.id] = z
+			continue
 		var sim := WorldSim.new(z, rules, rng_seed + i, ids)
 		sim.quests = quests
 		sim.world_flags = world_flags
@@ -41,9 +57,13 @@ var now: float:
 
 ## Allows the debug console in every zone (`content`: lookup tables by id), or
 ## refuses it again (null).
+## Debug builds also start with the dungeon "testing" setting on (parties of one).
 func enable_debug(content) -> void:
+	_debug_content = content
 	for id in _zones:
 		_zones[id].debug_content = content
+	if content != null:
+		rules.dungeon_testing = true
 
 
 func zone(id: StringName) -> WorldSim:
@@ -88,6 +108,77 @@ func intent_ack(hero_id: int) -> int:
 	return sim.intent_ack(hero_id) if sim != null else 0
 
 
+# --- Dungeons ----------------------------------------------------------------------
+
+## Every connected player is one party (rule 11); a real party system would give
+## each its own id, and so its own dungeon copies.
+func party_of(_hero_id: int) -> StringName:
+	return &"party"
+
+
+func party_size(hero_id: int) -> int:
+	var party := party_of(hero_id)
+	return heroes().filter(func(h): return party_of(h.id) == party).size()
+
+
+func is_dungeon(zone_id: StringName) -> bool:
+	return _dungeon_defs.has(zone_id)
+
+
+## The key of `hero_id`'s party's copy of dungeon `zone_id`.
+func instance_key(zone_id: StringName, hero_id: int) -> StringName:
+	return StringName("%s@%s" % [zone_id, party_of(hero_id)])
+
+
+## Why `hero` can't enter dungeon `def` ("" = it can).
+func dungeon_entry_problem(hero: Hero, def: ZoneDef) -> String:
+	if def.requires_quest != &"" and not (QuestLog.is_active(hero, def.requires_quest) \
+			or QuestLog.is_done(hero, def.requires_quest)):
+		return "dungeon_needs_quest"
+	if party_size(hero.id) < rules.min_dungeon_party():
+		return "dungeon_party_too_small"
+	return ""
+
+
+## The party's copy of dungeon `def` (made on first entry, on the world's clock).
+func dungeon_instance(def: ZoneDef, hero_id: int) -> WorldSim:
+	var key := instance_key(def.id, hero_id)
+	if _zones.has(key):
+		return _zones[key]
+	var sim := WorldSim.new(def, rules, _seed + 1000 + _zones.size(), ids)
+	sim.key = key
+	sim.quests = _quests
+	sim.world_flags = world_flags
+	sim.debug_content = _debug_content
+	sim.sync_clock(_zones[start_zone].tick_count)
+	_zones[key] = sim
+	return sim
+
+
+## Closes dungeon copies nobody has been in for rules.dungeon_close_seconds.
+func _close_empty_dungeons() -> void:
+	for key in zone_ids():
+		var sim: WorldSim = _zones[key]
+		if not sim.zone.dungeon or not sim.heroes().is_empty():
+			continue
+		if now - float(_empty_since.get(key, now)) >= rules.dungeon_close_seconds - Cooldowns.EPSILON:
+			_zones.erase(key)
+			_empty_since.erase(key)
+
+
+## Takes `hero` into its party's copy of dungeon `def` at `tile`, or says why not.
+func _enter_dungeon(sim: WorldSim, hero: Hero, def: ZoneDef, tile: Vector2i) -> Array[Dictionary]:
+	var why := dungeon_entry_problem(hero, def)
+	if why != "":
+		return [{"type": "rejected", "target": hero.id, "intent": "exit", "reason": why,
+				"need": rules.min_dungeon_party(), "zone": sim.key}]
+	var inst := dungeon_instance(def, hero.id)
+	var from := sim.key
+	move_hero(hero.id, inst.key, tile)
+	return [{"type": "zone_change", "target": hero.id, "from": from, "to": inst.key, "zone": inst.key},
+			{"type": "dungeon_enter", "target": hero.id, "dungeon": def.id, "zone": inst.key}]
+
+
 ## Advances every zone one tick, then moves heroes who arrived on an exit.
 ## Zones empty of heroes for `rules.empty_zone_sleep_seconds` only advance their
 ## clock (WorldSim.skip_tick), so the CPU goes to the zones people are in.
@@ -102,6 +193,7 @@ func step() -> Array[Dictionary]:
 			e.zone = id
 			events.append(e)
 	events.append_array(_handle_exits())
+	_close_empty_dungeons()
 	return events
 
 
@@ -146,11 +238,13 @@ func _handle_exits() -> Array[Dictionary]:
 			events.append_array(_respawn_elsewhere(sim, hero_id))
 		for req in sim.take_zone_requests():
 			var dest: WorldSim = _zones.get(req[1])
+			if dest == null and is_dungeon(req[1]): # debug `goto`: straight into the party's copy
+				dest = dungeon_instance(_dungeon_defs[req[1]], req[0])
 			if dest != null and sim.get_actor(req[0]) != null and dest != sim:
 				var spawn: Vector2i = dest.zone.hero_spawns[0] if not dest.zone.hero_spawns.is_empty() else Vector2i.ZERO
-				move_hero(req[0], dest.zone.id, spawn)
-				events.append({"type": "zone_change", "target": req[0], "from": sim.zone.id, "to": dest.zone.id,
-						"zone": dest.zone.id})
+				move_hero(req[0], dest.key, spawn)
+				events.append({"type": "zone_change", "target": req[0], "from": sim.key, "to": dest.key,
+						"zone": dest.key})
 	for hero in heroes():
 		var sim := zone_of(hero.id)
 		var tile := hero.tile()
@@ -159,14 +253,25 @@ func _handle_exits() -> Array[Dictionary]:
 		if not arrived or not hero.alive:
 			continue
 		var exit := sim.exit_at(tile)
-		if exit == null or not _zones.has(exit.to_zone):
+		if exit == null:
+			continue
+		if exit.to_zone == &"" or exit.to_zone == sim.zone.id:
+			# A lift or a ladder within the same map: a short ride, not a new zone.
+			hero.move.place(sim.find_free_tile_near(exit.to_tile))
+			_last_tile[hero.id] = hero.tile()
+			events.append({"type": "lift", "target": hero.id, "tile": hero.tile(), "zone": sim.key})
+			continue
+		if not _zones.has(exit.to_zone) and not is_dungeon(exit.to_zone):
 			continue
 		if hero.in_combat(now):
 			events.append({"type": "rejected", "target": hero.id, "intent": "exit",
-					"reason": "in_combat", "zone": sim.zone.id})
+					"reason": "in_combat", "zone": sim.key})
+			continue
+		if is_dungeon(exit.to_zone):
+			events.append_array(_enter_dungeon(sim, hero, _dungeon_defs[exit.to_zone], exit.to_tile))
 			continue
 		move_hero(hero.id, exit.to_zone, exit.to_tile)
-		events.append({"type": "zone_change", "target": hero.id, "from": sim.zone.id,
+		events.append({"type": "zone_change", "target": hero.id, "from": sim.key,
 				"to": exit.to_zone, "zone": exit.to_zone})
 	return events
 
@@ -182,11 +287,11 @@ func _leave_by_edge(sim: WorldSim, hero_id: int, edge: ZoneEdge) -> Array[Dictio
 	for k in [0, 1, -1, 2, -2]:
 		var t: Vector2i = target + edge.along() * k
 		if dest.grid.in_bounds(t) and dest.grid.is_walkable(t) and not dest.is_occupied(t):
-			var from := sim.zone.id
+			var from := sim.key
 			move_hero(hero_id, edge.to_zone, t)
 			return [{"type": "zone_change", "target": hero_id, "from": from, "to": edge.to_zone,
 					"zone": edge.to_zone}]
-	return [{"type": "rejected", "target": hero_id, "intent": "step", "reason": "blocked", "zone": sim.zone.id}]
+	return [{"type": "rejected", "target": hero_id, "intent": "step", "reason": "blocked", "zone": sim.key}]
 
 
 ## A hero released in a zone without its own graveyard respawns at the graveyard
@@ -195,12 +300,12 @@ func _respawn_elsewhere(sim: WorldSim, hero_id: int) -> Array[Dictionary]:
 	var dest: WorldSim = _zones.get(sim.zone.respawn_zone)
 	if dest == null or sim.get_actor(hero_id) == null:
 		return []
-	var from := sim.zone.id
+	var from := sim.key
 	var spawn: Vector2i = dest.zone.hero_spawns[0] if not dest.zone.hero_spawns.is_empty() else Vector2i.ZERO
-	move_hero(hero_id, dest.zone.id, dest.nearest_graveyard(spawn))
+	move_hero(hero_id, dest.key, dest.nearest_graveyard(spawn))
 	var hero := dest.get_actor(hero_id)
-	return [{"type": "zone_change", "target": hero_id, "from": from, "to": dest.zone.id, "zone": dest.zone.id},
-			{"type": "release", "target": hero_id, "tile": hero.tile(), "zone": dest.zone.id}]
+	return [{"type": "zone_change", "target": hero_id, "from": from, "to": dest.key, "zone": dest.key},
+			{"type": "release", "target": hero_id, "tile": hero.tile(), "zone": dest.key}]
 
 
 ## How fast the sim clock should run against real time: the game speed

@@ -9,7 +9,7 @@ const GREY := UiPalette.GREY
 const RED := "#a8321e"
 
 
-## "Wolves slain: 1/2", or "Talk to Old Maren" (done ones turn green with "(done)").
+## "Wolves slain: 1/2", or "Talk to Old Ottilie" (done ones turn green with "(done)").
 static func objective_line(hero: Hero, def: QuestDef, i: int) -> String:
 	var o := def.objectives[i]
 	var n := QuestLog.progress(hero, def, i)

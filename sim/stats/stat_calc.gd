@@ -23,14 +23,6 @@ static func scaled_amount(base: float, scaling: Array[AbilityScaling], stats: St
 	return maxf(amount, 0.0)
 
 
-## In-combat step cooldown. Speed shortens it hyperbolically
-## (half at `speed_half_point`), never below the configured floor.
-static func combat_step_cooldown(speed: float, rules: CombatRules) -> float:
-	var s := maxf(speed, 0.0)
-	var cd := rules.combat_step_base_seconds * rules.speed_half_point / (rules.speed_half_point + s)
-	return maxf(cd, rules.combat_step_min_seconds)
-
-
 ## Height levels climbable in one step.
 static func jump_levels(stats: StatBlock) -> int:
 	return maxi(floori(stats.jump), 0)

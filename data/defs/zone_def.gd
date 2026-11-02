@@ -58,6 +58,13 @@ extends Resource
 @export_range(0.0, 1.0) var bond: float = 1.0
 @export_group("")
 
+## A dungeon: instanced per party (World), entered through an exit tile that
+## names it. Needs `requires_quest` (active or done) and a big enough party.
+@export var dungeon: bool = false
+@export var requires_quest: StringName = &""
+## Its boss fight, if any (BossEncounter runs it).
+@export var encounter: BossEncounterDef
+
 ## Enemy testing map: TestingGrounds builds the whole layout at load, one pen
 ## per enemy type (so new enemies show up without editing the map).
 @export var enemy_pens: bool = false
@@ -109,7 +116,13 @@ func terrain_at(p: Vector2i) -> String:
 ## Rebuilds walk_rows and sight_rows from the tileset: a tile is walkable when
 ## its terrain is (all variants of a terrain agree; see validate_terrain) and its
 ## prop, if any, is; it blocks sight when its top block or its prop does.
+## Slippery tiles (a terrain's "friction" below 1 in its tileset), baked with the
+## walk rows: tile -> friction. None today.
+var friction_tiles := {}
+
+
 func bake_walkability(ts: TilesetData) -> void:
+	friction_tiles = {}
 	var walk: PackedStringArray = []
 	var sight: PackedStringArray = []
 	for y in terrain_rows.size():
@@ -119,6 +132,9 @@ func bake_walkability(ts: TilesetData) -> void:
 			var p := Vector2i(x, y)
 			var terrain := terrain_at(p)
 			var walkable := ts.terrain_walkable(terrain)
+			var friction := ts.terrain_friction(terrain)
+			if friction != 1.0:
+				friction_tiles[p] = friction
 			var blocks := ts.blocks_sight(ts.pick(terrain, p))
 			var group := prop_at(p)
 			if group != "":
@@ -216,10 +232,13 @@ func validate() -> PackedStringArray:
 		if n == null or n.npc == null:
 			errors.append("%s: NPC spawn without an NPC" % id)
 	for e in exits:
-		if e == null or e.to_zone == &"":
-			errors.append("%s: exit without a destination" % id)
+		if e == null:
+			errors.append("%s: empty exit" % id)
 		elif e.tile.x < 0 or e.tile.y < 0 or e.tile.x >= w or e.tile.y >= height_rows.size():
 			errors.append("%s: exit %s out of bounds" % [id, e.tile])
+		elif (e.to_zone == &"" or e.to_zone == self.id) and (e.to_tile.x < 0 or e.to_tile.y < 0 \
+				or e.to_tile.x >= w or e.to_tile.y >= height_rows.size()):
+			errors.append("%s: lift at %s leads out of the map" % [id, e.tile])
 	for edge in edges:
 		if edge == null or edge.to_zone == &"":
 			errors.append("%s: edge without a destination" % id)

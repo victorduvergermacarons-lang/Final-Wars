@@ -194,6 +194,8 @@ func test_aim_intent_and_dodge_warnings() -> void:
 	fast.projectile_speed = 20.0
 	var slow := _ability(AbilityDef.TargetingMode.GROUND, 4)
 	slow.telegraph_seconds = 2.5
+	fast.dodgeable = true # only attacks meant to be dodged are checked
+	slow.dodgeable = true
 	var warnings := CastResolver.dodge_warnings([fast, slow], rules)
 	assert_eq(warnings.size(), 1)
 	assert_string_contains(warnings[0], "can't really be dodged")

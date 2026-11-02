@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MusicTrackDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/music_track_def.gd" id="1_music"]
+
+[resource]
+script = ExtResource("1_music")
+id = &"boss_foreman"
+display_name = "The Foreman (boss)"
+file = "res://audio/music/music_boss_foreman.ogg"
+contexts = Array[int]([5])
+zones = Array[StringName]([&"silent_shaft"])

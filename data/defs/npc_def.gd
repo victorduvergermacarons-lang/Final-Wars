@@ -36,6 +36,9 @@ enum Kind {
 @export var resets_zone: bool = false
 ## Ability-tree items for sale, by id (ContentDB adds them to `sells`).
 @export var sells_ids: Array[StringName] = []
+## Gone from the world once this world flag is set (a story moves them on), e.g.
+## Steward Brann after Act I's 1-06. "" = always there.
+@export var gone_after_flag: StringName = &""
 
 
 ## The id of the line it greets you with, for the current world state

@@ -45,6 +45,8 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		d.level = enemy.level
 		d.state = int(enemy.state)
 		d.died_at = enemy.died_at
+		if enemy.invulnerable:
+			d.invulnerable = true
 		d.spawn = enemy.spawn_tile
 		actors.append(d)
 	for npc in world.npcs():
@@ -71,6 +73,7 @@ static func _actor(a: Actor) -> Dictionary:
 		"stats": a.stats.to_dict(),
 		"move": a.move.to_dict(),
 		"facing": a.facing,
+		"angle": a.facing_angle,
 		"cd": a.cooldowns.to_dict(),
 		"buffs": a.buffs.to_dict(),
 		"cast": {} if a.casting.is_empty() else {"ability": a.casting.ability.id, "kind": a.casting.kind,

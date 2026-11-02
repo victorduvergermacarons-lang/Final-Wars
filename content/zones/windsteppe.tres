@@ -7,7 +7,9 @@
 [ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
 [ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
 [ext_resource type="Resource" path="res://content/npcs/elder_tsaga.tres" id="npc_elder_tsaga"]
+[ext_resource type="Resource" path="res://content/npcs/saran.tres" id="npc_saran"]
 [ext_resource type="Resource" path="res://content/npcs/vael_stone.tres" id="npc_vael_stone"]
+[ext_resource type="Resource" path="res://content/npcs/well_diggers.tres" id="npc_well_diggers"]
 [ext_resource type="Resource" path="res://content/enemies/iron_wolf.tres" id="enemy_iron_wolf"]
 
 [sub_resource type="Resource" id="edge_0"]
@@ -28,41 +30,59 @@ npc = ExtResource("npc_elder_tsaga")
 tile = Vector2i(15, 19)
 facing = Vector2i(1, 0)
 
+[sub_resource type="Resource" id="npc_spawn_2"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_saran")
+tile = Vector2i(16, 22)
+facing = Vector2i(0, -1)
+
+[sub_resource type="Resource" id="npc_spawn_3"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_well_diggers")
+tile = Vector2i(49, 21)
+facing = Vector2i(-1, 0)
+
 [sub_resource type="Resource" id="enemy_spawn_0"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_iron_wolf")
 tile = Vector2i(40, 8)
 patrol = Array[Vector2i]([Vector2i(40, 8), Vector2i(47, 13), Vector2i(41, 16)])
+level = 4
 
 [sub_resource type="Resource" id="enemy_spawn_1"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_iron_wolf")
 tile = Vector2i(43, 7)
 patrol = Array[Vector2i]([Vector2i(43, 7), Vector2i(49, 10), Vector2i(44, 15)])
+level = 4
 
 [sub_resource type="Resource" id="enemy_spawn_2"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_iron_wolf")
 tile = Vector2i(8, 32)
 patrol = Array[Vector2i]([Vector2i(8, 32), Vector2i(12, 38), Vector2i(4, 39)])
+level = 5
 
 [sub_resource type="Resource" id="enemy_spawn_3"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_iron_wolf")
 tile = Vector2i(10, 30)
 patrol = Array[Vector2i]([Vector2i(10, 30), Vector2i(14, 35), Vector2i(6, 36)])
+level = 5
 
 [sub_resource type="Resource" id="enemy_spawn_4"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_iron_wolf")
 tile = Vector2i(26, 31)
 patrol = Array[Vector2i]([Vector2i(26, 31), Vector2i(30, 26), Vector2i(22, 34)])
+level = 4
 
 [sub_resource type="Resource" id="enemy_spawn_5"]
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_iron_wolf")
 tile = Vector2i(28, 33)
 patrol = Array[Vector2i]([Vector2i(28, 33), Vector2i(32, 28), Vector2i(24, 36)])
+level = 4
 
 [sub_resource type="Resource" id="landmark_0"]
 script = ExtResource("s_landmark")
@@ -226,7 +246,7 @@ enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("enemy_spawn_0")
 landmarks = Array[ExtResource("s_landmark")]([SubResource("landmark_0"), SubResource("landmark_1")])
 decor = Array[ExtResource("s_decor")]([SubResource("decor_0"), SubResource("decor_1"), SubResource("decor_2"), SubResource("decor_3"), SubResource("decor_4"), SubResource("decor_5"), SubResource("decor_6"), SubResource("decor_7"), SubResource("decor_8"), SubResource("decor_9"), SubResource("decor_10"), SubResource("decor_11"), SubResource("decor_12"), SubResource("decor_13"), SubResource("decor_14"), SubResource("decor_15"), SubResource("decor_16"), SubResource("decor_17"), SubResource("decor_18"), SubResource("decor_19"), SubResource("decor_20"), SubResource("decor_21"), SubResource("decor_22"), SubResource("decor_23")])
 edges = Array[ExtResource("s_edge")]([SubResource("edge_0")])
-npcs = Array[ExtResource("s_npc_spawn")]([SubResource("npc_spawn_0"), SubResource("npc_spawn_1")])
+npcs = Array[ExtResource("s_npc_spawn")]([SubResource("npc_spawn_0"), SubResource("npc_spawn_1"), SubResource("npc_spawn_2"), SubResource("npc_spawn_3")])
 tileset = &"iso_basic"
 terrain_rows = PackedStringArray("eeccccccccccccccccccccccecccccccccceeecccccccddddddddddd", "eeccccccccccccccccccccccccccccccccceeecccccccddddddddddd", "eeccccccccccccccccccccccccccccccccceeeecccccccdddddddddd", "eeecbbbbbbbbbbbbbbbbbccdddddccccccceeeeeeccccccccccccccc", "eeeebbbbbbbbbbbbbbbbbbbddddddddddceeeeeedddddccccccccccc", "eeecbbbbbbbbbbbbbbbbbbbdddddddddddceeeeddddddccccccccccc", "ccccbbbbbbbbbbbbbbbbbcddddddddddddcceccddddddccccccccccc", "ccccccccccccdcccccccccddddddddddddcceccddddddccccccccccc", "ccccccccccccccccccccccdddddddddddddccccddddddccccccccccc", "dddcccccccccccccccccccddddddddddddddddddddddcccccccccccc", "dddddccccccccccccccccdddddddddddddddddddcccccccccccccccc", "ddddddddccceeeeeeecccdddddddddddddddddddccccecddddcccccc", "dddddddddeeeeeeeeecccdddddddbbbbbdddddddccccecddddcccccc", "dddddddddceeeeeeeecccdddddddbbbbbdddddddccccedddddcccccc", "dddddddddccceeeeecccccddddddbbbbbdddddddccccdddddddccccc", "ddddddddddcccccccccccccdddddbbbbbdddddddddddddddddddcccc", "cccccdddddddddddcccccccccccebbbbbddcccdddddddddddddddddd", "ccccccdddddddddddcccccccccccedcddccccccddddddddddddddddd", "cccccccddddddddddddccccccccccdcddccccccddddddddddddddddd", "ccccccdddddddddddddccccccccccddddccccccddddddddddddddddd", "cccccddddddddddddddccccccccccddddcccccccddddddddddddddda", "ccccddddddddddddddddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "ccccddddddddddddddddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "ccccddddddddddddddddcccccccccddddddddccccccccddddddcccca", "ccccddddddddddddddddccccccccdddddddddccccccccddddddccccc", "ccccdddddddddddddddddccccccccdddddddddccccccccdddddccccc", "ccccddddddddddddddddddcccccccccccdddddccccccccdddddccccc", "cccccdddddddddddddddddddddccccccccdddddccccccccdddcccccc", "cccccddddddddddddddddddddddcccccccdddddcccccccccddcccccc", "ccccccccdddddddddddddddddddcccccccdddddccccccccccccccccc", "ccccccccdddddddddddddddddddcccccccdddddccccccccccccccccc", "ccccccccdddddddddddddddddddcccccccdddddccccccccccccccccc", "ccccccdddddddddddddddddddddcccccccdddddcccccccccddcccccc", "ccccdddddccccccddddddddddddcccccccdddddccccccccddddddddd", "dddddddddcccccccdddddddddddccccccddddddccccccccddddddddd", "dddddddddcccccccddddddddddcccccccddddddcccccccdddddddddd", "dddddddddcccccccddddddddcccccccccddddddcccccccdddddddddd", "ddddddddcccccccccddddddccccccccccddddddcccccccdddddddddd", "dddddcccccccccccccddccccccccccccdddddddccccccccddddddddd", "ccccccccccccccccccccccccccccccddddddddddcccccccccccddddd", "ccccccccccdddddccccccccccccccddddddddddddccccccccccccddd", "ccccccccccdddddcccccccccccccddddddddddddddddccccccccccdd", "ccccccccccdddddcccccccccccccddddddddddddddddcccccccccccd", "ccccccccccdddddcccccccccccccddddddddddddddddcccccccccccd")
 terrain_legend = {

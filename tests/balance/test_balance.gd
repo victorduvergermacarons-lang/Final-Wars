@@ -23,19 +23,18 @@ func _avg(specs: Array, enemy: StringName, count: int, level: int = 1) -> Dictio
 	return BalanceSim.tree_average(db, specs, enemy, count, RUNS, level)
 
 
-## Since 2026-10-26 Slash runs a 2 s timing bar (the bots press its green zone), so
-## sword builds hit less often and these fights got harder. The enemies and these
-## targets get retuned in the combat pacing pass the user planned; until then a
-## missed target is pending, not enforced. True when pending (the test stops).
-func _timing_retune_pending(met: bool, text: String) -> bool:
-	if not met:
-		pending("timing-bar retune pending: " + text)
-	return not met
+## A balance target: fails the test with `text` (the measured numbers) when not
+## met. Returns false, so callers continue with their other checks. (The targets
+## left pending after the timing bars and free movement were met again by the
+## free-movement balance pass, 2026-11-01; see CLAUDE.md.)
+func _target(met: bool, text: String) -> bool:
+	assert_true(met, text)
+	return false
 
 
 func test_starter_kit_beats_one_wolf_in_about_8s_with_half_hp() -> void:
 	var r := _avg([S.STARTER], &"wolf", 1)
-	if _timing_retune_pending(r.seconds <= 10.5 and r.hp_lost_pct <= 65 and r.win_rate == 1.0,
+	if _target(r.seconds <= 10.5 and r.hp_lost_pct <= 65 and r.win_rate == 1.0,
 			"starter vs 1 Wolf (target ~8 s, 35–65%% HP lost): %s" % str(r)):
 		return
 	assert_between(r.seconds, 6.5, 10.5, str(r))
@@ -46,7 +45,7 @@ func test_starter_kit_beats_one_wolf_in_about_8s_with_half_hp() -> void:
 func test_two_wolves_are_dangerous_solo_but_fine_for_a_pair() -> void:
 	assert_lt(_avg([S.STARTER], &"wolf", 2).win_rate, 0.5)
 	var pair := _avg([S.STARTER, S.STARTER_HEALER], &"wolf", 2)
-	if _timing_retune_pending(pair.win_rate == 1.0 and pair.hp_lost_pct < 75,
+	if _target(pair.win_rate == 1.0 and pair.hp_lost_pct < 75,
 			"a pair vs 2 Wolves (target: always wins, under 75%% HP lost): %s" % str(pair)):
 		return
 	assert_eq(pair.win_rate, 1.0, str(pair))
@@ -56,14 +55,19 @@ func test_two_wolves_are_dangerous_solo_but_fine_for_a_pair() -> void:
 func test_dodging_wind_ups_pays_off() -> void:
 	var still := _avg([S.STARTER], &"wolf", 1)
 	var dodging := _avg([S.STARTER_DODGE], &"wolf", 1)
+	if _target(dodging.hp_lost_pct * 2 < still.hp_lost_pct,
+			"dodging halves the HP lost: %s vs %s" % [dodging, still]):
+		return
 	assert_lt(dodging.hp_lost_pct * 2, still.hp_lost_pct, "%s vs %s" % [dodging, still])
 
 
 func test_single_weapon_builds_beat_a_wolf() -> void:
 	for spec in [S.SWORD_ONLY, S.ARCHER, S.HAMMER]:
 		var r := _avg([spec], &"wolf", 1)
-		if spec == S.SWORD_ONLY and _timing_retune_pending(r.win_rate > 0.79,
+		if spec == S.SWORD_ONLY and _target(r.win_rate > 0.79,
 				"sword alone vs 1 Wolf (target: wins 80%%): %s" % str(r)):
+			continue
+		if _target(r.win_rate > 0.79, "%s alone vs 1 Wolf (target: wins 80%%): %s" % [spec.weapon, r]):
 			continue
 		assert_gt(r.win_rate, 0.79, "%s: %s" % [spec.weapon, r])
 
@@ -71,7 +75,7 @@ func test_single_weapon_builds_beat_a_wolf() -> void:
 func test_a_wolf_costs_a_caster_most_of_their_mana() -> void:
 	var r := _avg([S.CASTER], &"wolf", 1)
 	assert_eq(r.win_rate, 1.0, str(r))
-	if _timing_retune_pending(r.mana_left_pct < 40,
+	if _target(r.mana_left_pct < 40,
 			"a Wolf costs a caster over 60%% of their mana: %s" % str(r)):
 		return
 	assert_lt(r.mana_left_pct, 40, str(r))
@@ -79,7 +83,7 @@ func test_a_wolf_costs_a_caster_most_of_their_mana() -> void:
 
 func test_level_2_caster_beats_a_shaman() -> void:
 	var r := _avg([S.CASTER], &"goblin_shaman", 1, 2)
-	if _timing_retune_pending(r.win_rate > 0.79, "level-2 caster vs Goblin Shaman (target: wins 80%%): %s" % str(r)):
+	if _target(r.win_rate > 0.79, "level-2 caster vs Goblin Shaman (target: wins 80%%): %s" % str(r)):
 		return
 	assert_gt(r.win_rate, 0.79, str(r))
 
@@ -87,12 +91,14 @@ func test_level_2_caster_beats_a_shaman() -> void:
 func test_brute_punishes_standing_still_but_heals_and_dodging_win() -> void:
 	assert_lt(_avg([S.L3_SWORD], &"bandit_brute", 1, 3).win_rate, 0.5, "trading blows loses")
 	var r := _avg([S.L3_SWORD_DODGE], &"bandit_brute", 1, 3)
+	if _target(r.win_rate == 1.0, "heals + dodges vs Brute (target: always wins): %s" % str(r)):
+		return
 	assert_eq(r.win_rate, 1.0, str(r))
 
 
 func test_level_4_sword_beats_a_skirmisher() -> void:
 	var r := _avg([S.L4_LUNGE], &"fen_skirmisher", 1, 4)
-	if _timing_retune_pending(r.win_rate == 1.0, "level-4 sword vs Skirmisher (target: always wins): %s" % str(r)):
+	if _target(r.win_rate == 1.0, "level-4 sword vs Skirmisher (target: always wins): %s" % str(r)):
 		return
 	assert_eq(r.win_rate, 1.0, str(r))
 
@@ -107,7 +113,7 @@ func test_grizzlehide_needs_a_group() -> void:
 func test_salamander_hound_is_a_fair_level_2_fight() -> void:
 	var r := _avg([S.STARTER], &"salamander_hound", 1, 2)
 	print("Salamander Hound vs level-2 starter: ", r)
-	if _timing_retune_pending(r.win_rate > 0.8 and r.hp_lost_pct <= 85,
+	if _target(r.win_rate > 0.8 and r.hp_lost_pct <= 85,
 			"level-2 starter vs Salamander Hound (target: wins 80%%+, 25–85%% HP lost): %s" % str(r)):
 		return
 	assert_gt(r.win_rate, 0.8, "a level-2 starter beats it: " + str(r))
@@ -120,6 +126,25 @@ func test_sunscale_drake_needs_a_group() -> void:
 	assert_eq(_avg([S.L4_LUNGE], &"sunscale_drake", 1, 7).win_rate, 0.0, "solo loses")
 	assert_eq(_avg([S.L5_TANK, S.L5_HEALER], &"sunscale_drake", 1, 7).win_rate, 0.0, "a pair loses")
 	var group := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 7)
-	assert_eq(group.win_rate, 0.0, "it beats a level-7 group of four every time: " + str(group))
+	if not _target(group.win_rate == 0.0, "it beats a level-7 group of four every time: %s" % str(group)):
+		assert_eq(group.win_rate, 0.0, "it beats a level-7 group of four every time: " + str(group))
 	var l10 := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 10)
+	if _target(l10.win_rate > 0.0, "a level-10 group can beat the drake: %s" % str(l10)):
+		return
 	assert_gt(l10.win_rate, 0.0, "a level-10 group can win: " + str(l10))
+
+
+## The Silent Shaft's boss (milestone 4): built for three or four players at about
+## level 10 (where Act I's quests leave a party). Bots never dodge the slams, the
+## charge or the grey ground and never taunt back, so real groups should do better.
+func test_the_foreman_is_a_fight_for_a_group() -> void:
+	var four := BalanceSim.boss_average(db, [S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], RUNS, 10)
+	var three := BalanceSim.boss_average(db, [S.L5_TANK, S.L5_FIRE, S.L5_HEALER], RUNS, 10)
+	var solo := BalanceSim.boss_average(db, [S.L5_TANK], RUNS, 10)
+	var met: bool = four.win_rate >= 0.3 and three.win_rate > 0.0 and three.win_rate < 1.0 and solo.win_rate == 0.0
+	if _target(met, "Foreman: four %s, three %s, solo %s" % [four, three, solo]):
+		return
+	assert_gte(four.win_rate, 0.3, "a level-10 group of four often wins: " + str(four))
+	assert_gt(three.win_rate, 0.0, "a level-10 group of three can win: " + str(three))
+	assert_lt(three.win_rate, 1.0, "but not every time: " + str(three))
+	assert_eq(solo.win_rate, 0.0, "a lone hero (testing setting only) can't: " + str(solo))

@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="QuestDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/quest_objective.gd" id="1_obj"]
+[ext_resource type="Script" path="res://data/defs/quest_def.gd" id="2_quest"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="3_item"]
+[ext_resource type="Resource" path="res://content/items/minor_mana_potion.tres" id="item_minor_mana_potion"]
+
+[sub_resource type="Resource" id="Objective_0"]
+script = ExtResource("1_obj")
+kind = 3
+text = "Millbrook's grey river visited"
+zone = &"town"
+tile = Vector2i(22, 20)
+radius = 2
+
+[sub_resource type="Resource" id="Objective_1"]
+script = ExtResource("1_obj")
+kind = 3
+text = "Tsaga's Camp visited"
+zone = &"windsteppe"
+tile = Vector2i(15, 21)
+radius = 2
+
+[sub_resource type="Resource" id="Objective_2"]
+script = ExtResource("1_obj")
+kind = 3
+text = "The ambush on the Road to Deepcut visited"
+zone = &"deepcut_road"
+tile = Vector2i(31, 9)
+radius = 2
+
+[sub_resource type="Resource" id="Objective_3"]
+script = ExtResource("1_obj")
+kind = 3
+text = "Deepcut's tailings pond visited"
+zone = &"deepcut"
+tile = Vector2i(32, 21)
+radius = 2
+
+[sub_resource type="Resource" id="Objective_4"]
+script = ExtResource("1_obj")
+kind = 6
+text = "Every site marked on the Guild Map"
+npc = &"guild_map"
+
+[resource]
+script = ExtResource("2_quest")
+id = &"act1_side_pins_on_the_map"
+title = "Pins on the Map"
+category = 1
+area = "The Crossing"
+giver = &"guild_board"
+turn_in = &"maren_voss"
+prerequisites = Array[StringName]([&"act1_06_recognition"])
+min_level = 7
+objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1"), SubResource("Objective_2"), SubResource("Objective_3"), SubResource("Objective_4")])
+reward_xp = 500
+reward_gold = 40
+reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_mana_potion"), ExtResource("item_minor_mana_potion")])

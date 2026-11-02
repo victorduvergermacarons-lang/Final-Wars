@@ -3,8 +3,11 @@ extends RefCounted
 ## The authoritative game world. Runs on the host only, on a fixed tick.
 ##
 ## Input: intents from players, as plain Dictionaries, via submit():
-##   {"type": "step", "to": Vector2i}         (also turns the hero that way; not while rooted)
-##   {"type": "face", "dir": Vector2i}        (turn in place; free)
+##   {"type": "move", "dir": Vector2i, "face": float}   (free movement: the held
+##       direction on screen, each of x/y −1..1, W = up the screen; and the
+##       mouse's grid-space angle, which the hero faces in combat)
+##   {"type": "step", "to": Vector2i}         (walk to that tile's centre; off the map: through its edge)
+##   {"type": "face", "dir": Vector2i}        (turn to a grid direction; free)
 ##   {"type": "cast", "ability": StringName, "target": int, "aim": Vector2 (optional)}
 ##       (target -1 = none/self; aim = tile coordinates for skillshots / ground)
 ##   {"type": "release"}
@@ -24,11 +27,13 @@ extends RefCounted
 ##   {"type": "turn_in_quest", "npc": int, "quest": StringName, "choice": int}   (choice: reward index or -1)
 ##   {"type": "abandon_quest", "quest": StringName}
 ##   {"type": "accept_shared_quest", "quest": StringName}   (a quest a party member here has)
+##   {"type": "finish_act", "quest": StringName}   (end-of-act screen closed: back to the quest's return zone)
 ##   {"type": "learn", "bag_index": int}   (a scroll into the learning slot) or
 ##   {"type": "learn", "slot": EquipSlot.Id}   (the worn weapon becomes the learning item)
 ##   {"type": "stop_learning"}
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
 ##   {"type": "game_speed", "value": float}   (game clock speed, 0.1–2; same rule as debug)
+##   {"type": "dungeon_testing", "on": bool}   (dungeons open to parties of one; same rule)
 ##   {"type": "timing_press", "at": float, "aim"?: Vector2}   (right-click on a timing bar: seconds since it started; aimed abilities: the cursor)
 ##   {"type": "timing_release", "at": float, "aim"?: Vector2}   (right-click let go, ending a hold on a timing bar)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
@@ -84,6 +89,8 @@ const HISTORY_SECONDS := 2.0
 var _acks := {} # hero id -> last processed intent "seq" (for client-side prediction)
 ## Heroes asking to walk off a map edge this tick: [[hero id, ZoneEdge], ...]; World moves them.
 var _edge_requests: Array = []
+## Its key in the World: the zone's id, or "<id>@<party>" for a dungeon copy.
+var key: StringName = &""
 ## Released heroes to respawn in another zone (ZoneDef.respawn_zone): hero ids.
 var _respawn_requests: Array = []
 var _events: Array[Dictionary] = []
@@ -93,21 +100,24 @@ var _events: Array[Dictionary] = []
 func _init(p_zone: ZoneDef, p_rules: CombatRules, rng_seed: int = 0, p_ids: IdSource = null) -> void:
 	ids = p_ids if p_ids != null else IdSource.new()
 	zone = p_zone
+	key = zone.id
 	rules = p_rules
 	grid = GridModel.from_zone(zone)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = rng_seed
 	ctx = CombatContext.new(grid, rules, rng)
 	for spawn in zone.enemy_spawns:
-		var enemy := add_enemy(spawn.enemy, spawn.tile)
+		var def := spawn.enemy
+		if spawn.level > 0 and spawn.level != def.level:
+			def = DebugCommands.at_level(def, spawn.level)
+		var enemy := add_enemy(def, spawn.tile)
+		enemy.level = def.level
 		enemy.patrol = spawn.patrol.duplicate()
 		enemy.respawn_seconds = spawn.respawn_seconds
 	for spawn in zone.npcs:
-		var npc := Npc.new(_take_id(), spawn.npc, spawn.tile)
-		npc.face(spawn.facing)
-		npc.home_facing = spawn.facing
-		_npcs[npc.id] = npc
-		ctx.add_actor(npc)
+		add_npc(spawn.npc, spawn.tile, spawn.facing)
+	if zone.encounter != null:
+		encounter = BossEncounter.new(zone.encounter, self)
 
 
 # --- Actors -----------------------------------------------------------------
@@ -122,6 +132,7 @@ func _place_new_hero(hero: Hero) -> void:
 	var spawns := zone.hero_spawns
 	var want := spawns[_heroes.size() % spawns.size()] if not spawns.is_empty() else Vector2i.ZERO
 	hero.move.place(find_free_tile_near(want))
+	hero.move.radius = rules.movement.hero_radius
 	_heroes[hero.id] = hero
 	ctx.add_actor(hero)
 
@@ -141,6 +152,8 @@ func transfer_out(hero_id: int) -> Hero:
 		return null
 	remove_hero(hero_id)
 	hero.pending_step = null
+	hero.walk_target = null
+	hero.wish = Vector2.ZERO
 	hero.combat_until = -1.0
 	return hero
 
@@ -148,6 +161,7 @@ func transfer_out(hero_id: int) -> Hero:
 ## Brings a hero in from another zone, at the free tile nearest `tile`.
 func transfer_in(hero: Hero, tile: Vector2i, ack: int = 0) -> void:
 	hero.move.place(find_free_tile_near(tile))
+	hero.move.radius = rules.movement.hero_radius
 	_heroes[hero.id] = hero
 	ctx.add_actor(hero)
 	if ack > 0:
@@ -212,11 +226,41 @@ func exit_at(tile: Vector2i) -> ZoneExit:
 	return null
 
 
+func add_npc(def: NpcDef, tile: Vector2i, facing: Vector2i = Vector2i.DOWN) -> Npc:
+	var npc := Npc.new(_take_id(), def, find_free_tile_near(tile) if is_occupied(tile) else tile)
+	npc.face(facing)
+	npc.home_facing = facing
+	_npcs[npc.id] = npc
+	ctx.add_actor(npc)
+	return npc
+
+
+## A ground zone owned by `source` (an encounter's greyed tiles): applies
+## `zone_ability` to whoever stands on `tiles` every `tick` seconds until `until`.
+func add_ground_zone(source: int, tiles: Array, ability: AbilityDef, zone_ability: AbilityDef, tick: float,
+		until: float) -> void:
+	ctx.requests.append({"type": "zone", "source": source, "tiles": tiles, "ability": ability,
+			"zone_ability": zone_ability, "tick": tick, "until": until, "bonus": 1.0})
+	_handle_requests()
+
+
+func remove_ground_zones_from(source: int) -> void:
+	_ground_zones = _ground_zones.filter(func(z): return z.source != source)
+
+
 func add_enemy(def: EnemyDef, tile: Vector2i) -> Enemy:
 	var enemy := Enemy.new(_take_id(), def, tile)
 	_enemies[enemy.id] = enemy
 	ctx.add_actor(enemy)
 	return enemy
+
+
+## NPCs the story has moved on (NpcDef.gone_after_flag set in the world flags).
+func _remove_gone_npcs() -> void:
+	for npc in npcs():
+		if npc.def.gone_after_flag != &"" and world_flags.has(String(npc.def.gone_after_flag)):
+			_npcs.erase(npc.id)
+			ctx.actors.erase(npc.id)
 
 
 func remove_enemy(id: int) -> void:
@@ -270,15 +314,22 @@ func step() -> Array[Dictionary]:
 	now = tick_count * rules.tick_seconds
 	ctx.now = now
 	_events = []
+	for id in _sorted(ctx.actors):
+		_begin_motion_tick(ctx.actors[id])
 
 	var intents := _intents
 	_intents = []
 	for entry in intents:
 		_handle_intent(entry[0], entry[1])
-	for hero in heroes():
-		_take_pending_step(hero)
+	_move_heroes()
+	_update_party_scale()
 	for enemy in enemies():
 		EnemyBrain.update(self, enemy)
+	_move_enemies()
+	_move_walking_npcs()
+	for id in _sorted(ctx.actors):
+		ctx.actors[id].move.update_glide(now)
+	_separate_units()
 	_update_casts()
 	_update_projectiles()
 	_update_pending_hits()
@@ -290,13 +341,245 @@ func step() -> Array[Dictionary]:
 		remove_enemy(id)
 	_remove_after_tick.clear()
 	_regen()
+	if encounter != null:
+		encounter.update(self) # after regen: a reset boss never heals past its phase
 	_update_escorts()
+	_update_wipe()
+	_remove_gone_npcs()
 	_update_quests()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
 	_record_history()
 	ctx.record_positions()
 	return _events
+
+
+## Enemies not fighting are scaled for the heroes in this zone (CombatRules
+## "Party size"); one in a fight keeps the size it started with.
+func _update_party_scale() -> void:
+	var n := heroes().size()
+	for enemy in enemies():
+		if enemy.state != Enemy.State.COMBAT:
+			enemy.set_party_size(n, rules)
+
+
+# --- Free movement ---------------------------------------------------------------
+
+## Start of a tick: remember the last position (for drawing), and take the ground
+## height from the tile for anyone just placed or still stepping tile to tile.
+func _begin_motion_tick(a: Actor) -> void:
+	var m := a.move
+	m.begin_tick(now)
+	if m.just_placed or not m.free or m.gliding:
+		m.ground_h = grid.height_at(m.to_tile)
+		if m.just_placed or not m.free:
+			m.draw_h = float(m.ground_h)
+			m.prev_draw_h = m.draw_h if m.just_placed else m.prev_draw_h
+		m.just_placed = false
+
+
+## Moves every hero by its input (Mover): acceleration, collisions, height, falls,
+## leaving through map edges, and facing (the mouse in combat, the way it walks
+## otherwise).
+func _move_heroes() -> void:
+	var dt := rules.tick_seconds
+	for hero in heroes():
+		var m := hero.move
+		if not hero.alive:
+			m.vel = Vector2.ZERO
+			hero.walk_target = null
+			continue
+		var wish := hero.wish
+		if hero.walk_target != null:
+			wish = _walk_wish(hero, dt)
+		if wish != Vector2.ZERO and not m.gliding and not hero.casting.is_empty():
+			cancel_cast(hero, "moved") # moving cancels anything with a cast bar
+		var r := Mover.step(hero, wish, dt, grid, rules, now)
+		if r.fell:
+			cancel_cast(hero, "moved")
+			emit({"type": "fall", "target": hero.id, "levels": m.z})
+		if r.landed > 0:
+			_land(hero, r.landed)
+		if wish != Vector2.ZERO:
+			_check_edge(hero, wish)
+		if hero.in_combat(now):
+			hero.face_angle(hero.aim_angle)
+		elif m.vel.length() > 0.3:
+			hero.face_angle(m.vel.angle())
+
+
+## Moves every free-moving enemy along its path (Navigator) with the heroes'
+## Mover: acceleration, collisions, height rules, flight, falls. Facing follows its
+## movement (attacks turn it toward the target). A fighting enemy with a trail
+## (Ember Trail) leaves it on each tile it leaves.
+func _move_enemies() -> void:
+	var dt := rules.tick_seconds
+	for enemy in enemies():
+		var m := enemy.move
+		if not m.free:
+			continue
+		if not enemy.alive:
+			m.vel = Vector2.ZERO
+			Navigator.stop(enemy)
+			continue
+		var wish := Vector2.ZERO
+		if enemy.casting.is_empty() and now >= enemy.busy_until:
+			wish = Navigator.follow(enemy)
+		else:
+			m.vel = Vector2.ZERO # planted while it attacks
+		var before := enemy.tile()
+		var r := Mover.step(enemy, wish, dt, grid, rules, now, enemy.airborne(now))
+		if r.fell:
+			cancel_cast(enemy, "moved")
+		if r.landed > 0:
+			_land(enemy, r.landed)
+		if m.vel.length() > 0.3 and not m.gliding:
+			enemy.face_angle(m.vel.angle())
+		if enemy.tile() != before and enemy.state == Enemy.State.COMBAT and enemy.def.trail_ability != null:
+			_leave_trail(enemy, before)
+
+
+## Escorted NPCs walk their route like enemies do (Navigator + Mover).
+func _move_walking_npcs() -> void:
+	for id in _sorted(_npcs):
+		var npc: Npc = _npcs[id]
+		if not npc.move.free or not npc.alive:
+			continue
+		Mover.step(npc, Navigator.follow(npc), rules.tick_seconds, grid, rules, now)
+		if npc.move.vel.length() > 0.3:
+			npc.face_angle(npc.move.vel.angle())
+
+
+## Wish toward the hero's walk target; arrives (and stops) when within this tick's reach.
+func _walk_wish(hero: Hero, dt: float) -> Vector2:
+	var m := hero.move
+	var d: Vector2 = hero.walk_target - m.pos
+	var reach := maxf(Mover.speed_of(hero, rules, now), 0.5) * dt
+	if d.length() <= reach or now > hero.walk_deadline:
+		if d.length() <= reach and Mover.speed_of(hero, rules, now) > 0.0:
+			m.pos = hero.walk_target
+			Mover.resolve_terrain(hero, grid)
+		m.vel = Vector2.ZERO
+		hero.walk_target = null
+		return Vector2.ZERO
+	return d.normalized()
+
+
+## A fall ended: damage for more than rules.movement.fall_damage_above levels.
+func _land(a: Actor, levels: int) -> void:
+	var md := rules.movement
+	var dmg := Mover.fall_damage(levels, a.current_stats(now).hp, md)
+	emit({"type": "landed", "target": a.id, "levels": levels})
+	if dmg <= 0.0:
+		return
+	if not md.fall_damage_can_kill:
+		dmg = minf(dmg, a.hp - 1.0)
+	if dmg <= 0.0:
+		return
+	a.hp -= dmg
+	var events: Array[Dictionary] = [{"type": "damage", "source": -1, "target": a.id, "ability": &"fall",
+			"amount": dmg, "crit": false, "flank": ""}]
+	if a.hp <= 0.0:
+		a.die()
+		a.casting = {}
+		events.append({"type": "death", "source": -1, "target": a.id})
+	_emit_resolved(events)
+
+
+## Pushing against a map side that leads somewhere leaves the zone that way.
+func _check_edge(hero: Hero, wish: Vector2) -> void:
+	var m := hero.move
+	var r := m.radius + 0.02
+	var sides := {
+		Vector2i.LEFT: m.pos.x <= -0.5 + r and wish.x < -0.2,
+		Vector2i.RIGHT: m.pos.x >= grid.width - 0.5 - r and wish.x > 0.2,
+		Vector2i.UP: m.pos.y <= -0.5 + r and wish.y < -0.2,
+		Vector2i.DOWN: m.pos.y >= grid.depth - 0.5 - r and wish.y > 0.2,
+	}
+	for dir in sides:
+		if not sides[dir]:
+			continue
+		var edge := edge_for(dir)
+		if edge == null or hero.in_combat(now) or hero.buffs.is_rooted(now) or m.falling():
+			continue
+		if not _edge_requests.any(func(q): return q[0] == hero.id):
+			_edge_requests.append([hero.id, edge])
+		return
+
+
+## Units don't overlap: free movers (heroes, enemies) push each other apart (the
+## lighter more) and are pushed out of everything else (NPCs, immobile enemies,
+## gliding units), then out of walls.
+func _separate_units() -> void:
+	var list: Array[Actor] = []
+	for id in _sorted(ctx.actors):
+		var a: Actor = ctx.actors[id]
+		if a.alive and a.move.free:
+			list.append(a)
+	for h in list:
+		for id in _sorted(ctx.actors):
+			var other: Actor = ctx.actors[id]
+			if other == h or not other.alive or (other.move.free and other.id < h.id):
+				continue
+			# A unit mid-attack (cast bar showing) stands firm: no shoving an enemy out of
+			# its own swing.
+			var fixed: bool = not other.move.free or other.move.gliding or not other.casting.is_empty()
+			Mover.separate_pair(h, other, h.move.gliding or (h is Enemy and not h.casting.is_empty()), fixed)
+	for h in list:
+		if not h.move.gliding:
+			Mover.resolve_terrain(h, grid, h is Enemy and (h as Enemy).airborne(now))
+
+
+# --- Dungeons: party wipes ---------------------------------------------------------
+
+## When the wipe began (everyone here dead), or -1.
+var _wipe_at := -1.0
+## The boss fight of this map (ZoneDef.encounter), if any.
+var encounter: BossEncounter = null
+
+
+## A dungeon party wipe: everyone in it is dead at once. After
+## rules.wipe_respawn_seconds everyone stands up at the entrance (half health and
+## mana, like a release), enemies forget them, and the boss goes back to the start
+## of its current phase.
+func _update_wipe() -> void:
+	if not zone.dungeon:
+		return
+	var all := heroes()
+	if all.is_empty() or all.any(func(h): return h.alive):
+		_wipe_at = -1.0
+		return
+	if _wipe_at < 0.0:
+		_wipe_at = now
+		emit({"type": "party_wipe"})
+		return
+	if now - _wipe_at < rules.wipe_respawn_seconds - Cooldowns.EPSILON:
+		return
+	_wipe_at = -1.0
+	var entrance: Vector2i = zone.graveyards[0] if not zone.graveyards.is_empty() else zone.hero_spawns[0]
+	for hero in all:
+		var stats := hero.current_stats(now)
+		hero.alive = true
+		hero.hp = maxf(roundf(stats.hp * rules.release_fraction), 1.0)
+		hero.mana = roundf(stats.mana * rules.release_fraction)
+		hero.combat_until = 0.0
+		hero.casting = {}
+		hero.move.place(find_free_tile_near(entrance))
+		_history.erase(hero.id)
+	for enemy in enemies():
+		for hero in all:
+			enemy.threat.remove(hero.id)
+	if encounter != null:
+		encounter.on_wipe(self)
+	emit({"type": "wipe_respawn", "tile": entrance})
+
+
+## Starts this zone's clock at `tick` (a dungeon copy made mid-game: heroes carry
+## cooldowns and buffs in world time).
+func sync_clock(tick: int) -> void:
+	tick_count = tick
+	now = tick_count * rules.tick_seconds
+	ctx.now = now
 
 
 ## A tick for a sleeping zone (World: no heroes here for a while): the clock
@@ -322,9 +605,28 @@ func perceived_facing(actor: Actor, delay: float) -> Vector2i:
 	return _perceived(actor, delay, 2, actor.facing)
 
 
-func _perceived(actor: Actor, delay: float, field: int, current: Vector2i) -> Vector2i:
+## Where `actor` was `delay` seconds ago, exactly (enemies aiming late; hits that
+## forgive a hero's network delay: a dodge on their own screen counts).
+func perceived_pos(actor: Actor, delay: float) -> Vector2:
+	if delay <= 0.0 or not _history.has(actor.id):
+		return actor.move.pos
+	return _perceived(actor, delay, 3, actor.move.pos)
+
+
+## Every position `actor` held in the last `window` seconds (the newest last).
+func positions_within(actor: Actor, window: float) -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	if _history.has(actor.id):
+		for e in _history[actor.id]:
+			if e[0] >= now - window - Cooldowns.EPSILON:
+				out.append(e[3])
+	out.append(actor.move.pos)
+	return out
+
+
+func _perceived(actor: Actor, delay: float, field: int, current: Variant) -> Variant:
 	var when := now - delay
-	var best := current
+	var best: Variant = current
 	var entries: Array = _history[actor.id]
 	for i in range(entries.size() - 1, -1, -1):
 		best = entries[i][field]
@@ -338,7 +640,7 @@ func _record_history() -> void:
 		if not _history.has(hero.id):
 			_history[hero.id] = []
 		var entries: Array = _history[hero.id]
-		entries.append([now, hero.tile(), hero.facing])
+		entries.append([now, hero.tile(), hero.facing, hero.move.pos])
 		while not entries.is_empty() and entries[0][0] < now - HISTORY_SECONDS:
 			entries.pop_front()
 
@@ -359,48 +661,35 @@ func intent_ack(hero_id: int) -> int:
 
 func emit(event: Dictionary) -> void:
 	_events.append(event)
+	_record(event)
+
+
+## Keeps each hero's records (Hero.records) from the events of their deeds.
+func _record(e: Dictionary) -> void:
+	match e.type:
+		"damage":
+			var by: Hero = _heroes.get(e.get("source", -1))
+			if by != null and _enemies.has(e.get("target", -1)):
+				by.records.damage += float(e.get("amount", 0.0))
+		"heal":
+			var by: Hero = _heroes.get(e.get("source", -1))
+			if by != null:
+				by.records.healing += float(e.get("amount", 0.0))
+		"death":
+			var who: Hero = _heroes.get(e.get("target", -1))
+			if who != null:
+				who.records.deaths += 1
+		"kill":
+			var who: Hero = _heroes.get(e.get("target", -1))
+			if who != null:
+				who.records.kills += 1
+		"quest_completed":
+			var who: Hero = _heroes.get(e.get("target", -1))
+			if who != null:
+				who.records.quests += 1
 
 
 # --- Shared actions (used by intents and EnemyBrain) -----------------------------
-
-## Starts a step if every rule allows it. Returns "" or a rejection reason.
-## `walk_seconds` overrides the walk time (enemy patrols); < 0 = the rules' value.
-func try_step(actor: Actor, to: Vector2i, walk_seconds: float = -1.0) -> String:
-	if not actor.alive:
-		return "dead"
-	var from := actor.tile()
-	if GridModel.distance(from, to) != 1:
-		return "not_adjacent"
-	if not can_move(actor, from, to):
-		return "blocked"
-	for t in actor.tiles(to):
-		if is_occupied(t, actor):
-			return "occupied"
-	if actor.buffs.is_rooted(now):
-		return "rooted"
-	if actor.buffs.is_stunned(now):
-		return "asleep" if actor.buffs.is_asleep(now) else "stunned"
-	# An enemy that just aggroed is fighting even before the end-of-tick update.
-	var in_combat := actor.in_combat(now) or (actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT)
-	if not actor.move.can_start_step(in_combat, actor.cooldowns, now):
-		return "not_ready"
-	cancel_cast(actor, "moved") # moving cancels anything with a cast bar: cast, channel, wind-up
-	if not actor is Hero:
-		actor.face(to - from) # heroes face the mouse, not where they walk
-	var step_cd := actor.combat_step_cooldown(rules, now) * actor.buffs.step_multiplier(now)
-	if walk_seconds < 0.0:
-		walk_seconds = rules.walk_tile_seconds
-		# Animated creatures glide over their whole step in combat, so their run
-		# cycle covers the ground it shows (no sliding feet).
-		if in_combat and actor is Enemy and (actor as Enemy).def.art != null:
-			walk_seconds = step_cd
-	actor.move.begin(to, now, walk_seconds)
-	if in_combat and not actor.buffs.use_free_step(now):
-		actor.cooldowns.trigger_step(now, step_cd)
-	if actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT and (actor as Enemy).def.trail_ability != null:
-		_leave_trail(actor as Enemy, from)
-	return ""
-
 
 ## A fighting enemy with a trail (Ember Trail) leaves it on the tile it just left.
 func _leave_trail(enemy: Enemy, tile: Vector2i) -> void:
@@ -494,7 +783,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 		caster.casting.next_input = 0
 	# A wound-up swipe or lob shows the tiles it will hit (dodge by leaving them).
 	if kind == "windup" and ability.targeting == AbilityDef.TargetingMode.SKILLSHOT and point != null \
-			and ability.projectile_speed <= 0.0:
+			and ability.projectile_speed <= 0.0 and not ability.uses_hitbox():
 		caster.casting.tiles = [CastResolver.lob_tile(caster.tile(), point, ability.max_range)] \
 				if ability.arc_seconds > 0.0 else CastResolver.skillshot_tiles(ctx, caster, ability, point)
 	# A wound-up charge (Searing Dive) shows its lane.
@@ -713,13 +1002,21 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 ## [{"source", "ability", "tiles", "at"}].
 func pending_hits() -> Array:
 	var out := _pending_hits.map(func(h): return {"source": h.caster, "ability": h.ability.id,
-			"tiles": h.tiles, "at": h.at})
+			"tiles": h.tiles, "at": h.at, "outline": h.get("outline", PackedVector2Array())})
 	# Wind-ups aimed at the ground (Grizzlehide's Charge) or swipes (Crushing Blow,
 	# Cleave) are telegraphed too.
 	for id in _sorted(ctx.actors):
 		var a: Actor = ctx.actors[id]
 		var c: Dictionary = a.casting
 		if c.is_empty() or c.kind != "windup":
+			continue
+		if c.ability.uses_hitbox() and c.ability.hitbox.is_aimed() or (c.ability.hitbox != null \
+				and c.ability.hitbox.shape == HitboxDef.Shape.SELF_CIRCLE):
+			# A free-movement wind-up shows the shape it will hit, aimed where it was aimed.
+			var point: Vector2 = c.aim if c.aim is Vector2 else (Vector2(c.aim) if c.aim is Vector2i \
+					else (get_actor(c.get("target", -1)).move.pos if get_actor(c.get("target", -1)) != null else a.move.pos + a.facing_vector()))
+			out.append({"source": a.id, "ability": c.ability.id, "tiles": [], "at": c.end,
+					"outline": HitboxResolver.shape_outline(ctx, a, c.ability, point)})
 			continue
 		if c.has("tiles"):
 			out.append({"source": a.id, "ability": c.ability.id, "tiles": c.tiles, "at": c.end})
@@ -742,7 +1039,14 @@ func _update_pending_hits() -> void:
 		var events: Array[Dictionary] = []
 		ctx.damage_bonus = h.bonus
 		ctx.force_crit = h.get("force_crit", false)
-		CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
+		if h.has("circle"):
+			ctx.continuous = true
+			ctx.cast_point = h.circle[0]
+			ctx.cast_vec = (h.circle[0] - caster.move.pos).normalized() if h.circle[0] != caster.move.pos else Vector2.RIGHT
+			HitboxResolver.hit_circle(ctx, caster, h.ability, h.circle[0], h.circle[1], events)
+			ctx.continuous = false
+		else:
+			CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
 		ctx.damage_bonus = 1.0
 		ctx.force_crit = false
 		_emit_resolved(events)
@@ -893,6 +1197,10 @@ func _update_projectiles() -> void:
 		var caster := get_actor(p.caster_id)
 		if caster == null:
 			continue
+		if p.continuous:
+			if _fly_continuous(p, caster):
+				flying.append(p)
+			continue
 		if p.ability.targeting != AbilityDef.TargetingMode.LEGACY:
 			if _fly_skillshot(p, caster):
 				flying.append(p)
@@ -917,6 +1225,56 @@ func _update_projectiles() -> void:
 		else:
 			flying.append(p)
 	_projectiles = flying
+
+
+## Moves a free-movement projectile (a PROJECTILE hitbox) along its line,
+## sweeping its round body over the stretch flown since the last tick; the first
+## unit it touches is hit (all of them if it pierces). A hero counts where it was
+## at any moment of the last skillshot_grace_seconds (network delay forgiven).
+## Returns whether it is still flying.
+func _fly_continuous(p: Projectile, caster: Actor) -> bool:
+	var d1 := minf(p.distance_at(now), p.max_dist)
+	var a := p.from + p.dirv * p.checked_dist
+	var b := p.from + p.dirv * d1
+	var hits: Array = []
+	for id in _sorted(ctx.actors):
+		var u: Actor = ctx.actors[id]
+		if p.hit_ids.has(u.id) or not AbilityShapes.affects(caster, p.ability, u):
+			continue
+		var spots: Array[Vector2] = [u.move.pos]
+		if u is Hero:
+			spots = positions_within(u, rules.skillshot_grace_seconds)
+		for spot in spots:
+			if Hitbox.in_capsule(a, b, p.radius, spot, u.move.radius):
+				hits.append([a.distance_to(Geometry2D.get_closest_point_to_segment(spot, a, b)), u])
+				break
+	hits.sort_custom(func(x, y): return x[0] < y[0])
+	p.checked_dist = d1
+	var events: Array[Dictionary] = []
+	for h in hits:
+		var u: Actor = h[1]
+		p.hit_ids[u.id] = true
+		ctx.damage_bonus = p.damage_bonus
+		ctx.force_crit = p.force_crit
+		ctx.continuous = true
+		ctx.cast_vec = p.dirv
+		ctx.cast_point = p.from + p.dirv * p.max_dist
+		AbilityResolver.apply_effects(ctx, caster, p.ability, u, events)
+		ctx.continuous = false
+		ctx.damage_bonus = 1.0
+		ctx.force_crit = false
+		if not p.pierce:
+			emit({"type": "projectile_end", "id": p.id, "tile": u.tile(), "target": u.id})
+			_emit_resolved(events)
+			_credit_mastery(caster, p.ability, events)
+			return false
+	if not events.is_empty():
+		_emit_resolved(events)
+		_credit_mastery(caster, p.ability, events)
+	if p.is_spent(now):
+		emit({"type": "projectile_end", "id": p.id, "tile": MoveState.tile_of(b), "target": -1})
+		return false
+	return true
 
 
 ## Moves a Milestone 3 projectile; returns whether it is still flying.
@@ -1006,6 +1364,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 		_acks[hero_id] = maxi(_acks.get(hero_id, 0), int(intent.seq))
 	var reason := ""
 	match kind:
+		"move":
+			reason = _intent_move(hero, intent.get("dir", Vector2i.ZERO), intent.get("face", hero.aim_angle))
 		"step":
 			reason = _intent_step(hero, intent.get("to", hero.tile()))
 		"face":
@@ -1024,6 +1384,14 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_examine(hero, intent.get("tile", Vector2i(-99, -99)))
 		"accept_shared_quest":
 			reason = _intent_accept_shared_quest(hero, StringName(intent.get("quest", &"")))
+		"finish_act":
+			var def: QuestDef = quests.get(StringName(intent.get("quest", &"")))
+			if def == null or def.ends_act <= 0 or not QuestLog.is_done(hero, def.id):
+				reason = "no_quest"
+			elif hero.in_combat(now):
+				reason = "in_combat"
+			elif def.return_zone != &"" and def.return_zone != zone.id:
+				request_zone_move(hero.id, def.return_zone)
 		"accept_quest":
 			reason = _intent_accept_quest(hero, intent.get("npc", -1), intent.get("quest", &""))
 		"turn_in_quest":
@@ -1071,6 +1439,14 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 				rules.game_speed = clampf(intent.get("value", 1.0), CombatRules.GAME_SPEED_MIN,
 						CombatRules.GAME_SPEED_MAX)
 				emit({"type": "game_speed", "value": rules.game_speed})
+		"dungeon_testing":
+			# The "testing" dungeon setting (parties of one may enter): a test setting
+			# like the game speed, shared by every zone.
+			if debug_content == null:
+				reason = "debug_disabled"
+			else:
+				rules.dungeon_testing = intent.get("on", false)
+				emit({"type": "dungeon_testing", "on": rules.dungeon_testing})
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)
@@ -1085,20 +1461,38 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 		emit({"type": "rejected", "target": hero.id, "intent": kind, "reason": reason})
 
 
+## Free movement: the held direction (screen-relative, 8 ways) and the mouse angle.
+func _intent_move(hero: Hero, dir: Vector2i, face: float) -> String:
+	hero.wish = Mover.screen_to_grid(dir)
+	if hero.wish != Vector2.ZERO:
+		hero.walk_target = null
+	if is_finite(face):
+		hero.aim_angle = face
+	return ""
+
+
+## Walks to the centre of tile `to` (stopping at whatever is in the way); a tile
+## off the map leaves through that edge, as stepping off it does.
 func _intent_step(hero: Hero, to: Vector2i) -> String:
 	if not hero.alive:
 		return "dead"
-	# Still walking: buffer the step if it continues from where we're heading.
-	if hero.move.is_moving(now) and GridModel.distance(hero.tile(), to) == 1:
-		hero.pending_step = to
-		return ""
-	return _step_or_leave(hero, to)
+	if not grid.in_bounds(to):
+		return _leave_toward(hero, to)
+	if hero.buffs.is_rooted(now):
+		return "rooted"
+	if hero.buffs.is_stunned(now):
+		return "asleep" if hero.buffs.is_asleep(now) else "stunned"
+	if GridModel.distance(hero.tile(), to) == 1 and not can_move(hero, hero.tile(), to):
+		return "blocked"
+	hero.walk_target = Vector2(to)
+	hero.wish = Vector2.ZERO
+	var dist := hero.move.pos.distance_to(Vector2(to))
+	hero.walk_deadline = now + dist / maxf(Mover.speed_of(hero, rules, now), 0.5) + 1.0
+	return ""
 
 
-## A step off the map leaves through that edge (if it leads somewhere).
-func _step_or_leave(hero: Hero, to: Vector2i) -> String:
-	if grid.in_bounds(to) or GridModel.distance(hero.tile(), to) != 1:
-		return try_step(hero, to)
+## Stepping off the map toward `to` leaves through that edge (if it leads somewhere).
+func _leave_toward(hero: Hero, to: Vector2i) -> String:
 	var edge := edge_for(to - hero.tile())
 	if edge == null:
 		return "blocked"
@@ -1110,35 +1504,25 @@ func _step_or_leave(hero: Hero, to: Vector2i) -> String:
 	return ""
 
 
-## Turning is free and instant, in and out of combat. It also cancels a step
-## buffered while walking, so a later step can't swing the hero back.
+## Turning is free and instant, in and out of combat.
 func _intent_face(hero: Hero, dir: Vector2i) -> String:
 	if not hero.alive:
 		return "dead"
 	if not hero.face(dir):
 		return "bad_direction"
-	if hero.pending_step != null and hero.pending_step - hero.tile() != dir:
-		hero.pending_step = null
+	hero.aim_angle = hero.facing_angle
 	return ""
-
-
-func _take_pending_step(hero: Hero) -> void:
-	if hero.pending_step == null or not hero.alive:
-		return
-	if not hero.move.can_start_step(hero.in_combat(now), hero.cooldowns, now):
-		return
-	var to: Vector2i = hero.pending_step
-	hero.pending_step = null
-	var reason := _step_or_leave(hero, to)
-	if reason != "":
-		emit({"type": "rejected", "target": hero.id, "intent": "step", "reason": reason})
 
 
 func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Variant = null) -> String:
 	var ability := hero.find_ability(ability_id)
 	if ability == null:
 		return "unknown_ability"
+	var walking: Variant = hero.walk_target
+	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
 	var result := cast(hero, ability, get_actor(target_id), aim)
+	if result != AbilityResolver.Result.OK:
+		hero.walk_target = walking
 	if result != AbilityResolver.Result.OK:
 		return AbilityResolver.Result.keys()[result].to_lower()
 	return ""
@@ -1274,7 +1658,22 @@ func _intent_turn_in_quest(hero: Hero, npc_id: int, quest_id: StringName, choice
 	if def.sets_world_flag != &"" and not world_flags.has(String(def.sets_world_flag)):
 		world_flags[String(def.sets_world_flag)] = true
 		emit({"type": "world_flag", "flag": def.sets_world_flag, "quest": def.id})
+	if def.ends_act > 0:
+		if not hero.records.acts.has(def.ends_act):
+			hero.records.acts.append(def.ends_act)
+		emit({"type": "act_complete", "target": hero.id, "act": def.ends_act, "quest": def.id,
+				"party": party_records()})
 	return ""
+
+
+## Every hero here (the party) and their records, for the end-of-act screen.
+func party_records() -> Array:
+	var out := []
+	for h in heroes():
+		out.append({"id": h.id, "name": h.display_name, "level": h.level, "kills": h.records.kills,
+				"damage": roundi(h.records.damage), "healing": roundi(h.records.healing),
+				"deaths": h.records.deaths, "quests": h.records.quests})
+	return out
 
 
 ## "" if `hero` is alive and within talking range of NPC actor `npc_id`, whose type is `npc_def_id`.
@@ -1462,7 +1861,9 @@ func _on_death(actor: Actor) -> void:
 				for e in QuestLog.on_kill(h, quests, enemy.def.id):
 					emit(e)
 		if not earners.is_empty():
-			var share := float(enemy.def.xp_reward) / earners.size()
+			# Scaled for a party, it gives XP for the party: each hero who fought it gets
+			# what a solo hero would (unscaled, the XP is shared as before).
+			var share := float(enemy.def.xp_reward) * mini(earners.size(), enemy.party_size) / earners.size()
 			for h in earners:
 				emit({"type": "kill", "target": h.id, "enemy": enemy.def.id})
 				var xp := share * Leveling.xp_level_multiplier(h.level, enemy.level, rules)
@@ -1585,7 +1986,7 @@ func _regen() -> void:
 		var mana_pct := rules.in_combat_mana_regen_percent if fighting else rules.out_of_combat_mana_regen_percent
 		mana_pct += a.buffs.mana_regen_percent(now)
 		a.hp = minf(a.hp + s.hp * hp_pct / 100.0 * dt, s.hp)
-		a.mana = minf(a.mana + s.mana * mana_pct / 100.0 * dt, s.mana)
+		a.mana = clampf(a.mana + s.mana * mana_pct / 100.0 * dt, 0.0, s.mana) # greyed ground drains it
 
 
 func _take_id() -> int:
@@ -1665,17 +2066,18 @@ func _update_escorts() -> void:
 		var o: QuestObjective = def.objectives[e.objective]
 		var goal: Vector2i = o.path[e.next]
 		var last: bool = e.next == o.path.size() - 1
-		var d := GridModel.distance(npc.tile(), goal)
-		if not npc.move.is_moving(now) and (d == 0 or (d == 1 and (not last or is_occupied(goal, npc)))):
+		var d := npc.move.pos.distance_to(Vector2(goal))
+		if d <= Navigator.REACHED + 0.05 or (d <= 1.2 and (not last or is_occupied(goal, npc))):
 			e.next += 1
 			if e.next >= o.path.size():
+				Navigator.stop(npc)
 				_escort_arrived(npc, def, e)
 			continue
-		if npc.move.is_moving(now) or not _escort_has_company(npc, def):
-			continue # waits for the party
-		var path := path_for(npc, goal, occupied_tiles(npc), 512)
-		if path.size() >= 2:
-			try_step(npc, path[1], ESCORT_STEP_SECONDS)
+		if not _escort_has_company(npc, def):
+			Navigator.stop(npc) # waits for the party
+			continue
+		npc.move.free = true
+		Navigator.go(self, npc, goal, (1.0 / ESCORT_STEP_SECONDS) / npc.base_move_speed(rules), 0.0, Callable(), 512)
 
 
 ## Whether a living party member on the escort's quest is close enough to follow.
@@ -1715,6 +2117,8 @@ func _escort_died(npc: Npc) -> void:
 
 func _end_escort(npc: Npc) -> void:
 	_escorts.erase(npc.id)
+	Navigator.stop(npc)
+	npc.move.free = false
 	npc.reset_home()
 	if is_occupied(npc.home_tile, npc):
 		npc.move.place(find_free_tile_near(npc.home_tile))

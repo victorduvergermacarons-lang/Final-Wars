@@ -14,6 +14,7 @@ const VIEWS := {
 	&"deepcut": [Vector2i(22, 20), Vector2i(34, 13), Vector2i(12, 13), Vector2i(26, 11)],
 	&"windsteppe": [Vector2i(28, 22), Vector2i(16, 21), Vector2i(30, 17), Vector2i(38, 34)],
 	&"tidereach_shore": [Vector2i(9, 7)],
+	&"silent_shaft": [Vector2i(33, 15), Vector2i(12, 14), Vector2i(36, 12), Vector2i(38, 23), Vector2i(55, 15)],
 }
 
 
@@ -48,10 +49,16 @@ func _run() -> void:
 	game.start_solo(CharacterData.new_character("Ayla", ContentDB.heroes[&"adventurer"]))
 	var session: LocalSession = game.session
 	var hero := session.local_hero()
+	var only := OS.get_environment("SHOTS_ONLY") # e.g. "silent_shaft": just that zone
 	for zone_id in VIEWS:
+		if only != "" and String(zone_id) != only:
+			continue
 		var spots: Array = VIEWS[zone_id]
+		var key: StringName = zone_id
+		if session.world.is_dungeon(zone_id): # the party's own copy
+			key = session.world.dungeon_instance(ContentDB.zones[zone_id], hero.id).key
 		for i in spots.size():
-			session.world.move_hero(hero.id, zone_id, spots[i])
+			session.world.move_hero(hero.id, key, spots[i])
 			var view: WorldView = await _view()
 			for z in 4:
 				view.camera.step_zoom(-1 if i == 0 else 1)

@@ -40,6 +40,7 @@ func _item(id: StringName, slot: EquipSlot.Type, teaches: Array[AbilityDef]) -> 
 
 func before_each() -> void:
 	rules = CombatRules.new()
+	rules.party_scaling = false # exact numbers here; party scaling has its own tests
 	var zone := ZoneDef.new()
 	zone.id = &"test"
 	var heights: PackedStringArray = []
@@ -111,26 +112,28 @@ func test_heroes_spawn_on_spawn_points() -> void:
 	assert_eq(enemy.tile(), Vector2i(9, 1))
 
 
-func test_walking_out_of_combat_chains_steps_with_no_cooldown() -> void:
+func test_walking_out_of_combat_has_no_step_cooldown() -> void:
+	# Free movement: no per-step limit, just the walk speed.
 	world.submit(a.id, {"type": "step", "to": Vector2i(2, 1)})
-	world.step()
+	world.advance(0.4)
 	assert_eq(a.tile(), Vector2i(2, 1))
-	world.submit(a.id, {"type": "step", "to": Vector2i(3, 1)}) # sent mid-walk: buffered
-	var events := world.advance(rules.walk_tile_seconds)
+	world.submit(a.id, {"type": "step", "to": Vector2i(4, 1)})
+	var events := world.advance(0.8)
 	assert_eq(_rejections(events), [])
-	assert_eq(a.tile(), Vector2i(3, 1), "second step starts the moment the first arrives")
+	assert_eq(a.tile(), Vector2i(4, 1), "two more tiles at 3 tiles/s")
 
 
 func test_step_rejections() -> void:
 	_place(a, Vector2i(4, 6))
 	world.submit(a.id, {"type": "step", "to": Vector2i(5, 6)})
-	world.submit(b.id, {"type": "step", "to": Vector2i(3, 3)})
 	var events := world.step()
-	assert_eq(_rejections(events), ["blocked", "not_adjacent"])
+	assert_eq(_rejections(events), ["blocked"], "too high to climb")
+	# Someone in the way: no rejection, the walker is stopped and slides around them.
 	_place(b, Vector2i(4, 5))
 	world.advance(1.0)
 	world.submit(a.id, {"type": "step", "to": Vector2i(4, 5)})
-	assert_eq(_rejections(world.step()), ["occupied"])
+	assert_eq(_rejections(world.advance(1.5)), [])
+	assert_gte(a.move.pos.distance_to(b.move.pos), a.move.radius + b.move.radius - 0.02, "never overlapping")
 
 
 # --- Aggro and combat mode ---------------------------------------------------------
@@ -172,19 +175,15 @@ func test_enemy_chases_and_attacks_on_cooldown() -> void:
 	assert_eq(fmod(100.0 - a.hp, 20.0), 0.0, "only whole bites landed (no HP regen in combat)")
 
 
-func test_step_cooldown_applies_in_combat() -> void:
+func test_no_step_cooldown_in_combat_either() -> void:
+	# Free movement replaced the combat step cooldown: the same speed applies.
 	_place(a, Vector2i(6, 1))
 	world.step()
 	assert_true(a.in_combat(world.now))
-	world.submit(a.id, {"type": "step", "to": Vector2i(6, 2)})
-	world.step()
-	world.advance(rules.walk_tile_seconds)
+	assert_eq(Mover.speed_of(a, rules, world.now), rules.movement.walk_speed * rules.movement.combat_speed_factor)
 	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
-	assert_eq(_rejections(world.step()), ["not_ready"], "arrived, but the combat step cooldown is running")
-	var cd := StatCalc.combat_step_cooldown(a.current_stats(world.now).speed, rules)
-	world.advance(cd - rules.walk_tile_seconds - 2 * rules.tick_seconds)
-	world.submit(a.id, {"type": "step", "to": Vector2i(6, 3)})
-	assert_eq(_rejections(world.step()), [])
+	assert_eq(_rejections(world.advance(0.8)), [])
+	assert_eq(a.tile(), Vector2i(6, 3), "two tiles in under a second, in combat")
 
 
 func test_healer_joins_combat_by_healing() -> void:
@@ -383,11 +382,10 @@ func test_same_seed_and_intents_give_same_result() -> void:
 
 # --- Facing ----------------------------------------------------------------------
 
-func test_steps_dont_turn_the_hero_and_face_turns_in_place() -> void:
-	var facing := a.facing
+func test_out_of_combat_heroes_face_where_they_walk_and_face_turns_in_place() -> void:
 	world.submit(a.id, {"type": "step", "to": a.tile() + Vector2i.RIGHT})
-	world.step()
-	assert_eq(a.facing, facing, "heroes face the mouse, not where they walk")
+	world.advance(0.2)
+	assert_eq(a.facing, Vector2i.RIGHT, "out of combat: the way it walks (the mouse in combat)")
 	world.advance(1.0)
 	var tile := a.tile()
 	world.submit(a.id, {"type": "face", "dir": Vector2i.UP})
@@ -437,17 +435,16 @@ func test_unequip_into_bag_and_back() -> void:
 
 
 func test_aggroed_enemy_does_not_dart_two_tiles() -> void:
-	enemy_def.combat_step_seconds = 0.8
+	# Free movement: an enemy that aggroes runs at its own speed from the start
+	# (accelerating), never faster.
 	_place(a, Vector2i(6, 1)) # 3 tiles away: aggro
-	var step_times: Array[float] = []
-	var last := enemy.tile()
+	var fastest := 0.0
 	for i in 40: # 2 s
 		world.step()
-		if enemy.tile() != last:
-			step_times.append(world.now)
-			last = enemy.tile()
-	assert_gt(step_times.size(), 1)
-	assert_gte(step_times[1] - step_times[0], 0.8 - 0.001, "second step waits for the step cooldown")
+		fastest = maxf(fastest, enemy.move.vel.length())
+	var top := Mover.speed_of(enemy, world.rules, world.now)
+	assert_gt(fastest, 0.0, "it moved")
+	assert_lte(fastest, top + 0.001, "never faster than its speed")
 
 
 func test_combat_ends_as_soon_as_the_enemy_dies() -> void:

@@ -51,18 +51,25 @@ func test_scaled_amount_sums_terms_and_never_goes_negative() -> void:
 	assert_eq(StatCalc.scaled_amount(5.0, negative, stats), 0.0)
 
 
-func test_step_cooldown_is_base_at_zero_speed() -> void:
-	assert_almost_eq(StatCalc.combat_step_cooldown(0.0, rules), 0.6, 0.0001)
+## Free movement: the Speed stat scales walking speed (Mover.speed_of), +1% per
+## point here (half point 100), capped at base / min (×2 with these rules).
+func _speed_with(speed: float) -> float:
+	var a := Actor.new(1, Actor.Team.HEROES, StatBlock.make({Stat.Id.HP: 10, Stat.Id.SPEED: speed}))
+	return Mover.speed_of(a, rules, 0.0) / rules.movement.walk_speed
 
 
-func test_step_cooldown_halves_at_half_point_then_floors() -> void:
-	assert_almost_eq(StatCalc.combat_step_cooldown(50.0, rules), 0.4, 0.0001)
-	assert_almost_eq(StatCalc.combat_step_cooldown(100.0, rules), 0.3, 0.0001)
-	assert_almost_eq(StatCalc.combat_step_cooldown(1000.0, rules), 0.3, 0.0001)
+func test_speed_stat_is_base_pace_at_zero() -> void:
+	assert_almost_eq(_speed_with(0.0), 1.0, 0.0001)
 
 
-func test_step_cooldown_ignores_negative_speed() -> void:
-	assert_almost_eq(StatCalc.combat_step_cooldown(-50.0, rules), 0.6, 0.0001)
+func test_speed_stat_doubles_pace_at_half_point_then_caps() -> void:
+	assert_almost_eq(_speed_with(50.0), 1.5, 0.0001)
+	assert_almost_eq(_speed_with(100.0), 2.0, 0.0001)
+	assert_almost_eq(_speed_with(1000.0), 2.0, 0.0001)
+
+
+func test_speed_stat_ignores_negative_speed() -> void:
+	assert_almost_eq(_speed_with(-50.0), 1.0, 0.0001)
 
 
 func test_jump_levels_floors_and_clamps() -> void:

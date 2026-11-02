@@ -142,7 +142,17 @@
   {"id": 133, "name": "Red tile roof (placeholder: recolour of tile 61)", "category": "rock", "kind": "block", "walkable": true, "blocks_sight": false},
   {"id": 134, "name": "Red rock pillar (placeholder: recolour of tile 55)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": true},
   {"id": 135, "name": "Red boulder (placeholder: recolour of tile 57)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": true},
-  {"id": 136, "name": "Red rock (placeholder: recolour of tile 54)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": false}
+  {"id": 136, "name": "Red rock (placeholder: recolour of tile 54)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": false},
+  {"id": 137, "name": "Mine floor 1 (placeholder: recolour of tile 11)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 138, "name": "Mine floor 2 (placeholder: recolour of tile 12)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 139, "name": "Mine floor 3 (placeholder: recolour of tile 13)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 140, "name": "Mine stone (placeholder: recolour of tile 63)", "category": "rock", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 141, "name": "Grey rock 1 (placeholder: recolour of tile 11)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 142, "name": "Grey rock 2 (placeholder: recolour of tile 12)", "category": "ground", "kind": "block", "walkable": true, "blocks_sight": false},
+  {"id": 143, "name": "Sunstone seam (placeholder: recolour of tile 114)", "category": "rock", "kind": "block", "walkable": false, "blocks_sight": false},
+  {"id": 144, "name": "Spent seam (placeholder: recolour of tile 114)", "category": "rock", "kind": "block", "walkable": false, "blocks_sight": false},
+  {"id": 145, "name": "Sunstone cluster (placeholder: recolour of tile 54)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": false},
+  {"id": 146, "name": "Grey cluster (placeholder: recolour of tile 54)", "category": "rock", "kind": "prop", "walkable": false, "blocks_sight": false}
  ],
  "animations": {
   "sparkle": {"frames": [82, 83, 84, 85], "fps": 6},
@@ -182,7 +192,13 @@
   "steppe_dry": {"tiles": [129, 130], "fill": "dirt"},
   "roof_thatch": {"tiles": [131], "fill": "cobble", "walkable": false},
   "roof_slate": {"tiles": [132], "fill": "cobble", "walkable": false},
-  "roof_red": {"tiles": [133], "fill": "red_stone", "walkable": false}
+  "roof_red": {"tiles": [133], "fill": "red_stone", "walkable": false},
+  "mine_floor": {"tiles": [137, 138, 139], "fill": "mine_stone"},
+  "mine_stone": {"tiles": [140]},
+  "mine_wall": {"tiles": [140], "walkable": false},
+  "grey_rock": {"tiles": [141, 142], "fill": "mine_stone"},
+  "sunstone": {"tiles": [143], "fill": "mine_stone", "walkable": false},
+  "spent_seam": {"tiles": [144], "fill": "mine_stone", "walkable": false}
  },
  "props": {
   "flowers": {"tiles": [41, 44, 46, 47, [42, 0.5]]},
@@ -193,6 +209,8 @@
   "brown_boulders": {"tiles": [55, 56, 57, 59, 60]},
   "grey_boulders": {"tiles": [64, 65, 68]},
   "red_boulders": {"tiles": [134, 135]},
-  "red_rocks": {"tiles": [136]}
+  "red_rocks": {"tiles": [136]},
+  "sunstone_clusters": {"tiles": [145]},
+  "grey_clusters": {"tiles": [146]}
  }
 }

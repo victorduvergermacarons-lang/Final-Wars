@@ -123,8 +123,8 @@ class Map:
         self.npcs.append((npc_id, x, y, facing))
         self.P[y][x] = None
 
-    def enemy(self, enemy_id, x, y, patrol=()):
-        self.enemies.append((enemy_id, x, y, list(patrol)))
+    def enemy(self, enemy_id, x, y, patrol=(), level=0):
+        self.enemies.append((enemy_id, x, y, list(patrol), level))
 
     def edge(self, side, to, offset):
         self.edges.append((side, to, offset))
@@ -155,7 +155,7 @@ def strings(rows):
 def write(m: Map):
     # Gameplay places never hold a prop (they must stay walkable).
     keep = [(x, y) for _, x, y, _ in m.npcs] + [(x, y) for _, x, y in m.landmarks] + m.graveyards + m.spawns
-    for _, x, y, patrol in m.enemies:
+    for _, x, y, patrol, _ in m.enemies:
         keep += [(x, y)] + patrol
     for _, x, y, _, _ in m.decor:
         keep.append((x, y))
@@ -183,12 +183,14 @@ def write(m: Map):
         npc_ids.append(sid)
         sub.append('[sub_resource type="Resource" id="%s"]\nscript = ExtResource("s_npc_spawn")\nnpc = ExtResource("npc_%s")\ntile = %s\nfacing = %s'
                    % (sid, n, v2((x, y)), v2(f)))
-    for i, (e, x, y, patrol) in enumerate(m.enemies):
+    for i, (e, x, y, patrol, level) in enumerate(m.enemies):
         sid = "enemy_spawn_%d" % i
         enemy_ids.append(sid)
         s = '[sub_resource type="Resource" id="%s"]\nscript = ExtResource("s_enemy_spawn")\nenemy = ExtResource("enemy_%s")\ntile = %s' % (sid, e, v2((x, y)))
         if patrol:
             s += "\npatrol = Array[Vector2i]([%s])" % ", ".join(v2(p) for p in patrol)
+        if level:
+            s += "\nlevel = %d" % level
         sub.append(s)
     for i, (name, x, y) in enumerate(m.landmarks):
         sid = "landmark_%d" % i
@@ -302,6 +304,14 @@ def millbrook():
     m.npc("maren", 6, 13, UP)
     m.npc("seer_ilyth", 17, 15, DOWN)
     m.npc("healer_wenna", 5, 24, DOWN)
+    # Act I quest 1-01: Maren Voss watches the south bridge; wolves and boars raid
+    # the fields beyond it.
+    m.npc("maren_voss_field", 21, 22, RIGHT)
+    m.enemy("wolf", 28, 18)
+    m.enemy("wolf", 27, 24)
+    m.enemy("wolf", 30, 26)
+    m.enemy("boar", 29, 21)
+    m.enemy("boar", 28, 28)
     m.spawns += [(13, 12), (14, 12), (16, 12), (17, 12)]
     m.edge(RIGHT, "greenfields", 13)
     m.edge(UP, "enemy_testing", -12)
@@ -373,6 +383,10 @@ def crossing():
     # People.
     m.npc("guild_board", 13, 15, DOWN)
     m.npc("warden_dorne", 9, 8, LEFT)
+    m.npc("maren_voss", 7, 11, DOWN)
+    m.npc("caedan_ashvale", 4, 12, DOWN)
+    m.npc("guild_quartermaster", 7, 6, RIGHT)
+    m.npc("guild_map", 2, 12, DOWN)
     m.npc("sabra_venn", 11, 26, RIGHT)
     m.npc("innkeeper_bram", 9, 27, LEFT)
     m.npc("trader_tamsin", 14, 23, UP)
@@ -431,9 +445,13 @@ def deepcut_road():
     m.add_decor("crates", 45, 13)
     m.add_decor("sign", 3, 8, "The Crossing")
     m.add_decor("sign", 56, 8, "Deepcut")
-    m.enemy("wolf", 10, 4)
-    m.enemy("wolf", 13, 14)
-    m.enemy("bandit_brute", 26, 3)
+    m.enemy("wolf", 10, 4, level=3)
+    m.enemy("wolf", 13, 14, level=3)
+    m.enemy("bandit_brute", 26, 3, level=5)
+    # Road ambushes (quest 1-04's grain wagon passes them).
+    m.enemy("bandit_brute", 31, 11, level=5)
+    m.enemy("bandit_brute", 47, 13, level=5)
+    m.npc("grain_caravan", 5, 10, RIGHT)
     m.spawns += [(2, 10), (2, 11)]
     m.edge(LEFT, "crossing", 9)
     m.edge(RIGHT, "deepcut", 7)
@@ -498,14 +516,17 @@ def deepcut():
             if m.T[y][x] in ("path",) and m.P[y][x]:
                 m.P[y][x] = None
     # The Ember Hand's fire hounds lurk by the canyon mouth (the escort's danger).
-    m.enemy("salamander_hound", 6, 21)
-    m.enemy("salamander_hound", 10, 22)
+    m.enemy("salamander_hound", 6, 21, level=6)
+    m.enemy("salamander_hound", 10, 22, level=6)
+    # Human Husks shamble out of the collapsed shaft (side quest Shift Bell).
+    m.enemy("human_husk", 22, 12)
+    m.enemy("human_husk", 26, 13)
+    m.enemy("human_husk", 29, 11)
     # People.
-    m.npc("steward_marl", 11, 10, DOWN)
+    m.npc("steward_brann", 11, 10, DOWN)
     m.npc("mine_board", 14, 15, DOWN)
-    m.npc("foreman_brannoc", 33, 14, RIGHT)
-    m.npc("ore_caravan", 31, 19, LEFT)
     m.npc("collapsed_shaft", 27, 10, DOWN)
+    m.npc("trapped_miner", 25, 10, DOWN)
     m.spawns += [(3, 17), (3, 18), (4, 17), (4, 18)]
     m.edge(LEFT, "deepcut_road", -7)
     return m
@@ -565,6 +586,8 @@ def windsteppe():
         m.add_decor("ger", p[0], p[1], "Ger" if p == (17, 16) else "")
     m.landmarks.append(("Tsaga's Camp", 15, 21))
     m.npc("elder_tsaga", 15, 19, RIGHT)
+    m.npc("saran", 16, 22, UP)
+    m.npc("well_diggers", 49, 21, LEFT)
     m.add_decor("dry_well", 14, 21, "Dry Well")
     m.add_decor("cairn", 18, 23, "Stone Cairn")
     for i, p in enumerate([(23, 25), (24, 27), (22, 28), (25, 26)]):
@@ -585,12 +608,12 @@ def windsteppe():
             if m.T[y][x] == "path" and m.P[y][x]:
                 m.P[y][x] = None
     # Iron wolves roam in three packs.
-    m.enemy("iron_wolf", 40, 8, [(40, 8), (47, 13), (41, 16)])
-    m.enemy("iron_wolf", 43, 7, [(43, 7), (49, 10), (44, 15)])
-    m.enemy("iron_wolf", 8, 32, [(8, 32), (12, 38), (4, 39)])
-    m.enemy("iron_wolf", 10, 30, [(10, 30), (14, 35), (6, 36)])
-    m.enemy("iron_wolf", 26, 31, [(26, 31), (30, 26), (22, 34)])
-    m.enemy("iron_wolf", 28, 33, [(28, 33), (32, 28), (24, 36)])
+    m.enemy("iron_wolf", 40, 8, [(40, 8), (47, 13), (41, 16)], level=4)
+    m.enemy("iron_wolf", 43, 7, [(43, 7), (49, 10), (44, 15)], level=4)
+    m.enemy("iron_wolf", 8, 32, [(8, 32), (12, 38), (4, 39)], level=5)
+    m.enemy("iron_wolf", 10, 30, [(10, 30), (14, 35), (6, 36)], level=5)
+    m.enemy("iron_wolf", 26, 31, [(26, 31), (30, 26), (22, 34)], level=4)
+    m.enemy("iron_wolf", 28, 33, [(28, 33), (32, 28), (24, 36)], level=4)
     m.spawns += [(52, 21), (52, 22), (51, 21), (51, 22)]
     m.edge(RIGHT, "crossing", -2)
     return m

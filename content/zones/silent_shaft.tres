@@ -1,0 +1,175 @@
+[gd_resource type="Resource" script_class="ZoneDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/zone_exit.gd" id="s_exit"]
+[ext_resource type="Resource" path="res://content/encounters/foreman.tres" id="enc_foreman"]
+[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="s_zone"]
+[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="s_edge"]
+[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="s_npc_spawn"]
+[ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="s_enemy_spawn"]
+[ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
+[ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
+[ext_resource type="Resource" path="res://content/enemies/foreman.tres" id="enemy_foreman"]
+[ext_resource type="Resource" path="res://content/enemies/grey_heart.tres" id="enemy_grey_heart"]
+[ext_resource type="Resource" path="res://content/enemies/grey_overseer.tres" id="enemy_grey_overseer"]
+[ext_resource type="Resource" path="res://content/enemies/human_husk.tres" id="enemy_human_husk"]
+
+[sub_resource type="Resource" id="exit_0"]
+script = ExtResource("s_exit")
+tile = Vector2i(1, 15)
+to_zone = &"deepcut"
+to_tile = Vector2i(34, 12)
+
+[sub_resource type="Resource" id="exit_1"]
+script = ExtResource("s_exit")
+tile = Vector2i(19, 19)
+to_tile = Vector2i(26, 21)
+
+[sub_resource type="Resource" id="exit_2"]
+script = ExtResource("s_exit")
+tile = Vector2i(24, 21)
+to_tile = Vector2i(17, 19)
+
+[sub_resource type="Resource" id="enemy_spawn_0"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(11, 12)
+level = 8
+
+[sub_resource type="Resource" id="enemy_spawn_1"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(10, 17)
+level = 8
+
+[sub_resource type="Resource" id="enemy_spawn_2"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(17, 9)
+level = 8
+
+[sub_resource type="Resource" id="enemy_spawn_3"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(16, 16)
+level = 8
+
+[sub_resource type="Resource" id="enemy_spawn_4"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(31, 13)
+level = 9
+
+[sub_resource type="Resource" id="enemy_spawn_5"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(35, 9)
+level = 9
+
+[sub_resource type="Resource" id="enemy_spawn_6"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(40, 14)
+level = 9
+
+[sub_resource type="Resource" id="enemy_spawn_7"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_human_husk")
+tile = Vector2i(41, 8)
+level = 9
+
+[sub_resource type="Resource" id="enemy_spawn_8"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_grey_overseer")
+tile = Vector2i(38, 24)
+
+[sub_resource type="Resource" id="enemy_spawn_9"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_foreman")
+tile = Vector2i(56, 15)
+
+[sub_resource type="Resource" id="enemy_spawn_10"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_grey_heart")
+tile = Vector2i(61, 15)
+
+[sub_resource type="Resource" id="landmark_0"]
+script = ExtResource("s_landmark")
+name = "Mine Lift"
+tile = Vector2i(18, 20)
+
+[sub_resource type="Resource" id="landmark_1"]
+script = ExtResource("s_landmark")
+name = "Old Shift Office"
+tile = Vector2i(36, 22)
+
+[sub_resource type="Resource" id="landmark_2"]
+script = ExtResource("s_landmark")
+name = "The Foreman's Chamber"
+tile = Vector2i(49, 15)
+
+[sub_resource type="Resource" id="decor_0"]
+script = ExtResource("s_decor")
+kind = 4
+tile = Vector2i(7, 15)
+label = "Abandoned Ore Cart"
+
+[sub_resource type="Resource" id="decor_1"]
+script = ExtResource("s_decor")
+kind = 10
+tile = Vector2i(12, 9)
+
+[sub_resource type="Resource" id="decor_2"]
+script = ExtResource("s_decor")
+kind = 4
+tile = Vector2i(20, 19)
+label = "Mine Lift"
+
+[sub_resource type="Resource" id="decor_3"]
+script = ExtResource("s_decor")
+kind = 4
+tile = Vector2i(23, 20)
+label = "Mine Lift"
+
+[sub_resource type="Resource" id="decor_4"]
+script = ExtResource("s_decor")
+kind = 10
+tile = Vector2i(41, 25)
+label = "Overseer's Strongbox"
+
+[resource]
+script = ExtResource("s_zone")
+id = &"silent_shaft"
+display_name = "The Silent Shaft"
+height_rows = PackedStringArray("666666666666666666666666666666666666666666666666666666666666666666", "666666666666666666666666666666666666666666666666666666666666666666", "666666660000666666666666666666666666666666666666666666666666666666", "666666666006666666666666666666666666666666666666666666666666666666", "666666666006666666666666666666666666666666666660000000000000000006", "666666666006666666666666666666666666666666666660000000000000000006", "666666666006666666666666666666000000000000006660000000006000000006", "666666666006660000006666666666000222222000006660000000000000000006", "666666666006660000006666666666000222222000006660000600000000000006", "666666660000000000006666666666060222222006006660000000000000000006", "666666660000000000006666666666000222222000006660000000000000000006", "666666660000000000006666666666000222222000006660000000000011111106", "666666660000000000006666666600000011000000006660000000000011111106", "600000660000000000006666666600000000000333306600000000000011111106", "600000000000006600666666666600000000012333300000000000000011111106", "600000000000006600666666666600006000612333300000000000000011111106", "600000660000006600666666666600000000000333306600000000000011111106", "666666660000006600666666666600000000000000006660000000000011111106", "666666660000000000000666000000000066066666666660000000000011111106", "666666660000000000000666000000000066066666666660000000000011111106", "666666666666660000000666000000000066066666666660000000000000000006", "666666666666660000000666000000000000000000066660000000000000000006", "666666666666666666000666000000000000000000066660000600000000000006", "666666666666666666000666000000000000000000066660000000000000000006", "666666666666666666666666000000000000000000066660000000006000000006", "666666666666666666666666666666666000000000066660000000000000000006", "666666666666666666666666666666666000000000066660000000000000000006", "666666666666666666666666666666666666666666666666666666666666666666", "666666666666666666666666666666666666666666666666666666666666666666", "666666666666666666666666666666666666666666666666666666666666666666")
+walk_rows = PackedStringArray("##################################################################", "##################################################################", "##################################################################", "##################################################################", "###############################################..................#", "###############################################..................#", "#########..###################..............###.........#........#", "#########..###......##########..............###..................#", "#########..####.#...##########...#..........###....#.............#", "########....#.......##########.#.........#..###..................#", "########............###########.............###..................#", "########............##########.#............###..................#", "########............########................###..................#", "#.....##..........#.########.#..............##...................#", "#.............##..##########......#..............................#", "#......#....#.##..##########....#...#.#...#......................#", "#.....##......##..##########.....#.........###...................#", "########......##..##########................###..................#", "########.............###........#.##.##########..................#", "########.....#......####....#.....##.##########..................#", "##############.......####...#.....##.##########..................#", "##############.......###.#...........##..######..................#", "########################.#.................####....#.............#", "########################.........#.........####..................#", "########################.............#.....####.........#........#", "#################################....#...#.####..................#", "#################################..###.....####..................#", "##################################################################", "##################################################################", "##################################################################")
+graveyards = Array[Vector2i]([Vector2i(2, 15)])
+hero_spawns = Array[Vector2i]([Vector2i(3, 14), Vector2i(3, 15), Vector2i(2, 14), Vector2i(4, 14)])
+enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("enemy_spawn_0"), SubResource("enemy_spawn_1"), SubResource("enemy_spawn_2"), SubResource("enemy_spawn_3"), SubResource("enemy_spawn_4"), SubResource("enemy_spawn_5"), SubResource("enemy_spawn_6"), SubResource("enemy_spawn_7"), SubResource("enemy_spawn_8"), SubResource("enemy_spawn_9"), SubResource("enemy_spawn_10")])
+landmarks = Array[ExtResource("s_landmark")]([SubResource("landmark_0"), SubResource("landmark_1"), SubResource("landmark_2")])
+decor = Array[ExtResource("s_decor")]([SubResource("decor_0"), SubResource("decor_1"), SubResource("decor_2"), SubResource("decor_3"), SubResource("decor_4")])
+edges = Array[ExtResource("s_edge")]([])
+npcs = Array[ExtResource("s_npc_spawn")]([])
+tileset = &"iso_basic"
+terrain_rows = PackedStringArray("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "ccccccccbbbbcccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cccccccccbbcccccccccccccccccccccccccccccccccccccfcecffecccffcfcccf", "cccccccccbbccccccccccccccccccccccccccccccccccccaaaaaaaaaaaaaaaaaaf", "cccccccccbbccccccccccccccccccccececccfccfcfcccfaaaaaaaaaaaaaaaaaac", "cccccccccbbcccccccccccccccccccbbbbbbbbbbbbbbfccaaaaaaaaaeaaaaaaaaf", "cccccccccbbcccbbbaaaccccccccccbbbaaaaaabbbbbfcfaaaaaaaaaaaaaaaaaac", "cccccccccbbcccbaaaaaccccccccccbbbaaaaaabbbbbcccaaaacaaaaaaaaaaaaac", "ccccccccbbbbbbaaaaaacccccccccebcbaaaaaabbcbbfccaaaaaaaaaaaaaaaaaae", "ccccccccbbbbbbbaaaaaccccccccccbbbaaaaaabbbbbcccaaaaaaaaaaaaaaaaaac", "ccccccccbbbbbddddbbbccccccccecbbbaaaaaabbbbbccfaaaaaaaaaaaaaaaaaac", "ccccccccbbbbadbbdbbbccccccccbbbbbbaabbbbbbbbfccaaaaaaaaaaaaaaaaaaf", "cbbbbbccbbbbbdbbdbbbcccccccebbbbbbbbbbbbbbbbfcbbaaaaaaaaaaaaaaaaac", "cbdddddddbddddccdbccccccccccbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaf", "cbbbbbbbbbbbbbccdbccccccccccbbbbebbbebbbbbbbbbbbaaaaaaaaaaaaaaaaae", "cbbbbbccbbbbbbccdbccccccccccbbbbbbbbbbbbbbbbccbbaaaaaaaaaaaaaaaaae", "ccccccccbbbbbbccdaccccccceecbbbbbbbbbbbbbbbbfccaaaaaaaaaaaaaaaaaaf", "ccccccccbbbbbbbbdaaabcccabbbbbbbaacebfcfccccccfaaaaaaaaaaaaaaaaaaf", "ccccccccbbbbbbbbdaadbcccbbbbbbbbaaecbccccccccccaaaaaaaaaaaaaaaaaaf", "ccccccccccccccbbbaaabcccbbbbbbbbaaecbccccccccceaaaaaaaaaaaaaaaaaac", "ccccccccccccccbbbaaabccedbbbbbbbabbbbbbbbbbccceaaaaaaaaaaaaaaaaaaf", "ccccccccccccccccccaabccebbbbbbbbabbbbbbbbbbcccfaaaacaaaaaaaaaaaaaf", "ccccccccccccccccccbbbcccaaaaabbbabbbbbbbbbbcccfaaaaaaaaaaaaaaaaaae", "ccccccccccccccccccccccccaaaaaabbbbbbbbbbbbbccccaaaaaaaaacaaaaaaaae", "cccccccccccccccccccccccceccecceeebbbbbbbbbbccceaaaaaaaaaaaaaaaaaac", "cccccccccccccccccccccccccccccccccbbbbbbbbbbccccaaaaaaaaaaaaaaaaaac", "cccccccccccccccccccccccccccccccccccccccccccccccceffeceeffccccccece", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc")
+terrain_legend = {
+"a": "grey_rock",
+"b": "mine_floor",
+"c": "mine_wall",
+"d": "slab",
+"e": "spent_seam",
+"f": "sunstone"
+}
+prop_rows = PackedStringArray("..................................................................", "..................................................................", "........aaaa......................................................", ".........cc.......................................................", ".........cc.......................................................", ".........cc.......................................................", "..................................................................", "..................................................................", "..............c.c................b................................", "..................................................................", "..............................b...................................", "...............................b..................................", "..................................................................", "..................c..........b....................................", "..................................b...............................", "............c.........................d...d.......................", ".................................b.........d......................", "..................................................................", "................................b.................................", ".............c..............b.....................................", "........................b...b.....................................", ".........................b...........dd..dd.......................", "..................ccc....b........................................", "..................ccc............d................................", ".....................................d............................", ".....................................d............................", "...................................ddd............................", "..................................................................", "..................................................................", "..................................................................")
+prop_legend = {
+"a": "grey_boulders",
+"b": "grey_clusters",
+"c": "small_rocks",
+"d": "sunstone_clusters"
+}
+sight_rows = PackedStringArray("..................................................................", "..................................................................", "........####......................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................")
+region = 1
+music_context = 4
+exits = Array[ExtResource("s_exit")]([SubResource("exit_0"), SubResource("exit_1"), SubResource("exit_2")])
+dungeon = true
+requires_quest = &"act1_07_the_silent_shaft"
+encounter = ExtResource("enc_foreman")

@@ -181,14 +181,14 @@ func damage_taken_multiplier(now: float) -> float:
 	return m
 
 
-## Uses one charge of each charged buff that applies to an ability of `tree`
-## (not free-step buffs); buffs out of charges end. With `before` (ids() taken
+## Uses one charge of each charged buff that applies to an ability of `tree`;
+## buffs out of charges end. With `before` (ids() taken
 ## before the cast), buffs the cast itself applied are spared.
 func consume_on_cast(tree: String, now: float, before: Dictionary = {}) -> void:
 	for id in _active.keys():
 		var b: Dictionary = _active[id]
 		var d: BuffDef = b.def
-		if not has(id, now) or d.charges <= 0 or d.free_steps:
+		if not has(id, now) or d.charges <= 0:
 			continue
 		if not before.is_empty() and not before.has(id):
 			continue # applied by this very cast (Kindle doesn't use its own charge)
@@ -197,19 +197,6 @@ func consume_on_cast(tree: String, now: float, before: Dictionary = {}) -> void:
 		b.charges -= 1
 		if b.charges <= 0:
 			_active.erase(id)
-
-
-## A step with no step cooldown, if a free-step buff has charges left (uses one).
-func use_free_step(now: float) -> bool:
-	for id in _active.keys():
-		var b: Dictionary = _active[id]
-		if has(id, now) and b.def.free_steps:
-			if b.def.charges > 0:
-				b.charges -= 1
-				if b.charges <= 0:
-					_active.erase(id)
-			return true
-	return false
 
 
 ## Soaks damage with shields (oldest first). Returns what gets through.

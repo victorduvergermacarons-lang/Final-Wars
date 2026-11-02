@@ -9,3 +9,6 @@ extends Resource
 @export var patrol: Array[Vector2i] = []
 ## Seconds before it respawns after dying (< 0 = the enemy type's own).
 @export var respawn_seconds: float = -1.0
+## Its level (0 = the type's own): health, attack, defense and XP change by
+## 15% per level, like the debug console's spawns (DebugCommands.at_level).
+@export var level: int = 0

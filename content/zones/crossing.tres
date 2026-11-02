@@ -7,8 +7,12 @@
 [ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
 [ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
 [ext_resource type="Resource" path="res://content/npcs/apothecary_odo.tres" id="npc_apothecary_odo"]
+[ext_resource type="Resource" path="res://content/npcs/caedan_ashvale.tres" id="npc_caedan_ashvale"]
 [ext_resource type="Resource" path="res://content/npcs/guild_board.tres" id="npc_guild_board"]
+[ext_resource type="Resource" path="res://content/npcs/guild_map.tres" id="npc_guild_map"]
+[ext_resource type="Resource" path="res://content/npcs/guild_quartermaster.tres" id="npc_guild_quartermaster"]
 [ext_resource type="Resource" path="res://content/npcs/innkeeper_bram.tres" id="npc_innkeeper_bram"]
+[ext_resource type="Resource" path="res://content/npcs/maren_voss.tres" id="npc_maren_voss"]
 [ext_resource type="Resource" path="res://content/npcs/sabra_venn.tres" id="npc_sabra_venn"]
 [ext_resource type="Resource" path="res://content/npcs/trader_tamsin.tres" id="npc_trader_tamsin"]
 [ext_resource type="Resource" path="res://content/npcs/warden_dorne.tres" id="npc_warden_dorne"]
@@ -45,23 +49,47 @@ facing = Vector2i(-1, 0)
 
 [sub_resource type="Resource" id="npc_spawn_2"]
 script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_maren_voss")
+tile = Vector2i(7, 11)
+facing = Vector2i(0, 1)
+
+[sub_resource type="Resource" id="npc_spawn_3"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_caedan_ashvale")
+tile = Vector2i(4, 12)
+facing = Vector2i(0, 1)
+
+[sub_resource type="Resource" id="npc_spawn_4"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_guild_quartermaster")
+tile = Vector2i(7, 6)
+facing = Vector2i(1, 0)
+
+[sub_resource type="Resource" id="npc_spawn_5"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_guild_map")
+tile = Vector2i(2, 12)
+facing = Vector2i(0, 1)
+
+[sub_resource type="Resource" id="npc_spawn_6"]
+script = ExtResource("s_npc_spawn")
 npc = ExtResource("npc_sabra_venn")
 tile = Vector2i(11, 26)
 facing = Vector2i(1, 0)
 
-[sub_resource type="Resource" id="npc_spawn_3"]
+[sub_resource type="Resource" id="npc_spawn_7"]
 script = ExtResource("s_npc_spawn")
 npc = ExtResource("npc_innkeeper_bram")
 tile = Vector2i(9, 27)
 facing = Vector2i(-1, 0)
 
-[sub_resource type="Resource" id="npc_spawn_4"]
+[sub_resource type="Resource" id="npc_spawn_8"]
 script = ExtResource("s_npc_spawn")
 npc = ExtResource("npc_trader_tamsin")
 tile = Vector2i(14, 23)
 facing = Vector2i(0, -1)
 
-[sub_resource type="Resource" id="npc_spawn_5"]
+[sub_resource type="Resource" id="npc_spawn_9"]
 script = ExtResource("s_npc_spawn")
 npc = ExtResource("npc_apothecary_odo")
 tile = Vector2i(17, 23)
@@ -144,7 +172,7 @@ enemy_spawns = Array[ExtResource("s_enemy_spawn")]([])
 landmarks = Array[ExtResource("s_landmark")]([])
 decor = Array[ExtResource("s_decor")]([SubResource("decor_0"), SubResource("decor_1"), SubResource("decor_2"), SubResource("decor_3"), SubResource("decor_4"), SubResource("decor_5"), SubResource("decor_6"), SubResource("decor_7"), SubResource("decor_8"), SubResource("decor_9"), SubResource("decor_10")])
 edges = Array[ExtResource("s_edge")]([SubResource("edge_0"), SubResource("edge_1"), SubResource("edge_2")])
-npcs = Array[ExtResource("s_npc_spawn")]([SubResource("npc_spawn_0"), SubResource("npc_spawn_1"), SubResource("npc_spawn_2"), SubResource("npc_spawn_3"), SubResource("npc_spawn_4"), SubResource("npc_spawn_5")])
+npcs = Array[ExtResource("s_npc_spawn")]([SubResource("npc_spawn_0"), SubResource("npc_spawn_1"), SubResource("npc_spawn_2"), SubResource("npc_spawn_3"), SubResource("npc_spawn_4"), SubResource("npc_spawn_5"), SubResource("npc_spawn_6"), SubResource("npc_spawn_7"), SubResource("npc_spawn_8"), SubResource("npc_spawn_9")])
 tileset = &"iso_basic"
 terrain_rows = PackedStringArray("aaaaaaaaffffaaaaaaaaaaaaddaaaaaaaaaaaaaa", "acccceeeffffccccccccccccddcccccccceeeeea", "acccceeeffffccccccccccccddccggggggggggea", "abbbbbbbbfffccccccccccccddccggggggggggca", "abhhhhhbbffcccccccecccccddccggggggggggca", "abhhhhhbcffccccccceeccccddccggggggggggca", "abhhhhhbcffcccccceeeccccddccggggggggggca", "abhhhhhbcffccccccceeccccddccggggggggggca", "abhhhhhbcffccccccceeccccddccggggggggggca", "abhhhhhbcffcccccccccccccddccggggggggggca", "abhhhhhbcffcccccccccceeeddccggggggggggca", "abbbbbbbbffcccccccccceeeddccggggggggggca", "abbbbbbbbffcccccccccceeeddccggggggggggca", "accccccccffcccccccccceeeddccggggggccccca", "accccccccffcbbbbbbbbbbbcddccggggggccccca", "accccccccffcbbbbbbbbbbbcddccggggggccccca", "acccceecccccbbbbbbbbbbbcddccccccccccccca", "acceeeeeccccbbbbbbbbbbbcddccccccccccccca", "fcceeeeeecccbbbbbbbbbbbcjjcccccccccccccf", "ffffffffffffbbbbbbbbbbbfjjffffffffffffff", "ffffffffffffbbbbbbbbbbbfjjffffffffffffff", "feeeeeeeecccbbbbbbbbbbbcjjcccccccccccccf", "aeeeeeeeecccbbbbbbbbbbbcddccccecccccccca", "aeeeeeeebbbcbbbbbbbbbbbcddcccceeecccccea", "aeiiiiiibbbcbbbbbbbbbbbcddccceeeeeecceea", "aeiiiiiibbbcbbbbbbbbbbbcddcccceeeeeeeeea", "aeiiiiiibbbccccccccccccfdddddddddddddddd", "aeiiiiiibbbccccccccccccfdddddddddddddddd", "aeiiiiiibbbccccccccccccfcccccccccceeeeea", "aciiiiiibbbccccccccccccfccccccccccccccea", "aciiiiiibbbccccccccccccffffffeeeeeeeecea", "accceeeebbbcccccccccccccccccceeeeeeeecea", "acccccccccccccccccccccccccccceeeeeeeecea", "acccccccccccecccccccccccccccceeeeeeeecea", "accccccccceeeeeeccccccccccccceeeeeeeecca", "aggggggggggggggggggggggggggcceeeeeeeecca", "aggggggggggggggggggggggggggcceeeeeeeecca", "aggggggggggggggggggggggggggcccccccccccca", "aggggggggggggggggggggggggggcceeeccccccca", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 terrain_legend = {

@@ -28,6 +28,11 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 		return AbilityResolver.Result.CASTER_DEAD
 	if pay_mode == Pay.INSTANT and not caster.casting.is_empty():
 		return AbilityResolver.Result.BUSY
+	if ability.uses_hitbox():
+		var r := HitboxResolver.validate(ctx, caster, ability, target, aim)
+		if r != AbilityResolver.Result.OK or pay_mode == Pay.FREE:
+			return r
+		return AbilityResolver._check_cost(ctx, caster, ability, pay_mode == Pay.INSTANT)
 	match ability.targeting:
 		AbilityDef.TargetingMode.TARGETED:
 			if ability.target == AbilityDef.TargetType.SELF:
@@ -87,6 +92,9 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 
 
 static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, out: Dictionary) -> void:
+	if ability.uses_hitbox():
+		HitboxResolver.resolve(ctx, caster, ability, target, aim, out)
+		return
 	var events: Array[Dictionary] = out.events
 	if ability.targeting == AbilityDef.TargetingMode.TARGETED and ability.target == AbilityDef.TargetType.SELF:
 		target = caster
@@ -264,16 +272,31 @@ static func _face(caster: Actor, point: Vector2) -> void:
 	caster.face(Vector2i(signi(roundi(d.x)), 0) if absf(d.x) >= absf(d.y) else Vector2i(0, signi(roundi(d.y))))
 
 
-## Abilities whose warning time (skillshot travel, lob or telegraph) is shorter than
-## a hero's base combat step plus the reaction time: they can't really be dodged.
+## Abilities whose warning time (projectile travel, lob, telegraph or wind-up) is
+## shorter than the time a unit needs to get one tile out of the way (free
+## movement: a tile at walking speed) plus the reaction time: they can't really
+## be dodged.
 static func dodge_warnings(abilities: Array, rules: CombatRules) -> PackedStringArray:
 	var out: PackedStringArray = []
-	var limit := rules.combat_step_base_seconds + rules.dodge_reaction_seconds
+	var move := 1.0 / maxf(rules.movement.walk_speed, 0.1)
+	var limit := move + rules.dodge_reaction_seconds
 	for a in abilities:
-		if a == null or not a.implemented:
+		if a == null or not a.implemented or not a.dodgeable:
 			continue
 		var warn := -1.0
-		if a.targeting == AbilityDef.TargetingMode.SKILLSHOT:
+		if a.uses_hitbox():
+			match a.hitbox.shape:
+				HitboxDef.Shape.PROJECTILE:
+					warn = a.hitbox.reach / maxf(a.hitbox.speed, 0.1)
+				HitboxDef.Shape.LOB:
+					warn = a.arc_seconds
+				HitboxDef.Shape.CIRCLE:
+					warn = a.telegraph_seconds
+				HitboxDef.Shape.CONE, HitboxDef.Shape.RECT, HitboxDef.Shape.DASH, HitboxDef.Shape.LEAP:
+					warn = 0.0
+				_:
+					warn = 0.0 if a.targeting == AbilityDef.TargetingMode.TARGETED else -1.0
+		elif a.targeting == AbilityDef.TargetingMode.SKILLSHOT:
 			if a.arc_seconds > 0.0:
 				warn = a.arc_seconds
 			elif a.projectile_speed > 0.0:
@@ -285,6 +308,6 @@ static func dodge_warnings(abilities: Array, rules: CombatRules) -> PackedString
 		if warn >= 0.0:
 			warn += a.windup_seconds # a wind-up is time to react too
 		if warn >= 0.0 and warn < limit:
-			out.append("%s (%s): %.2f s to react, under step %.1f s + %.1f s: can't really be dodged" % [
-					a.display_name, a.id, warn, rules.combat_step_base_seconds, rules.dodge_reaction_seconds])
+			out.append("%s (%s): %.2f s to react, under %.2f s to move a tile + %.1f s: can't really be dodged" % [
+					a.display_name, a.id, warn, move, rules.dodge_reaction_seconds])
 	return out

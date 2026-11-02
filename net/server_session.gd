@@ -65,8 +65,9 @@ func _on_tick(events: Array) -> void:
 			continue
 		var snap := Snapshot.capture(sim, hero_id)
 		snap.time_scale = world.time_scale() # so the client's clock runs at the same pace
+		snap.dungeon_testing = world.rules.dungeon_testing
 		Net.send_snapshot(peer_id, snap)
-		var zone_id := sim.zone.id
+		var zone_id := sim.key # events are tagged with the zone's key (dungeon copies have their own)
 		var theirs := events.filter(func(e): return e.get("zone", zone_id) == zone_id)
 		if not theirs.is_empty():
 			Net.send_events(peer_id, theirs)

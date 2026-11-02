@@ -79,6 +79,28 @@ Item ids are made from the item name (`Scroll of the Fireball` → `scroll_of_th
 Renaming an item changes its id, so characters holding the old one lose it; ability IDs
 (F01, W05…) are what saves and action bars use, so keep those stable.
 
+## Hitboxes (the eight Hitbox columns, free movement)
+
+What an ability hits since free movement. A short version is on the **Timing Rules**
+tab ("Hitbox Rules"). Distances are in tiles.
+
+| Column | What to write |
+|--------|---------------|
+| Hitbox Shape | `None` (a buff on yourself), `Targeted`, `Cone`, `Line`, `Circle`, `Projectile`, `Lob`, `Self Circle`, `Dash`, `Leap`, `Blink` or `Tiles` |
+| Hitbox Range | Targeted: edge to edge; Cone, Line, Dash: length; Circle, Lob, Leap, Blink, Tiles: how far away you can aim |
+| Hitbox Angle | A cone's width in degrees |
+| Hitbox Width | A line's or a dash's width |
+| Hitbox Radius | A circle's radius (Self Circle, Circle, Lob, Leap); for Tiles, tiles around the aimed one (1 = 3×3) |
+| Projectile Speed | Tiles per second |
+| Projectile Size | The projectile's radius |
+| Pierce | `Yes` hits everything on its path; empty or `No` stops at the first |
+
+Each shape needs some of them: Targeted a range, Cone a range and angle, Line and
+Dash a range and width, Circle and Lob a range and radius, Projectile a range, speed
+and size, Self Circle a radius, Leap / Blink / Tiles a range. The import refuses an
+unknown shape, a missing value, a negative number, or values without a shape.
+`Tiles` abilities (terrain, burning ground) stay on the tile grid.
+
 ## Behavior files
 
 Each implemented ability has `content/tree/behaviors/<ID>.tres` (an `AbilityDef`: targeting,
