@@ -201,7 +201,12 @@ func test_each_region_plays_its_own_explore_track_or_the_draft() -> void:
 	assert_eq(water.regions, [Regions.Id.TIDEREACH] as Array[Regions.Id])
 	var explore := MusicTrackDef.Context.EXPLORE
 	assert_eq(audio.pick_track(explore, 1.0, Regions.Id.TIDEREACH).track, water, "Tidereach: its own track")
-	for r in [Regions.Id.HEARTLAND, Regions.Id.BEDRUN, Regions.Id.VAEL, Regions.Id.ASHKARA]:
+	var steppe: MusicTrackDef = audio.tracks.filter(func(x): return x.id == &"explore_windsteppe")[0]
+	assert_true(ResourceLoader.exists(steppe.file), "the Windsteppe OGG is imported")
+	assert_eq(audio.pick_track(explore, 1.0, Regions.Id.VAEL).track, steppe, "Vael (the Windsteppe): its own track")
+	assert_eq(audio.pick_track(explore, 1.0, ContentDB.zones[&"windsteppe"].region).track, steppe,
+			"the Windsteppe zone is in Vael")
+	for r in [Regions.Id.HEARTLAND, Regions.Id.BEDRUN, Regions.Id.ASHKARA]:
 		assert_eq(audio.pick_track(explore, 1.0, r).track, draft, "%s has no music yet: the draft" % Regions.display_name(r))
 	assert_eq(audio.pick_track(explore).track, draft, "no region (title screen): never a region's track")
 	assert_eq(audio.pick_track(MusicTrackDef.Context.TOWN, 1.0, Regions.Id.TIDEREACH).track, draft,
