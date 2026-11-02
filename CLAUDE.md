@@ -982,7 +982,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones), ability import, tilesets, quests and dialogue
+docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones), ability import, tilesets, quests and dialogue
 ```
 
 ### Build order (milestone 1)
@@ -1649,6 +1649,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-02 | Exports keep text resources as text (`editor/export/convert_text_resources_to_binary=false`); the Windows export preset is committed | User report: the exported Windows build showed a grey world ("Invalid zone: …: empty height_rows" for every tiled zone). Cause measured: Godot 4.7.2's export conversion of `.tres` to binary drops `PackedStringArray` values (reproduced with a two-file project) and script-made defaults (the tree tuning's stat blocks). Not the `.json` files: they were packed. `tests/integration/test_export_zones.gd` exports a pack and loads every zone from it; `docs/exporting.md`. |
 | 2026-10-27 | Act I milestone 2 of 4: zones (Millbrook rebuilt, the Crossing, Road to Deepcut, Deepcut, Windsteppe), region music, the Tidereach track | User brief ("list every decision"). See **Act I: zones and region music**. My decisions are in the next rows. |
 | 2026-10-27 | Branch `feature/v1.3.1` from `main` after milestone 1's merge | User correction of the brief's branch name (first given as `feature/act1-m2-zones`, renamed before any commit); merged at the end. |
 | 2026-10-27 | Zone size: 32–60 tiles across, not 2–3 minutes' walk | At the current walking speed (5 tiles/s) 2–3 minutes would be 600–900 tiles; "small and hand-built" and the existing maps (30×30) point the other way. The zones take 10–15 s to cross straight, longer along the roads and around cliffs. To revisit with the walking speed. |
