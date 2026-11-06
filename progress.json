@@ -29,6 +29,42 @@
         "type": "generations",
         "generations": 1.0
       }
+    },
+    "PL-01-1": {
+      "date": "2026-11-06",
+      "files": [
+        "art/PL-01/PL-01-1_no-bracelets_south-east.png",
+        "art/PL-01/PL-01-1_belt-bracelets_south-east.png"
+      ],
+      "usage": {},
+      "source": "Victor's PixelLab character, shrunk to 32 px; approved 2026-11-06 (no bracelets = base; belt and bracelets = variant)"
+    },
+    "PL-01-1+8dir": {
+      "date": "2026-11-06",
+      "files": [
+        "art/PL-01/PL-01-1_no-bracelets_south.png",
+        "art/PL-01/PL-01-1_no-bracelets_south-east.png",
+        "art/PL-01/PL-01-1_no-bracelets_east.png",
+        "art/PL-01/PL-01-1_no-bracelets_north-east.png",
+        "art/PL-01/PL-01-1_no-bracelets_north.png",
+        "art/PL-01/PL-01-1_no-bracelets_north-west.png",
+        "art/PL-01/PL-01-1_no-bracelets_west.png",
+        "art/PL-01/PL-01-1_no-bracelets_south-west.png",
+        "art/PL-01/PL-01-1_belt-bracelets_south.png",
+        "art/PL-01/PL-01-1_belt-bracelets_south-east.png",
+        "art/PL-01/PL-01-1_belt-bracelets_east.png",
+        "art/PL-01/PL-01-1_belt-bracelets_north-east.png",
+        "art/PL-01/PL-01-1_belt-bracelets_north.png",
+        "art/PL-01/PL-01-1_belt-bracelets_north-west.png",
+        "art/PL-01/PL-01-1_belt-bracelets_west.png",
+        "art/PL-01/PL-01-1_belt-bracelets_south-west.png"
+      ],
+      "usage": {},
+      "source": "Victor's PixelLab character, shrunk to 32 px; approved 2026-11-06",
+      "preview": [
+        "art/PL-01/PL-01-1_no-bracelets_8dir_preview.png",
+        "art/PL-01/PL-01-1_belt-bracelets_8dir_preview.png"
+      ]
     }
   },
   "failures": {},
