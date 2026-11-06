@@ -65,6 +65,56 @@
         "art/PL-01/PL-01-1_no-bracelets_8dir_preview.png",
         "art/PL-01/PL-01-1_belt-bracelets_8dir_preview.png"
       ]
+    },
+    "PL-01-2": {
+      "date": "2026-11-06",
+      "files": [
+        "art/PL-01/PL-01-2_2026-11-06_1.png",
+        "art/PL-01/PL-01-2_2026-11-06_2.png"
+      ],
+      "usage": {
+        "seconds": 28.92242670059204
+      }
+    },
+    "PL-02-1": {
+      "date": "2026-11-06",
+      "files": [
+        "art/PL-02/PL-02-1_2026-11-06_1.png",
+        "art/PL-02/PL-02-1_2026-11-06_2.png"
+      ],
+      "usage": {
+        "seconds": 31.718767166137695
+      }
+    },
+    "PL-02-2": {
+      "date": "2026-11-06",
+      "files": [
+        "art/PL-02/PL-02-2_2026-11-06_1.png",
+        "art/PL-02/PL-02-2_2026-11-06_2.png"
+      ],
+      "usage": {
+        "seconds": 30.790887594223022
+      }
+    },
+    "FX-01-1": {
+      "date": "2026-11-06",
+      "files": [
+        "art/FX-01/FX-01-1_2026-11-06.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-02-1": {
+      "date": "2026-11-06",
+      "files": [
+        "art/FX-02/FX-02-1_2026-11-06.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
     }
   },
   "failures": {},
@@ -77,6 +127,18 @@
         "WO-01-2",
         "FX-01-1",
         "FX-01-2"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-06",
+      "made": [
+        "PL-01-2",
+        "PL-02-1",
+        "PL-02-2",
+        "FX-01-1",
+        "FX-02-1"
       ],
       "failed": [],
       "stopped": ""

@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-4 of 73 stills done. Newest first. These are drafts: copy the
+9 of 73 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -10,6 +10,11 @@ keepers into the game's `assets/` folder by hand.
 ## Waiting for an approved base
 
 - `approved/NP-02-1.png` unlocks BO-06-1
+
+## Approve to animate
+
+- `approved/PL-02-1.png` unlocks 8 directions, sword slash, sword lunge
+- `approved/PL-02-2.png` unlocks 8 directions, quick bow shot, aimed bow shot
 
 ## Drafts
 
@@ -42,4 +47,34 @@ keepers into the game's `assets/` folder by hand.
 ![PL-01-1+8dir](art/PL-01/PL-01-1_no-bracelets_8dir_preview.png) ![PL-01-1+8dir](art/PL-01/PL-01-1_belt-bracelets_8dir_preview.png)
 
 <sub>Made from approved/PL-01-1.png: 8 directions of the approved picture</sub>
+
+### PL-01-2 · Hero base body (2026-11-06)
+
+![PL-01-2](art/PL-01/PL-01-2_2026-11-06_1.png) ![PL-01-2](art/PL-01/PL-01-2_2026-11-06_2.png)
+
+<sub>Made from approved/PL-01-1.png: empty-handed, in a martial-arts bending stance</sub>
+
+### PL-02-1 · Weapon attacks: sword, bow, hammer (2026-11-06)
+
+![PL-02-1](art/PL-02/PL-02-1_2026-11-06_1.png) ![PL-02-1](art/PL-02/PL-02-1_2026-11-06_2.png)
+
+<sub>Made from approved/PL-01-1.png: holding a one-handed sword</sub>
+
+### PL-02-2 · Weapon attacks: sword, bow, hammer (2026-11-06)
+
+![PL-02-2](art/PL-02/PL-02-2_2026-11-06_1.png) ![PL-02-2](art/PL-02/PL-02-2_2026-11-06_2.png)
+
+<sub>Made from approved/PL-01-1.png: holding a recurve bow and quiver</sub>
+
+### FX-01-1 · Fire effects (2026-11-06)
+
+![FX-01-1](art/FX-01/FX-01-1_2026-11-06.png)
+
+<sub>9 small bursts of fire from a punch and a kick, each shooting sideways (horizontally), each no bigger than 16x16 pixels, arranged in a 3x3 grid with empty space between them, each one slightly different. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. </sub>
+
+### FX-02-1 · Earth effects (2026-11-06)
+
+![FX-02-1](art/FX-02/FX-02-1_2026-11-06.png)
+
+<sub>a spinning rock chunk with dust trail. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
 
