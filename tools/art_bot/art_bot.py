@@ -44,13 +44,14 @@ ROTATE_ENDPOINT = "/generate-8-rotations-v3"
 ANIMATE_ENDPOINT = "/animate-with-text-v3"
 USER_AGENT = "final-wars-art-bot/1.1"
 POLL_SECONDS = int(os.environ.get("ART_BOT_POLL", "5"))
-JOB_TIMEOUT_SECONDS = 900
+JOB_TIMEOUT_SECONDS = 1800  # slow (free daily) generations can wait in a queue
 MAX_FAILURES = 3  # a prompt that fails this many times is skipped until reset
 DEFAULT_FRAMES = 8
 
 # Answers that mean "no generations left today": stop instead of retrying.
 OUT_OF_CREDITS_STATUS = {402, 429}
-OUT_OF_CREDITS_WORDS = ("insufficient", "no generations", "limit reached", "quota", "out of credits")
+OUT_OF_CREDITS_WORDS = ("insufficient", "no generations", "limit reached", "quota", "out of credits",
+                        "subscription", "upgrade", "trial", "not available on your plan")
 
 KEY_RE = re.compile(r"^([A-Z]{2}-\d{2}-\d+)")
 
@@ -176,6 +177,8 @@ def request(method: str, path: str, secret: str, body: dict | None = None) -> tu
             return resp.status, (json.loads(raw) if raw.strip() else {})
     except urllib.error.HTTPError as err:
         text = err.read().decode("utf-8", "replace")
+        # Account problems (no generations left, plan doesn't allow the API) stop today's run
+        # without counting against the prompt, so no prompt gets skipped for it.
         if err.code in OUT_OF_CREDITS_STATUS or any(w in text.lower() for w in OUT_OF_CREDITS_WORDS):
             raise OutOfCredits(f"HTTP {err.code}: {text[:300]}") from None
         raise ApiError(err.code, text) from None
@@ -436,7 +439,7 @@ def main() -> int:
         try:
             pngs, usage = generate(e, secret, approved)
         except OutOfCredits as err:
-            print(f"   Out of generations for today: {err}")
+            print(f"   Stopping for today (generations or plan): {err}")
             run["stopped"] = "out of generations"
             break
         except (ApiError, urllib.error.URLError, OSError, ValueError) as err:
