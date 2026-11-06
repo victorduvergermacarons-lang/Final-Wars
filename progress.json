@@ -20,16 +20,6 @@
         "generations": 1.0
       }
     },
-    "FX-01-1": {
-      "date": "2026-11-06",
-      "files": [
-        "art/FX-01/FX-01-1_2026-11-06.png"
-      ],
-      "usage": {
-        "type": "generations",
-        "generations": 1.0
-      }
-    },
     "FX-01-2": {
       "date": "2026-11-06",
       "files": [
@@ -68,6 +58,19 @@
           "generations": 1.0
         },
         "note": "not approved by Victor 2026-11-05"
+      }
+    ],
+    "FX-01-1": [
+      {
+        "date": "2026-11-06",
+        "files": [
+          "art/FX-01/FX-01-1_2026-11-06.png"
+        ],
+        "usage": {
+          "type": "generations",
+          "generations": 1.0
+        },
+        "note": "redo as 9 small sideways bursts (Victor, 2026-11-05)"
       }
     ]
   }
