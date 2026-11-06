@@ -1,0 +1,69 @@
+{
+  "done": {
+    "PL-01-1": {
+      "date": "2026-11-06",
+      "files": [
+        "art/PL-01/PL-01-1_2026-11-06.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "WO-01-1": {
+      "date": "2026-11-06",
+      "files": [
+        "art/WO-01/WO-01-1_2026-11-06.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "WO-01-2": {
+      "date": "2026-11-06",
+      "files": [
+        "art/WO-01/WO-01-2_2026-11-06.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-01-1": {
+      "date": "2026-11-06",
+      "files": [
+        "art/FX-01/FX-01-1_2026-11-06.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-01-2": {
+      "date": "2026-11-06",
+      "files": [
+        "art/FX-01/FX-01-2_2026-11-06.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    }
+  },
+  "failures": {},
+  "runs": [
+    {
+      "date": "2026-11-06",
+      "made": [
+        "PL-01-1",
+        "WO-01-1",
+        "WO-01-2",
+        "FX-01-1",
+        "FX-01-2"
+      ],
+      "failed": [],
+      "stopped": ""
+    }
+  ]
+}
