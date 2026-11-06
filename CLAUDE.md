@@ -980,6 +980,8 @@ tools/           ability spreadsheet importer (xlsx reader, converter, CLI), beh
 design/          Ability_Tree.xlsx (source of truth for abilities)
 tools/once/      one-off content conversions and generators (kept for the record)
 tools/perf/      headless profilers: frame time per map, sim cost per tick
+tools/art_bot/   daily PixelLab art bot (queue.json from the art tracker); drafts go to the art-drafts branch
+.github/workflows/ art-bot.yml runs the art bot every day
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
 docs/            local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones), ability import, tilesets, quests and dialogue
@@ -1649,6 +1651,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-05 | Daily PixelLab art bot: a GitHub Action spends the day's 5 generations on the next art tracker prompts and commits the pictures to an `art-drafts` branch | User request (a cloud bot using the daily PixelLab credits; drafts in a local folder, by pulling from GitHub; tracker order). My choices: `tools/art_bot/` (Python, standard library) and `.github/workflows/art-bot.yml`, daily at 14:17 UTC; the queue is `tools/art_bot/queue.json`, built from the art tracker snapshot of 2026-11-05 (73 prompts; skipped EN-01, BO-05, IC-01/02, WO-10), each prompt = subject + its kind's shared style text; one still per prompt with PixFlux (`/create-image-pixflux`, v2 API); tile and icon sets at 128×128; the drafts branch is an orphan holding only `art/<ID>/`, `progress.json` and a review page, so the game branches never get bot commits; out of generations = stop till tomorrow, a prompt failing 3 times is skipped; the key lives only in the `PIXELLAB_SECRET` repository secret (the repo is public). How-to: `tools/art_bot/README.md`. |
 | 2026-10-27 | Act I milestone 2 of 4: zones (Millbrook rebuilt, the Crossing, Road to Deepcut, Deepcut, Windsteppe), region music, the Tidereach track | User brief ("list every decision"). See **Act I: zones and region music**. My decisions are in the next rows. |
 | 2026-10-27 | Branch `feature/v1.3.1` from `main` after milestone 1's merge | User correction of the brief's branch name (first given as `feature/act1-m2-zones`, renamed before any commit); merged at the end. |
 | 2026-10-27 | Zone size: 32–60 tiles across, not 2–3 minutes' walk | At the current walking speed (5 tiles/s) 2–3 minutes would be 600–900 tiles; "small and hand-built" and the existing maps (30×30) point the other way. The zones take 10–15 s to cross straight, longer along the roads and around cliffs. To revisit with the walking speed. |

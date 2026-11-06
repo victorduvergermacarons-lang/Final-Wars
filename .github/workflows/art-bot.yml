@@ -1,0 +1,72 @@
+# Daily PixelLab art bot: spends the day's generations on the next prompts in
+# tools/art_bot/queue.json and commits the pictures to the art-drafts branch.
+# Needs the repository secret PIXELLAB_SECRET (Settings > Secrets and variables > Actions).
+name: Art bot
+
+on:
+  schedule:
+    - cron: "17 14 * * *"   # every day at 14:17 UTC (6:17 am Pacific in winter)
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "How many prompts to try"
+        default: "5"
+      dry_run:
+        description: "Only list what would be made"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: art-bot
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Get the bot
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools/art_bot
+
+      - name: Get the drafts branch (made on the first run)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$url" art-drafts >/dev/null; then
+            git clone --depth 1 --branch art-drafts "$url" drafts
+          else
+            mkdir drafts && cd drafts
+            git init -b art-drafts
+            git remote add origin "$url"
+          fi
+
+      - name: Install Pillow
+        run: pip install --quiet pillow
+
+      - name: Make today's art
+        env:
+          PIXELLAB_SECRET: ${{ secrets.PIXELLAB_SECRET }}
+        run: |
+          args="--drafts drafts --count ${{ github.event.inputs.count || '5' }}"
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then args="$args --dry-run"; fi
+          python3 tools/art_bot/art_bot.py $args
+
+      - name: Save the drafts
+        if: always() && github.event.inputs.dry_run != 'true'
+        working-directory: drafts
+        run: |
+          git config user.name "art-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing new to save."
+          else
+            git commit -q -m "Art drafts $(date -u +%F)"
+            git push origin HEAD:art-drafts
+          fi
