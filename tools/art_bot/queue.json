@@ -1,5 +1,5 @@
 {
-  "about": "The art bot's queue: the live art tracker's prompts word for word, except that \"clean 1px dark outline\" is removed from the world and effect prompts (user request), in tracker order (act, then row), read 2026-11-05. Each prompt costs one generation. Skipped: EN-01 (Acquired), IC-01 (no prompt here), IC-02 (no prompt here), WO-10 (no prompt here), BO-05 (Found (link)). A prompt's key is <ID>-<n>; keys already in the drafts branch's progress.json are not made again.",
+  "about": "The art bot's queue: the live art tracker's prompts (read 2026-11-05), in tracker order (act, then row). Differences from the tracker (user requests): \"clean 1px dark outline\" removed from the world and effect prompts; prompts with a \"base\" are edits of that approved picture (approved/<KEY>.png on the art-drafts branch) instead of \"the same ...\" and wait until it exists; \"animations\" (from the tracker's Detail column) and 8 directions are made from the approved picture after every still is done. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02/WO-10 (no prompt). A key is <ID>-<n>, follow-ups <ID>-<n>+8dir and <ID>-<n>+<action>; keys in the drafts branch's progress.json are not made again.",
   "kinds": {
     "plain": {
       "size": [
@@ -21,15 +21,25 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "walk",
+            "cast",
+            "getting hit",
+            "death",
+            "downed",
+            "revived"
           ]
         },
         {
-          "subject": "the same young adventurer, empty-handed, in a martial-arts bending stance. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "subject": "empty-handed, in a martial-arts bending stance",
           "kind": "plain",
           "size": [
             48,
             48
-          ]
+          ],
+          "base": "PL-01-1"
         }
       ]
     },
@@ -39,19 +49,29 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "the same young adventurer holding a one-handed sword. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "subject": "holding a one-handed sword",
           "kind": "plain",
           "size": [
             48,
             48
+          ],
+          "base": "PL-01-1",
+          "animations": [
+            "sword slash",
+            "sword lunge"
           ]
         },
         {
-          "subject": "the same young adventurer holding a recurve bow and quiver. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "subject": "holding a recurve bow and quiver",
           "kind": "plain",
           "size": [
             48,
             48
+          ],
+          "base": "PL-01-1",
+          "animations": [
+            "quick bow shot",
+            "aimed bow shot"
           ]
         }
       ]
@@ -261,20 +281,22 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "armor set of crimson Crucible robes with ember-orange trim, black obsidian shoulder plates, gold sash, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "subject": "wearing an armor set of crimson Crucible robes with ember-orange trim, black obsidian shoulder plates and a gold sash (Ashkara)",
           "kind": "plain",
           "size": [
             48,
             48
-          ]
+          ],
+          "base": "PL-01-1"
         },
         {
-          "subject": "armor set of heavy stone-grey plate with leather straps, miner's helmet with lamp, ochre cloth, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "subject": "wearing an armor set of heavy stone-grey plate with leather straps, a miner's helmet with a lamp and ochre cloth (Bedrun)",
           "kind": "plain",
           "size": [
             48,
             48
-          ]
+          ],
+          "base": "PL-01-1"
         }
       ]
     },
@@ -289,6 +311,10 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking"
           ]
         }
       ]
@@ -304,6 +330,12 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "walk",
+            "talking",
+            "fire cast"
           ]
         }
       ]
@@ -319,6 +351,10 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking"
           ]
         }
       ]
@@ -334,6 +370,10 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking"
           ]
         }
       ]
@@ -349,6 +389,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "walk",
+            "talking"
           ]
         },
         {
@@ -357,6 +402,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "walk",
+            "talking"
           ]
         }
       ]
@@ -372,6 +422,12 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "walk",
+            "attack",
+            "death"
           ]
         }
       ]
@@ -387,6 +443,13 @@
           "size": [
             96,
             96
+          ],
+          "animations": [
+            "idle",
+            "attack",
+            "winding up a big attack",
+            "phase change",
+            "death"
           ]
         },
         {
@@ -395,6 +458,13 @@
           "size": [
             96,
             96
+          ],
+          "animations": [
+            "idle",
+            "attack",
+            "winding up a big attack",
+            "phase change",
+            "death"
           ]
         }
       ]
@@ -572,6 +642,10 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking"
           ]
         }
       ]
@@ -587,6 +661,10 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking"
           ]
         }
       ]
@@ -602,6 +680,12 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "run",
+            "bite",
+            "death"
           ]
         }
       ]
@@ -617,6 +701,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "fly",
+            "dive",
+            "death"
           ]
         }
       ]
@@ -632,6 +721,13 @@
           "size": [
             128,
             128
+          ],
+          "animations": [
+            "idle",
+            "slam",
+            "winding up a big attack",
+            "burn",
+            "death"
           ]
         }
       ]
@@ -670,6 +766,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking",
+            "heal cast"
           ]
         }
       ]
@@ -685,6 +786,12 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "run",
+            "pounce",
+            "death"
           ]
         }
       ]
@@ -700,6 +807,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "fly",
+            "dive",
+            "death"
           ]
         }
       ]
@@ -715,6 +827,13 @@
           "size": [
             96,
             96
+          ],
+          "animations": [
+            "rise",
+            "bite",
+            "coil",
+            "submerge",
+            "death"
           ]
         }
       ]
@@ -753,6 +872,12 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking",
+            "earth cast",
+            "death"
           ]
         }
       ]
@@ -768,6 +893,12 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "walk",
+            "slam",
+            "death"
           ]
         }
       ]
@@ -798,6 +929,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "talking",
+            "meditate"
           ]
         }
       ]
@@ -813,6 +949,12 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "walk",
+            "attack",
+            "death"
           ]
         }
       ]
@@ -828,6 +970,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "move",
+            "attack"
           ]
         },
         {
@@ -836,6 +983,11 @@
           "size": [
             48,
             48
+          ],
+          "animations": [
+            "idle",
+            "move",
+            "attack"
           ]
         }
       ]
@@ -851,6 +1003,12 @@
           "size": [
             128,
             128
+          ],
+          "animations": [
+            "idle",
+            "cast",
+            "winding up a big attack",
+            "death"
           ]
         }
       ]
@@ -884,11 +1042,17 @@
       "act": "Act VI",
       "prompts": [
         {
-          "subject": "the same prince turned dark king: grey ashen skin, cracked black crystal crown, tattered grey royal coat, carrying a jagged black crystal sword leaking grey smoke, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, near human size: about 34 px tall and 16 px wide (a touch taller than the 32 px people), feet at bottom centre (32, 52) of a 64x64 canvas so the blade and smoke aura fit, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "subject": "turned dark king: grey ashen skin, cracked black crystal crown, tattered grey royal coat, carrying a jagged black crystal sword leaking grey smoke; about 34 px tall, feet at bottom centre (32, 52) of the 64x64 canvas so the blade and smoke aura fit",
           "kind": "plain",
           "size": [
             64,
             64
+          ],
+          "base": "NP-02-1",
+          "animations": [
+            "powering up between phases",
+            "capstone cast",
+            "death"
           ]
         },
         {
