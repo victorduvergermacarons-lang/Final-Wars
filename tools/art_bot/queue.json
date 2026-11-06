@@ -1,69 +1,6 @@
 {
-  "about": "The art bot's queue, in art tracker order (snapshot 2026-11-05). Each prompt costs one generation. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02 (prompts in other tabs), WO-10 (shader). Edit freely: reorder items, change subjects, add items. A prompt's key is <ID>-<n>; keys already in the drafts branch's progress.json are not made again.",
+  "about": "The art bot's queue: the live art tracker's prompts word for word, in tracker order (act, then row), read 2026-11-05. Each prompt costs one generation. Skipped: EN-01 (Acquired), IC-01 (no prompt here), IC-02 (no prompt here), WO-10 (no prompt here), BO-05 (Found (link)). A prompt's key is <ID>-<n>; keys already in the drafts branch's progress.json are not made again.",
   "kinds": {
-    "character48": {
-      "size": [
-        48,
-        48
-      ],
-      "suffix": "Single character sprite, facing south-east (front three-quarter isometric view), full body, about 42 px tall on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style."
-    },
-    "sprite48": {
-      "size": [
-        48,
-        48
-      ],
-      "suffix": "Single sprite, facing south-east (front three-quarter isometric view), full body, about 42 px tall on a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style."
-    },
-    "creature48": {
-      "size": [
-        48,
-        48
-      ],
-      "suffix": "Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style."
-    },
-    "large96": {
-      "size": [
-        96,
-        96
-      ],
-      "suffix": "Single character sprite, facing south-east (front three-quarter isometric view), full body, large creature on a 96x96 canvas, idle standing pose. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style."
-    },
-    "giant128": {
-      "size": [
-        128,
-        128
-      ],
-      "suffix": "Single sprite, facing south-east (front three-quarter isometric view), full body, about 90 px tall on a 128x128 canvas, idle pose. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style."
-    },
-    "tiles": {
-      "size": [
-        128,
-        128
-      ],
-      "suffix": "Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style."
-    },
-    "effect64": {
-      "size": [
-        64,
-        64
-      ],
-      "suffix": "Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style."
-    },
-    "icons": {
-      "size": [
-        128,
-        128
-      ],
-      "suffix": "Inventory icons, each 32x32, front view centered, bold silhouette, slight drop shadow. Pixel art, limited palette, transparent background, high-fantasy RPG style."
-    },
-    "ui": {
-      "size": [
-        128,
-        128
-      ],
-      "suffix": "Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background."
-    },
     "plain": {
       "size": [
         128,
@@ -79,14 +16,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "a young adventurer in a plain linen tunic, trousers and boots, short hair, neutral build, no weapon, ready for gear to be layered on.",
-          "kind": "character48",
-          "animation": "Player base body idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a young adventurer in a plain linen tunic, trousers and boots, short hair, neutral build, no weapon, ready for gear to be layered on. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         },
         {
-          "subject": "the same young adventurer, empty-handed, in a martial-arts bending stance.",
-          "kind": "character48",
-          "animation": "Character performing a fire punch with flame burst, facing south-east (front three-quarter isometric view), 6 frames."
+          "subject": "the same young adventurer, empty-handed, in a martial-arts bending stance. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -96,14 +39,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "the same young adventurer holding a one-handed sword.",
-          "kind": "character48",
-          "animation": "Sword attack animations: three attack moves in sequence, facing south-east (front three-quarter isometric view), 6 frames each, snappy wind-up and follow-through."
+          "subject": "the same young adventurer holding a one-handed sword. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         },
         {
-          "subject": "the same young adventurer holding a recurve bow and quiver.",
-          "kind": "character48",
-          "animation": "Bow attack animations: three attack moves in sequence, facing south-east (front three-quarter isometric view), 6 frames each, snappy wind-up and follow-through."
+          "subject": "the same young adventurer holding a recurve bow and quiver. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -113,13 +62,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "props set: wooden chest, barrel, crate, signpost, table and stool.",
-          "kind": "tiles"
+          "subject": "props set: wooden chest, barrel, crate, signpost, table and stool. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "props set: wall torch, standing lamp, brazier, glowing gold Sunstone lamp.",
-          "kind": "tiles",
-          "animation": "Light sources: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "props set: wall torch, standing lamp, brazier, glowing gold Sunstone lamp. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -129,14 +85,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "burst of fire from a punch and a kick.",
-          "kind": "effect64",
-          "animation": "Melee fire strikes: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "burst of fire from a punch and a kick. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         },
         {
-          "subject": "a whip of fire, a straight stream of flame and a cone of fire breath.",
-          "kind": "effect64",
-          "animation": "Fire lines and cones: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a whip of fire, a straight stream of flame and a cone of fire breath. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         }
       ]
     },
@@ -146,14 +108,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "a spinning rock chunk with dust trail.",
-          "kind": "effect64",
-          "animation": "Rock projectile: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a spinning rock chunk with dust trail. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         },
         {
-          "subject": "ground cracks spreading with dust and pebbles.",
-          "kind": "effect64",
-          "animation": "Quake effects: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "ground cracks spreading with dust and pebbles. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         }
       ]
     },
@@ -163,14 +131,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "a whip of clear water, a high-pressure water jet and a rolling wave.",
-          "kind": "effect64",
-          "animation": "Water whip and jet: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a whip of clear water, a high-pressure water jet and a rolling wave. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         },
         {
-          "subject": "rising green-blue healing sparkles and soft mist.",
-          "kind": "effect64",
-          "animation": "Healing effects: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "rising green-blue healing sparkles and soft mist. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         }
       ]
     },
@@ -180,14 +154,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "a bright crescent sword slash arc.",
-          "kind": "effect64",
-          "animation": "Slash arcs: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a bright crescent sword slash arc. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         },
         {
-          "subject": "a sharp white spark flash from blades clashing.",
-          "kind": "effect64",
-          "animation": "Parry and counter flashes: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a sharp white spark flash from blades clashing. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         }
       ]
     },
@@ -197,14 +177,20 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "set of small hit sparks: white physical spark, purple magic burst.",
-          "kind": "effect64",
-          "animation": "Hit sparks and impacts: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "set of small hit sparks: white physical spark, purple magic burst. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         },
         {
-          "subject": "small looping icons above a head: stun stars, root vines, slow snail swirl, silence bubble, sleep Zzz, burn flame, bleed drops, poison bubbles.",
-          "kind": "effect64",
-          "animation": "Status effect overlays: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "small looping icons above a head: stun stars, root vines, slow snail swirl, silence bubble, sleep Zzz, burn flame, bleed drops, poison bubbles. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         }
       ]
     },
@@ -214,8 +200,12 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "set of small round buff and debuff icons.",
-          "kind": "icons"
+          "subject": "set of small round buff and debuff icons. Inventory icons, each 32x32, front view centered, bold silhouette, slight drop shadow. Pixel art, limited palette, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -225,16 +215,16 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "a fantasy action bar with 10 square slots, stone-and-bronze frame.",
-          "kind": "ui",
+          "subject": "a fantasy action bar with 10 square slots, stone-and-bronze frame. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.",
+          "kind": "plain",
           "size": [
             320,
             64
           ]
         },
         {
-          "subject": "a portrait frame with red health bar and blue mana bar, bronze trim.",
-          "kind": "ui",
+          "subject": "a portrait frame with red health bar and blue mana bar, bronze trim. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.",
+          "kind": "plain",
           "size": [
             128,
             64
@@ -248,16 +238,16 @@
       "act": "Prototype",
       "prompts": [
         {
-          "subject": "a parchment-and-wood character panel with equipment slots around a silhouette.",
-          "kind": "ui",
+          "subject": "a parchment-and-wood character panel with equipment slots around a silhouette. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.",
+          "kind": "plain",
           "size": [
             192,
             192
           ]
         },
         {
-          "subject": "an ability tree panel with tiered icon slots and connecting lines on dark parchment.",
-          "kind": "ui",
+          "subject": "an ability tree panel with tiered icon slots and connecting lines on dark parchment. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.",
+          "kind": "plain",
           "size": [
             192,
             192
@@ -271,14 +261,20 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "armor set of crimson Crucible robes with ember-orange trim, black obsidian shoulder plates, gold sash, from the Ashkara region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Equipment layers: Fire head, facing south-east (front three-quarter isometric view), 6-8 frames."
+          "subject": "armor set of crimson Crucible robes with ember-orange trim, black obsidian shoulder plates, gold sash, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         },
         {
-          "subject": "armor set of heavy stone-grey plate with leather straps, miner's helmet with lamp, ochre cloth, from the Bedrun region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Equipment layers: Earth head, facing south-east (front three-quarter isometric view), 6-8 frames."
+          "subject": "armor set of heavy stone-grey plate with leather straps, miner's helmet with lamp, ochre cloth, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -288,8 +284,12 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a sharp-eyed Floor Guild recruiter woman, blue guild coat, clipboard, short auburn hair.",
-          "kind": "sprite48"
+          "subject": "a sharp-eyed Floor Guild recruiter woman, blue guild coat, clipboard, short auburn hair. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -299,9 +299,12 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a charismatic young prince, red-black royal coat with gold trim, short dark hair, warm confident expression, small flame floating above one palm, from the Ashkara region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Caedan Ashvale (Prince) idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a charismatic young prince, red-black royal coat with gold trim, short dark hair, warm confident expression, small flame floating above one palm, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -311,8 +314,12 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a portly mine steward, dusty waistcoat, ledger, lamp at belt, smug expression.",
-          "kind": "sprite48"
+          "subject": "a portly mine steward, dusty waistcoat, ledger, lamp at belt, smug expression. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -322,8 +329,12 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a weathered steppe clan matriarch, fur-lined felt coat, silver headdress, walking staff.",
-          "kind": "sprite48"
+          "subject": "a weathered steppe clan matriarch, fur-lined felt coat, silver headdress, walking staff. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -333,14 +344,20 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a set of townsfolk: merchant with apron, town guard with spear, quest-giver elder with cane, from the Crossing region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Crossing townsfolk idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a set of townsfolk: merchant with apron, town guard with spear, quest-giver elder with cane, from the Crossing region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         },
         {
-          "subject": "three guild members: a swordmaster in a blue dueling coat, a hooded ranger in green with a bow, a burly smith with a hammer and leather apron, from the Crossing region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Guild members: Edge, Free March, Anvil idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "three guild members: a swordmaster in a blue dueling coat, a hooded ranger in green with a bow, a burly smith with a hammer and leather apron, from the Crossing region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -350,9 +367,12 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "Ashkaran soldier in black and crimson lamellar armor with a glaive, and a Crucible student in red robes, from the Ashkara region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Ashkaran citizens and soldiers idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "Ashkaran soldier in black and crimson lamellar armor with a glaive, and a Crucible student in red robes, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -362,14 +382,20 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a hulking corrupted miner boss, grey cracked skin, glowing Sunstone shards in his back, giant pick-hammer, from the Bedrun region of the world of Veyra.",
-          "kind": "large96",
-          "animation": "The Foreman idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a hulking corrupted miner boss, grey cracked skin, glowing Sunstone shards in his back, giant pick-hammer, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, large creature on a 96x96 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            96,
+            96
+          ]
         },
         {
-          "subject": "a large floating crystal of black-gold Sunstone, cracked, pulsing with grey smoke, from the Bedrun region of the world of Veyra.",
-          "kind": "large96",
-          "animation": "The Grey Heart idle pulse, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a large floating crystal of black-gold Sunstone, cracked, pulsing with grey smoke, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, large creature on a 96x96 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            96,
+            96
+          ]
         }
       ]
     },
@@ -379,12 +405,20 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "medieval market-town buildings: timber inn, market stalls with awnings, stone city wall and gate, from the Crossing region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "medieval market-town buildings: timber inn, market stalls with awnings, stone city wall and gate, from the Crossing region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "three guild buildings: a fencing hall with crossed-swords banner, a ranger lodge of logs, a stone forge with chimney, from the Crossing region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "three guild buildings: a fencing hall with crossed-swords banner, a ranger lodge of logs, a stone forge with chimney, from the Crossing region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -394,12 +428,20 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "red sandstone canyon cliff blocks and green terraced farm steps, from the Bedrun region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "red sandstone canyon cliff blocks and green terraced farm steps, from the Bedrun region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "a timber mine entrance with rail track and cart, rock wall with glowing gold Sunstone seams, from the Bedrun region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "a timber mine entrance with rail track and cart, rock wall with glowing gold Sunstone seams, from the Bedrun region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -409,12 +451,20 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "cold steppe grass tiles and snow-covered grass tiles, from the Vael region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "cold steppe grass tiles and snow-covered grass tiles, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "a round white felt nomad tent with a wooden door and smoke hole, from the Vael region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "a round white felt nomad tent with a wooden door and smoke hole, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -424,14 +474,20 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a palm-shaped gust of white wind lines.",
-          "kind": "effect64",
-          "animation": "Gusts and pushes: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a palm-shaped gust of white wind lines. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         },
         {
-          "subject": "a small swirling tornado with debris.",
-          "kind": "effect64",
-          "animation": "Tornado and storms: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a small swirling tornado with debris. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         }
       ]
     },
@@ -441,12 +497,16 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "armor icons: helmet, chestplate, leggings, boots, gloves, ring, amulet.",
-          "kind": "icons"
+          "subject": "armor icons: helmet, chestplate, leggings, boots, gloves, ring, amulet. Inventory icons, each 32x32, front view centered, bold silhouette, slight drop shadow. Pixel art, limited palette, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "a red health potion and a blue mana potion in glass flasks.",
-          "kind": "icons",
+          "subject": "a red health potion and a blue mana potion in glass flasks. Inventory icons, each 32x32, front view centered, bold silhouette, slight drop shadow. Pixel art, limited palette, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
           "size": [
             64,
             32
@@ -460,8 +520,8 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "a dialogue text box with a name plate and portrait slot, wood and parchment.",
-          "kind": "ui",
+          "subject": "a dialogue text box with a name plate and portrait slot, wood and parchment. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.",
+          "kind": "plain",
           "size": [
             256,
             96
@@ -484,16 +544,16 @@
       "act": "Act I",
       "prompts": [
         {
-          "subject": "game logo text 'VEYRA' with four element symbols (flame, stone, wave, wind).",
-          "kind": "ui",
+          "subject": "game logo text 'VEYRA' with four element symbols (flame, stone, wave, wind). Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.",
+          "kind": "plain",
           "size": [
             256,
             96
           ]
         },
         {
-          "subject": "readable pixel font, uppercase and lowercase alphabet.",
-          "kind": "ui",
+          "subject": "readable pixel font, uppercase and lowercase alphabet. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.",
+          "kind": "plain",
           "size": [
             256,
             128
@@ -507,9 +567,12 @@
       "act": "Act II",
       "prompts": [
         {
-          "subject": "a stern older king, greying beard, heavy crimson and black robes, obsidian crown, imposing posture, from the Ashkara region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Sovereign Ilsar Ashvale idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a stern older king, greying beard, heavy crimson and black robes, obsidian crown, imposing posture, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -519,8 +582,12 @@
       "act": "Act II",
       "prompts": [
         {
-          "subject": "two Ashkarans: a scarred burn-master in soot-black leathers with a torch-staff, and a surveyor in red robes with a map tube.",
-          "kind": "sprite48"
+          "subject": "two Ashkarans: a scarred burn-master in soot-black leathers with a torch-staff, and a surveyor in red robes with a map tube. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -530,9 +597,12 @@
       "act": "Act II",
       "prompts": [
         {
-          "subject": "a lean red salamander-like hound with glowing orange spots and a smoking tail, from the Ashkara region of the world of Veyra.",
-          "kind": "creature48",
-          "animation": "Salamander hounds idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a lean red salamander-like hound with glowing orange spots and a smoking tail, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -542,9 +612,12 @@
       "act": "Act II",
       "prompts": [
         {
-          "subject": "a black vulture with ash-grey wingtips and glowing ember eyes, from the Ashkara region of the world of Veyra.",
-          "kind": "creature48",
-          "animation": "Cinder vultures fly, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a black vulture with ash-grey wingtips and glowing ember eyes, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -554,8 +627,12 @@
       "act": "Act II",
       "prompts": [
         {
-          "subject": "an ancient giant made of ash-grey bark and smouldering branches, glowing ember core.",
-          "kind": "giant128"
+          "subject": "an ancient giant made of ash-grey bark and smouldering branches, glowing ember core. Single sprite, facing south-east (front three-quarter isometric view), full body, about 90 px tall on a 128x128 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -565,12 +642,20 @@
       "act": "Act II",
       "prompts": [
         {
-          "subject": "an obsidian palace with red banners, sharp black towers and gold braziers, from the Ashkara region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "an obsidian palace with red banners, sharp black towers and gold braziers, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "three versions of a tall ash tree: healthy with orange leaves, burning, and charred black, from the Ashkara region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "three versions of a tall ash tree: healthy with orange leaves, burning, and charred black, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -580,9 +665,12 @@
       "act": "Act III",
       "prompts": [
         {
-          "subject": "a calm middle-aged healer woman, teal and white flowing wraps, braided hair with river beads, small glowing water orb in hand, from the Tidereach region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Sela of the Healing Houses idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a calm middle-aged healer woman, teal and white flowing wraps, braided hair with river beads, small glowing water orb in hand, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -592,9 +680,12 @@
       "act": "Act III",
       "prompts": [
         {
-          "subject": "a black jaguar with silver moon-shaped rosettes and glowing blue eyes, from the Tidereach region of the world of Veyra.",
-          "kind": "creature48",
-          "animation": "Moon jaguars idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a black jaguar with silver moon-shaped rosettes and glowing blue eyes, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -604,9 +695,12 @@
       "act": "Act III",
       "prompts": [
         {
-          "subject": "a giant harpy eagle with a grey crest crown and powerful talons, from the Tidereach region of the world of Veyra.",
-          "kind": "creature48",
-          "animation": "Crown harpies fly, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a giant harpy eagle with a grey crest crown and powerful talons, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -616,9 +710,12 @@
       "act": "Act III",
       "prompts": [
         {
-          "subject": "a colossal green-and-gold anaconda-like river serpent, crowned with fins, from the Tidereach region of the world of Veyra.",
-          "kind": "large96",
-          "animation": "Riverwyrm swim segments, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a colossal green-and-gold anaconda-like river serpent, crowned with fins, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, large creature on a 96x96 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            96,
+            96
+          ]
         }
       ]
     },
@@ -628,12 +725,20 @@
       "act": "Act III",
       "prompts": [
         {
-          "subject": "flooded jungle floor tiles with roots, mud and shallow dark water, from the Tidereach region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "flooded jungle floor tiles with roots, mud and shallow dark water, from the Tidereach region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "a giant kapok tree with buttress roots and a rope canopy walkway, from the Tidereach region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "a giant kapok tree with buttress roots and a rope canopy walkway, from the Tidereach region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -643,9 +748,12 @@
       "act": "Act IV",
       "prompts": [
         {
-          "subject": "a broad elderly earth-clan chieftain, thick white braided beard, stone-plate armor, barefoot, huge forearms, from the Bedrun region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Thane Orvek Stonehand idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a broad elderly earth-clan chieftain, thick white braided beard, stone-plate armor, barefoot, huge forearms, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -655,9 +763,12 @@
       "act": "Act IV",
       "prompts": [
         {
-          "subject": "a hulking stone golem guardian carved with clan runes, glowing amber eyes, from the Bedrun region of the world of Veyra.",
-          "kind": "creature48",
-          "animation": "Stone sentinels idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a hulking stone golem guardian carved with clan runes, glowing amber eyes, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -667,9 +778,12 @@
       "act": "Act IV",
       "prompts": [
         {
-          "subject": "cave tiles with glowing teal lichen and tall purple crystal clusters, from the Bedrun region of the world of Veyra.",
-          "kind": "tiles",
-          "animation": "Crystal caverns (Underdeep): smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "cave tiles with glowing teal lichen and tall purple crystal clusters, from the Bedrun region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -679,9 +793,12 @@
       "act": "Act V",
       "prompts": [
         {
-          "subject": "a thin elderly monk, shaved head, saffron robes over a grey felt coat, prayer beads, serene closed eyes, from the Vael region of the world of Veyra.",
-          "kind": "character48",
-          "animation": "Brother Wend (the Seer) idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a thin elderly monk, shaved head, saffron robes over a grey felt coat, prayer beads, serene closed eyes, from the Vael region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -691,8 +808,12 @@
       "act": "Act V",
       "prompts": [
         {
-          "subject": "a disciplined Ember Hand officer woman, black and crimson lamellar armor, glaive, red plume.",
-          "kind": "sprite48"
+          "subject": "a disciplined Ember Hand officer woman, black and crimson lamellar armor, glaive, red plume. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -702,14 +823,20 @@
       "act": "Act V",
       "prompts": [
         {
-          "subject": "a stocky steppe horse with a long mane that streams like wind and crackles with blue sparks, from the Vael region of the world of Veyra.",
-          "kind": "creature48",
-          "animation": "Windmanes idle, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a stocky steppe horse with a long mane that streams like wind and crackles with blue sparks, from the Vael region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         },
         {
-          "subject": "a huge golden eagle with wings spread wide, from the Vael region of the world of Veyra.",
-          "kind": "creature48",
-          "animation": "Sky eagles fly, facing south-east (front three-quarter isometric view), smooth seamless loop, 6-8 frames."
+          "subject": "a huge golden eagle with wings spread wide, from the Vael region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            48,
+            48
+          ]
         }
       ]
     },
@@ -719,8 +846,12 @@
       "act": "Act V",
       "prompts": [
         {
-          "subject": "a ghostly ancient king, translucent blue-white, obsidian crown, burning Sunstone sceptre.",
-          "kind": "giant128"
+          "subject": "a ghostly ancient king, translucent blue-white, obsidian crown, burning Sunstone sceptre. Single sprite, facing south-east (front three-quarter isometric view), full body, about 90 px tall on a 128x128 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -730,13 +861,20 @@
       "act": "Act V",
       "prompts": [
         {
-          "subject": "frozen mountain rock blocks with ice and snow caps, from the Vael region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "frozen mountain rock blocks with ice and snow caps, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "a cliffside monastery with red-gold roofs and a hall of hanging bronze wind chimes, from the Vael region of the world of Veyra.",
-          "kind": "tiles",
-          "animation": "Monasteries and wind archives: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a cliffside monastery with red-gold roofs and a hall of hanging bronze wind chimes, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     },
@@ -746,14 +884,20 @@
       "act": "Act VI",
       "prompts": [
         {
-          "subject": "the same prince turned dark king: grey ashen skin, cracked black crystal crown, tattered grey royal coat, carrying a jagged black crystal sword leaking grey smoke, from the Ashkara region of the world of Veyra.",
-          "kind": "large96",
-          "animation": "Caedan (Hollow King): phase-change animation, powering up with grey smoke, facing south-east (front three-quarter isometric view), 8 frames."
+          "subject": "the same prince turned dark king: grey ashen skin, cracked black crystal crown, tattered grey royal coat, carrying a jagged black crystal sword leaking grey smoke, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, near human size: about 34 px tall and 16 px wide (a touch taller than the 32 px people), feet at bottom centre (32, 52) of a 64x64 canvas so the blade and smoke aura fit, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         },
         {
-          "subject": "a jagged black crystal sword with grey smoke aura and drained colored sparks.",
-          "kind": "effect64",
-          "animation": "Stillheart blade effects: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "a jagged black crystal sword with grey smoke aura and drained colored sparks. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            64,
+            64
+          ]
         }
       ]
     },
@@ -763,13 +907,20 @@
       "act": "Act VI",
       "prompts": [
         {
-          "subject": "black volcanic obsidian ground tiles and glassy cliff blocks with orange glow cracks, from the Ashkara region of the world of Veyra.",
-          "kind": "tiles"
+          "subject": "black volcanic obsidian ground tiles and glassy cliff blocks with orange glow cracks, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         },
         {
-          "subject": "molten lava tiles and lava river with cooled dark crust edges, from the Ashkara region of the world of Veyra.",
-          "kind": "tiles",
-          "animation": "Lava and lava rivers: smooth looping effect animation, isometric view, 6-8 frames."
+          "subject": "molten lava tiles and lava river with cooled dark crust edges, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, clean 1px dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+          "kind": "plain",
+          "size": [
+            128,
+            128
+          ]
         }
       ]
     }

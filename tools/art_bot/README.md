@@ -29,8 +29,9 @@ The `art-drafts` branch only exists after the first real run.
 
 ## Changing what it makes
 - **Order or wording:** edit `queue.json` here on the main branch. Items run top to
-  bottom; each prompt is `subject` + its kind's `suffix` (the shared style text) at the
-  kind's `size` (or the prompt's own `size`).
+  bottom; each prompt's `subject` is the full text sent, at its `size` (width, height).
+  The queue is a copy of the live art tracker's prompts: when you change a prompt in
+  the tracker, update it here too (or ask Claude to re-copy the tracker).
 - **Make a prompt again:** on the `art-drafts` branch, delete its key (for example
   `"NP-02-1"`) from `"done"` in `progress.json`. A prompt that failed 3 times is skipped
   until you delete it from `"failures"`.
