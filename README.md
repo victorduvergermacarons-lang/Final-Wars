@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-9 of 73 stills done. Newest first. These are drafts: copy the
+14 of 73 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -77,4 +77,34 @@ keepers into the game's `assets/` folder by hand.
 ![FX-02-1](art/FX-02/FX-02-1_2026-11-06.png)
 
 <sub>a spinning rock chunk with dust trail. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### FX-02-2 · Earth effects (2026-11-06)
+
+![FX-02-2](art/FX-02/FX-02-2_2026-11-06.png)
+
+<sub>ground cracks spreading with dust and pebbles. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### FX-03-1 · Water effects (2026-11-06)
+
+![FX-03-1](art/FX-03/FX-03-1_2026-11-06.png)
+
+<sub>a whip of clear water, a high-pressure water jet and a rolling wave. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### FX-03-2 · Water effects (2026-11-06)
+
+![FX-03-2](art/FX-03/FX-03-2_2026-11-06.png)
+
+<sub>rising green-blue healing sparkles and soft mist. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### FX-05-1 · Weapon effects: slash, parry, dash, arrows, traps, slam (2026-11-06)
+
+![FX-05-1](art/FX-05/FX-05-1_2026-11-06.png)
+
+<sub>a bright crescent sword slash arc. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### FX-05-2 · Weapon effects: slash, parry, dash, arrows, traps, slam (2026-11-06)
+
+![FX-05-2](art/FX-05/FX-05-2_2026-11-06.png)
+
+<sub>a sharp white spark flash from blades clashing. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
 
