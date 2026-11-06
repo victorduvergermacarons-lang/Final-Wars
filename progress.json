@@ -1,15 +1,5 @@
 {
   "done": {
-    "PL-01-1": {
-      "date": "2026-11-06",
-      "files": [
-        "art/PL-01/PL-01-1_2026-11-06.png"
-      ],
-      "usage": {
-        "type": "generations",
-        "generations": 1.0
-      }
-    },
     "WO-01-1": {
       "date": "2026-11-06",
       "files": [
@@ -65,5 +55,20 @@
       "failed": [],
       "stopped": ""
     }
-  ]
+  ],
+  "rejected": {
+    "PL-01-1": [
+      {
+        "date": "2026-11-06",
+        "files": [
+          "art/PL-01/PL-01-1_2026-11-06.png"
+        ],
+        "usage": {
+          "type": "generations",
+          "generations": 1.0
+        },
+        "note": "not approved by Victor 2026-11-05"
+      }
+    ]
+  }
 }
