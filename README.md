@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-14 of 73 stills done. Newest first. These are drafts: copy the
+19 of 73 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -17,6 +17,36 @@ keepers into the game's `assets/` folder by hand.
 - `approved/PL-02-2.png` unlocks 8 directions, quick bow shot, aimed bow shot
 
 ## Drafts
+
+### FX-06-1 · General: hit sparks, status loops, telegraphs, level-up (2026-11-07)
+
+![FX-06-1](art/FX-06/FX-06-1_2026-11-07.png)
+
+<sub>set of small hit sparks: white physical spark, purple magic burst. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### FX-06-2 · General: hit sparks, status loops, telegraphs, level-up (2026-11-07)
+
+![FX-06-2](art/FX-06/FX-06-2_2026-11-07.png)
+
+<sub>small looping icons above a head: stun stars, root vines, slow snail swirl, silence bubble, sleep Zzz, burn flame, bleed drops, poison bubbles. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light f</sub>
+
+### IC-04-1 · Buff and debuff icons (2026-11-07)
+
+![IC-04-1](art/IC-04/IC-04-1_2026-11-07.png)
+
+<sub>set of small round buff and debuff icons. Inventory icons, each 32x32, front view centered, bold silhouette, slight drop shadow. Pixel art, limited palette, transparent background, high-fantasy RPG style.</sub>
+
+### UI-01-1 · HUD: action bar, unit frames, numbers, minimap (2026-11-07)
+
+![UI-01-1](art/UI-01/UI-01-1_2026-11-07.png)
+
+<sub>a fantasy action bar with 10 square slots, stone-and-bronze frame. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.</sub>
+
+### UI-01-2 · HUD: action bar, unit frames, numbers, minimap (2026-11-07)
+
+![UI-01-2](art/UI-01/UI-01-2_2026-11-07.png)
+
+<sub>a portrait frame with red health bar and blue mana bar, bronze trim. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.</sub>
 
 ### WO-01-1 · Base tileset + plants + props + lights (2026-11-06)
 
