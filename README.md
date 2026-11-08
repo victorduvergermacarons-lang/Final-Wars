@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-19 of 73 stills done. Newest first. These are drafts: copy the
+24 of 73 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -15,8 +15,39 @@ keepers into the game's `assets/` folder by hand.
 
 - `approved/PL-02-1.png` unlocks 8 directions, sword slash, sword lunge
 - `approved/PL-02-2.png` unlocks 8 directions, quick bow shot, aimed bow shot
+- `approved/NP-01-1.png` unlocks 8 directions, idle, talking
 
 ## Drafts
+
+### UI-02-1 · Menus: character, ability tree, inventory, quest log (2026-11-08)
+
+![UI-02-1](art/UI-02/UI-02-1_2026-11-08.png)
+
+<sub>a parchment-and-wood character panel with equipment slots around a silhouette. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.</sub>
+
+### UI-02-2 · Menus: character, ability tree, inventory, quest log (2026-11-08)
+
+![UI-02-2](art/UI-02/UI-02-2_2026-11-08.png)
+
+<sub>an ability tree panel with tiered icon slots and connecting lines on dark parchment. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.</sub>
+
+### PL-03-1 · Armor layers (4 nation styles) (2026-11-08)
+
+![PL-03-1](art/PL-03/PL-03-1_2026-11-08_1.png) ![PL-03-1](art/PL-03/PL-03-1_2026-11-08_2.png)
+
+<sub>Made from approved/PL-01-1.png: wearing an armor set of crimson Crucible robes with ember-orange trim, black obsidian shoulder plates and a gold sash (Ashkara)</sub>
+
+### PL-03-2 · Armor layers (4 nation styles) (2026-11-08)
+
+![PL-03-2](art/PL-03/PL-03-2_2026-11-08_1.png) ![PL-03-2](art/PL-03/PL-03-2_2026-11-08_2.png)
+
+<sub>Made from approved/PL-01-1.png: wearing an armor set of heavy stone-grey plate with leather straps, a miner's helmet with a lamp and ochre cloth (Bedrun)</sub>
+
+### NP-01-1 · Maren Voss (2026-11-08)
+
+![NP-01-1](art/NP-01/NP-01-1_2026-11-08.png)
+
+<sub>a sharp-eyed Floor Guild recruiter woman, blue guild coat, clipboard, short auburn hair. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no d</sub>
 
 ### FX-06-1 · General: hit sparks, status loops, telegraphs, level-up (2026-11-07)
 
