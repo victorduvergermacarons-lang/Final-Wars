@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-24 of 73 stills done. Newest first. These are drafts: copy the
+27 of 73 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -16,8 +16,29 @@ keepers into the game's `assets/` folder by hand.
 - `approved/PL-02-1.png` unlocks 8 directions, sword slash, sword lunge
 - `approved/PL-02-2.png` unlocks 8 directions, quick bow shot, aimed bow shot
 - `approved/NP-01-1.png` unlocks 8 directions, idle, talking
+- `approved/NP-02-1.png` unlocks 8 directions, idle, walk, talking, fire cast
+- `approved/NP-03-1.png` unlocks 8 directions, idle, talking
+- `approved/NP-04-1.png` unlocks 8 directions, idle, talking
 
 ## Drafts
+
+### NP-02-1 · Caedan Ashvale (2026-11-09)
+
+![NP-02-1](art/NP-02/NP-02-1_2026-11-09.png)
+
+<sub>a charismatic young prince, red-black royal coat with gold trim, short dark hair, warm confident expression, small flame floating above one palm, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tal</sub>
+
+### NP-03-1 · Steward Brann (2026-11-09)
+
+![NP-03-1](art/NP-03/NP-03-1_2026-11-09.png)
+
+<sub>a portly mine steward, dusty waistcoat, ledger, lamp at belt, smug expression. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no dark outlin</sub>
+
+### NP-04-1 · Saran (2026-11-09)
+
+![NP-04-1](art/NP-04/NP-04-1_2026-11-09.png)
+
+<sub>a weathered steppe clan matriarch, fur-lined felt coat, silver headdress, walking staff. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, no d</sub>
 
 ### UI-02-1 · Menus: character, ability tree, inventory, quest log (2026-11-08)
 
