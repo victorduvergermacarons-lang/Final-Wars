@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-27 of 73 stills done. Newest first. These are drafts: copy the
+47 of 73 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -19,8 +19,134 @@ keepers into the game's `assets/` folder by hand.
 - `approved/NP-02-1.png` unlocks 8 directions, idle, walk, talking, fire cast
 - `approved/NP-03-1.png` unlocks 8 directions, idle, talking
 - `approved/NP-04-1.png` unlocks 8 directions, idle, talking
+- `approved/NP-05-1.png` unlocks 8 directions, idle, walk, talking
+- `approved/NP-05-2.png` unlocks 8 directions, idle, walk, talking
+- `approved/EN-02-1.png` unlocks 8 directions, idle, walk, attack, death
+- `approved/BO-01-1.png` unlocks 8 directions, idle, attack, winding up a big attack, phase change, death
+- `approved/BO-01-2.png` unlocks 8 directions, idle, attack, winding up a big attack, phase change, death
+- `approved/NP-06-1.png` unlocks 8 directions, idle, talking
 
 ## Drafts
+
+### BO-01-1 · The Foreman + Grey Heart (2026-11-14)
+
+![BO-01-1](art/BO-01/BO-01-1_2026-11-14.png)
+
+<sub>a hulking corrupted miner boss, grey cracked skin, glowing Sunstone shards in his back, giant pick-hammer, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, large creature on a 96x96 canvas, idle standing pose. p</sub>
+
+### BO-01-2 · The Foreman + Grey Heart (2026-11-14)
+
+![BO-01-2](art/BO-01/BO-01-2_2026-11-14.png)
+
+<sub>a large floating crystal of black-gold Sunstone, cracked, pulsing with grey smoke, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, large creature on a 96x96 canvas, idle standing pose. pixel art, isometric 2:1 </sub>
+
+### EN-02-1 · Human husks (+ Ember Hand soldier reskin) (2026-11-14)
+
+![EN-02-1](art/EN-02/EN-02-1_2026-11-14.png)
+
+<sub>Ashkaran soldier in black and crimson lamellar armor with a glaive, and a Crucible student in red robes, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (</sub>
+
+### FX-04-1 · Air effects (2026-11-14)
+
+![FX-04-1](art/FX-04/FX-04-1_2026-11-14.png)
+
+<sub>a palm-shaped gust of white wind lines. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### FX-04-2 · Air effects (2026-11-14)
+
+![FX-04-2](art/FX-04/FX-04-2_2026-11-14.png)
+
+<sub>a small swirling tornado with debris. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.</sub>
+
+### IC-03-1 · Armor, consumables, materials, quest items, rarity frames (2026-11-14)
+
+![IC-03-1](art/IC-03/IC-03-1_2026-11-14.png)
+
+<sub>armor icons: helmet, chestplate, leggings, boots, gloves, ring, amulet. Inventory icons, each 32x32, front view centered, bold silhouette, slight drop shadow. Pixel art, limited palette, transparent background, high-fantasy RPG style.</sub>
+
+### IC-03-2 · Armor, consumables, materials, quest items, rarity frames (2026-11-14)
+
+![IC-03-2](art/IC-03/IC-03-2_2026-11-14.png)
+
+<sub>a red health potion and a blue mana potion in glass flasks. Inventory icons, each 32x32, front view centered, bold silhouette, slight drop shadow. Pixel art, limited palette, transparent background, high-fantasy RPG style.</sub>
+
+### NP-05-1 · Generic townsfolk (recolor per region) (2026-11-14)
+
+![NP-05-1](art/NP-05/NP-05-1_2026-11-14.png)
+
+<sub>a set of townsfolk: merchant with apron, town guard with spear, quest-giver elder with cane, from the Crossing region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of </sub>
+
+### NP-05-2 · Generic townsfolk (recolor per region) (2026-11-14)
+
+![NP-05-2](art/NP-05/NP-05-2_2026-11-14.png)
+
+<sub>three guild members: a swordmaster in a blue dueling coat, a hooded ranger in green with a bow, a burly smith with a hammer and leather apron, from the Crossing region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall </sub>
+
+### NP-06-1 · Sovereign Ilsar (2026-11-14)
+
+![NP-06-1](art/NP-06/NP-06-1_2026-11-14.png)
+
+<sub>a stern older king, greying beard, heavy crimson and black robes, obsidian crown, imposing posture, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 4</sub>
+
+### UI-03-1 · Dialogue box + portraits (12 quest givers) (2026-11-14)
+
+![UI-03-1](art/UI-03/UI-03-1_2026-11-14.png)
+
+<sub>a dialogue text box with a name plate and portrait slot, wood and parchment. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.</sub>
+
+### UI-03-2 · Dialogue box + portraits (12 quest givers) (2026-11-14)
+
+![UI-03-2](art/UI-03/UI-03-2_2026-11-14.png)
+
+<sub>Close-up bust portraits, 64x64 each, of: a young prince in a red-black coat (Caedan) in three moods (warm, troubled, cold and grey); a calm teal-robed healer woman; an old bearded earth chieftain; an elderly saffron-robed monk; a stern crowned king. Pixel art, limited palette, soft light, high-fanta</sub>
+
+### UI-04-1 · Title, logo, fonts, nation emblems (2026-11-14)
+
+![UI-04-1](art/UI-04/UI-04-1_2026-11-14.png)
+
+<sub>game logo text 'VEYRA' with four element symbols (flame, stone, wave, wind). Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.</sub>
+
+### UI-04-2 · Title, logo, fonts, nation emblems (2026-11-14)
+
+![UI-04-2](art/UI-04/UI-04-2_2026-11-14.png)
+
+<sub>readable pixel font, uppercase and lowercase alphabet. Game UI element, pixel art, crisp edges, readable at 1x, limited palette, high-fantasy RPG style, transparent background.</sub>
+
+### WO-02-1 · Millbrook + the Crossing (guild hall, quest boards, respawn shrine) (2026-11-14)
+
+![WO-02-1](art/WO-02/WO-02-1_2026-11-14.png)
+
+<sub>medieval market-town buildings: timber inn, market stalls with awnings, stone city wall and gate, from the Crossing region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:</sub>
+
+### WO-02-2 · Millbrook + the Crossing (guild hall, quest boards, respawn shrine) (2026-11-14)
+
+![WO-02-2](art/WO-02/WO-02-2_2026-11-14.png)
+
+<sub>three guild buildings: a fencing hall with crossed-swords banner, a ranger lodge of logs, a stone forge with chimney, from the Crossing region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pix</sub>
+
+### WO-03-1 · Deepcut + Silent Shaft + Clan Halls (2026-11-14)
+
+![WO-03-1](art/WO-03/WO-03-1_2026-11-14.png)
+
+<sub>red sandstone canyon cliff blocks and green terraced farm steps, from the Bedrun region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft light</sub>
+
+### WO-03-2 · Deepcut + Silent Shaft + Clan Halls (2026-11-14)
+
+![WO-03-2](art/WO-03/WO-03-2_2026-11-14.png)
+
+<sub>a timber mine entrance with rail track and cart, rock wall with glowing gold Sunstone seams, from the Bedrun region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view,</sub>
+
+### WO-04-1 · Windsteppe camps (gers, cairns, snow) (2026-11-14)
+
+![WO-04-1](art/WO-04/WO-04-1_2026-11-14.png)
+
+<sub>cold steppe grass tiles and snow-covered grass tiles, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft light from top-lef</sub>
+
+### WO-04-2 · Windsteppe camps (gers, cairns, snow) (2026-11-14)
+
+![WO-04-2](art/WO-04/WO-04-2_2026-11-14.png)
+
+<sub>a round white felt nomad tent with a wooden door and smoke hole, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft light f</sub>
 
 ### NP-02-1 · Caedan Ashvale (2026-11-09)
 

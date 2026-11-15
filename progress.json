@@ -295,6 +295,226 @@
         "type": "generations",
         "generations": 1.0
       }
+    },
+    "BO-01-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/BO-01/BO-01-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "BO-01-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/BO-01/BO-01-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "EN-02-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/EN-02/EN-02-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "FX-04-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/FX-04/FX-04-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "FX-04-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/FX-04/FX-04-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "IC-03-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/IC-03/IC-03-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "IC-03-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/IC-03/IC-03-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "NP-05-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/NP-05/NP-05-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "NP-05-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/NP-05/NP-05-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "NP-06-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/NP-06/NP-06-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "UI-03-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/UI-03/UI-03-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "UI-03-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/UI-03/UI-03-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "UI-04-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/UI-04/UI-04-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "UI-04-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/UI-04/UI-04-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "WO-02-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/WO-02/WO-02-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "WO-02-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/WO-02/WO-02-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "WO-03-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/WO-03/WO-03-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "WO-03-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/WO-03/WO-03-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "WO-04-1": {
+      "date": "2026-11-14",
+      "files": [
+        "art/WO-04/WO-04-1_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
+    },
+    "WO-04-2": {
+      "date": "2026-11-14",
+      "files": [
+        "art/WO-04/WO-04-2_2026-11-14.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "pixen (Create S-XL image)",
+        "generations": 1
+      }
     }
   },
   "failures": {},
@@ -398,6 +618,34 @@
       "made": [],
       "failed": [],
       "stopped": "out of generations"
+    },
+    {
+      "date": "2026-11-14",
+      "made": [
+        "BO-01-1",
+        "BO-01-2",
+        "EN-02-1",
+        "FX-04-1",
+        "FX-04-2",
+        "IC-03-1",
+        "IC-03-2",
+        "NP-05-1",
+        "NP-05-2",
+        "NP-06-1",
+        "UI-03-1",
+        "UI-03-2",
+        "UI-04-1",
+        "UI-04-2",
+        "WO-02-1",
+        "WO-02-2",
+        "WO-03-1",
+        "WO-03-2",
+        "WO-04-1",
+        "WO-04-2"
+      ],
+      "failed": [],
+      "stopped": "",
+      "source": "pixellab.ai web app (by Claude, by hand)"
     }
   ],
   "rejected": {
