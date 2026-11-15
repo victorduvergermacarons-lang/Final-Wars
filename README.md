@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-47 of 73 stills done. Newest first. These are drafts: copy the
+72 of 73 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -25,8 +25,173 @@ keepers into the game's `assets/` folder by hand.
 - `approved/BO-01-1.png` unlocks 8 directions, idle, attack, winding up a big attack, phase change, death
 - `approved/BO-01-2.png` unlocks 8 directions, idle, attack, winding up a big attack, phase change, death
 - `approved/NP-06-1.png` unlocks 8 directions, idle, talking
+- `approved/NP-07-1.png` unlocks 8 directions, idle, talking
+- `approved/EN-03-1.png` unlocks 8 directions, idle, run, bite, death
+- `approved/EN-04-1.png` unlocks 8 directions, fly, dive, death
+- `approved/BO-02-1.png` unlocks 8 directions, idle, slam, winding up a big attack, burn, death
+- `approved/NP-08-1.png` unlocks 8 directions, idle, talking, heal cast
+- `approved/EN-05-1.png` unlocks 8 directions, idle, run, pounce, death
+- `approved/EN-06-1.png` unlocks 8 directions, fly, dive, death
+- `approved/BO-03-1.png` unlocks 8 directions, rise, bite, coil, submerge, death
+- `approved/NP-09-1.png` unlocks 8 directions, idle, talking, earth cast, death
+- `approved/EN-07-1.png` unlocks 8 directions, idle, walk, slam, death
+- `approved/NP-10-1.png` unlocks 8 directions, idle, talking, meditate
+- `approved/NP-11-1.png` unlocks 8 directions, idle, walk, attack, death
+- `approved/EN-08-1.png` unlocks 8 directions, idle, move, attack
+- `approved/EN-08-2.png` unlocks 8 directions, idle, move, attack
+- `approved/BO-04-1.png` unlocks 8 directions, idle, cast, winding up a big attack, death
 
 ## Drafts
+
+### BO-02-1 · Ashbark Colossus (2026-11-15)
+
+![BO-02-1](art/BO-02/BO-02-1_2026-11-15.png)
+
+<sub>an ancient giant made of ash-grey bark and smouldering branches, glowing ember core. Single sprite, facing south-east (front three-quarter isometric view), full body, about 90 px tall on a 128x128 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker</sub>
+
+### BO-03-1 · Riverwyrm (2026-11-15)
+
+![BO-03-1](art/BO-03/BO-03-1_2026-11-15.png)
+
+<sub>a colossal green-and-gold anaconda-like river serpent, crowned with fins, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, large creature on a 96x96 canvas, idle standing pose. pixel art, isometric 2:1 view, </sub>
+
+### BO-04-1 · First Ashvale (spirit) (2026-11-15)
+
+![BO-04-1](art/BO-04/BO-04-1_2026-11-15.png)
+
+<sub>a ghostly ancient king, translucent blue-white, obsidian crown, burning Sunstone sceptre. Single sprite, facing south-east (front three-quarter isometric view), full body, about 90 px tall on a 128x128 canvas, idle pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a d</sub>
+
+### BO-06-2 · Caedan with Stillheart (2026-11-15)
+
+![BO-06-2](art/BO-06/BO-06-2_2026-11-15.png)
+
+<sub>a jagged black crystal sword with grey smoke aura and drained colored sparks. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black</sub>
+
+### EN-03-1 · Salamander hounds (2026-11-15)
+
+![EN-03-1](art/EN-03/EN-03-1_2026-11-15.png)
+
+<sub>a lean red salamander-like hound with glowing orange spots and a smoking tail, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometr</sub>
+
+### EN-04-1 · Cinder vultures (2026-11-15)
+
+![EN-04-1](art/EN-04/EN-04-1_2026-11-15.png)
+
+<sub>a black vulture with ash-grey wingtips and glowing ember eyes, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no </sub>
+
+### EN-05-1 · Moon jaguars (2026-11-15)
+
+![EN-05-1](art/EN-05/EN-05-1_2026-11-15.png)
+
+<sub>a black jaguar with silver moon-shaped rosettes and glowing blue eyes, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1</sub>
+
+### EN-06-1 · Crown harpies (2026-11-15)
+
+![EN-06-1](art/EN-06/EN-06-1_2026-11-15.png)
+
+<sub>a giant harpy eagle with a grey crest crown and powerful talons, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view,</sub>
+
+### EN-07-1 · Stone sentinels (2026-11-15)
+
+![EN-07-1](art/EN-07/EN-07-1_2026-11-15.png)
+
+<sub>a hulking stone golem guardian carved with clan runes, glowing amber eyes, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:</sub>
+
+### EN-08-1 · Summons: windmane, sky eagle, ghost leopard, Sunstone construct (2026-11-15)
+
+![EN-08-1](art/EN-08/EN-08-1_2026-11-15.png)
+
+<sub>a stocky steppe horse with a long mane that streams like wind and crackles with blue sparks, from the Vael region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel a</sub>
+
+### EN-08-2 · Summons: windmane, sky eagle, ghost leopard, Sunstone construct (2026-11-15)
+
+![EN-08-2](art/EN-08/EN-08-2_2026-11-15.png)
+
+<sub>a huge golden eagle with wings spread wide, from the Vael region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges co</sub>
+
+### NP-07-1 · Warden Kesh and Surveyor Iven (2026-11-15)
+
+![NP-07-1](art/NP-07/NP-07-1_2026-11-15.png)
+
+<sub>two Ashkarans: a scarred burn-master in soot-black leathers with a torch-staff, and a surveyor in red robes with a map tube. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose.</sub>
+
+### NP-08-1 · Sela and Keeper Amaru (2026-11-15)
+
+![NP-08-1](art/NP-08/NP-08-1_2026-11-15.png)
+
+<sub>a calm middle-aged healer woman, teal and white flowing wraps, braided hair with river beads, small glowing water orb in hand, from the Tidereach region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide,</sub>
+
+### NP-09-1 · Thane Orvek (2026-11-15)
+
+![NP-09-1](art/NP-09/NP-09-1_2026-11-15.png)
+
+<sub>a broad elderly earth-clan chieftain, thick white braided beard, stone-plate armor, barefoot, huge forearms, from the Bedrun region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centr</sub>
+
+### NP-10-1 · Brother Wend (2026-11-15)
+
+![NP-10-1](art/NP-10/NP-10-1_2026-11-15.png)
+
+<sub>a thin elderly monk, shaved head, saffron robes over a grey felt coat, prayer beads, serene closed eyes, from the Vael region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24,</sub>
+
+### NP-11-1 · Captain Tavi Rhal (2026-11-15)
+
+![NP-11-1](art/NP-11/NP-11-1_2026-11-15.png)
+
+<sub>a disciplined Ember Hand officer woman, black and crimson lamellar armor, glaive, red plume. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose. pixel art, isometric 2:1 view, </sub>
+
+### WO-05-1 · Emberhold + Ash Forests + Heartwood Pyre (2026-11-15)
+
+![WO-05-1](art/WO-05/WO-05-1_2026-11-15.png)
+
+<sub>an obsidian palace with red banners, sharp black towers and gold braziers, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette,</sub>
+
+### WO-05-2 · Emberhold + Ash Forests + Heartwood Pyre (2026-11-15)
+
+![WO-05-2](art/WO-05/WO-05-2_2026-11-15.png)
+
+<sub>three versions of a tall ash tree: healthy with orange leaves, burning, and charred black, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, </sub>
+
+### WO-06-1 · Lunhaven + Lowlands + Drowned Dig (2026-11-15)
+
+![WO-06-1](art/WO-06/WO-06-1_2026-11-15.png)
+
+<sub>flooded jungle floor tiles with roots, mud and shallow dark water, from the Tidereach region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft </sub>
+
+### WO-06-2 · Lunhaven + Lowlands + Drowned Dig (2026-11-15)
+
+![WO-06-2](art/WO-06/WO-06-2_2026-11-15.png)
+
+<sub>a giant kapok tree with buttress roots and a rope canopy walkway, from the Tidereach region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft l</sub>
+
+### WO-07-1 · Underdeep (Bedru's Heart) (2026-11-15)
+
+![WO-07-1](art/WO-07/WO-07-1_2026-11-15.png)
+
+<sub>cave tiles with glowing teal lichen and tall purple crystal clusters, from the Bedrun region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft </sub>
+
+### WO-08-1 · Ice Spine monasteries + Stillpoint (2026-11-15)
+
+![WO-08-1](art/WO-08/WO-08-1_2026-11-15.png)
+
+<sub>frozen mountain rock blocks with ice and snow caps, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft light from top-left,</sub>
+
+### WO-08-2 · Ice Spine monasteries + Stillpoint (2026-11-15)
+
+![WO-08-2](art/WO-08/WO-08-2_2026-11-15.png)
+
+<sub>a cliffside monastery with red-gold roofs and a hall of hanging bronze wind chimes, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited pa</sub>
+
+### WO-09-1 · High Calderas + Caldera Nest (2026-11-15)
+
+![WO-09-1](art/WO-09/WO-09-1_2026-11-15.png)
+
+<sub>black volcanic obsidian ground tiles and glassy cliff blocks with orange glow cracks, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limit</sub>
+
+### WO-09-2 · High Calderas + Caldera Nest (2026-11-15)
+
+![WO-09-2](art/WO-09/WO-09-2_2026-11-15.png)
+
+<sub>molten lava tiles and lava river with cooled dark crust edges, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft light </sub>
 
 ### BO-01-1 · The Foreman + Grey Heart (2026-11-14)
 
