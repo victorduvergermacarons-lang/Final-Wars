@@ -27,7 +27,7 @@ Drag the book's top edge to move it.
 Drag an ability onto the action bar.
 
 [b]Character[/b]
-Permanent Mastery unlocks a tree's tiers; Mastery from gear only adds power.
+Permanent Mastery unlocks a tree's abilities, each at its own level; Mastery from gear only adds power.
 
 [b]Inventory[/b]
 Drag to move or equip · right-click to equip or take off

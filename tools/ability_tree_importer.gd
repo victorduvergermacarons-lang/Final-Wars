@@ -126,10 +126,11 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 		if a.tier < 1 or a.tier > 5:
 			errors.append("%s: tier \"%s\" is outside 1–5" % [where, tier_text])
 		else:
-			a.mastery_required = tiers.get(a.tier, 0)
-			var expected := "%s Mastery %d" % [a.tree, a.mastery_required]
-			if a.mastery_required_text != "" and a.mastery_required_text != expected:
-				warnings.append("%s: Mastery Required says \"%s\", Tiers tab gives \"%s\" (using the Tiers tab)" % [where, a.mastery_required_text, expected])
+			# Each ability unlocks at its own Mastery Required ("<Tree> Mastery N");
+			# an empty cell falls back to its tier's threshold on the Tiers tab.
+			# (Until 2026-11-15 the Tiers tab always decided; the Water tree now
+			# unlocks one ability per step.)
+			a.mastery_required = _mastery_required(a, tiers.get(a.tier, 0), where, errors)
 		if a.taught_by == "":
 			errors.append("%s: no item in Taught By" % where)
 		elif by_item.has(a.taught_by):
@@ -173,6 +174,7 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 	for a in abilities:
 		a.prerequisites = _prerequisites(a, by_name, tree_names, errors)
 	_check_cycles(abilities, by_id, errors)
+	_check_unlock_order(abilities, by_id, warnings)
 	for t in trees:
 		var n := abilities.filter(func(a): return a.tree == t.name).size()
 		if t.has("abilities") and t.abilities != n:
@@ -286,6 +288,34 @@ static func _prerequisites(a: Dictionary, by_name: Dictionary, trees: Dictionary
 					hint = " (did you mean \"%s\"?)" % n
 			errors.append("%s (%s): unknown prerequisite \"%s\"%s" % [a.id, a.name, p, hint])
 	return out
+
+
+## The Mastery an ability needs, from its Mastery Required text ("Water Mastery 220");
+## `tier_default` when the cell is empty.
+static func _mastery_required(a: Dictionary, tier_default: int, where: String, errors: PackedStringArray) -> int:
+	var text: String = a.mastery_required_text
+	if text == "":
+		return tier_default
+	var m := RegEx.create_from_string("^(.+?) Mastery (\\d+)$").search(text)
+	if m == null:
+		errors.append("%s: Mastery Required \"%s\" isn't \"%s Mastery <number>\"" % [where, text, a.tree])
+		return tier_default
+	if m.get_string(1) != a.tree:
+		errors.append("%s: Mastery Required names %s Mastery, but the ability is in the %s tree" % [where, m.get_string(1), a.tree])
+	return m.get_string(2).to_int()
+
+
+## A prerequisite that unlocks at more Mastery than the ability (same tree) makes the
+## ability's own requirement meaningless: warn so the sheet can be fixed.
+static func _check_unlock_order(abilities: Array, by_id: Dictionary, warnings: PackedStringArray) -> void:
+	for a in abilities:
+		if not a.has("mastery_required"):
+			continue
+		for pre_id in a.get("prerequisites", {}).get("abilities", []):
+			var pre: Dictionary = by_id.get(pre_id, {})
+			if pre.get("tree", "") == a.tree and int(pre.get("mastery_required", 0)) > int(a.mastery_required):
+				warnings.append("%s (%s) needs %s (%s), which unlocks later (%s Mastery %d > %d)" % [a.id, a.name,
+						pre.id, pre.name, a.tree, pre.mastery_required, a.mastery_required])
 
 
 static func _check_cycles(abilities: Array, by_id: Dictionary, errors: PackedStringArray) -> void:

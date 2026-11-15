@@ -133,7 +133,14 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
   +0.05% per Mastery point. Haste −25%.
 - **AP to master by tier:** 20/30/40/50/50. AP: 10 per level-up + the enemy's kill AP, to
   the learning item only. Mastery on learn 5 (T1) / 10 (T2); per use 0.2–0.6; caps 50 / 70.
-- **Tiers open at** 0 / 150 / 350 / 600 / 900 permanent Mastery.
+- **Unlocks:** each ability at its own Mastery Required (the sheet's column). Most trees
+  still use their tier's threshold, 0 / 150 / 350 / 600 / 900 permanent Mastery; **Water**
+  unlocks one ability per step (2026-11-15): Water Whip and Healing Touch 0, Water Shield
+  20, Soothing Mist 40, Tidal Blessing 65, Frost Shard 90, Revive 120, Leeching Tide 150,
+  Spirit Water 185, Flow State 220, Water Pulse 260, Ice Spikes 300, Water Jet 345, Healing
+  Rain 390, Ice Prison 440, Rising Tide 490, Tidal Wave 545, Steam Veil 600 (and Fire 350),
+  Ocean Spirit 655, Bloodbending 715, Octopus Form 775, Full Moon 835, Tidal Resurgence
+  900. Tiers still set AP, rarity, prices and default amounts.
 - **Learning scroll growth per level** (50% applied): Fire MagAtk 3, Mana 6, Fire Mastery 2;
   Water MagAtk 2, MagDef 2, Mana 8, Water Mastery 2; Earth MagAtk 1, PhysDef 2, HP 8, Earth
   Mastery 2; Air MagAtk 2, Evasion 1, Mana 6, Air Mastery 2. Weapons: sword PhysAtk 10 /
@@ -1991,6 +1998,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-15 | Water abilities unlock one per Mastery step (per-ability Mastery Required, read by the importer; Water rows' formula replaced by their own text); Tidal Blessing, Water Shield and Revive lose the prerequisites that now unlock later | User request (the 23 steps). The rules already read each ability's `mastery_required`; the importer used to take the tier's threshold and now takes the Mastery Required cell (empty: the tier's). My choices: tiers stay as they are for everything else (AP, rarity, prices, damage defaults, the tree screen's columns); a prerequisite unlocking later is an import warning and a content test; the tree screen heads a column with its first ability's step, orders it by step, and a locked node shows "Needs N"; Excel's calcChain.xml was dropped from the workbook (Excel rebuilds it) since it listed the replaced formulas (`tools/once/water_mastery_steps.py`). |
 | 2026-11-15 | The hero gets PL-01-1's sprite and animations (idle, walk, cast, hit, death, downed, revived) | User approval of the art-drafts animations. User choices: death take 4; downed for stuns (then revived to get up; revived also after a resurrection or a release); back stills when facing away until back animations exist; cast plays when an ability goes off. My choices: frame rates (idle 6, cast and hit 18, death 12, downed 15, revived 12, run 4 frames per tile); death, downed and revived use the front frames facing away too; no white hit flash for heroes (the hit animation shows it); state changes noted by each view rather than new snapshot fields. |
 | 2026-11-15 | Playtest fixes: two-key movement follows the grid lines; the folded quest tracker shrinks after being moved; mouse-aimed abilities always aim at the cursor; a second press of an ability's key uses it | User playtest report (5 items; item 4, gradual unlocks, waits for the user's approval of a schedule). Causes: two keys gave a 45° screen diagonal, but the grid's lines run at 26.6° (`Mover.screen_to_grid`); a dragged tracker kept a fixed size, and folding only hid its text; the host ignored the cursor sent with Slash's bar inputs (Targeted in the sheet, cone hitbox), the client aimed at the targeted enemy until the mouse moved, and a cursor off the map fell back to the hero's facing. My choices: the lock-on to the target is gone for every aimed ability (it was decision 24's default); a second press during a bar plays it like a right-click; another ability's key cancels the bar and gives back its global cooldown, so the new ability isn't blocked; aimed abilities without a bar keep release-to-fire. |
 | 2026-11-02 | The Windsteppe track plays: a music entry (`explore_windsteppe.tres`, explore, region Vael); the duplicate upload at `audio/music_explore_windsteppe.ogg` deleted | User approval. The upload had no `MusicTrackDef`, so the draft played. Not edited (measured: no silence; the last 0.5 s average −28 dB, the first −38 dB, so a small dip at the loop). |

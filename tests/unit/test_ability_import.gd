@@ -22,7 +22,8 @@ func _book(rows: Array) -> Dictionary:
 
 func _row(id: String, name: String, tier := "1", prereq := "—", item := "", tree := "Fire",
 		item_type := "Scroll", targeting := "Targeted") -> Array:
-	return [id, tree, "Blasts", tier, "%s Mastery 0" % tree, name, "Damage", prereq, item_type,
+	var tier_mastery := {"1": 0, "2": 150, "3": 350, "4": 600, "5": 900}
+	return [id, tree, "Blasts", tier, "%s Mastery %d" % [tree, tier_mastery.get(tier, 0)], name, "Damage", prereq, item_type,
 			item if item != "" else name + " Scroll", "Fire Mastery, Magic Atk", "Text", targeting,
 			"Details", "2", "5", "0.2", "50", "text", ""]
 
@@ -80,6 +81,37 @@ func test_fields_and_prerequisites() -> void:
 	assert_eq(edge.item_id, "runeblade")
 	assert_eq(result.data.items[2], {"id": "runeblade", "name": "Runeblade", "type": "Sword",
 			"tree": "Sword", "tier": 4, "ability": "S01"})
+
+
+func test_each_ability_unlocks_at_its_own_mastery_required() -> void:
+	# 2026-11-15: the Mastery Required column decides, not the tier (Water's steps).
+	var own := _row("F02", "Fire Kick", "1")
+	own[4] = "Fire Mastery 65"
+	var empty := _row("F03", "Fire Dart", "2")
+	empty[4] = ""
+	var result := AbilityTreeImporter.convert(_book([_row("F01", "Fire Punch"), own, empty]))
+	assert_eq(result.errors, PackedStringArray())
+	assert_eq(result.data.abilities[1].mastery_required, 65, "its own number, though tier 1")
+	assert_eq(result.data.abilities[2].mastery_required, 150, "an empty cell falls back to its tier")
+
+
+func test_mastery_required_is_checked() -> void:
+	var other_tree := _row("F01", "A")
+	other_tree[4] = "Air Mastery 20"
+	assert_string_contains(_errors([other_tree]), "names Air Mastery, but the ability is in the Fire tree")
+	var not_a_number := _row("F01", "A")
+	not_a_number[4] = "lots"
+	assert_string_contains(_errors([not_a_number]), "isn't \"Fire Mastery <number>\"")
+
+
+func test_a_prerequisite_that_unlocks_later_is_a_warning() -> void:
+	var early := _row("F02", "B", "1", "A")
+	early[4] = "Fire Mastery 20"
+	var late := _row("F01", "A")
+	late[4] = "Fire Mastery 65"
+	var result := AbilityTreeImporter.convert(_book([late, early]))
+	assert_eq(result.errors, PackedStringArray())
+	assert_string_contains("\n".join(result.warnings), "F02 (B) needs F01 (A), which unlocks later (Fire Mastery 65 > 20)")
 
 
 func test_validation_errors() -> void:

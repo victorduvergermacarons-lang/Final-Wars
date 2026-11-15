@@ -189,3 +189,37 @@ func test_weapon_learns_automatically_when_the_slot_is_empty() -> void:
 	TreeRules.award_ap(hero, 10)
 	assert_true(hero.is_mastered(&"S01"))
 	assert_null(hero.active_learning_item(), "nothing left to learn from the sword")
+
+
+## Water unlocks one ability per Mastery step (2026-11-15), whatever its tier.
+const WATER_STEPS := {&"W02": 0, &"W01": 0, &"W12": 20, &"W05": 40, &"W08": 65, &"W04": 90, &"W14": 120,
+		&"W07": 150, &"W10": 185, &"W03": 220, &"W06": 260, &"W09": 300, &"W11": 345, &"W17": 390,
+		&"W13": 440, &"W16": 490, &"W15": 545, &"W18": 600, &"W22": 655, &"W19": 715, &"W20": 775,
+		&"W21": 835, &"W23": 900}
+
+
+func test_water_abilities_unlock_at_their_own_step() -> void:
+	for id in WATER_STEPS:
+		assert_eq(int(abilities[id].sheet.mastery_required), WATER_STEPS[id], "%s's step" % id)
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W03"]), "mastery_too_low", "Flow State is tier 1 but needs 220")
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W12"]), "mastery_too_low", "Water Shield needs 20")
+	Mastery.add_permanent(hero, "Water", 20)
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W12"]), "", "tier 3, but open at 20, with no prerequisite now")
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W05"]), "mastery_too_low", "Soothing Mist needs 40")
+
+
+func test_no_ability_needs_one_that_unlocks_later() -> void:
+	for a in abilities.values():
+		for pre in a.sheet.get("prerequisites", {}).get("abilities", []):
+			var p: AbilityDef = abilities[StringName(pre)]
+			if p.tree == a.tree:
+				assert_true(int(p.sheet.mastery_required) <= int(a.sheet.mastery_required),
+						"%s needs %s, which must unlock no later" % [a.id, p.id])
+
+
+func test_steam_veil_still_needs_fire_mastery() -> void:
+	Mastery.add_permanent(hero, "Water", 600)
+	TreeRules.master(hero, abilities[&"W13"])
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W18"]), "mastery_too_low", "Fire Mastery 350 too")
+	Mastery.add_permanent(hero, "Fire", 350)
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W18"]), "")
