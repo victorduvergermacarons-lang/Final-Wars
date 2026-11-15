@@ -57,12 +57,27 @@ func _speed() -> float:
 func test_w_walks_up_the_screen() -> void:
 	assert_eq(Mover.screen_to_grid(Vector2i(0, -1)), Vector2(-1, -1).normalized(), "W: grid up-left")
 	assert_eq(Mover.screen_to_grid(Vector2i(1, 0)), Vector2(1, -1).normalized(), "D: grid up-right")
-	# Screen down-right is 45° on screen, which on the 2:1 isometric grid is not
-	# grid +x (that is 26.6° on screen) but close to it.
-	var sd := Mover.screen_to_grid(Vector2i(1, 1))
-	assert_almost_eq(sd.length(), 1.0, 0.0001)
-	assert_almost_eq(rad_to_deg(sd.angle()), 18.43, 0.01, "S+D: 45° down-right on screen")
 	assert_eq(Mover.screen_to_grid(Vector2i.ZERO), Vector2.ZERO)
+
+
+func test_two_keys_walk_exactly_along_a_grid_line_at_full_speed() -> void:
+	# The 2:1 isometric grid's lines run at 26.6° on screen; two keys follow them
+	# exactly (no drift north or south), as fast as one key.
+	assert_eq(Mover.screen_to_grid(Vector2i(-1, -1)), Vector2(-1, 0), "W+A: grid left")
+	assert_eq(Mover.screen_to_grid(Vector2i(1, -1)), Vector2(0, -1), "W+D: grid up")
+	assert_eq(Mover.screen_to_grid(Vector2i(1, 1)), Vector2(1, 0), "S+D: grid right")
+	assert_eq(Mover.screen_to_grid(Vector2i(-1, 1)), Vector2(0, 1), "S+A: grid down")
+	for d in [Vector2i(-1, -1), Vector2i(1, -1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(0, 1), Vector2i(1, 0)]:
+		assert_almost_eq(Mover.screen_to_grid(d).length(), 1.0, 0.0001, "same speed as one key: %s" % d)
+
+
+func test_walking_two_keys_stays_on_its_grid_row() -> void:
+	# S+D for a second: x grows, y (the row) doesn't change at all.
+	var start := hero.move.pos
+	var y0 := start.y
+	_move(Vector2i(1, 1), 1.0)
+	assert_gt(hero.move.pos.x - start.x, 2.0, "walked along the row")
+	assert_almost_eq(hero.move.pos.y, y0, 0.0001, "no drift off the grid line")
 
 
 func test_reaches_full_speed_in_about_a_tenth_and_stops_in_under_a_tenth() -> void:
