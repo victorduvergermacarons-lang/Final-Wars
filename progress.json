@@ -792,7 +792,36 @@
       }
     }
   },
-  "failures": {},
+  "failures": {
+    "PL-01-1+idle": {
+      "count": 1,
+      "last_error": "HTTP 0: job 2ae24a8f-8792-478b-9a66-ab97e8ccd30e failed: {\"usage\": {\"type\": \"usd\", \"usd\": 0.0}, \"id\": \"2ae24a8f-8792-478b-9a66-ab97e8ccd30e\", \"status\": \"failed\", \"created_at\": \"2026-11-15T05:50:57.021066+00:00\", \"last_response\": {\"type\": \"error\", \"error\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"detail\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"status\": \"failed\", \"flow_kind\": \"a"
+    },
+    "PL-01-1+walk": {
+      "count": 1,
+      "last_error": "HTTP 0: job 5a9b24df-b119-4ea7-baf1-5ad7ba31b6fe failed: {\"usage\": {\"type\": \"usd\", \"usd\": 0.0}, \"id\": \"5a9b24df-b119-4ea7-baf1-5ad7ba31b6fe\", \"status\": \"failed\", \"created_at\": \"2026-11-15T05:51:03.043802+00:00\", \"last_response\": {\"type\": \"error\", \"error\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"detail\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"status\": \"failed\", \"flow_kind\": \"a"
+    },
+    "PL-01-1+cast": {
+      "count": 1,
+      "last_error": "HTTP 0: job da6e5236-6966-4f56-ac69-2c22f96985b2 failed: {\"usage\": {\"type\": \"usd\", \"usd\": 0.0}, \"id\": \"da6e5236-6966-4f56-ac69-2c22f96985b2\", \"status\": \"failed\", \"created_at\": \"2026-11-15T05:51:09.115300+00:00\", \"last_response\": {\"type\": \"error\", \"error\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"detail\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"status\": \"failed\", \"flow_kind\": \"a"
+    },
+    "PL-01-1+getting-hit": {
+      "count": 1,
+      "last_error": "HTTP 0: job 754eeb28-ad33-431d-96b3-5a6af1fb671e failed: {\"usage\": {\"type\": \"usd\", \"usd\": 0.0}, \"id\": \"754eeb28-ad33-431d-96b3-5a6af1fb671e\", \"status\": \"failed\", \"created_at\": \"2026-11-15T05:51:15.172783+00:00\", \"last_response\": {\"type\": \"error\", \"error\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"detail\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"status\": \"failed\", \"flow_kind\": \"a"
+    },
+    "PL-01-1+death": {
+      "count": 1,
+      "last_error": "HTTP 0: job cd7807c3-94ba-4168-abd6-498db3a5d918 failed: {\"usage\": {\"type\": \"usd\", \"usd\": 0.0}, \"id\": \"cd7807c3-94ba-4168-abd6-498db3a5d918\", \"status\": \"failed\", \"created_at\": \"2026-11-15T05:51:21.187158+00:00\", \"last_response\": {\"type\": \"error\", \"error\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"detail\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"status\": \"failed\", \"flow_kind\": \"a"
+    },
+    "PL-01-1+downed": {
+      "count": 1,
+      "last_error": "HTTP 0: job c1cac9dc-20a4-4045-8965-d6aec2d4cf89 failed: {\"usage\": {\"type\": \"usd\", \"usd\": 0.0}, \"id\": \"c1cac9dc-20a4-4045-8965-d6aec2d4cf89\", \"status\": \"failed\", \"created_at\": \"2026-11-15T05:51:27.234649+00:00\", \"last_response\": {\"type\": \"error\", \"error\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"detail\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"status\": \"failed\", \"flow_kind\": \"a"
+    },
+    "PL-01-1+revived": {
+      "count": 1,
+      "last_error": "HTTP 0: job a7a8d7c5-8e9b-40bf-bf9d-f41db220b2d9 failed: {\"usage\": {\"type\": \"usd\", \"usd\": 0.0}, \"id\": \"a7a8d7c5-8e9b-40bf-bf9d-f41db220b2d9\", \"status\": \"failed\", \"created_at\": \"2026-11-15T05:51:33.279427+00:00\", \"last_response\": {\"type\": \"error\", \"error\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"detail\": \"Insufficient generations and credits. Generations: 40.0/40.0, Credits: 0.0\", \"status\": \"failed\", \"flow_kind\": \"a"
+    }
+  },
   "runs": [
     {
       "date": "2026-11-06",
@@ -966,6 +995,20 @@
       "failed": [],
       "stopped": "",
       "source": "pixellab.ai web app (by Claude)"
+    },
+    {
+      "date": "2026-11-15",
+      "made": [],
+      "failed": [
+        "PL-01-1+idle",
+        "PL-01-1+walk",
+        "PL-01-1+cast",
+        "PL-01-1+getting-hit",
+        "PL-01-1+death",
+        "PL-01-1+downed",
+        "PL-01-1+revived"
+      ],
+      "stopped": ""
     }
   ],
   "rejected": {

@@ -41,6 +41,16 @@ keepers into the game's `assets/` folder by hand.
 - `approved/EN-08-2.png` unlocks 8 directions, idle, move, attack
 - `approved/BO-04-1.png` unlocks 8 directions, idle, cast, winding up a big attack, death
 
+## Failed (retried next run, skipped after 3 tries)
+
+- **PL-01-1+idle** (1x): HTTP 0: job 2ae24a8f-8792-478b-9a66-ab97e8ccd30e failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "2ae24a8f-8792-478b-9a66-ab97e8ccd30e", "status": "failed"
+- **PL-01-1+walk** (1x): HTTP 0: job 5a9b24df-b119-4ea7-baf1-5ad7ba31b6fe failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "5a9b24df-b119-4ea7-baf1-5ad7ba31b6fe", "status": "failed"
+- **PL-01-1+cast** (1x): HTTP 0: job da6e5236-6966-4f56-ac69-2c22f96985b2 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "da6e5236-6966-4f56-ac69-2c22f96985b2", "status": "failed"
+- **PL-01-1+getting-hit** (1x): HTTP 0: job 754eeb28-ad33-431d-96b3-5a6af1fb671e failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "754eeb28-ad33-431d-96b3-5a6af1fb671e", "status": "failed"
+- **PL-01-1+death** (1x): HTTP 0: job cd7807c3-94ba-4168-abd6-498db3a5d918 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "cd7807c3-94ba-4168-abd6-498db3a5d918", "status": "failed"
+- **PL-01-1+downed** (1x): HTTP 0: job c1cac9dc-20a4-4045-8965-d6aec2d4cf89 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "c1cac9dc-20a4-4045-8965-d6aec2d4cf89", "status": "failed"
+- **PL-01-1+revived** (1x): HTTP 0: job a7a8d7c5-8e9b-40bf-bf9d-f41db220b2d9 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "a7a8d7c5-8e9b-40bf-bf9d-f41db220b2d9", "status": "failed"
+
 ## Drafts
 
 ### BO-02-1 · Ashbark Colossus (2026-11-15)
