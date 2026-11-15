@@ -250,6 +250,28 @@ How-to: `docs/tilesets.md`.
   (3,3), 15+ tiles from the lone wolves.
 - Other enemies keep the placeholder diamond until they get art.
 
+## Hero art (PL-01-1, 2026-11-15)
+
+The first hero sprite: the user's PixelLab character PL-01-1 (no bracelets), with the
+animations the art bot made from it, approved on the `art-drafts` branch.
+- **Source:** `art/heroes/PL-01-1/` (the approved sheets and back stills, 48×48 frames,
+  9 per animation); `tools/once/make_pl01_sheets.py` cuts them into
+  `assets/heroes/pl01/<anim>.png` with rows SW, SE, NW, NE. Art data:
+  `content/heroes/pl01_art.tres` (`CreatureArtDef`, feet (24, 39)), linked from
+  `HeroDef.art` (`adventurer.tres`). A hero without art is still a circle.
+- **Facings:** the art faces south-east; south-west mirrors it. Facing away (NE, NW)
+  shows the approved back stills, not animated (no back animations yet), except
+  death, downed and revived, which use the front frames.
+- **Animations** (`CreatureAnimator.pick_hero`): dead → death (take 4 of 4, user's
+  pick), held on its last frame until released or revived; stunned → downed (falls,
+  lies until the stun ends); getting up after a stun, a resurrection or a release →
+  revived; an ability going off → cast; taking damage → hit; walking → run (4 frames
+  per tile, from the distance walked); else idle (6 fps).
+- **Timing:** heroes' death and stun times aren't replicated, so each player's view
+  notes when it sees them change, and cast and hit come from the event stream (a
+  snapshot's delay apart at most between players).
+- Screenshots: `tests/visual/hero_art_shots.tscn`.
+
 ## Salamander Hound (2026-10-20)
 
 A fast Ashkaran fire hound (`content/enemies/salamander_hound.tres`), level 2, MELEE.
@@ -1286,6 +1308,7 @@ content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ z
 audio/           music/ (OGG), ambience/ (OGG), sfx/<category>/ (WAV); see AUDIO_SPEC.md
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
+assets/heroes/   hero sprite sheets (art data in content/heroes/)
 assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera, decor painter (placeholder objects)
@@ -1968,6 +1991,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-15 | The hero gets PL-01-1's sprite and animations (idle, walk, cast, hit, death, downed, revived) | User approval of the art-drafts animations. User choices: death take 4; downed for stuns (then revived to get up; revived also after a resurrection or a release); back stills when facing away until back animations exist; cast plays when an ability goes off. My choices: frame rates (idle 6, cast and hit 18, death 12, downed 15, revived 12, run 4 frames per tile); death, downed and revived use the front frames facing away too; no white hit flash for heroes (the hit animation shows it); state changes noted by each view rather than new snapshot fields. |
 | 2026-11-15 | Playtest fixes: two-key movement follows the grid lines; the folded quest tracker shrinks after being moved; mouse-aimed abilities always aim at the cursor; a second press of an ability's key uses it | User playtest report (5 items; item 4, gradual unlocks, waits for the user's approval of a schedule). Causes: two keys gave a 45° screen diagonal, but the grid's lines run at 26.6° (`Mover.screen_to_grid`); a dragged tracker kept a fixed size, and folding only hid its text; the host ignored the cursor sent with Slash's bar inputs (Targeted in the sheet, cone hitbox), the client aimed at the targeted enemy until the mouse moved, and a cursor off the map fell back to the hero's facing. My choices: the lock-on to the target is gone for every aimed ability (it was decision 24's default); a second press during a bar plays it like a right-click; another ability's key cancels the bar and gives back its global cooldown, so the new ability isn't blocked; aimed abilities without a bar keep release-to-fire. |
 | 2026-11-02 | The Windsteppe track plays: a music entry (`explore_windsteppe.tres`, explore, region Vael); the duplicate upload at `audio/music_explore_windsteppe.ogg` deleted | User approval. The upload had no `MusicTrackDef`, so the draft played. Not edited (measured: no silence; the last 0.5 s average −28 dB, the first −38 dB, so a small dip at the loop). |
 | 2026-11-02 | Exports keep text resources as text (`editor/export/convert_text_resources_to_binary=false`); the Windows export preset is committed | User report: the exported Windows build showed a grey world ("Invalid zone: …: empty height_rows" for every tiled zone). Cause measured: Godot 4.7.2's export conversion of `.tres` to binary drops `PackedStringArray` values (reproduced with a two-file project) and script-made defaults (the tree tuning's stat blocks). Not the `.json` files: they were packed. `tests/integration/test_export_zones.gd` exports a pack and loads every zone from it; `docs/exporting.md`. |

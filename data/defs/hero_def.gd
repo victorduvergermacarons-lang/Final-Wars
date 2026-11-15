@@ -6,6 +6,9 @@ extends Resource
 @export var id: StringName = &""
 @export var display_name: String = ""
 @export var base_stats: StatBlock = StatBlock.new()
+## Sprite art (animations: idle, run, cast, hit, death, downed, revived). Without
+## it the hero is drawn as a coloured circle. See CreatureAnimator.pick_hero.
+@export var art: CreatureArtDef
 ## Items the hero owns at start (M1: all four starter items).
 @export var starting_items: Array[ItemDef] = []
 ## Items equipped at start; must also be in starting_items.
