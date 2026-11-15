@@ -34,7 +34,13 @@ of date" until someone runs step 2. That's on purpose.
 - Every column the game needs is present (extra columns are kept as-is), and the Timing
   columns read (see below).
 - No duplicate IDs, ability names or teaching items; every ability has a Taught By item.
-- Tiers are whole numbers 1–5; Mastery Required matches the Tiers tab (the Tiers tab wins).
+- Tiers are whole numbers 1–5.
+- Mastery Required decides when each ability unlocks: "<its own tree> Mastery N" (another
+  tree's name, or anything else, is an error). An empty cell takes the tier's threshold
+  from the Tiers tab. Most rows hold a formula that gives the tier's threshold; the Water
+  rows hold their own steps (one ability per step, 2026-11-15), so edit those cells by hand.
+- A warning when an ability's prerequisite (in the same tree) unlocks at more Mastery
+  than the ability itself.
 - Every prerequisite is an ability name spelled exactly as in the Ability column (it
   suggests the right spelling when only capitals differ), or "<Tree> Mastery N", or
   "any element Mastery N". Prerequisites can't loop back on themselves.

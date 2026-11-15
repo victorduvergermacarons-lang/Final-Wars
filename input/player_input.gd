@@ -46,7 +46,7 @@ func _physics_process(_delta: float) -> void:
 	# Without a view (tests), keep the last angle sent.
 	var angle := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
 	if view != null and is_inside_tree():
-		angle = mouse_angle(hero, view.get_global_mouse_position())
+		angle = mouse_angle(hero, world_mouse())
 	var t: float = session.render_time()
 	var tick: float = session.rules().tick_seconds
 	if _held != _sent_dir or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
@@ -187,6 +187,10 @@ func _input(event: InputEvent) -> void:
 	if session != null and event is InputEventMouseButton and not event.pressed \
 			and event.button_index == MOUSE_BUTTON_RIGHT:
 		release_timing_bar()
+	# So does letting go of the hotkey that played the bar (a second press).
+	if session != null and _bar_key != &"" and event.is_action_released(_bar_key):
+		_bar_key = &""
+		release_timing_bar()
 
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was
@@ -219,8 +223,15 @@ func use_item(item_id: StringName) -> void:
 	client.error("You don't have any left")
 
 
+## The hotkey that started (or played) the running timing bar: letting it go ends a
+## hold, like letting go of right-click.
+var _bar_key: StringName = &""
+
+
 func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
+	if hero != null and _second_press(hero, ability, key):
+		return
 	if AimPreview.is_aimed(ability) and aims_during_bar(ability):
 		_start_bar_aiming(ability)
 		return
@@ -236,6 +247,32 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 		client.error(picked.error)
 		return
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target})
+
+
+## Pressing an ability's key while it is already chosen uses it; pressing another
+## ability's key switches to that one without using either (2026-11-15).
+## - Its timing bar is running: the press plays the bar, exactly like a right-click
+##   (aimed at the cursor), and letting the key go ends a hold.
+## - It is being aimed (no bar): the press fires it where the cursor points.
+## - Another ability's bar is running: that bar stops unplayed (the host gives its
+##   global cooldown back) and the new ability starts as if nothing ran.
+## Key repeat never counts: held keys send no repeated presses (allow_echo off).
+## True if the press was handled here.
+func _second_press(hero: Hero, ability: AbilityDef, key: StringName) -> bool:
+	var c: Dictionary = hero.casting
+	if c.get("kind", "") == "timing" and hero.alive:
+		if c.ability.id == ability.id:
+			_bar_key = key
+			press_timing_bar()
+			return true
+		session.send_intent({"type": "cancel_bar"}) # then the new ability, below
+		_bar_key = &""
+		cancel_aiming()
+		return false
+	if not _aiming.is_empty() and not _aiming.get("during_bar", false) and _aiming.ability.id == ability.id:
+		fire_aimed()
+		return true
+	return false
 
 
 ## E: talk to (or use) the NPC or object in front of you, else examine a quest
@@ -382,29 +419,36 @@ func _process(_delta: float) -> void:
 		_update_aim()
 
 
-## Where the aimed ability points now (a tile position, as Vector2).
+## Where the aimed ability points now (a tile position, as Vector2): always the
+## cursor (2026-11-15: it used to aim at the targeted enemy until the mouse moved,
+## so a Slash pressed with a target selected swung at the target, not the cursor).
 func aim_point() -> Vector2:
-	var hero: Hero = session.local_hero()
-	var ability: AbilityDef = _aiming.ability
-	var target: Actor = session.get_actor(client.target_id)
-	var enemy := target != null and target.alive and hero.is_hostile_to(target)
-	# Screen position, so the camera following the hero doesn't count as moving.
-	if _screen_mouse().distance_to(_aiming.mouse) < 4.0 and enemy:
-		return target.move.pos if ability.uses_hitbox() else Vector2(target.tile())
-	return mouse_point(ability)
+	return mouse_point(_aiming.ability)
+
+
+## For tests (no real mouse headless): where the cursor is in the world, or null.
+var mouse_override: Variant = null
+
+
+## The cursor in world coordinates (the view's space).
+func world_mouse() -> Vector2:
+	return mouse_override if mouse_override is Vector2 else view.get_global_mouse_position()
 
 
 ## Where the mouse points on the ground: the exact point for hitbox abilities
-## (free movement), the tile under it for grid abilities.
+## (free movement), the tile under it for grid abilities. Off the map (no tile
+## under the cursor) it is the point under the cursor at the hero's own height,
+## so the aim still goes toward the cursor, never "straight ahead".
 func mouse_point(ability: AbilityDef) -> Vector2:
 	var hero: Hero = session.local_hero()
-	var mouse := view.get_global_mouse_position()
+	var mouse := world_mouse()
 	var tile: Variant = view.tile_at(mouse)
-	if tile == null:
-		return AimPreview.default_aim(hero, ability, session.get_actor(client.target_id))
+	var height: int = session.grid().height_at(tile) if tile != null \
+			else session.grid().height_at(hero.tile()) if session.grid().in_bounds(hero.tile()) else 0
+	var point := Iso.from_screen(mouse, height)
 	if ability.uses_hitbox():
-		return Iso.from_screen(mouse, session.grid().height_at(tile))
-	return Vector2(tile)
+		return point
+	return Vector2(tile) if tile != null else Vector2(MoveState.tile_of(point))
 
 
 func _update_aim() -> void:

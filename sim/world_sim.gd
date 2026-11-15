@@ -36,6 +36,7 @@ extends RefCounted
 ##   {"type": "dungeon_testing", "on": bool}   (dungeons open to parties of one; same rule)
 ##   {"type": "timing_press", "at": float, "aim"?: Vector2}   (right-click on a timing bar: seconds since it started; aimed abilities: the cursor)
 ##   {"type": "timing_release", "at": float, "aim"?: Vector2}   (right-click let go, ending a hold on a timing bar)
+##   {"type": "cancel_bar"}   (another ability picked during a timing bar: it stops unplayed, GCD given back)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -769,6 +770,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 	var point: Variant = CastResolver.aim_point(caster, target, aim)
 	if point != null:
 		CastResolver._face(caster, point)
+	var gcd_before := caster.cooldowns.gcd_timer()
 	if kind == "cast" or kind == "timing":
 		if ability.on_gcd:
 			caster.cooldowns.trigger_gcd(now, rules.gcd_seconds * caster.buffs.cooldown_multiplier(now))
@@ -781,6 +783,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 	if kind == "timing": # the inputs played so far (TimingBarDef.inputs, in order)
 		caster.casting.results = []
 		caster.casting.next_input = 0
+		caster.casting.gcd_before = gcd_before # given back if the player switches away (cancel_bar)
 	# A wound-up swipe or lob shows the tiles it will hit (dodge by leaving them).
 	if kind == "windup" and ability.targeting == AbilityDef.TargetingMode.SKILLSHOT and point != null \
 			and ability.projectile_speed <= 0.0 and not ability.uses_hitbox():
@@ -882,6 +885,18 @@ func _intent_timing_press(hero: Hero, at: float, aim: Variant = null) -> String:
 
 
 ## Right-click let go, `at` seconds into the bar (as the player saw it).
+## The player picked another ability while a timing bar ran: the bar stops without
+## going off (nothing was paid: mana and cooldown are paid when it goes off) and the
+## global cooldown it started is given back, so the new choice isn't blocked by it.
+func _intent_cancel_bar(hero: Hero) -> String:
+	var c: Dictionary = hero.casting
+	if c.is_empty() or c.get("kind", "") != "timing":
+		return ""
+	hero.cooldowns.restore_gcd(c.get("gcd_before", Vector2.ZERO))
+	cancel_cast(hero, "switched")
+	return ""
+
+
 func _intent_timing_release(hero: Hero, at: float, aim: Variant = null) -> String:
 	var c: Dictionary = hero.casting
 	if c.is_empty() or c.kind != "timing" or not c.has("hold_from"):
@@ -921,16 +936,26 @@ func _finish_timing(caster: Actor, at: float) -> void:
 	_resolve_timing(caster, r.grade, at, r.power, r.accuracy)
 
 
-## Aimed abilities (skillshots, ground) aim where the player's cursor was at their
-## last input: the shot goes where they point when the bar is done. Ground aims
-## beyond range are pulled back to the edge of it.
+## Aimed abilities (skillshots, ground, and mouse-aimed hitboxes such as Slash's
+## cone) aim where the player's cursor was at their last input: the swing or shot
+## goes where they point when the bar is done. Ground aims beyond range are pulled
+## back to the edge of it. (Slash is Targeted in the sheet, with a cone hitbox, so
+## until 2026-11-15 its inputs' aim was ignored and it swung where the key was pressed.)
 func _aim_timing_bar(caster: Actor, aim: Variant) -> void:
 	var c: Dictionary = caster.casting
 	var ability: AbilityDef = c.ability
-	if aim == null or not ability.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]:
+	if aim == null or not is_mouse_aimed(ability):
 		return
 	c.aim = _clamp_aim(caster, ability, aim)
 	CastResolver._face(caster, c.aim)
+
+
+## Abilities aimed with the cursor: skillshots, ground abilities and abilities with
+## an aimed hitbox (cones, lines, circles, dashes…).
+static func is_mouse_aimed(ability: AbilityDef) -> bool:
+	if ability.uses_hitbox():
+		return ability.hitbox.is_aimed()
+	return ability.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]
 
 
 ## `aim` pulled back toward the caster until a ground ability reaches it.
@@ -1378,6 +1403,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_timing_press(hero, intent.get("at", 0.0), intent.get("aim"))
 		"timing_release":
 			reason = _intent_timing_release(hero, intent.get("at", 0.0), intent.get("aim"))
+		"cancel_bar":
+			reason = _intent_cancel_bar(hero)
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
 		"examine":

@@ -355,7 +355,10 @@ func _process(_delta: float) -> void:
 	_sync_party(hero)
 	_page_label.text = str(client.action_bar.page + 1)
 	_update_quest_markers(hero)
-	_tracker.text = QuestText.tracker_bbcode(hero, ContentDB.quests)
+	var tracker_text := QuestText.tracker_bbcode(hero, ContentDB.quests)
+	if tracker_text != _tracker.text:
+		_tracker.text = tracker_text
+		_shrink_tracker.call_deferred()
 	_tracker_panel.visible = _tracker.text != "" and not _tracker_covered()
 	var age := Time.get_ticks_msec() / 1000.0 - client.error_at
 	_error.text = client.error_text if age < ERROR_SECONDS else ""
@@ -470,6 +473,22 @@ func _on_tracker_drag(event: InputEvent) -> void:
 func _fold_tracker(fold: bool) -> void:
 	_tracker.visible = not fold
 	_tracker_fold.text = "+" if fold else "–"
+	_shrink_tracker()
+
+
+## Fits the tracker's frame to what it shows. Before it is moved it is anchored to
+## the right edge with no size of its own, so it always fits; once dragged it has a
+## fixed size, and a Control never shrinks by itself, so folding (or a shorter
+## quest list) left the full-size frame behind. Keeps where the player put it:
+## a moved tracker keeps its top-left corner; one still on the right edge keeps
+## its right edge and vertical centre.
+func _shrink_tracker() -> void:
+	var at := _tracker_panel.position
+	var old_size := _tracker_panel.size
+	_tracker_panel.reset_size()
+	if _tracker_panel.anchor_left != 0.0: # still on the right edge
+		at += Vector2(old_size.x - _tracker_panel.size.x, (old_size.y - _tracker_panel.size.y) / 2.0)
+	_tracker_panel.position = at.clamp(Vector2.ZERO, (_root.size - _tracker_panel.size).max(Vector2.ZERO)).round()
 
 
 func _toggle(panel: Control) -> void:

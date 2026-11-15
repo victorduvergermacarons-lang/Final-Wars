@@ -76,6 +76,15 @@ func trigger_gcd(now: float, seconds: float) -> void:
 	_gcd = Vector2(now, seconds)
 
 
+## The GCD timer as it stands (start, seconds), to put back with restore_gcd.
+func gcd_timer() -> Vector2:
+	return _gcd
+
+
+func restore_gcd(timer: Vector2) -> void:
+	_gcd = timer
+
+
 ## Plain-data form for replication.
 func to_dict() -> Dictionary:
 	var abilities := {}

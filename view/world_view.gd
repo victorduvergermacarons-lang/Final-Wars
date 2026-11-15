@@ -625,10 +625,18 @@ func _draw_actor(a: Actor) -> void:
 		draw_set_transform(ground, 0.0, Vector2(1.0, 0.5))
 		draw_circle(Vector2.ZERO, 11.0, Color(0, 0, 0, 0.35))
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	var animated := (a is Enemy and (a as Enemy).def.art != null) or (a is Npc and (a as Npc).def.art != null)
+	var animated := (a is Hero and _hero_art(a) != null) or (a is Enemy and (a as Enemy).def.art != null) or (a is Npc and (a as Npc).def.art != null)
 	var still := a is Enemy and (a as Enemy).def.immobile # the Grey Heart faces nowhere
 	if a.alive and not animated and not still: # animated creatures show their facing themselves
 		_draw_facing(feet, a.facing_vector() if a.move.free else Vector2(a.facing), Color(1, 1, 1, 0.85 * alpha))
+	var hero_art := _hero_art(a)
+	if hero_art != null and _draw_creature(a, feet, alpha, hero_art):
+		var top := feet - Vector2(0, (hero_art.feet.y - hero_art.head_y) * PixelCamera.ART_SCALE)
+		_draw_label(top + Vector2(0, -16), "%s  Lv%d" % [a.display_name, (a as Hero).level], Color.WHITE)
+		if a.alive:
+			_draw_bar(top + Vector2(-14, -10), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
+			_draw_cast_bar(a, feet, now)
+		return
 	if a is Hero:
 		var color: Color = HERO_COLORS[(a.id - 1) % HERO_COLORS.size()]
 		if not a.alive:
@@ -720,11 +728,20 @@ func _draw_crystal(e: Enemy, feet: Vector2, alpha: float) -> void:
 		_draw_ellipse(feet + Vector2(0, -28), 26, 40, Color(0.8, 0.82, 0.9, 0.35 * alpha), 2.0)
 
 
+## A hero's sprite art (HeroDef.art), or null: then it is drawn as a circle.
+func _hero_art(a: Actor) -> CreatureArtDef:
+	if not (a is Hero):
+		return null
+	var def: HeroDef = ContentDB.heroes.get((a as Hero).def_id)
+	return def.art if def != null else null
+
+
 ## Draws an animated creature standing on `feet`; false if it has nothing to show.
 func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef = null) -> bool:
 	if art == null:
 		art = (e as Enemy).def.art
-	var pick := _animator.pick(e, art, session.render_time())
+	var pick := _animator.pick_hero(e, art, session.render_time()) if e is Hero \
+			else _animator.pick(e, art, session.render_time())
 	if pick.is_empty():
 		return false
 	if not _frames_cache.has(art):
@@ -1027,6 +1044,8 @@ func _on_events(events: Array) -> void:
 					text = "Flank " + text
 				_float(e.target, text, Color(1, 0.35, 0.3), t)
 				var hit = session.get_actor(e.target)
+				if hit is Hero:
+					_animator.note(e.target, "hit", t)
 				if hit is Enemy and (hit as Enemy).def.art != null:
 					_flash_until[e.target] = t + (hit as Enemy).def.art.flash_seconds
 			"heal":
@@ -1051,6 +1070,8 @@ func _on_events(events: Array) -> void:
 				_float(e.target, "Evade", Color(0.8, 0.8, 0.8), t)
 			"cast":
 				var ability: AbilityDef = ContentDB.abilities.get(e.get("ability", &""))
+				if session.get_actor(e.get("source", -1)) is Hero:
+					_animator.note(e.source, "cast", t)
 				if ability != null and ability.flame_effect and e.has("tiles"):
 					_flames.append({"tiles": e.tiles, "start": t})
 			"grounded":

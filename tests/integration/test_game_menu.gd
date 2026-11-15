@@ -102,3 +102,55 @@ func test_the_quest_tracker_folds_to_its_heading() -> void:
 	assert_eq(hud._tracker_fold.text, "+")
 	hud._fold_tracker(false)
 	assert_true(hud._tracker.visible)
+
+
+## The tracker with two quests in it, so it has something to show.
+func _tracker_with_quests() -> void:
+	var hero: Hero = game.session.local_hero()
+	var n := 0
+	for id in ContentDB.quests:
+		if n < 2 and QuestLog.accept(hero, ContentDB.quests[id]).size() >= 0:
+			n += 1
+	await wait_process_frames(3)
+	assert_true(hud._tracker_panel.visible, "the tracker shows")
+
+
+func _drag_tracker(by: Vector2) -> void:
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	hud._on_tracker_drag(press)
+	var move := InputEventMouseMotion.new()
+	move.relative = by
+	hud._on_tracker_drag(move)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	hud._on_tracker_drag(release)
+
+
+func test_folding_a_moved_tracker_shrinks_its_whole_frame_and_keeps_its_place() -> void:
+	await _tracker_with_quests()
+	var open_size := hud._tracker_panel.size
+	_drag_tracker(Vector2(-200, -100))
+	var moved_to := hud._tracker_panel.position
+	hud._fold_tracker(true)
+	await wait_process_frames(2)
+	assert_lt(hud._tracker_panel.size.y, open_size.y * 0.5, "the frame shrinks to the heading, not just the text")
+	assert_eq(hud._tracker_panel.position, moved_to, "it stays where it was put")
+	hud._fold_tracker(false)
+	await wait_process_frames(2)
+	assert_almost_eq(hud._tracker_panel.size.y, open_size.y, 2.0, "and grows back")
+	assert_eq(hud._tracker_panel.position, moved_to)
+
+
+func test_folding_the_tracker_before_moving_it_shrinks_it_too() -> void:
+	await _tracker_with_quests()
+	var open_size := hud._tracker_panel.size
+	var right := hud._tracker_panel.position.x + open_size.x
+	hud._fold_tracker(true)
+	await wait_process_frames(2)
+	assert_lt(hud._tracker_panel.size.y, open_size.y * 0.5)
+	assert_almost_eq(hud._tracker_panel.position.x + hud._tracker_panel.size.x, right, 1.0, "still on the right edge")
+	hud._fold_tracker(false)
+	await wait_process_frames(2)
+	assert_almost_eq(hud._tracker_panel.size.y, open_size.y, 2.0)

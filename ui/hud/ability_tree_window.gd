@@ -2,7 +2,9 @@ class_name AbilityTreeWindow
 extends BookSpread
 ## The ability trees (T), across the menu book: one tab per tree. Tiers go left
 ## to right, one column each: tiers 1–3 on the left page, 4 and 5 on the right,
-## each headed by the Mastery it needs. Abilities show their state (mastered,
+## each headed by the Mastery its first ability needs (each ability unlocks at its
+## own Mastery Required; a locked one shows "Needs N"), its abilities going down in
+## the order they unlock. Abilities show their state (mastered,
 ## learning, learnable, locked, not in the game yet), AP and how much Mastery
 ## they have given toward their cap, with lines from their prerequisites. Usable
 ## abilities can be dragged onto the action bar.
@@ -132,7 +134,11 @@ static func node_text(hero: Hero, ability: AbilityDef) -> String:
 	# Two lines fit a node: while AP shows, the Mastery count stays in the tooltip.
 	if given.y > 0.0 and progress.is_empty():
 		progress.append("Mastery %d/%d" % [floori(given.x), int(given.y)])
-	lines.append(" · ".join(progress) if not progress.is_empty() else STATE_NAMES[state_of(hero, ability)])
+	var need := int(ability.sheet.get("mastery_required", 0))
+	if state_of(hero, ability) == State.LOCKED and Mastery.permanent(hero, ability.tree) + 0.0001 < need:
+		lines.append("Needs %d" % need) # its own step (Water: one per step), not the column's
+	else:
+		lines.append(" · ".join(progress) if not progress.is_empty() else STATE_NAMES[state_of(hero, ability)])
 	return "\n".join(lines)
 
 
@@ -162,6 +168,14 @@ class _Canvas:
 				by_tier[row.tier] = []
 			by_tier[row.tier].append(id)
 			tallest = maxi(tallest, by_tier[row.tier].size())
+		# Within a column, abilities go down in the order they unlock (sheet order
+		# for equal requirements).
+		for t in by_tier:
+			var order: Array = data.ids(window.tree_name)
+			by_tier[t].sort_custom(func(x, y):
+				var mx := int(data.ability(x).get("mastery_required", 0))
+				var my := int(data.ability(y).get("mastery_required", 0))
+				return mx < my or (mx == my and order.find(x) < order.find(y)))
 		# One column per tier: tiers 1..LEFT_TIERS share the left page, the rest the
 		# right page. Every node the same size; the abilities of a tier go down.
 		var lp: Rect2 = pages[0]
@@ -175,7 +189,14 @@ class _Canvas:
 			var on_left := tier <= LEFT_TIERS
 			var col_w := col_l if on_left else col_r
 			var col_x := lp.position.x + (tier - 1) * col_l if on_left else rp.position.x + (tier - 1 - LEFT_TIERS) * col_r
+			var ids: Array = by_tier.get(tier, [])
+			# The column's lowest requirement: each ability unlocks at its own Mastery
+			# Required (Water: one per step), so a column opens with its first one.
 			var need := float(data.tier_mastery.get(tier, 0))
+			if not ids.is_empty():
+				need = INF
+				for id in ids:
+					need = minf(need, float(data.ability(id).get("mastery_required", 0)))
 			var open := permanent + 0.0001 >= need
 			var label := Label.new()
 			label.position = Vector2(roundf(col_x), lp.position.y)
@@ -186,7 +207,6 @@ class _Canvas:
 			label.text = "Tier %d\n%s" % [tier, "open" if open else "needs %d" % int(need)]
 			label.add_theme_color_override("font_color", Color(UiPalette.GREEN) if open else Color(UiPalette.RED))
 			add_child(label)
-			var ids: Array = by_tier.get(tier, [])
 			for i in ids.size():
 				var ability: AbilityDef = ContentDB.abilities[StringName(ids[i])]
 				var n := _Node.new(hero, ability, node_size)

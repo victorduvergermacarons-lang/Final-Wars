@@ -188,9 +188,14 @@ static func fall_damage(levels: int, max_hp: float, md: MovementDef) -> float:
 
 
 ## Screen-relative 8-way input (x right, y down on screen, each −1..1) to a grid
-## direction of length 1 (or zero): W = up the screen = grid (−1, −1).
+## direction of length 1 (or zero). One key walks straight along the screen:
+## W = up the screen = grid (−1, −1). Two keys walk exactly along a grid line
+## (on the 2:1 isometric grid those run at 26.6° on screen, not 45°):
+## W+A = grid (−1, 0), W+D = grid (0, −1), S+D = grid (1, 0), S+A = grid (0, 1).
 static func screen_to_grid(dir: Vector2i) -> Vector2:
-	var sx := float(clampi(dir.x, -1, 1))
-	var sy := float(clampi(dir.y, -1, 1))
+	var sx := clampi(dir.x, -1, 1)
+	var sy := clampi(dir.y, -1, 1)
+	if sx != 0 and sy != 0:
+		return Vector2((sx + sy) / 2, (sy - sx) / 2)
 	var g := Vector2(sx * 0.5 + sy, sy - sx * 0.5)
 	return g.normalized() if g != Vector2.ZERO else Vector2.ZERO

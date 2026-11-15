@@ -102,12 +102,19 @@ func test_previews_show_the_exact_shape() -> void:
 	assert_false(_inside(dash, _a(5, 12)), "only as far as it dashes")
 
 
+## Puts the (test) cursor over a point of the map.
+func _point_at(p: Vector2) -> void:
+	input.mouse_override = Iso.to_screen(p, session.grid().height_at(MoveState.tile_of(p)))
+
+
 func test_hold_to_aim_and_release_to_cast() -> void:
 	client.target_id = wolf.id
+	_point_at(_a(5, 11))
 	input.use_slot_ability_for_test(ContentDB.abilities[&"F03"], &"action_slot_1")
 	assert_true(input.is_aiming())
 	assert_false(client.aim.is_empty())
-	assert_eq(client.aim.point, Vector2(wolf.tile()), "aims at the target until the mouse moves")
+	assert_almost_eq(client.aim.point, _a(5, 11), Vector2(0.01, 0.01),
+			"aims at the cursor, not at the targeted wolf")
 	assert_true(client.aim.valid)
 	var release := InputEventAction.new()
 	release.action = &"action_slot_1"
@@ -165,3 +172,78 @@ func test_an_aimed_bar_ability_pressed_while_dead_does_nothing() -> void:
 	input.use_slot_ability_for_test(ContentDB.abilities[&"F03"], &"action_slot_1")
 	assert_false(input.is_aiming(), "no aiming while dead (and no error)")
 	assert_true(client.aim.is_empty())
+
+
+## Item 3 (2026-11-15): mouse-aimed abilities go toward the cursor every time.
+func _learn(item: StringName) -> void:
+	hero.bag.add(ContentDB.items[item])
+	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[item]))
+
+
+func test_slash_swings_at_the_cursor_even_with_a_target_selected() -> void:
+	wolf.move.place(_t(6, 8)) # right beside the hero, to the east, and targeted
+	client.target_id = wolf.id
+	var hp := wolf.hp
+	_point_at(_a(5, 5)) # straight up the grid: away from the wolf
+	# With its timing bar (as in play): the bar starts on the key press, and the
+	# swing used to lock onto the targeted enemy until the mouse moved.
+	ContentDB.rules.timing_bars_enabled = true
+	input.use_slot_ability_for_test(ContentDB.abilities[&"S01"], &"action_slot_1")
+	await wait_physics_frames(4)
+	assert_eq(hero.casting.get("kind", ""), "timing")
+	if hero.casting.is_empty():
+		return
+	var zone: Vector2 = hero.casting.ability.timing_bar.inputs()[0].zone
+	while session.render_time() - float(hero.casting.start) < zone.x + zone.y / 2.0:
+		await wait_physics_frames(1)
+	input.press_timing_bar()
+	await wait_physics_frames(3)
+	assert_gt(hero.cooldowns.ability_remaining(&"S01", session.now()), 0.0, "it swung")
+	assert_eq(wolf.hp, hp, "toward the cursor, so the targeted wolf beside it isn't hit")
+
+
+func test_slash_on_a_timing_bar_swings_where_the_cursor_is_at_the_last_press() -> void:
+	ContentDB.rules.timing_bars_enabled = true
+	wolf.move.place(_t(4, 8)) # right beside the hero, to its grid −x
+	var hp := wolf.hp
+	_point_at(_a(5, 11)) # down the grid when the key is pressed: away from the wolf
+	input.use_slot_ability_for_test(ContentDB.abilities[&"S01"], &"action_slot_1")
+	await wait_physics_frames(4)
+	assert_eq(hero.casting.get("kind", ""), "timing", "the bar runs")
+	if hero.casting.is_empty():
+		return
+	_point_at(_a(3, 8)) # then the cursor moves onto the wolf before the press
+	var bar: TimingBarDef = hero.casting.ability.timing_bar
+	var zone: Vector2 = bar.inputs()[0].zone # start, length
+	while session.render_time() - float(hero.casting.start) < zone.x + zone.y / 2.0:
+		await wait_physics_frames(1)
+	input.press_timing_bar()
+	await wait_physics_frames(3)
+	assert_true(hero.casting.is_empty(), "the swing went off")
+	assert_lt(wolf.hp, hp, "it swung where the cursor was at the press, and hit the wolf")
+
+
+func test_lunge_dashes_toward_the_cursor_with_a_target_elsewhere() -> void:
+	hero.bag.add(ContentDB.items[&"travelers_longsword"])
+	hero.equip_from_bag(hero.bag.index_of(ContentDB.items[&"travelers_longsword"]))
+	assert_not_null(hero.find_ability(&"S04"), "Lunge from the longsword in hand")
+	client.target_id = wolf.id # to the east
+	_point_at(_a(5, 4)) # north (grid −y)
+	var start := hero.move.pos
+	input.use_slot_ability_for_test(ContentDB.abilities[&"S04"], &"action_slot_1")
+	input.fire_aimed()
+	await wait_physics_frames(15)
+	var moved := hero.move.pos - start
+	assert_gt(moved.length(), 0.5, "it dashed")
+	assert_almost_eq(rad_to_deg(moved.angle()), -90.0, 10.0, "toward the cursor (north), not the wolf (east)")
+
+
+func test_off_the_map_the_aim_still_points_toward_the_cursor() -> void:
+	# A cursor beyond the map's edge (no tile under it) still gives a direction
+	# toward it, not "straight ahead".
+	hero.face(Vector2i.RIGHT)
+	input.mouse_override = Iso.to_screen(Vector2(-40, -40), 0.0) # far off the map, up-left
+	var p := input.mouse_point(ContentDB.abilities[&"S01"])
+	var d := (p - hero.move.pos).normalized()
+	assert_lt(d.x, -0.5)
+	assert_lt(d.y, -0.5)

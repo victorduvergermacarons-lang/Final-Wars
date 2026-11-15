@@ -1,7 +1,8 @@
 class_name TreeRules
 extends RefCounted
 ## Ability-tree learning rules (CLAUDE.md, Milestone 3 §2):
-## - unlocking: permanent tree Mastery ≥ the tier's requirement, every prerequisite
+## - unlocking: permanent tree Mastery ≥ the ability's own Mastery Required (the
+##   sheet's column; by default its tier's threshold), every prerequisite
 ##   ability mastered, and any "<Tree> Mastery N" / "any element Mastery N" met;
 ## - the single learning slot (only it earns AP);
 ## - Mastery on learn, and per use against enemies near your level, up to each

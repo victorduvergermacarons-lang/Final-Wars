@@ -68,3 +68,23 @@ func test_drag_a_usable_ability_onto_the_bar() -> void:
 	assert_true(slot._can_drop_data(Vector2.ZERO, data))
 	slot._drop_data(Vector2.ZERO, data)
 	assert_eq(game.client.action_bar.slots[9], &"F01")
+
+
+func test_water_shows_each_abilitys_own_step() -> void:
+	# Water unlocks one ability per step (2026-11-15): a locked node says what it
+	# needs, columns open with their first ability, and each column goes down in
+	# unlock order.
+	assert_eq(AbilityTreeWindow.node_text(hero, _a("W03")).get_slice("\n", 1), "Needs 220",
+			"Flow State (tier 1) shows its own step")
+	assert_string_contains(AbilityTreeWindow.lock_reason(hero, _a("W03")), "Water Mastery 220")
+	hud._toggle(hud.trees_window)
+	hud.trees_window.show_tree("Water")
+	await wait_process_frames(3)
+	var canvas = hud.trees_window._canvas
+	assert_eq(canvas._nodes.size(), ContentDB.tree.ids("Water").size())
+	var shield: Control = canvas.node(&"W12") # tier 3, step 20
+	var spirit: Control = canvas.node(&"W10") # tier 3, step 185
+	assert_lt(shield.position.y, spirit.position.y, "Water Shield above Spirit Water in its column")
+	var headers := canvas.get_children().filter(func(c): return c is Label and c.text.begins_with("Tier 3"))
+	assert_eq(headers.size(), 1)
+	assert_string_contains(headers[0].text, "needs 20", "tier 3 opens with Water Shield")
