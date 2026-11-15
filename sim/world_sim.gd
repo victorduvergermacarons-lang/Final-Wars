@@ -921,16 +921,26 @@ func _finish_timing(caster: Actor, at: float) -> void:
 	_resolve_timing(caster, r.grade, at, r.power, r.accuracy)
 
 
-## Aimed abilities (skillshots, ground) aim where the player's cursor was at their
-## last input: the shot goes where they point when the bar is done. Ground aims
-## beyond range are pulled back to the edge of it.
+## Aimed abilities (skillshots, ground, and mouse-aimed hitboxes such as Slash's
+## cone) aim where the player's cursor was at their last input: the swing or shot
+## goes where they point when the bar is done. Ground aims beyond range are pulled
+## back to the edge of it. (Slash is Targeted in the sheet, with a cone hitbox, so
+## until 2026-11-15 its inputs' aim was ignored and it swung where the key was pressed.)
 func _aim_timing_bar(caster: Actor, aim: Variant) -> void:
 	var c: Dictionary = caster.casting
 	var ability: AbilityDef = c.ability
-	if aim == null or not ability.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]:
+	if aim == null or not is_mouse_aimed(ability):
 		return
 	c.aim = _clamp_aim(caster, ability, aim)
 	CastResolver._face(caster, c.aim)
+
+
+## Abilities aimed with the cursor: skillshots, ground abilities and abilities with
+## an aimed hitbox (cones, lines, circles, dashes…).
+static func is_mouse_aimed(ability: AbilityDef) -> bool:
+	if ability.uses_hitbox():
+		return ability.hitbox.is_aimed()
+	return ability.targeting in [AbilityDef.TargetingMode.SKILLSHOT, AbilityDef.TargetingMode.GROUND]
 
 
 ## `aim` pulled back toward the caster until a ground ability reaches it.

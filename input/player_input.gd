@@ -46,7 +46,7 @@ func _physics_process(_delta: float) -> void:
 	# Without a view (tests), keep the last angle sent.
 	var angle := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
 	if view != null and is_inside_tree():
-		angle = mouse_angle(hero, view.get_global_mouse_position())
+		angle = mouse_angle(hero, world_mouse())
 	var t: float = session.render_time()
 	var tick: float = session.rules().tick_seconds
 	if _held != _sent_dir or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
@@ -382,29 +382,36 @@ func _process(_delta: float) -> void:
 		_update_aim()
 
 
-## Where the aimed ability points now (a tile position, as Vector2).
+## Where the aimed ability points now (a tile position, as Vector2): always the
+## cursor (2026-11-15: it used to aim at the targeted enemy until the mouse moved,
+## so a Slash pressed with a target selected swung at the target, not the cursor).
 func aim_point() -> Vector2:
-	var hero: Hero = session.local_hero()
-	var ability: AbilityDef = _aiming.ability
-	var target: Actor = session.get_actor(client.target_id)
-	var enemy := target != null and target.alive and hero.is_hostile_to(target)
-	# Screen position, so the camera following the hero doesn't count as moving.
-	if _screen_mouse().distance_to(_aiming.mouse) < 4.0 and enemy:
-		return target.move.pos if ability.uses_hitbox() else Vector2(target.tile())
-	return mouse_point(ability)
+	return mouse_point(_aiming.ability)
+
+
+## For tests (no real mouse headless): where the cursor is in the world, or null.
+var mouse_override: Variant = null
+
+
+## The cursor in world coordinates (the view's space).
+func world_mouse() -> Vector2:
+	return mouse_override if mouse_override is Vector2 else view.get_global_mouse_position()
 
 
 ## Where the mouse points on the ground: the exact point for hitbox abilities
-## (free movement), the tile under it for grid abilities.
+## (free movement), the tile under it for grid abilities. Off the map (no tile
+## under the cursor) it is the point under the cursor at the hero's own height,
+## so the aim still goes toward the cursor, never "straight ahead".
 func mouse_point(ability: AbilityDef) -> Vector2:
 	var hero: Hero = session.local_hero()
-	var mouse := view.get_global_mouse_position()
+	var mouse := world_mouse()
 	var tile: Variant = view.tile_at(mouse)
-	if tile == null:
-		return AimPreview.default_aim(hero, ability, session.get_actor(client.target_id))
+	var height: int = session.grid().height_at(tile) if tile != null \
+			else session.grid().height_at(hero.tile()) if session.grid().in_bounds(hero.tile()) else 0
+	var point := Iso.from_screen(mouse, height)
 	if ability.uses_hitbox():
-		return Iso.from_screen(mouse, session.grid().height_at(tile))
-	return Vector2(tile)
+		return point
+	return Vector2(tile) if tile != null else Vector2(MoveState.tile_of(point))
 
 
 func _update_aim() -> void:
