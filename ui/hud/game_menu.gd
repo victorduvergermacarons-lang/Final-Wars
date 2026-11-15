@@ -7,14 +7,16 @@ extends PanelContainer
 ## for now (Godot's default look), not the menu book.
 
 const CONTROLS := """[b]Moving and fighting[/b]
-WASD or the arrow keys: move · the mouse: face that way
+WASD or the arrow keys: move (two keys walk along the grid) · the mouse: face that way
 E: talk to the person next to you · right-click someone to talk
 Click someone, or Tab, to target · Esc: clear the target
 1–9, 0: use the action bar · Shift+1–6 (or < >): switch action bar page
-Hold an aimed ability's key to aim, release to cast · Esc or right-click: cancel
-Timing bar (Slash, Fire Punch, Water Whip): right-click on a green zone for full
-power, on a yellow zone for a sure critical strike; on a blue zone press and hold
-right-click until it ends; moving cancels the bar
+Aimed abilities go where the mouse points
+Hold an aimed ability's key to aim, release to cast (or press it again) · Esc or right-click: cancel
+Timing bar (Slash, Fire Punch, Water Whip): right-click, or press the ability's key
+again, on a green zone for full power, on a yellow zone for a sure critical strike;
+on a blue zone press and hold until it ends; moving cancels the bar, and another
+ability's key switches to that one
 R: release to the graveyard when dead · mouse wheel: zoom
 
 [b]Menus[/b] (the menu book)

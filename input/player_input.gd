@@ -187,6 +187,10 @@ func _input(event: InputEvent) -> void:
 	if session != null and event is InputEventMouseButton and not event.pressed \
 			and event.button_index == MOUSE_BUTTON_RIGHT:
 		release_timing_bar()
+	# So does letting go of the hotkey that played the bar (a second press).
+	if session != null and _bar_key != &"" and event.is_action_released(_bar_key):
+		_bar_key = &""
+		release_timing_bar()
 
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was
@@ -219,8 +223,15 @@ func use_item(item_id: StringName) -> void:
 	client.error("You don't have any left")
 
 
+## The hotkey that started (or played) the running timing bar: letting it go ends a
+## hold, like letting go of right-click.
+var _bar_key: StringName = &""
+
+
 func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
+	if hero != null and _second_press(hero, ability, key):
+		return
 	if AimPreview.is_aimed(ability) and aims_during_bar(ability):
 		_start_bar_aiming(ability)
 		return
@@ -236,6 +247,32 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 		client.error(picked.error)
 		return
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target})
+
+
+## Pressing an ability's key while it is already chosen uses it; pressing another
+## ability's key switches to that one without using either (2026-11-15).
+## - Its timing bar is running: the press plays the bar, exactly like a right-click
+##   (aimed at the cursor), and letting the key go ends a hold.
+## - It is being aimed (no bar): the press fires it where the cursor points.
+## - Another ability's bar is running: that bar stops unplayed (the host gives its
+##   global cooldown back) and the new ability starts as if nothing ran.
+## Key repeat never counts: held keys send no repeated presses (allow_echo off).
+## True if the press was handled here.
+func _second_press(hero: Hero, ability: AbilityDef, key: StringName) -> bool:
+	var c: Dictionary = hero.casting
+	if c.get("kind", "") == "timing" and hero.alive:
+		if c.ability.id == ability.id:
+			_bar_key = key
+			press_timing_bar()
+			return true
+		session.send_intent({"type": "cancel_bar"}) # then the new ability, below
+		_bar_key = &""
+		cancel_aiming()
+		return false
+	if not _aiming.is_empty() and not _aiming.get("during_bar", false) and _aiming.ability.id == ability.id:
+		fire_aimed()
+		return true
+	return false
 
 
 ## E: talk to (or use) the NPC or object in front of you, else examine a quest

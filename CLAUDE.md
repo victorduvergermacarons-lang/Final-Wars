@@ -716,7 +716,10 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     3 tiles/s in and out of combat (`combat_speed_factor` 1.0), full speed in 0.1 s, stop
     in 0.08 s, hero radius 0.3. Speed stat +1% per point (up to ×3); slows and Haste act
     through the buffs' step multiplier (×1.5 slow = 2 tiles/s); roots and stuns stop it.
-  - Input: WASD give 8 screen directions (W = up the screen; diagonals no faster), sent
+  - Input: WASD give 8 directions: one key walks straight along the screen (W = up the
+    screen), two keys walk exactly along a grid line (W+A grid left, W+D grid up, S+D
+    grid right, S+A grid down; since 2026-11-15, they used to cut across at 45° on
+    screen and drift off the row); diagonals no faster. Sent
     as `{"type": "move", "dir": Vector2i (screen), "face": angle}` with the mouse's
     grid-space angle. In combat the hero faces the mouse, otherwise where it walks;
     `facing` is the nearest of the 4 grid directions (sprites).
@@ -787,7 +790,10 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     are lines; Fireball a circle; Rock Throw a lob; Flame Dash and Lunge dashes;
     Seismic Stomp and Ground Slam circles around you. Burning Ground, Ice Spikes,
     Raise Pillar and Earth Wall stay on the tiles.
-  - Aims are the exact mouse point (`PlayerInput.mouse_point`); a circle aimed too far
+  - Aims are the exact mouse point (`PlayerInput.mouse_point`), always (since 2026-11-15:
+    no lock-on to the targeted enemy, and a cursor off the map still gives the direction
+    toward it); a timing bar's inputs re-aim every mouse-aimed ability, Slash's cone
+    included (`WorldSim.is_mouse_aimed`); a circle aimed too far
     lands at the edge of its range (grid abilities still refuse it).
   - **Air Step** is now +40% speed for 4 s (the "free steps" no longer exist).
   - Outlines are drawn flat at the height under their centre, so they don't tear
@@ -1004,7 +1010,8 @@ User request. Replaces parts of HUD rule 15 (the button row and the message log)
   the Escape menu if open; else close the menu book, shop and conversation; else clear
   the target; else open the Escape menu. (The dialogue box no longer handles Esc itself.)
 - **Quest tracker:** a "Quests" heading (drag it to move the tracker) with a fold button
-  (– / +) that hides the list;
+  (– / +) that folds the whole panel down to its heading, moved or not (since
+  2026-11-15; once dragged it used to keep its full-size frame);
   text 15, 260 wide.
 
 ## Timing bars (2026-10-26)
@@ -1075,6 +1082,13 @@ and the player right-clicks on its zones.
   - Moving, a stun, an interrupt or the target leaving range cancels it (cooldown
 	not spent).
   - Enemies cast these abilities without a bar.
+- **Second press (2026-11-15):** pressing the ability's hotkey again during its bar is a
+  right-click press (aimed at the cursor), and letting that key go ends a hold. Another
+  ability's hotkey stops the bar unplayed (`cancel_bar` intent: nothing paid, its global
+  cooldown given back) and starts the new ability. An aimed ability without a bar
+  (Lunge, Flame Dash, Raise Pillar, Earth Wall) still fires when its key is let go, and
+  now also on a second press (after a click on the bar). Held keys never count (no
+  key repeat).
 - **Network:** the client measures its presses against the bar as it saw it and
   sends `{"type": "timing_press", "at"}` and, for a hold, `{"type":
   "timing_release", "at"}`. The host judges them (`TimingBarDef.judge`,
@@ -1954,6 +1968,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-15 | Playtest fixes: two-key movement follows the grid lines; the folded quest tracker shrinks after being moved; mouse-aimed abilities always aim at the cursor; a second press of an ability's key uses it | User playtest report (5 items; item 4, gradual unlocks, waits for the user's approval of a schedule). Causes: two keys gave a 45° screen diagonal, but the grid's lines run at 26.6° (`Mover.screen_to_grid`); a dragged tracker kept a fixed size, and folding only hid its text; the host ignored the cursor sent with Slash's bar inputs (Targeted in the sheet, cone hitbox), the client aimed at the targeted enemy until the mouse moved, and a cursor off the map fell back to the hero's facing. My choices: the lock-on to the target is gone for every aimed ability (it was decision 24's default); a second press during a bar plays it like a right-click; another ability's key cancels the bar and gives back its global cooldown, so the new ability isn't blocked; aimed abilities without a bar keep release-to-fire. |
 | 2026-11-02 | The Windsteppe track plays: a music entry (`explore_windsteppe.tres`, explore, region Vael); the duplicate upload at `audio/music_explore_windsteppe.ogg` deleted | User approval. The upload had no `MusicTrackDef`, so the draft played. Not edited (measured: no silence; the last 0.5 s average −28 dB, the first −38 dB, so a small dip at the loop). |
 | 2026-11-02 | Exports keep text resources as text (`editor/export/convert_text_resources_to_binary=false`); the Windows export preset is committed | User report: the exported Windows build showed a grey world ("Invalid zone: …: empty height_rows" for every tiled zone). Cause measured: Godot 4.7.2's export conversion of `.tres` to binary drops `PackedStringArray` values (reproduced with a two-file project) and script-made defaults (the tree tuning's stat blocks). Not the `.json` files: they were packed. `tests/integration/test_export_zones.gd` exports a pack and loads every zone from it; `docs/exporting.md`. |
 | 2026-11-01 | Free movement: all 6 phases built on `feature/free-movement` | User brief and plan approval (3 tiles/s in and out of combat; drops of more than 3 levels hurt but are allowed; falls under gravity; enemies follow the same rules). See **Free movement** and `docs/FREE_MOVEMENT_PLAN.md`. My decisions are in the next rows. |
