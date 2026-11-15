@@ -215,7 +215,11 @@ def wait_for_job(first: dict, secret: str) -> dict:
         if status in ("completed", "complete", "succeeded", "success"):
             return payload.get("last_response") if isinstance(payload.get("last_response"), dict) else payload
         if status in ("failed", "error", "cancelled", "canceled"):
-            raise ApiError(0, f"job {jid} {status}: {json.dumps(payload)[:400]}")
+            text = json.dumps(payload)
+            # A job refused for lack of generations is an account problem, not the prompt's.
+            if "insufficient generations" in text.lower():
+                raise OutOfCredits(f"job {jid}: {text[:300]}")
+            raise ApiError(0, f"job {jid} {status}: {text[:400]}")
     raise ApiError(0, f"job {jid} still running after {JOB_TIMEOUT_SECONDS} s")
 
 
