@@ -790,6 +790,163 @@
         "model": "pixen (Create S-XL image)",
         "generations": 1
       }
+    },
+    "PL-01-1+idle": {
+      "date": "2026-11-15",
+      "files": [
+        "art/PL-01/PL-01-1+idle_2026-11-15_1.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_2.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_3.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_4.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_5.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_6.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_7.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_8.png",
+        "art/PL-01/PL-01-1+idle_2026-11-15_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+idle_2026-11-15_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      }
+    },
+    "PL-01-1+walk": {
+      "date": "2026-11-15",
+      "files": [
+        "art/PL-01/PL-01-1+walk_2026-11-15_1.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_2.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_3.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_4.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_5.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_6.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_7.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_8.png",
+        "art/PL-01/PL-01-1+walk_2026-11-15_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+walk_2026-11-15_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      }
+    },
+    "PL-01-1+cast": {
+      "date": "2026-11-15",
+      "files": [
+        "art/PL-01/PL-01-1+cast_2026-11-15_1.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_2.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_3.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_4.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_5.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_6.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_7.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_8.png",
+        "art/PL-01/PL-01-1+cast_2026-11-15_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+cast_2026-11-15_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      }
+    },
+    "PL-01-1+getting-hit": {
+      "date": "2026-11-15",
+      "files": [
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_1.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_2.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_3.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_4.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_5.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_6.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_7.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_8.png",
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+getting-hit_2026-11-15_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      }
+    },
+    "PL-01-1+death": {
+      "date": "2026-11-15",
+      "files": [
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_1.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_2.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_3.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_4.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_5.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_6.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_7.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_8.png",
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+death_2026-11-15_take1_preview.gif",
+        "art/PL-01/PL-01-1+death_2026-11-15_take2_preview.gif",
+        "art/PL-01/PL-01-1+death_2026-11-15_take3_preview.gif",
+        "art/PL-01/PL-01-1+death_2026-11-15_take4_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      }
+    },
+    "PL-01-1+downed": {
+      "date": "2026-11-15",
+      "files": [
+        "art/PL-01/PL-01-1+downed_2026-11-15_1.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_2.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_3.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_4.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_5.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_6.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_7.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_8.png",
+        "art/PL-01/PL-01-1+downed_2026-11-15_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+downed_2026-11-15_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      }
+    },
+    "PL-01-1+revived": {
+      "date": "2026-11-15",
+      "files": [
+        "art/PL-01/PL-01-1+revived_2026-11-15_1.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_2.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_3.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_4.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_5.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_6.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_7.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_8.png",
+        "art/PL-01/PL-01-1+revived_2026-11-15_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+revived_2026-11-15_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      }
     }
   },
   "failures": {},
@@ -980,6 +1137,21 @@
         "PL-01-1+revived"
       ],
       "stopped": ""
+    },
+    {
+      "date": "2026-11-15",
+      "made": [
+        "PL-01-1+idle",
+        "PL-01-1+walk",
+        "PL-01-1+cast",
+        "PL-01-1+getting-hit",
+        "PL-01-1+death",
+        "PL-01-1+downed",
+        "PL-01-1+revived"
+      ],
+      "failed": [],
+      "stopped": "",
+      "source": "pixellab.ai web app, Animate with text V3 (by Claude)"
     }
   ],
   "rejected": {

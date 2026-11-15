@@ -41,16 +41,6 @@ keepers into the game's `assets/` folder by hand.
 - `approved/EN-08-2.png` unlocks 8 directions, idle, move, attack
 - `approved/BO-04-1.png` unlocks 8 directions, idle, cast, winding up a big attack, death
 
-## Failed (retried next run, skipped after 3 tries)
-
-- **PL-01-1+idle** (1x): HTTP 0: job 2ae24a8f-8792-478b-9a66-ab97e8ccd30e failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "2ae24a8f-8792-478b-9a66-ab97e8ccd30e", "status": "failed"
-- **PL-01-1+walk** (1x): HTTP 0: job 5a9b24df-b119-4ea7-baf1-5ad7ba31b6fe failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "5a9b24df-b119-4ea7-baf1-5ad7ba31b6fe", "status": "failed"
-- **PL-01-1+cast** (1x): HTTP 0: job da6e5236-6966-4f56-ac69-2c22f96985b2 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "da6e5236-6966-4f56-ac69-2c22f96985b2", "status": "failed"
-- **PL-01-1+getting-hit** (1x): HTTP 0: job 754eeb28-ad33-431d-96b3-5a6af1fb671e failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "754eeb28-ad33-431d-96b3-5a6af1fb671e", "status": "failed"
-- **PL-01-1+death** (1x): HTTP 0: job cd7807c3-94ba-4168-abd6-498db3a5d918 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "cd7807c3-94ba-4168-abd6-498db3a5d918", "status": "failed"
-- **PL-01-1+downed** (1x): HTTP 0: job c1cac9dc-20a4-4045-8965-d6aec2d4cf89 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "c1cac9dc-20a4-4045-8965-d6aec2d4cf89", "status": "failed"
-- **PL-01-1+revived** (1x): HTTP 0: job a7a8d7c5-8e9b-40bf-bf9d-f41db220b2d9 failed: {"usage": {"type": "usd", "usd": 0.0}, "id": "a7a8d7c5-8e9b-40bf-bf9d-f41db220b2d9", "status": "failed"
-
 ## Drafts
 
 ### BO-02-1 · Ashbark Colossus (2026-11-15)
@@ -202,6 +192,48 @@ keepers into the game's `assets/` folder by hand.
 ![WO-09-2](art/WO-09/WO-09-2_2026-11-15.png)
 
 <sub>molten lava tiles and lava river with cooled dark crust edges, from the Ashkara region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft light </sub>
+
+### PL-01-1+idle · Hero base body (2026-11-15)
+
+![PL-01-1+idle](art/PL-01/PL-01-1+idle_2026-11-15_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: idle</sub>
+
+### PL-01-1+walk · Hero base body (2026-11-15)
+
+![PL-01-1+walk](art/PL-01/PL-01-1+walk_2026-11-15_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: walk</sub>
+
+### PL-01-1+cast · Hero base body (2026-11-15)
+
+![PL-01-1+cast](art/PL-01/PL-01-1+cast_2026-11-15_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: cast</sub>
+
+### PL-01-1+getting-hit · Hero base body (2026-11-15)
+
+![PL-01-1+getting-hit](art/PL-01/PL-01-1+getting-hit_2026-11-15_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: getting hit</sub>
+
+### PL-01-1+death · Hero base body (2026-11-15)
+
+![PL-01-1+death](art/PL-01/PL-01-1+death_2026-11-15_take1_preview.gif) ![PL-01-1+death](art/PL-01/PL-01-1+death_2026-11-15_take2_preview.gif) ![PL-01-1+death](art/PL-01/PL-01-1+death_2026-11-15_take3_preview.gif) ![PL-01-1+death](art/PL-01/PL-01-1+death_2026-11-15_take4_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: death</sub>
+
+### PL-01-1+downed · Hero base body (2026-11-15)
+
+![PL-01-1+downed](art/PL-01/PL-01-1+downed_2026-11-15_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: downed</sub>
+
+### PL-01-1+revived · Hero base body (2026-11-15)
+
+![PL-01-1+revived](art/PL-01/PL-01-1+revived_2026-11-15_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: revived</sub>
 
 ### BO-01-1 · The Foreman + Grey Heart (2026-11-14)
 
