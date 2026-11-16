@@ -97,6 +97,48 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
+### PL-01-1+idle@north-west ·  (2026-11-16)
+
+![PL-01-1+idle@north-west](art/PL-01/PL-01-1+idle_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+walk@north-west ·  (2026-11-16)
+
+![PL-01-1+walk@north-west](art/PL-01/PL-01-1+walk_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+cast@north-west ·  (2026-11-16)
+
+![PL-01-1+cast@north-west](art/PL-01/PL-01-1+cast_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+getting-hit@north-west ·  (2026-11-16)
+
+![PL-01-1+getting-hit@north-west](art/PL-01/PL-01-1+getting-hit_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+death@north-west ·  (2026-11-16)
+
+![PL-01-1+death@north-west](art/PL-01/PL-01-1+death_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+downed@north-west ·  (2026-11-16)
+
+![PL-01-1+downed@north-west](art/PL-01/PL-01-1+downed_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+revived@north-west ·  (2026-11-16)
+
+![PL-01-1+revived@north-west](art/PL-01/PL-01-1+revived_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
 ### BO-02-1 · Ashbark Colossus (2026-11-15)
 
 ![BO-02-1](art/BO-02/BO-02-1_2026-11-15.png)
