@@ -1,23 +1,55 @@
 [gd_resource type="Resource" script_class="ZoneDef" format=3]
 
-[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="s_zone"]
-[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="s_edge"]
-[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="s_npc_spawn"]
-[ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="s_enemy_spawn"]
-[ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
-[ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
+[ext_resource type="Script" path="res://data/defs/zone_exit.gd" id="6_lnsr3"]
+[ext_resource type="Resource" path="res://content/enemies/boar.tres" id="enemy_boar"]
+[ext_resource type="Resource" path="res://content/enemies/wolf.tres" id="enemy_wolf"]
 [ext_resource type="Resource" path="res://content/npcs/healer_wenna.tres" id="npc_healer_wenna"]
 [ext_resource type="Resource" path="res://content/npcs/hilda.tres" id="npc_hilda"]
 [ext_resource type="Resource" path="res://content/npcs/maren.tres" id="npc_maren"]
 [ext_resource type="Resource" path="res://content/npcs/maren_voss_field.tres" id="npc_maren_voss_field"]
 [ext_resource type="Resource" path="res://content/npcs/rowan.tres" id="npc_rowan"]
 [ext_resource type="Resource" path="res://content/npcs/seer_ilyth.tres" id="npc_seer_ilyth"]
-[ext_resource type="Resource" path="res://content/enemies/boar.tres" id="enemy_boar"]
-[ext_resource type="Resource" path="res://content/enemies/wolf.tres" id="enemy_wolf"]
+[ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
+[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="s_edge"]
+[ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="s_enemy_spawn"]
+[ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
+[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="s_npc_spawn"]
+[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="s_zone"]
+
+[sub_resource type="Resource" id="decor_0"]
+script = ExtResource("s_decor")
+tile = Vector2i(15, 11)
+label = "Village Well"
+
+[sub_resource type="Resource" id="decor_1"]
+script = ExtResource("s_decor")
+kind = 11
+tile = Vector2i(3, 22)
+label = "Healer's Hut"
+
+[sub_resource type="Resource" id="decor_2"]
+script = ExtResource("s_decor")
+kind = 10
+tile = Vector2i(7, 4)
+
+[sub_resource type="Resource" id="decor_3"]
+script = ExtResource("s_decor")
+kind = 10
+tile = Vector2i(22, 10)
+
+[sub_resource type="Resource" id="decor_4"]
+script = ExtResource("s_decor")
+kind = 8
+tile = Vector2i(12, 30)
+label = "Road to the Crossing"
+
+[sub_resource type="Resource" id="decor_5"]
+script = ExtResource("s_decor")
+kind = 7
+tile = Vector2i(11, 10)
 
 [sub_resource type="Resource" id="edge_0"]
 script = ExtResource("s_edge")
-side = Vector2i(1, 0)
 to_zone = &"greenfields"
 offset = 13
 
@@ -31,43 +63,6 @@ offset = -12
 script = ExtResource("s_edge")
 side = Vector2i(0, 1)
 to_zone = &"crossing"
-offset = 0
-
-[sub_resource type="Resource" id="npc_spawn_0"]
-script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_hilda")
-tile = Vector2i(12, 10)
-facing = Vector2i(1, 0)
-
-[sub_resource type="Resource" id="npc_spawn_1"]
-script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_rowan")
-tile = Vector2i(11, 27)
-facing = Vector2i(-1, 0)
-
-[sub_resource type="Resource" id="npc_spawn_2"]
-script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_maren")
-tile = Vector2i(6, 13)
-facing = Vector2i(0, -1)
-
-[sub_resource type="Resource" id="npc_spawn_3"]
-script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_seer_ilyth")
-tile = Vector2i(17, 15)
-facing = Vector2i(0, 1)
-
-[sub_resource type="Resource" id="npc_spawn_4"]
-script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_healer_wenna")
-tile = Vector2i(5, 24)
-facing = Vector2i(0, 1)
-
-[sub_resource type="Resource" id="npc_spawn_5"]
-script = ExtResource("s_npc_spawn")
-npc = ExtResource("npc_maren_voss_field")
-tile = Vector2i(21, 22)
-facing = Vector2i(1, 0)
 
 [sub_resource type="Resource" id="enemy_spawn_0"]
 script = ExtResource("s_enemy_spawn")
@@ -104,38 +99,39 @@ script = ExtResource("s_landmark")
 name = "Enemy Testing Grounds"
 tile = Vector2i(17, 1)
 
-[sub_resource type="Resource" id="decor_0"]
-script = ExtResource("s_decor")
-kind = 0
-tile = Vector2i(15, 11)
-label = "Village Well"
+[sub_resource type="Resource" id="npc_spawn_0"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_hilda")
+tile = Vector2i(12, 10)
+facing = Vector2i(1, 0)
 
-[sub_resource type="Resource" id="decor_1"]
-script = ExtResource("s_decor")
-kind = 11
-tile = Vector2i(3, 22)
-label = "Healer's Hut"
+[sub_resource type="Resource" id="npc_spawn_1"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_rowan")
+tile = Vector2i(11, 27)
+facing = Vector2i(-1, 0)
 
-[sub_resource type="Resource" id="decor_2"]
-script = ExtResource("s_decor")
-kind = 10
-tile = Vector2i(7, 4)
+[sub_resource type="Resource" id="npc_spawn_2"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_maren")
+tile = Vector2i(6, 13)
+facing = Vector2i(0, -1)
 
-[sub_resource type="Resource" id="decor_3"]
-script = ExtResource("s_decor")
-kind = 10
-tile = Vector2i(22, 10)
+[sub_resource type="Resource" id="npc_spawn_3"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_seer_ilyth")
+tile = Vector2i(17, 15)
 
-[sub_resource type="Resource" id="decor_4"]
-script = ExtResource("s_decor")
-kind = 8
-tile = Vector2i(12, 30)
-label = "Road to the Crossing"
+[sub_resource type="Resource" id="npc_spawn_4"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_healer_wenna")
+tile = Vector2i(5, 24)
 
-[sub_resource type="Resource" id="decor_5"]
-script = ExtResource("s_decor")
-kind = 7
-tile = Vector2i(11, 10)
+[sub_resource type="Resource" id="npc_spawn_5"]
+script = ExtResource("s_npc_spawn")
+npc = ExtResource("npc_maren_voss_field")
+tile = Vector2i(21, 22)
+facing = Vector2i(1, 0)
 
 [resource]
 script = ExtResource("s_zone")
@@ -175,5 +171,4 @@ prop_legend = {
 "c": "stump"
 }
 sight_rows = PackedStringArray("................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................", "................................")
-region = 0
 music_context = 1

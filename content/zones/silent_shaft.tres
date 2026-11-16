@@ -1,33 +1,46 @@
 [gd_resource type="Resource" script_class="ZoneDef" format=3]
 
-[ext_resource type="Script" path="res://data/defs/zone_exit.gd" id="s_exit"]
 [ext_resource type="Resource" path="res://content/encounters/foreman.tres" id="enc_foreman"]
-[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="s_zone"]
-[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="s_edge"]
-[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="s_npc_spawn"]
-[ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="s_enemy_spawn"]
-[ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
-[ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
 [ext_resource type="Resource" path="res://content/enemies/foreman.tres" id="enemy_foreman"]
 [ext_resource type="Resource" path="res://content/enemies/grey_heart.tres" id="enemy_grey_heart"]
 [ext_resource type="Resource" path="res://content/enemies/grey_overseer.tres" id="enemy_grey_overseer"]
 [ext_resource type="Resource" path="res://content/enemies/human_husk.tres" id="enemy_human_husk"]
+[ext_resource type="Script" path="res://data/defs/zone_decor.gd" id="s_decor"]
+[ext_resource type="Script" path="res://data/defs/zone_edge.gd" id="s_edge"]
+[ext_resource type="Script" path="res://data/defs/enemy_spawn.gd" id="s_enemy_spawn"]
+[ext_resource type="Script" path="res://data/defs/zone_exit.gd" id="s_exit"]
+[ext_resource type="Script" path="res://data/defs/zone_landmark.gd" id="s_landmark"]
+[ext_resource type="Script" path="res://data/defs/npc_spawn.gd" id="s_npc_spawn"]
+[ext_resource type="Script" path="res://data/defs/zone_def.gd" id="s_zone"]
 
-[sub_resource type="Resource" id="exit_0"]
-script = ExtResource("s_exit")
-tile = Vector2i(1, 15)
-to_zone = &"deepcut"
-to_tile = Vector2i(34, 12)
+[sub_resource type="Resource" id="decor_0"]
+script = ExtResource("s_decor")
+kind = 4
+tile = Vector2i(7, 15)
+label = "Abandoned Ore Cart"
 
-[sub_resource type="Resource" id="exit_1"]
-script = ExtResource("s_exit")
-tile = Vector2i(19, 19)
-to_tile = Vector2i(26, 21)
+[sub_resource type="Resource" id="decor_1"]
+script = ExtResource("s_decor")
+kind = 10
+tile = Vector2i(12, 9)
 
-[sub_resource type="Resource" id="exit_2"]
-script = ExtResource("s_exit")
-tile = Vector2i(24, 21)
-to_tile = Vector2i(17, 19)
+[sub_resource type="Resource" id="decor_2"]
+script = ExtResource("s_decor")
+kind = 4
+tile = Vector2i(20, 19)
+label = "Mine Lift"
+
+[sub_resource type="Resource" id="decor_3"]
+script = ExtResource("s_decor")
+kind = 4
+tile = Vector2i(23, 20)
+label = "Mine Lift"
+
+[sub_resource type="Resource" id="decor_4"]
+script = ExtResource("s_decor")
+kind = 10
+tile = Vector2i(41, 25)
+label = "Overseer's Strongbox"
 
 [sub_resource type="Resource" id="enemy_spawn_0"]
 script = ExtResource("s_enemy_spawn")
@@ -92,6 +105,22 @@ script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_grey_heart")
 tile = Vector2i(61, 15)
 
+[sub_resource type="Resource" id="exit_0"]
+script = ExtResource("s_exit")
+tile = Vector2i(1, 15)
+to_zone = &"deepcut"
+to_tile = Vector2i(34, 12)
+
+[sub_resource type="Resource" id="exit_1"]
+script = ExtResource("s_exit")
+tile = Vector2i(19, 19)
+to_tile = Vector2i(26, 21)
+
+[sub_resource type="Resource" id="exit_2"]
+script = ExtResource("s_exit")
+tile = Vector2i(24, 21)
+to_tile = Vector2i(17, 19)
+
 [sub_resource type="Resource" id="landmark_0"]
 script = ExtResource("s_landmark")
 name = "Mine Lift"
@@ -107,35 +136,6 @@ script = ExtResource("s_landmark")
 name = "The Foreman's Chamber"
 tile = Vector2i(49, 15)
 
-[sub_resource type="Resource" id="decor_0"]
-script = ExtResource("s_decor")
-kind = 4
-tile = Vector2i(7, 15)
-label = "Abandoned Ore Cart"
-
-[sub_resource type="Resource" id="decor_1"]
-script = ExtResource("s_decor")
-kind = 10
-tile = Vector2i(12, 9)
-
-[sub_resource type="Resource" id="decor_2"]
-script = ExtResource("s_decor")
-kind = 4
-tile = Vector2i(20, 19)
-label = "Mine Lift"
-
-[sub_resource type="Resource" id="decor_3"]
-script = ExtResource("s_decor")
-kind = 4
-tile = Vector2i(23, 20)
-label = "Mine Lift"
-
-[sub_resource type="Resource" id="decor_4"]
-script = ExtResource("s_decor")
-kind = 10
-tile = Vector2i(41, 25)
-label = "Overseer's Strongbox"
-
 [resource]
 script = ExtResource("s_zone")
 id = &"silent_shaft"
@@ -145,10 +145,9 @@ walk_rows = PackedStringArray("#################################################
 graveyards = Array[Vector2i]([Vector2i(2, 15)])
 hero_spawns = Array[Vector2i]([Vector2i(3, 14), Vector2i(3, 15), Vector2i(2, 14), Vector2i(4, 14)])
 enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("enemy_spawn_0"), SubResource("enemy_spawn_1"), SubResource("enemy_spawn_2"), SubResource("enemy_spawn_3"), SubResource("enemy_spawn_4"), SubResource("enemy_spawn_5"), SubResource("enemy_spawn_6"), SubResource("enemy_spawn_7"), SubResource("enemy_spawn_8"), SubResource("enemy_spawn_9"), SubResource("enemy_spawn_10")])
+exits = Array[ExtResource("s_exit")]([SubResource("exit_0"), SubResource("exit_1"), SubResource("exit_2")])
 landmarks = Array[ExtResource("s_landmark")]([SubResource("landmark_0"), SubResource("landmark_1"), SubResource("landmark_2")])
 decor = Array[ExtResource("s_decor")]([SubResource("decor_0"), SubResource("decor_1"), SubResource("decor_2"), SubResource("decor_3"), SubResource("decor_4")])
-edges = Array[ExtResource("s_edge")]([])
-npcs = Array[ExtResource("s_npc_spawn")]([])
 tileset = &"iso_basic"
 terrain_rows = PackedStringArray("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "ccccccccbbbbcccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cccccccccbbcccccccccccccccccccccccccccccccccccccfcecffecccffcfcccf", "cccccccccbbccccccccccccccccccccccccccccccccccccaaaaaaaaaaaaaaaaaaf", "cccccccccbbccccccccccccccccccccececccfccfcfcccfaaaaaaaaaaaaaaaaaac", "cccccccccbbcccccccccccccccccccbbbbbbbbbbbbbbfccaaaaaaaaaeaaaaaaaaf", "cccccccccbbcccbbbaaaccccccccccbbbaaaaaabbbbbfcfaaaaaaaaaaaaaaaaaac", "cccccccccbbcccbaaaaaccccccccccbbbaaaaaabbbbbcccaaaacaaaaaaaaaaaaac", "ccccccccbbbbbbaaaaaacccccccccebcbaaaaaabbcbbfccaaaaaaaaaaaaaaaaaae", "ccccccccbbbbbbbaaaaaccccccccccbbbaaaaaabbbbbcccaaaaaaaaaaaaaaaaaac", "ccccccccbbbbbddddbbbccccccccecbbbaaaaaabbbbbccfaaaaaaaaaaaaaaaaaac", "ccccccccbbbbadbbdbbbccccccccbbbbbbaabbbbbbbbfccaaaaaaaaaaaaaaaaaaf", "cbbbbbccbbbbbdbbdbbbcccccccebbbbbbbbbbbbbbbbfcbbaaaaaaaaaaaaaaaaac", "cbdddddddbddddccdbccccccccccbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaf", "cbbbbbbbbbbbbbccdbccccccccccbbbbebbbebbbbbbbbbbbaaaaaaaaaaaaaaaaae", "cbbbbbccbbbbbbccdbccccccccccbbbbbbbbbbbbbbbbccbbaaaaaaaaaaaaaaaaae", "ccccccccbbbbbbccdaccccccceecbbbbbbbbbbbbbbbbfccaaaaaaaaaaaaaaaaaaf", "ccccccccbbbbbbbbdaaabcccabbbbbbbaacebfcfccccccfaaaaaaaaaaaaaaaaaaf", "ccccccccbbbbbbbbdaadbcccbbbbbbbbaaecbccccccccccaaaaaaaaaaaaaaaaaaf", "ccccccccccccccbbbaaabcccbbbbbbbbaaecbccccccccceaaaaaaaaaaaaaaaaaac", "ccccccccccccccbbbaaabccedbbbbbbbabbbbbbbbbbccceaaaaaaaaaaaaaaaaaaf", "ccccccccccccccccccaabccebbbbbbbbabbbbbbbbbbcccfaaaacaaaaaaaaaaaaaf", "ccccccccccccccccccbbbcccaaaaabbbabbbbbbbbbbcccfaaaaaaaaaaaaaaaaaae", "ccccccccccccccccccccccccaaaaaabbbbbbbbbbbbbccccaaaaaaaaacaaaaaaaae", "cccccccccccccccccccccccceccecceeebbbbbbbbbbccceaaaaaaaaaaaaaaaaaac", "cccccccccccccccccccccccccccccccccbbbbbbbbbbccccaaaaaaaaaaaaaaaaaac", "cccccccccccccccccccccccccccccccccccccccccccccccceffeceeffccccccece", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc")
 terrain_legend = {
@@ -169,7 +168,6 @@ prop_legend = {
 sight_rows = PackedStringArray("..................................................................", "..................................................................", "........####......................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................", "..................................................................")
 region = 1
 music_context = 4
-exits = Array[ExtResource("s_exit")]([SubResource("exit_0"), SubResource("exit_1"), SubResource("exit_2")])
 dungeon = true
 requires_quest = &"act1_07_the_silent_shaft"
 encounter = ExtResource("enc_foreman")
