@@ -65,6 +65,8 @@ func test_written_walk_and_sight_rows_match_the_tileset() -> void:
 func test_every_zone_passes_the_editors_check() -> void:
 	for z: ZoneDef in ContentDB.zones.values():
 		assert_eq(Array(ZoneCheck.problems(z, GridModel.from_zone(z))), [], "%s" % z.id)
+		assert_eq(Array(ZoneCheck.link_problems(z)), [], "%s links" % z.id)
+		assert_eq(Array(ZoneCheck.story_problems(z)), [], "%s story" % z.id)
 
 
 func test_greenfields_has_the_promised_features() -> void:

@@ -66,6 +66,11 @@ func reload() -> void:
 			print("DODGE WARNING: " + w)
 
 
+## Again after the map editor reloaded some files (safe to repeat).
+func link_tree_items() -> void:
+	_link_tree_items()
+
+
 ## Content (.tres) can name ability-tree items only by id, since those are built
 ## at load time. Puts the real items in place; safe to repeat (replaces by id).
 func _link_tree_items() -> void:

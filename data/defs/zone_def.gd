@@ -106,6 +106,11 @@ func decor_at(p: Vector2i) -> ZoneDecor:
 var _decor_by_tile := {}
 
 
+## Objects were moved (the map editor): look them up afresh.
+func forget_decor_cache() -> void:
+	_decor_by_tile.clear()
+
+
 ## The terrain kind at `p` ("" outside the map or without a terrain layer).
 func terrain_at(p: Vector2i) -> String:
 	if p.y < 0 or p.y >= terrain_rows.size() or p.x < 0 or p.x >= terrain_rows[p.y].length():

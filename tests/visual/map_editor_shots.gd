@@ -52,4 +52,25 @@ func _run() -> void:
 	await _shot("editor_3_cached")
 	editor.view.set_terrain_cache(false) # the same picture, every tile redrawn
 	await _shot("editor_4_full")
+	editor.view.set_terrain_cache(true)
+	# Things: a wolf with a patrol, a door, the selection; then the size and links panels.
+	editor.set_tool(MapEditor.Tool.THINGS)
+	editor.set_thing_kind("enemy")
+	editor.thing_what = ContentDB.enemies[&"wolf"]
+	editor.place(c + Vector2i(-1, -3))
+	editor.set_tool(MapEditor.Tool.SELECT)
+	editor.set_patrol_mode(true)
+	for p in [c + Vector2i(3, -3), c + Vector2i(3, -6)]:
+		editor._patrol_click(p, MOUSE_BUTTON_LEFT)
+	editor.set_tool(MapEditor.Tool.THINGS)
+	editor.set_thing_kind("exit")
+	editor.thing_what = &"crossing"
+	editor.place(c + Vector2i(1, 3))
+	editor.set_tool(MapEditor.Tool.SELECT)
+	editor.select(ZoneEdit.ref("enemy", editor.edit.zone.enemy_spawns.size() - 1))
+	await _shot("editor_5_things")
+	editor._cam_target = Iso.to_screen(Vector2(editor.edit.width() - 2, 9), 0)
+	await _shot("editor_6_edge")
+	editor._open_links_dialog()
+	await _shot("editor_7_connections")
 	get_tree().quit()

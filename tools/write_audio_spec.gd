@@ -1,3 +1,4 @@
+class_name AudioSpecWriter
 extends SceneTree
 ## Rewrites the sound key list in AUDIO_SPEC.md from the game's content (the same
 ## SoundCatalog the game plays from), marking which files exist yet.
@@ -25,26 +26,36 @@ const GROUPS := [
 
 func _init() -> void:
 	await process_frame # autoloads (ContentDB, Audio) are ready
-	var text := FileAccess.get_file_as_string(SPEC)
-	var a := text.find(START)
-	var b := text.find(END)
-	if a == -1 or b == -1 or b < a:
+	var result := write(root.get_node("ContentDB"), root.get_node("Audio").config)
+	if result.error != OK:
 		printerr("ERROR: %s needs the lines\n%s\n%s" % [SPEC, START, END])
 		quit(1)
 		return
-	var audio = root.get_node("Audio")
-	var keys: Dictionary = SoundCatalog.new(root.get_node("ContentDB")).keys()
-	var body := _list(keys, audio.config)
+	print("Wrote %d sound keys to %s (%d without a file yet)." % [result.keys, SPEC, result.missing])
+	quit()
+
+
+## Rewrites the key list from `content` (ContentDB); also used by the map editor
+## when it adds a map (a new ambience key). Returns {"error", "keys", "missing"}.
+static func write(content, config: AudioConfig, spec_path := SPEC) -> Dictionary:
+	var text := FileAccess.get_file_as_string(spec_path)
+	var a := text.find(START)
+	var b := text.find(END)
+	if a == -1 or b == -1 or b < a:
+		return {"error": ERR_PARSE_ERROR, "keys": 0, "missing": 0}
+	var keys: Dictionary = SoundCatalog.new(content).keys()
+	var body := _list(keys, config)
 	var out := text.substr(0, a + START.length()) + "\n" + body + text.substr(b)
-	var f := FileAccess.open(SPEC, FileAccess.WRITE)
+	var f := FileAccess.open(spec_path, FileAccess.WRITE)
+	if f == null:
+		return {"error": FileAccess.get_open_error(), "keys": 0, "missing": 0}
 	f.store_string(out)
 	f.close()
 	var missing := 0
 	for k in keys:
-		if not _exists(audio.config.file_for(k)):
+		if not _exists(config.file_for(k)):
 			missing += 1
-	print("Wrote %d sound keys to %s (%d without a file yet)." % [keys.size(), SPEC, missing])
-	quit()
+	return {"error": OK, "keys": keys.size(), "missing": missing}
 
 
 static func _exists(path: String) -> bool:
