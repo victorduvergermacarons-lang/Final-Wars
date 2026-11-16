@@ -235,6 +235,48 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
+### PL-02-2+quick-bow-shot@south-west ·  (2026-11-16)
+
+![PL-02-2+quick-bow-shot@south-west](art/PL-02/PL-02-2+quick-bow-shot_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+quick-bow-shot@north-west ·  (2026-11-16)
+
+![PL-02-2+quick-bow-shot@north-west](art/PL-02/PL-02-2+quick-bow-shot_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+quick-bow-shot@north-east ·  (2026-11-16)
+
+![PL-02-2+quick-bow-shot@north-east](art/PL-02/PL-02-2+quick-bow-shot_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot ·  (2026-11-16)
+
+![PL-02-2+aimed-bow-shot](art/PL-02/PL-02-2+aimed-bow-shot_south-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot@south-west ·  (2026-11-16)
+
+![PL-02-2+aimed-bow-shot@south-west](art/PL-02/PL-02-2+aimed-bow-shot_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot@north-west ·  (2026-11-16)
+
+![PL-02-2+aimed-bow-shot@north-west](art/PL-02/PL-02-2+aimed-bow-shot_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot@north-east ·  (2026-11-16)
+
+![PL-02-2+aimed-bow-shot@north-east](art/PL-02/PL-02-2+aimed-bow-shot_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
 ### BO-02-1 · Ashbark Colossus (2026-11-15)
 
 ![BO-02-1](art/BO-02/BO-02-1_2026-11-15.png)
