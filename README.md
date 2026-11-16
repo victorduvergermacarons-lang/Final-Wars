@@ -181,6 +181,60 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
+### PL-02-1+sword-slash ·  (2026-11-16)
+
+![PL-02-1+sword-slash](art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-slash@south-west ·  (2026-11-16)
+
+![PL-02-1+sword-slash@south-west](art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-slash@north-west ·  (2026-11-16)
+
+![PL-02-1+sword-slash@north-west](art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-slash@north-east ·  (2026-11-16)
+
+![PL-02-1+sword-slash@north-east](art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge ·  (2026-11-16)
+
+![PL-02-1+sword-lunge](art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge@south-west ·  (2026-11-16)
+
+![PL-02-1+sword-lunge@south-west](art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge@north-west ·  (2026-11-16)
+
+![PL-02-1+sword-lunge@north-west](art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge@north-east ·  (2026-11-16)
+
+![PL-02-1+sword-lunge@north-east](art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+quick-bow-shot ·  (2026-11-16)
+
+![PL-02-2+quick-bow-shot](art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
 ### BO-02-1 · Ashbark Colossus (2026-11-15)
 
 ![BO-02-1](art/BO-02/BO-02-1_2026-11-15.png)

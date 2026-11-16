@@ -1474,6 +1474,222 @@
         "generations": 1
       },
       "facing": "north-east"
+    },
+    "PL-02-1+sword-slash": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-slash_south-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-east",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-1+sword-slash@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-slash_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-1+sword-slash@north-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-slash_north-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-west",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-1+sword-slash@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-slash_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-1+sword-lunge": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-lunge_south-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-east",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-1+sword-lunge@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-lunge_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-1+sword-lunge@north-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-lunge_north-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-west",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-1+sword-lunge@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_1.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_2.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_3.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_4.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_5.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_6.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_7.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_8.png",
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1+sword-lunge_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east",
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+quick-bow-shot": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_1.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_2.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_3.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_4.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_5.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_6.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_7.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_8.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+quick-bow-shot_south-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-east",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
     }
   },
   "failures": {},
@@ -1720,6 +1936,23 @@
         "north-east/death",
         "north-east/downed",
         "north-east/revived"
+      ],
+      "failed": [],
+      "stopped": "",
+      "source": "pixellab.ai web app, Animate with text V3 (by Claude)"
+    },
+    {
+      "date": "2026-11-16",
+      "made": [
+        "south-east/sword-slash",
+        "south-west/sword-slash",
+        "north-west/sword-slash",
+        "north-east/sword-slash",
+        "south-east/sword-lunge",
+        "south-west/sword-lunge",
+        "north-west/sword-lunge",
+        "north-east/sword-lunge",
+        "south-east/quick-bow-shot"
       ],
       "failed": [],
       "stopped": "",
