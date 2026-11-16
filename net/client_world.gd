@@ -240,6 +240,10 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 
 func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
+	var anim: Dictionary = d.get("anim", {})
+	for k in ["died", "down", "up", "hit", "act_at"]:
+		h.anim[k] = float(anim.get(k, Hero.NEVER))
+	h.anim.act = StringName(anim.get("act", ""))
 	var eq := {}
 	for slot in d.eq:
 		var item: ItemDef = content.items.get(StringName(d.eq[slot]))
