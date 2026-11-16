@@ -33,6 +33,10 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## hit frame / fps seconds, so its effect lands on that frame. A hit frame of -1
 ## means the whole animation (e.g. a howl that calls the pack when it ends).
 @export var timed_abilities: Dictionary = {}
+## Heroes: ability id -> [animation, weapon tree] for abilities with their own
+## animation (Slash -> sword_slash while a Sword is in hand). Any other ability, or
+## one whose weapon isn't in hand, plays "cast".
+@export var ability_anims: Dictionary = {}
 ## Frames still played after an attack's hit frame, during which it stays put.
 @export var recovery_frames: Dictionary = {"bite": 2}
 ## The corpse lies this long after the death animation ends, then fades out.

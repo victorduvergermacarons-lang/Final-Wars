@@ -153,3 +153,38 @@ func test_world_flags_reach_clients() -> void:
 	world.world_flags["grizzlehide_slain"] = true
 	_sync()
 	assert_eq(mirror.world_flags, {"grizzlehide_slain": true})
+
+
+func test_hero_animation_times_are_the_hosts() -> void:
+	# The host records when a hero used an ability, was hit, fell, was stunned and
+	# got up (Hero.anim); every player gets those times, so all pick the same frame.
+	hero.bag.add(db.items[&"shield"])
+	world.submit(hero.id, {"type": "equip", "bag_index": hero.bag.index_of(db.items[&"shield"])})
+	world.step()
+	world.submit(hero.id, {"type": "cast", "ability": &"block", "target": hero.id})
+	world.step()
+	var cast_at := world.now
+	assert_eq(hero.anim.act, &"block")
+	assert_eq(hero.anim.act_at, cast_at)
+	var wolf: Enemy = world.enemies()[0]
+	world.emit({"type": "damage", "source": wolf.id, "target": other.id, "amount": 5.0})
+	world.step()
+	assert_almost_eq(other.anim.hit, world.now, 0.06)
+	other.buffs.apply(db.buffs[&"searing_dive_stun"], world.now)
+	world.step()
+	var down_at := world.now
+	assert_eq(other.anim.down, down_at)
+	for i in 60:
+		world.step()
+	assert_gt(other.anim.up, down_at, "up again when the stun ends")
+	other.die()
+	world.step()
+	assert_eq(other.anim.died, world.now)
+	var bytes := var_to_bytes(Snapshot.capture(world, hero.id))
+	mirror.apply_snapshot(bytes_to_var(bytes))
+	var h := mirror.get_actor(other.id) as Hero
+	for k in ["died", "down", "up", "hit"]:
+		assert_eq(h.anim[k], other.anim[k], k)
+	var me := mirror.local_hero()
+	assert_eq(me.anim.act, &"block")
+	assert_eq(me.anim.act_at, cast_at)

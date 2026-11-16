@@ -260,27 +260,49 @@ How-to: `docs/tilesets.md`.
   (3,3), 15+ tiles from the lone wolves.
 - Other enemies keep the placeholder diamond until they get art.
 
-## Hero art (PL-01-1, 2026-11-15)
+## Hero art (PL-01-1, 4 facings and weapon sets, 2026-11-16)
 
-The first hero sprite: the user's PixelLab character PL-01-1 (no bracelets), with the
-animations the art bot made from it, approved on the `art-drafts` branch.
-- **Source:** `art/heroes/PL-01-1/` (the approved sheets and back stills, 48×48 frames,
-  9 per animation); `tools/once/make_pl01_sheets.py` cuts them into
-  `assets/heroes/pl01/<anim>.png` with rows SW, SE, NW, NE. Art data:
-  `content/heroes/pl01_art.tres` (`CreatureArtDef`, feet (24, 39)), linked from
-  `HeroDef.art` (`adventurer.tres`). A hero without art is still a circle.
-- **Facings:** the art faces south-east; south-west mirrors it. Facing away (NE, NW)
-  shows the approved back stills, not animated (no back animations yet), except
-  death, downed and revived, which use the front frames.
-- **Animations** (`CreatureAnimator.pick_hero`): dead → death (take 4 of 4, user's
-  pick), held on its last frame until released or revived; stunned → downed (falls,
-  lies until the stun ends); getting up after a stun, a resurrection or a release →
-  revived; an ability going off → cast; taking damage → hit; walking → run (4 frames
-  per tile, from the distance walked); else idle (6 fps).
-- **Timing:** heroes' death and stun times aren't replicated, so each player's view
-  notes when it sees them change, and cast and hit come from the event stream (a
-  snapshot's delay apart at most between players).
-- Screenshots: `tests/visual/hero_art_shots.tscn`.
+The hero sprite: the user's PixelLab character PL-01-1 (no bracelets), its animations
+in all four facings, and the sword and bow attacks of PL-02-1 (sword) and PL-02-2 (bow),
+characters drawn as edits of PL-01-1, all approved on the `art-drafts` branch (never
+merged; files copied). Checklist: `docs/playtest-checklist-hero-art.md`.
+- **Source:** `art/heroes/PL-01/` and `art/heroes/PL-02/` (the frames, 9 per animation,
+  48×48, plus the standing stills and `PL-01-1.png`). `tools/once/make_hero_sheets.py`
+  copies them from `origin/art-drafts` and cuts `assets/heroes/pl01/<anim>.png`, rows SW,
+  SE, NW, NE: idle, run (the walk), cast, hit (getting-hit), death (south-east: take 1),
+  downed, revived, sword_slash, sword_lunge, bow_quick_shot, bow_aimed_shot. Art data:
+  `content/heroes/pl01_art.tres` (`CreatureArtDef`), linked from `HeroDef.art`
+  (`adventurer.tres`). A hero without art is still a circle.
+- **Measured on the art:**
+  - **Feet:** midway between the two soles on the first idle frame: x 22.25–25 and
+    y 37.5–39 across the facings, so each facing's row is shifted by whole pixels onto
+    one point, (24, 38): the hero doesn't jump when turning. The PL-02 bodies are lined up
+    by overlaying their standing stills on PL-01-1's (81–94% overlap after 0–2 px; their
+    scabbard and bow hang below the feet and fool a sole test).
+  - **Walk:** the widest step is 8–10.5 art px across (a tile along a grid axis is 16),
+    so a 9-frame cycle (two steps) covers 1.19 tiles: 8 frames per tile
+    (`run_frames_per_tile`), from the distance walked.
+- **Animations** (`CreatureAnimator.pick_hero`, in order): dead → death once (12 fps),
+  then lying in downed's last frame until released or revived (death and downed both
+  start standing and end lying; downed again would get up and fall twice); stunned →
+  downed (15 fps), held until the stun ends; up again (stun over, resurrected, released
+  at a graveyard) → revived (12 fps); an ability went off → its own animation
+  (`CreatureArtDef.ability_anims`: Slash → sword_slash 20 fps, Lunge → sword_lunge 18,
+  Quick Shot → bow_quick_shot 20, Aimed Shot → bow_aimed_shot 15, each only while that
+  weapon type is in hand), else cast (18 fps: element spells, hammer arts, potions);
+  took damage → hit (18 fps); moving → run; else idle (6 fps).
+- **Network:** the host records on each hero (`Hero.anim`, sim clock) when it died, was
+  stunned, got up, was hit, and which ability last went off (deaths, stuns and getting
+  up from the state each tick, `WorldSim._track_hero_anims`; hits and abilities from the
+  events). Snapshots carry them, so every player picks the same frame from the same host
+  times, as creatures do.
+- **Pixel-perfect:** drawn by the creature drawing at `PixelCamera.ART_SCALE` (2× world
+  units per art pixel) with whole-pixel feet, under the whole-pixel camera.
+- **Known flaws in the drafts** (used anyway): getting-hit facing north-west falls to the
+  ground; walk facing north-east has stray white streaks in its last frames.
+- Tests: `tests/unit/test_hero_animator.gd`, `test_hero_animation_times_are_the_hosts`
+  (`test_snapshot.gd`). Screenshots: `tests/visual/hero_art_shots.tscn` (four heroes, one
+  per facing, every animation).
 
 ## Map editor (2026-11-16)
 
@@ -1361,7 +1383,7 @@ content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ z
 audio/           music/ (OGG), ambience/ (OGG), sfx/<category>/ (WAV); see AUDIO_SPEC.md
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
-assets/heroes/   hero sprite sheets (art data in content/heroes/)
+assets/heroes/   hero sprite sheets (art data in content/heroes/; source frames in art/heroes/)
 assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera, decor painter (placeholder objects)
@@ -1378,7 +1400,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
+docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor, hero art), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
 ```
 
 ### Build order (milestone 1)
@@ -2045,6 +2067,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-16 | The hero shows PL-01-1 in all four facings, with the PL-02 sword and bow attacks; frames picked from host times | User brief (replaces the 2026-11-15 mirrored south-east art and back stills). User choices: downed for stuns as well as while dead; animations play when the ability goes off, not over the timing bar; hammer arts and potions play the plain cast until they have their own; revived also after a release at a graveyard; death take 1 (was take 4). |
+| 2026-11-16 | Hero art measurements and fixes | Mine: facings shifted onto one feet point (24, 38) by whole pixels; the PL-02 bodies lined up by overlaying their stills on PL-01-1's (a scabbard below the feet fooled the sole test); walk 8 frames per tile from the stride, not a planted foot (the generated walk has no planted foot); while dead, death then downed's last frame held, not downed replayed or looped (both animations fall from standing); 20 / 18 / 20 / 15 fps for slash, lunge, quick shot, aimed shot; the source frames live in `art/heroes/PL-01`, `PL-02` (the old `art/heroes/PL-01-1` sheets and `make_pl01_sheets.py` removed). |
 | 2026-11-16 | Map editor part 2: things, map size, connections, new maps; saving through Godot's resource writer | User request and choices: each person placed once in the whole game; a New map button; a one-time re-save of every map (format only); all three parts. My choices: a Things tool and a Select tool (click again cycles a tile's things, drag moves, Delete removes); patrols start where the enemy stands; a resize keeps things on their ground and moves every reference to the map's coordinates in other files on save (quests, doors, edges, the encounter); this map's edges decide the partner's (opposite side and offset); doors pick their arrival on the destination map; warnings (asked, not refused) for one-way doors, edges landing on blocked ground, and quests losing a person or every enemy of a kind; new maps start with a spawn and a graveyard and regenerate `AUDIO_SPEC.md`. |
 | 2026-11-16 | Map editor: its own screen from the main menu, painting ground, heights and props, saving into the zone files | User choices: a separate screen (not in-game), enemies frozen, ground/height/props first (objects later). My choices: offered only when running from the Godot editor; heights 0–9; height raise/lower changes each tile once per drag; right-click copies ground / removes props; Pick returns to Ground; saving warns (and asks) when a spawn, graveyard, NPC, enemy, patrol point, exit or edge can't be reached; saving also updates the loaded map; the rows are rewritten in place so nothing else in the file changes. |
 | 2026-11-15 | Water abilities unlock one per Mastery step (per-ability Mastery Required, read by the importer; Water rows' formula replaced by their own text); Tidal Blessing, Water Shield and Revive lose the prerequisites that now unlock later | User request (the 23 steps). The rules already read each ability's `mastery_required`; the importer used to take the tier's threshold and now takes the Mastery Required cell (empty: the tier's). My choices: tiers stay as they are for everything else (AP, rarity, prices, damage defaults, the tree screen's columns); a prerequisite unlocking later is an import warning and a content test; the tree screen heads a column with its first ability's step, orders it by step, and a locked node shows "Needs N"; Excel's calcChain.xml was dropped from the workbook (Excel rebuilds it) since it listed the replaced formulas (`tools/once/water_mastery_steps.py`). |

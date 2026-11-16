@@ -348,6 +348,7 @@ func step() -> Array[Dictionary]:
 	_update_wipe()
 	_remove_gone_npcs()
 	_update_quests()
+	_track_hero_anims()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
 	_record_history()
@@ -665,13 +666,28 @@ func emit(event: Dictionary) -> void:
 	_record(event)
 
 
-## Keeps each hero's records (Hero.records) from the events of their deeds.
+## Keeps each hero's records (Hero.records) from the events of their deeds, and
+## the times its sprite needs (Hero.anim: last hit, last ability gone off).
 func _record(e: Dictionary) -> void:
+	match e.type:
+		"cast":
+			var by: Hero = _heroes.get(e.get("source", -1))
+			if by != null:
+				by.anim.act = e.get("ability", &"")
+				by.anim.act_at = now
+		"use_item":
+			var by: Hero = _heroes.get(e.get("target", -1))
+			if by != null:
+				by.anim.act = &""
+				by.anim.act_at = now
 	match e.type:
 		"damage":
 			var by: Hero = _heroes.get(e.get("source", -1))
 			if by != null and _enemies.has(e.get("target", -1)):
 				by.records.damage += float(e.get("amount", 0.0))
+			var hurt: Hero = _heroes.get(e.get("target", -1))
+			if hurt != null:
+				hurt.anim.hit = now
 		"heal":
 			var by: Hero = _heroes.get(e.get("source", -1))
 			if by != null:
@@ -688,6 +704,24 @@ func _record(e: Dictionary) -> void:
 			var who: Hero = _heroes.get(e.get("target", -1))
 			if who != null:
 				who.records.quests += 1
+
+
+## Each tick: when a hero died, was stunned, or got up (stun over, resurrected,
+## released), for Hero.anim. Read from the state, so every way in counts.
+func _track_hero_anims() -> void:
+	for hero: Hero in heroes():
+		var a := hero.anim
+		var stunned := hero.alive and hero.buffs.is_stunned(now)
+		if a.alive and not hero.alive:
+			a.died = now
+		elif not a.alive and hero.alive:
+			a.up = now
+		if stunned and not a.stunned:
+			a.down = now
+		elif a.stunned and not stunned and hero.alive:
+			a.up = now
+		a.alive = hero.alive
+		a.stunned = stunned
 
 
 # --- Shared actions (used by intents and EnemyBrain) -----------------------------

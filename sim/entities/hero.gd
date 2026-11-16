@@ -34,6 +34,15 @@ var learning_item: ItemDef = null
 var mastery_contrib := {}
 ## Where the hero died (picks the graveyard on release).
 var death_tile := Vector2i.ZERO
+## When things happened to this hero that its sprite shows, on the host's sim clock
+## (WorldSim._track_hero_anims and _record; sent in snapshots so every player picks
+## the same frame): "died", "down" (a stun began), "up" (got up: stun over,
+## resurrected, released), "hit" (took damage), "act" (the ability that last went
+## off; &"" for a potion) and "act_at". NEVER = not yet. "alive" and "stunned" are
+## the state last tick (the host's own bookkeeping).
+const NEVER := -1.0e9
+var anim := {"died": NEVER, "down": NEVER, "up": NEVER, "hit": NEVER, "act": &"", "act_at": NEVER,
+		"alive": true, "stunned": false}
 ## One buffered step, taken as soon as the current walk arrives, so holding a
 ## direction stays smooth despite network latency.
 var pending_step: Variant = null # unused since free movement (kept for old callers)

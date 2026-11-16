@@ -7,60 +7,61 @@ extends RefCounted
 ## host's wind-up has ended.
 
 var _attacks := {} # actor id -> {"anim", "start", "hit_at", "resolved"}
-## Heroes: what this view has seen happen to each, with the time it saw it.
-## actor id -> {"alive", "stunned", "died_at", "up_at", "stun_from", "cast_at", "hit_at"}
-var _heroes := {}
-
-
-## A hero's ability went off ("cast") or it was hit ("hit"), at render time `t`
-## (from the event stream every player receives).
-func note(actor_id: int, what: String, t: float) -> void:
-	var h: Dictionary = _heroes.get(actor_id, {})
-	if h.is_empty():
-		return
-	h[what + "_at"] = t
-
-
-## The frame a hero with art shows (2026-11-15, PL-01-1). Heroes' death and stun
-## times aren't replicated, so the view notes the moment it sees them change
-## (the same for every player within a snapshot's delay). In order:
-## - dead: the death animation once, then its last frame until released or revived;
-## - stunned: falls ("downed") and lies there until the stun ends;
-## - just up again (after a stun, a resurrection or a release): "revived" once;
-## - an ability just went off: "cast" once; just hit: "hit" once;
+## The frame a hero with art shows (PL-01-1, 4 facings since 2026-11-16), from the
+## host's times in Hero.anim (sent in snapshots), so every player sees the same frame
+## at the same moment. In order:
+## - dead: "death" once, then lying in "downed"'s last frame until released or
+##   revived (downed and death both end lying down; playing downed again would get
+##   up and fall twice);
+## - stunned: "downed" (falls) and lies there until the stun ends;
+## - just up again (stun over, resurrected, released): "revived" once;
+## - an ability just went off: its own animation (Slash, Lunge, Quick Shot, Aimed
+##   Shot, while that weapon type is in hand; CreatureArtDef.ability_anims), else
+##   "cast" (element spells, hammer arts, potions);
+## - just hit: "hit" once;
 ## - walking: "run", following the distance walked; else "idle".
 func pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	var dir := CreatureArtDef.direction_for(actor.facing)
-	var stunned: bool = actor.alive and actor.buffs.is_stunned(t)
-	var h: Dictionary = _heroes.get(actor.id, {})
-	if h.is_empty():
-		# First sight: a hero already lying down shows its last frame, not the fall.
-		h = {"alive": actor.alive, "stunned": stunned, "died_at": -INF, "up_at": -INF,
-				"stun_from": -INF, "cast_at": -INF, "hit_at": -INF}
-		_heroes[actor.id] = h
-	if h.alive and not actor.alive:
-		h.died_at = t
-	elif not h.alive and actor.alive:
-		h.up_at = t
-	if stunned and not h.stunned:
-		h.stun_from = t
-	elif not stunned and h.stunned and actor.alive:
-		h.up_at = t
-	h.alive = actor.alive
-	h.stunned = stunned
+	var hero := actor as Hero
+	var times: Dictionary = hero.anim if hero != null else {}
 	if not actor.alive:
-		return _once(art, "death", dir, t - h.died_at, true)
-	if stunned:
-		return _once(art, "downed", dir, t - h.stun_from, true)
-	for anim in ["revived", "cast", "hit"]:
-		var since: float = t - float(h["up_at" if anim == "revived" else anim + "_at"])
-		if since >= 0.0 and since < art.duration(anim):
-			return _once(art, anim, dir, since, false)
+		var since: float = t - float(times.get("died", Hero.NEVER))
+		if since >= 0.0 and since < art.duration("death"):
+			return _once(art, "death", dir, since, true)
+		return _once(art, "downed", dir, INF, true)
+	if actor.buffs.is_stunned(t):
+		return _once(art, "downed", dir, _since(times, "down", t), true)
+	var up := t - float(times.get("up", Hero.NEVER))
+	if up >= 0.0 and up < art.duration("revived"):
+		return _once(art, "revived", dir, up, false)
+	var act := action_anim(hero, art)
+	var acted := t - float(times.get("act_at", Hero.NEVER))
+	if act != "" and acted >= 0.0 and acted < art.duration(act):
+		return _once(art, act, dir, acted, false)
+	var hit := t - float(times.get("hit", Hero.NEVER))
+	if hit >= 0.0 and hit < art.duration("hit"):
+		return _once(art, "hit", dir, hit, false)
 	if actor.move.is_moving(t):
 		var cycle := maxi(art.frame_count("run"), 1)
 		return {"anim": "run", "dir": dir, "frame": int(actor.move.odometer * art.run_frames_per_tile) % cycle}
 	var idle_n := maxi(art.frame_count("idle"), 1)
 	return {"anim": "idle", "dir": dir, "frame": int(t * art.anim_fps("idle")) % idle_n}
+
+
+## The animation for the hero's last ability: its own while its weapon type is in
+## hand, else "cast".
+static func action_anim(hero: Hero, art: CreatureArtDef) -> String:
+	if hero == null:
+		return "cast"
+	var own: Array = art.ability_anims.get(StringName(hero.anim.act), [])
+	if own.size() == 2 and hero.wields(own[1]) and art.sheets.has(own[0]):
+		return own[0]
+	return "cast"
+
+
+static func _since(times: Dictionary, key: String, t: float) -> float:
+	var at := float(times.get(key, Hero.NEVER))
+	return t - at if at > Hero.NEVER else INF # seen already down: the last frame
 
 
 ## Frame `since` seconds into an animation played once (holding its last frame).
