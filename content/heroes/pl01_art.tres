@@ -8,29 +8,47 @@
 [ext_resource type="Texture2D" path="res://assets/heroes/pl01/death.png" id="6_death"]
 [ext_resource type="Texture2D" path="res://assets/heroes/pl01/downed.png" id="7_downed"]
 [ext_resource type="Texture2D" path="res://assets/heroes/pl01/revived.png" id="8_revived"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/sword_slash.png" id="9_slash"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/sword_lunge.png" id="10_lunge"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/bow_quick_shot.png" id="11_quick"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/bow_aimed_shot.png" id="12_aimed"]
 
 [resource]
 script = ExtResource("1_art")
 sheets = {
+"bow_aimed_shot": ExtResource("12_aimed"),
+"bow_quick_shot": ExtResource("11_quick"),
 "cast": ExtResource("4_cast"),
 "death": ExtResource("6_death"),
 "downed": ExtResource("7_downed"),
 "hit": ExtResource("5_hit"),
 "idle": ExtResource("2_idle"),
 "revived": ExtResource("8_revived"),
-"run": ExtResource("3_run")
+"run": ExtResource("3_run"),
+"sword_lunge": ExtResource("10_lunge"),
+"sword_slash": ExtResource("9_slash")
 }
 frame_size = Vector2i(48, 48)
-feet = Vector2(24, 39)
+feet = Vector2(24, 38)
 head_y = 8.0
 fps = {
+"bow_aimed_shot": 15.0,
+"bow_quick_shot": 20.0,
 "cast": 18.0,
 "death": 12.0,
 "downed": 15.0,
 "hit": 18.0,
 "idle": 6.0,
-"revived": 12.0
+"revived": 12.0,
+"sword_lunge": 18.0,
+"sword_slash": 20.0
 }
-run_frames_per_tile = 4
+run_frames_per_tile = 8
 looping = PackedStringArray("idle", "run")
+ability_anims = {
+&"B01": ["bow_quick_shot", "Bow"],
+&"B02": ["bow_aimed_shot", "Bow"],
+&"S01": ["sword_slash", "Sword"],
+&"S04": ["sword_lunge", "Sword"]
+}
 recovery_frames = {}

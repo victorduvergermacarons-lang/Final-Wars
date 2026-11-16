@@ -1044,8 +1044,6 @@ func _on_events(events: Array) -> void:
 					text = "Flank " + text
 				_float(e.target, text, Color(1, 0.35, 0.3), t)
 				var hit = session.get_actor(e.target)
-				if hit is Hero:
-					_animator.note(e.target, "hit", t)
 				if hit is Enemy and (hit as Enemy).def.art != null:
 					_flash_until[e.target] = t + (hit as Enemy).def.art.flash_seconds
 			"heal":
@@ -1070,8 +1068,6 @@ func _on_events(events: Array) -> void:
 				_float(e.target, "Evade", Color(0.8, 0.8, 0.8), t)
 			"cast":
 				var ability: AbilityDef = ContentDB.abilities.get(e.get("ability", &""))
-				if session.get_actor(e.get("source", -1)) is Hero:
-					_animator.note(e.source, "cast", t)
 				if ability != null and ability.flame_effect and e.has("tiles"):
 					_flames.append({"tiles": e.tiles, "start": t})
 			"grounded":
