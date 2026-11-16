@@ -139,6 +139,48 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
+### PL-01-1+idle@north-east ·  (2026-11-16)
+
+![PL-01-1+idle@north-east](art/PL-01/PL-01-1+idle_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+walk@north-east ·  (2026-11-16)
+
+![PL-01-1+walk@north-east](art/PL-01/PL-01-1+walk_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+cast@north-east ·  (2026-11-16)
+
+![PL-01-1+cast@north-east](art/PL-01/PL-01-1+cast_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+getting-hit@north-east ·  (2026-11-16)
+
+![PL-01-1+getting-hit@north-east](art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+death@north-east ·  (2026-11-16)
+
+![PL-01-1+death@north-east](art/PL-01/PL-01-1+death_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+downed@north-east ·  (2026-11-16)
+
+![PL-01-1+downed@north-east](art/PL-01/PL-01-1+downed_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+revived@north-east ·  (2026-11-16)
+
+![PL-01-1+revived@north-east](art/PL-01/PL-01-1+revived_north-east_2026-11-16_preview.gif)
+
+<sub></sub>
+
 ### BO-02-1 · Ashbark Colossus (2026-11-15)
 
 ![BO-02-1](art/BO-02/BO-02-1_2026-11-15.png)

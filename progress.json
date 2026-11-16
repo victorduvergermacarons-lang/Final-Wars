@@ -1313,6 +1313,167 @@
         "generations": 1
       },
       "facing": "north-west"
+    },
+    "PL-01-1+idle@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+idle_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east"
+    },
+    "PL-01-1+walk@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+walk_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east"
+    },
+    "PL-01-1+cast@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+cast_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east"
+    },
+    "PL-01-1+getting-hit@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+getting-hit_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east"
+    },
+    "PL-01-1+death@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+death_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east"
+    },
+    "PL-01-1+downed@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+downed_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east"
+    },
+    "PL-01-1+revived@north-east": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+revived_north-east_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north-east"
     }
   },
   "failures": {},
@@ -1544,6 +1705,21 @@
         "north-west/death",
         "north-west/downed",
         "north-west/revived"
+      ],
+      "failed": [],
+      "stopped": "",
+      "source": "pixellab.ai web app, Animate with text V3 (by Claude)"
+    },
+    {
+      "date": "2026-11-16",
+      "made": [
+        "north-east/idle",
+        "north-east/walk",
+        "north-east/cast",
+        "north-east/getting-hit",
+        "north-east/death",
+        "north-east/downed",
+        "north-east/revived"
       ],
       "failed": [],
       "stopped": "",
