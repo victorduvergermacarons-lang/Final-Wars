@@ -947,6 +947,50 @@
         "model": "Animate with text V3",
         "generations": 1
       }
+    },
+    "PL-02-1+8dir": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-1_take1_south.png",
+        "art/PL-02/PL-02-1_take1_south-east.png",
+        "art/PL-02/PL-02-1_take1_east.png",
+        "art/PL-02/PL-02-1_take1_north-east.png",
+        "art/PL-02/PL-02-1_take1_north.png",
+        "art/PL-02/PL-02-1_take1_north-west.png",
+        "art/PL-02/PL-02-1_take1_west.png",
+        "art/PL-02/PL-02-1_take1_south-west.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-1_take1_8dir_preview.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Generate 8 rotations v3",
+        "generations": 1
+      },
+      "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1)"
+    },
+    "PL-02-2+8dir": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-02/PL-02-2_take1_south.png",
+        "art/PL-02/PL-02-2_take1_south-east.png",
+        "art/PL-02/PL-02-2_take1_east.png",
+        "art/PL-02/PL-02-2_take1_north-east.png",
+        "art/PL-02/PL-02-2_take1_north.png",
+        "art/PL-02/PL-02-2_take1_north-west.png",
+        "art/PL-02/PL-02-2_take1_west.png",
+        "art/PL-02/PL-02-2_take1_south-west.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2_take1_8dir_preview.png"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Generate 8 rotations v3",
+        "generations": 1
+      },
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1)"
     }
   },
   "failures": {},
