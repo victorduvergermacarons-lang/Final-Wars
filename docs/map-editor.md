@@ -1,7 +1,9 @@
 # Map editor
 
-Paint the ground, heights and props of a map with the mouse, see it as the game
-draws it, and save it straight into the map's file.
+Paint the ground, heights and props of a map with the mouse; place, move and edit
+its enemies, people, spawn points, graveyards, objects, landmarks and doors; change
+its size; link its edges to other maps; make new maps. You see everything as the
+game draws it, and save straight into the game's files.
 
 ## Opening it
 
@@ -12,29 +14,86 @@ menu (right page, under Host / Join). The button only appears there: an exported
 Shortcut: run with `--map_editor` (Debug > Customize Run Instances, or the command
 line) to open it directly.
 
-Pick the map in the **Map** list at the top. Every hand-made map is there
-(Millbrook, the Crossing, the Road to Deepcut, Deepcut, the Windsteppe, the Silent
-Shaft, Greenfields, Tidereach Shore). The Enemy Testing Grounds aren't: they are
-built from the enemy list each time the game starts.
+Pick the map in the **Map** list at the top. Every hand-made map is there. The
+Enemy Testing Grounds aren't: they are built from the enemy list each time the game
+starts (other maps can still link to them).
 
-Enemies and people stand frozen where they spawn, so you can see where they are.
+Enemies and people stand frozen where they spawn.
 
-## Tools (left panel)
+## Tools (left panel, keys 1–6)
 
-| Tool (key) | Left click / drag | Right click / drag |
+| Tool | Left click / drag | Right click |
 |---|---|---|
 | **1 Ground** | paint the ground chosen in the list | copy the ground under the mouse |
 | **2 Height** | raise one level (each tile once per drag) | lower one level |
-| **3 Props** | place the prop chosen in the list | remove props |
+| **3 Props** | place the chosen prop | remove props |
 | **4 Pick** | copy the tile's ground, height and prop, then back to Ground | |
+| **5 Things** | place the chosen thing (it gets selected) | remove the thing under the mouse |
+| **6 Select** | select a thing; click again for the next one on that tile; drag to move it | select nothing |
 
 - **Height:** tick **Exact level** (or change **Level**) to paint that height
-  instead of raising. Heights go from 0 to 9. A hero climbs 2 levels at a time,
-  so a jump of 3 or more is a cliff, and steps of 1 make a ramp.
-- **Brush:** 1×1, 3×3 or 5×5 (`[` and `]` change it).
-- **Grid** and **Height numbers** draw tile outlines and each tile's height over
-  the map. Heights in red are tiles you can't walk on (water, walls, boulders).
-- The status bar shows the map, "(unsaved changes)", and the tile under the mouse.
+  instead of raising. Heights go from 0 to 9. A hero climbs 2 levels at a time, so
+  a jump of 3 or more is a cliff, and steps of 1 make a ramp.
+- **Brush:** 1×1, 3×3 or 5×5 for the painting tools (`[` and `]` change it).
+- **Grid** and **Height numbers** draw tile outlines and heights over the map. Red
+  numbers are tiles you can't walk on.
+
+### Things
+
+Choose a kind in the Things list, then what to place:
+
+- **Enemies:** any enemy. Selected, you can change its type, its **level** (0 = the
+  type's own level) and **respawn seconds** (−1 = the usual), and its **patrol**:
+  click **Edit patrol**, then left-click tiles to add waypoints (the walk starts
+  where it stands; numbered orange points joined by lines); right-click a waypoint to
+  remove it; **Clear patrol** makes it stand guard again. Moving an enemy moves its
+  route with it.
+- **People:** each person stands in **one place in the whole game**. The list says
+  where each one is now ("here", another map's name, or "not placed"). Placing
+  someone who is already on this map moves them; placing someone from another map
+  moves them here when you save. Selected, you can change which way they face.
+- **Hero spawn point** (blue "Spawn" marker): where heroes arrive (`goto`, joining).
+- **Graveyard:** where released heroes come back.
+- **Objects:** well, cart, stall, ger, sign, mine and the rest, with an optional label
+  shown over them. Objects block their tile (gers and mines block sight too).
+- **Landmark:** the red banner with a name.
+- **Doors** (purple marker): stepping on the tile takes you elsewhere. Choose
+  "Lift (inside this map)" or "Door to …" another map. Selected, **Choose where it
+  leads…** shows that map: click the arrival tile there (right-click or Esc
+  cancels). A lift's arrival shows with a line on this map.
+
+**Delete** (or the **Remove** button) removes the selected thing.
+
+## Map size
+
+**Map size** (top bar): add (+) or remove (−) rows and columns on each side:
+north-east (top right), south-east (bottom right), south-west (bottom left),
+north-west (top left). New tiles get the ground and height you choose.
+
+Everything on the map keeps its place on the ground. Adding or removing on the
+north-west or north-east side changes the coordinates of everything, and the
+editor moves them for you: things on this map, patrols, lifts, and, when you save,
+quest places in this map (reach spots, escort routes, places to examine), doors in
+other maps that lead here, the matching edges of linked maps, and the boss fight's
+victory spot. If shrinking would cut things off, it lists them and asks first.
+
+## Connections
+
+**Connections** (top bar): for each side, the map you walk into and an **offset**
+that lines the two sides up (rows or columns). Under each side it says where its
+open tiles arrive and how many land on walkable ground there. The other map gets
+the matching edge (its opposite side, with the opposite offset) when you save, so
+both maps always agree. Linked sides show their open tiles in green on the map,
+with the destination's name.
+
+## New map
+
+**New map** (top bar): a name, a size, the starting ground and height, a region
+(for the music) and the kind of music (town, explore or dungeon). It starts with a
+hero spawn point and a graveyard in the middle; link it to another map in
+Connections (or with a door) so heroes can walk there. Its file is
+`content/zones/<name>.tres`, and its ambience sound key is added to
+`AUDIO_SPEC.md`.
 
 ## Moving around
 
@@ -42,32 +101,42 @@ WASD or the arrow keys, or drag with the middle mouse button. Mouse wheel zooms.
 
 ## Undo and saving
 
-- **Ctrl+Z** undoes a whole drag at once, **Ctrl+Y** (or Ctrl+Shift+Z) redoes.
-- **Ctrl+S** or **Save** writes the map into its file (`content/zones/<map>.tres`).
-  Only the ground, height and prop rows change in the file; enemies, people,
-  objects, exits and settings stay exactly as they were. The walk and sight rows
-  are updated for you.
-- Before saving, the editor checks the map is still playable: every spawn point,
-  graveyard, person, enemy, patrol point, exit and map edge must be reachable on
-  foot from where heroes start. If something isn't, it lists it and asks whether
-  to save anyway.
-- Switching maps or going **Back to menu** with unsaved changes asks first.
-- After saving, **Play Solo** uses the new map straight away (no restart).
-- Commit the changed `.tres` in GitHub Desktop like any other change.
+- **Ctrl+Z** undoes a whole drag or one change to things, size or connections;
+  **Ctrl+Y** (or Ctrl+Shift+Z) redoes.
+- **Ctrl+S** or **Save** writes the map, and every other file the change reaches
+  (see above). The status bar lists what was saved and what else changed.
+- Before saving, the editor checks:
+  - every spawn point, graveyard, person, enemy, patrol point, door and linked edge
+    can still be reached on foot from where heroes start;
+  - doors lead onto ground you can stand on, and back (a one-way door is reported);
+  - each linked edge has open tiles that land on walkable ground;
+  - no quest lost a person it needs, or every enemy of a kind it asks you to defeat.
+  It lists what it found and asks whether to save anyway.
+- Switching maps, making a new map or going **Back to menu** with unsaved changes
+  asks first.
+- After saving, **Play Solo** uses the new maps straight away (no restart).
+- Commit the changed files in GitHub Desktop like any other change.
 
-## Not in this version
-
-Placing or moving enemies, people, spawn points, graveyards and objects, and
-making a map bigger or smaller. Edit those in the `.tres` file for now (see
-`docs/tilesets.md`).
+Big changes to the Act I maps can make some automatic tests fail, because they
+stand on exact spots (for example a wolf at (8, 13)). That's expected: when you ask
+to merge your map changes, the tests get updated with them.
 
 ## For programmers
 
-`editor/`: `ZoneEdit` (painting, undo, re-baking walkability into the rows and the
-live grid), `ZoneFile` (writes rows and legends into the .tres in place),
-`ZoneCheck` (playability, also used by `tests/unit/test_zone_layout.gd`),
-`EditorSession` (one frozen zone with the read API `WorldView` draws from),
-`MapEditor` (the screen), `EditorOverlay` (grid and height numbers).
+`editor/`:
+- `ZoneEdit`: the model. Painting (tile strokes) and whole-map steps (things, size,
+  links: snapshots), undo, re-baking walkability into the rows and the live grid.
+  Works on a copy loaded fresh from the file.
+- `ZoneSaver`: writes with `ResourceSaver` and syncs the other files: partner edges,
+  doors into the map, quests and the encounter after a shift, people moved away.
+  Then it refreshes ContentDB.
+- `ZoneCheck`: playability, links and quest people/enemies (also run on every map by
+  `tests/unit/test_zone_layout.gd`).
+- `EditorSession`: one frozen zone with the read API `WorldView` draws from.
+- `MapEditor`: the screen. `EditorOverlay`: grid, numbers, markers, patrols, edges.
+
 `WorldView.refresh_tiles` redraws the cached ground around painted tiles. Tests:
-`tests/unit/test_zone_edit.gd`, `tests/integration/test_map_editor.gd`;
-screenshots: `tests/visual/map_editor_shots.tscn`.
+`tests/unit/test_zone_edit.gd`, `tests/integration/test_map_editor.gd` (both save
+into a scratch folder, `ZoneSaver.redirect`); screenshots:
+`tests/visual/map_editor_shots.tscn`. `tools/once/resave_zones.tscn` re-saved every
+map once through the saver (2026-11-16).

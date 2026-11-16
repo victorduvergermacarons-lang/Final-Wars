@@ -29,8 +29,9 @@ checklist `docs/playtest-checklist-act1-full.md`. **Free movement** (branch
 `feature/free-movement`, 2026-11-01, all 6 phases): units move freely instead of tile by tile,
 attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **Free movement**,
 `docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Map editor**
-(2026-11-16, branch `feature/map-editor`): paint ground, heights and props with the mouse; see
-**Map editor** and `docs/map-editor.md`. Tile steps, step
+(2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
+enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
+new maps; see **Map editor** and `docs/map-editor.md`. Tile steps, step
 cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
@@ -283,26 +284,46 @@ animations the art bot made from it, approved on the `art-drafts` branch.
 
 ## Map editor (2026-11-16)
 
-User request: edit maps by hand with the mouse instead of the text rows. How-to:
-`docs/map-editor.md`.
+User requests: edit maps by hand with the mouse (part 1: ground, heights, props), then
+everything on them, their size and how they connect (part 2). How-to:
+`docs/map-editor.md`; checklist `docs/playtest-checklist-map-editor.md`.
 - **Where:** its own screen, from the main menu's **Map Editor** button (or `--map_editor`),
   only when the game runs from the Godot editor (`MapEditor.can_save()`: an export can't
   write its own files). Any tiled map stored in a file (not the generated testing grounds).
-- **What:** ground (the tileset's terrains), heights 0–9 (raise / lower once per tile per
-  drag, or an exact level), props (place / remove), brush 1×1 / 3×3 / 5×5, eyedropper,
-  undo / redo of whole drags (200 steps), grid and height-number helpers.
+- **Tools (1–6):** Ground, Height (raise / lower once per tile per drag, or an exact level
+  0–9), Props, Pick, **Things** (place enemies, people, hero spawns, graveyards, objects,
+  landmarks, doors), **Select** (select, cycle a tile's things, drag to move, Delete;
+  settings: enemy type / level / respawn / patrol, a person's facing, an object's kind and
+  label, a landmark's name, a door's destination and arrival tile picked on that map).
+  Brush 1/3/5, undo / redo (200 steps), grid and height numbers; markers for spawns,
+  doors, linked edge tiles, the selection and patrol routes (`EditorOverlay`).
+- **People stand once in the game:** placing someone already on the map moves them;
+  someone from another map is removed from it when saving.
+- **Map size:** rows / columns added or removed per side (named by screen corner:
+  north-east = grid up …). Things keep their place on the ground; cut-off things are listed
+  first. A shift of the map's coordinates (north-west / north-east side) is tracked
+  (`ZoneEdit.shift`) and applied on save to quest places in the map (reach, escort,
+  investigate), other maps' doors into it, its edges' offsets and the encounter's
+  victory tile.
+- **Connections:** per side, the map it leads to and the offset, with where its open
+  tiles land; the other map's matching edge (opposite side and offset) is written on save
+  (`ZoneSaver._sync_edges`), so both always agree. Doors are things.
+- **New map:** name, size, ground, height, region, music; a hero spawn and a graveyard;
+  file `content/zones/<id>.tres`; `AUDIO_SPEC.md` regenerated (`AudioSpecWriter.write`).
 - **How it shows:** the game's own `WorldView` draws an `EditorSession`: one zone,
   never ticked (enemies and people frozen where they spawn), no hero; the editor moves
-  the camera. `WorldView.refresh_tiles` redraws the cached ground around painted tiles.
-- **Model:** `ZoneEdit` paints a copy of the zone, re-bakes each painted tile's
-  walkability and sight (`ZoneDef.bake_tile`, shared with `bake_walkability`) into its
-  rows and the live grid, and adds legend letters for new terrains or props.
-- **Saving:** `ZoneFile` replaces only the five row lines and two legends in the .tres;
-  everything else in the file is untouched. Unused legend letters are dropped. First
-  `ZoneCheck.problems` (the zone layout test's checks, moved) lists what can no longer
-  be reached on foot, and the editor asks before saving anyway. The game's loaded zone
-  is updated too, so Play uses the new map without a restart.
-- **Later (not built):** moving enemies, people, spawns, graveyards and objects; resizing.
+  the camera; whole-map changes rebuild the session and view. `WorldView.refresh_tiles`
+  redraws the cached ground around painted tiles.
+- **Model** (`ZoneEdit`): works on a copy loaded fresh from the file; tile strokes are
+  undone tile by tile, whole-map steps by snapshots; walkability and sight re-baked
+  (`ZoneDef.bake_tile`); legend letters added for new terrains and props.
+- **Saving** (`ZoneSaver`): Godot's `ResourceSaver` writes the map and every file the change
+  reaches (partner edges, doors into it, quests and the encounter after a shift, people
+  moved away); then ContentDB's copies are refreshed so Play uses them at once. Every map
+  was re-saved once through it (`tools/once/resave_zones.tscn`). First `ZoneCheck` lists,
+  and the editor asks about: unreachable places, doors onto blocked or missing ground,
+  one-way doors, edges landing on blocked tiles, quests losing a person or every enemy of
+  a kind they need.
 
 ## Salamander Hound (2026-10-20)
 
@@ -1347,7 +1368,7 @@ view/            world view, iso tile renderer, actor views, camera, decor paint
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
 				 inventory, character sheet, spellbook, ability trees, dialogue, vendor, loot,
 				 quest log, tracker)
-editor/          map editor (ZoneEdit, ZoneFile, ZoneCheck, EditorSession, MapEditor, EditorOverlay)
+editor/          map editor (ZoneEdit, ZoneSaver, ZoneCheck, EditorSession, MapEditor, EditorOverlay)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator,
@@ -2024,6 +2045,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-16 | Map editor part 2: things, map size, connections, new maps; saving through Godot's resource writer | User request and choices: each person placed once in the whole game; a New map button; a one-time re-save of every map (format only); all three parts. My choices: a Things tool and a Select tool (click again cycles a tile's things, drag moves, Delete removes); patrols start where the enemy stands; a resize keeps things on their ground and moves every reference to the map's coordinates in other files on save (quests, doors, edges, the encounter); this map's edges decide the partner's (opposite side and offset); doors pick their arrival on the destination map; warnings (asked, not refused) for one-way doors, edges landing on blocked ground, and quests losing a person or every enemy of a kind; new maps start with a spawn and a graveyard and regenerate `AUDIO_SPEC.md`. |
 | 2026-11-16 | Map editor: its own screen from the main menu, painting ground, heights and props, saving into the zone files | User choices: a separate screen (not in-game), enemies frozen, ground/height/props first (objects later). My choices: offered only when running from the Godot editor; heights 0–9; height raise/lower changes each tile once per drag; right-click copies ground / removes props; Pick returns to Ground; saving warns (and asks) when a spawn, graveyard, NPC, enemy, patrol point, exit or edge can't be reached; saving also updates the loaded map; the rows are rewritten in place so nothing else in the file changes. |
 | 2026-11-15 | Water abilities unlock one per Mastery step (per-ability Mastery Required, read by the importer; Water rows' formula replaced by their own text); Tidal Blessing, Water Shield and Revive lose the prerequisites that now unlock later | User request (the 23 steps). The rules already read each ability's `mastery_required`; the importer used to take the tier's threshold and now takes the Mastery Required cell (empty: the tier's). My choices: tiers stay as they are for everything else (AP, rarity, prices, damage defaults, the tree screen's columns); a prerequisite unlocking later is an import warning and a content test; the tree screen heads a column with its first ability's step, orders it by step, and a locked node shows "Needs N"; Excel's calcChain.xml was dropped from the workbook (Excel rebuilds it) since it listed the replaced formulas (`tools/once/water_mastery_steps.py`). |
 | 2026-11-15 | The hero gets PL-01-1's sprite and animations (idle, walk, cast, hit, death, downed, revived) | User approval of the art-drafts animations. User choices: death take 4; downed for stuns (then revived to get up; revived also after a resurrection or a release); back stills when facing away until back animations exist; cast plays when an ability goes off. My choices: frame rates (idle 6, cast and hit 18, death 12, downed 15, revived 12, run 4 frames per tile); death, downed and revived use the front frames facing away too; no white hit flash for heroes (the hit animation shows it); state changes noted by each view rather than new snapshot fields. |
