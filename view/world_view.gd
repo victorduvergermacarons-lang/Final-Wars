@@ -198,6 +198,22 @@ func _update_terrain_cache() -> void:
 		_max_height = _highest(_heights_seen)
 
 
+## Redraws the cached ground around `tiles` after their terrain or props changed
+## (the map editor; height changes are noticed by themselves). The rows just
+## behind and in front go too: hidden blocks and shoreline foam depend on them.
+func refresh_tiles(tiles: Array) -> void:
+	if _chunks.is_empty():
+		return
+	var rows := {}
+	for p: Vector2i in tiles:
+		var d := Iso.depth(p)
+		for row in [d - 1, d, d + 1]:
+			if row >= 0 and row <= _max_depth:
+				rows[row / CHUNK_ROWS] = true
+	for i in rows:
+		_chunks[i].queue_redraw()
+
+
 static func _highest(heights: PackedInt32Array) -> int:
 	var m := 0
 	for h in heights:

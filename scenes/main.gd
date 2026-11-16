@@ -3,10 +3,11 @@ extends Node2D
 ##
 ## Command-line shortcuts (handy with Debug > Customize Run Instances):
 ##   --solo | --host | --join=ADDRESS   [--port=N] [--name=NAME]
+##   --map_editor (opens the map editor)
 ## --name picks a saved character (created if it doesn't exist).
 ## Accepted with or without a "--" separator before them.
 
-const FLAGS := ["solo", "host", "join", "port", "name"]
+const FLAGS := ["solo", "host", "join", "port", "name", "map_editor"]
 
 var _menu: MainMenu
 var _game: Game
@@ -26,6 +27,7 @@ func _show_menu(status: String) -> void:
 	_menu.solo_requested.connect(_on_solo)
 	_menu.host_requested.connect(_on_host)
 	_menu.join_requested.connect(_on_join)
+	_menu.map_editor_requested.connect(_on_map_editor)
 	_menu.show_status(status)
 
 
@@ -71,6 +73,16 @@ func _on_join(character: Dictionary, address: String, port: int) -> void:
 		_game.client.say("Connecting to %s:%d…" % [address, port])
 
 
+func _on_map_editor() -> void:
+	_menu.queue_free()
+	var editor := MapEditor.new()
+	editor.name = "MapEditor"
+	add_child(editor)
+	editor.closed.connect(func():
+		editor.queue_free()
+		_show_menu.call_deferred(""))
+
+
 func _auto_start(args: PackedStringArray) -> void:
 	var opts := {}
 	for a in args:
@@ -79,6 +91,9 @@ func _auto_start(args: PackedStringArray) -> void:
 		var parts := a.trim_prefix("--").split("=", true, 1)
 		if parts[0] in FLAGS:
 			opts[parts[0]] = parts[1] if parts.size() > 1 else ""
+	if opts.has("map_editor"):
+		_on_map_editor()
+		return
 	var port := int(opts.get("port", Net.DEFAULT_PORT))
 	if not (opts.has("solo") or opts.has("host") or opts.has("join")):
 		return

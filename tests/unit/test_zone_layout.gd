@@ -4,45 +4,15 @@ extends GutTest
 ## walkable and reachable on foot (Jump 2) from where heroes start, riding the
 ## map's lifts (exits within the same map) where it has them.
 
-const JUMP := 2
+## (The checks live in ZoneCheck, which the map editor also runs before saving.)
 
 
 func _reachable(grid: GridModel, start: Vector2i, z: ZoneDef = null) -> Dictionary:
-	var lifts := {}
-	if z != null:
-		for e in z.exits:
-			if e.to_zone == &"" or e.to_zone == z.id:
-				lifts[e.tile] = e.to_tile
-	var seen := {start: true}
-	var queue: Array[Vector2i] = [start]
-	while not queue.is_empty():
-		var p: Vector2i = queue.pop_front()
-		if lifts.has(p) and not seen.has(lifts[p]):
-			seen[lifts[p]] = true
-			queue.append(lifts[p])
-		for d in GridModel.DIRECTIONS:
-			var n: Vector2i = p + d
-			if not seen.has(n) and grid.can_step(p, n, JUMP):
-				seen[n] = true
-				queue.append(n)
-	return seen
+	return ZoneCheck.reachable(grid, start, z)
 
 
 func _places(z: ZoneDef) -> Dictionary:
-	var out := {}
-	for p in z.hero_spawns:
-		out[p] = "hero spawn"
-	for p in z.graveyards:
-		out[p] = "graveyard"
-	for n in z.npcs:
-		out[n.tile] = "NPC %s" % n.npc.id
-	for lm in z.landmarks:
-		out[lm.tile] = "landmark %s" % lm.name
-	for s in z.enemy_spawns:
-		out[s.tile] = "%s spawn" % s.enemy.id
-		for w in s.patrol:
-			out[w] = "%s patrol point" % s.enemy.id
-	return out
+	return ZoneCheck.places(z)
 
 
 func test_every_place_is_walkable_and_reachable() -> void:
@@ -90,6 +60,13 @@ func test_written_walk_and_sight_rows_match_the_tileset() -> void:
 		var on_disk: ZoneDef = ResourceLoader.load(z.resource_path, "", ResourceLoader.CACHE_MODE_IGNORE)
 		assert_eq(Array(on_disk.walk_rows), Array(z.walk_rows), "%s walk_rows" % z.id)
 		assert_eq(Array(on_disk.sight_rows), Array(z.sight_rows), "%s sight_rows" % z.id)
+
+
+func test_every_zone_passes_the_editors_check() -> void:
+	for z: ZoneDef in ContentDB.zones.values():
+		assert_eq(Array(ZoneCheck.problems(z, GridModel.from_zone(z))), [], "%s" % z.id)
+		assert_eq(Array(ZoneCheck.link_problems(z)), [], "%s links" % z.id)
+		assert_eq(Array(ZoneCheck.story_problems(z)), [], "%s story" % z.id)
 
 
 func test_greenfields_has_the_promised_features() -> void:
