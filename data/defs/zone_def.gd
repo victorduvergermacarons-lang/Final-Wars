@@ -130,27 +130,33 @@ func bake_walkability(ts: TilesetData) -> void:
 		var srow := ""
 		for x in terrain_rows[y].length():
 			var p := Vector2i(x, y)
-			var terrain := terrain_at(p)
-			var walkable := ts.terrain_walkable(terrain)
-			var friction := ts.terrain_friction(terrain)
-			if friction != 1.0:
-				friction_tiles[p] = friction
-			var blocks := ts.blocks_sight(ts.pick(terrain, p))
-			var group := prop_at(p)
-			if group != "":
-				var prop := ts.pick_prop(group, p)
-				walkable = walkable and ts.is_walkable(prop)
-				blocks = blocks or ts.blocks_sight(prop)
-			var d := decor_at(p)
-			if d != null:
-				walkable = walkable and not d.blocks_walk()
-				blocks = blocks or d.blocks_sight()
-			wrow += "." if walkable else "#"
-			srow += "#" if blocks else "."
+			var baked := bake_tile(ts, p)
+			if baked.friction != 1.0:
+				friction_tiles[p] = baked.friction
+			wrow += "." if baked.walkable else "#"
+			srow += "#" if baked.blocks_sight else "."
 		walk.append(wrow)
 		sight.append(srow)
 	walk_rows = walk
 	sight_rows = sight
+
+
+## One tile's walkability, sight and friction from its terrain, prop and decor
+## (what bake_walkability writes; the map editor re-bakes painted tiles with it).
+func bake_tile(ts: TilesetData, p: Vector2i) -> Dictionary:
+	var terrain := terrain_at(p)
+	var walkable := ts.terrain_walkable(terrain)
+	var blocks := ts.blocks_sight(ts.pick(terrain, p))
+	var group := prop_at(p)
+	if group != "":
+		var prop := ts.pick_prop(group, p)
+		walkable = walkable and ts.is_walkable(prop)
+		blocks = blocks or ts.blocks_sight(prop)
+	var d := decor_at(p)
+	if d != null:
+		walkable = walkable and not d.blocks_walk()
+		blocks = blocks or d.blocks_sight()
+	return {"walkable": walkable, "blocks_sight": blocks, "friction": ts.terrain_friction(terrain)}
 
 
 ## Problems with the terrain layer against its tileset (empty = fine).
