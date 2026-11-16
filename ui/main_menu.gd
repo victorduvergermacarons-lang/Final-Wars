@@ -6,6 +6,8 @@ extends CanvasLayer
 signal solo_requested(character: Dictionary)
 signal host_requested(character: Dictionary, port: int)
 signal join_requested(character: Dictionary, address: String, port: int)
+## Map Editor (only offered when the game runs from the Godot editor).
+signal map_editor_requested
 
 var store: CharacterStore
 var _characters: OptionButton
@@ -72,6 +74,8 @@ func _ready() -> void:
 	row.add_child(host)
 	row.add_child(join)
 	box.add_child(row)
+	if MapEditor.can_save():
+		box.add_child(_button("Map Editor", func(): map_editor_requested.emit()))
 	box.add_child(_button("Settings", func():
 		settings_window.visible = not settings_window.visible))
 	_status = Label.new()
