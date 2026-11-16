@@ -991,6 +991,167 @@
         "generations": 1
       },
       "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1)"
+    },
+    "PL-01-1+idle@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+idle_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west"
+    },
+    "PL-01-1+walk@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+walk_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west"
+    },
+    "PL-01-1+cast@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+cast_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west"
+    },
+    "PL-01-1+getting-hit@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west"
+    },
+    "PL-01-1+death@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+death_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west"
+    },
+    "PL-01-1+downed@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+downed_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west"
+    },
+    "PL-01-1+revived@south-west": {
+      "date": "2026-11-16",
+      "files": [
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_1.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_2.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_3.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_4.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_5.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_6.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_7.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_8.png",
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+revived_south-west_2026-11-16_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south-west"
     }
   },
   "failures": {},
@@ -1192,6 +1353,21 @@
         "PL-01-1+death",
         "PL-01-1+downed",
         "PL-01-1+revived"
+      ],
+      "failed": [],
+      "stopped": "",
+      "source": "pixellab.ai web app, Animate with text V3 (by Claude)"
+    },
+    {
+      "date": "2026-11-16",
+      "made": [
+        "south-west/idle",
+        "south-west/walk",
+        "south-west/cast",
+        "south-west/getting-hit",
+        "south-west/death",
+        "south-west/downed",
+        "south-west/revived"
       ],
       "failed": [],
       "stopped": "",

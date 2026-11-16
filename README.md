@@ -43,6 +43,60 @@ keepers into the game's `assets/` folder by hand.
 
 ## Drafts
 
+### PL-02-1+8dir ·  (2026-11-16)
+
+![PL-02-1+8dir](art/PL-02/PL-02-1_take1_8dir_preview.png)
+
+<sub></sub>
+
+### PL-02-2+8dir ·  (2026-11-16)
+
+![PL-02-2+8dir](art/PL-02/PL-02-2_take1_8dir_preview.png)
+
+<sub></sub>
+
+### PL-01-1+idle@south-west ·  (2026-11-16)
+
+![PL-01-1+idle@south-west](art/PL-01/PL-01-1+idle_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+walk@south-west ·  (2026-11-16)
+
+![PL-01-1+walk@south-west](art/PL-01/PL-01-1+walk_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+cast@south-west ·  (2026-11-16)
+
+![PL-01-1+cast@south-west](art/PL-01/PL-01-1+cast_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+getting-hit@south-west ·  (2026-11-16)
+
+![PL-01-1+getting-hit@south-west](art/PL-01/PL-01-1+getting-hit_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+death@south-west ·  (2026-11-16)
+
+![PL-01-1+death@south-west](art/PL-01/PL-01-1+death_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+downed@south-west ·  (2026-11-16)
+
+![PL-01-1+downed@south-west](art/PL-01/PL-01-1+downed_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+revived@south-west ·  (2026-11-16)
+
+![PL-01-1+revived@south-west](art/PL-01/PL-01-1+revived_south-west_2026-11-16_preview.gif)
+
+<sub></sub>
+
 ### BO-02-1 · Ashbark Colossus (2026-11-15)
 
 ![BO-02-1](art/BO-02/BO-02-1_2026-11-15.png)
