@@ -28,7 +28,9 @@ and `docs/playtest-checklist-act1-zones.md`. **Milestone 3 of 4** (the Act I que
 checklist `docs/playtest-checklist-act1-full.md`. **Free movement** (branch
 `feature/free-movement`, 2026-11-01, all 6 phases): units move freely instead of tile by tile,
 attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **Free movement**,
-`docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. Tile steps, step
+`docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Map editor**
+(2026-11-16, branch `feature/map-editor`): paint ground, heights and props with the mouse; see
+**Map editor** and `docs/map-editor.md`. Tile steps, step
 cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
@@ -278,6 +280,29 @@ animations the art bot made from it, approved on the `art-drafts` branch.
   notes when it sees them change, and cast and hit come from the event stream (a
   snapshot's delay apart at most between players).
 - Screenshots: `tests/visual/hero_art_shots.tscn`.
+
+## Map editor (2026-11-16)
+
+User request: edit maps by hand with the mouse instead of the text rows. How-to:
+`docs/map-editor.md`.
+- **Where:** its own screen, from the main menu's **Map Editor** button (or `--map_editor`),
+  only when the game runs from the Godot editor (`MapEditor.can_save()`: an export can't
+  write its own files). Any tiled map stored in a file (not the generated testing grounds).
+- **What:** ground (the tileset's terrains), heights 0–9 (raise / lower once per tile per
+  drag, or an exact level), props (place / remove), brush 1×1 / 3×3 / 5×5, eyedropper,
+  undo / redo of whole drags (200 steps), grid and height-number helpers.
+- **How it shows:** the game's own `WorldView` draws an `EditorSession`: one zone,
+  never ticked (enemies and people frozen where they spawn), no hero; the editor moves
+  the camera. `WorldView.refresh_tiles` redraws the cached ground around painted tiles.
+- **Model:** `ZoneEdit` paints a copy of the zone, re-bakes each painted tile's
+  walkability and sight (`ZoneDef.bake_tile`, shared with `bake_walkability`) into its
+  rows and the live grid, and adds legend letters for new terrains or props.
+- **Saving:** `ZoneFile` replaces only the five row lines and two legends in the .tres;
+  everything else in the file is untouched. Unused legend letters are dropped. First
+  `ZoneCheck.problems` (the zone layout test's checks, moved) lists what can no longer
+  be reached on foot, and the editor asks before saving anyway. The game's loaded zone
+  is updated too, so Play uses the new map without a restart.
+- **Later (not built):** moving enemies, people, spawns, graveyards and objects; resizing.
 
 ## Salamander Hound (2026-10-20)
 
@@ -1322,6 +1347,7 @@ view/            world view, iso tile renderer, actor views, camera, decor paint
 ui/              main menu, stores (characters, world, settings), HUD (action bar, unit frames,
 				 inventory, character sheet, spellbook, ability trees, dialogue, vendor, loot,
 				 quest log, tracker)
+editor/          map editor (ZoneEdit, ZoneFile, ZoneCheck, EditorSession, MapEditor, EditorOverlay)
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator,
@@ -1331,7 +1357,7 @@ tools/once/      one-off content conversions and generators (kept for the record
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement), ability import, tilesets, quests and dialogue, the free movement plan
+docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
 ```
 
 ### Build order (milestone 1)
@@ -1998,6 +2024,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-16 | Map editor: its own screen from the main menu, painting ground, heights and props, saving into the zone files | User choices: a separate screen (not in-game), enemies frozen, ground/height/props first (objects later). My choices: offered only when running from the Godot editor; heights 0–9; height raise/lower changes each tile once per drag; right-click copies ground / removes props; Pick returns to Ground; saving warns (and asks) when a spawn, graveyard, NPC, enemy, patrol point, exit or edge can't be reached; saving also updates the loaded map; the rows are rewritten in place so nothing else in the file changes. |
 | 2026-11-15 | Water abilities unlock one per Mastery step (per-ability Mastery Required, read by the importer; Water rows' formula replaced by their own text); Tidal Blessing, Water Shield and Revive lose the prerequisites that now unlock later | User request (the 23 steps). The rules already read each ability's `mastery_required`; the importer used to take the tier's threshold and now takes the Mastery Required cell (empty: the tier's). My choices: tiers stay as they are for everything else (AP, rarity, prices, damage defaults, the tree screen's columns); a prerequisite unlocking later is an import warning and a content test; the tree screen heads a column with its first ability's step, orders it by step, and a locked node shows "Needs N"; Excel's calcChain.xml was dropped from the workbook (Excel rebuilds it) since it listed the replaced formulas (`tools/once/water_mastery_steps.py`). |
 | 2026-11-15 | The hero gets PL-01-1's sprite and animations (idle, walk, cast, hit, death, downed, revived) | User approval of the art-drafts animations. User choices: death take 4; downed for stuns (then revived to get up; revived also after a resurrection or a release); back stills when facing away until back animations exist; cast plays when an ability goes off. My choices: frame rates (idle 6, cast and hit 18, death 12, downed 15, revived 12, run 4 frames per tile); death, downed and revived use the front frames facing away too; no white hit flash for heroes (the hit animation shows it); state changes noted by each view rather than new snapshot fields. |
 | 2026-11-15 | Playtest fixes: two-key movement follows the grid lines; the folded quest tracker shrinks after being moved; mouse-aimed abilities always aim at the cursor; a second press of an ability's key uses it | User playtest report (5 items; item 4, gradual unlocks, waits for the user's approval of a schedule). Causes: two keys gave a 45° screen diagonal, but the grid's lines run at 26.6° (`Mover.screen_to_grid`); a dragged tracker kept a fixed size, and folding only hid its text; the host ignored the cursor sent with Slash's bar inputs (Targeted in the sheet, cone hitbox), the client aimed at the targeted enemy until the mouse moved, and a cursor off the map fell back to the hero's facing. My choices: the lock-on to the target is gone for every aimed ability (it was decision 24's default); a second press during a bar plays it like a right-click; another ability's key cancels the bar and gives back its global cooldown, so the new ability isn't blocked; aimed abilities without a bar keep release-to-fire. |
