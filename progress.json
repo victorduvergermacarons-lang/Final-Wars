@@ -1858,6 +1858,167 @@
       },
       "facing": "north-east",
       "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-01-1+idle@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_1.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_2.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_3.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_4.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_5.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_6.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_7.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_8.png",
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+idle_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south"
+    },
+    "PL-01-1+walk@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_1.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_2.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_3.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_4.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_5.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_6.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_7.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_8.png",
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+walk_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south"
+    },
+    "PL-01-1+cast@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_1.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_2.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_3.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_4.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_5.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_6.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_7.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_8.png",
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+cast_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south"
+    },
+    "PL-01-1+getting-hit@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_1.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_2.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_3.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_4.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_5.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_6.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_7.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_8.png",
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+getting-hit_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south"
+    },
+    "PL-01-1+death@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-01/PL-01-1+death_south_2026-11-17_1.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_2.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_3.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_4.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_5.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_6.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_7.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_8.png",
+        "art/PL-01/PL-01-1+death_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+death_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south"
+    },
+    "PL-01-1+downed@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_1.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_2.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_3.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_4.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_5.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_6.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_7.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_8.png",
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+downed_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south"
+    },
+    "PL-01-1+revived@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_1.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_2.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_3.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_4.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_5.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_6.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_7.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_8.png",
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-01/PL-01-1+revived_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south"
     }
   },
   "failures": {},
@@ -2136,6 +2297,21 @@
         "south-west/aimed-bow-shot",
         "north-west/aimed-bow-shot",
         "north-east/aimed-bow-shot"
+      ],
+      "failed": [],
+      "stopped": "",
+      "source": "pixellab.ai web app, Animate with text V3 (by Claude)"
+    },
+    {
+      "date": "2026-11-17",
+      "made": [
+        "south/idle",
+        "south/walk",
+        "south/cast",
+        "south/getting-hit",
+        "south/death",
+        "south/downed",
+        "south/revived"
       ],
       "failed": [],
       "stopped": "",

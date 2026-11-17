@@ -43,6 +43,48 @@ keepers into the game's `assets/` folder by hand.
 
 ## Drafts
 
+### PL-01-1+idle@south ·  (2026-11-17)
+
+![PL-01-1+idle@south](art/PL-01/PL-01-1+idle_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+walk@south ·  (2026-11-17)
+
+![PL-01-1+walk@south](art/PL-01/PL-01-1+walk_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+cast@south ·  (2026-11-17)
+
+![PL-01-1+cast@south](art/PL-01/PL-01-1+cast_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+getting-hit@south ·  (2026-11-17)
+
+![PL-01-1+getting-hit@south](art/PL-01/PL-01-1+getting-hit_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+death@south ·  (2026-11-17)
+
+![PL-01-1+death@south](art/PL-01/PL-01-1+death_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+downed@south ·  (2026-11-17)
+
+![PL-01-1+downed@south](art/PL-01/PL-01-1+downed_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+revived@south ·  (2026-11-17)
+
+![PL-01-1+revived@south](art/PL-01/PL-01-1+revived_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
 ### PL-02-1+8dir ·  (2026-11-16)
 
 ![PL-02-1+8dir](art/PL-02/PL-02-1_take1_8dir_preview.png)
