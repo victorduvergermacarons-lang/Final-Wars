@@ -402,7 +402,17 @@ def main() -> int:
     ap.add_argument("--queue", default=str(HERE / "queue.json"))
     ap.add_argument("--count", type=int, default=int(os.environ.get("DAILY_GENERATIONS", "5")))
     ap.add_argument("--dry-run", action="store_true", help="show what would be made, call nothing")
+    ap.add_argument("--balance", action="store_true", help="only print the PixelLab balance")
     args = ap.parse_args()
+
+    if args.balance:
+        secret = os.environ.get("PIXELLAB_SECRET", "").strip()
+        if not secret:
+            print("PIXELLAB_SECRET is not set.")
+            return 1
+        _, balance = request("GET", "/balance", secret)
+        print(f"Balance: {json.dumps(balance)}")
+        return 0
 
     drafts = Path(args.drafts)
     stills = load_queue(Path(args.queue))

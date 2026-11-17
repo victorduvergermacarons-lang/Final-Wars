@@ -15,6 +15,10 @@ on:
         description: "Only list what would be made"
         type: boolean
         default: false
+      balance_only:
+        description: "Only check the PixelLab balance"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -55,6 +59,7 @@ jobs:
         run: |
           args="--drafts drafts --count ${{ github.event.inputs.count || '5' }}"
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then args="$args --dry-run"; fi
+          if [ "${{ github.event.inputs.balance_only }}" = "true" ]; then args="$args --balance"; fi
           python3 tools/art_bot/art_bot.py $args
 
       - name: Save the drafts
