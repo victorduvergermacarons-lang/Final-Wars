@@ -141,14 +141,14 @@ func test_out_of_range_aims_are_pulled_back_or_refused() -> void:
 	hero.bag.add(ContentDB.items[&"scroll_of_the_fireball"])
 	TreeRules.master(hero, ContentDB.abilities[&"F07"])
 	var p := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ContentDB.abilities[&"F07"],
-			_a(14, 8), null, session.now())
+			_a(16, 8), null, session.now())
 	assert_eq(p.result, AbilityResolver.Result.OK, "a circle aimed too far lands at the edge of its range")
-	assert_true(_inside(p.outline, _a(10, 8)), "5 tiles out")
-	assert_false(_inside(p.outline, _a(14, 8)))
+	assert_true(_inside(p.outline, _a(12, 8)), "7 tiles out (5 until the 2026-11-17 rebalance)")
+	assert_false(_inside(p.outline, _a(16, 8)))
 	# A grid ability (terrain) still refuses an aim out of range.
 	TreeRules.master(hero, ContentDB.abilities[&"E03"])
 	p = AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ContentDB.abilities[&"E03"],
-			_a(14, 8), null, session.now())
+			_a(16, 8), null, session.now())
 	assert_eq(p.result, AbilityResolver.Result.OUT_OF_RANGE)
 
 
