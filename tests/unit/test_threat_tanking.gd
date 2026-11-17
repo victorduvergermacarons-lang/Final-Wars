@@ -65,3 +65,59 @@ func test_a_dead_taunter_ends_the_forced_time() -> void:
 	world._on_death(tank) # what a killing blow does: off every threat table
 	assert_false(wolf.threat.has(tank.id))
 	assert_eq(EnemyBrain.pick_target(world, wolf), dps.id)
+
+
+# --- Physical Defense raises heroes' threat ----------------------------------------------
+
+func _damage(source: Actor, amount: float, threat_multiplier := 1.0) -> void:
+	var events: Array[Dictionary] = []
+	AbilityResolver.deal_damage(world.ctx, source, wolf, &"test", amount, false, events, "", threat_multiplier)
+
+
+func test_threat_grows_with_physical_defense() -> void:
+	var rules: CombatRules = world.rules
+	var cloth := _hero(10.0)
+	var plate := _hero(60.0)
+	_damage(cloth, 10.0)
+	_damage(plate, 10.0)
+	assert_almost_eq(wolf.threat.get_threat(cloth.id), 10.0 * (1.0 + 10.0 / rules.threat_def_divisor), 0.001)
+	assert_almost_eq(wolf.threat.get_threat(plate.id), 10.0 * (1.0 + 60.0 / rules.threat_def_divisor), 0.001)
+	assert_almost_eq(AbilityResolver.defense_threat_multiplier(world.ctx, plate), 2.5, 0.001,
+			"a geared tank (60 Physical Defense) at about 2.5x")
+
+
+func test_the_multiplier_is_capped() -> void:
+	var wall := _hero(500.0)
+	assert_eq(AbilityResolver.defense_threat_multiplier(world.ctx, wall), world.rules.max_def_threat_multiplier)
+
+
+func test_buffs_count_while_up() -> void:
+	var h := _hero(20.0)
+	var before := AbilityResolver.defense_threat_multiplier(world.ctx, h)
+	h.buffs.apply(db.buffs[&"tidal_blessing"], world.now) # +20 Physical Defense
+	assert_gt(AbilityResolver.defense_threat_multiplier(world.ctx, h), before)
+
+
+func test_effect_multiplier_stacks_and_enemies_dont_get_it() -> void:
+	var plate := _hero(60.0)
+	_damage(plate, 10.0, 3.0)
+	assert_almost_eq(wolf.threat.get_threat(plate.id), 10.0 * 2.5 * 3.0, 0.001)
+	assert_eq(AbilityResolver.defense_threat_multiplier(world.ctx, wolf), 1.0)
+
+
+func test_healing_threat_grows_with_physical_defense_too() -> void:
+	var healer := _hero(60.0)
+	wolf.threat.add(tank.id, 10.0) # fighting the tank
+	tank.hp = 100.0
+	var heal := AbilityDef.new()
+	heal.id = &"test_heal"
+	heal.target = AbilityDef.TargetType.ALLY
+	heal.max_range = 10
+	var e := AbilityEffect.new()
+	e.kind = AbilityEffect.Kind.HEAL
+	e.base_amount = 40.0
+	heal.effects = [e]
+	var events: Array[Dictionary] = []
+	AbilityResolver.apply_effects(world.ctx, healer, heal, tank, events)
+	var healed: float = events.filter(func(x): return x.type == "heal")[0].amount
+	assert_almost_eq(wolf.threat.get_threat(healer.id), healed * world.rules.heal_threat_multiplier * 2.5, 0.01)

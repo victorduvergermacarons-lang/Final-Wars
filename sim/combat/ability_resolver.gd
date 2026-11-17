@@ -510,7 +510,7 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 		e.absorbed = taken - through
 	events.append(e)
 	if target.threat != null and source != null:
-		target.threat.add(source.id, dmg * threat_multiplier)
+		target.threat.add(source.id, dmg * threat_multiplier * defense_threat_multiplier(ctx, source))
 	if target.hp <= 0.0:
 		target.die()
 		target.casting = {}
@@ -725,6 +725,17 @@ static func _roll_crit(ctx: CombatContext, effect: AbilityEffect, caster_stats: 
 	return effect.can_crit and (ctx.force_crit or ctx.rng.randf() < CombatMath.crit_chance(caster_stats.crit_rate))
 
 
+## Heroes make more threat the tougher they are: 1 + Physical Defense ÷
+## `threat_def_divisor`, at most `max_def_threat_multiplier` (current Physical
+## Defense, buffs included, so Stone Skin and Earth Armor raise it while up).
+## Enemies and anything else: 1. Ability effects' own threat_multiplier stacks on top.
+static func defense_threat_multiplier(ctx: CombatContext, source: Actor) -> float:
+	if not source is Hero or ctx.rules.threat_def_divisor <= 0.0:
+		return 1.0
+	var def := maxf(source.current_stats(ctx.now).phys_def, 0.0)
+	return minf(1.0 + def / ctx.rules.threat_def_divisor, maxf(ctx.rules.max_def_threat_multiplier, 1.0))
+
+
 ## A taunt that needs a buff on the caster (Metalbending: Stone Skin or Earth Armor).
 static func _taunt_allowed(ctx: CombatContext, caster: Actor, effect: AbilityEffect) -> bool:
 	if effect.taunt_requires_buffs.is_empty():
@@ -741,6 +752,6 @@ static func _share_support_threat(ctx: CombatContext, caster: Actor, target: Act
 	var enemies := ctx.enemies_fighting(target.id)
 	if enemies.is_empty():
 		return
-	var share := total_threat / enemies.size()
+	var share := total_threat * defense_threat_multiplier(ctx, caster) / enemies.size()
 	for enemy in enemies:
 		enemy.threat.add(caster.id, share)
