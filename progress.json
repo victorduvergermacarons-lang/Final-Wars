@@ -2946,6 +2946,175 @@
       "usage": {
         "seconds": 53.12093114852905
       }
+    },
+    "NP-02-4": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-02/NP-02-4_2026-11-17_1.png",
+        "art/NP-02/NP-02-4_2026-11-17_2.png"
+      ],
+      "usage": {
+        "seconds": 42.3674578666687
+      }
+    },
+    "NP-07-1+8dir": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-07/NP-07-1+8dir_2026-11-17_1.png",
+        "art/NP-07/NP-07-1+8dir_2026-11-17_2.png",
+        "art/NP-07/NP-07-1+8dir_2026-11-17_3.png",
+        "art/NP-07/NP-07-1+8dir_2026-11-17_4.png",
+        "art/NP-07/NP-07-1+8dir_2026-11-17_5.png",
+        "art/NP-07/NP-07-1+8dir_2026-11-17_6.png",
+        "art/NP-07/NP-07-1+8dir_2026-11-17_7.png",
+        "art/NP-07/NP-07-1+8dir_2026-11-17_8.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01875594496064716
+      },
+      "preview": [
+        "art/NP-07/NP-07-1+8dir_2026-11-17_sheet.png"
+      ]
+    },
+    "NP-07-1+idle": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-07/NP-07-1+idle_2026-11-17_1.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_2.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_3.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_4.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_5.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_6.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_7.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_8.png",
+        "art/NP-07/NP-07-1+idle_2026-11-17_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018748845100402832
+      },
+      "preview": [
+        "art/NP-07/NP-07-1+idle_2026-11-17_preview.gif"
+      ]
+    },
+    "NP-07-1+talking": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-07/NP-07-1+talking_2026-11-17_1.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_2.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_3.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_4.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_5.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_6.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_7.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_8.png",
+        "art/NP-07/NP-07-1+talking_2026-11-17_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018241974261071946
+      },
+      "preview": [
+        "art/NP-07/NP-07-1+talking_2026-11-17_preview.gif"
+      ]
+    },
+    "NP-08-1+8dir": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-08/NP-08-1+8dir_2026-11-17_1.png",
+        "art/NP-08/NP-08-1+8dir_2026-11-17_2.png",
+        "art/NP-08/NP-08-1+8dir_2026-11-17_3.png",
+        "art/NP-08/NP-08-1+8dir_2026-11-17_4.png",
+        "art/NP-08/NP-08-1+8dir_2026-11-17_5.png",
+        "art/NP-08/NP-08-1+8dir_2026-11-17_6.png",
+        "art/NP-08/NP-08-1+8dir_2026-11-17_7.png",
+        "art/NP-08/NP-08-1+8dir_2026-11-17_8.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.032433164291911655
+      },
+      "preview": [
+        "art/NP-08/NP-08-1+8dir_2026-11-17_sheet.png"
+      ]
+    },
+    "NP-08-1+idle": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-08/NP-08-1+idle_2026-11-17_1.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_2.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_3.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_4.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_5.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_6.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_7.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_8.png",
+        "art/NP-08/NP-08-1+idle_2026-11-17_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.024296779387527043
+      },
+      "preview": [
+        "art/NP-08/NP-08-1+idle_2026-11-17_preview.gif"
+      ]
+    },
+    "NP-08-1+talking": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-08/NP-08-1+talking_2026-11-17_1.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_2.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_3.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_4.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_5.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_6.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_7.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_8.png",
+        "art/NP-08/NP-08-1+talking_2026-11-17_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02063985953728358
+      },
+      "preview": [
+        "art/NP-08/NP-08-1+talking_2026-11-17_preview.gif"
+      ]
+    },
+    "NP-08-1+heal-cast": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_1.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_2.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_3.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_4.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_5.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_6.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_7.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_8.png",
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018709099484814536
+      },
+      "preview": [
+        "art/NP-08/NP-08-1+heal-cast_2026-11-17_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -3352,6 +3521,21 @@
       "made": [
         "NP-07-3",
         "NP-08-3"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-17",
+      "made": [
+        "NP-02-4",
+        "NP-07-1+8dir",
+        "NP-07-1+idle",
+        "NP-07-1+talking",
+        "NP-08-1+8dir",
+        "NP-08-1+idle",
+        "NP-08-1+talking",
+        "NP-08-1+heal-cast"
       ],
       "failed": [],
       "stopped": ""
