@@ -18,7 +18,7 @@ kind = 10
 [resource]
 script = ExtResource("3_rrw60")
 id = &"A02"
-max_range = 3
+max_range = 5
 mana_cost = 8.0
 on_gcd = false
 ranged = true

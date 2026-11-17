@@ -63,15 +63,27 @@ def set_cell(row, col, value):
     sheet = sheet[:m.start()] + new + sheet[m.end():]
 
 
-def plus_two(text, shape):
-    """Ranges written in the text, two tiles further. Area sizes ("within 2 tiles of
-    a point", "3x3") stay; a Line's length ("3-tile line") is its range."""
+def plus_two(text, shape, where):
+    """The range written in the text, two tiles further: the first "within N",
+    "range N" or "up to N tiles away" in the cell (later numbers are area sizes,
+    "within 1 of the target"), or a Line's length ("3-tile line"). Counts, heights
+    and durations ("up to 3 enemies", "up to 3s") aren't ranges and stay."""
+    if where in SKIP_TEXT:
+        return text
     def bump(m):
         return "%s%d%s" % (m.group(1), int(m.group(2)) + 2, m.group(3))
-    out = re.sub(r"((?:[Ww]ithin|[Rr]ange|up to) )(\d+)((?! tiles? of)(?: tiles?)?)", bump, text)
+    pattern = r"([Ww]ithin |[Rr]ange |up to )(\d+)((?: tiles? away)|(?=[ .;,]|$)(?! of)(?: tiles?)?)"
+    out = text
+    m = re.search(pattern, out)
+    if m and not (m.group(1) == "up to " and "away" not in m.group(3)):
+        out = out[:m.start()] + bump(m) + out[m.end():]
     if shape == "Line":
-        out = re.sub(r"()(\d+)(-tile line)", bump, out)
+        out = re.sub(r"()(\d+)(-tile line)", bump, out, count=1)
     return out
+
+
+# Cells whose first number isn't the cast range (Ricochet Arrow: the bounce reach).
+SKIP_TEXT = {"B18 N", "A06 L"}  # Ricochet: bounce reach; Vortex: its pull area
 
 
 changes = []
@@ -86,7 +98,7 @@ for r in range(2, 400):
         set_cell(r, "Z", int(new) if new == int(new) else new)
         for col in ("L", "N"):
             old = cell_text(r, col)
-            text = plus_two(old, shape)
+            text = plus_two(old, shape, f"{ability_id} {col}")
             if text != old:
                 set_cell(r, col, text)
                 changes.append(f"{ability_id} {col}: {old!r} -> {text!r}")

@@ -34,7 +34,7 @@ zone_ability = SubResource("Resource_xe8nv")
 [resource]
 script = ExtResource("3_wdxba")
 id = &"F08"
-max_range = 4
+max_range = 6
 mana_cost = 15.0
 effects = Array[ExtResource("1_w6phm")]([SubResource("Resource_vel02")])
 targeting = 3

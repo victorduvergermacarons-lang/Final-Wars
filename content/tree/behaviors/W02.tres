@@ -13,7 +13,7 @@ sheet_scaling = true
 [resource]
 script = ExtResource("3_w155g")
 id = &"W02"
-max_range = 3
+max_range = 5
 mana_cost = 6.0
 ranged = true
 effects = Array[ExtResource("1_h3ta4")]([SubResource("Resource_6d6di")])

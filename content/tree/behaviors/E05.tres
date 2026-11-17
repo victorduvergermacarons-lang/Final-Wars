@@ -18,7 +18,7 @@ mastery_per_extra = 300.0
 [resource]
 script = ExtResource("3_ywrst")
 id = &"E05"
-max_range = 4
+max_range = 6
 mana_cost = 15.0
 effects = Array[ExtResource("1_oef71")]([SubResource("Resource_splyo")])
 targeting = 3
