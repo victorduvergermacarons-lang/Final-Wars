@@ -3065,6 +3065,26 @@
       "preview": [
         "art/NP-08/NP-08-1+heal-cast_2026-11-17_preview.gif"
       ]
+    },
+    "NP-07-2": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-07/NP-07-2_2026-11-17_1.png",
+        "art/NP-07/NP-07-2_2026-11-17_2.png"
+      ],
+      "usage": {
+        "seconds": 24.648313760757446
+      }
+    },
+    "NP-08-2": {
+      "date": "2026-11-17",
+      "files": [
+        "art/NP-08/NP-08-2_2026-11-17_1.png",
+        "art/NP-08/NP-08-2_2026-11-17_2.png"
+      ],
+      "usage": {
+        "seconds": 34.40739440917969
+      }
     }
   },
   "failures": {},
@@ -3453,6 +3473,15 @@
         "NP-08-1+idle",
         "NP-08-1+talking",
         "NP-08-1+heal-cast"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-17",
+      "made": [
+        "NP-07-2",
+        "NP-08-2"
       ],
       "failed": [],
       "stopped": ""

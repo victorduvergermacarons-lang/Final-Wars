@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-74 of 75 stills done. Newest first. These are drafts: copy the
+76 of 77 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -364,6 +364,18 @@ keepers into the game's `assets/` folder by hand.
 ![NP-08-1+heal-cast](art/NP-08/NP-08-1+heal-cast_2026-11-17_preview.gif)
 
 <sub>Made from approved/NP-08-1.png: heal cast</sub>
+
+### NP-07-2 · Warden Kesh and Surveyor Iven (2026-11-17)
+
+![NP-07-2](art/NP-07/NP-07-2_2026-11-17_1.png) ![NP-07-2](art/NP-07/NP-07-2_2026-11-17_2.png)
+
+<sub>Made from approved/NP-07-1.png: the same character redrawn at the game's hero scale: much smaller, about 32 px tall and 17 px wide, feet at bottom centre (24, 40) of the 48x48 canvas, same outfit and colours, chunky readable pixels with a dark outline like the hero, no ground shadow, facing south-east</sub>
+
+### NP-08-2 · Sela and Keeper Amaru (2026-11-17)
+
+![NP-08-2](art/NP-08/NP-08-2_2026-11-17_1.png) ![NP-08-2](art/NP-08/NP-08-2_2026-11-17_2.png)
+
+<sub>Made from approved/NP-08-1.png: the same character redrawn at the game's hero scale: much smaller, about 32 px tall and 17 px wide, feet at bottom centre (24, 40) of the 48x48 canvas, same outfit and colours, chunky readable pixels with a dark outline like the hero, no ground shadow, facing south-east</sub>
 
 ### PL-02-1+8dir ·  (2026-11-16)
 
