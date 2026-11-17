@@ -1269,14 +1269,14 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Pebble Scroll",
-			"effect": "Hurl a rock, range 4.",
+			"effect": "Hurl a rock, range 4. Generates 3x threat: the Stone Guard's ranged opener.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim at an enemy within 4. The rock arcs over low obstacles and lands on that tile after 0.3s; misses if the target moved.",
 			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Atk",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
-			"notes": "",
+			"notes": "Threat x3.",
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "pebble_scroll",
@@ -1329,14 +1329,14 @@
 			"role": "Self buff",
 			"item_type": "Scroll",
 			"taught_by": "Granite Skin Scroll",
-			"effect": "Gain Physical Defense for 10s.",
+			"effect": "Gain +20 Physical Defense for 10s.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
 			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Def",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
-			"notes": "",
+			"notes": "Physical Defense raises all your threat while it lasts; lets Metalbending taunt.",
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "granite_skin_scroll",
@@ -1353,12 +1353,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a self buff."
 			},
 			"hitbox": {
 				"shape": "None",
@@ -1424,18 +1424,18 @@
 			"role": "Taunt",
 			"item_type": "Scroll",
 			"taught_by": "Stomp Scroll",
-			"effect": "Taunt adjacent enemies for 4s.",
+			"effect": "Taunt every enemy on the 8 tiles around you for 4s and hit them for light Physical damage.",
 			"targeting": "Self",
 			"targeting_details": "Taunts every enemy on the 8 tiles around you.",
 			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Def",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
-			"notes": "",
+			"notes": "Everyday pack grab. Taunt: top threat +10% and the enemy is forced onto you for 4s. Damage 70% of Rock Throw's, so you keep threat after the taunt.",
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "stomp_scroll",
-			"cooldown": 10.0,
+			"cooldown": 8.0,
 			"mastery_on_learn": 5.0,
 			"mastery_per_use": 0.4,
 			"mastery_cap": 50.0,
@@ -1571,7 +1571,7 @@
 			"role": "Shield",
 			"item_type": "Scroll",
 			"taught_by": "Boulder Scroll",
-			"effect": "Absorb shield on yourself; size scales with Earth Mastery.",
+			"effect": "Absorb shield on yourself for 12s; size scales with Earth Mastery and Physical Defense.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
 			"mastery_required_text": "Earth Mastery 150",
@@ -1595,12 +1595,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a self shield."
 			},
 			"hitbox": {
 				"shape": "None",
@@ -1628,11 +1628,11 @@
 			"prerequisites_text": "Seismic Stomp",
 			"scales_with_text": "Earth Mastery, Phys Def",
 			"mastery_contribution": "+10 Earth Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
-			"notes": "",
+			"notes": "Emergency AoE taunt: top threat +10% and every enemy is forced onto you for 5s.",
 			"tier": 2,
 			"mastery_required": 150,
 			"item_id": "rumble_scroll",
-			"cooldown": 15.0,
+			"cooldown": 120.0,
 			"mastery_on_learn": 10.0,
 			"mastery_per_use": 0.6,
 			"mastery_cap": 70.0,
@@ -1645,12 +1645,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a taunt."
 			},
 			"hitbox": {
 				"shape": "Self Circle",
@@ -1921,14 +1921,14 @@
 			"role": "Self buff",
 			"item_type": "Scroll",
 			"taught_by": "Stone Armor Codex",
-			"effect": "Encase yourself in rock for 15s: large Physical Defense boost, steps 50% slower.",
+			"effect": "Encase yourself in rock for 15s: +50 Physical Defense, steps 50% slower.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
 			"mastery_required_text": "Earth Mastery 350",
 			"prerequisites_text": "Boulder Shield",
 			"scales_with_text": "Earth Mastery, Phys Def",
 			"mastery_contribution": "+15 Earth Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
-			"notes": "",
+			"notes": "Physical Defense raises all your threat while it lasts; lets Metalbending taunt.",
 			"tier": 3,
 			"mastery_required": 350,
 			"item_id": "stone_armor_codex",
@@ -1945,12 +1945,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a self buff."
 			},
 			"hitbox": {
 				"shape": "None",
@@ -1971,14 +1971,14 @@
 			"role": "Debuff / CC",
 			"item_type": "Scroll",
 			"taught_by": "Iron Will Scroll",
-			"effect": "Bend an enemy's armor: lower its Physical Defense and pull it 2 tiles toward you.",
+			"effect": "Bend an enemy's armor: -20 Physical Defense for 8s and pull it 2 tiles toward you. With Stone Skin or Earth Armor up, also taunts it for 3s.",
 			"targeting": "Targeted",
 			"targeting_details": "Enemy within 4. Pulls it toward you along a straight tile line; stops at obstacles.",
 			"mastery_required_text": "Earth Mastery 600",
 			"prerequisites_text": "Earth Armor",
 			"scales_with_text": "Earth Mastery, Phys Atk",
 			"mastery_contribution": "+25 Earth Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
-			"notes": "",
+			"notes": "Single-target grab for tanks; without Stone Skin or Earth Armor it doesn't taunt, so a damage-dealing earthbender keeps it without pulling aggro.",
 			"tier": 4,
 			"mastery_required": 600,
 			"item_id": "iron_will_scroll",
@@ -1995,12 +1995,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a pull."
 			},
 			"hitbox": {
 				"shape": "Targeted",

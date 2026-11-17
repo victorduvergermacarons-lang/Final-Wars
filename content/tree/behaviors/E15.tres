@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_scl"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_def"]
+[ext_resource type="Resource" path="res://content/buffs/metalbent.tres" id="4_buff"]
+
+[sub_resource type="Resource" id="eff_0"]
+script = ExtResource("1_eff")
+kind = 2
+taunt_seconds = 3.0
+taunt_requires_buffs = Array[StringName]([&"stone_skin", &"earth_armor"])
+
+[sub_resource type="Resource" id="eff_1"]
+script = ExtResource("1_eff")
+kind = 4
+buff = ExtResource("4_buff")
+
+[sub_resource type="Resource" id="eff_2"]
+script = ExtResource("1_eff")
+kind = 12
+base_amount = 2.0
+
+[resource]
+script = ExtResource("3_def")
+id = &"E15"
+max_range = 4
+mana_cost = 15.0
+targeting = 1
+effects = Array[ExtResource("1_eff")]([SubResource("eff_0"), SubResource("eff_1"), SubResource("eff_2")])
