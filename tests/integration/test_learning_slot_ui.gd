@@ -86,7 +86,7 @@ func test_tooltips_say_where_an_item_stands() -> void:
 	assert_string_contains(ready, "Right-click or drag onto Learning")
 	var locked := ItemTooltip.text(ContentDB.items[&"lash_of_embers_scroll"], hero, rules, false)
 	assert_string_contains(locked, "Locked")
-	var later := ItemTooltip.text(ContentDB.items[&"granite_skin_scroll"], hero, rules, false)
+	var later := ItemTooltip.text(ContentDB.items[&"snaring_wind_scroll"], hero, rules, false)
 	assert_string_contains(later, "isn't in the game yet")
 	var weapon := ItemTooltip.text(ContentDB.items[&"iron_mallet"], hero, rules, false)
 	assert_string_contains(weapon, "Wield it, then drag it onto Learning")
