@@ -174,10 +174,15 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | A02 | Gust | Breeze Scroll | Targeted, 3 | 0.5 + interrupt, off GCD | 8 | 10 |
 | A03 | Air Step | Featherstep Scroll | Self | +40% speed for 4 s (free movement), off GCD | 8 | 10 |
 | A05 | Air Blast | Gale Scroll | Targeted, 3 | 0.6 + knockback 3, +25 on impact | 12 | 10 |
-| E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
+| E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical, **threat ×3** | 6 | 3 |
+| E02 | Stone Skin | Granite Skin Scroll | Self | +20 PhysDef 10 s | 8 | sheet |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
-| E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
+| E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt, forced 4 s, + 0.7 physical | 8 | 8 |
 | E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth); lifts units on it, enemies take 10 + 0.02 per Earth Mastery | 15 | 15 |
+| E07 | Boulder Shield | (sheet) | Self | shield (heal default + PhysDef) 12 s | 12 | sheet |
+| E08 | Rumbling Taunt | (sheet) | Self, within 2 | taunt, forced 5 s | 12 | 120 |
+| E14 | Earth Armor | (sheet) | Self | +50 PhysDef, steps ×2 (half speed), 15 s | 15 | sheet |
+| E15 | Metalbending | (sheet) | Targeted, 4 | −20 PhysDef 8 s, pull 2; taunt forced 3 s only under Stone Skin or Earth Armor | 15 | sheet |
 | S01 | Slash | Rusty Shortsword | Targeted, adjacent, **1 s timing bar** (see **Timing bars**) | 1.0 physical | — | 2 |
 | S04 | Lunge | Traveler's Longsword | Targeted, 3 | dash 2, then 1.1 if adjacent | — | 8 |
 | B01 | Quick Shot | Hunter's Shortbow | Targeted, 5 | 0.9 | — | 2 |
@@ -192,6 +197,29 @@ any-angle skillshot; Grizzlehide Cleave the same swipe with a 0.4 s wind-up, Cha
 telegraphed tile then rush + maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Weight (knockbacks/pulls ±1
 tile): Shaman and Skirmisher light, Brute and Grizzlehide heavy, everyone else medium. Hilda: potions, Iron Helm,
 Swift Boots and the 20 implemented tier-1 scrolls (25 g) and weapons (30 g).
+
+## Threat and tanking (branch `feature/threat-tanking`, 2026-11-17)
+
+User brief: WoW-style tanking. Tests: `tests/unit/test_threat_table.gd`,
+`test_threat_tanking.gd`, `test_earth_tanking.gd`, taunt cases in `test_ability_resolver.gd`.
+- **Overtake** (`ThreatTable.update`, called each tick by `EnemyBrain.pick_target`): an
+  enemy keeps its target until someone passes 110% of the target's threat within melee
+  range (`melee_overtake_percent`, gap ≤ `melee_overtake_range` 1 tile, edge to edge) or
+  130% farther away (`ranged_overtake_percent`). With no target yet, or when it leaves
+  the table: the highest threat; ties go to whoever was added first. `top()` is gone
+  (`target()`).
+- **Forced taunt:** `AbilityEffect.taunt_seconds` (default 3): top threat +10% and the
+  enemy stays on the taunter for that long whatever the threat; ends early if the taunter
+  dies or leaves the table; a second taunt by the same hero extends it.
+  `taunt_requires_buffs`: the taunt only lands while the caster has one of those buffs.
+- **Physical Defense raises heroes' threat** (`AbilityResolver.defense_threat_multiplier`):
+  × (1 + current PhysDef / `threat_def_divisor` 40), at most `max_def_threat_multiplier`
+  3.0; heroes only, buffs count, on damage and healing threat; an effect's
+  `threat_multiplier` stacks on top. Base 10 PhysDef → ×1.25; a geared tank (~60) → ×2.5;
+  with Stone Skin or Earth Armor up → the cap.
+- **Earth** (behaviors in `content/tree/behaviors/`, buffs `stone_skin`, `earth_armor`,
+  `boulder_shield`, `metalbent`; sheet patched by `tools/once/earth_tanking.py`): see the
+  E rows of the table above. Other Earth abilities make normal threat.
 
 ## Map art (tileset, 2026-10-16)
 
@@ -2067,6 +2095,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-17 | WoW-style threat: overtake 110% in melee / 130% at range, forced taunts, Physical Defense threat multiplier, Earth tanking abilities | User brief. User choices: Metalbending's threat multiplier stays 0 (so the ×3 has no effect); Boulder Shield built. My choices: divisor 40 and cap 3.0 (cloth ×1.25, geared tank ~60 PhysDef ×2.5, Stone Skin or Earth Armor reach the cap); melee range 1 tile edge to edge; Seismic Stomp damage 0.7 × Rock Throw's; Stone Skin +20 PhysDef 10 s; Earth Armor +50 and half speed 15 s; Metalbent −20 for 8 s; Boulder Shield the tier heal default + PhysDef, 12 s; taunt durations don't scale with Mastery; the Earth abilities live as tree behaviors (`content/tree/behaviors/`), not `content/abilities/` (legacy only; `taunt.tres` got `taunt_seconds` 3). The footstep sound test now waits for the first footstep (it was timing-flaky). |
 | 2026-11-16 | The hero shows PL-01-1 in all four facings, with the PL-02 sword and bow attacks; frames picked from host times | User brief (replaces the 2026-11-15 mirrored south-east art and back stills). User choices: downed for stuns as well as while dead; animations play when the ability goes off, not over the timing bar; hammer arts and potions play the plain cast until they have their own; revived also after a release at a graveyard; death take 1 (was take 4). |
 | 2026-11-16 | Hero art measurements and fixes | Mine: facings shifted onto one feet point (24, 38) by whole pixels; the PL-02 bodies lined up by overlaying their stills on PL-01-1's (a scabbard below the feet fooled the sole test); walk 8 frames per tile from the stride, not a planted foot (the generated walk has no planted foot); while dead, death then downed's last frame held, not downed replayed or looped (both animations fall from standing); 20 / 18 / 20 / 15 fps for slash, lunge, quick shot, aimed shot; the source frames live in `art/heroes/PL-01`, `PL-02` (the old `art/heroes/PL-01-1` sheets and `make_pl01_sheets.py` removed). |
 | 2026-11-16 | Map editor part 2: things, map size, connections, new maps; saving through Godot's resource writer | User request and choices: each person placed once in the whole game; a New map button; a one-time re-save of every map (format only); all three parts. My choices: a Things tool and a Select tool (click again cycles a tile's things, drag moves, Delete removes); patrols start where the enemy stands; a resize keeps things on their ground and moves every reference to the map's coordinates in other files on save (quests, doors, edges, the encounter); this map's edges decide the partner's (opposite side and offset); doors pick their arrival on the destination map; warnings (asked, not refused) for one-way doors, edges landing on blocked ground, and quests losing a person or every enemy of a kind; new maps start with a spawn and a graveyard and regenerate `AUDIO_SPEC.md`. |
