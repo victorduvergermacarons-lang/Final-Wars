@@ -17,6 +17,18 @@ Saving writes the real files: GitHub Desktop shows them, and Discard puts them b
 - [ ] **Grid** and **Height numbers** show; red numbers are tiles you can't walk on.
 - [ ] **Ctrl+Z** takes back a whole drag; **Ctrl+Y** brings it back.
 
+## Shape
+- [ ] **Shape (7):** right-drag across a patch of grass: the tiles vanish, and the
+      ground around shows its sides. **Ctrl+Z** brings them back.
+- [ ] Pick Dirt in the list, set **Level** 1, and left-click a hole: dirt at height 1.
+- [ ] Left-drag past the map's north-west side (the faint grid): new dirt appears out
+      there, and the map grows (the size in the top bar goes up).
+- [ ] Save: the size in the top bar shrinks back to just around the shape.
+- [ ] Remove the tiles under the graveyard and save: a warning says it's where the
+      map has no tile.
+- [ ] Play: you can't walk into a hole; a Fire Dart flies across one; a wolf chasing
+      you goes round it.
+
 ## Things
 - [ ] **Things (5) → Enemies:** pick Wolf, click grass: a wolf appears, selected, with
       its settings on the left. Set its level to 3: its name says Lv 3.
