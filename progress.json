@@ -2907,165 +2907,6 @@
         "generations": 1.0
       }
     },
-    "NP-07-1+8dir": {
-      "date": "2026-11-17",
-      "files": [
-        "art/NP-07/NP-07-1+8dir_2026-11-17_1.png",
-        "art/NP-07/NP-07-1+8dir_2026-11-17_2.png",
-        "art/NP-07/NP-07-1+8dir_2026-11-17_3.png",
-        "art/NP-07/NP-07-1+8dir_2026-11-17_4.png",
-        "art/NP-07/NP-07-1+8dir_2026-11-17_5.png",
-        "art/NP-07/NP-07-1+8dir_2026-11-17_6.png",
-        "art/NP-07/NP-07-1+8dir_2026-11-17_7.png",
-        "art/NP-07/NP-07-1+8dir_2026-11-17_8.png"
-      ],
-      "usage": {
-        "usd": 0.0,
-        "type": "generations",
-        "generations": 1,
-        "cost_if_paid": 0.019007164551152124
-      },
-      "preview": [
-        "art/NP-07/NP-07-1+8dir_2026-11-17_sheet.png"
-      ]
-    },
-    "NP-07-1+idle": {
-      "date": "2026-11-17",
-      "files": [
-        "art/NP-07/NP-07-1+idle_2026-11-17_1.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_2.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_3.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_4.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_5.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_6.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_7.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_8.png",
-        "art/NP-07/NP-07-1+idle_2026-11-17_9.png"
-      ],
-      "usage": {
-        "usd": 0.0,
-        "type": "generations",
-        "generations": 1,
-        "cost_if_paid": 0.022659437033865186
-      },
-      "preview": [
-        "art/NP-07/NP-07-1+idle_2026-11-17_preview.gif"
-      ]
-    },
-    "NP-07-1+talking": {
-      "date": "2026-11-17",
-      "files": [
-        "art/NP-07/NP-07-1+talking_2026-11-17_1.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_2.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_3.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_4.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_5.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_6.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_7.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_8.png",
-        "art/NP-07/NP-07-1+talking_2026-11-17_9.png"
-      ],
-      "usage": {
-        "usd": 0.0,
-        "type": "generations",
-        "generations": 1,
-        "cost_if_paid": 0.019473125881618925
-      },
-      "preview": [
-        "art/NP-07/NP-07-1+talking_2026-11-17_preview.gif"
-      ]
-    },
-    "NP-08-1+8dir": {
-      "date": "2026-11-17",
-      "files": [
-        "art/NP-08/NP-08-1+8dir_2026-11-17_1.png",
-        "art/NP-08/NP-08-1+8dir_2026-11-17_2.png",
-        "art/NP-08/NP-08-1+8dir_2026-11-17_3.png",
-        "art/NP-08/NP-08-1+8dir_2026-11-17_4.png",
-        "art/NP-08/NP-08-1+8dir_2026-11-17_5.png",
-        "art/NP-08/NP-08-1+8dir_2026-11-17_6.png",
-        "art/NP-08/NP-08-1+8dir_2026-11-17_7.png",
-        "art/NP-08/NP-08-1+8dir_2026-11-17_8.png"
-      ],
-      "usage": {
-        "usd": 0.0,
-        "type": "generations",
-        "generations": 1,
-        "cost_if_paid": 0.024255690746837193
-      },
-      "preview": [
-        "art/NP-08/NP-08-1+8dir_2026-11-17_sheet.png"
-      ]
-    },
-    "NP-08-1+idle": {
-      "date": "2026-11-17",
-      "files": [
-        "art/NP-08/NP-08-1+idle_2026-11-17_1.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_2.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_3.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_4.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_5.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_6.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_7.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_8.png",
-        "art/NP-08/NP-08-1+idle_2026-11-17_9.png"
-      ],
-      "usage": {
-        "usd": 0.0,
-        "type": "generations",
-        "generations": 1,
-        "cost_if_paid": 0.02404690639177958
-      },
-      "preview": [
-        "art/NP-08/NP-08-1+idle_2026-11-17_preview.gif"
-      ]
-    },
-    "NP-08-1+talking": {
-      "date": "2026-11-17",
-      "files": [
-        "art/NP-08/NP-08-1+talking_2026-11-17_1.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_2.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_3.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_4.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_5.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_6.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_7.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_8.png",
-        "art/NP-08/NP-08-1+talking_2026-11-17_9.png"
-      ],
-      "usage": {
-        "usd": 0.0,
-        "type": "generations",
-        "generations": 1,
-        "cost_if_paid": 0.019589494579368167
-      },
-      "preview": [
-        "art/NP-08/NP-08-1+talking_2026-11-17_preview.gif"
-      ]
-    },
-    "NP-08-1+heal-cast": {
-      "date": "2026-11-17",
-      "files": [
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_1.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_2.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_3.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_4.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_5.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_6.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_7.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_8.png",
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_9.png"
-      ],
-      "usage": {
-        "usd": 0.0,
-        "type": "generations",
-        "generations": 1,
-        "cost_if_paid": 0.018780668954054516
-      },
-      "preview": [
-        "art/NP-08/NP-08-1+heal-cast_2026-11-17_preview.gif"
-      ]
-    },
     "NP-07-2": {
       "date": "2026-11-17",
       "files": [
@@ -3554,6 +3395,186 @@
           "generations": 1.0
         },
         "note": "not approved by Victor 2026-11-17: should look more regal, charismatic and powerful (like PL-03-1 or NP-11-1)"
+      }
+    ],
+    "NP-07-1+8dir": [
+      {
+        "date": "2026-11-17",
+        "files": [
+          "art/NP-07/NP-07-1+8dir_2026-11-17_1.png",
+          "art/NP-07/NP-07-1+8dir_2026-11-17_2.png",
+          "art/NP-07/NP-07-1+8dir_2026-11-17_3.png",
+          "art/NP-07/NP-07-1+8dir_2026-11-17_4.png",
+          "art/NP-07/NP-07-1+8dir_2026-11-17_5.png",
+          "art/NP-07/NP-07-1+8dir_2026-11-17_6.png",
+          "art/NP-07/NP-07-1+8dir_2026-11-17_7.png",
+          "art/NP-07/NP-07-1+8dir_2026-11-17_8.png"
+        ],
+        "usage": {
+          "usd": 0.0,
+          "type": "generations",
+          "generations": 1,
+          "cost_if_paid": 0.019007164551152124
+        },
+        "preview": [
+          "art/NP-07/NP-07-1+8dir_2026-11-17_sheet.png"
+        ],
+        "note": "made from the old, oversized approved picture (replaced 2026-11-17)"
+      }
+    ],
+    "NP-07-1+idle": [
+      {
+        "date": "2026-11-17",
+        "files": [
+          "art/NP-07/NP-07-1+idle_2026-11-17_1.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_2.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_3.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_4.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_5.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_6.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_7.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_8.png",
+          "art/NP-07/NP-07-1+idle_2026-11-17_9.png"
+        ],
+        "usage": {
+          "usd": 0.0,
+          "type": "generations",
+          "generations": 1,
+          "cost_if_paid": 0.022659437033865186
+        },
+        "preview": [
+          "art/NP-07/NP-07-1+idle_2026-11-17_preview.gif"
+        ],
+        "note": "made from the old, oversized approved picture (replaced 2026-11-17)"
+      }
+    ],
+    "NP-07-1+talking": [
+      {
+        "date": "2026-11-17",
+        "files": [
+          "art/NP-07/NP-07-1+talking_2026-11-17_1.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_2.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_3.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_4.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_5.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_6.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_7.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_8.png",
+          "art/NP-07/NP-07-1+talking_2026-11-17_9.png"
+        ],
+        "usage": {
+          "usd": 0.0,
+          "type": "generations",
+          "generations": 1,
+          "cost_if_paid": 0.019473125881618925
+        },
+        "preview": [
+          "art/NP-07/NP-07-1+talking_2026-11-17_preview.gif"
+        ],
+        "note": "made from the old, oversized approved picture (replaced 2026-11-17)"
+      }
+    ],
+    "NP-08-1+8dir": [
+      {
+        "date": "2026-11-17",
+        "files": [
+          "art/NP-08/NP-08-1+8dir_2026-11-17_1.png",
+          "art/NP-08/NP-08-1+8dir_2026-11-17_2.png",
+          "art/NP-08/NP-08-1+8dir_2026-11-17_3.png",
+          "art/NP-08/NP-08-1+8dir_2026-11-17_4.png",
+          "art/NP-08/NP-08-1+8dir_2026-11-17_5.png",
+          "art/NP-08/NP-08-1+8dir_2026-11-17_6.png",
+          "art/NP-08/NP-08-1+8dir_2026-11-17_7.png",
+          "art/NP-08/NP-08-1+8dir_2026-11-17_8.png"
+        ],
+        "usage": {
+          "usd": 0.0,
+          "type": "generations",
+          "generations": 1,
+          "cost_if_paid": 0.024255690746837193
+        },
+        "preview": [
+          "art/NP-08/NP-08-1+8dir_2026-11-17_sheet.png"
+        ],
+        "note": "made from the old, oversized approved picture (replaced 2026-11-17)"
+      }
+    ],
+    "NP-08-1+idle": [
+      {
+        "date": "2026-11-17",
+        "files": [
+          "art/NP-08/NP-08-1+idle_2026-11-17_1.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_2.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_3.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_4.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_5.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_6.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_7.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_8.png",
+          "art/NP-08/NP-08-1+idle_2026-11-17_9.png"
+        ],
+        "usage": {
+          "usd": 0.0,
+          "type": "generations",
+          "generations": 1,
+          "cost_if_paid": 0.02404690639177958
+        },
+        "preview": [
+          "art/NP-08/NP-08-1+idle_2026-11-17_preview.gif"
+        ],
+        "note": "made from the old, oversized approved picture (replaced 2026-11-17)"
+      }
+    ],
+    "NP-08-1+talking": [
+      {
+        "date": "2026-11-17",
+        "files": [
+          "art/NP-08/NP-08-1+talking_2026-11-17_1.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_2.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_3.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_4.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_5.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_6.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_7.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_8.png",
+          "art/NP-08/NP-08-1+talking_2026-11-17_9.png"
+        ],
+        "usage": {
+          "usd": 0.0,
+          "type": "generations",
+          "generations": 1,
+          "cost_if_paid": 0.019589494579368167
+        },
+        "preview": [
+          "art/NP-08/NP-08-1+talking_2026-11-17_preview.gif"
+        ],
+        "note": "made from the old, oversized approved picture (replaced 2026-11-17)"
+      }
+    ],
+    "NP-08-1+heal-cast": [
+      {
+        "date": "2026-11-17",
+        "files": [
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_1.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_2.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_3.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_4.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_5.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_6.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_7.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_8.png",
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_9.png"
+        ],
+        "usage": {
+          "usd": 0.0,
+          "type": "generations",
+          "generations": 1,
+          "cost_if_paid": 0.018780668954054516
+        },
+        "preview": [
+          "art/NP-08/NP-08-1+heal-cast_2026-11-17_preview.gif"
+        ],
+        "note": "made from the old, oversized approved picture (replaced 2026-11-17)"
       }
     ]
   }
