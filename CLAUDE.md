@@ -127,8 +127,12 @@ numbers, prerequisites, items) plus behavior files in `content/tree/behaviors/`
 (targeting, range, effects, mana). Decisions 13–27 below describe the rules; tuned
 values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`.
 
-- **Start:** Rusty Shortsword in hand (Slash), Ember Fist Scroll in the learning slot
-  (Fire Punch), Mender's Scroll in the bag (Healing Touch). Adventurer base stats as below.
+- **Start (since 2026-11-17):** a new character picks an element on the element screen
+  (see **Starting elements**): its first ability mastered (scroll in the bag), its next
+  scroll in the learning slot, its shirt and pants worn; the Rusty Shortsword (Slash)
+  stays. Characters made before, and ones made without the screen (tests, the command
+  line), keep the old kit: Ember Fist Scroll in the learning slot (Fire Punch), Mender's
+  Scroll in the bag (Healing Touch). Adventurer base stats as below.
 - **Keys:** hold an aimed ability's key to aim, release to cast; T ability trees;
   ` debug console (debug builds).
 - **Amounts:** (tier default + Scales With stats) × effect power × (1 + 0.1% per tree
@@ -192,6 +196,78 @@ any-angle skillshot; Grizzlehide Cleave the same swipe with a 0.4 s wind-up, Cha
 telegraphed tile then rush + maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Weight (knockbacks/pulls ±1
 tile): Shaman and Skirmisher light, Brute and Grizzlehide heavy, everyone else medium. Hilda: potions, Iron Helm,
 Swift Boots and the 20 implemented tier-1 scrolls (25 g) and weapons (30 g).
+
+## Starting elements, faster enemies, rebalance (branch `feature/element-start`, 2026-11-17)
+
+User brief, seven parts (part 2, element quest rewards, waits for the user's OK on its
+table). Numbers as built:
+- **Starting elements** (`StartingElementDef`, `content/elements/`, written by
+  `tools/once/make_element_start.py`; `ElementScreen`, `ui/element_screen.gd`, opened by
+  the main menu's Create; `CharacterData.apply_element`):
+
+  | Element | Mastered (scroll kept) | Learning | Key stats | Shirt / pants (Common) |
+  |---------|------------------------|----------|-----------|------------------------|
+  | Earth | Rock Throw (Pebble Scroll) | Stone Skin (Granite Skin Scroll) | Phys Atk, Phys Def | Quarryman's Shirt / Trousers |
+  | Water | Healing Touch (Mender's Scroll) | Water Whip (River Lash Scroll) | Magic Atk, Phys Def | Riverweave Shirt / Breeches |
+  | Fire | Fire Punch (Ember Fist Scroll) | Fire Kick (Cinder Kick Scroll) | Magic Atk, Magic Def | Emberstitch Shirt / Trousers |
+  | Air | Air Palm (Open Palm Scroll) | Gust (Breeze Scroll) | Phys Atk, Magic Def | Breezecloth Shirt / Leggings |
+
+  Shirt: attack stat +2, defense stat +2 (growth 1 / 0.5); pants: +1 / +2 (growth
+  0.5 / 1). `Hero.element` is saved (`"element"`) and sent in every snapshot; an unknown
+  or missing element reads as none. Stone Skin (E02) is built as on the
+  `feature/threat-tanking` branch (+20 Physical Defense, 10 s). `ItemDef.element` marks
+  gear made for an element.
+- **The Foreman's Hurled Sunstone** (`foreman_hurl`, first in his list): a 1.5 s cast bar,
+  range 6, 18 + 0.9 x Physical Attack, cooldown 12 s, at whoever holds his eye.
+  `AbilityDef.locks_on`: never rolls Accuracy against Evasion, and once it starts the
+  target can't escape it (range and line of sight aren't checked again); a stun or an
+  interrupt (Gust) still stops it. Bots at level 10 (`BalanceSim.boss_average`, 12 fights):
+  four heroes win 58% in about 52 s with 1.8 deaths per fight, about 4.5 throws per
+  fight, every one landing; three win 50%; one never.
+- **Faster enemy attacks:** wind-ups cut up to 40%, never below the warning a dodgeable
+  attack needs (0.63 s: a tile at walking speed plus 0.3 s; `CastResolver.dodge_warnings`)
+  nor 0.2 s for quick bites. Art frame rates raised so bites land on their hit frame
+  (wolf and iron wolf bite 30 -> 50 fps, hound bite 20 -> 30, drake rake 10 -> 16.7).
+
+  | Ability | Before | After |
+  |---------|--------|-------|
+  | Wolf / Iron Wolf Bite | 0.4 | 0.24 |
+  | Hound Bite | 0.3 | 0.2 |
+  | Quick Slash (Skirmisher) | 0.3 | 0.2 |
+  | Boar Gore | 0.4 | 0.24 |
+  | Talon Rake (drake) | 0.5 | 0.3 |
+  | Crushing Blow (Brute) | 0.8 | 0.64 |
+  | Cleave (Grizzlehide), Hollow Rake (Husk), Overseer's Crush, Pick-Hammer (Foreman) | 0.7 | 0.64 |
+  | Charge (Grizzlehide), Tusk Charge (Boar) | 1.0 | 0.64 |
+
+  Kept: Foreman's Ground Slam (1.0 s telegraph) and Mine-Cart Charge (1.1 s), the drake's
+  Sunfire Breath (0.8 s) and Searing Dive (1.0 s), Cinder Pounce (0.67 s, already at the
+  floor), Shadow Bolt (a projectile, 0.71 s of flight), the wolf's howl (not an attack).
+- **Hero art:** eight facings: the straight screen directions drawn 2026-11-17 are rows
+  5-8 (s, e, n, w) of every sheet (`tools/once/make_hero_sheets.py`);
+  `CreatureArtDef.direction_for_angle` picks one of eight 45° slices of the facing angle.
+- **Hero walk:** the cycle follows the distance walked on screen
+  (`MoveState.screen_odometer`, art pixels) at a pace per facing
+  (`CreatureArtDef.run_px_per_frame`: 2.24 px per frame on the diagonals, 2.0 across,
+  1.2 up and down), measured from the planted foot; north and south can't be measured
+  (the soles barely part on screen) and use the iso-foreshortened stride. Slows, haste
+  and Earth Armor change it by themselves; it stops with the hero. GIF:
+  `tests/visual/hero_walk_shots.tscn` + `tools/once/make_walk_gif.py`.
+- **Ability rebalance** (`tools/once/ability_rebalance.py` on the sheet; the built
+  abilities' behavior files too):
+  - every ranged ability +2 tiles: Hitbox Range and the range in its Effect / Targeting
+    Details text (Targeted beyond adjacent, Projectile, Lob, Circle, Line, ground Tiles;
+    not dashes, leaps, blinks, cones or adjacent attacks). Built ones: Healing Touch 4,
+    Water Whip / Flow State / Leeching Tide / Tidal Blessing / Water Pulse / Gust / Air
+    Blast / Fire Whip / Raise Pillar 5, Frost Shard / Soothing Mist / Ice Spikes / Fire
+    Dart / Burning Ground / Rock Throw / Earth Wall 6, Fireball / Quick Shot 7, Aimed
+    Shot 9.
+  - Water's heals (Healing Touch, Soothing Mist, Spirit Water, Healing Rain): 0.45 Magic
+    Atk + 0.55 Phys Def.
+  - Air: Phys Atk instead of Magic Atk; control and defense (Gust, Wind Snare, Stolen
+    Breath, Air Sphere, Suffocate, Storm Front, Pressure Lock): 0.6 Phys Atk + 0.4 Magic Def.
+  - Scales With takes a coefficient before a stat ("0.45 Magic Atk"; without one,
+    `CombatRules.sheet_stat_coefficient`).
 
 ## Map art (tileset, 2026-10-16)
 
@@ -2086,6 +2162,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-17 | Starting elements, the Foreman's guaranteed hit, faster enemy attacks, eight-facing hero art, a walk that keeps pace on screen, ability rebalance | User brief (seven parts; part 2 waits for the OK on its reward table). My choices: elements as data files; old characters and tool-made ones keep the old kit; shirt / pants numbers; Stone Skin ported from the threat-tanking branch; the Foreman's new ability Hurled Sunstone rather than changing slam, charge or pick, interruptible; wind-up floors 0.63 s for dodgeable attacks (the dodge warning) and 0.2 s for bites, boss telegraphs kept; eight facings by 45° slices of the facing angle; the walk by screen distance with per-facing measured strides; range +2 on every ranged ability (dashes excluded), only the first range number in each text cell; Air control and defense abilities 0.6 Phys Atk + 0.4 Magic Def. See **Starting elements, faster enemies, rebalance**. |
 | 2026-11-17 | The user's map edits merged: Greenfields, the Silent Shaft, Millbrook, Windsteppe, Deepcut, the Road to Deepcut, the Crossing | User's own edits in the map editor. User choices: the Foreman stays at his own level 10 (the edit had set level 1); Greenfields stays as edited: no Goblin Shamans, Fen Skirmishers or graveyard (a release there goes to its hero spawn), so Goblin Fetishes can only be done in the testing grounds for now (to rework later). Mine: the Silent Shaft's top row was trimmed, so the encounter's victory spot and quest 1-07's two places move up a row; tests describing the old maps follow the new ones. |
 | 2026-11-17 | Maps need not be rectangles: a Shape tool removes and adds tiles; a missing tile is a wall that shots fly over | User request and choice (a hole is a wall like the map's outside, not a pit). My choices: a space in `height_rows`/`terrain_rows` marks a missing tile, so existing maps are unchanged; maps stay stored as their bounding rectangle; adding past a side grows the map with 3 spare rows of holes and saving trims every empty side; new tiles take the Ground list's choice at the Level box's height; things already on removed tiles stay and are warned about; holes can't be painted or hold things; a map keeps at least one tile; fliers can't cross holes either; ground areas and terrain changes skip them. |
 | 2026-11-16 | The hero shows PL-01-1 in all four facings, with the PL-02 sword and bow attacks; frames picked from host times | User brief (replaces the 2026-11-15 mirrored south-east art and back stills). User choices: downed for stuns as well as while dead; animations play when the ability goes off, not over the timing bar; hammer arts and potions play the plain cast until they have their own; revived also after a release at a graveyard; death take 1 (was take 4). |
