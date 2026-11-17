@@ -5,7 +5,7 @@ extends GutTest
 const ContentDBScript := preload("res://autoload/content_db.gd")
 const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09",
 		"W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09",
-		"A01", "A02", "A03", "A05", "E01", "E03", "E04", "E05",
+		"A01", "A02", "A03", "A05", "E01", "E02", "E03", "E04", "E05",
 		"S01", "S04", "B01", "B02", "H01", "H02"]
 
 var db

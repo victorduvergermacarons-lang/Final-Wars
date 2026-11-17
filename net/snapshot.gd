@@ -16,6 +16,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		var d := _actor(hero)
 		d.kind = KIND_HERO
 		d.level = hero.level
+		d.element = String(hero.element)
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:

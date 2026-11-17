@@ -1329,14 +1329,14 @@
 			"role": "Self buff",
 			"item_type": "Scroll",
 			"taught_by": "Granite Skin Scroll",
-			"effect": "Gain Physical Defense for 10s.",
+			"effect": "Gain +20 Physical Defense for 10s.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
 			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Def",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
-			"notes": "",
+			"notes": "Physical Defense raises all your threat while it lasts; lets Metalbending taunt.",
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "granite_skin_scroll",
@@ -1353,12 +1353,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a self buff."
 			},
 			"hitbox": {
 				"shape": "None",

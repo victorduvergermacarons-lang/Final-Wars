@@ -104,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-225 keys, 0 with a file, 225 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+226 keys, 0 with a file, 226 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -237,6 +237,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `earth_rock_throw_cast` | Rock Throw is used | **missing** |
 | `earth_rock_throw_hit` | Rock Throw lands on someone | **missing** |
 | `earth_seismic_stomp_cast` | Seismic Stomp is used | **missing** |
+| `earth_stone_skin_cast` | Stone Skin is used | **missing** |
 | `earth_wall_cast` | Earth Wall is used | **missing** |
 | `earth_wall_hit` | Earth Wall lands on someone | **missing** |
 

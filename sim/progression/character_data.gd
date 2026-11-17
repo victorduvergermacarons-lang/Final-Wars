@@ -24,6 +24,7 @@ static func capture(hero: Hero) -> Dictionary:
 		"name": hero.display_name,
 		"hero": String(hero.def_id),
 		"level": hero.level,
+		"element": String(hero.element),
 		"xp": hero.xp,
 		"gold": hero.gold,
 		"growth": _stats_out(hero.growth),
@@ -54,6 +55,10 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	hero.def_id = def.id
 	hero.display_name = clean_name(str(data.get("name", "Adventurer")))
 	hero.level = clampi(_int(data.get("level"), 1), 1, MAX_LEVEL_SANITY)
+	var elements = content.get("elements")
+	var element := StringName(str(data.get("element", "")))
+	if elements is Dictionary and elements.has(element):
+		hero.element = element
 	hero.xp = maxf(_float(data.get("xp"), 0.0), 0.0)
 	hero.gold = clampi(_int(data.get("gold"), 0), 0, MAX_GOLD)
 	hero.growth = _stats_in(data.get("growth"))
@@ -153,11 +158,39 @@ static func _has_tree_item(hero: Hero) -> bool:
 	return false
 
 
-## A fresh level-1 character.
-static func new_character(char_name: String, hero_def: HeroDef) -> Dictionary:
+## A fresh level-1 character. With an `element` (the element screen), its kit
+## replaces the default scrolls (see apply_element); without one, the default kit.
+static func new_character(char_name: String, hero_def: HeroDef, element: StartingElementDef = null,
+		content = null) -> Dictionary:
 	var hero := Hero.from_def(0, hero_def)
 	hero.display_name = clean_name(char_name)
+	if element != null:
+		apply_element(hero, element, content if content != null else ContentDB)
 	return capture(hero)
+
+
+## Gives a new hero its element's start: the default scrolls (HeroDef's starting
+## kit) go; its first ability is mastered with that scroll kept in the bag; the next
+## scroll goes in the learning slot; its shirt and pants are worn. Everything else
+## (the Rusty Shortsword) stays.
+static func apply_element(hero: Hero, element: StartingElementDef, content) -> void:
+	hero.learning_item = null
+	for i in range(hero.bag.size() - 1, -1, -1):
+		var held := hero.bag.item_at(i)
+		if held != null and held.is_scroll:
+			hero.bag.remove_at(i, hero.bag.count_at(i))
+	hero.element = element.id
+	var ability: AbilityDef = content.abilities.get(element.mastered_ability_id)
+	hero.bag.add(content.items[element.mastered_scroll_id])
+	if ability != null:
+		TreeRules.master(hero, ability)
+	hero.bag.add(content.items[element.learning_scroll_id])
+	TreeRules.learn_from_bag(hero, hero.bag.index_of(content.items[element.learning_scroll_id]))
+	for id in element.clothes_ids:
+		hero.wear(content.items[id])
+	hero.refresh_stats()
+	hero.hp = hero.stats.hp
+	hero.mana = hero.stats.mana
 
 
 ## Names are 1–16 printable characters, trimmed.

@@ -6,6 +6,10 @@ extends Actor
 ## Which HeroDef this hero was made from (for saves).
 var def_id: StringName = &"adventurer"
 var level: int = 1
+## The element picked when the character was made (&"earth", &"water", &"fire",
+## &"air"; ContentDB.elements), or empty for characters made before the element
+## screen. Saved, and sent to every player in the snapshot.
+var element: StringName = &""
 var gold: int = 0
 ## Per-quest progress, saved with the character (filled in by the quest system).
 var quest_state := {}

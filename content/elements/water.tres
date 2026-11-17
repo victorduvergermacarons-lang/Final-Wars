@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StartingElementDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/starting_element_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"water"
+display_name = "Water"
+description = "Mend your friends and lash your foes with the river's flow."
+tree = "Water"
+order = 1
+color = Color(0.25, 0.45, 0.7, 1)
+mastered_ability_id = &"W01"
+mastered_scroll_id = &"menders_scroll"
+learning_scroll_id = &"river_lash_scroll"
+clothes_ids = Array[StringName]([&"riverweave_shirt", &"riverweave_breeches"])
+key_stats = Array[int]([3, 4])

@@ -117,15 +117,34 @@ func _start(emit: Callable) -> void:
 	emit.call(c)
 
 
+## Creating a character: first the element screen, then it's saved.
 func _on_create() -> void:
 	var char_name := CharacterData.clean_name(_new_name.text)
 	if store.exists(char_name):
 		show_status("%s already exists." % char_name)
-	else:
-		store.save(CharacterData.new_character(char_name, ContentDB.heroes[&"adventurer"]))
-		show_status("Created %s." % char_name)
+		return
+	element_screen = ElementScreen.new(char_name)
+	add_child(element_screen)
+	element_screen.chosen.connect(func(e): _create(char_name, e))
+	element_screen.cancelled.connect(_close_element_screen)
+
+
+## The element screen while it is open (null otherwise).
+var element_screen: ElementScreen
+
+
+func _create(char_name: String, element: StartingElementDef) -> void:
+	_close_element_screen()
+	store.save(CharacterData.new_character(char_name, ContentDB.heroes[&"adventurer"], element))
+	show_status("Created %s, %s adept." % [char_name, element.display_name])
 	_new_name.text = ""
 	_refresh_characters(char_name)
+
+
+func _close_element_screen() -> void:
+	if element_screen != null:
+		element_screen.queue_free()
+		element_screen = null
 
 
 func _refresh_characters(select: String) -> void:

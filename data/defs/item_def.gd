@@ -33,6 +33,9 @@ extends Resource
 @export var tree: String = ""
 @export var tier: int = 0
 @export var is_scroll: bool = false
+## The element this gear is made for (&"earth", &"water", &"fire", &"air"; empty for
+## none): starting clothes, and quest rewards offered first to heroes of that element.
+@export var element: StringName = &""
 
 
 ## The tree ability this item teaches, or null.
