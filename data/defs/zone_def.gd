@@ -3,7 +3,11 @@ extends Resource
 ## Authoring data for one zone's grid. Rows are strings so a zone can be edited
 ## by hand in the inspector or the .tres text.
 ##
-## height_rows: one char per tile, '0'-'9' then 'a'-'z' for heights 10-35.
+## height_rows: one char per tile, '0'-'9' then 'a'-'z' for heights 10-35, or
+##              ' ' (NO_TILE) where the map has no tile at all: maps need not be
+##              rectangles. A missing tile is a wall (nothing walks or flies into
+##              it); spells and arrows fly over it. Its other rows hold ' ' in
+##              terrain_rows, '#' in walk_rows and '.' in prop and sight rows.
 ## walk_rows:   '.' walkable, any other char (e.g. '#') blocked.
 ## Row 0 is the top (smallest y). Every row must be `width` chars long.
 ##
@@ -72,6 +76,8 @@ extends Resource
 @export var enemy_respawn_seconds: float = -1.0
 
 const HEIGHT_CHARS := "0123456789abcdefghijklmnopqrstuvwxyz"
+## The height char of a tile the map doesn't have.
+const NO_TILE := " "
 
 
 func get_width() -> int:
@@ -80,6 +86,12 @@ func get_width() -> int:
 
 func get_depth() -> int:
 	return height_rows.size()
+
+
+## Whether the map has a tile at `p` (inside its rectangle and not NO_TILE).
+func has_tile(p: Vector2i) -> bool:
+	return p.y >= 0 and p.y < height_rows.size() and p.x >= 0 and p.x < height_rows[p.y].length() \
+			and height_rows[p.y][p.x] != NO_TILE
 
 
 func has_terrain() -> bool:
@@ -149,6 +161,8 @@ func bake_walkability(ts: TilesetData) -> void:
 ## One tile's walkability, sight and friction from its terrain, prop and decor
 ## (what bake_walkability writes; the map editor re-bakes painted tiles with it).
 func bake_tile(ts: TilesetData, p: Vector2i) -> Dictionary:
+	if not has_tile(p):
+		return {"walkable": false, "blocks_sight": false, "friction": 1.0}
 	var terrain := terrain_at(p)
 	var walkable := ts.terrain_walkable(terrain)
 	var blocks := ts.blocks_sight(ts.pick(terrain, p))
@@ -176,6 +190,8 @@ func validate_terrain(ts: TilesetData) -> PackedStringArray:
 			errors.append("%s: terrain row %d has length %d, expected %d" % [id, y, terrain_rows[y].length(), get_width()])
 		for x in terrain_rows[y].length():
 			var c := terrain_rows[y][x]
+			if c == NO_TILE and not has_tile(Vector2i(x, y)):
+				continue
 			if not terrain_legend.has(c):
 				errors.append("%s: terrain char '%s' at (%d,%d) is not in the legend" % [id, c, x, y])
 	for c in terrain_legend:
@@ -216,7 +232,7 @@ func validate() -> PackedStringArray:
 		if row.length() != w:
 			errors.append("%s: height row %d has length %d, expected %d" % [id, y, row.length(), w])
 		for x in row.length():
-			if parse_height(row[x]) < 0:
+			if row[x] != NO_TILE and parse_height(row[x]) < 0:
 				errors.append("%s: bad height char '%s' at (%d,%d)" % [id, row[x], x, y])
 	if not sight_rows.is_empty() and sight_rows.size() != height_rows.size():
 		errors.append("%s: sight_rows has %d rows, height_rows has %d" % [id, sight_rows.size(), height_rows.size()])
