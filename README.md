@@ -259,6 +259,54 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
+### PL-02-2+quick-bow-shot@south ·  (2026-11-17)
+
+![PL-02-2+quick-bow-shot@south](art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+quick-bow-shot@north ·  (2026-11-17)
+
+![PL-02-2+quick-bow-shot@north](art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+quick-bow-shot@east ·  (2026-11-17)
+
+![PL-02-2+quick-bow-shot@east](art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+quick-bow-shot@west ·  (2026-11-17)
+
+![PL-02-2+quick-bow-shot@west](art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot@south ·  (2026-11-17)
+
+![PL-02-2+aimed-bow-shot@south](art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot@north ·  (2026-11-17)
+
+![PL-02-2+aimed-bow-shot@north](art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot@east ·  (2026-11-17)
+
+![PL-02-2+aimed-bow-shot@east](art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-2+aimed-bow-shot@west ·  (2026-11-17)
+
+![PL-02-2+aimed-bow-shot@west](art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
 ### PL-02-1+8dir ·  (2026-11-16)
 
 ![PL-02-1+8dir](art/PL-02/PL-02-1_take1_8dir_preview.png)

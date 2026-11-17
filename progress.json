@@ -2694,6 +2694,198 @@
       },
       "facing": "west",
       "note": "made from art/PL-02/PL-02-1_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+quick-bow-shot@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+quick-bow-shot_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+quick-bow-shot@north": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+quick-bow-shot_north_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+quick-bow-shot@east": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+quick-bow-shot_east_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "east",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+quick-bow-shot@west": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+quick-bow-shot_west_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "west",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+aimed-bow-shot@south": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_south_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "south",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+aimed-bow-shot@north": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_north_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "north",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+aimed-bow-shot@east": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_east_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "east",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
+    },
+    "PL-02-2+aimed-bow-shot@west": {
+      "date": "2026-11-17",
+      "files": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_1.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_2.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_3.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_4.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_5.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_6.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_7.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_8.png",
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_9.png"
+      ],
+      "preview": [
+        "art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_preview.gif"
+      ],
+      "usage": {
+        "type": "pixellab-web",
+        "model": "Animate with text V3",
+        "generations": 1
+      },
+      "facing": "west",
+      "note": "made from art/PL-02/PL-02-2_2026-11-06_1.png (take 1) and its 8 directions"
     }
   },
   "failures": {},
@@ -3048,6 +3240,22 @@
         "north/sword-lunge",
         "east/sword-lunge",
         "west/sword-lunge"
+      ],
+      "failed": [],
+      "stopped": "",
+      "source": "pixellab.ai web app, Animate with text V3 (by Claude)"
+    },
+    {
+      "date": "2026-11-17",
+      "made": [
+        "south/quick-bow-shot",
+        "north/quick-bow-shot",
+        "east/quick-bow-shot",
+        "west/quick-bow-shot",
+        "south/aimed-bow-shot",
+        "north/aimed-bow-shot",
+        "east/aimed-bow-shot",
+        "west/aimed-bow-shot"
       ],
       "failed": [],
       "stopped": "",
