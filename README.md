@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-72 of 73 stills done. Newest first. These are drafts: copy the
+74 of 75 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -25,11 +25,9 @@ keepers into the game's `assets/` folder by hand.
 - `approved/BO-01-1.png` unlocks 8 directions, idle, attack, winding up a big attack, phase change, death
 - `approved/BO-01-2.png` unlocks 8 directions, idle, attack, winding up a big attack, phase change, death
 - `approved/NP-06-1.png` unlocks 8 directions, idle, talking
-- `approved/NP-07-1.png` unlocks 8 directions, idle, talking
 - `approved/EN-03-1.png` unlocks 8 directions, idle, run, bite, death
 - `approved/EN-04-1.png` unlocks 8 directions, fly, dive, death
 - `approved/BO-02-1.png` unlocks 8 directions, idle, slam, winding up a big attack, burn, death
-- `approved/NP-08-1.png` unlocks 8 directions, idle, talking, heal cast
 - `approved/EN-05-1.png` unlocks 8 directions, idle, run, pounce, death
 - `approved/EN-06-1.png` unlocks 8 directions, fly, dive, death
 - `approved/BO-03-1.png` unlocks 8 directions, rise, bite, coil, submerge, death
@@ -306,6 +304,66 @@ keepers into the game's `assets/` folder by hand.
 ![PL-02-2+aimed-bow-shot@west](art/PL-02/PL-02-2+aimed-bow-shot_west_2026-11-17_preview.gif)
 
 <sub></sub>
+
+### NP-02-1 · Caedan Ashvale (2026-11-17)
+
+![NP-02-1](art/NP-02/NP-02-1_2026-11-17.png)
+
+<sub>a regal, charismatic young prince standing tall and proud, crimson and black royal coat richly embroidered with gold, black obsidian shoulder plates, gold sash, short dark hair, confident commanding smile, small flame floating above one palm, from the Ashkara region of the world of Veyra. Single cha</sub>
+
+### NP-02-2 · Caedan Ashvale (2026-11-17)
+
+![NP-02-2](art/NP-02/NP-02-2_2026-11-17.png)
+
+<sub>a powerful, commanding young prince in black and crimson lamellar half-armor over a royal coat, thin gold circlet, long flowing red cape, one hand resting on a sword hilt, short dark hair, intense charismatic gaze, from the Ashkara region of the world of Veyra. Single character sprite, facing south-</sub>
+
+### NP-02-3 · Caedan Ashvale (2026-11-17)
+
+![NP-02-3](art/NP-02/NP-02-3_2026-11-17.png)
+
+<sub>a powerful young fire-mage prince in long crimson robes with ember-orange trim and gold embroidery, black obsidian pauldrons, gold sash and crown-like circlet, short dark hair, regal stance, flames swirling around one raised hand, from the Ashkara region of the world of Veyra. Single character sprit</sub>
+
+### NP-07-1+8dir · Warden Kesh and Surveyor Iven (2026-11-17)
+
+![NP-07-1+8dir](art/NP-07/NP-07-1+8dir_2026-11-17_sheet.png)
+
+<sub>Made from approved/NP-07-1.png: 8 directions of the approved picture</sub>
+
+### NP-07-1+idle · Warden Kesh and Surveyor Iven (2026-11-17)
+
+![NP-07-1+idle](art/NP-07/NP-07-1+idle_2026-11-17_preview.gif)
+
+<sub>Made from approved/NP-07-1.png: idle</sub>
+
+### NP-07-1+talking · Warden Kesh and Surveyor Iven (2026-11-17)
+
+![NP-07-1+talking](art/NP-07/NP-07-1+talking_2026-11-17_preview.gif)
+
+<sub>Made from approved/NP-07-1.png: talking</sub>
+
+### NP-08-1+8dir · Sela and Keeper Amaru (2026-11-17)
+
+![NP-08-1+8dir](art/NP-08/NP-08-1+8dir_2026-11-17_sheet.png)
+
+<sub>Made from approved/NP-08-1.png: 8 directions of the approved picture</sub>
+
+### NP-08-1+idle · Sela and Keeper Amaru (2026-11-17)
+
+![NP-08-1+idle](art/NP-08/NP-08-1+idle_2026-11-17_preview.gif)
+
+<sub>Made from approved/NP-08-1.png: idle</sub>
+
+### NP-08-1+talking · Sela and Keeper Amaru (2026-11-17)
+
+![NP-08-1+talking](art/NP-08/NP-08-1+talking_2026-11-17_preview.gif)
+
+<sub>Made from approved/NP-08-1.png: talking</sub>
+
+### NP-08-1+heal-cast · Sela and Keeper Amaru (2026-11-17)
+
+![NP-08-1+heal-cast](art/NP-08/NP-08-1+heal-cast_2026-11-17_preview.gif)
+
+<sub>Made from approved/NP-08-1.png: heal cast</sub>
 
 ### PL-02-1+8dir ·  (2026-11-16)
 
@@ -607,13 +665,13 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a huge golden eagle with wings spread wide, from the Vael region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, small to medium creature on a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges co</sub>
 
-### NP-07-1 · Warden Kesh and Surveyor Iven (2026-11-15)
+### NP-07-1 · Warden Kesh and Surveyor Iven (2026-11-15) ✓ approved
 
 ![NP-07-1](art/NP-07/NP-07-1_2026-11-15.png)
 
 <sub>two Ashkarans: a scarred burn-master in soot-black leathers with a torch-staff, and a surveyor in red robes with a map tube. Single sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle pose.</sub>
 
-### NP-08-1 · Sela and Keeper Amaru (2026-11-15)
+### NP-08-1 · Sela and Keeper Amaru (2026-11-15) ✓ approved
 
 ![NP-08-1](art/NP-08/NP-08-1_2026-11-15.png)
 
@@ -852,12 +910,6 @@ keepers into the game's `assets/` folder by hand.
 ![WO-04-2](art/WO-04/WO-04-2_2026-11-14.png)
 
 <sub>a round white felt nomad tent with a wooden door and smoke hole, from the Vael region of the world of Veyra. Isometric game tiles/props for a 32x16 isometric grid (blocks 32 px wide with 16 px side faces), seamless edges, several variants. pixel art, isometric 2:1 view, limited palette, soft light f</sub>
-
-### NP-02-1 · Caedan Ashvale (2026-11-09)
-
-![NP-02-1](art/NP-02/NP-02-1_2026-11-09.png)
-
-<sub>a charismatic young prince, red-black royal coat with gold trim, short dark hair, warm confident expression, small flame floating above one palm, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tal</sub>
 
 ### NP-03-1 · Steward Brann (2026-11-09)
 
