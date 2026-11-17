@@ -44,7 +44,10 @@ func _talk_to(npc_id: StringName, intent: Dictionary) -> Array[Dictionary]:
 func _kill(enemy_id: StringName, n: int) -> void:
 	for i in n:
 		var fields := world.zone(&"greenfields")
-		var enemy: Enemy = fields.enemies().filter(func(e): return e.def.id == enemy_id and e.alive)[0]
+		var alive := fields.enemies().filter(func(e): return e.def.id == enemy_id and e.alive)
+		if alive.is_empty(): # Greenfields has had no Goblin Shamans since 2026-11-17: bring one in
+			alive = [fields.add_enemy(db.enemies[enemy_id], Vector2i(6, 12))]
+		var enemy: Enemy = alive[0]
 		if world.zone_of(hero.id) != fields:
 			world.move_hero(hero.id, &"greenfields", Vector2i(2, 25))
 		enemy.threat.add(hero.id, 1.0)

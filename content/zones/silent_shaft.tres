@@ -99,7 +99,6 @@ tile = Vector2i(38, 23)
 script = ExtResource("s_enemy_spawn")
 enemy = ExtResource("enemy_foreman")
 tile = Vector2i(56, 14)
-level = 1
 
 [sub_resource type="Resource" id="enemy_spawn_10"]
 script = ExtResource("s_enemy_spawn")
