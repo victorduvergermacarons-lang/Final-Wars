@@ -58,12 +58,19 @@ static func problems(z: ZoneDef, grid: GridModel) -> PackedStringArray:
 	for p in where:
 		if not grid.in_bounds(p):
 			continue
-		if not grid.is_walkable(p):
+		if not grid.has_tile(p):
+			out.append("The %s at (%d, %d) is where the map has no tile." % [where[p], p.x, p.y])
+		elif not grid.is_walkable(p):
 			out.append("The %s at (%d, %d) is on a tile you can't stand on." % [where[p], p.x, p.y])
 		elif not reach.has(p):
 			out.append("The %s at (%d, %d) can't be reached on foot." % [where[p], p.x, p.y])
+	for d in z.decor:
+		if not grid.has_tile(d.tile):
+			out.append("The %s at (%d, %d) is where the map has no tile." % [d.label if d.label != "" else "object", d.tile.x, d.tile.y])
 	for e in z.exits:
-		if not reach.has(e.tile):
+		if not grid.has_tile(e.tile):
+			out.append("The door at (%d, %d) is where the map has no tile." % [e.tile.x, e.tile.y])
+		elif not reach.has(e.tile):
 			out.append("The exit at (%d, %d) can't be reached on foot." % [e.tile.x, e.tile.y])
 	for edge in z.edges:
 		var count := 0

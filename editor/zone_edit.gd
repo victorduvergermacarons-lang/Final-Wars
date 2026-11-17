@@ -1,13 +1,15 @@
 class_name ZoneEdit
 extends RefCounted
-## The map editor's model: paints a tiled zone's ground, heights and props; places,
+## The map editor's model: paints a tiled zone's ground, heights and props; removes
+## and adds tiles (the map's shape: holes are ZoneDef.NO_TILE; adding beyond the map
+## grows it, and `trim` cuts empty rows and columns off its sides); places,
 ## moves and removes the things on it (enemies, people, hero spawns, graveyards,
 ## objects, landmarks, doors); resizes it; edits its map-edge links. Keeps the walk
 ## and sight rows (and a live GridModel, if given) in step, and undoes everything.
 ## Works on its own copy of the zone, loaded fresh from its file; nothing here draws
 ## or saves (ZoneSaver writes it, with the other files a change reaches).
 
-enum Layer { TERRAIN, HEIGHT, PROP }
+enum Layer { TERRAIN, HEIGHT, PROP, SHAPE }
 
 ## Heights the editor paints: the digits of ZoneDef.HEIGHT_CHARS.
 const MAX_HEIGHT := 9
@@ -100,16 +102,29 @@ func in_bounds(p: Vector2i) -> bool:
 	return p.x >= 0 and p.y >= 0 and p.x < width() and p.y < depth()
 
 
-## The tiles a square brush of `size` (1, 3, 5…) covers around `center`.
-func brush(center: Vector2i, brush_size: int) -> Array[Vector2i]:
+## The tiles a square brush of `size` (1, 3, 5…) covers around `center`, inside
+## the map's rectangle (all of them, beyond it too, with `clip` false).
+func brush(center: Vector2i, brush_size: int, clip := true) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	var r := maxi(brush_size, 1) / 2
 	for y in range(center.y - r, center.y + r + 1):
 		for x in range(center.x - r, center.x + r + 1):
 			var p := Vector2i(x, y)
-			if in_bounds(p):
+			if in_bounds(p) or not clip:
 				out.append(p)
 	return out
+
+
+## Whether the map has a tile at `p` (inside it and not a hole in its shape).
+func has_tile(p: Vector2i) -> bool:
+	return zone.has_tile(p)
+
+
+func tile_count() -> int:
+	var n := 0
+	for row in zone.height_rows:
+		n += row.length() - row.count(ZoneDef.NO_TILE)
+	return n
 
 
 # --- Reading ------------------------------------------------------------------
@@ -130,7 +145,7 @@ func is_walkable(p: Vector2i) -> bool:
 	return in_bounds(p) and zone.walk_rows[p.y][p.x] == "."
 
 
-## What the eyedropper copies: {"terrain", "height", "prop"}.
+## What the eyedropper copies: {"terrain", "height", "prop"} ("" and -1 at a hole).
 func pick(p: Vector2i) -> Dictionary:
 	return {"terrain": terrain_at(p), "height": height_at(p), "prop": prop_at(p)}
 
@@ -185,10 +200,29 @@ func change_height(tiles: Array, delta: int) -> Array[Vector2i]:
 	return _paint(Layer.HEIGHT, tiles, func(p): return clampi(height_at(p) + delta, 0, MAX_HEIGHT))
 
 
+## Removes the map's tiles at `tiles` (they become holes: walls nothing enters).
+## Refused (nothing changes) if no tile would be left. Things standing there stay
+## (ZoneCheck lists them). Returns the tiles that changed.
+func remove_tiles(tiles: Array) -> Array[Vector2i]:
+	var gone := tiles.filter(func(p): return has_tile(p))
+	if gone.size() >= tile_count():
+		return []
+	return _paint(Layer.SHAPE, gone, func(_p): return [])
+
+
+## Adds tiles of `terrain` ground at height `h` where the map has none (holes, inside
+## its rectangle; grow it first with grow_to_include for tiles beyond it).
+func add_tiles(tiles: Array, terrain: String, h: int) -> Array[Vector2i]:
+	if not tileset.terrains.has(terrain):
+		return []
+	var v := [terrain, clampi(h, 0, MAX_HEIGHT), ""]
+	return _paint(Layer.SHAPE, tiles.filter(func(p): return in_bounds(p) and not has_tile(p)), func(_p): return v)
+
+
 func _paint(layer: Layer, tiles: Array, value_of: Callable) -> Array[Vector2i]:
 	var changed: Array[Vector2i] = []
 	for p: Vector2i in tiles:
-		if not in_bounds(p):
+		if not in_bounds(p) or (layer != Layer.SHAPE and not has_tile(p)):
 			continue
 		var old: Variant = _read(layer, p)
 		var new: Variant = value_of.call(p)
@@ -263,6 +297,8 @@ func _read(layer: Layer, p: Vector2i) -> Variant:
 			return terrain_at(p)
 		Layer.HEIGHT:
 			return height_at(p)
+		Layer.SHAPE: # [] for a hole
+			return [terrain_at(p), height_at(p), prop_at(p)] if has_tile(p) else []
 		_:
 			return prop_at(p)
 
@@ -275,6 +311,16 @@ func _write(layer: Layer, p: Vector2i, value: Variant) -> void:
 			_set_char(zone.height_rows, p, ZoneDef.HEIGHT_CHARS[int(value)])
 		Layer.PROP:
 			_set_char(zone.prop_rows, p, "." if str(value) == "" else _legend_char(zone.prop_legend, str(value)))
+		Layer.SHAPE:
+			var v: Array = value
+			if v.is_empty():
+				_set_char(zone.terrain_rows, p, ZoneDef.NO_TILE)
+				_set_char(zone.height_rows, p, ZoneDef.NO_TILE)
+				_set_char(zone.prop_rows, p, ".")
+			else:
+				_write(Layer.TERRAIN, p, v[0])
+				_write(Layer.HEIGHT, p, v[1])
+				_write(Layer.PROP, p, v[2])
 
 
 static func _set_char(rows: PackedStringArray, p: Vector2i, c: String) -> void:
@@ -306,7 +352,9 @@ func _rebake(tiles: Array[Vector2i]) -> Array[Vector2i]:
 			zone.friction_tiles[p] = baked.friction
 		else:
 			zone.friction_tiles.erase(p)
-		if grid != null:
+		if grid != null and not has_tile(p):
+			grid.remove_tile(p)
+		elif grid != null:
 			grid.set_tile(p, height_at(p), baked.walkable)
 			grid.set_blocks_sight(p, baked.blocks_sight)
 			grid.set_friction(p, baked.friction)
@@ -467,7 +515,7 @@ func all_things() -> Array:
 ## a destination zone id for doors; ignored for spawns and graveyards.
 ## A person already on this map moves here instead (each person stands once).
 func add_thing(kind: String, p: Vector2i, what: Variant = null) -> Dictionary:
-	if not in_bounds(p):
+	if not has_tile(p): # off the map, or a hole in its shape
 		return {}
 	return _change(func():
 		match kind:
@@ -517,7 +565,7 @@ func add_thing(kind: String, p: Vector2i, what: Variant = null) -> Dictionary:
 
 ## Moves a thing to tile `p` (its patrol, if any, moves along with it).
 func move_thing(r: Dictionary, p: Vector2i) -> bool:
-	if not in_bounds(p) or thing(r) == null:
+	if not has_tile(p) or thing(r) == null:
 		return false
 	return _change(func():
 		var t: Variant = thing(r)
@@ -613,29 +661,91 @@ func resize(grow: Dictionary, fill: String, fill_height: int) -> bool:
 	var new_size := _grown_size(grow)
 	if new_size.x < 4 or new_size.y < 4 or not tileset.terrains.has(fill):
 		return false
-	var by := Vector2i(int(grow.get(Vector2i.LEFT, 0)), int(grow.get(Vector2i.UP, 0)))
 	return _change(func():
 		var tc := _legend_char(zone.terrain_legend, fill)
 		var hc := ZoneDef.HEIGHT_CHARS[clampi(fill_height, 0, MAX_HEIGHT)]
-		var fills := {"terrain_rows": tc, "height_rows": hc, "prop_rows": ".", "walk_rows": ".", "sight_rows": "."}
-		for key in ROW_KEYS:
-			var old: PackedStringArray = zone.get(key)
-			var rows: PackedStringArray = []
-			for y in new_size.y:
-				var row := ""
-				for x in new_size.x:
-					var o := Vector2i(x, y) - by
-					if o.y >= 0 and o.y < old.size() and o.x >= 0 and o.x < old[o.y].length():
-						row += old[o.y][o.x]
-					else:
-						row += fills[key]
-				rows.append(row)
-			zone.set(key, rows)
-		_shift_things(by, new_size)
-		for e in zone.edges:
-			e.offset -= by.y if e.side.x != 0 else by.x
-		shift += by
+		_resize_rows(grow, {"terrain_rows": tc, "height_rows": hc, "prop_rows": ".", "walk_rows": ".", "sight_rows": "."})
 		return true)
+
+
+## Fills for rows added around the map that hold no tiles (holes).
+const HOLE_FILLS := {"terrain_rows": ZoneDef.NO_TILE, "height_rows": ZoneDef.NO_TILE, "prop_rows": ".",
+		"walk_rows": "#", "sight_rows": "."}
+
+
+## Grows the map's rectangle with holes so every tile of `tiles` is inside it, plus
+## `margin` more on each side that grows (room to keep painting). One undo step.
+## Returns how far the map's coordinates moved (add it to tiles held from before).
+func grow_to_include(tiles: Array, margin := 0) -> Vector2i:
+	var grow := {}
+	for p: Vector2i in tiles:
+		if p.x < 0:
+			grow[Vector2i.LEFT] = maxi(grow.get(Vector2i.LEFT, 0), -p.x + margin)
+		if p.y < 0:
+			grow[Vector2i.UP] = maxi(grow.get(Vector2i.UP, 0), -p.y + margin)
+		if p.x >= width():
+			grow[Vector2i.RIGHT] = maxi(grow.get(Vector2i.RIGHT, 0), p.x - width() + 1 + margin)
+		if p.y >= depth():
+			grow[Vector2i.DOWN] = maxi(grow.get(Vector2i.DOWN, 0), p.y - depth() + 1 + margin)
+	if grow.is_empty():
+		return Vector2i.ZERO
+	_change(func(): _resize_rows(grow, HOLE_FILLS))
+	return Vector2i(grow.get(Vector2i.LEFT, 0), grow.get(Vector2i.UP, 0))
+
+
+## Rows and columns on each side holding no tile (what `trim` would cut), per SIDES
+## direction, as negative grow amounts.
+func trimmable() -> Dictionary:
+	var lo := Vector2i(width(), depth())
+	var hi := Vector2i(-1, -1)
+	for y in depth():
+		for x in width():
+			if has_tile(Vector2i(x, y)):
+				lo = lo.min(Vector2i(x, y))
+				hi = hi.max(Vector2i(x, y))
+	var out := {}
+	if hi.x < 0:
+		return out # no tile at all: nothing sensible to trim to
+	for pair in [[Vector2i.LEFT, lo.x], [Vector2i.UP, lo.y], [Vector2i.RIGHT, width() - 1 - hi.x],
+			[Vector2i.DOWN, depth() - 1 - hi.y]]:
+		if pair[1] > 0:
+			out[pair[0]] = -pair[1]
+	return out
+
+
+## Cuts the empty rows and columns off the map's sides (one undo step; things on
+## them are removed). Returns how far the map's coordinates moved.
+func trim() -> Vector2i:
+	var grow := trimmable()
+	if grow.is_empty():
+		return Vector2i.ZERO
+	_change(func(): _resize_rows(grow, HOLE_FILLS))
+	return Vector2i(grow.get(Vector2i.LEFT, 0), grow.get(Vector2i.UP, 0))
+
+
+## Adds (negative: removes) rows and columns per side, new ones filled per row key
+## from `fills`; moves things, patrols, lifts, edge offsets and `shift` with the
+## ground. Call inside _change.
+func _resize_rows(grow: Dictionary, fills: Dictionary) -> void:
+	var new_size := _grown_size(grow)
+	var by := Vector2i(int(grow.get(Vector2i.LEFT, 0)), int(grow.get(Vector2i.UP, 0)))
+	for key in ROW_KEYS:
+		var old: PackedStringArray = zone.get(key)
+		var rows: PackedStringArray = []
+		for y in new_size.y:
+			var row := ""
+			for x in new_size.x:
+				var o := Vector2i(x, y) - by
+				if o.y >= 0 and o.y < old.size() and o.x >= 0 and o.x < old[o.y].length():
+					row += old[o.y][o.x]
+				else:
+					row += fills[key]
+			rows.append(row)
+		zone.set(key, rows)
+	_shift_things(by, new_size)
+	for e in zone.edges:
+		e.offset -= by.y if e.side.x != 0 else by.x
+	shift += by
 
 
 func _shift_things(by: Vector2i, new_size: Vector2i) -> void:

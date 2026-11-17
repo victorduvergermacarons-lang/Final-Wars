@@ -22,6 +22,8 @@ func _draw() -> void:
 	var font := ThemeDB.fallback_font
 	if editor.show_grid or editor.show_heights:
 		_draw_helpers(grid, font)
+	if editor.tool == MapEditor.Tool.SHAPE and not editor.is_picking():
+		_draw_shape_helpers(grid)
 	var edit := editor.edit
 	for e in edit.zone.edges:
 		for p in edit.edge_tiles(e.side):
@@ -60,7 +62,7 @@ func _draw_helpers(grid: GridModel, font: Font) -> void:
 	for y in range(c.y - RADIUS, c.y + RADIUS + 1):
 		for x in range(c.x - RADIUS, c.x + RADIUS + 1):
 			var p := Vector2i(x, y)
-			if not grid.in_bounds(p):
+			if not grid.has_tile(p):
 				continue
 			var at := _at(grid, p)
 			if editor.show_grid:
@@ -72,6 +74,31 @@ func _draw_helpers(grid: GridModel, font: Font) -> void:
 			if editor.show_heights:
 				var colour := Color(1, 1, 1) if grid.is_walkable(p) else Color(1, 0.55, 0.5)
 				_text(font, at + Vector2(0, 5), str(grid.height_at(p)), colour, 14)
+
+
+## Shape tool: faint outlines where tiles could be added (holes, and ground level
+## for a few tiles around the map near the camera), and the brush.
+func _draw_shape_helpers(grid: GridModel) -> void:
+	var centre := Iso.from_screen(editor.view.camera.position, 0.0)
+	var c := Vector2i(roundi(centre.x), roundi(centre.y))
+	var margin := MapEditor.GROW_MARGIN + 2
+	for y in range(maxi(c.y - RADIUS, -margin), mini(c.y + RADIUS, grid.depth + margin - 1) + 1):
+		for x in range(maxi(c.x - RADIUS, -margin), mini(c.x + RADIUS, grid.width + margin - 1) + 1):
+			var p := Vector2i(x, y)
+			if not grid.has_tile(p):
+				_outline(Iso.to_screen(Vector2(p), 0.0), Color(1, 1, 1, 0.14))
+	if editor._hover != null:
+		var add := editor.edit.brush(editor._hover, editor.brush_size, false)
+		for p in add:
+			var at := _at(grid, p) if grid.has_tile(p) else Iso.to_screen(Vector2(p), 0.0)
+			_outline(at, Color(1, 1, 1, 0.9), 2.0)
+
+
+func _outline(at: Vector2, colour: Color, width := 1.0) -> void:
+	var hw := Iso.TILE_W * 0.5
+	var hh := Iso.TILE_H * 0.5
+	draw_polyline(PackedVector2Array([at + Vector2(0, -hh), at + Vector2(hw, 0), at + Vector2(0, hh),
+			at + Vector2(-hw, 0), at + Vector2(0, -hh)]), colour, width)
 
 
 func _patrol(grid: GridModel, font: Font, route: Array, mine: bool) -> void:

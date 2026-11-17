@@ -9,9 +9,9 @@ extends Node
 
 signal closed
 
-enum Tool { GROUND, HEIGHT, PROPS, PICK, THINGS, SELECT }
+enum Tool { GROUND, HEIGHT, PROPS, PICK, THINGS, SELECT, SHAPE }
 
-const TOOL_NAMES := ["Ground", "Height", "Props", "Pick", "Things", "Select"]
+const TOOL_NAMES := ["Ground", "Height", "Props", "Pick", "Things", "Select", "Shape"]
 const BRUSH_SIZES := [1, 3, 5]
 const PAN_SPEED := 900.0 # world units per second at zoom 1
 const HELP := {
@@ -21,8 +21,9 @@ const HELP := {
 	Tool.PICK: "Left: copy the tile under the mouse\n(its ground, height and prop)",
 	Tool.THINGS: "Left: place the chosen thing\nRight: remove the thing under the mouse",
 	Tool.SELECT: "Left: select a thing (click again for the next one on that tile)\nDrag: move it   Delete: remove it\nRight: select nothing",
+	Tool.SHAPE: "Left: add tiles of the chosen ground at the chosen level,\nalso beyond the map (it grows; empty sides are cut off on save)\nRight: remove tiles (nothing walks there; shots fly over)",
 }
-const KEYS_HELP := "WASD / arrows or middle-drag: move   Wheel: zoom\n1-6: tools   [ ]: brush size   Ctrl+Z / Ctrl+Y: undo / redo   Ctrl+S: save"
+const KEYS_HELP := "WASD / arrows or middle-drag: move   Wheel: zoom\n1-7: tools   [ ]: brush size   Ctrl+Z / Ctrl+Y: undo / redo   Ctrl+S: save"
 ## Things the Things tool places: kind -> label.
 const CATEGORIES := [
 	["enemy", "Enemies"], ["npc", "People"], ["hero_spawn", "Hero spawn point"],
@@ -55,6 +56,10 @@ var thing_what: Variant = null
 ## Select tool: the selected thing ({} for none) and whether clicks edit its patrol.
 var selected := {}
 var patrol_mode := false
+
+## Shape tool: rows and columns of holes added past a tile placed beyond the map, so
+## a drag can carry on without growing it at every tile (cut off again on save).
+const GROW_MARGIN := 3
 
 var _cam_target := Vector2.ZERO
 var _painting := MOUSE_BUTTON_NONE
@@ -236,7 +241,7 @@ func _update_hover() -> void:
 	var t: Variant = null
 	var active := _active_view()
 	if not _mouse_over_ui():
-		t = active.tile_at(active.get_global_mouse_position())
+		t = _tile_under(active, active.get_global_mouse_position())
 	if t != _hover:
 		_hover = t
 		if _hover != null and _painting != MOUSE_BUTTON_NONE and _peek.is_empty() and _paints():
@@ -248,12 +253,22 @@ func _update_hover() -> void:
 		var tiles: Array[Vector2i] = [_hover]
 		if _paints() and _peek.is_empty():
 			tiles = edit.brush(_hover, brush_size)
-		client.aim = {"tiles": tiles, "valid": true}
+		client.aim = {"tiles": tiles, "valid": true} if tool != Tool.SHAPE else {} # the overlay draws the shape brush
+
+
+## The tile under a screen point: the map's tiles as the view picks them; with the
+## Shape tool, ground level beyond the map too (where tiles can be added).
+func _tile_under(active: WorldView, at: Vector2) -> Variant:
+	var t: Variant = active.tile_at(at)
+	if t == null and tool == Tool.SHAPE and _peek.is_empty():
+		var f := Iso.from_screen(at, 0.0)
+		t = Vector2i(roundi(f.x), roundi(f.y))
+	return t
 
 
 ## The current tool paints tiles (drags over many).
 func _paints() -> bool:
-	return tool == Tool.GROUND or tool == Tool.HEIGHT or tool == Tool.PROPS
+	return tool == Tool.GROUND or tool == Tool.HEIGHT or tool == Tool.PROPS or tool == Tool.SHAPE
 
 
 func _mouse_over_ui() -> bool:
@@ -269,7 +284,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var b: int = event.button_index
 		if b == MOUSE_BUTTON_LEFT or b == MOUSE_BUTTON_RIGHT:
 			var active := _active_view()
-			var tile: Variant = active.tile_at(active.get_global_mouse_position())
+			var tile: Variant = _tile_under(active, active.get_global_mouse_position())
 			if not _peek.is_empty():
 				if event.pressed and tile != null:
 					if b == MOUSE_BUTTON_LEFT:
@@ -352,7 +367,7 @@ func _shortcut(event: InputEventKey) -> bool:
 			redo()
 		KEY_S when ctrl:
 			save()
-		KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6 when not ctrl:
+		KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7 when not ctrl:
 			set_tool(event.physical_keycode - KEY_1)
 		KEY_BRACKETLEFT:
 			set_brush(BRUSH_SIZES[maxi(BRUSH_SIZES.find(brush_size) - 1, 0)])
@@ -381,6 +396,9 @@ func _apply(tile: Vector2i, button: int) -> void:
 	if tool == Tool.PICK or (tool == Tool.GROUND and button == MOUSE_BUTTON_RIGHT):
 		pick_from(tile)
 		return
+	if tool == Tool.SHAPE:
+		_apply_shape(tile, button)
+		return
 	var tiles: Array = []
 	for p in edit.brush(tile, brush_size):
 		if not _painted.has(p):
@@ -403,8 +421,59 @@ func _apply(tile: Vector2i, button: int) -> void:
 		_refresh_status()
 
 
+## The Shape tool on `tile`: left adds tiles (growing the map when the brush reaches
+## past it), right removes them.
+func _apply_shape(tile: Vector2i, button: int) -> void:
+	var tiles: Array = []
+	# Adding reaches beyond the map; removing only touches tiles in it.
+	for p in edit.brush(tile, brush_size, button != MOUSE_BUTTON_LEFT):
+		if not _painted.has(p):
+			tiles.append(p)
+	if tiles.is_empty():
+		return
+	var changed: Array[Vector2i] = []
+	if button == MOUSE_BUTTON_LEFT:
+		if tiles.any(func(p): return not edit.in_bounds(p)):
+			# Growing is a step of its own: close the stroke so far, grow, carry on.
+			edit.end_stroke()
+			var by := edit.grow_to_include(tiles, GROW_MARGIN)
+			_shift_view(by)
+			tiles = tiles.map(func(p): return p + by)
+			var moved := {}
+			for p in _painted:
+				moved[p + by] = true
+			_painted = moved
+			_after_change()
+			edit.begin_stroke()
+		changed = edit.add_tiles(tiles, terrain, height_level)
+	else:
+		changed = edit.remove_tiles(tiles)
+		if changed.is_empty() and tiles.any(func(p): return edit.has_tile(p)):
+			_message = "A map needs at least one tile."
+	for p in tiles:
+		_painted[p] = true
+	if not changed.is_empty():
+		view.refresh_tiles(changed)
+		_message = ""
+	_refresh_status()
+
+
+## The map's coordinates moved by `by` (it grew or shrank on its north-west or
+## north-east side): keep the camera and the hovered tile over the same ground.
+func _shift_view(by: Vector2i) -> void:
+	if by == Vector2i.ZERO:
+		return
+	_cam_target += Iso.to_screen(Vector2(by), 0) - Iso.to_screen(Vector2.ZERO, 0)
+	if _hover != null:
+		_hover += by
+
+
 ## The eyedropper: the tile's ground, height and prop become the selections.
 func pick_from(tile: Vector2i) -> void:
+	if not edit.has_tile(tile):
+		_message = "No tile there to copy."
+		_refresh_status()
+		return
 	var got := edit.pick(tile)
 	terrain = got.terrain
 	height_level = got.height
@@ -475,6 +544,9 @@ func place(tile: Vector2i) -> void:
 		was_elsewhere = ZoneEdit.placements(zone_id).get(what.id, "")
 	var r := edit.add_thing(thing_kind, tile, what)
 	if r.is_empty():
+		if not edit.has_tile(tile):
+			_message = "There is no tile there to place it on."
+			_refresh_status()
 		return
 	selected = r
 	_message = "Placed %s." % edit.describe(r)
@@ -695,6 +767,10 @@ func save() -> void:
 
 ## Writes the map (and the files the change reaches) and refreshes the game's copies.
 func write() -> Error:
+	var by := edit.trim() # empty rows and columns along the sides go
+	if by != Vector2i.ZERO or edit.rebuild_needed:
+		_shift_view(by)
+		_after_change()
 	var err := saver.save(edit, zone_path)
 	if err != OK:
 		_message = "Could not save %s (%s)." % [zone_path, error_string(err)]
@@ -778,7 +854,7 @@ func _build_ui() -> void:
 	col.add_theme_constant_override("separation", 6)
 	side.add_child(col)
 	var tool_group := ButtonGroup.new()
-	for row_tools in [[0, 1, 2], [3, 4, 5]]:
+	for row_tools in [[0, 1, 2], [3, 4, 5], [6]]:
 		var row := HBoxContainer.new()
 		for i in row_tools:
 			var b := _button(row, "%d %s" % [i + 1, TOOL_NAMES[i]], set_tool.bind(i))
@@ -815,8 +891,9 @@ func _build_ui() -> void:
 	_level.value = height_level
 	_level.value_changed.connect(func(v):
 		height_level = int(v)
-		exact_height = true
-		_exact.set_pressed_no_signal(true))
+		if tool == Tool.HEIGHT:
+			exact_height = true
+			_exact.set_pressed_no_signal(true))
 	level_row.add_child(_level)
 	_height_box.add_child(level_row)
 	col.add_child(_height_box)
@@ -917,17 +994,18 @@ func _fill_palette() -> void:
 		return
 	_palette.clear()
 	_palette_ids = []
-	_height_box.visible = tool == Tool.HEIGHT
+	_height_box.visible = tool == Tool.HEIGHT or tool == Tool.SHAPE
+	_exact.visible = tool == Tool.HEIGHT
 	_brush_row.visible = _paints()
 	_things_box.visible = tool == Tool.THINGS
-	_palette.visible = tool == Tool.GROUND or tool == Tool.PROPS or \
+	_palette.visible = tool == Tool.GROUND or tool == Tool.PROPS or tool == Tool.SHAPE or \
 			(tool == Tool.THINGS and thing_kind in ["enemy", "npc", "decor", "exit"])
 	_help.text = HELP[tool]
 	if edit == null:
 		return
 	var art := TileArt.for_tileset(edit.tileset)
 	match tool:
-		Tool.GROUND:
+		Tool.GROUND, Tool.SHAPE:
 			for t in edit.terrain_names():
 				_add_entry(ZoneEdit.pretty(t), t, art.texture(art.top_tile(t, Vector2i.ZERO)), t == terrain)
 		Tool.PROPS:
@@ -978,7 +1056,7 @@ func _add_entry(text: String, id: Variant, icon: Texture2D, selected_now: bool) 
 
 func _on_palette(i: int) -> void:
 	match tool:
-		Tool.GROUND:
+		Tool.GROUND, Tool.SHAPE:
 			terrain = _palette_ids[i]
 		Tool.PROPS:
 			prop = _palette_ids[i]
@@ -1253,7 +1331,9 @@ func _refresh_status() -> void:
 	parts.append("%s %d×%d%s" % [edit.zone.display_name, edit.width(), edit.depth(), " (unsaved changes)" if edit.dirty else ""])
 	if _hover != null and _peek.is_empty():
 		var p: Vector2i = _hover
-		if edit.in_bounds(p):
+		if not edit.has_tile(p):
+			parts.append("(%d, %d) no tile" % [p.x, p.y])
+		else:
 			var got := edit.pick(p)
 			parts.append("(%d, %d) %s, height %d%s" % [p.x, p.y, ZoneEdit.pretty(got.terrain), got.height,
 					", " + ZoneEdit.pretty(got.prop) if got.prop != "" else ""])
