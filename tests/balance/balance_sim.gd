@@ -166,7 +166,7 @@ static func boss_fight(content, specs: Array, seed: int = 1, hero_level: int = 1
 	var heroes: Array[Hero] = []
 	for i in specs.size():
 		var h := make_bot(world, content, specs[i], hero_level)
-		h.move.place(world.find_free_tile_near(Vector2i(52, 13 + i * 2)))
+		h.move.place(world.find_free_tile_near(Vector2i(52, 12 + i * 2)))
 		heroes.append(h)
 	world.step() # scaled for the party
 	var enc := world.encounter
