@@ -93,7 +93,8 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 			events.append({"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id})
 			if AbilityResolver.has_target_effects(ability):
 				var reach := float(ability.hit_range) if ability.hit_range >= 0 else hb.reach
-				if target == caster or Hitbox.gap(caster, target) <= reach + 0.05:
+				# A locked-on throw (Hurled Sunstone) reaches its target wherever it went.
+				if target == caster or ability.locks_on or Hitbox.gap(caster, target) <= reach + 0.05:
 					AbilityResolver.apply_effects(ctx, caster, ability, target, events)
 				else:
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": target.tile()})

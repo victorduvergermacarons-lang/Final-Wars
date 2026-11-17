@@ -104,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-226 keys, 0 with a file, 226 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+228 keys, 0 with a file, 228 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -282,6 +282,8 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_foreman_enrage` | The Foreman enrages (Grey Fury, phase 3) | **missing** |
 | `creature_foreman_ground_slam` | Ground Slam is used | **missing** |
 | `creature_foreman_ground_slam_hit` | Ground Slam lands on someone | **missing** |
+| `creature_foreman_hurled_sunstone` | Hurled Sunstone is used | **missing** |
+| `creature_foreman_hurled_sunstone_hit` | Hurled Sunstone lands on someone | **missing** |
 | `creature_foreman_hurt` | The Foreman takes damage | **missing** |
 | `creature_foreman_mine_cart_charge` | Mine-Cart Charge is used | **missing** |
 | `creature_foreman_mine_cart_charge_hit` | Mine-Cart Charge lands on someone | **missing** |

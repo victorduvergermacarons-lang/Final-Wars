@@ -122,7 +122,7 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			events.append({"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id})
 			if AbilityResolver.has_target_effects(ability):
 				var reach := ability.hit_range if ability.hit_range >= 0 else ability.max_range
-				if target == caster or Actor.body_distance(caster, target) <= reach:
+				if target == caster or ability.locks_on or Actor.body_distance(caster, target) <= reach:
 					AbilityResolver.apply_effects(ctx, caster, ability, target, events)
 				else:
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": target.tile()})
