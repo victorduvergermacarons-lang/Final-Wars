@@ -76,7 +76,7 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_eq(reloaded.slots, game.client.action_bar.slots)
 
 	# Talking to Hilda opens the dialogue box; walking away closes it.
-	hero.move.place(Vector2i(12, 11))
+	hero.move.place(Vector2i(10, 9)) # Hilda stands at (10, 8)
 	hero.face(Vector2i.UP)
 	input.talk_to_nearest()
 	await wait_physics_frames(6)
@@ -141,7 +141,7 @@ func test_solo_game_runs_with_hud() -> void:
 	var new_view := game.get_node_or_null("WorldView")
 	assert_not_null(new_view)
 	assert_ne(new_view, old_view, "the view was rebuilt for the new zone")
-	assert_eq(session.actors().filter(func(a): return a is Enemy).size(), 14, "now seeing Greenfields' enemies (11 + the wolf pack)")
+	assert_eq(session.actors().filter(func(a): return a is Enemy).size(), 13, "now seeing Greenfields' enemies (10 + the wolf pack)")
 
 	# Saving writes the hero's progress to the store.
 	game.store = CharacterStore.new("user://test_smoke_characters")

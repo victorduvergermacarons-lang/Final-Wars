@@ -104,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-224 keys, 0 with a file, 224 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+225 keys, 0 with a file, 225 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -148,6 +148,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 |-----|-----------|------|
 | `footstep_cobble` | a hero steps on cobble | **missing** |
 | `footstep_cracked` | a hero steps on cracked | **missing** |
+| `footstep_dark_earth` | a hero steps on dark earth | **missing** |
 | `footstep_dark_grass` | a hero steps on dark grass | **missing** |
 | `footstep_default` | a hero steps on ground without a known surface | **missing** |
 | `footstep_dense_grass` | a hero steps on dense grass | **missing** |
@@ -157,11 +158,11 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `footstep_grey_rock` | a hero steps on grey rock | **missing** |
 | `footstep_meadow` | a hero steps on meadow | **missing** |
 | `footstep_mine_floor` | a hero steps on mine floor | **missing** |
+| `footstep_mine_stone` | a hero steps on mine stone | **missing** |
 | `footstep_path` | a hero steps on path | **missing** |
 | `footstep_red_earth` | a hero steps on red earth | **missing** |
 | `footstep_red_rock` | a hero steps on red rock | **missing** |
 | `footstep_red_stone` | a hero steps on red stone | **missing** |
-| `footstep_rocky_dirt` | a hero steps on rocky dirt | **missing** |
 | `footstep_rocky_ground` | a hero steps on rocky ground | **missing** |
 | `footstep_slab` | a hero steps on slab | **missing** |
 | `footstep_steppe` | a hero steps on steppe | **missing** |
