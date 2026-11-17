@@ -266,16 +266,6 @@
         "generations": 1.0
       }
     },
-    "NP-02-1": {
-      "date": "2026-11-09",
-      "files": [
-        "art/NP-02/NP-02-1_2026-11-09.png"
-      ],
-      "usage": {
-        "type": "generations",
-        "generations": 1.0
-      }
-    },
     "NP-03-1": {
       "date": "2026-11-09",
       "files": [
@@ -3287,6 +3277,19 @@
           "generations": 1.0
         },
         "note": "redo as 9 small sideways bursts (Victor, 2026-11-05)"
+      }
+    ],
+    "NP-02-1": [
+      {
+        "date": "2026-11-09",
+        "files": [
+          "art/NP-02/NP-02-1_2026-11-09.png"
+        ],
+        "usage": {
+          "type": "generations",
+          "generations": 1.0
+        },
+        "note": "not approved by Victor 2026-11-17: should look more regal, charismatic and powerful (like PL-03-1 or NP-11-1)"
       }
     ]
   }
