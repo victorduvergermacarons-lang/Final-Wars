@@ -11,7 +11,7 @@ script = ExtResource("1_obj")
 kind = 3
 text = "Ride the lift down to the deep seams"
 zone = &"silent_shaft"
-tile = Vector2i(26, 21)
+tile = Vector2i(26, 20)
 radius = 3
 
 [sub_resource type="Resource" id="Objective_1"]
@@ -19,7 +19,7 @@ script = ExtResource("1_obj")
 kind = 3
 text = "Find where the silence comes from"
 zone = &"silent_shaft"
-tile = Vector2i(49, 15)
+tile = Vector2i(49, 14)
 radius = 2
 
 [sub_resource type="Resource" id="Objective_2"]
