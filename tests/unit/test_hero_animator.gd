@@ -2,7 +2,8 @@ extends GutTest
 ## Which frame a hero shows (CreatureAnimator.pick_hero), from the host's times in
 ## Hero.anim: death then lying down, downed while stunned, revived, the weapon
 ## sets only with that weapon in hand, cast otherwise, hit, walk and idle; and the
-## art itself (4 facings, 9 frames each, one feet point).
+## art itself (8 facings, 9 frames each, one feet point); the walk follows the
+## distance walked on screen.
 
 var art: CreatureArtDef
 var hero: Hero
@@ -20,14 +21,14 @@ func _pick(t := T) -> Dictionary:
 	return animator.pick_hero(hero, art, t)
 
 
-func test_every_sheet_has_four_facings_of_nine_frames() -> void:
+func test_every_sheet_has_eight_facings_of_nine_frames() -> void:
 	for anim in ["idle", "run", "cast", "hit", "death", "downed", "revived",
 			"sword_slash", "sword_lunge", "bow_quick_shot", "bow_aimed_shot"]:
 		var tex: Texture2D = art.sheets.get(anim)
 		assert_not_null(tex, anim)
 		if tex != null:
-			assert_eq(Vector2i(tex.get_width(), tex.get_height()), Vector2i(9 * 48, 4 * 48), anim)
-	assert_eq(art.rows, PackedStringArray(["sw", "se", "nw", "ne"]))
+			assert_eq(Vector2i(tex.get_width(), tex.get_height()), Vector2i(9 * 48, 8 * 48), anim)
+	assert_eq(art.rows, PackedStringArray(["sw", "se", "nw", "ne", "s", "e", "n", "w"]))
 	assert_eq(art.feet, Vector2(24, 38), "the measured feet point")
 
 
@@ -36,12 +37,53 @@ func test_idle_and_walk() -> void:
 	hero.move.vel = Vector2(3, 0)
 	hero.move.pos += Vector2(0.5, 0)
 	hero.move.odometer = 0.5
+	hero.move.screen_odometer = 5.0 * art.run_px_per_frame["se"] + 0.01
+	hero.face(Vector2i.RIGHT)
 	if hero.move.is_moving(T):
 		assert_eq(_pick().anim, "run")
-		assert_eq(_pick().frame, 4, "8 frames per tile")
+		assert_eq(_pick().frame, 5, "a frame per run_px_per_frame art px on screen")
 
 
-func test_facing_picks_the_row() -> void:
+## The feet keep pace with the ground on screen: the same ground distance plays
+## half the frames going up the screen as going across it (iso halves heights),
+## and a slower walk (a slow, Earth Armor, Haste) plays proportionally.
+func test_the_walk_follows_the_screen_distance() -> void:
+	var across := MoveState.screen_length(Vector2(1, -1).normalized()) # one tile across the screen
+	var up := MoveState.screen_length(Vector2(-1, -1).normalized()) # one tile up it
+	assert_almost_eq(across, 22.63, 0.01)
+	assert_almost_eq(up, 11.31, 0.01)
+	var frames_e: float = across / art.run_px_per_frame["e"]
+	var frames_n: float = up / art.run_px_per_frame["n"]
+	assert_lt(frames_n, frames_e, "fewer frames per tile walking up the screen")
+	var world := WorldSim.new(ContentDB.zones[&"town"], ContentDB.rules, 1)
+	var h := world.add_hero(ContentDB.heroes[&"adventurer"])
+	h.move.place(Vector2i(6, 7))
+	world.step()
+	world.submit(h.id, {"type": "move", "dir": Vector2i(1, 0), "face": 0.0})
+	world.advance(0.5)
+	var full := h.move.screen_odometer
+	assert_almost_eq(full / h.move.odometer, across, 0.5, "screen distance tracks the walk")
+	# Half the speed (a slow, Earth Armor): half the screen distance in the same time,
+	# so half the frames: the cadence follows the speed by itself.
+	var o0 := h.move.screen_odometer
+	h.move.vel = Vector2.ZERO
+	world.submit(h.id, {"type": "move", "dir": Vector2i.ZERO, "face": 0.0})
+	world.advance(0.3)
+	assert_almost_eq(h.move.screen_odometer - o0, 0.0, 3.0, "stopping stops the cycle")
+	assert_eq(MoveState.screen_length(Vector2.ZERO), 0.0)
+
+
+## Eight facings: grid axes are the diagonal views, grid diagonals the straight
+## ones (screen up is grid (-1, -1)).
+func test_the_facing_angle_picks_one_of_eight_rows() -> void:
+	var want := {0.0: "se", 45.0: "s", 90.0: "sw", 135.0: "w", 180.0: "nw", -135.0: "n", -90.0: "ne", -45.0: "e",
+			20.0: "se", 25.0: "s"}
+	for deg in want:
+		hero.face_angle(deg_to_rad(deg))
+		assert_eq(_pick().dir, want[deg], "%s°" % deg)
+
+
+func test_grid_facings_pick_the_diagonal_rows() -> void:
 	for f in {Vector2i.DOWN: "sw", Vector2i.RIGHT: "se", Vector2i.LEFT: "nw", Vector2i.UP: "ne"}.keys():
 		hero.face(f)
 		assert_eq(_pick().dir, {Vector2i.DOWN: "sw", Vector2i.RIGHT: "se", Vector2i.LEFT: "nw", Vector2i.UP: "ne"}[f])

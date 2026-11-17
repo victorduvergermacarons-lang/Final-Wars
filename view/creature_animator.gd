@@ -21,7 +21,7 @@ var _attacks := {} # actor id -> {"anim", "start", "hit_at", "resolved"}
 ## - just hit: "hit" once;
 ## - walking: "run", following the distance walked; else "idle".
 func pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
-	var dir := CreatureArtDef.direction_for(actor.facing)
+	var dir := art.direction_for_angle(actor.facing_angle, actor.facing)
 	var hero := actor as Hero
 	var times: Dictionary = hero.anim if hero != null else {}
 	if not actor.alive:
@@ -42,8 +42,7 @@ func pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	if hit >= 0.0 and hit < art.duration("hit"):
 		return _once(art, "hit", dir, hit, false)
 	if actor.move.is_moving(t):
-		var cycle := maxi(art.frame_count("run"), 1)
-		return {"anim": "run", "dir": dir, "frame": int(actor.move.odometer * art.run_frames_per_tile) % cycle}
+		return {"anim": "run", "dir": dir, "frame": art.run_frame(actor.move, dir)}
 	var idle_n := maxi(art.frame_count("idle"), 1)
 	return {"anim": "idle", "dir": dir, "frame": int(t * art.anim_fps("idle")) % idle_n}
 
@@ -87,8 +86,7 @@ func pick(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	if actor.move.free and not actor.move.gliding and actor.move.is_moving(t):
 		# Free movement: the run cycle follows the distance walked, so the feet
 		# match the ground at any speed and in any direction.
-		var cycle := maxi(art.frame_count("run"), 1)
-		return {"anim": "run", "dir": dir, "frame": int(actor.move.odometer * art.run_frames_per_tile) % cycle}
+		return {"anim": "run", "dir": dir, "frame": art.run_frame(actor.move, dir)}
 	if actor.move.is_moving(t):
 		var n := maxi(art.frame_count("run"), 1)
 		# One run cycle can span several tiles; which part of it a step plays

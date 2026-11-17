@@ -28,6 +28,12 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 		return AbilityResolver.Result.CASTER_DEAD
 	if pay_mode == Pay.INSTANT and not caster.casting.is_empty():
 		return AbilityResolver.Result.BUSY
+	# A locked-on cast already under way only needs its target alive.
+	if ability.locks_on and pay_mode != Pay.INSTANT:
+		if not AbilityResolver._is_valid_target(caster, ability, target):
+			return AbilityResolver.Result.INVALID_TARGET
+		return AbilityResolver.Result.OK if pay_mode == Pay.FREE \
+				else AbilityResolver._check_cost(ctx, caster, ability, false)
 	if ability.uses_hitbox():
 		var r := HitboxResolver.validate(ctx, caster, ability, target, aim)
 		if r != AbilityResolver.Result.OK or pay_mode == Pay.FREE:

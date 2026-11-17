@@ -27,6 +27,12 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## travels per frame; the cycle may span several tiles).
 @export var fps: Dictionary = {"idle": 6.0, "bite": 30.0, "howl": 10.0, "death": 10.0}
 @export var run_frames_per_tile: int = 4
+## Optional, per facing (a `rows` name): art pixels the body moves on screen per
+## run frame, measured from the planted foot. When set, the run cycle follows
+## the distance walked on screen (MoveState.screen_odometer) instead of tiles, so
+## the feet match the ground whichever way it walks (the hero: walking up the
+## screen covers half the pixels of walking across it).
+@export var run_px_per_frame: Dictionary = {}
 ## Animations that loop (others play once and hold their last frame).
 @export var looping: PackedStringArray = PackedStringArray(["idle", "run"])
 ## Ability id -> [animation, hit frame]: the ability winds up for exactly
@@ -128,6 +134,25 @@ func build_sprite_frames(from: Dictionary = {}) -> SpriteFrames:
 				at.region = Rect2(Vector2(c * frame_size.x, r * frame_size.y), Vector2(frame_size))
 				sf.add_frame(name, at)
 	return sf
+
+
+## The run frame after walking `move` (MoveState) facing `dir`.
+func run_frame(move: MoveState, dir: String) -> int:
+	var n := maxi(frame_count("run"), 1)
+	var px := float(run_px_per_frame.get(dir, 0.0))
+	if px > 0.0:
+		return int(move.screen_odometer / px) % n
+	return int(move.odometer * run_frames_per_tile) % n
+
+
+## Art with 8 rows (the hero): the screen facing for a grid-space angle, in eight
+## equal slices of 45° (grid axes are the diagonal views, grid diagonals the
+## straight ones: screen up is grid (-1, -1)). Otherwise the 4-way facing.
+func direction_for_angle(angle: float, facing: Vector2i) -> String:
+	if rows.size() < 8:
+		return direction_for(facing)
+	var k := posmod(roundi(angle / (PI / 4.0)), 8)
+	return ["se", "s", "sw", "w", "nw", "n", "ne", "e"][k]
 
 
 ## The screen facing for a grid facing (4-way).

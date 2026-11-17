@@ -176,6 +176,10 @@ static func boss_fight(content, specs: Array, seed: int = 1, hero_level: int = 1
 	var start := t
 	var min_hp_frac := 1.0
 	var phase := 1
+	var hero_ids := heroes.map(func(h): return h.id)
+	var deaths := 0
+	var hurls := 0 # Hurled Sunstone throws (finished or cancelled), and hits that landed
+	var hurl_hits := 0
 	while t - start < 300.0 and not enc.defeated:
 		if heroes.all(func(h): return not h.alive):
 			break
@@ -188,7 +192,13 @@ static func boss_fight(content, specs: Array, seed: int = 1, hero_level: int = 1
 				break
 		var foes := world.enemies().filter(func(e): return e.alive and not e.evading and e.state == Enemy.State.COMBAT)
 		bot_turn(world, content, heroes, specs, foes, focus, true)
-		world.step()
+		for e in world.step():
+			if e.type == "death" and hero_ids.has(e.target):
+				deaths += 1
+			elif (e.type == "cast" or e.type == "cast_cancel") and e.get("ability") == &"foreman_hurl":
+				hurls += 1 # each throw ends one way or the other
+			elif e.type == "damage" and e.get("ability") == &"foreman_hurl" and hero_ids.has(e.target):
+				hurl_hits += 1
 		t = world.now
 		phase = maxi(phase, enc.phase)
 		for h in heroes:
@@ -197,7 +207,8 @@ static func boss_fight(content, specs: Array, seed: int = 1, hero_level: int = 1
 	for h in heroes:
 		mana = minf(mana, h.mana / maxf(h.stats.mana, 1.0))
 	return {"seconds": snappedf(t - start, 0.05), "hp_lost_pct": roundi((1.0 - min_hp_frac) * 100),
-			"won": enc.defeated, "mana_left_pct": roundi(mana * 100), "phase": phase}
+			"won": enc.defeated, "mana_left_pct": roundi(mana * 100), "phase": phase, "deaths": deaths,
+			"hurls": hurls, "hurl_hits": hurl_hits}
 
 
 static func boss_average(content, specs: Array, runs: int = 6, hero_level: int = 10) -> Dictionary:
@@ -205,14 +216,23 @@ static func boss_average(content, specs: Array, runs: int = 6, hero_level: int =
 	var wins := 0
 	var phases := 0.0
 	var lost := 0.0
+	var deaths := 0
+	var hurls := 0
+	var hurl_hits := 0
 	for i in runs:
 		var r := boss_fight(content, specs, i + 1, hero_level)
 		secs += r.seconds
 		wins += 1 if r.won else 0
 		phases += r.phase
 		lost += r.hp_lost_pct
+		deaths += r.deaths
+		hurls += r.hurls
+		hurl_hits += r.hurl_hits
 	return {"seconds": snappedf(secs / runs, 0.1), "win_rate": float(wins) / runs,
-			"phase": snappedf(phases / runs, 0.1), "hp_lost_pct": roundi(lost / runs)}
+			"phase": snappedf(phases / runs, 0.1), "hp_lost_pct": roundi(lost / runs),
+			"deaths_per_fight": snappedf(float(deaths) / runs, 0.1),
+			"hurls_per_fight": snappedf(float(hurls) / runs, 0.1),
+			"hurl_land_rate": snappedf(float(hurl_hits) / maxf(hurls, 1), 0.01)}
 
 
 ## A bot hero built from `spec` (see tree_fight) at `hero_level`, in `world`.

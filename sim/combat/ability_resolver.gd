@@ -225,7 +225,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			# melee, which still rolls Accuracy against Evasion.
 			var rolls := ability.targeting == AbilityDef.TargetingMode.LEGACY \
 					or (caster is Enemy and ability.is_melee())
-			var sure_hit := not rolls or (flank == CombatMath.Flank.BEHIND and rules.behind_never_misses)
+			var sure_hit := not rolls or ability.locks_on \
+					or (flank == CombatMath.Flank.BEHIND and rules.behind_never_misses)
 			if not sure_hit and ctx.rng.randf() >= CombatMath.hit_chance(caster_stats.accuracy, target_stats.evasion, rules):
 				events.append({"type": "miss", "source": caster.id, "target": target.id, "ability": ability.id})
 				return
