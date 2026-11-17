@@ -92,6 +92,9 @@ def load_queue(path: Path) -> list[dict]:
                 "act": item["act"],
                 "op": "edit" if prompt.get("base") else "generate",
                 "base": prompt.get("base", ""),
+                # optional: edit this drafts-branch file instead of approved/<base>.png
+                # (still waits for <base> to be approved)
+                "base_file": prompt.get("base_file", ""),
                 "description": text,
                 "width": size[0],
                 "height": size[1],
@@ -284,7 +287,10 @@ def generate(entry: dict, secret: str, approved: dict[str, Path]) -> tuple[list[
             body.pop("no_background")  # older endpoints may not take it
             result = post(GENERATE_ENDPOINT, body, secret)
     else:
-        base_png = approved[entry["base"]].read_bytes()
+        base_path = approved[entry["base"]]
+        if entry.get("base_file"):
+            base_path = Path(base_path).parent.parent / entry["base_file"]
+        base_png = Path(base_path).read_bytes()
         bw, bh = png_size(base_png)
         if op == "edit":
             body = {"image": image_obj(base_png), "description": entry["description"],

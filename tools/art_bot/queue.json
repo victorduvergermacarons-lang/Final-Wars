@@ -691,6 +691,16 @@
       48
      ],
      "base": "NP-07-1"
+    },
+    {
+     "subject": "clean up this small pixel-art character: same character, same pose, same size and position (about 32 px tall, feet at (24, 40)), crisp hand-placed pixels, clear readable face and outfit, dark outline like the game's hero, no ground shadow, facing south-east",
+     "kind": "plain",
+     "size": [
+      48,
+      48
+     ],
+     "base": "NP-07-1",
+     "base_file": "reference/shrunk/NP-07-1_32px.png"
     }
    ]
   },
@@ -806,6 +816,16 @@
       48
      ],
      "base": "NP-08-1"
+    },
+    {
+     "subject": "clean up this small pixel-art character: same character, same pose, same size and position (about 32 px tall, feet at (24, 40)), crisp hand-placed pixels, clear readable face and outfit, dark outline like the game's hero, no ground shadow, facing south-east",
+     "kind": "plain",
+     "size": [
+      48,
+      48
+     ],
+     "base": "NP-08-1",
+     "base_file": "reference/shrunk/NP-08-1_32px.png"
     }
    ]
   },
