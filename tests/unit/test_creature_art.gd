@@ -33,8 +33,8 @@ func test_sprite_frames_have_every_animation_and_direction() -> void:
 
 func test_bite_lands_on_the_jaw_frame() -> void:
 	var bite: AbilityDef = ContentDB.abilities[&"wolf_bite"]
-	assert_almost_eq(bite.windup_seconds, 12.0 / 30.0, 0.0001, "frame 12 at 30 fps = 0.4 s")
-	assert_almost_eq(art.recovery_for(&"wolf_bite"), 2.0 / 30.0, 0.0001)
+	assert_almost_eq(bite.windup_seconds, 12.0 / 50.0, 0.0001, "frame 12 at 50 fps = 0.24 s (0.4 s until 2026-11-17)")
+	assert_almost_eq(art.recovery_for(&"wolf_bite"), 2.0 / 50.0, 0.0001)
 
 
 func test_grid_facing_maps_to_screen_diagonals() -> void:

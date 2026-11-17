@@ -248,14 +248,23 @@ static func _read_trees(table: Array, errors: PackedStringArray) -> Array:
 	return out
 
 
+## "Water Mastery, 0.45 Magic Atk, 0.55 Phys Def": a stat may start with its
+## coefficient ("coef"; without one, CombatRules.sheet_stat_coefficient).
 static func _scales_with(text: String, trees: Dictionary, where: String, errors: PackedStringArray) -> Array:
 	var out := []
 	for part in text.split(",", false):
 		var p := part.strip_edges()
+		var coef := -1.0
+		var words := p.split(" ", false, 1)
+		if words.size() == 2 and words[0].is_valid_float():
+			coef = float(words[0])
+			p = words[1].strip_edges()
+			if coef <= 0.0:
+				errors.append("%s: Scales With coefficient must be above 0 (\"%s\")" % [where, part.strip_edges()])
 		if p.ends_with(" Mastery") and trees.has(p.trim_suffix(" Mastery")):
 			out.append({"mastery": p.trim_suffix(" Mastery")})
 		elif STAT_NAMES.has(p):
-			out.append({"stat": STAT_NAMES[p]})
+			out.append({"stat": STAT_NAMES[p], "coef": coef} if coef > 0.0 else {"stat": STAT_NAMES[p]})
 		else:
 			errors.append("%s: Scales With has unknown stat \"%s\"" % [where, p])
 	return out

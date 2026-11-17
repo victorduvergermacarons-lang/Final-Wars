@@ -29,5 +29,5 @@ cooldown_seconds = 2.0
 max_height_difference = 2
 effects = Array[ExtResource("1_fx")]([SubResource("Resource_dmg")])
 targeting = 1
-windup_seconds = 0.3
+windup_seconds = 0.2
 hitbox = SubResource("Resource_hitbox")

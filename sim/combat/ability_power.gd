@@ -22,7 +22,7 @@ static func amount(caster: Actor, ability: AbilityDef, effect: AbilityEffect, no
 	if effect.sheet_scaling and ability.is_tree_ability():
 		for term in ability.sheet.get("scales_with", []):
 			if term.has("stat") and term.stat != "crit_rate" and term.stat != "crit_dmg":
-				value += rules.sheet_stat_coefficient * stats.get(StringName(term.stat))
+				value += float(term.get("coef", rules.sheet_stat_coefficient)) * stats.get(StringName(term.stat))
 	else:
 		for term in effect.scaling:
 			if term != null:

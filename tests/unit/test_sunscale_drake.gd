@@ -62,7 +62,8 @@ func test_art_facings_timing_and_recolour() -> void:
 	assert_eq(art.frame_count("breath"), 8)
 	assert_eq(art.frame_count("dive"), 18, "10 poised frames for the 1 s lane, then the 8 dive frames")
 	assert_eq(art.frame_count("death"), 16)
-	assert_almost_eq(ContentDB.abilities[&"talon_rake"].windup_seconds, 0.5, 0.001, "talons swing through kick frame 13")
+	assert_almost_eq(ContentDB.abilities[&"talon_rake"].windup_seconds, 0.3, 0.001,
+			"talons swing through kick frame 13, at 16.7 fps (10 until 2026-11-17)")
 	assert_almost_eq(ContentDB.abilities[&"sunfire_breath"].windup_seconds, 0.8, 0.001, "rear back 16-19 at 5 fps")
 	assert_almost_eq(ContentDB.abilities[&"searing_dive"].windup_seconds, 1.0, 0.001, "1 s lane")
 	# Right-facing rows are the left-facing ones mirrored.
