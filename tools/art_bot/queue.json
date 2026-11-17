@@ -682,6 +682,15 @@
       "idle",
       "talking"
      ]
+    },
+    {
+     "subject": "the same character redrawn at the game's hero scale: much smaller, about 32 px tall and 17 px wide, feet at bottom centre (24, 40) of the 48x48 canvas, same outfit and colours, chunky readable pixels with a dark outline like the hero, no ground shadow, facing south-east",
+     "kind": "plain",
+     "size": [
+      48,
+      48
+     ],
+     "base": "NP-07-1"
     }
    ]
   },
@@ -788,6 +797,15 @@
       "talking",
       "heal cast"
      ]
+    },
+    {
+     "subject": "the same character redrawn at the game's hero scale: much smaller, about 32 px tall and 17 px wide, feet at bottom centre (24, 40) of the 48x48 canvas, same outfit and colours, chunky readable pixels with a dark outline like the hero, no ground shadow, facing south-east",
+     "kind": "plain",
+     "size": [
+      48,
+      48
+     ],
+     "base": "NP-08-1"
     }
    ]
   },
