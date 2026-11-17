@@ -85,6 +85,17 @@ const GAME_SPEED_MAX := 2.0
 @export var heal_threat_multiplier: float = 0.5
 ## Taunt sets the caster's threat to the current top threat plus this percent.
 @export var taunt_lead_percent: float = 10.0
+## Overtaking aggro (WoW's 110% / 130%): another actor becomes an enemy's target only
+## once their threat is above the target's × this percent, within melee range of the
+## enemy (melee_overtake_range tiles, edge to edge) or farther away.
+@export var melee_overtake_percent: float = 110.0
+@export var ranged_overtake_percent: float = 130.0
+@export var melee_overtake_range: float = 1.0
+## Heroes' threat × (1 + Physical Defense / threat_def_divisor), at most
+## max_def_threat_multiplier (current Physical Defense, buffs included; enemies don't
+## have it). The per-effect threat_multiplier multiplies on top.
+@export var threat_def_divisor: float = 40.0
+@export var max_def_threat_multiplier: float = 3.0
 
 @export_group("Combat state")
 ## Seconds after no enemy lists a hero before they leave combat.

@@ -253,7 +253,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not caster is Enemy or caster.threat.is_empty():
 				return
 			var howler := caster as Enemy
-			var prey: int = howler.threat.top()
+			var prey: int = howler.threat.target()
 			for id in ctx.actors:
 				var other = ctx.actors[id]
 				if other == howler or not other is Enemy or not other.alive:
@@ -382,8 +382,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 					"ability": ability.id, "amount": restored})
 
 		AbilityEffect.Kind.TAUNT:
-			if target.threat != null:
-				target.threat.taunt(caster.id, rules.taunt_lead_percent)
+			if target.threat != null and _taunt_allowed(ctx, caster, effect):
+				target.threat.taunt(caster.id, rules.taunt_lead_percent, ctx.now, effect.taunt_seconds)
 				events.append({"type": "taunt", "source": caster.id, "target": target.id, "ability": ability.id})
 
 		AbilityEffect.Kind.RESURRECT:
@@ -723,6 +723,16 @@ static func _occupied(ctx: CombatContext, tile: Vector2i, ignore: Actor) -> bool
 
 static func _roll_crit(ctx: CombatContext, effect: AbilityEffect, caster_stats: StatBlock) -> bool:
 	return effect.can_crit and (ctx.force_crit or ctx.rng.randf() < CombatMath.crit_chance(caster_stats.crit_rate))
+
+
+## A taunt that needs a buff on the caster (Metalbending: Stone Skin or Earth Armor).
+static func _taunt_allowed(ctx: CombatContext, caster: Actor, effect: AbilityEffect) -> bool:
+	if effect.taunt_requires_buffs.is_empty():
+		return true
+	for id in effect.taunt_requires_buffs:
+		if caster.buffs.has(id, ctx.now):
+			return true
+	return false
 
 
 ## Healing or buffing someone puts the caster on the threat table of every enemy

@@ -213,7 +213,7 @@ func test_seismic_stomp_taunts_adjacent_enemies() -> void:
 	tank.move.place(Vector2i(7, 6))
 	foe.threat.add(hero.id, 100.0)
 	assert_eq(world.cast(tank, _a("E04"), null), AbilityResolver.Result.OK)
-	assert_eq(foe.threat.top(), tank.id)
+	assert_eq(foe.threat.target(), tank.id)
 
 
 func test_earth_wall_can_be_climbed_with_enough_jump() -> void:
