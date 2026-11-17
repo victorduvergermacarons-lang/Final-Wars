@@ -169,6 +169,48 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
+### PL-01-1+idle@west ·  (2026-11-17)
+
+![PL-01-1+idle@west](art/PL-01/PL-01-1+idle_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+walk@west ·  (2026-11-17)
+
+![PL-01-1+walk@west](art/PL-01/PL-01-1+walk_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+cast@west ·  (2026-11-17)
+
+![PL-01-1+cast@west](art/PL-01/PL-01-1+cast_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+getting-hit@west ·  (2026-11-17)
+
+![PL-01-1+getting-hit@west](art/PL-01/PL-01-1+getting-hit_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+death@west ·  (2026-11-17)
+
+![PL-01-1+death@west](art/PL-01/PL-01-1+death_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+downed@west ·  (2026-11-17)
+
+![PL-01-1+downed@west](art/PL-01/PL-01-1+downed_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-01-1+revived@west ·  (2026-11-17)
+
+![PL-01-1+revived@west](art/PL-01/PL-01-1+revived_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
 ### PL-02-1+8dir ·  (2026-11-16)
 
 ![PL-02-1+8dir](art/PL-02/PL-02-1_take1_8dir_preview.png)
