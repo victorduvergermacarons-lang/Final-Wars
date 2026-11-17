@@ -483,6 +483,8 @@ static func _row_order(row: Array, after: Dictionary) -> Array:
 
 func _draw_tile_with_marks(grid: GridModel, p: Vector2i, quest_areas: Dictionary, marks: Dictionary) -> void:
 	_draw_tile(self, grid, p)
+	if not grid.has_tile(p):
+		return # no glow or mark over a hole
 	if quest_areas.has(p):
 		_draw_quest_area(grid, p, quest_areas[p])
 	for color in marks.get(p, []):
@@ -526,6 +528,8 @@ func _free_anchor(a: Actor) -> Vector2i:
 ## Draws a tile on `canvas` (this view, or a terrain chunk); with `clip`, only
 ## the part inside that box (tileset maps only).
 func _draw_tile(canvas: CanvasItem, grid: GridModel, p: Vector2i, clip := Rect2()) -> void:
+	if not grid.has_tile(p):
+		return # a hole in the map's shape: nothing there
 	if _art != null:
 		_draw_terrain_column(canvas, grid, p, clip)
 		return
@@ -620,8 +624,10 @@ func surface_point(grid: GridModel, p: Vector2i) -> Vector2:
 	return c
 
 
+## How high the tile in front stands (-1 off the map or at a hole, so every block
+## of the tile behind shows its sides, as at the map's edge).
 func _front_height(grid: GridModel, p: Vector2i) -> int:
-	return grid.height_at(p) if grid.in_bounds(p) else -1
+	return grid.height_at(p) if grid.has_tile(p) else -1
 
 
 func _draw_actor(a: Actor) -> void:
