@@ -1,7 +1,8 @@
 extends Node
 ## Screenshots of the map editor (needs a display or xvfb):
 ##   SHOTS_DIR=/tmp/shots godot --path . res://tests/visual/map_editor_shots.tscn
-## Paints a pond, a hill and flowers on a scratch copy of Millbrook (never saved).
+## Paints a pond, a hill and flowers on a scratch copy of Millbrook (never saved),
+## then cuts a hole and adds ground past its edge with the Shape tool.
 
 var out_dir := OS.get_environment("SHOTS_DIR").path_join("") if OS.get_environment("SHOTS_DIR") != "" else ProjectSettings.globalize_path("user://shots/")
 
@@ -73,4 +74,16 @@ func _run() -> void:
 	await _shot("editor_6_edge")
 	editor._open_links_dialog()
 	await _shot("editor_7_connections")
+	editor._links_dialog.hide()
+	# Shape: a hole cut in the green, and ground added past the map's north-west side.
+	editor.set_tool(MapEditor.Tool.SHAPE)
+	editor.set_brush(3)
+	editor._press(c + Vector2i(0, -2), MOUSE_BUTTON_RIGHT)
+	editor._release(null)
+	editor.terrain = "dirt"
+	editor.height_level = 1
+	editor._press(Vector2i(-2, 12), MOUSE_BUTTON_LEFT)
+	editor._release(null)
+	editor._cam_target = Iso.to_screen(Vector2(4, 13), 0)
+	await _shot("editor_8_shape")
 	get_tree().quit()

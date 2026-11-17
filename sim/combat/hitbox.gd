@@ -121,7 +121,7 @@ static func tiles_in(grid: GridModel, poly: PackedVector2Array) -> Array[Vector2
 	for y in range(floori(lo.y), ceili(hi.y) + 1):
 		for x in range(floori(lo.x), ceili(hi.x) + 1):
 			var t := Vector2i(x, y)
-			if grid.in_bounds(t) and Geometry2D.is_point_in_polygon(Vector2(t), poly):
+			if grid.has_tile(t) and Geometry2D.is_point_in_polygon(Vector2(t), poly):
 				out.append(t)
 	return out
 

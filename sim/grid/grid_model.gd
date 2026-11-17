@@ -16,6 +16,9 @@ var _sight_blocked := PackedByteArray()
 ## Tiles whose floor is slippery (free movement accelerates and stops more slowly
 ## there): tile -> friction (1 = normal). Empty on every map today.
 var _friction := {}
+## 0 where the map has no tile (ZoneDef.NO_TILE): a wall for walkers and fliers,
+## height 0 and open to line of sight, so shots fly over it.
+var _exists := PackedByteArray()
 
 
 func _init(p_width: int = 0, p_depth: int = 0, fill_height: int = 0) -> void:
@@ -27,6 +30,8 @@ func _init(p_width: int = 0, p_depth: int = 0, fill_height: int = 0) -> void:
 	_walkable.fill(1)
 	_sight_blocked.resize(width * depth)
 	_sight_blocked.fill(0)
+	_exists.resize(width * depth)
+	_exists.fill(1)
 
 
 ## Builds a grid from zone data. Returns null (and logs) if the zone is invalid.
@@ -40,6 +45,9 @@ static func from_zone(zone: ZoneDef) -> GridModel:
 		var hrow := zone.height_rows[y]
 		var wrow := zone.walk_rows[y]
 		for x in grid.width:
+			if hrow[x] == ZoneDef.NO_TILE:
+				grid.remove_tile(Vector2i(x, y))
+				continue
 			grid.set_tile(Vector2i(x, y), ZoneDef.parse_height(hrow[x]), wrow[x] == ".")
 			if not zone.sight_rows.is_empty():
 				grid.set_blocks_sight(Vector2i(x, y), zone.sight_rows[y][x] == "#")
@@ -60,6 +68,21 @@ func set_tile(p: Vector2i, h: int, walkable: bool) -> void:
 	var i := _index(p)
 	_heights[i] = h
 	_walkable[i] = 1 if walkable else 0
+	_exists[i] = 1
+
+
+## Whether the map has a tile at `p` (inside it and not a hole in its shape).
+func has_tile(p: Vector2i) -> bool:
+	return in_bounds(p) and _exists[_index(p)] == 1
+
+
+## Makes `p` a hole in the map's shape: no tile, a wall to everyone.
+func remove_tile(p: Vector2i) -> void:
+	var i := _index(p)
+	_exists[i] = 0
+	_heights[i] = 0
+	_walkable[i] = 0
+	_sight_blocked[i] = 0
 
 
 ## Every tile's height, row by row (index y × width + x). Read-only: the view
@@ -113,7 +136,7 @@ func can_step(from: Vector2i, to: Vector2i, jump: int, max_drop: int = -1) -> bo
 ## and other unwalkable tiles only if they rise at most `max_wall_rise` levels
 ## above `from`; never tiles that block sight (tall rocks and props).
 func can_fly(from: Vector2i, to: Vector2i, max_wall_rise: int) -> bool:
-	if distance(from, to) != 1 or not in_bounds(from) or not in_bounds(to) or blocks_sight(to):
+	if distance(from, to) != 1 or not in_bounds(from) or not has_tile(to) or blocks_sight(to):
 		return false
 	return is_walkable(to) or height_at(to) - height_at(from) <= max_wall_rise
 

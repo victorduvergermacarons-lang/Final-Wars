@@ -1173,7 +1173,7 @@ func _raise_terrain(r: Dictionary) -> void:
 	var delta := {}
 	var blocked := {}
 	for t in r.tiles:
-		if not grid.in_bounds(t):
+		if not grid.has_tile(t): # off the map or a hole: nothing to raise
 			continue
 		if not _terrain_base_walkable.has(t):
 			_terrain_base_walkable[t] = grid.is_walkable(t)

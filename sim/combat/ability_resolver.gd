@@ -189,7 +189,7 @@ static func _wall_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, 
 	var out := []
 	for k in range(-(length - 1) / 2, length / 2 + 1):
 		var t := ctx.cast_aim + across * k
-		if ctx.grid.in_bounds(t):
+		if ctx.grid.has_tile(t):
 			out.append(t)
 	return out
 

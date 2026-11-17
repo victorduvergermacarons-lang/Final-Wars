@@ -205,9 +205,9 @@ static func lob_tile(origin: Vector2i, point: Vector2, max_range: int) -> Vector
 	return line.back() if not line.is_empty() else origin
 
 
-## Square area around `center` (a diamond if `diamond`), inside the map.
+## Square area around `center` (a diamond if `diamond`), on the map's tiles (not its holes).
 static func area_tiles(grid: GridModel, center: Vector2i, radius: int, diamond: bool = false) -> Array[Vector2i]:
-	return TileGeometry.square(center, radius).filter(func(t): return grid.in_bounds(t) \
+	return TileGeometry.square(center, radius).filter(func(t): return grid.has_tile(t) \
 			and (not diamond or TileGeometry.range_distance(center, t) <= radius))
 
 

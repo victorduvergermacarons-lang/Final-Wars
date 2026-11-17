@@ -20,7 +20,7 @@ starts (other maps can still link to them).
 
 Enemies and people stand frozen where they spawn.
 
-## Tools (left panel, keys 1–6)
+## Tools (left panel, keys 1–7)
 
 | Tool | Left click / drag | Right click |
 |---|---|---|
@@ -30,6 +30,7 @@ Enemies and people stand frozen where they spawn.
 | **4 Pick** | copy the tile's ground, height and prop, then back to Ground | |
 | **5 Things** | place the chosen thing (it gets selected) | remove the thing under the mouse |
 | **6 Select** | select a thing; click again for the next one on that tile; drag to move it | select nothing |
+| **7 Shape** | add tiles of the ground chosen in the list, at **Level** (also beyond the map: it grows) | remove tiles |
 
 - **Height:** tick **Exact level** (or change **Level**) to paint that height
   instead of raising. Heights go from 0 to 9. A hero climbs 2 levels at a time, so
@@ -37,6 +38,26 @@ Enemies and people stand frozen where they spawn.
 - **Brush:** 1×1, 3×3 or 5×5 for the painting tools (`[` and `]` change it).
 - **Grid** and **Height numbers** draw tile outlines and heights over the map. Red
   numbers are tiles you can't walk on.
+
+### Shape: maps that aren't rectangles
+
+The **Shape** tool changes the outline of the map.
+- **Right-click / drag** removes tiles: nothing is left there, not even the bottom
+  block. In the game a missing tile is a wall: nobody walks or flies into it and
+  enemies go round it, but spells and arrows fly over it. The tiles around it show
+  their sides, like the map's outer edge.
+- **Left-click / drag** adds tiles of the ground chosen in the list, at the height in
+  **Level**: into a hole, or past the map's side. A faint grid shows where tiles can
+  go, a few tiles out from the map. Adding past a side grows the map (with a few
+  spare rows, so a drag can carry on); like **Map size**, growing on the north-west
+  or north-east side moves everything's coordinates for you.
+- **Saving** cuts off rows and columns along the sides that hold no tile, so the
+  map is always as small as its shape.
+- Ground, height and props can't be painted on a hole, and nothing can be placed
+  there. Things already standing where you remove tiles stay, and the check before
+  saving names them ("… is where the map has no tile").
+- The map must keep at least one tile. A map edge's gate is the tiles that exist
+  along that side.
 
 ### Things
 
@@ -126,6 +147,8 @@ to merge your map changes, the tests get updated with them.
 `editor/`:
 - `ZoneEdit`: the model. Painting (tile strokes) and whole-map steps (things, size,
   links: snapshots), undo, re-baking walkability into the rows and the live grid.
+  The Shape tool's strokes are a `SHAPE` layer (`remove_tiles` / `add_tiles`);
+  `grow_to_include` and `trim` are whole-map steps.
   Works on a copy loaded fresh from the file.
 - `ZoneSaver`: writes with `ResourceSaver` and syncs the other files: partner edges,
   doors into the map, quests and the encounter after a shift, people moved away.
@@ -135,8 +158,12 @@ to merge your map changes, the tests get updated with them.
 - `EditorSession`: one frozen zone with the read API `WorldView` draws from.
 - `MapEditor`: the screen. `EditorOverlay`: grid, numbers, markers, patrols, edges.
 
+Missing tiles are `ZoneDef.NO_TILE` (a space) in `height_rows` and `terrain_rows`
+(`#` in walk rows, `.` in prop and sight rows); `GridModel.has_tile` is false there.
+
 `WorldView.refresh_tiles` redraws the cached ground around painted tiles. Tests:
-`tests/unit/test_zone_edit.gd`, `tests/integration/test_map_editor.gd` (both save
+`tests/unit/test_zone_edit.gd`, `tests/unit/test_map_shape_edit.gd`,
+`tests/unit/test_map_shapes.gd` (the game's rules), `tests/integration/test_map_editor.gd` (both save
 into a scratch folder, `ZoneSaver.redirect`); screenshots:
 `tests/visual/map_editor_shots.tscn`. `tools/once/resave_zones.tscn` re-saved every
 map once through the saver (2026-11-16).

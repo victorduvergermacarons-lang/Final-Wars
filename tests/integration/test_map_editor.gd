@@ -276,3 +276,51 @@ func test_a_new_map_is_made_saved_and_opened() -> void:
 	assert_true(ContentDB.zones.has(&"test_hollow"))
 	assert_eq(Array(editor.problems()), [], "a new map is playable")
 	assert_eq(editor.create_map("Test Hollow", Vector2i(12, 10), "grass", 0, 0, 1), ERR_ALREADY_EXISTS)
+
+
+# --- Shape tool ------------------------------------------------------------------------
+
+func test_shape_tool_removes_tiles_and_the_map_shown_follows() -> void:
+	var p := _grass_tile()
+	editor.set_tool(MapEditor.Tool.SHAPE)
+	editor._press(p, MOUSE_BUTTON_RIGHT)
+	editor._release(p)
+	assert_false(editor.edit.has_tile(p))
+	assert_false(editor.session.grid().has_tile(p), "the map shown has the hole")
+	editor.undo()
+	assert_true(editor.session.grid().has_tile(p))
+
+
+func test_shape_tool_adds_beyond_the_map_and_saving_trims_it() -> void:
+	var size := editor.edit.size()
+	var spawn: Vector2i = editor.edit.zone.hero_spawns[0]
+	editor.set_tool(MapEditor.Tool.SHAPE)
+	editor.terrain = "dirt"
+	editor.height_level = 1
+	var cam := editor._cam_target
+	editor._press(Vector2i(-1, 2), MOUSE_BUTTON_LEFT) # one tile past the north-west side
+	editor._release(null)
+	var by := Vector2i(1 + MapEditor.GROW_MARGIN, 0)
+	assert_eq(editor.edit.size(), size + by, "grew with room to keep painting")
+	assert_eq(editor.session.grid().width, size.x + by.x, "the map shown was rebuilt")
+	assert_ne(editor._cam_target, cam, "the camera stays over the same ground")
+	var added := Vector2i(-1, 2) + by
+	assert_true(editor.edit.has_tile(added))
+	assert_eq(editor.edit.terrain_at(added), "dirt")
+	assert_eq(editor.edit.height_at(added), 1)
+	assert_eq(editor.edit.zone.hero_spawns[0], spawn + by)
+	assert_eq(editor.write(), OK)
+	assert_eq(editor.edit.size(), size + Vector2i(1, 0), "the empty columns were cut off")
+	var saved: ZoneDef = ResourceLoader.load(_scratch("res://content/zones/town.tres"), "", ResourceLoader.CACHE_MODE_IGNORE)
+	assert_eq(saved.get_width(), size.x + 1)
+	assert_true(saved.has_tile(Vector2i(0, 2)))
+	assert_false(saved.has_tile(Vector2i(0, 3)))
+	assert_eq(saved.hero_spawns[0], spawn + Vector2i(1, 0))
+
+
+func test_hovering_a_hole_says_there_is_no_tile() -> void:
+	var p := _grass_tile()
+	editor.edit.remove_tiles([p])
+	editor._hover = p
+	editor._refresh_status()
+	assert_string_contains(editor._status.text, "no tile")

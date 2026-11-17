@@ -110,7 +110,7 @@ static func _update_ground(actor: Actor, grid: GridModel, md: MovementDef, flyin
 
 ## Whether the tile `t` stops a unit standing at height `from_h` with `jump`.
 static func blocks(grid: GridModel, t: Vector2i, from_h: int, jump: int, flying: bool, fly_rise := 1) -> bool:
-	if not grid.in_bounds(t):
+	if not grid.has_tile(t): # off the map, or a hole in its shape
 		return true
 	if flying:
 		return grid.blocks_sight(t) or (not grid.is_walkable(t) and grid.height_at(t) - from_h > fly_rise)

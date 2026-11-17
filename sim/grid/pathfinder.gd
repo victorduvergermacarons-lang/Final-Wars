@@ -19,7 +19,7 @@ static func find_path(grid: GridModel, start: Vector2i, goal: Vector2i, jump: in
 	var body: Array = footprint if not footprint.is_empty() else [Vector2i.ZERO]
 	var empty: Array[Vector2i] = []
 	if not grid.in_bounds(start) or not grid.in_bounds(goal) \
-			or (not grid.is_walkable(goal) if fly_rise < 0 else grid.blocks_sight(goal)):
+			or (not grid.is_walkable(goal) if fly_rise < 0 else grid.blocks_sight(goal) or not grid.has_tile(goal)):
 		return empty
 	if start == goal:
 		return [start] as Array[Vector2i]

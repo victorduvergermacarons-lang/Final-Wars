@@ -31,7 +31,7 @@ attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **F
 `docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
-new maps; see **Map editor** and `docs/map-editor.md`. Tile steps, step
+new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. Tile steps, step
 cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
@@ -312,13 +312,32 @@ everything on them, their size and how they connect (part 2). How-to:
 - **Where:** its own screen, from the main menu's **Map Editor** button (or `--map_editor`),
   only when the game runs from the Godot editor (`MapEditor.can_save()`: an export can't
   write its own files). Any tiled map stored in a file (not the generated testing grounds).
-- **Tools (1–6):** Ground, Height (raise / lower once per tile per drag, or an exact level
+- **Tools (1–7):** Ground, Height (raise / lower once per tile per drag, or an exact level
   0–9), Props, Pick, **Things** (place enemies, people, hero spawns, graveyards, objects,
   landmarks, doors), **Select** (select, cycle a tile's things, drag to move, Delete;
   settings: enemy type / level / respawn / patrol, a person's facing, an object's kind and
   label, a landmark's name, a door's destination and arrival tile picked on that map).
   Brush 1/3/5, undo / redo (200 steps), grid and height numbers; markers for spawns,
   doors, linked edge tiles, the selection and patrol routes (`EditorOverlay`).
+- **Shape (tool 7, 2026-11-17, branch `feature/map-shapes`):** maps need not be
+  rectangles. Right-drag removes tiles (no block left at all); left-drag adds tiles of
+  the chosen ground at the chosen level into holes or past the map's sides, which grows
+  it (`ZoneEdit.grow_to_include`, `GROW_MARGIN` 3 spare rows); saving trims rows and
+  columns with no tile (`ZoneEdit.trim`); both shift coordinates like a resize. A faint
+  grid shows where tiles can go. Holes can't be painted or hold things; the check names
+  things left on one; at least one tile stays.
+  - **Storage:** `ZoneDef.NO_TILE` (a space) in `height_rows` and `terrain_rows`, `#` in
+    walk rows, `.` in prop and sight rows; `ZoneDef.has_tile`, `GridModel.has_tile` /
+    `remove_tile`.
+  - **In play** (user choice): a hole is a wall, like the map's outside: nobody walks or
+    flies into it (`Mover.blocks`, `GridModel.can_fly`, the pathfinder), enemies path
+    round it; it is height 0 and open to sight, so spells and arrows fly over it. Ground
+    areas, shape footprints, terrain changes and Earth Wall leave holes out. Drawn as
+    nothing; the tiles behind show their sides, like the map's edge. A map edge's gate is
+    the tiles that exist along that side of the rectangle.
+  - Tests: `tests/unit/test_map_shapes.gd`, `test_map_shape_edit.gd`, Shape cases in
+    `tests/integration/test_map_editor.gd`; screenshots `tests/visual/map_shape_shots.tscn`
+    and `editor_8_shape` in `map_editor_shots.tscn`.
 - **People stand once in the game:** placing someone already on the map moves them;
   someone from another map is removed from it when saving.
 - **Map size:** rows / columns added or removed per side (named by screen corner:
@@ -2067,6 +2086,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-17 | Maps need not be rectangles: a Shape tool removes and adds tiles; a missing tile is a wall that shots fly over | User request and choice (a hole is a wall like the map's outside, not a pit). My choices: a space in `height_rows`/`terrain_rows` marks a missing tile, so existing maps are unchanged; maps stay stored as their bounding rectangle; adding past a side grows the map with 3 spare rows of holes and saving trims every empty side; new tiles take the Ground list's choice at the Level box's height; things already on removed tiles stay and are warned about; holes can't be painted or hold things; a map keeps at least one tile; fliers can't cross holes either; ground areas and terrain changes skip them. |
 | 2026-11-16 | The hero shows PL-01-1 in all four facings, with the PL-02 sword and bow attacks; frames picked from host times | User brief (replaces the 2026-11-15 mirrored south-east art and back stills). User choices: downed for stuns as well as while dead; animations play when the ability goes off, not over the timing bar; hammer arts and potions play the plain cast until they have their own; revived also after a release at a graveyard; death take 1 (was take 4). |
 | 2026-11-16 | Hero art measurements and fixes | Mine: facings shifted onto one feet point (24, 38) by whole pixels; the PL-02 bodies lined up by overlaying their stills on PL-01-1's (a scabbard below the feet fooled the sole test); walk 8 frames per tile from the stride, not a planted foot (the generated walk has no planted foot); while dead, death then downed's last frame held, not downed replayed or looped (both animations fall from standing); 20 / 18 / 20 / 15 fps for slash, lunge, quick shot, aimed shot; the source frames live in `art/heroes/PL-01`, `PL-02` (the old `art/heroes/PL-01-1` sheets and `make_pl01_sheets.py` removed). |
 | 2026-11-16 | Map editor part 2: things, map size, connections, new maps; saving through Godot's resource writer | User request and choices: each person placed once in the whole game; a New map button; a one-time re-save of every map (format only); all three parts. My choices: a Things tool and a Select tool (click again cycles a tile's things, drag moves, Delete removes); patrols start where the enemy stands; a resize keeps things on their ground and moves every reference to the map's coordinates in other files on save (quests, doors, edges, the encounter); this map's edges decide the partner's (opposite side and offset); doors pick their arrival on the destination map; warnings (asked, not refused) for one-way doors, edges landing on blocked ground, and quests losing a person or every enemy of a kind; new maps start with a spawn and a graveyard and regenerate `AUDIO_SPEC.md`. |
