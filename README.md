@@ -211,6 +211,54 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
+### PL-02-1+sword-slash@south ·  (2026-11-17)
+
+![PL-02-1+sword-slash@south](art/PL-02/PL-02-1+sword-slash_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-slash@north ·  (2026-11-17)
+
+![PL-02-1+sword-slash@north](art/PL-02/PL-02-1+sword-slash_north_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-slash@east ·  (2026-11-17)
+
+![PL-02-1+sword-slash@east](art/PL-02/PL-02-1+sword-slash_east_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-slash@west ·  (2026-11-17)
+
+![PL-02-1+sword-slash@west](art/PL-02/PL-02-1+sword-slash_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge@south ·  (2026-11-17)
+
+![PL-02-1+sword-lunge@south](art/PL-02/PL-02-1+sword-lunge_south_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge@north ·  (2026-11-17)
+
+![PL-02-1+sword-lunge@north](art/PL-02/PL-02-1+sword-lunge_north_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge@east ·  (2026-11-17)
+
+![PL-02-1+sword-lunge@east](art/PL-02/PL-02-1+sword-lunge_east_2026-11-17_preview.gif)
+
+<sub></sub>
+
+### PL-02-1+sword-lunge@west ·  (2026-11-17)
+
+![PL-02-1+sword-lunge@west](art/PL-02/PL-02-1+sword-lunge_west_2026-11-17_preview.gif)
+
+<sub></sub>
+
 ### PL-02-1+8dir ·  (2026-11-16)
 
 ![PL-02-1+8dir](art/PL-02/PL-02-1_take1_8dir_preview.png)
