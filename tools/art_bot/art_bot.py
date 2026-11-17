@@ -157,10 +157,16 @@ def plan(stills: list[dict], approved: dict[str, Path], progress: dict, count: i
     """Today's work: stills first (the tracker's rule: animations after every reference),
     skipping those whose base isn't approved yet; then the follow-ups."""
     open_stills = pending(stills, progress)
-    ready = [e for e in open_stills if not e["base"] or e["base"] in approved]
-    waiting = [e for e in open_stills if e["base"] and e["base"] not in approved]
+
+    def has_base(e):  # a prompt with its own base_file doesn't wait for an approval
+        return not e["base"] or e["base"] in approved or (e.get("base_file") and (DRAFTS / e["base_file"]).exists())
+    ready = [e for e in open_stills if has_base(e)]
+    waiting = [e for e in open_stills if not has_base(e)]
     later = pending(followups(stills, approved), progress)
     return (ready + later)[:count], waiting  # follow-ups only use what the stills leave
+
+
+DRAFTS = Path("drafts")  # set from --drafts in main()
 
 
 # ---------------------------------------------------------------- API
@@ -287,9 +293,10 @@ def generate(entry: dict, secret: str, approved: dict[str, Path]) -> tuple[list[
             body.pop("no_background")  # older endpoints may not take it
             result = post(GENERATE_ENDPOINT, body, secret)
     else:
-        base_path = approved[entry["base"]]
         if entry.get("base_file"):
-            base_path = Path(base_path).parent.parent / entry["base_file"]
+            base_path = DRAFTS / entry["base_file"]
+        else:
+            base_path = approved[entry["base"]]
         base_png = Path(base_path).read_bytes()
         bw, bh = png_size(base_png)
         if op == "edit":
@@ -421,6 +428,8 @@ def main() -> int:
         return 0
 
     drafts = Path(args.drafts)
+    global DRAFTS
+    DRAFTS = drafts
     stills = load_queue(Path(args.queue))
     approved = load_approved(drafts)
     progress_path = drafts / "progress.json"

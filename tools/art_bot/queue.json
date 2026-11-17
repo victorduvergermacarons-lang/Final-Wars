@@ -353,6 +353,16 @@
       48,
       48
      ]
+    },
+    {
+     "subject": "clean up this small pixel-art prince: same character, same outfit and colours, same size and position (about 32 px tall, feet at (24, 40)), remove the fire from his raised hand so the hand is empty with no flames or glow anywhere, crisp hand-placed pixels, clear readable face, dark outline like the game's hero, no ground shadow, facing south-east",
+     "kind": "plain",
+     "size": [
+      48,
+      48
+     ],
+     "base": "NP-02-3",
+     "base_file": "reference/shrunk/NP-02-3_32px.png"
     }
    ]
   },
