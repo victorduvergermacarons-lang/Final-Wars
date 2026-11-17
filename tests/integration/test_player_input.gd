@@ -15,6 +15,7 @@ func before_each() -> void:
 	session.start(ContentDB.zones.values(), &"town", ContentDB.rules,
 			CharacterData.new_character("Turner", ContentDB.heroes[&"adventurer"]))
 	hero = session.local_hero()
+	hero.move.place(Vector2i(6, 7)) # open ground (the spawn point is beside the Village Well)
 	input = PlayerInput.new()
 	add_child(input)
 	input.setup(session, ClientState.new(), null)

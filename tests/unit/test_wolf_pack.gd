@@ -82,7 +82,7 @@ func test_the_howl_animation_plays_during_the_howl() -> void:
 
 func test_greenfields_has_a_pack_of_three_far_from_lone_wolves() -> void:
 	var zone: ZoneDef = ContentDB.zones[&"greenfields"]
-	var pack: Array[Vector2i] = [Vector2i(2, 1), Vector2i(4, 1), Vector2i(3, 3)]
+	var pack: Array[Vector2i] = [Vector2i(5, 2), Vector2i(6, 0), Vector2i(8, 2)]
 	var others: Array[Vector2i] = []
 	for s in zone.enemy_spawns:
 		if s.enemy.id == &"wolf" and not pack.has(s.tile):

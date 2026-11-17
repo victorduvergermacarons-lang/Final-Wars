@@ -114,12 +114,21 @@ func test_snapshot_only_contains_the_viewers_zone() -> void:
 
 
 func test_release_uses_a_graveyard_in_the_same_zone() -> void:
-	world.move_hero(hero.id, &"greenfields", Vector2i(2, 25))
+	world.move_hero(hero.id, &"town", Vector2i(20, 20))
+	hero.die()
+	world.submit(hero.id, {"type": "release"})
+	world.step()
+	assert_eq(world.zone_of(hero.id).zone.id, &"town")
+	assert_eq(hero.tile(), Vector2i(3, 26), "Millbrook's graveyard")
+
+
+func test_a_zone_without_a_graveyard_releases_to_its_hero_spawn() -> void:
+	world.move_hero(hero.id, &"greenfields", Vector2i(20, 8))
 	hero.die()
 	world.submit(hero.id, {"type": "release"})
 	world.step()
 	assert_eq(world.zone_of(hero.id).zone.id, &"greenfields")
-	assert_eq(hero.tile(), Vector2i(27, 14), "Greenfields' only graveyard")
+	assert_lte(GridModel.distance(hero.tile(), ContentDB.zones[&"greenfields"].hero_spawns[0]), 1)
 
 
 func test_world_steps_all_zones_on_one_clock() -> void:
