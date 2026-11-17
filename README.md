@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-76 of 77 stills done. Newest first. These are drafts: copy the
+78 of 79 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -376,6 +376,18 @@ keepers into the game's `assets/` folder by hand.
 ![NP-08-2](art/NP-08/NP-08-2_2026-11-17_1.png) ![NP-08-2](art/NP-08/NP-08-2_2026-11-17_2.png)
 
 <sub>Made from approved/NP-08-1.png: the same character redrawn at the game's hero scale: much smaller, about 32 px tall and 17 px wide, feet at bottom centre (24, 40) of the 48x48 canvas, same outfit and colours, chunky readable pixels with a dark outline like the hero, no ground shadow, facing south-east</sub>
+
+### NP-07-3 · Warden Kesh and Surveyor Iven (2026-11-17)
+
+![NP-07-3](art/NP-07/NP-07-3_2026-11-17_1.png) ![NP-07-3](art/NP-07/NP-07-3_2026-11-17_2.png)
+
+<sub>Made from approved/NP-07-1.png: clean up this small pixel-art character: same character, same pose, same size and position (about 32 px tall, feet at (24, 40)), crisp hand-placed pixels, clear readable face and outfit, dark outline like the game's hero, no ground shadow, facing south-east</sub>
+
+### NP-08-3 · Sela and Keeper Amaru (2026-11-17)
+
+![NP-08-3](art/NP-08/NP-08-3_2026-11-17_1.png) ![NP-08-3](art/NP-08/NP-08-3_2026-11-17_2.png)
+
+<sub>Made from approved/NP-08-1.png: clean up this small pixel-art character: same character, same pose, same size and position (about 32 px tall, feet at (24, 40)), crisp hand-placed pixels, clear readable face and outfit, dark outline like the game's hero, no ground shadow, facing south-east</sub>
 
 ### PL-02-1+8dir ·  (2026-11-16)
 
