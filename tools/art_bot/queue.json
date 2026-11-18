@@ -332,11 +332,10 @@
       48
      ],
      "animations": [
-      "idle",
-      "walk",
       "talking",
       "fire cast"
-     ]
+     ],
+     "rotate": false
     },
     {
      "subject": "a powerful, commanding young prince in black and crimson lamellar half-armor over a royal coat, thin gold circlet, long flowing red cape, one hand resting on a sword hilt, short dark hair, intense charismatic gaze, from the Ashkara region of the world of Veyra. Single character sprite, facing south-east (front three-quarter isometric view), full body, about 32 px tall and 16 px wide, feet at bottom centre (24, 40) of a 48x48 canvas, idle standing pose. pixel art, isometric 2:1 view, no dark outline (edges come from shading and a darker tone of each part's own colour, not black lines), limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -363,6 +362,20 @@
      ],
      "base": "NP-02-3",
      "base_file": "reference/shrunk/NP-02-3_32px.png"
+    },
+    {
+     "subject": "the same prince in a relaxed idle stance: both arms lowered and resting at his sides, hands empty, same outfit, colours, size and position (about 32 px tall, feet at (24, 40)), crisp pixels, dark outline like the game's hero, facing south-east",
+     "kind": "plain",
+     "size": [
+      48,
+      48
+     ],
+     "base": "NP-02-1",
+     "rotate": true,
+     "animations": [
+      "idle",
+      "walk"
+     ]
     }
    ]
   },
