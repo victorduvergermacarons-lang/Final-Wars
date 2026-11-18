@@ -1,22 +1,18 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-79 of 80 stills done. Newest first. These are drafts: copy the
+81 of 81 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
 `approved/<KEY>.png` on this branch, for example `approved/PL-01-1.png`.
-
-## Waiting for an approved base
-
-- `approved/NP-02-1.png` unlocks BO-06-1
 
 ## Approve to animate
 
 - `approved/PL-02-1.png` unlocks 8 directions, sword slash, sword lunge
 - `approved/PL-02-2.png` unlocks 8 directions, quick bow shot, aimed bow shot
 - `approved/NP-01-1.png` unlocks 8 directions, idle, talking
-- `approved/NP-02-1.png` unlocks 8 directions, idle, walk, talking, fire cast
+- `approved/NP-02-5.png` unlocks 8 directions, idle, walk
 - `approved/NP-03-1.png` unlocks 8 directions, idle, talking
 - `approved/NP-04-1.png` unlocks 8 directions, idle, talking
 - `approved/NP-05-1.png` unlocks 8 directions, idle, walk, talking
@@ -38,8 +34,33 @@ keepers into the game's `assets/` folder by hand.
 - `approved/EN-08-1.png` unlocks 8 directions, idle, move, attack
 - `approved/EN-08-2.png` unlocks 8 directions, idle, move, attack
 - `approved/BO-04-1.png` unlocks 8 directions, idle, cast, winding up a big attack, death
+- `approved/BO-06-1.png` unlocks 8 directions, powering up between phases, capstone cast, death
 
 ## Drafts
+
+### NP-02-5 · Caedan Ashvale (2026-11-18)
+
+![NP-02-5](art/NP-02/NP-02-5_2026-11-18_1.png) ![NP-02-5](art/NP-02/NP-02-5_2026-11-18_2.png)
+
+<sub>Made from approved/NP-02-1.png: the same prince in a relaxed idle stance: both arms lowered and resting at his sides, hands empty, same outfit, colours, size and position (about 32 px tall, feet at (24, 40)), crisp pixels, dark outline like the game's hero, facing south-east</sub>
+
+### BO-06-1 · Caedan with Stillheart (2026-11-18)
+
+![BO-06-1](art/BO-06/BO-06-1_2026-11-18_1.png) ![BO-06-1](art/BO-06/BO-06-1_2026-11-18_2.png)
+
+<sub>Made from approved/NP-02-1.png: turned dark king: grey ashen skin, cracked black crystal crown, tattered grey royal coat, carrying a jagged black crystal sword leaking grey smoke; about 34 px tall, feet at bottom centre (32, 52) of the 64x64 canvas so the blade and smoke aura fit</sub>
+
+### NP-02-1+talking · Caedan Ashvale (2026-11-18)
+
+![NP-02-1+talking](art/NP-02/NP-02-1+talking_2026-11-18_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: talking</sub>
+
+### NP-02-1+fire-cast · Caedan Ashvale (2026-11-18)
+
+![NP-02-1+fire-cast](art/NP-02/NP-02-1+fire-cast_2026-11-18_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
 
 ### PL-01-1+idle@south ·  (2026-11-17)
 
@@ -305,7 +326,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub></sub>
 
-### NP-02-1 · Caedan Ashvale (2026-11-17)
+### NP-02-1 · Caedan Ashvale (2026-11-17) ✓ approved
 
 ![NP-02-1](art/NP-02/NP-02-1_2026-11-17.png)
 

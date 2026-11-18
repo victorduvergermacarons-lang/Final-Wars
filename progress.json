@@ -3115,6 +3115,72 @@
       "preview": [
         "art/NP-08/NP-08-1+heal-cast_2026-11-17_preview.gif"
       ]
+    },
+    "NP-02-5": {
+      "date": "2026-11-18",
+      "files": [
+        "art/NP-02/NP-02-5_2026-11-18_1.png",
+        "art/NP-02/NP-02-5_2026-11-18_2.png"
+      ],
+      "usage": {
+        "seconds": 30.5820951461792
+      }
+    },
+    "BO-06-1": {
+      "date": "2026-11-18",
+      "files": [
+        "art/BO-06/BO-06-1_2026-11-18_1.png",
+        "art/BO-06/BO-06-1_2026-11-18_2.png"
+      ],
+      "usage": {
+        "seconds": 26.102447748184204
+      }
+    },
+    "NP-02-1+talking": {
+      "date": "2026-11-18",
+      "files": [
+        "art/NP-02/NP-02-1+talking_2026-11-18_1.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_2.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_3.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_4.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_5.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_6.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_7.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_8.png",
+        "art/NP-02/NP-02-1+talking_2026-11-18_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019814354300498962
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+talking_2026-11-18_preview.gif"
+      ]
+    },
+    "NP-02-1+fire-cast": {
+      "date": "2026-11-18",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_1.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_2.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_3.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_4.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_5.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_6.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_7.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_8.png",
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02061136747068829
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast_2026-11-18_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -3536,6 +3602,17 @@
         "NP-08-1+idle",
         "NP-08-1+talking",
         "NP-08-1+heal-cast"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-18",
+      "made": [
+        "NP-02-5",
+        "BO-06-1",
+        "NP-02-1+talking",
+        "NP-02-1+fire-cast"
       ],
       "failed": [],
       "stopped": ""
