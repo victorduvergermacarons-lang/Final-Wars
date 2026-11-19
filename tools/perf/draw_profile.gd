@@ -4,7 +4,7 @@ extends Node
 ##   godot --headless --path . res://tools/perf/draw_profile.tscn
 ## Headless frames cost at least ~6.9 ms (the engine's own pacing), so read
 ## the numbers above that floor.
-var zones := [&"town", &"greenfields", &"enemy_testing"]
+var zones := [&"town", &"greenfields", &"wilds"]
 var zi := 0
 var phase := 0 # 0 = full redraw, 1 = terrain cache
 var frames := 0

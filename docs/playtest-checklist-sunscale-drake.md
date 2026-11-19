@@ -1,5 +1,9 @@
 # Playtest checklist: the Sunscale Drake
 
+> **Retired 2026-11-19:** the Enemy Testing Grounds are no longer in the game (the gate in
+> Millbrook's north-east hedge now leads to the Wilds). Use the debug console's `spawn`
+> command to meet these enemies instead. Kept for the record.
+
 For a non-programmer. Tick each box; if something looks wrong, note what you did
 and what you saw. The drake is a level-6 elite built for a group (its numbers are tuned by playtesting). To try it
 alone, open the debug console (`) and type `level 40`, or use `spawn sunscale_drake`.

@@ -59,7 +59,7 @@ func _edge_tiles(z: ZoneDef, side: Vector2i) -> Array:
 
 func test_every_zone_has_its_region_and_music() -> void:
 	var expect := {&"town": Regions.Id.HEARTLAND, &"crossing": Regions.Id.HEARTLAND, &"greenfields": Regions.Id.HEARTLAND,
-			&"enemy_testing": Regions.Id.HEARTLAND, &"deepcut_road": Regions.Id.BEDRUN, &"deepcut": Regions.Id.BEDRUN,
+			&"wilds": Regions.Id.HEARTLAND, &"deepcut_road": Regions.Id.BEDRUN, &"deepcut": Regions.Id.BEDRUN,
 			&"windsteppe": Regions.Id.VAEL, &"tidereach_shore": Regions.Id.TIDEREACH,
 			&"silent_shaft": Regions.Id.BEDRUN}
 	assert_eq(db.zones.size(), expect.size(), "every zone is listed here")
@@ -141,7 +141,7 @@ func test_the_crossing_is_the_hub() -> void:
 	assert_eq(links.call(&"deepcut_road"), [&"crossing", &"deepcut"])
 	assert_eq(links.call(&"deepcut"), [&"deepcut_road"])
 	assert_eq(links.call(&"windsteppe"), [&"crossing"])
-	for id in [&"greenfields", &"enemy_testing", &"crossing"]:
+	for id in [&"greenfields", &"wilds", &"crossing"]:
 		assert_true(links.call(&"town").has(id), "Millbrook still leads to %s" % id)
 
 
@@ -195,7 +195,7 @@ func test_players_can_be_in_different_zones() -> void:
 	events = world.advance(0.2)
 	for e in events:
 		assert_has([&"crossing", &"greenfields", &"town", &"windsteppe", &"deepcut", &"deepcut_road",
-				&"enemy_testing", &"tidereach_shore"], e.zone)
+				&"wilds", &"tidereach_shore"], e.zone)
 	# Ann carries on east to Deepcut while Bob comes back: zones fill and empty.
 	world.move_hero(ann.id, &"crossing", Vector2i(37, 19))
 	assert_true(_walk(ann, Vector2i(39, 19)))
@@ -319,7 +319,7 @@ func test_music_switches_by_region_when_walking_between_regions() -> void:
 	assert_eq(Audio.current_track.id, &"explore_tidereach", "Tidereach: its own explore music")
 	await wait_seconds(1.8)
 	assert_almost_eq(Audio.music_fade(), 1.0, 0.01, "faded in")
-	# Walk east off the shore into the Heartland (the Enemy Testing Grounds).
+	# Walk east off the shore into the Heartland (the Wilds).
 	var hero := session.local_hero()
 	var edge := Vector2i(session.grid().width - 1, 6)
 	hero.move.place(edge)
@@ -328,7 +328,7 @@ func test_music_switches_by_region_when_walking_between_regions() -> void:
 	session.send_intent({"type": "step", "to": edge + Vector2i.RIGHT})
 	await wait_physics_frames(8)
 	await wait_seconds(0.4)
-	assert_eq(session.zone().id, &"enemy_testing", "walked into the Heartland")
+	assert_eq(session.zone().id, &"wilds", "walked into the Heartland")
 	assert_eq(Audio.current_track.id, &"idle_draft", "no Heartland explore track yet: the draft")
 	assert_ne(Audio._active, water_player, "crossfading on the other player")
 	assert_gt(Audio._fade[water_player], 0.0, "the water track is still fading out...")

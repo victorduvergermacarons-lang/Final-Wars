@@ -1118,7 +1118,32 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     (The boss rows, Grizzlehide, the drake and the Foreman, were removed 2026-11-19.)
   - Manual checklist: `docs/playtest-checklist-free-movement.md`.
 
-## Enemy Testing Grounds (2026-10-20)
+## The Wilds (2026-11-19)
+
+A 64 x 64 map in place of the Enemy Testing Grounds (`content/zones/wilds.tres`, written by
+`tools/once/make_wilds.py`; edit the file or use the map editor now). Region Heartland,
+explore music. Reached through the same gate in Millbrook's north-east hedge (town north edge,
+offset -12: its x 15-16 lands on our x 3-4 at the south row) and from Tidereach Shore's east
+side (our west column, rows 2-9). Spawn and graveyard in the clearing by the south gate.
+- Four winding streams (`water`, not walkable) with stone-slab fords (`ford`, the tileset's
+  only wadeable water) where the paths cross and at a few other points; 22 puddles of
+  `light_water` (not walkable, shoreline pieces picked by the tileset).
+- Dense vegetation over most of the land: tall and dense grass (walkable), leafy-bush
+  thickets (not walkable, like Millbrook's hedge), flowers, weeds, logs and stumps (logs,
+  stumps and rocks block movement); a few low hummocks (height 1); a bush hedge along the
+  border but for the two gates. Every walkable tile is reachable from the gate (pockets the
+  generator cut off became thicket). The tileset has no trees: bushes, logs and stumps stand in.
+- Empty: no enemies, people, quests or loot yet.
+- Tests: `tests/unit/test_wilds.gd`. Screenshots: `wilds0_gate`, `wilds1_inland` in
+  `tests/visual/loot_shots.tscn`.
+
+## Enemy Testing Grounds (2026-10-20; retired 2026-11-19)
+
+**Retired:** nothing loads it any more. Its zone file moved to `content/retired/enemy_testing.tres`
+(outside the folders ContentDB reads), Millbrook's gate and Tidereach Shore lead to the Wilds,
+`goto` lists `wilds`, and its tests (`test_testing_grounds.gd`, the walkthrough) were removed;
+`data/testing_grounds.gd`, the Training Dummy and the Reset Shrine stay in the repo, unused. The
+network check's brute-dodging guest now does it in the Wilds. As it was:
 
 - **Getting there:** a 2-tile gate in Millbrook's north-east hedge at (15–16, 0), with an
   "Enemy Testing Grounds" sign at (17, 1) and a dirt road down to the town's main path.
@@ -2228,6 +2253,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-19 | The Wilds replace the Enemy Testing Grounds | User request (phase 7; "same gate" and "retire with the map" chosen by the user). My choices: the name; four streams, 22 puddles, fords at path crossings plus four per stream so no bank is cut off; bushes as the blocking vegetation (no tree tiles exist); the testing grounds' file moved to `content/retired/` so ContentDB never loads it; the screenshot scene's creature shots staged on Greenfields. |
 | 2026-11-19 | Boss balance targets removed | User request (phase 6). Removed: the tests `test_grizzlehide_needs_a_group`, `test_sunscale_drake_needs_a_group`, `test_the_foreman_is_a_fight_for_a_group`; the boss rows of `balance_scenarios.gd` (Grizzlehide rows, `FOREMAN_ROWS`, the level-5 group builds used only by them) and of `balance_report.gd`; the bot boss-fight benchmark `BalanceSim.boss_fight` / `boss_average`; the target sentences in this file (Hurled Sunstone win rates, drake "beats a level-7 group", Foreman "tuned with bots", phase-6 measured boss rates, Grizzlehide group targets) and the drake checklist. Boss HP, damage and timers stay as plain values in their .tres files. Older log rows below keep their history. Non-boss balance targets (wolves, Shaman, Brute, Skirmisher, hound) stay. |
 | 2026-11-19 | Critters pack: boar art, a neutral Stag, Foreman x2 damage / +20% speed / +25% areas, targeted casts face their target, leash x1.8, dungeon respawn hold and way out | User brief (branch `feature/critters-boss-fixes`, from `feature/element-start`). See **Critters, the stag, the Foreman, dungeon fixes**. My decisions are in the next rows. |
 | 2026-11-19 | The pack was zipped (`art/critters.zip`), not unzipped in the repo; strips copied into `assets/creatures/<name>/strips/`, sheets built from them | Only the strips the game uses (the pack also has per-frame PNGs, sheets and a badger and wolf). One sheet per animation keeps the existing art format; feet line up across rows by bottom-aligning frames in one cell size. |

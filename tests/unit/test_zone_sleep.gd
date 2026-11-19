@@ -34,7 +34,7 @@ func test_empty_zones_fall_asleep_after_the_wait() -> void:
 	assert_false(world.is_asleep(&"greenfields"), "still settling")
 	world.advance(1.5)
 	assert_true(world.is_asleep(&"greenfields"))
-	assert_true(world.is_asleep(&"enemy_testing"))
+	assert_true(world.is_asleep(&"wilds"))
 	assert_false(world.is_asleep(&"town"), "the hero is here")
 
 

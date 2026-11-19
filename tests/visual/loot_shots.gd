@@ -100,4 +100,13 @@ func _run() -> void:
 	for i in 4:
 		await get_tree().process_frame
 	await _shot("duel0_flag")
+	# The Wilds (the map in place of the testing grounds), from its gate and inland.
+	session.world.move_hero(me.id, &"wilds", Vector2i(4, 60))
+	for i in 20:
+		await get_tree().process_frame
+	await _shot("wilds0_gate")
+	me.move.place(Vector2i(26, 32))
+	for i in 20:
+		await get_tree().process_frame
+	await _shot("wilds1_inland")
 	get_tree().quit()

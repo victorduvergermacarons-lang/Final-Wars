@@ -56,7 +56,7 @@ offset = 13
 [sub_resource type="Resource" id="edge_1"]
 script = ExtResource("s_edge")
 side = Vector2i(0, -1)
-to_zone = &"enemy_testing"
+to_zone = &"wilds"
 offset = -12
 
 [sub_resource type="Resource" id="edge_2"]
@@ -81,7 +81,7 @@ tile = Vector2i(14, 26)
 
 [sub_resource type="Resource" id="landmark_1"]
 script = ExtResource("s_landmark")
-name = "Enemy Testing Grounds"
+name = "The Wilds"
 tile = Vector2i(17, 1)
 
 [sub_resource type="Resource" id="npc_spawn_0"]

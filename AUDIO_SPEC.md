@@ -389,11 +389,11 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `ambience_crossing` | background loop in The Crossing (Ambience bus, OGG) | **missing** |
 | `ambience_deepcut` | background loop in Deepcut (Ambience bus, OGG) | **missing** |
 | `ambience_deepcut_road` | background loop in Road to Deepcut (Ambience bus, OGG) | **missing** |
-| `ambience_enemy_testing` | background loop in Enemy Testing Grounds (Ambience bus, OGG) | **missing** |
 | `ambience_greenfields` | background loop in Greenfields (Ambience bus, OGG) | **missing** |
 | `ambience_silent_shaft` | background loop in The Silent Shaft (Ambience bus, OGG) | **missing** |
 | `ambience_tidereach_shore` | background loop in Tidereach Shore (test) (Ambience bus, OGG) | **missing** |
 | `ambience_town` | background loop in Millbrook (Ambience bus, OGG) | **missing** |
+| `ambience_wilds` | background loop in The Wilds (Ambience bus, OGG) | **missing** |
 | `ambience_windsteppe` | background loop in Windsteppe (Ambience bus, OGG) | **missing** |
 
 <!-- sound keys end -->
