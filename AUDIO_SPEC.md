@@ -104,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-228 keys, 0 with a file, 228 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+234 keys, 0 with a file, 234 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -345,6 +345,12 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_salamander_hound_embers_hit` | Ember Trail: its ground zone hurts someone standing in it | **missing** |
 | `creature_salamander_hound_hurt` | Salamander Hound takes damage | **missing** |
 | `creature_salamander_hound_step` | Salamander Hound moves one tile (paws, wings...) | **missing** |
+| `creature_stag_aggro` | Stag notices a hero and starts a fight | **missing** |
+| `creature_stag_antler_thrust` | Antler Thrust is used | **missing** |
+| `creature_stag_antler_thrust_hit` | Antler Thrust lands on someone | **missing** |
+| `creature_stag_death` | Stag dies | **missing** |
+| `creature_stag_hurt` | Stag takes damage | **missing** |
+| `creature_stag_step` | Stag moves one tile (paws, wings...) | **missing** |
 | `creature_sunscale_drake_aggro` | Sunscale Drake notices a hero and starts a fight | **missing** |
 | `creature_sunscale_drake_death` | Sunscale Drake dies | **missing** |
 | `creature_sunscale_drake_enrage` | Sunscale Drake enrages (Molten Fury) | **missing** |

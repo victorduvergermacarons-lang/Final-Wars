@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://data/defs/zone_exit.gd" id="5_d0xp5"]
 [ext_resource type="Resource" path="res://content/enemies/boar.tres" id="5_g685c"]
 [ext_resource type="Resource" path="res://content/enemies/iron_wolf.tres" id="enemy_iron_wolf"]
+[ext_resource type="Resource" path="res://content/enemies/stag.tres" id="enemy_stag"]
 [ext_resource type="Resource" path="res://content/npcs/elder_tsaga.tres" id="npc_elder_tsaga"]
 [ext_resource type="Resource" path="res://content/npcs/saran.tres" id="npc_saran"]
 [ext_resource type="Resource" path="res://content/npcs/vael_stone.tres" id="npc_vael_stone"]
@@ -52,31 +53,6 @@ kind = 3
 tile = Vector2i(18, 23)
 label = "Stone Cairn"
 
-[sub_resource type="Resource" id="Resource_glnvw"]
-script = ExtResource("s_decor")
-kind = 5
-tile = Vector2i(23, 25)
-label = "Herd"
-color = Color(0.72, 0.66, 0.58, 1)
-
-[sub_resource type="Resource" id="Resource_tmt0j"]
-script = ExtResource("s_decor")
-kind = 5
-tile = Vector2i(24, 27)
-color = Color(0.45, 0.33, 0.24, 1)
-
-[sub_resource type="Resource" id="Resource_skib0"]
-script = ExtResource("s_decor")
-kind = 5
-tile = Vector2i(22, 28)
-color = Color(0.72, 0.66, 0.58, 1)
-
-[sub_resource type="Resource" id="Resource_2cup2"]
-script = ExtResource("s_decor")
-kind = 5
-tile = Vector2i(25, 26)
-color = Color(0.45, 0.33, 0.24, 1)
-
 [sub_resource type="Resource" id="Resource_i40f1"]
 script = ExtResource("s_decor")
 kind = 2
@@ -97,25 +73,6 @@ script = ExtResource("s_decor")
 kind = 1
 tile = Vector2i(37, 32)
 label = "Dry Well"
-
-[sub_resource type="Resource" id="Resource_ax6j6"]
-script = ExtResource("s_decor")
-kind = 5
-tile = Vector2i(42, 30)
-label = "Herd"
-color = Color(0.5, 0.36, 0.25, 1)
-
-[sub_resource type="Resource" id="Resource_veguj"]
-script = ExtResource("s_decor")
-kind = 5
-tile = Vector2i(44, 31)
-color = Color(0.5, 0.36, 0.25, 1)
-
-[sub_resource type="Resource" id="Resource_487dg"]
-script = ExtResource("s_decor")
-kind = 5
-tile = Vector2i(43, 33)
-color = Color(0.5, 0.36, 0.25, 1)
 
 [sub_resource type="Resource" id="Resource_etncw"]
 script = ExtResource("s_decor")
@@ -157,6 +114,26 @@ label = "Stone Cairn"
 script = ExtResource("s_edge")
 to_zone = &"crossing"
 offset = -2
+
+[sub_resource type="Resource" id="Resource_stag0"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_stag")
+tile = Vector2i(23, 25)
+
+[sub_resource type="Resource" id="Resource_stag1"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_stag")
+tile = Vector2i(24, 28)
+
+[sub_resource type="Resource" id="Resource_stag2"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_stag")
+tile = Vector2i(42, 30)
+
+[sub_resource type="Resource" id="Resource_stag3"]
+script = ExtResource("s_enemy_spawn")
+enemy = ExtResource("enemy_stag")
+tile = Vector2i(44, 33)
 
 [sub_resource type="Resource" id="Resource_amuxr"]
 script = ExtResource("s_enemy_spawn")
@@ -280,9 +257,9 @@ height_rows = PackedStringArray("22222222222222111000000000000111111111111111111
 walk_rows = PackedStringArray("........................................................", ".....#..................................................", "........................................................", ".....#.#................................................", ".....#.............#....................................", "...........#......#...........#.........................", "........#...............................................", "..................................................#.....", "...........................#............................", "..........#......................#......................", ".......##...............................................", "....................#...................................", "..............................................#.........", "..................#.#...................................", "........................................................", "........................................................", "..#..............#......................................", "........................................................", ".............#.........#................................", "........................................................", "...................#..............#.....................", "..............#.........................................", "#.......................................................", "............#.....#.....................................", ".....#......#...........#...............................", "................#......#................................", "..#......................#..............................", "........................#...............................", "..................#...#.................................", "..............................#.....#................#..", "............#.............................#.....#....#..", "................#...........................##..........", "...........#.......#.................#..................", "....#......................................#....#.......", "......#..........................#..#...................", "..........#.............................................", ".......................................#................", "..................................##.#..................", "........................................................", "................#.............#.........................", "................................................#.......", "..............#.........................................", ".................#......................................", "........................................................")
 respawn_zone = &"crossing"
 hero_spawns = Array[Vector2i]([Vector2i(52, 21), Vector2i(52, 22), Vector2i(51, 21), Vector2i(51, 22)])
-enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("Resource_amuxr"), SubResource("Resource_ny8cn"), SubResource("Resource_ps1nl"), SubResource("Resource_cwgem"), SubResource("Resource_vien1"), SubResource("Resource_lbs4d"), SubResource("Resource_2gabt"), SubResource("Resource_trhj1"), SubResource("Resource_dgvuo"), SubResource("Resource_lqrem"), SubResource("Resource_cp67s"), SubResource("Resource_g78kk")])
+enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("Resource_amuxr"), SubResource("Resource_ny8cn"), SubResource("Resource_ps1nl"), SubResource("Resource_cwgem"), SubResource("Resource_vien1"), SubResource("Resource_lbs4d"), SubResource("Resource_2gabt"), SubResource("Resource_trhj1"), SubResource("Resource_dgvuo"), SubResource("Resource_lqrem"), SubResource("Resource_cp67s"), SubResource("Resource_g78kk"), SubResource("Resource_stag0"), SubResource("Resource_stag1"), SubResource("Resource_stag2"), SubResource("Resource_stag3")])
 landmarks = Array[ExtResource("s_landmark")]([SubResource("Resource_k2ub8"), SubResource("Resource_hwdd8")])
-decor = Array[ExtResource("s_decor")]([SubResource("Resource_g685c"), SubResource("Resource_848rs"), SubResource("Resource_e6ht0"), SubResource("Resource_r0ybw"), SubResource("Resource_okgs1"), SubResource("Resource_awcd8"), SubResource("Resource_c8kk0"), SubResource("Resource_glnvw"), SubResource("Resource_tmt0j"), SubResource("Resource_skib0"), SubResource("Resource_2cup2"), SubResource("Resource_i40f1"), SubResource("Resource_kygj3"), SubResource("Resource_c40tw"), SubResource("Resource_wn7gx"), SubResource("Resource_ax6j6"), SubResource("Resource_veguj"), SubResource("Resource_487dg"), SubResource("Resource_etncw"), SubResource("Resource_pupxr"), SubResource("Resource_r8skg"), SubResource("Resource_xdfqd"), SubResource("Resource_1lnwu"), SubResource("Resource_2tsky")])
+decor = Array[ExtResource("s_decor")]([SubResource("Resource_g685c"), SubResource("Resource_848rs"), SubResource("Resource_e6ht0"), SubResource("Resource_r0ybw"), SubResource("Resource_okgs1"), SubResource("Resource_awcd8"), SubResource("Resource_c8kk0"), SubResource("Resource_i40f1"), SubResource("Resource_kygj3"), SubResource("Resource_c40tw"), SubResource("Resource_wn7gx"), SubResource("Resource_etncw"), SubResource("Resource_pupxr"), SubResource("Resource_r8skg"), SubResource("Resource_xdfqd"), SubResource("Resource_1lnwu"), SubResource("Resource_2tsky")])
 edges = Array[ExtResource("s_edge")]([SubResource("Resource_v78kh")])
 npcs = Array[ExtResource("s_npc_spawn")]([SubResource("Resource_oluop"), SubResource("Resource_ub0id"), SubResource("Resource_ynt6m"), SubResource("Resource_wmno5")])
 tileset = &"iso_basic"

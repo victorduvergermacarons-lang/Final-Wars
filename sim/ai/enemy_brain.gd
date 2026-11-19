@@ -24,6 +24,10 @@ const FLANK_PATIENCE := 2.0
 ## unreachable target would otherwise cost a full search every tick.
 const CHASE_SEARCH := 1024
 const CHASE_RETRY_SECONDS := 0.5
+## Wandering (EnemyDef.wander_radius): share of its speed it walks at, and tries
+## at finding a reachable spot before grazing a while longer.
+const WANDER_PACE := 0.4
+const WANDER_TRIES := 8
 
 
 static func update(world: WorldSim, enemy: Enemy) -> void:
@@ -42,7 +46,10 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 			if enemy.threat.is_empty():
 				var hero := _find_aggro_target(world, enemy)
 				if hero == null:
-					_patrol(world, enemy)
+					if enemy.patrol.is_empty() and enemy.def.wander_radius > 0:
+						_wander(world, enemy)
+					else:
+						_patrol(world, enemy)
 					return
 				enemy.threat.add(hero.id, 0.0)
 				world.emit({"type": "aggro", "source": enemy.id, "target": hero.id})
@@ -65,6 +72,8 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 ## The nearest living hero (or escorted NPC or caravan) it can see within its
 ## aggro radius, or null.
 static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Actor:
+	if enemy.def.neutral:
+		return null # only fights what damages it
 	var best: Actor = null
 	var best_dist := 0
 	var candidates: Array[Actor] = []
@@ -394,6 +403,8 @@ static func _start_evade(world: WorldSim, enemy: Enemy) -> void:
 	enemy.hp = enemy.stats.hp
 	enemy.mana = enemy.stats.mana
 	enemy.combat_until = -1.0
+	enemy.wander_goal = Vector2i(-1, -1)
+	enemy.wander_at = -1.0
 	world.emit({"type": "evade", "target": enemy.id})
 
 
@@ -407,6 +418,41 @@ static func _patrol(world: WorldSim, enemy: Enemy) -> void:
 		return
 	if not Navigator.go(world, enemy, goal, patrol_pace(enemy)):
 		enemy.patrol_index = (enemy.patrol_index + 1) % enemy.patrol.size() # unreachable: skip it
+
+
+## Idle and wandering (the stag): grazes a random while, then walks to a random
+## reachable tile within `wander_radius` of its spawn, and grazes again. Each one
+## rolls its own times and spots (the zone's seeded random numbers).
+static func _wander(world: WorldSim, enemy: Enemy) -> void:
+	if enemy.move.gliding:
+		return
+	if enemy.wander_at < 0.0:
+		# Starts partway through a graze, so neighbours don't set off together.
+		enemy.wander_at = world.now + _graze_seconds(world, enemy) * world.ctx.rng.randf()
+	if enemy.wander_goal != Vector2i(-1, -1):
+		var reached := enemy.move.pos.distance_to(Vector2(enemy.wander_goal)) <= Navigator.REACHED + 0.05
+		if reached or not Navigator.go(world, enemy, enemy.wander_goal, WANDER_PACE):
+			Navigator.stop(enemy)
+			enemy.wander_goal = Vector2i(-1, -1)
+			enemy.wander_at = world.now + _graze_seconds(world, enemy)
+		return
+	if world.now < enemy.wander_at:
+		return
+	var r := enemy.def.wander_radius
+	for i in WANDER_TRIES:
+		var spot := enemy.spawn_tile + Vector2i(world.ctx.rng.randi_range(-r, r), world.ctx.rng.randi_range(-r, r))
+		if spot == enemy.tile() or not world.grid.in_bounds(spot) or not world.grid.is_walkable(spot) \
+				or world.body_blocked(enemy, spot):
+			continue
+		if Navigator.go(world, enemy, spot, WANDER_PACE):
+			enemy.wander_goal = spot
+			return
+	enemy.wander_at = world.now + _graze_seconds(world, enemy) # nowhere to go: graze on
+
+
+static func _graze_seconds(world: WorldSim, enemy: Enemy) -> float:
+	var lo := enemy.def.graze_seconds_min
+	return world.ctx.rng.randf_range(lo, maxf(enemy.def.graze_seconds_max, lo))
 
 
 ## A patrol's pace (0..1 of its speed): `patrol_step_seconds` set the old tile

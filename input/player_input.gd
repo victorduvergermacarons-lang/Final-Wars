@@ -327,11 +327,16 @@ static func talk_target(session) -> Actor:
 	return best
 
 
+## A neutral creature (a grazing stag) isn't a foe until it fights.
+static func _peaceful(a: Actor) -> bool:
+	return a is Enemy and (a as Enemy).def.neutral and (a as Enemy).state != Enemy.State.COMBAT
+
+
 func _target_next_enemy() -> void:
 	var hero: Hero = session.local_hero()
 	var candidates: Array = []
 	for a in session.actors():
-		if a.alive and hero.is_hostile_to(a) and not a.evading \
+		if a.alive and hero.is_hostile_to(a) and not a.evading and not _peaceful(a) \
 				and GridModel.distance(hero.tile(), a.tile()) <= TAB_RANGE:
 			candidates.append(a)
 	if candidates.is_empty():
