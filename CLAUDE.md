@@ -222,9 +222,8 @@ table). Numbers as built:
   range 6, 18 + 0.9 x Physical Attack, cooldown 12 s, at whoever holds his eye.
   `AbilityDef.locks_on`: never rolls Accuracy against Evasion, and once it starts the
   target can't escape it (range and line of sight aren't checked again); a stun or an
-  interrupt (Gust) still stops it. Bots at level 10 (`BalanceSim.boss_average`, 12 fights):
-  four heroes win 58% in about 52 s with 1.8 deaths per fight, about 4.5 throws per
-  fight, every one landing; three win 50%; one never.
+  interrupt (Gust) still stops it. (Boss win-rate targets were removed 2026-11-19: bosses
+  are tuned by playtesting.)
 - **Faster enemy attacks:** wind-ups cut up to 40%, never below the warning a dodgeable
   attack needs (0.63 s: a tile at walking speed plus 0.3 s; `CastResolver.dodge_warnings`)
   nor 0.2 s for quick bites. Art frame rates raised so bites land on their hit frame
@@ -587,9 +586,8 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 - **Molten Fury:** below 30% HP (`enrage_below`) it gains `molten_fury`: cooldowns ×0.7,
   and its ground zones last 2 s longer (`BuffDef.zone_seconds_bonus`), so the breath's
   fire burns 5 s. It glows hotter and the message log announces it. Evading clears it.
-- **Balance** (`tests/balance/test_balance.gd`, bots that never dodge): it beats a
-  level-7 group of four every time (user request, 2026-10-21); see the decisions log for
-  the measured rates. A pair or a lone hero loses.
+- **Balance:** no target any more (boss balance targets removed 2026-11-19); its numbers
+  above are plain values, tuned by playtesting.
 - **Chasing:** it heads for any tile where its body is beside its target
   (`Pathfinder.find_path`'s `arrived` test), not the target's own tile, which its body
   can never reach. A chase search that finds nothing waits 0.5 s before the next.
@@ -932,7 +930,8 @@ Checklist: `docs/playtest-checklist-act1-full.md`.
     the Heart opens and pulses every 9 s (8 grey tiles, no husks). He can't fall below 5% while it
     beats. **Breaking the Heart ends the fight:** he falls with it (his kill and XP go to the
     party), adds and grey fade, and Caedan comes down to the chamber door (50, 15).
-  - Numbers tuned with bots in the real chamber (`BalanceSim.boss_fight`; see the decisions log).
+  - Its numbers are plain values, tuned by playtesting (the bot boss-fight benchmark and its
+    targets were removed 2026-11-19).
 - **Quest 1-07 The Silent Shaft** (main, level 8, Caedan at the hall → Caedan in the shaft):
   ride the lift to the deep seams, find where the silence comes from (the chamber), break the
   Grey Heart, speak with Caedan. Shaken, he recruits the party into the Ember Hand (a dialogue
@@ -959,8 +958,8 @@ Checklist: `docs/playtest-checklist-act1-full.md`.
 - **Debug:** `goto silent_shaft` goes straight into the party's copy.
 - **Tests:** `tests/unit/test_dungeons.gd` (entry rules, testing setting, copies, closing,
   lifts, wipes), `tests/integration/test_foreman.gd` (phases with 1 and 4 heroes, greyed
-  ground, the wipe reset, threat), `tests/integration/test_act_end_screen.gd`, the balance test
-  `test_the_foreman_is_a_fight_for_a_group`, and `Act1Playthrough` now plays 1-01 to 1-07, the
+  ground, the wipe reset, threat), `tests/integration/test_act_end_screen.gd`, and
+  `Act1Playthrough` now plays 1-01 to 1-07, the
   end screen and the walk home.
 
 ## Free movement (branch `feature/free-movement`, 2026-11-01)
@@ -1115,9 +1114,8 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     dealers and healer dodge; tanks hold still.
   - Measured (bots): starter vs a Wolf 9.0 s, 36% HP lost (dodging: 10%); sword, bow or
     hammer alone win; a pair beats 2 Wolves (70%); a caster spends 64% of its mana on a
-    Wolf and beats the Shaman; heals + dodges beat the Brute (54%), standing still loses;
-    a group of 4 beats Grizzlehide; the drake: level 7 group 0%, level 10 group 83%; the
-    Foreman at level 10: solo 0%, pair 17%, three 83%, four 67%.
+    Wolf and beats the Shaman; heals + dodges beat the Brute (54%), standing still loses.
+    (The boss rows, Grizzlehide, the drake and the Foreman, were removed 2026-11-19.)
   - Manual checklist: `docs/playtest-checklist-free-movement.md`.
 
 ## Enemy Testing Grounds (2026-10-20)
@@ -1485,8 +1483,8 @@ Ranger's Gloves and the Mantle come from the new enemies and the elite.
 XP by level: +10% per enemy level above you (max +50%); from 3 levels below, −20% per
 level (3 below = 80%), never under 20%. Balance report (bots stand still and always face the enemy): a level-3 sword
 hero who just trades blows with a Brute loses, but wins by healing itself (~95% HP lost) or with a shield, staff hero beats a Shaman at level 2 (~40%),
-sword hero beats a Skirmisher at level 4 80% of the time; Grizzlehide kills a lone or
-paired level-5 hero but a level-5 group of four wins (~46 s).
+sword hero beats a Skirmisher at level 4 80% of the time. (Grizzlehide's group target was
+removed with every boss target, 2026-11-19.)
 
 ### Milestone 2 quests (step 17)
 | Quest | Giver → hand in | Needs | Objectives | Rewards |
@@ -2184,9 +2182,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 	  dodging starter loses under half the HP; sword, bow or hammer alone beats a
 	  Wolf; a Wolf costs a Fire Dart caster over 60% of its mana; a level-2 caster
 	  beats a Shaman; a level-3 hero trading blows with a Brute loses, but healing and
-	  dodging the 0.6 s wind-up wins; a level-4 Lunge sword beats a Skirmisher;
-	  Grizzlehide kills a lone level-5 hero and mostly a pair, a group of four wins
-	  (~21 s).
+	  dodging the 0.6 s wind-up wins; a level-4 Lunge sword beats a Skirmisher.
+	  (Grizzlehide's target removed 2026-11-19 with every boss target.)
 	- The dodge warning counts wind-up time as time to react.
 24. **Aiming UI (as built in step 12):** pressing a Skillshot or Ground ability's key
 	starts aiming; the exact tiles it would affect are highlighted (blue; red when out
@@ -2231,6 +2228,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-19 | Boss balance targets removed | User request (phase 6). Removed: the tests `test_grizzlehide_needs_a_group`, `test_sunscale_drake_needs_a_group`, `test_the_foreman_is_a_fight_for_a_group`; the boss rows of `balance_scenarios.gd` (Grizzlehide rows, `FOREMAN_ROWS`, the level-5 group builds used only by them) and of `balance_report.gd`; the bot boss-fight benchmark `BalanceSim.boss_fight` / `boss_average`; the target sentences in this file (Hurled Sunstone win rates, drake "beats a level-7 group", Foreman "tuned with bots", phase-6 measured boss rates, Grizzlehide group targets) and the drake checklist. Boss HP, damage and timers stay as plain values in their .tres files. Older log rows below keep their history. Non-boss balance targets (wolves, Shaman, Brute, Skirmisher, hound) stay. |
 | 2026-11-19 | Critters pack: boar art, a neutral Stag, Foreman x2 damage / +20% speed / +25% areas, targeted casts face their target, leash x1.8, dungeon respawn hold and way out | User brief (branch `feature/critters-boss-fixes`, from `feature/element-start`). See **Critters, the stag, the Foreman, dungeon fixes**. My decisions are in the next rows. |
 | 2026-11-19 | The pack was zipped (`art/critters.zip`), not unzipped in the repo; strips copied into `assets/creatures/<name>/strips/`, sheets built from them | Only the strips the game uses (the pack also has per-frame PNGs, sheets and a badger and wolf). One sheet per animation keeps the existing art format; feet line up across rows by bottom-aligning frames in one cell size. |
 | 2026-11-19 | Facing bug was Healing Touch, not Frost Shard | User correction mid-task. Fix covers every targeted cast; hold 0.5 s after it goes off (my number) so the cast animation faces the target. |
