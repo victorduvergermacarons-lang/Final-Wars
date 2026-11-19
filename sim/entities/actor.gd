@@ -22,6 +22,10 @@ var move := MoveState.new()
 ## right, +x). `facing` is the nearest of the four grid directions (sprites pick
 ## their diagonal from it; tile-based abilities aim this way).
 var facing_angle := PI / 2.0
+## Duels (WorldSim): the opponent's id (-1 = none) and whether the fight is on
+## (after the countdown).
+var duel_with := -1
+var duel_live := false
 var facing := Vector2i.DOWN
 var cooldowns := Cooldowns.new()
 ## Light characters are knocked back and pulled 1 tile further, heavy ones 1 less.
@@ -168,12 +172,26 @@ func in_combat(now: float) -> bool:
 
 
 func is_hostile_to(other: Actor) -> bool:
+	if duel_live and other.id == duel_with:
+		return true # duelists fight each other (and only each other: see in_duel_with)
 	return team != other.team and team != Team.NEUTRAL and other.team != Team.NEUTRAL
 
 
 ## Same side (heroes with heroes, enemies with enemies); neutral is no one's ally.
 func is_ally_of(other: Actor) -> bool:
+	if duel_live and other.id == duel_with:
+		return false
 	return team == other.team and team != Team.NEUTRAL
+
+
+## A duel's damage rule: while either is in a live duel, damage only passes between
+## the two duelists (nobody else hurts them, they hurt nobody else).
+static func damage_allowed(source: Actor, target: Actor) -> bool:
+	if source == null or source == target:
+		return true
+	if source.duel_live or target.duel_live:
+		return source.duel_live and target.duel_live and source.duel_with == target.id
+	return true
 
 
 func die() -> void:

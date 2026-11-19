@@ -92,4 +92,12 @@ func _run() -> void:
 	for i in 4:
 		await get_tree().process_frame
 	await _shot("trade2_contract")
+	sim.submit(me.id, {"type": "trade_cancel"})
+	sim.submit(mara.id, {"type": "duel_request", "target": me.id})
+	for i in 3:
+		await get_tree().process_frame
+	hud.request_window.answer(true)
+	for i in 4:
+		await get_tree().process_frame
+	await _shot("duel0_flag")
 	get_tree().quit()

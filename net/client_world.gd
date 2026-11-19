@@ -28,6 +28,8 @@ var projectiles: Array = []
 var telegraphs: Array = []
 ## Boss rolls in progress (LootRolls.to_array).
 var rolls: Array = []
+## Duels in this zone (WorldSim.duels_view).
+var duels: Array = []
 ## The open way out of a cleared dungeon (a tile), or null.
 var way_out: Variant = null
 ## Ground zones: [{"source", "ability", "tiles", "until"}].
@@ -175,6 +177,7 @@ func apply_snapshot(snap: Dictionary) -> void:
 	telegraphs = snap.get("telegraphs", [])
 	way_out = snap.get("way_out")
 	rolls = snap.get("rolls", [])
+	duels = snap.get("duels", [])
 	ground_zones = snap.get("zones", [])
 	_apply_terrain(snap.get("terrain", []))
 	world_flags.clear()
@@ -219,6 +222,9 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	a.mana = d.mana
 	a.alive = d.alive
 	a.evading = d.evading
+	var duel: Array = d.get("duel", [-1, false])
+	a.duel_with = int(duel[0])
+	a.duel_live = bool(duel[1])
 	a.combat_until = d.combat_until
 	a.move.buffered = a.id != local_hero_id
 	a.move.apply_dict(d.move, now)

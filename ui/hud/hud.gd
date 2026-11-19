@@ -84,6 +84,8 @@ var request_window: RequestWindow
 var trade_window: TradeWindow
 var player_menu: PopupMenu
 var _menu_hero := -1
+## "Return to the duel area: 7" while the local duelist is outside the boundary.
+var duel_warning: Label
 ## "End of Act I": the party's records, then back to the Crossing.
 var act_end: ActEndScreen
 var _act_end_pending := {}
@@ -355,6 +357,17 @@ func _build() -> void:
 	player_menu.add_item("Duel", 1)
 	player_menu.id_pressed.connect(_on_player_menu)
 	_root.add_child(player_menu)
+	duel_warning = Label.new()
+	duel_warning.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	duel_warning.position.y = 180
+	duel_warning.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	duel_warning.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	duel_warning.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	duel_warning.add_theme_color_override("font_outline_color", Color.BLACK)
+	duel_warning.add_theme_constant_override("outline_size", 5)
+	duel_warning.add_theme_font_size_override("font_size", 24)
+	duel_warning.visible = false
+	_root.add_child(duel_warning)
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -385,6 +398,7 @@ func _process(_delta: float) -> void:
 		act_end.open(_act_end_pending)
 		_act_end_pending = {}
 	_update_book()
+	_update_duel_warning()
 	var hero: Hero = session.local_hero()
 	if hero == null:
 		return
@@ -735,6 +749,25 @@ func _on_events(events: Array) -> void:
 							"too_far": "you moved out of range", "in_combat": "combat started",
 							"bag_full": "a bag couldn't hold the goods", "dead": "a player died"}
 					client.say("Trade cancelled: %s. Everything went back to its owner." % why.get(e.reason, e.reason))
+			"duel_start":
+				client.say("Duel: %s against %s. It begins in %d…" % [e.a_name, e.b_name,
+						roundi(session.rules().party_play.duel_countdown)])
+			"duel_fight":
+				if e.source == me or e.target == me:
+					client.say("Fight!")
+			"duel_out":
+				if e.target == me:
+					client.error("Return to the duel area within %d s or you forfeit" % roundi(e.seconds))
+			"duel_end":
+				var mine_hero: Actor = session.local_hero()
+				if mine_hero != null and mine_hero.move.pos.distance_to(e.flag) <= float(e.radius):
+					match e.reason:
+						"fled":
+							client.say("%s has fled from %s in a duel." % [e.loser_name, e.winner_name])
+						"left":
+							client.say("%s left; %s wins the duel." % [e.loser_name, e.winner_name])
+						_:
+							client.say("%s has defeated %s in a duel." % [e.winner_name, e.loser_name])
 			"roll_start":
 				var rolled: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				if rolled != null:
@@ -763,6 +796,18 @@ func _on_events(events: Array) -> void:
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:
 					dialogue.open(npc)
+
+
+func _update_duel_warning() -> void:
+	var me: int = session.local_hero_id
+	var left := -1.0
+	for d in session.duels():
+		var out: Dictionary = d.get("out", {})
+		if out.has(me):
+			left = float(out[me])
+	duel_warning.visible = left >= 0.0
+	if duel_warning.visible:
+		duel_warning.text = "Return to the duel area: %d" % ceili(left)
 
 
 ## Right-click on another player (their unit frame or the hero in the world):

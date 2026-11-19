@@ -412,6 +412,7 @@ func _draw() -> void:
 	_draw_landmarks(grid)
 	_draw_way_out(grid)
 	_draw_drops(grid)
+	_draw_duels(grid)
 	_draw_decor_labels(grid)
 	_draw_talk_prompt()
 	for f in _overlay:
@@ -1211,6 +1212,30 @@ func _draw_quest_area(grid: GridModel, p: Vector2i, kind: Variant = true) -> voi
 			c + Vector2(-hw, 0)]), Color(1, 0.85, 0.2, pulse))
 	draw_polyline(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),
 			c + Vector2(-hw, 0), c + Vector2(0, -hh)]), Color(1, 0.95, 0.5, 0.9), 1.5)
+
+
+## Duels: a flag at the midpoint and the boundary circle; the countdown above
+## the flag.
+func _draw_duels(grid: GridModel) -> void:
+	for d in session.duels():
+		var p: Vector2 = d.flag
+		var t := MoveState.tile_of(p)
+		var h := grid.height_at(t) if grid.in_bounds(t) else 0
+		var base := Iso.to_screen(p, h)
+		var c := Color(0.95, 0.3, 0.2, 0.55 if d.state != "over" else 0.25)
+		var ring := PackedVector2Array()
+		for i in 49:
+			var a := TAU * i / 48.0
+			ring.append(Iso.to_screen(p + Vector2.from_angle(a) * float(d.radius), h))
+		draw_polyline(ring, c, 2.0)
+		draw_line(base, base + Vector2(0, -50), Color(0.35, 0.25, 0.15), 3.0)
+		var cloth := PackedVector2Array([base + Vector2(1, -50), base + Vector2(24, -44), base + Vector2(1, -36)])
+		draw_colored_polygon(cloth, Color(0.85, 0.15, 0.15))
+		draw_colored_polygon(PackedVector2Array([base + Vector2(1, -36), base + Vector2(24, -42), base + Vector2(1, -30)]),
+				Color(0.95, 0.95, 0.9))
+		if d.state == "countdown":
+			var left := ceili(float(d.starts_at) - session.render_time())
+			_draw_label(base + Vector2(0, -62), str(maxi(left, 1)), Color(1, 0.85, 0.3), 22)
 
 
 ## Your own loot on the ground (only yours are sent): a light beam in the item's

@@ -69,6 +69,10 @@ func social() -> Dictionary:
 	return {"trade": {}, "requests": []}
 
 
+func duels() -> Array:
+	return []
+
+
 func loot_rolls() -> Array:
 	return []
 

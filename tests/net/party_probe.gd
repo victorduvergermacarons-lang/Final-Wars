@@ -76,6 +76,8 @@ func _host(port: int, players: int, scenario: String) -> void:
 			await _host_bind(town, guests)
 		"trade":
 			await _host_trade(town, guests)
+		"duel":
+			await _host_duel(town, guests)
 		_:
 			_finish(false, "host: unknown scenario %s" % scenario)
 
@@ -214,6 +216,29 @@ func _host_trade(town: WorldSim, guests: Array) -> void:
 	_finish(true, "host: a helm and 5 gold went for 3 pelts in one go; a second trade, declined at the contract, returned everything")
 
 
+## Duel: Guest1 challenges Guest2; once the fight is on, the host (as the world)
+## brings Guest2 low so one Fire Punch from Guest1 makes them yield at 1 HP.
+## The host, a bystander near the flag, hears who won.
+func _host_duel(town: WorldSim, guests: Array) -> void:
+	var heard := [""]
+	game.session.events_received.connect(func(events):
+		for e in events:
+			if e.type == "duel_end":
+				heard[0] = "%s has defeated %s in a duel." % [e.winner_name, e.loser_name])
+	if not await _wait_until(func(): return guests[1].duel_live):
+		_finish(false, "host: the duel never started")
+		return
+	guests[1].hp = 6.0
+	if not await _wait_until(func(): return heard[0] != ""):
+		_finish(false, "host: never heard the duel end")
+		return
+	if heard[0] != "Guest1 has defeated Guest2 in a duel." or not guests[1].alive or guests[1].hp > 2.0:
+		_finish(false, "host: %s, Guest2 alive %s at %s HP" % [heard[0], guests[1].alive, guests[1].hp])
+		return
+	await get_tree().create_timer(1.5).timeout
+	_finish(true, "host: duel ran (flag, countdown, fight); Guest2 yielded at 1 HP alive; the host nearby heard: %s" % heard[0])
+
+
 ## Set by watching the host's own world for the second trade's cancel.
 var _second_trade_over := false
 
@@ -245,6 +270,8 @@ func _join(port: int, players: int, scenario: String, index: int) -> void:
 			await _join_bind(session)
 		"trade":
 			await _join_trade(session, index)
+		"duel":
+			await _join_duel(session, index)
 		_:
 			_finish(false, "%s: unknown scenario %s" % [me, scenario])
 	game.store.delete(me)
@@ -372,6 +399,64 @@ func _join_trade(session: ClientSession, index: int) -> void:
 				_finish(false, "%s: our item never came back after the decline" % me)
 				return
 	_finish(true, "%s: traded through the request, trade and contract windows; a declined contract gave everything back" % me)
+
+
+func _join_duel(session: ClientSession, index: int) -> void:
+	var hud: Hud = game.get_node("Hud")
+	var hero := func() -> Hero: return session.local_hero()
+	var foe_id := func() -> int:
+		for a in session.actors():
+			if a is Hero and a.display_name == ("Guest2" if index == 1 else "Guest1"):
+				return a.id
+		return -1
+	var said: Array = []
+	session.events_received.connect(func(events):
+		for e in events:
+			if e.type == "duel_end":
+				said.append("%s has defeated %s in a duel." % [e.winner_name, e.loser_name]))
+	if index == 1:
+		await get_tree().create_timer(0.5).timeout
+		hud.ask(foe_id.call(), "duel")
+	else:
+		if not await _wait_until(func(): return hud.request_window.showing() >= 0):
+			_finish(false, "%s: no duel request window" % me)
+			return
+		hud.request_window.answer(true)
+	if not await _wait_until(func(): return not session.duels().is_empty()):
+		_finish(false, "%s: never saw the duel flag" % me)
+		return
+	var d: Dictionary = session.duels()[0]
+	if d.state != "countdown":
+		_finish(false, "%s: the duel didn't start with a countdown" % me)
+		return
+	if not await _wait_until(func(): return hero.call().duel_live):
+		_finish(false, "%s: the fight never began on our side" % me)
+		return
+	var lowest := [INF]
+	get_tree().process_frame.connect(func():
+		if session.local_hero() != null:
+			lowest[0] = minf(lowest[0], session.local_hero().hp))
+	if index == 1:
+		# Fire Punch the other duelist (adjacent) until the duel ends.
+		while said.is_empty() and _waited < TIMEOUT:
+			session.send_intent({"type": "cast", "ability": &"F01", "target": foe_id.call()})
+			await get_tree().create_timer(0.5).timeout
+			_waited += 0.5
+	if not await _wait_until(func(): return not said.is_empty()):
+		_finish(false, "%s: never heard the duel end" % me)
+		return
+	if said[0] != "Guest1 has defeated Guest2 in a duel.":
+		_finish(false, "%s: heard %s" % [me, said[0]])
+		return
+	await get_tree().create_timer(0.5).timeout
+	if index == 2 and (not hero.call().alive or absf(lowest[0] - 1.0) > 0.01):
+		_finish(false, "%s: expected to yield at 1 HP alive; lowest %s" % [me, lowest[0]])
+		return
+	if hero.call().duel_with != -1:
+		_finish(false, "%s: still marked in a duel" % me)
+		return
+	_finish(true, "%s: requested/accepted through the windows, saw the flag and countdown, %s" % [me,
+			"won with Fire Punch" if index == 1 else "yielded at 1 HP, still alive"])
 
 
 func _join_loot(session: ClientSession) -> void:

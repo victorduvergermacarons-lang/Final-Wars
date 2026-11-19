@@ -85,8 +85,8 @@ static func _find_aggro_target(world: WorldSim, enemy: Enemy) -> Actor:
 	candidates.append_array(world.heroes())
 	candidates.append_array(world.escortees())
 	for hero in candidates:
-		if not hero.alive:
-			continue
+		if not hero.alive or hero.duel_live:
+			continue # duelists are left to their duel
 		var seen := world.perceived_tile(hero, enemy.def.reaction_seconds)
 		var dist := GridModel.distance(enemy.tile(), seen)
 		if dist > enemy.def.aggro_radius:

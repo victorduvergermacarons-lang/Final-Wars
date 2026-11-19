@@ -1205,6 +1205,10 @@ func _handle_requests() -> void:
 						"zone_ability": r.zone_ability, "tick": r.tick, "next_tick": now + r.tick,
 						"until": r.until, "bonus": r.bonus})
 				emit({"type": "zone", "source": r.source, "ability": r.ability.id, "tiles": r.tiles, "until": r.until})
+			"duel_yield":
+				for d in _duels:
+					if d.state == "live" and (d.a == r.loser or d.b == r.loser):
+						_end_duel(d, r.winner, r.loser, "yield")
 			"counter":
 				var owner := get_actor(r.owner)
 				var attacker := get_actor(r.target)
@@ -1514,6 +1518,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_pick_up(hero, intent.get("drop", -1))
 		"trade_request":
 			reason = _intent_request(hero, "trade", intent.get("target", -1))
+		"duel_request":
+			reason = _intent_request(hero, "duel", intent.get("target", -1))
 		"request_answer":
 			reason = _intent_answer(hero, intent.get("request", -1), bool(intent.get("accept", false)))
 		"trade_add", "trade_remove", "trade_gold", "trade_offer", "trade_accept", "trade_cancel":
@@ -2277,17 +2283,108 @@ func social_view(hero_id: int) -> Dictionary:
 	return {"trade": Trades.view(social.trade_of(hero_id), hero_id, names), "requests": reqs}
 
 
-# Duels (phase 5) hook in here.
-func _duel_problem(_a: Hero, _b: Hero) -> String:
-	return "not_yet"
+# --- Duels (WoW rules; PartyPlayDef "Duels") -----------------------------------------
+
+## {id, a, b, flag: Vector2, state: "countdown" | "live" | "over", starts_at,
+##  out: {hero id: time it left the boundary}, ended_at}
+var _duels: Array = []
+var _next_duel := 1
 
 
-func _start_duel(_a: Hero, _b: Hero) -> void:
-	pass
+func _duel_problem(a: Hero, b: Hero) -> String:
+	if zone.dungeon:
+		return "no_duel_here"
+	if a.duel_with >= 0 or b.duel_with >= 0:
+		return "duelling"
+	return ""
+
+
+## Accepted: a flag at the midpoint, the countdown, then the two fight each other only.
+func _start_duel(a: Hero, b: Hero) -> void:
+	var why := _duel_problem(a, b)
+	if why != "":
+		return
+	var pp := rules.party_play
+	var d := {"id": _next_duel, "a": a.id, "b": b.id, "flag": (a.move.pos + b.move.pos) * 0.5,
+			"state": "countdown", "starts_at": now + pp.duel_countdown, "out": {}, "ended_at": -1.0}
+	_next_duel += 1
+	_duels.append(d)
+	a.duel_with = b.id
+	b.duel_with = a.id
+	emit({"type": "duel_start", "duel": d.id, "source": a.id, "target": b.id, "a_name": a.display_name,
+			"b_name": b.display_name, "flag": d.flag, "starts_at": d.starts_at})
 
 
 func _update_duels() -> void:
-	pass
+	var pp := rules.party_play
+	for d in _duels.duplicate():
+		if d.state == "over":
+			if now - d.ended_at >= pp.duel_flag_linger:
+				_duels.erase(d)
+			continue
+		var a: Hero = _heroes.get(d.a)
+		var b: Hero = _heroes.get(d.b)
+		if a == null or b == null:
+			# A disconnect (or leaving the zone) forfeits.
+			_end_duel(d, d.b if a == null else d.a, d.a if a == null else d.b, "left")
+			continue
+		if not a.alive or not b.alive:
+			# Died to something else.
+			_end_duel(d, b.id if not a.alive else a.id, a.id if not a.alive else b.id, "died")
+			continue
+		if d.state == "countdown":
+			if now >= d.starts_at:
+				d.state = "live"
+				a.duel_live = true
+				b.duel_live = true
+				emit({"type": "duel_fight", "duel": d.id, "source": a.id, "target": b.id})
+			continue
+		for h in [a, b]:
+			h.combat_until = combat_until_from_now() # dueling is combat
+			var outside: bool = h.move.pos.distance_to(d.flag) > pp.duel_radius
+			if outside and not d.out.has(h.id):
+				d.out[h.id] = now
+				emit({"type": "duel_out", "duel": d.id, "target": h.id, "seconds": pp.duel_out_of_bounds_seconds})
+			elif not outside and d.out.has(h.id):
+				d.out.erase(h.id)
+				emit({"type": "duel_back", "duel": d.id, "target": h.id})
+			elif outside and now - float(d.out[h.id]) >= pp.duel_out_of_bounds_seconds:
+				_end_duel(d, a.id if h == b else b.id, h.id, "fled")
+				break
+
+
+## Ends a duel: nothing lost but the duel; the buffs and debuffs the two put on each
+## other go (health and cooldowns stay); everyone near the flag hears who won.
+func _end_duel(d: Dictionary, winner_id: int, loser_id: int, reason: String) -> void:
+	if d.state == "over":
+		return
+	d.state = "over"
+	d.ended_at = now
+	var names := {}
+	for id in [d.a, d.b]:
+		var h: Hero = _heroes.get(id)
+		if h == null:
+			continue
+		names[id] = h.display_name
+		h.duel_with = -1
+		h.duel_live = false
+		h.buffs.remove_from(d.b if id == d.a else d.a)
+		h.combat_until = combat_until_from_now() # out of combat next tick, as after any fight
+	emit({"type": "duel_end", "duel": d.id, "source": winner_id, "target": loser_id, "reason": reason,
+			"winner_name": names.get(winner_id, "?"), "loser_name": names.get(loser_id, "?"), "flag": d.flag,
+			"radius": rules.party_play.duel_announce_radius})
+
+
+## Duels in this zone as plain data (everyone near sees the flag).
+func duels_view() -> Array:
+	var out: Array = []
+	for d in _duels:
+		var out_left := {}
+		for id in d.out:
+			out_left[id] = maxf(rules.party_play.duel_out_of_bounds_seconds - (now - float(d.out[id])), 0.0)
+		out.append({"id": d.id, "a": d.a, "b": d.b, "flag": d.flag, "state": d.state, "starts_at": d.starts_at,
+				"radius": rules.party_play.duel_radius, "out": out_left})
+	return out
 
 
 ## One drop on the ground for `hero`, scattered near where `enemy` fell (on

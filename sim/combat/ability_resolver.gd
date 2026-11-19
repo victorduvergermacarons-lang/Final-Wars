@@ -492,6 +492,8 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 				deal_damage(ctx, target, source, &"reflect", roundf(amount * counter.reflect), false, events)
 			if counter.negate:
 				return
+	if not Actor.damage_allowed(source, target):
+		return # a duel keeps everyone else out of it
 	if target is Enemy and (target as Enemy).invulnerable:
 		events.append({"type": "immune", "source": source.id if source != null else -1, "target": target.id,
 				"ability": ability_id})
@@ -503,6 +505,12 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 	var dmg := minf(through, target.hp)
 	if target is Enemy and (target as Enemy).min_hp > 0.0:
 		dmg = clampf(dmg, 0.0, maxf(target.hp - (target as Enemy).min_hp, 0.0)) # held up by its heart
+	var yielded := false
+	if target.duel_live and source != null and source.id == target.duel_with \
+			and target.hp - dmg <= ctx.rules.party_play.duel_yield_hp:
+		# A duel ends at duel_yield_hp: the loser yields instead of dying.
+		dmg = maxf(target.hp - ctx.rules.party_play.duel_yield_hp, 0.0)
+		yielded = true
 	target.hp -= dmg
 	target.buffs.wake()
 	var e := {"type": "damage", "source": source.id if source != null else -1, "target": target.id,
@@ -512,7 +520,9 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 	events.append(e)
 	if target.threat != null and source != null:
 		target.threat.add(source.id, dmg * threat_multiplier)
-	if target.hp <= 0.0:
+	if yielded:
+		ctx.requests.append({"type": "duel_yield", "loser": target.id, "winner": source.id})
+	elif target.hp <= 0.0:
 		target.die()
 		target.casting = {}
 		events.append({"type": "death", "source": source.id if source != null else -1, "target": target.id})

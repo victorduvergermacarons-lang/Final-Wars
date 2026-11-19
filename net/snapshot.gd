@@ -64,7 +64,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 	return {"tick": world.tick_count, "now": world.now, "zone": world.zone.id, "actors": actors,
 			"projectiles": projectiles, "flags": world.world_flags.keys(), "telegraphs": world.pending_hits(),
 			"terrain": world.changed_terrain(), "zones": world.ground_zones(), "way_out": world.way_out(),
-			"rolls": world.rolls.to_array()}
+			"rolls": world.rolls.to_array(), "duels": world.duels_view()}
 
 
 static func _actor(a: Actor) -> Dictionary:
@@ -75,6 +75,7 @@ static func _actor(a: Actor) -> Dictionary:
 		"mana": a.mana,
 		"alive": a.alive,
 		"evading": a.evading,
+		"duel": [a.duel_with, a.duel_live],
 		"combat_until": a.combat_until,
 		"stats": a.stats.to_dict(),
 		"move": a.move.to_dict(),

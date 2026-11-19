@@ -173,6 +173,10 @@ func social() -> Dictionary:
 	return hero.social if hero != null else {"trade": {}, "requests": []}
 
 
+func duels() -> Array:
+	return mirror.duels
+
+
 func loot_rolls() -> Array:
 	return mirror.rolls
 

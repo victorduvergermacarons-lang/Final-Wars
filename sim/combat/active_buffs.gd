@@ -39,6 +39,13 @@ func remove(id: StringName) -> void:
 	_active.erase(id)
 
 
+## Removes every buff and debuff `source` put on this unit (a duel's end).
+func remove_from(source: int) -> void:
+	for id in _active.keys():
+		if int(_active[id].get("source", -1)) == source:
+			_active.erase(id)
+
+
 func clear() -> void:
 	_active.clear()
 
