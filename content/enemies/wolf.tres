@@ -31,3 +31,4 @@ loot = ExtResource("3_ij6gd")
 art = ExtResource("5_art")
 howl_ability = ExtResource("6_howl")
 pack_call_radius = 6
+leash_radius = 18

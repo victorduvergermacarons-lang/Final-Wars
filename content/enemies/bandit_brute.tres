@@ -29,3 +29,4 @@ ap_reward = 3
 loot = ExtResource("3_hklvq")
 respawn_seconds = 45.0
 weight = 2
+leash_radius = 18

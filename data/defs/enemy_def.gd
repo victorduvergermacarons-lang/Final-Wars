@@ -18,8 +18,9 @@ enum Behavior {
 @export var abilities: Array[AbilityDef] = []
 ## Distance at which the enemy notices a hero and aggros.
 @export var aggro_radius: int = 4
-## Distance from its spawn point at which it gives up and walks home.
-@export var leash_radius: int = 10
+## Distance from its spawn point at which it gives up and walks home (every
+## enemy's was raised x1.8 on 2026-11-19, user request).
+@export var leash_radius: int = 18
 ## Unused since free movement (the old seconds per tile in combat; `move_speed`
 ## replaced it). Kept so older content files load.
 @export var combat_step_seconds: float = 0.0
