@@ -108,11 +108,11 @@ func test_the_zones_have_what_the_brief_asks_for() -> void:
 	assert_gt(terrain.call(&"deepcut", "grey_water"), 40, "the polluted stream")
 	for n in [&"mine_board", &"steward_brann", &"collapsed_shaft"]:
 		assert_true(npcs.call(&"deepcut").has(n), "Deepcut has %s" % n)
-	# Windsteppe: gers, cairns, dry wells, herds, iron wolves.
+	# Windsteppe: gers, cairns, dry wells, stags (in place of the herds since 2026-11-19), iron wolves.
 	assert_gte(decor.call(&"windsteppe", ZoneDecor.Kind.GER), 6, "felt tents")
 	assert_gte(decor.call(&"windsteppe", ZoneDecor.Kind.CAIRN), 5, "stone cairns")
 	assert_gte(decor.call(&"windsteppe", ZoneDecor.Kind.DRY_WELL), 2, "dry wells")
-	assert_gte(decor.call(&"windsteppe", ZoneDecor.Kind.ANIMAL), 6, "herds")
+	assert_eq(ContentDB.zones[&"windsteppe"].enemy_spawns.filter(func(s): return s.enemy.id == &"stag").size(), 4, "stags")
 	var wolves: Array = db.zones[&"windsteppe"].enemy_spawns.filter(func(s): return s.enemy.id == &"iron_wolf")
 	assert_gte(wolves.size(), 4, "iron wolves")
 	assert_true(wolves.all(func(s): return not s.patrol.is_empty()), "that roam")

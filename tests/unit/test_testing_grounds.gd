@@ -126,7 +126,7 @@ func test_pulling_one_enemy_to_its_leash_never_pulls_another() -> void:
 			var farthest := 0
 			var evaded := false
 			var walled := false # the hero's lane ended (a pen wall): it can't pull further
-			for k in spawn.enemy.leash_radius + 4:
+			for k in spawn.enemy.leash_radius + 8: # (+8: a kiter shooting from range trails the hero)
 				var next: Vector2i = spot + dir
 				if sim.grid.is_walkable(next):
 					spot = next

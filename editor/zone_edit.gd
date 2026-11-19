@@ -456,7 +456,10 @@ static func _plain(v: Variant) -> Variant:
 					and p.name != "resource_name" and p.name != "resource_local_to_scene" \
 					and p.name != "resource_scene_unique_id":
 				var x: Variant = v.get(p.name)
-				d[p.name] = x.resource_path if x is Resource and x.resource_path != "" else _plain(x)
+				# A resource of its own file by its path; one built into this file (a
+				# sub-resource, "…tres::id", e.g. ZoneDef.cleared_exit) by its contents.
+				var own_file: bool = x is Resource and x.resource_path != "" and not x.resource_path.contains("::")
+				d[p.name] = x.resource_path if own_file else _plain(x)
 		return d
 	if v is Array:
 		return v.map(func(x): return _plain(x))
