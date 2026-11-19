@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://content/loot/boar.tres" id="4_loot"]
 [ext_resource type="Resource" path="res://content/abilities/boar_gore.tres" id="ab_boar_gore"]
 [ext_resource type="Resource" path="res://content/abilities/boar_charge.tres" id="ab_boar_charge"]
+[ext_resource type="Resource" path="res://content/creatures/boar_art.tres" id="art_boar"]
 
 [sub_resource type="Resource" id="Resource_stats"]
 script = ExtResource("3_stats")
@@ -30,4 +31,5 @@ xp_reward = 60
 ap_reward = 2
 loot = ExtResource("4_loot")
 aggro_radius = 3
-leash_radius = 9
+leash_radius = 16
+art = ExtResource("art_boar")

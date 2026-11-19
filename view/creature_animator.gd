@@ -85,8 +85,10 @@ func pick(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 		return attack
 	if actor.move.free and not actor.move.gliding and actor.move.is_moving(t):
 		# Free movement: the run cycle follows the distance walked, so the feet
-		# match the ground at any speed and in any direction.
-		return {"anim": "run", "dir": dir, "frame": art.run_frame(actor.move, dir)}
+		# match the ground at any speed and in any direction. Art with a walk
+		# (the stag) walks while not fighting and runs in a fight.
+		var anim := "walk" if art.sheets.has("walk") and not _fighting(actor) else "run"
+		return {"anim": anim, "dir": dir, "frame": art.run_frame(actor.move, dir, anim, t)}
 	if actor.move.is_moving(t):
 		var n := maxi(art.frame_count("run"), 1)
 		# One run cycle can span several tiles; which part of it a step plays
@@ -103,21 +105,29 @@ func pick(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	return {"anim": "idle", "dir": dir, "frame": int(t * art.anim_fps("idle") + phase) % idle_n}
 
 
+static func _fighting(actor: Actor) -> bool:
+	return actor is Enemy and (actor as Enemy).state == Enemy.State.COMBAT
+
+
 ## Death plays once from the host's time of death, the corpse lies still for
-## corpse_seconds, then fades out over fade_seconds.
+## corpse_seconds, then fades out over fade_seconds. Without a death sheet
+## (fallback): idle's first frame tipping over onto its side ("tip" 0 -> 1).
 func _death_frame(actor: Enemy, art: CreatureArtDef, t: float, dir: String) -> Dictionary:
 	if actor.died_at < 0.0:
 		return {}
 	var since := t - actor.died_at
-	var length := art.duration("death")
-	var n := art.frame_count("death")
-	var frame := mini(floori(maxf(since, 0.0) * art.anim_fps("death") + 0.0001), n - 1)
+	var length := art.death_length()
 	var alpha := 1.0
 	var fading := since - length - art.corpse_seconds
 	if fading > 0.0:
 		alpha = 1.0 - fading / maxf(art.fade_seconds, 0.001)
 	if alpha <= 0.0:
 		return {}
+	if not art.sheets.has("death"):
+		return {"anim": "idle", "dir": dir, "frame": 0, "alpha": alpha,
+				"tip": clampf(since / maxf(length, 0.001), 0.0, 1.0)}
+	var n := art.frame_count("death")
+	var frame := mini(floori(maxf(since, 0.0) * art.anim_fps("death") + 0.0001), n - 1)
 	return {"anim": "death", "dir": dir, "frame": frame, "alpha": alpha}
 
 
@@ -130,6 +140,11 @@ func _attack_frame(actor: Enemy, art: CreatureArtDef, t: float) -> Dictionary:
 		var anim := str(art.timed_abilities[ability.id][0])
 		var start := float(c.get("start", t))
 		_attacks[actor.id] = {"anim": anim, "start": start, "hit_at": float(c.get("end", t)), "resolved": false}
+	elif ability is AbilityDef and art.sheets.has(art.fallback_attack_anim):
+		# No attack art (fallback): hold the last frame of the fallback animation
+		# through the wind-up, then lunge toward the target on the hit.
+		_attacks[actor.id] = {"anim": art.fallback_attack_anim, "fallback": true,
+				"start": float(c.get("start", t)), "hit_at": float(c.get("end", t)), "resolved": false}
 	var a: Dictionary = _attacks.get(actor.id, {})
 	if a.is_empty():
 		return {}
@@ -141,6 +156,15 @@ func _attack_frame(actor: Enemy, art: CreatureArtDef, t: float) -> Dictionary:
 			_attacks.erase(actor.id)
 			return {}
 	var n := art.frame_count(a.anim)
+	if a.get("fallback", false):
+		var after := t - float(a.hit_at)
+		if not a.resolved:
+			return {"anim": a.anim, "frame": n - 1}
+		if after > art.fallback_lunge_seconds:
+			_attacks.erase(actor.id)
+			return {}
+		var k := clampf(after / maxf(art.fallback_lunge_seconds, 0.001), 0.0, 1.0)
+		return {"anim": a.anim, "frame": n - 1, "lunge": art.fallback_lunge_px * sin(PI * k)}
 	var frame := floori((t - a.start) * art.anim_fps(a.anim) + 0.0001)
 	if frame >= n:
 		_attacks.erase(actor.id)

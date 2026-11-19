@@ -51,6 +51,19 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## The sprite flashes white this long when the creature takes damage.
 @export var flash_seconds: float = 0.1
 
+@export_group("Missing animations (fallbacks)")
+## Used only while the sheet they stand in for is missing, so real sheets drop in
+## later by adding them (plus `timed_abilities` for an attack) with no code change.
+## No attack sheet for an ability it uses (not in `timed_abilities`): during the
+## wind-up it holds the last frame of `fallback_attack_anim`, then lunges this many
+## art pixels toward its facing on the hit and back over `fallback_lunge_seconds`.
+@export var fallback_attack_anim: String = "run"
+@export var fallback_lunge_px: float = 6.0
+@export var fallback_lunge_seconds: float = 0.2
+## No "death" sheet: it holds idle's first frame and tips over onto its side over
+## this many seconds, lies `corpse_seconds`, then fades over `fade_seconds`.
+@export var fallback_death_tip_seconds: float = 0.35
+
 @export_group("Recolour")
 ## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
 ## Sunscale Drake's mauve art shown gold and crimson). Flash sheets aren't
@@ -102,9 +115,15 @@ func windup_for(ability_id: StringName) -> float:
 	return hit / anim_fps(anim)
 
 
+## Seconds the death takes before the corpse lies still (the death animation, or
+## the tip-over fallback).
+func death_length() -> float:
+	return duration("death") if sheets.has("death") else fallback_death_tip_seconds
+
+
 ## Seconds from death until the corpse has faded away.
 func corpse_total() -> float:
-	return duration("death") + corpse_seconds + fade_seconds
+	return death_length() + corpse_seconds + fade_seconds
 
 
 ## Seconds after the hit frame the creature stays busy (recovery frames).
@@ -136,9 +155,12 @@ func build_sprite_frames(from: Dictionary = {}) -> SpriteFrames:
 	return sf
 
 
-## The run frame after walking `move` (MoveState) facing `dir`.
-func run_frame(move: MoveState, dir: String) -> int:
-	var n := maxi(frame_count("run"), 1)
+## The run frame after walking `move` (MoveState) facing `dir`. A walk listed in
+## `fps` ("run" / "walk", the Critters pack) plays by time at that rate instead.
+func run_frame(move: MoveState, dir: String, anim: String = "run", t: float = 0.0) -> int:
+	var n := maxi(frame_count(anim), 1)
+	if fps.has(anim):
+		return int(t * anim_fps(anim)) % n
 	var px := float(run_px_per_frame.get(dir, 0.0))
 	if px > 0.0:
 		return int(move.screen_odometer / px) % n
