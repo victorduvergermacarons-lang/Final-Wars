@@ -21,6 +21,10 @@ var _attacks := {} # actor id -> {"anim", "start", "hit_at", "resolved"}
 ## - just hit: "hit" once;
 ## - walking: "run", following the distance walked; else "idle".
 func pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
+	return art.mirrored(_pick_hero(actor, art, t))
+
+
+func _pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	var dir := art.direction_for_angle(actor.facing_angle, actor.facing)
 	var hero := actor as Hero
 	var times: Dictionary = hero.anim if hero != null else {}
@@ -75,6 +79,10 @@ static func _once(art: CreatureArtDef, anim: String, dir: String, since: float, 
 ## {"anim", "dir", "frame", "alpha"} for `actor` at time `t` (empty: draw nothing).
 ## Enemies attack and die; NPCs with art (any actor) idle and walk.
 func pick(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
+	return art.mirrored(_pick(actor, art, t))
+
+
+func _pick(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	var dir := CreatureArtDef.direction_for(actor.facing)
 	if not actor.alive:
 		_attacks.erase(actor.id)

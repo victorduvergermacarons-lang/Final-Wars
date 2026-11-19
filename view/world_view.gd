@@ -788,10 +788,12 @@ func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef =
 		var toward := Iso.to_screen(e.facing_vector(), 0.0) - Iso.to_screen(Vector2.ZERO, 0.0)
 		feet += (toward.normalized() * lunge * s).round()
 	var tip := float(pick.get("tip", 0.0))
-	if tip > 0.0:
+	var flip: bool = pick.get("flip", false)
+	if tip > 0.0 or flip:
 		# Death fallback (no death art): tips over onto its side about its feet.
+		# Mirrored rows (CreatureArtDef.mirror_rows): flipped left to right about the feet.
 		var side := -1.0 if pick.dir in ["sw", "nw"] else 1.0
-		draw_set_transform(feet, side * tip * PI * 0.45, Vector2.ONE)
+		draw_set_transform(feet, side * tip * PI * 0.45, Vector2(-1.0 if flip else 1.0, 1.0))
 		feet = Vector2.ZERO
 	var rect := Rect2(feet - art.feet * s, Vector2(art.frame_size) * s)
 	draw_texture_rect(tex, rect, false, color)
@@ -801,7 +803,7 @@ func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef =
 		var plain: SpriteFrames = _frames_cache[art][1]
 		var body := plain.get_frame_texture(name, mini(pick.frame, plain.get_frame_count(name) - 1)) if plain != null else tex
 		draw_texture_rect(body, rect, false, Color(FLASH_STRENGTH, FLASH_STRENGTH, FLASH_STRENGTH, color.a))
-	if tip > 0.0:
+	if tip > 0.0 or flip:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	return true
 

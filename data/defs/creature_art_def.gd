@@ -33,6 +33,12 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## the feet match the ground whichever way it walks (the hero: walking up the
 ## screen covers half the pixels of walking across it).
 @export var run_px_per_frame: Dictionary = {}
+## Facings drawn as another facing's row, flipped left to right: animation ->
+## {facing: source facing}. The hero's getting-hit animation: west shows east and
+## north-west shows north-east, mirrored (2026-11-19; the drawn W and NW rows looked
+## wrong). Same frames, same timing; the flip is about the feet point, so anything
+## drawn in the frames (and the body's offset) lands on the mirrored side.
+@export var mirror_rows: Dictionary = {}
 ## Animations that loop (others play once and hold their last frame).
 @export var looping: PackedStringArray = PackedStringArray(["idle", "run"])
 ## Ability id -> [animation, hit frame]: the ability winds up for exactly
@@ -153,6 +159,16 @@ func build_sprite_frames(from: Dictionary = {}) -> SpriteFrames:
 				at.region = Rect2(Vector2(c * frame_size.x, r * frame_size.y), Vector2(frame_size))
 				sf.add_frame(name, at)
 	return sf
+
+
+## Applies `mirror_rows` to a pick ({"anim", "dir", ...}): the source row and
+## "flip": true when that facing is drawn mirrored.
+func mirrored(pick: Dictionary) -> Dictionary:
+	var m: Dictionary = mirror_rows.get(pick.get("anim", ""), {})
+	if m.has(pick.get("dir", "")):
+		pick.dir = m[pick.dir]
+		pick.flip = true
+	return pick
 
 
 ## The run frame after walking `move` (MoveState) facing `dir`. A walk listed in

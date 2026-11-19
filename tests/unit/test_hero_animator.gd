@@ -148,3 +148,27 @@ func test_stunned_falls_and_lies_until_it_ends() -> void:
 	assert_eq([p.anim, p.frame], ["downed", 3])
 	p = _pick(T + 0.9)
 	assert_eq([p.anim, p.frame], ["downed", 8], "held")
+
+
+## 2026-11-19: the drawn west and north-west getting-hit rows looked wrong; they are
+## the east and north-east rows mirrored, frame for frame, about the feet.
+func test_west_and_north_west_hits_are_east_and_north_east_mirrored() -> void:
+	hero.anim.hit = T - 0.2
+	# Grid-space angles: screen west is 3/4 pi, north-west pi (direction_for_angle).
+	var angle := {"w": 3.0 * PI / 4.0, "nw": PI, "e": -PI / 4.0, "ne": -PI / 2.0}
+	for pair in [[angle.w, "w", "e"], [angle.nw, "nw", "ne"]]:
+		hero.facing_angle = pair[0]
+		assert_eq(art.direction_for_angle(hero.facing_angle, hero.facing), pair[1])
+		var p := _pick()
+		assert_eq(p.anim, "hit")
+		assert_eq(p.dir, pair[2], "%s shows the %s row" % [pair[1], pair[2]])
+		assert_true(p.get("flip", false), "mirrored")
+		hero.facing_angle = angle[pair[2]]
+		var src := _pick()
+		assert_eq(src.dir, pair[2])
+		assert_false(src.get("flip", false), "the source row is drawn as it is")
+		assert_eq(p.frame, src.frame, "same frame at the same moment: same timing")
+	hero.anim.hit = Hero.NEVER
+	hero.facing_angle = angle.w
+	assert_false(_pick().get("flip", false), "only the hit is mirrored (west idle is drawn)")
+	assert_eq(art.feet.x, art.frame_size.x / 2.0, "the feet sit mid-frame, so mirroring keeps them in place")
