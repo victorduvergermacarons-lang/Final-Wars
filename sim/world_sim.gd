@@ -405,7 +405,8 @@ func _move_heroes() -> void:
 		if wish != Vector2.ZERO:
 			_check_edge(hero, wish)
 		if hero.in_combat(now):
-			hero.face_angle(hero.aim_angle)
+			if not hero.holds_cast_facing(now):
+				hero.face_angle(hero.aim_angle)
 		elif m.vel.length() > 0.3:
 			hero.face_angle(m.vel.angle())
 
@@ -802,8 +803,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 		kind = "timing"
 		seconds = ability.timing_bar.seconds
 	var point: Variant = CastResolver.aim_point(caster, target, aim)
-	if point != null:
-		CastResolver._face(caster, point)
+	CastResolver.face_cast(caster, ability, target, aim)
 	var gcd_before := caster.cooldowns.gcd_timer()
 	if kind == "cast" or kind == "timing":
 		if ability.on_gcd:

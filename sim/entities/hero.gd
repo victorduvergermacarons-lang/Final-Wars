@@ -260,6 +260,25 @@ func wields(tree: String) -> bool:
 	return false
 
 
+## Seconds a hero keeps facing a targeted ability's target after it goes off (its
+## cast animation), before turning back to the mouse.
+const FACE_HOLD_SECONDS := 0.5
+
+
+## Whether it keeps the facing a cast turned it to instead of facing the mouse (in
+## combat): while casting an ability that isn't aimed at the cursor (Healing Touch
+## on an ally: it turned toward the ally when the cast began) and for
+## FACE_HOLD_SECONDS after one goes off. Host and client prediction both ask.
+func holds_cast_facing(t: float) -> bool:
+	var ab = casting.get("ability")
+	if ab is AbilityDef:
+		return not WorldSim.is_mouse_aimed(ab)
+	if t - float(anim.get("act_at", NEVER)) < FACE_HOLD_SECONDS:
+		var done := find_ability(StringName(anim.get("act", &"")))
+		return done != null and not WorldSim.is_mouse_aimed(done)
+	return false
+
+
 func find_ability(id: StringName) -> AbilityDef:
 	for a in available_abilities():
 		if a.id == id:

@@ -134,7 +134,8 @@ func _step_local(hero: Hero, wish: Vector2, face: float, t: float) -> void:
 			Mover.separate_pair(hero, a, false, true)
 	Mover.resolve_terrain(hero, grid)
 	if hero.in_combat(t):
-		hero.face_angle(face)
+		if not hero.holds_cast_facing(t):
+			hero.face_angle(face)
 	elif hero.move.vel.length() > 0.3:
 		hero.face_angle(hero.move.vel.angle())
 
@@ -295,7 +296,7 @@ func _apply_local_hero(h: Hero, d: Dictionary) -> void:
 		return # first snapshot, or a forced move the host drives
 	for tk in _ticks:
 		_step_local(h, tk.wish, tk.face, now)
-	if not _ticks.is_empty():
+	if not _ticks.is_empty() and not h.holds_cast_facing(now):
 		h.face_angle(predicted_angle)
 	# Keep drawing on the predicted timeline (same tick times as before); the
 	# difference to the old prediction fades out rather than popping.

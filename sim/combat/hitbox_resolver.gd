@@ -81,7 +81,9 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 	ctx.cast_aim = MoveState.tile_of(point)
 	ctx.cast_dir = TileGeometry.snap8(dir)
 	ctx.cast_tiles = []
-	if hb.shape not in [HitboxDef.Shape.NONE, HitboxDef.Shape.SELF_CIRCLE]:
+	if hb.shape == HitboxDef.Shape.TARGETED:
+		CastResolver.face_cast(caster, ability, target, null) # the target, not the cursor
+	elif hb.shape not in [HitboxDef.Shape.NONE, HitboxDef.Shape.SELF_CIRCLE]:
 		caster.face_angle(dir.angle())
 	match hb.shape:
 		HitboxDef.Shape.NONE:
