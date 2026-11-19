@@ -15,6 +15,7 @@ extends RefCounted
 ##       hands over DELIVER items, and sets an escort off)
 ##   {"type": "examine", "tile": Vector2i}   (an INVESTIGATE spot within 1 tile)
 ##   {"type": "pick_up", "drop": int}         (one of your own drops on the ground, in reach)
+##   {"type": "roll", "roll": int, "choice": "need" | "greed" | "pass"}   (a boss item roll)
 ##   {"type": "use_item", "bag_index": int}  (consumables, e.g. potions)
 ##   {"type": "buy", "npc": int, "item": StringName, "count": int}
 ##   {"type": "sell", "npc": int, "bag_index": int, "count": int}
@@ -82,6 +83,10 @@ var _ground_zones: Array = []
 ## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
 ## Personal loot on the ground (PartyPlayDef "Personal loot").
 var drops := GroundDrops.new()
+## Need / Greed / Pass rolls for boss key items (PartyPlayDef "Boss rolls").
+var rolls := LootRolls.new()
+## Shared with every zone (World.claims): winnings for players who were offline.
+var claims := {}
 var _next_projectile_id := 1
 ## Recent hero positions, for enemies' reaction delay: hero id -> [[time, tile], ...].
 var _history := {}
@@ -360,6 +365,8 @@ func step() -> Array[Dictionary]:
 	_tick_heals_over_time()
 	_update_combat_state()
 	drops.expire(now)
+	_update_rolls()
+	_deliver_claims()
 	for id in _remove_after_tick:
 		remove_enemy(id)
 	_remove_after_tick.clear()
@@ -1492,6 +1499,11 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 					emit(e)
 		"pick_up":
 			reason = _intent_pick_up(hero, intent.get("drop", -1))
+		"roll":
+			reason = rolls.choose(hero.id, intent.get("roll", -1), str(intent.get("choice", "")))
+			if reason == "":
+				emit({"type": "roll_chosen", "roll": intent.roll, "source": hero.id, "target": hero.id,
+						"choice": intent.choice})
 		"use_item":
 			reason = _intent_use_item(hero, intent.get("bag_index", -1))
 		"buy":
@@ -2000,6 +2012,15 @@ func _loot_kill(enemy: Enemy, earners: Array[Hero]) -> void:
 	var table := enemy.def.loot
 	var shared := Loot.roll(table, ctx.rng, null, quests, Loot.Part.SHARED)
 	var summary: Array = []
+	var boss := enemy.def.elite or enemy.def.dungeon_boss
+	if boss:
+		# Its key items are rolled once for the party (Need / Greed / Pass).
+		var party := Loot.roll(table, ctx.rng, earners[0], quests, Loot.Part.PERSONAL)
+		for pair in party.items:
+			if LootRolls.is_key_item(pair[0], earners):
+				var s := rolls.start(pair[0], pair[1], enemy.def.display_name, earners, now, pp)
+				emit({"type": "roll_start", "roll": s.id, "item": String(pair[0].id), "count": pair[1],
+						"boss": s.boss, "ends_at": s.ends_at, "eligible": s.eligible.duplicate()})
 	for h in earners:
 		var got := {"hero": h.id, "name": h.display_name, "gold": shared.gold, "items": []}
 		h.gold = mini(h.gold + shared.gold, CharacterData.MAX_GOLD)
@@ -2016,12 +2037,74 @@ func _loot_kill(enemy: Enemy, earners: Array[Hero]) -> void:
 					"items": Loot.items_to_array(materials), "left": -1})
 		var personal := Loot.roll(table, ctx.rng, h, quests, Loot.Part.PERSONAL)
 		for pair in personal.items:
+			if boss and LootRolls.is_key_item(pair[0], earners):
+				continue # rolled for the party instead
 			_drop_for(h, pair[0], pair[1], enemy)
 			got.items.append([String(pair[0].id), pair[1]])
 		summary.append(got)
-	if enemy.def.elite or enemy.def.dungeon_boss:
+	if boss:
 		emit({"type": "boss_loot", "boss": enemy.def.display_name, "received": summary,
 				"seconds": pp.boss_summary_seconds})
+
+
+## Settles the boss rolls whose players have all chosen or whose timer ran out:
+## everyone's rolls go to the party feed, the winner gets the item (bag, else the
+## ground at their feet; the mailbox if they have left the zone or the game).
+func _update_rolls() -> void:
+	for s in rolls.due(now):
+		var res := LootRolls.resolve(s, _heroes, ctx.rng, rules.party_play)
+		var winner: int = res.winner
+		var winner_name: String = s.names.get(winner, "") if winner >= 0 else ""
+		emit({"type": "roll_result", "roll": s.id, "item": String(s.item.id), "count": s.count,
+				"boss": s.boss, "lines": res.lines, "winner": winner, "winner_name": winner_name})
+		if winner < 0:
+			continue
+		var h: Hero = _heroes.get(winner)
+		if h == null:
+			_store_claim(winner_name, s.item, s.count)
+			continue
+		var left := h.bag.add(s.item, s.count)
+		if left > 0:
+			var id := drops.add(h.id, s.item, left, h.move.pos, now + rules.party_play.drop_seconds, &"roll")
+			emit({"type": "drop", "target": h.id, "drop": id, "item": String(s.item.id), "count": left,
+					"rarity": int(s.item.rarity)})
+
+
+## A won item waits (by character name) for a player who isn't here.
+func _store_claim(hero_name: String, item: ItemDef, count: int) -> void:
+	var list: Array = claims.get(hero_name, [])
+	list.append([String(item.id), count])
+	claims[hero_name] = list
+	emit({"type": "claim_stored", "name": hero_name, "item": String(item.id), "count": count})
+
+
+## Delivers waiting winnings to their owners here, as far as their bags allow.
+func _deliver_claims() -> void:
+	if claims.is_empty():
+		return
+	for h in heroes():
+		var list: Array = claims.get(h.display_name, [])
+		if list.is_empty():
+			continue
+		var still: Array = []
+		for pair in list:
+			var item: ItemDef = _content_item(StringName(pair[0]))
+			if item == null:
+				continue
+			var left := h.bag.add(item, int(pair[1]))
+			if left < int(pair[1]):
+				emit({"type": "claimed", "target": h.id, "item": String(item.id), "count": int(pair[1]) - left})
+			if left > 0:
+				still.append([pair[0], left])
+		if still.is_empty():
+			claims.erase(h.display_name)
+		else:
+			claims[h.display_name] = still
+
+
+## An item by id from the game's content (the mailbox stores ids).
+func _content_item(id: StringName) -> ItemDef:
+	return ContentDB.items.get(id)
 
 
 ## One drop on the ground for `hero`, scattered near where `enemy` fell (on

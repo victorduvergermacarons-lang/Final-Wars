@@ -18,6 +18,9 @@ var quest_state := {}
 ## acts (the acts finished, e.g. [1]).
 var records := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests": 0, "acts": []}
 ## Client copy of loot waiting for this hero (filled from the host's snapshot).
+## Bad-luck bonus added to boss rolls (LootRolls): +10 per Need roll lost, +15 per
+## chosen Pass, 0 after winning one. Saved with the character.
+var loot_bonus := 0
 ## Client mirror only: this hero's own drops on the ground (GroundDrops.for_owner).
 var drops: Array = []
 var xp: float = 0.0

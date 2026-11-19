@@ -65,6 +65,10 @@ func my_drops() -> Array:
 	return []
 
 
+func loot_rolls() -> Array:
+	return []
+
+
 func way_out() -> Variant:
 	return null
 

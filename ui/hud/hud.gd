@@ -70,6 +70,7 @@ var dialogue: DialogueBox
 ## Co-op: quests a party member just accepted, offered to you.
 var quest_prompt: QuestPrompt
 var boss_loot: BossLootSummary
+var roll_window: RollWindow
 ## "End of Act I": the party's records, then back to the Crossing.
 var act_end: ActEndScreen
 var _act_end_pending := {}
@@ -318,6 +319,12 @@ func _build() -> void:
 	boss_loot.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	boss_loot.position.y += 150
 	_root.add_child(boss_loot)
+	roll_window = RollWindow.new(self)
+	roll_window.set_anchors_preset(Control.PRESET_CENTER)
+	roll_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	roll_window.grow_vertical = Control.GROW_DIRECTION_BOTH
+	roll_window.position.y += 60 # below the boss loot summary
+	_root.add_child(roll_window)
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -679,6 +686,23 @@ func _on_events(events: Array) -> void:
 					client.say("A %s item dropped for you: %s." % [Rarity.NAMES[dropped.rarity], dropped.display_name])
 			"boss_loot":
 				boss_loot.show_summary(e)
+			"roll_start":
+				var rolled: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if rolled != null:
+					client.say("Roll for %s [%s] from %s." % [rolled.display_name, Rarity.NAMES[rolled.rarity], e.boss])
+			"roll_result":
+				for line in roll_lines(e):
+					client.say(line)
+				var won: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if won != null and int(e.winner) >= 0:
+					boss_loot.add_line("%s won the roll for [color=%s]%s[/color]" % [e.winner_name,
+							Rarity.COLORS[won.rarity].to_html(false), won.display_name])
+			"claim_stored":
+				var kept: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				client.say("%s is away: %s waits in their claim box." % [e.name, kept.display_name if kept else e.item])
+			"claimed":
+				var got_item: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				client.say("From your claim box: %s." % (got_item.display_name if got_item else e.item))
 			"buy":
 				var bought: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				client.say("You buy %s for %d gold." % [bought.display_name if bought else e.item, e.gold])
@@ -690,6 +714,25 @@ func _on_events(events: Array) -> void:
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:
 					dialogue.open(npc)
+
+
+## The party feed lines of a settled boss roll: "Mara: Need 87 (+25) = 112" for
+## each player, then the winner (or that everyone passed).
+static func roll_lines(e: Dictionary) -> PackedStringArray:
+	var out: PackedStringArray = []
+	var item: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+	var name := item.display_name if item != null else str(e.item)
+	for l in e.lines:
+		match l.choice:
+			"pass":
+				out.append("%s: Pass%s" % [l.name, " (no answer)" if l.timeout else ""])
+			_:
+				out.append("%s: %s %d (+%d) = %d" % [l.name, String(l.choice).capitalize(), l.roll, l.bonus, l.total])
+	if int(e.winner) >= 0:
+		out.append("%s wins %s." % [e.winner_name, name])
+	else:
+		out.append("Everyone passed on %s." % name)
+	return out
 
 
 ## What an NPC says when a quest event happens in your conversation with them:

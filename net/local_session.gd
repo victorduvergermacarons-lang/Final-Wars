@@ -114,6 +114,10 @@ func way_out() -> Variant:
 	return zone_sim().way_out()
 
 
+func loot_rolls() -> Array:
+	return zone_sim().rolls.to_array()
+
+
 func ground_zones() -> Array:
 	return zone_sim().ground_zones()
 

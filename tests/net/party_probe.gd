@@ -65,6 +65,8 @@ func _host(port: int, players: int, scenario: String) -> void:
 	match scenario:
 		"loot":
 			await _host_loot(town, guests)
+		"roll":
+			await _host_roll(town, guests)
 		_:
 			_finish(false, "host: unknown scenario %s" % scenario)
 
@@ -112,6 +114,45 @@ func _host_loot(town: WorldSim, guests: Array) -> void:
 	_finish(true, "host: a kill gave each guest its own helm on the ground (picked up by each) and copied 7 gold and 2 pelts to both")
 
 
+## Boss roll: an elite drops a helm; Guest1 rolls Need, Guest2 Greed (through their
+## roll windows), the host never answers (a timeout pass, no bonus). Need wins.
+func _host_roll(town: WorldSim, guests: Array) -> void:
+	var pp: PartyPlayDef = town.rules.party_play
+	pp.roll_seconds = 6.0 # a short timer so the host's silence settles it quickly
+	var host: Hero = game.session.local_hero()
+	host.move.place(town.find_free_tile_near(SPOT + Vector2i(2, 0)))
+	var def := EnemyDef.new()
+	def.id = &"party_boss"
+	def.display_name = "Party Boss"
+	def.elite = true
+	def.stats = StatBlock.make({Stat.Id.HP: 10})
+	def.aggro_radius = 0
+	def.loot = LootTable.new()
+	var entry := LootEntry.new()
+	entry.item = ContentDB.items[&"iron_helm"]
+	entry.chance = 1.0
+	def.loot.entries = [entry]
+	var foe := town.add_enemy(def, SPOT + Vector2i(0, -2))
+	for h in guests + [host]:
+		foe.threat.add(h.id, 1.0)
+	foe.state = Enemy.State.COMBAT
+	var events: Array[Dictionary] = []
+	AbilityResolver.deal_damage(town.ctx, guests[0], foe, &"test", 1000.0, false, events)
+	town._emit_resolved(events)
+	var helm: ItemDef = ContentDB.items[&"iron_helm"]
+	if not await _wait_until(func(): return guests[0].bag.count_of(helm) == 1):
+		_finish(false, "host: the Need roller never got the helm")
+		return
+	if guests[1].bag.count_of(helm) != 0 or host.bag.count_of(helm) != 0:
+		_finish(false, "host: the helm went to someone else too")
+		return
+	if guests[1].loot_bonus != 0 or host.loot_bonus != 0 or guests[0].loot_bonus != 0:
+		_finish(false, "host: bonuses wrong: %d %d %d" % [guests[0].loot_bonus, guests[1].loot_bonus, host.loot_bonus])
+		return
+	await get_tree().create_timer(1.5).timeout
+	_finish(true, "host: Guest1 rolled Need, Guest2 Greed, the host timed out; Need won the helm, no bonus for the silent host or the lost Greed")
+
+
 # --- Guests -------------------------------------------------------------------------
 
 func _join(port: int, players: int, scenario: String, index: int) -> void:
@@ -133,9 +174,39 @@ func _join(port: int, players: int, scenario: String, index: int) -> void:
 	match scenario:
 		"loot":
 			await _join_loot(session)
+		"roll":
+			await _join_roll(session, index)
 		_:
 			_finish(false, "%s: unknown scenario %s" % [me, scenario])
 	game.store.delete(me)
+
+
+func _join_roll(session: ClientSession, index: int) -> void:
+	var hud: Hud = game.get_node("Hud")
+	var lines: Array = []
+	session.events_received.connect(func(events):
+		for e in events:
+			if e.type == "roll_result":
+				lines.append_array(Array(Hud.roll_lines(e))))
+	if not await _wait_until(func(): return not hud.roll_window.showing().is_empty()):
+		_finish(false, "%s: no roll window ever opened" % me)
+		return
+	var id: int = hud.roll_window.showing()[0]
+	hud.roll_window.choose(id, "need" if index == 1 else "greed")
+	if not await _wait_until(func(): return lines.size() >= 4):
+		_finish(false, "%s: never heard the roll's result" % me)
+		return
+	var text := "\n".join(lines)
+	for want in ["Guest1: Need", "Guest2: Greed", "Host: Pass (no answer)", "Guest1 wins Iron Helm."]:
+		if not text.contains(want):
+			_finish(false, "%s: the feed lacks '%s': %s" % [me, want, text])
+			return
+	var helm: ItemDef = ContentDB.items[&"iron_helm"]
+	var has := session.local_hero().bag.count_of(helm)
+	if (index == 1) != (has == 1):
+		_finish(false, "%s: helm in bag: %d" % [me, has])
+		return
+	_finish(true, "%s: answered in its roll window, saw every roll in the feed (%s)" % [me, " / ".join(lines)])
 
 
 func _join_loot(session: ClientSession) -> void:

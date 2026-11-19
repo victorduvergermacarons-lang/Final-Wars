@@ -19,6 +19,14 @@ var world_flags := {}:
 		world_flags = value
 		for sim in _zones.values():
 			sim.world_flags = value
+## Boss-roll winnings for players who were offline when awarded (character name ->
+## [[item id, count], ...]): delivered when they are next in the world; saved by
+## the host with the world. Shared by every zone's WorldSim.
+var claims := {}:
+	set(value):
+		claims = value
+		for sim in _zones.values():
+			sim.claims = value
 var ids := IdSource.new()
 
 var _zones := {} # key -> WorldSim (a zone's key is its id; dungeon copies "<id>@<party>")
@@ -46,6 +54,7 @@ func _init(zone_defs: Array, p_rules: CombatRules, rng_seed: int, p_start_zone: 
 		var sim := WorldSim.new(z, rules, rng_seed + i, ids)
 		sim.quests = quests
 		sim.world_flags = world_flags
+		sim.claims = claims
 		_zones[z.id] = sim
 		i += 1
 
@@ -149,6 +158,7 @@ func dungeon_instance(def: ZoneDef, hero_id: int) -> WorldSim:
 	sim.key = key
 	sim.quests = _quests
 	sim.world_flags = world_flags
+	sim.claims = claims
 	sim.debug_content = _debug_content
 	sim.sync_clock(_zones[start_zone].tick_count)
 	_zones[key] = sim

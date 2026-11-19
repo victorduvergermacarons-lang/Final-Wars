@@ -26,6 +26,8 @@ var _actors := {} # id -> Actor
 var projectiles: Array = []
 ## Telegraphed areas and lobbed shots: [{"source", "ability", "tiles", "at"}].
 var telegraphs: Array = []
+## Boss rolls in progress (LootRolls.to_array).
+var rolls: Array = []
 ## The open way out of a cleared dungeon (a tile), or null.
 var way_out: Variant = null
 ## Ground zones: [{"source", "ability", "tiles", "until"}].
@@ -172,6 +174,7 @@ func apply_snapshot(snap: Dictionary) -> void:
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
 	way_out = snap.get("way_out")
+	rolls = snap.get("rolls", [])
 	ground_zones = snap.get("zones", [])
 	_apply_terrain(snap.get("terrain", []))
 	world_flags.clear()
@@ -274,6 +277,7 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 			h.mastered[StringName(id)] = ability
 	h.quest_state = p.quests
 	h.drops = p.get("drops", [])
+	h.loot_bonus = int(p.get("loot_bonus", 0))
 	h.learning_item = content.items.get(StringName(p.get("learning", "")))
 	h.mastery_contrib = {}
 	for id in p.get("contrib", {}):

@@ -62,4 +62,7 @@ func _run() -> void:
 		{"name": "Kael", "gold": 42, "items": [["wolf_pelt", 2], [String(items[3].id), 1]]},
 		{"name": "Mara", "gold": 42, "items": [["wolf_pelt", 2], [String(items[2].id), 1]]}]})
 	await _shot("loot1_boss_summary")
+	sim.rolls.start(items[3], 1, "Old Grizzlehide", [me], sim.now, sim.rules.party_play)
+	me.loot_bonus = 25
+	await _shot("loot2_roll_window")
 	get_tree().quit()

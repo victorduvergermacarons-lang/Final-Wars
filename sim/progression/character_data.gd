@@ -36,6 +36,7 @@ static func capture(hero: Hero) -> Dictionary:
 		"learning": String(hero.learning_item.id) if hero.learning_item != null else "",
 		"mastery_contrib": _contrib_out(hero.mastery_contrib),
 		"records": hero.records.duplicate(true),
+		"loot_bonus": hero.loot_bonus,
 	}
 
 
@@ -55,6 +56,7 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	hero.def_id = def.id
 	hero.display_name = clean_name(str(data.get("name", "Adventurer")))
 	hero.level = clampi(_int(data.get("level"), 1), 1, MAX_LEVEL_SANITY)
+	hero.loot_bonus = maxi(int(data.get("loot_bonus", 0)), 0)
 	var elements = content.get("elements")
 	var element := StringName(str(data.get("element", "")))
 	if elements is Dictionary and elements.has(element):

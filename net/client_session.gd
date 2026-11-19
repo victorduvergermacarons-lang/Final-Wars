@@ -168,6 +168,10 @@ func way_out() -> Variant:
 	return mirror.way_out
 
 
+func loot_rolls() -> Array:
+	return mirror.rolls
+
+
 func ground_zones() -> Array:
 	return mirror.ground_zones
 

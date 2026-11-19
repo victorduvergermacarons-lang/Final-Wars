@@ -57,6 +57,13 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"pick_up":
 			if not _ints(raw, out, ["drop"]):
 				return {}
+		"roll":
+			if not _ints(raw, out, ["roll"]):
+				return {}
+			var choice = raw.get("choice")
+			if typeof(choice) != TYPE_STRING or not LootRolls.CHOICES.has(choice):
+				return {}
+			out.choice = choice
 		"use_item":
 			if not _ints(raw, out, ["bag_index"]):
 				return {}

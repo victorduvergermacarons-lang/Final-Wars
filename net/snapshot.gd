@@ -37,6 +37,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 				"contrib": hero.mastery_contrib.duplicate(),
 				"quests": hero.quest_state,
 				"drops": world.drops.for_owner(hero.id),
+				"loot_bonus": hero.loot_bonus,
 				"def": hero.def_id,
 				"ack": world.intent_ack(hero.id),
 			}
@@ -61,7 +62,8 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 	var projectiles: Array = world.projectiles().map(func(p): return p.to_dict())
 	return {"tick": world.tick_count, "now": world.now, "zone": world.zone.id, "actors": actors,
 			"projectiles": projectiles, "flags": world.world_flags.keys(), "telegraphs": world.pending_hits(),
-			"terrain": world.changed_terrain(), "zones": world.ground_zones(), "way_out": world.way_out()}
+			"terrain": world.changed_terrain(), "zones": world.ground_zones(), "way_out": world.way_out(),
+			"rolls": world.rolls.to_array()}
 
 
 static func _actor(a: Actor) -> Dictionary:
