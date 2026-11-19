@@ -39,6 +39,11 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 				if world.now >= enemy.respawn_at:
 					world.remove_after_tick(enemy.id)
 				return
+			if world.zone.dungeon and not world.heroes().is_empty():
+				# A cleared dungeon stays cleared while anyone is inside: the timer
+				# starts over, and runs as usual once the last hero has left.
+				enemy.respawn_at = maxf(enemy.respawn_at, world.now + enemy.respawn_delay())
+				return
 			if world.now >= enemy.respawn_at and not world.body_blocked(enemy, enemy.spawn_tile):
 				enemy.reset_at_spawn()
 				world.emit({"type": "respawn", "target": enemy.id})

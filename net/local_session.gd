@@ -110,6 +110,10 @@ func telegraphs() -> Array:
 	return zone_sim().pending_hits()
 
 
+func way_out() -> Variant:
+	return zone_sim().way_out()
+
+
 func ground_zones() -> Array:
 	return zone_sim().ground_zones()
 

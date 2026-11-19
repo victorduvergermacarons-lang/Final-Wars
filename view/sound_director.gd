@@ -198,6 +198,8 @@ func _on_events(events: Array) -> void:
 				Audio.play(&"world_party_wipe")
 			"wipe_respawn":
 				Audio.play(&"world_wipe_respawn")
+			"way_out":
+				Audio.play(&"world_way_out")
 			"level_up":
 				_play_on(&"world_level_up", _actor(e.target))
 			"zone_reset":

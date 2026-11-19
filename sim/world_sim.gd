@@ -219,12 +219,35 @@ func nearest_graveyard(near: Vector2i) -> Vector2i:
 	return best
 
 
-## The exit on `tile`, or null.
+## The exit on `tile`, or null (the way out of a cleared dungeon too, once open).
 func exit_at(tile: Vector2i) -> ZoneExit:
 	for e in zone.exits:
 		if e.tile == tile:
 			return e
+	if way_out_open and zone.cleared_exit.tile == tile:
+		return zone.cleared_exit
 	return null
+
+
+## The open way out's tile (ZoneDef.cleared_exit), or null.
+func way_out() -> Variant:
+	return zone.cleared_exit.tile if way_out_open else null
+
+
+## Opens the way out once every enemy here is dead (summoned adds don't count).
+func _update_way_out() -> void:
+	if way_out_open or zone.cleared_exit == null or heroes().is_empty():
+		return
+	var any := false
+	for enemy in enemies():
+		if enemy.temporary:
+			continue
+		if enemy.alive:
+			return
+		any = true
+	if any:
+		way_out_open = true
+		emit({"type": "way_out", "tile": zone.cleared_exit.tile})
 
 
 func add_npc(def: NpcDef, tile: Vector2i, facing: Vector2i = Vector2i.DOWN) -> Npc:
@@ -346,6 +369,7 @@ func step() -> Array[Dictionary]:
 		encounter.update(self) # after regen: a reset boss never heals past its phase
 	_update_escorts()
 	_update_wipe()
+	_update_way_out()
 	_remove_gone_npcs()
 	_update_quests()
 	_track_hero_anims()
@@ -539,6 +563,8 @@ func _separate_units() -> void:
 var _wipe_at := -1.0
 ## The boss fight of this map (ZoneDef.encounter), if any.
 var encounter: BossEncounter = null
+## A cleared dungeon's way out is open (ZoneDef.cleared_exit).
+var way_out_open := false
 
 
 ## A dungeon party wipe: everyone in it is dead at once. After

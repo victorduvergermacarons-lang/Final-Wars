@@ -121,6 +121,12 @@ script = ExtResource("s_exit")
 tile = Vector2i(24, 21)
 to_tile = Vector2i(17, 18)
 
+[sub_resource type="Resource" id="exit_way_out"]
+script = ExtResource("s_exit")
+tile = Vector2i(52, 17)
+to_zone = &"deepcut"
+to_tile = Vector2i(34, 12)
+
 [sub_resource type="Resource" id="landmark_0"]
 script = ExtResource("s_landmark")
 name = "Mine Lift"
@@ -146,6 +152,7 @@ graveyards = Array[Vector2i]([Vector2i(2, 14)])
 hero_spawns = Array[Vector2i]([Vector2i(3, 13), Vector2i(3, 14), Vector2i(2, 13), Vector2i(4, 13)])
 enemy_spawns = Array[ExtResource("s_enemy_spawn")]([SubResource("enemy_spawn_0"), SubResource("enemy_spawn_1"), SubResource("enemy_spawn_2"), SubResource("enemy_spawn_3"), SubResource("enemy_spawn_4"), SubResource("enemy_spawn_5"), SubResource("enemy_spawn_6"), SubResource("enemy_spawn_7"), SubResource("enemy_spawn_8"), SubResource("enemy_spawn_9"), SubResource("enemy_spawn_10")])
 exits = Array[ExtResource("s_exit")]([SubResource("exit_0"), SubResource("exit_1"), SubResource("exit_2")])
+cleared_exit = SubResource("exit_way_out")
 landmarks = Array[ExtResource("s_landmark")]([SubResource("landmark_0"), SubResource("landmark_1"), SubResource("landmark_2")])
 decor = Array[ExtResource("s_decor")]([SubResource("decor_0"), SubResource("decor_1"), SubResource("decor_2"), SubResource("decor_3"), SubResource("decor_4")])
 tileset = &"iso_basic"

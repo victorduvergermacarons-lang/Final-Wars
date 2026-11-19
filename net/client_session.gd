@@ -163,6 +163,10 @@ func telegraphs() -> Array:
 	return mirror.telegraphs
 
 
+func way_out() -> Variant:
+	return mirror.way_out
+
+
 func ground_zones() -> Array:
 	return mirror.ground_zones
 

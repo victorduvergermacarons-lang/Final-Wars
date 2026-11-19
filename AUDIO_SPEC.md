@@ -104,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-234 keys, 0 with a file, 234 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+235 keys, 0 with a file, 235 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -138,6 +138,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `world_party_wipe` | the whole party has fallen in a dungeon | **missing** |
 | `world_release` | a hero releases to a graveyard | **missing** |
 | `world_shrine_reset` | the Reset Shrine resets the testing grounds | **missing** |
+| `world_way_out` | a way out of a cleared dungeon opens (a low chime, light swelling) | **missing** |
 | `world_whiff` | an attack hits nothing | **missing** |
 | `world_wipe_respawn` | the fallen party wakes at the dungeon's entrance | **missing** |
 | `world_zone_enter` | you walk into another map | **missing** |

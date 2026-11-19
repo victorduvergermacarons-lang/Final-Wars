@@ -583,6 +583,8 @@ func _on_events(events: Array) -> void:
 				session.rules().dungeon_testing = e.on
 				game_menu.show_dungeon_testing(e.on)
 				client.say("Dungeon testing %s." % ("on: any party size may enter" if e.on else "off"))
+			"way_out":
+				client.say("The last of them falls. A way out glows open in the Foreman's chamber.")
 			"lift":
 				if e.target == me:
 					client.say("The lift rattles along its shaft.")

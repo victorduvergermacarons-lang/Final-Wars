@@ -43,6 +43,7 @@ const WORLD_KEYS := {
 	"world_lift": "a mine lift rattles along its shaft (you ride it)",
 	"world_party_wipe": "the whole party has fallen in a dungeon",
 	"world_wipe_respawn": "the fallen party wakes at the dungeon's entrance",
+	"world_way_out": "a way out of a cleared dungeon opens (a low chime, light swelling)",
 	"world_act_complete": "an act of the story ends (the end-of-act screen opens)",
 }
 

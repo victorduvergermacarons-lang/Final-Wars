@@ -26,6 +26,8 @@ var _actors := {} # id -> Actor
 var projectiles: Array = []
 ## Telegraphed areas and lobbed shots: [{"source", "ability", "tiles", "at"}].
 var telegraphs: Array = []
+## The open way out of a cleared dungeon (a tile), or null.
+var way_out: Variant = null
 ## Ground zones: [{"source", "ability", "tiles", "until"}].
 var ground_zones: Array = []
 ## Tiles the host changed (pillars, walls…), as applied to `grid`: tile -> true.
@@ -169,6 +171,7 @@ func apply_snapshot(snap: Dictionary) -> void:
 	rules.dungeon_testing = snap.get("dungeon_testing", rules.dungeon_testing)
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
+	way_out = snap.get("way_out")
 	ground_zones = snap.get("zones", [])
 	_apply_terrain(snap.get("terrain", []))
 	world_flags.clear()

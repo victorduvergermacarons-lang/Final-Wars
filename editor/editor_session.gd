@@ -61,6 +61,10 @@ func projectiles() -> Array:
 	return []
 
 
+func way_out() -> Variant:
+	return null
+
+
 func telegraphs() -> Array:
 	return []
 
