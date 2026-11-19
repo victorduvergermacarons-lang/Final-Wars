@@ -7,18 +7,18 @@
 
 [sub_resource type="Resource" id="Resource_s0_0"]
 script = ExtResource("2_sc")
-coefficient = 0.6
+coefficient = 1.2
 
 [sub_resource type="Resource" id="Resource_fx0"]
 script = ExtResource("1_fx")
-base_amount = 12.0
+base_amount = 24.0
 scaling = Array[ExtResource("2_sc")]([SubResource("Resource_s0_0")])
 
 [sub_resource type="Resource" id="Resource_hitbox"]
 script = ExtResource("hb_script")
 shape = 4
 reach = 3.0
-radius = 1.5
+radius = 1.875
 
 [resource]
 script = ExtResource("3_ab")
