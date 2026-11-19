@@ -26,9 +26,9 @@ static func capture(hero: Hero) -> Dictionary:
 		"level": hero.level,
 		"element": String(hero.element),
 		"xp": hero.xp,
-		"gold": hero.gold,
+		"gold": mini(hero.gold + hero.escrow_gold, MAX_GOLD),
 		"growth": _stats_out(hero.growth),
-		"bag": hero.bag.to_array(),
+		"bag": _bag_with_escrow(hero),
 		"equipped": equipped,
 		"ap": ap,
 		"mastered": hero.mastered.keys().map(func(id): return String(id)),
@@ -38,6 +38,19 @@ static func capture(hero: Hero) -> Dictionary:
 		"records": hero.records.duplicate(true),
 		"loot_bonus": hero.loot_bonus,
 	}
+
+
+## The bag as saved: with anything sitting in an open trade window put back (a
+## save mid-trade must not lose it).
+static func _bag_with_escrow(hero: Hero) -> Array:
+	if hero.escrow.is_empty():
+		return hero.bag.to_array()
+	var b := hero.bag.copy()
+	for e in hero.escrow:
+		var item: ItemDef = ContentDB.items.get(StringName(str(e[0])))
+		if item != null:
+			b.add(item, int(e[1]), e[2] if e.size() > 2 and e[2] is Dictionary else {})
+	return b.to_array()
 
 
 static func _contrib_out(contrib: Dictionary) -> Dictionary:

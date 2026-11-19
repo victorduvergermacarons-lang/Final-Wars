@@ -38,6 +38,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 				"quests": hero.quest_state,
 				"drops": world.drops.for_owner(hero.id),
 				"loot_bonus": hero.loot_bonus,
+				"social": world.social_view(hero.id),
 				"def": hero.def_id,
 				"ack": world.intent_ack(hero.id),
 			}

@@ -65,4 +65,31 @@ func _run() -> void:
 	sim.rolls.start(items[3], 1, "Old Grizzlehide", [me], sim.now, sim.rules.party_play)
 	me.loot_bonus = 25
 	await _shot("loot2_roll_window")
+	# Trading: a second hero beside us, a request, then both windows.
+	var hud: Hud = game.get_node("Hud")
+	hud.boss_loot.visible = false
+	sim.rolls = LootRolls.new()
+	var mara := session.world.add_saved_hero(CharacterData.new_character("Mara", ContentDB.heroes[&"adventurer"]), ContentDB)
+	mara.move.place(Vector2i(13, 20))
+	mara.bag.add(ContentDB.items[&"wolf_pelt"], 3)
+	me.bag.add(ContentDB.items[&"iron_helm"])
+	me.gold = 40
+	sim.submit(mara.id, {"type": "trade_request", "target": me.id})
+	for i in 4:
+		await get_tree().process_frame
+	await _shot("trade0_request")
+	hud.request_window.answer(true)
+	for i in 4:
+		await get_tree().process_frame
+	sim.submit(me.id, {"type": "trade_add", "index": me.bag.index_of(ContentDB.items[&"iron_helm"]), "count": 1})
+	sim.submit(me.id, {"type": "trade_gold", "amount": 15})
+	sim.submit(mara.id, {"type": "trade_add", "index": mara.bag.index_of(ContentDB.items[&"wolf_pelt"]), "count": 3})
+	sim.submit(mara.id, {"type": "trade_offer"})
+	for i in 4:
+		await get_tree().process_frame
+	await _shot("trade1_window")
+	sim.submit(me.id, {"type": "trade_offer"})
+	for i in 4:
+		await get_tree().process_frame
+	await _shot("trade2_contract")
 	get_tree().quit()

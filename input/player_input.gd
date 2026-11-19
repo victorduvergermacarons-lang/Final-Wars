@@ -3,6 +3,9 @@ extends Node
 ## Turns the local player's keys and clicks into intents. Only sends intents;
 ## the host decides what actually happens.
 
+## Right-click on another player in the world (the HUD opens Trade / Duel).
+signal player_menu_requested(hero_id: int, at: Vector2)
+
 ## Free movement: the held keys give one of 8 directions on screen (W = up the
 ## screen), sent with the mouse's angle as a `move` intent whenever either
 ## changes, and every sim tick while walking (each predicted tick then has its
@@ -115,6 +118,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		var picked: Actor = view.actor_at(view.get_global_mouse_position())
 		if picked is Npc:
 			session.send_intent({"type": "talk", "npc": picked.id})
+		elif picked is Hero and picked.id != session.local_hero_id:
+			player_menu_requested.emit(picked.id, get_viewport().get_mouse_position())
 	else:
 		for p in ActionBarModel.PAGE_COUNT:
 			if event.is_action_pressed(InputActions.page_action(p), false, true):

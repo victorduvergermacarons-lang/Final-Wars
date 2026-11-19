@@ -168,6 +168,11 @@ func way_out() -> Variant:
 	return mirror.way_out
 
 
+func social() -> Dictionary:
+	var hero := local_hero()
+	return hero.social if hero != null else {"trade": {}, "requests": []}
+
+
 func loot_rolls() -> Array:
 	return mirror.rolls
 

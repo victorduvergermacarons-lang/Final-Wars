@@ -114,6 +114,10 @@ func way_out() -> Variant:
 	return zone_sim().way_out()
 
 
+func social() -> Dictionary:
+	return zone_sim().social_view(local_hero_id)
+
+
 func loot_rolls() -> Array:
 	return zone_sim().rolls.to_array()
 

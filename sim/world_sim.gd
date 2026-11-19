@@ -16,6 +16,11 @@ extends RefCounted
 ##   {"type": "examine", "tile": Vector2i}   (an INVESTIGATE spot within 1 tile)
 ##   {"type": "pick_up", "drop": int}         (one of your own drops on the ground, in reach)
 ##   {"type": "roll", "roll": int, "choice": "need" | "greed" | "pass"}   (a boss item roll)
+##   {"type": "trade_request", "target": int}   {"type": "duel_request", "target": int}
+##   {"type": "request_answer", "request": int, "accept": bool}
+##   {"type": "trade_add", "index": int, "count": int}   (a bag stack into your side of the trade)
+##   {"type": "trade_remove", "slot": int}   {"type": "trade_gold", "amount": int}
+##   {"type": "trade_offer"}   {"type": "trade_accept"}   {"type": "trade_cancel"}
 ##   {"type": "use_item", "bag_index": int}  (consumables, e.g. potions)
 ##   {"type": "buy", "npc": int, "item": StringName, "count": int}
 ##   {"type": "sell", "npc": int, "bag_index": int, "count": int}
@@ -87,6 +92,8 @@ var drops := GroundDrops.new()
 var rolls := LootRolls.new()
 ## Shared with every zone (World.claims): winnings for players who were offline.
 var claims := {}
+## Trade and duel requests, and trades (PartyPlayDef "Trading").
+var social := Trades.new()
 var _next_projectile_id := 1
 ## Recent hero positions, for enemies' reaction delay: hero id -> [[time, tile], ...].
 var _history := {}
@@ -297,6 +304,11 @@ func remove_enemy(id: int) -> void:
 
 
 func remove_hero(id: int) -> void:
+	# A trade ends with everything back to its owner before they go.
+	var t := social.trade_of(id)
+	if not t.is_empty():
+		_cancel_trade(t, "left")
+	social.requests = social.requests.filter(func(r): return r.from != id and r.to != id)
 	for enemy in enemies():
 		enemy.threat.remove(id)
 	_heroes.erase(id)
@@ -367,6 +379,7 @@ func step() -> Array[Dictionary]:
 	drops.expire(now)
 	_update_rolls()
 	_deliver_claims()
+	_update_social()
 	for id in _remove_after_tick:
 		remove_enemy(id)
 	_remove_after_tick.clear()
@@ -1499,6 +1512,12 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 					emit(e)
 		"pick_up":
 			reason = _intent_pick_up(hero, intent.get("drop", -1))
+		"trade_request":
+			reason = _intent_request(hero, "trade", intent.get("target", -1))
+		"request_answer":
+			reason = _intent_answer(hero, intent.get("request", -1), bool(intent.get("accept", false)))
+		"trade_add", "trade_remove", "trade_gold", "trade_offer", "trade_accept", "trade_cancel":
+			reason = _intent_trade(hero, kind, intent)
 		"roll":
 			reason = rolls.choose(hero.id, intent.get("roll", -1), str(intent.get("choice", "")))
 			if reason == "":
@@ -2109,6 +2128,166 @@ func _deliver_claims() -> void:
 ## An item by id from the game's content (the mailbox stores ids).
 func _content_item(id: StringName) -> ItemDef:
 	return ContentDB.items.get(id)
+
+
+# --- Trades (and the requests duels share) -----------------------------------------
+
+## Why `a` can't trade with (or duel) `b` right now ("" = it can).
+func _pair_problem(a: Hero, b: Hero, kind: String) -> String:
+	if b == null or b == a or not _heroes.has(b.id):
+		return "no_target"
+	if not a.alive or not b.alive:
+		return "dead"
+	if a.in_combat(now) or b.in_combat(now):
+		return "in_combat"
+	var pp := rules.party_play
+	var reach := pp.trade_range if kind == "trade" else pp.duel_request_range
+	if a.move.pos.distance_to(b.move.pos) > reach:
+		return "too_far"
+	return ""
+
+
+func _intent_request(hero: Hero, kind: String, target_id: int) -> String:
+	var target: Hero = _heroes.get(target_id)
+	var why := _pair_problem(hero, target, kind)
+	if why != "":
+		return why
+	if social.pending_between(hero.id, target.id, kind):
+		return "already_asked"
+	if kind == "trade" and (not social.trade_of(hero.id).is_empty() or not social.trade_of(target.id).is_empty()):
+		return "busy"
+	if kind == "duel":
+		var no := _duel_problem(hero, target)
+		if no != "":
+			return no
+	var r := social.request(kind, hero.id, target.id, now, rules.party_play)
+	emit({"type": "request", "request": r.id, "kind": kind, "source": hero.id, "target": target.id,
+			"from_name": hero.display_name, "to_name": target.display_name, "expires": r.expires})
+	return ""
+
+
+func _intent_answer(hero: Hero, request_id: int, accept: bool) -> String:
+	var r := social.find_request(request_id)
+	if r.is_empty() or r.to != hero.id:
+		return "no_request"
+	social.requests.erase(r)
+	var from: Hero = _heroes.get(r.from)
+	if not accept or from == null:
+		emit({"type": "request_declined", "request": r.id, "kind": r.kind, "source": hero.id,
+				"target": r.from, "name": hero.display_name})
+		return ""
+	var why := _pair_problem(from, hero, r.kind)
+	if why != "":
+		emit({"type": "request_declined", "request": r.id, "kind": r.kind, "source": hero.id,
+				"target": r.from, "name": hero.display_name, "reason": why})
+		return why
+	if r.kind == "trade":
+		if not social.trade_of(from.id).is_empty() or not social.trade_of(hero.id).is_empty():
+			return "busy"
+		var t := social.open(from.id, hero.id)
+		emit({"type": "trade_open", "trade": t.id, "source": from.id, "target": hero.id,
+				"a_name": from.display_name, "b_name": hero.display_name})
+	else:
+		_start_duel(from, hero)
+	return ""
+
+
+func _intent_trade(hero: Hero, kind: String, intent: Dictionary) -> String:
+	var t := social.trade_of(hero.id)
+	if t.is_empty():
+		return "no_trade"
+	var other: Hero = _heroes.get(Trades.other(t, hero.id))
+	if other == null:
+		_cancel_trade(t, "left")
+		return "no_trade"
+	match kind:
+		"trade_add":
+			return social.add_item(t, hero, other.display_name, intent.get("index", -1), intent.get("count", 1),
+					now, rules.party_play)
+		"trade_remove":
+			return social.remove_item(t, hero, intent.get("slot", -1), _escrow_drop)
+		"trade_gold":
+			return social.set_gold(t, hero, intent.get("amount", 0))
+		"trade_offer":
+			social.offer(t, hero.id)
+		"trade_accept":
+			if t.stage != "contract":
+				return "not_locked"
+			if social.accept(t, hero.id):
+				var a: Hero = _heroes.get(t.a)
+				var b: Hero = _heroes.get(t.b)
+				var gave := {t.a: Trades.view(t, t.a, {}).mine, t.b: Trades.view(t, t.b, {}).mine}
+				var why := social.complete(t, a, b)
+				if why != "":
+					_cancel_trade(t, why)
+					return why
+				emit({"type": "trade_done", "trade": t.id, "source": a.id, "target": b.id, "a": a.id, "b": b.id,
+						"a_name": a.display_name, "b_name": b.display_name, "a_gave": gave[t.a], "b_gave": gave[t.b]})
+		"trade_cancel":
+			_cancel_trade(t, "declined", hero.display_name)
+	return ""
+
+
+## Cancels a trade, everything back to its owner, and says why.
+func _cancel_trade(t: Dictionary, reason: String, by: String = "") -> void:
+	social.cancel(t, _heroes, _escrow_drop)
+	emit({"type": "trade_cancelled", "trade": t.id, "source": t.a, "target": t.b, "a": t.a, "b": t.b,
+			"reason": reason, "by": by})
+
+
+## What an escrow return can't fit in the bag lands at the owner's feet (theirs only).
+func _escrow_drop(hero: Hero, item: ItemDef, count: int, bind: Dictionary) -> void:
+	var id := drops.add(hero.id, item, count, hero.move.pos, now + rules.party_play.drop_seconds, &"trade", [], bind)
+	emit({"type": "drop", "target": hero.id, "drop": id, "item": String(item.id), "count": count,
+			"rarity": int(item.rarity)})
+
+
+## Requests time out; trades end when someone leaves, walks out of range, dies or
+## enters combat.
+func _update_social() -> void:
+	for r in social.requests.duplicate():
+		if now >= r.expires or not _heroes.has(r.from) or not _heroes.has(r.to):
+			social.requests.erase(r)
+			emit({"type": "request_declined", "request": r.id, "kind": r.kind, "source": r.to, "target": r.from,
+					"reason": "timeout"})
+	for t in social.trades.duplicate():
+		var a: Hero = _heroes.get(t.a)
+		var b: Hero = _heroes.get(t.b)
+		if a == null or b == null:
+			_cancel_trade(t, "left")
+		elif not a.alive or not b.alive:
+			_cancel_trade(t, "dead")
+		elif a.in_combat(now) or b.in_combat(now):
+			_cancel_trade(t, "in_combat")
+		elif a.move.pos.distance_to(b.move.pos) > rules.party_play.trade_range:
+			_cancel_trade(t, "too_far")
+	_update_duels()
+
+
+## Plain data for one hero's snapshot: its trade, and requests to or from it.
+func social_view(hero_id: int) -> Dictionary:
+	var names := {}
+	for h in heroes():
+		names[h.id] = h.display_name
+	var reqs: Array = []
+	for r in social.requests:
+		if r.from == hero_id or r.to == hero_id:
+			reqs.append({"id": r.id, "kind": r.kind, "from": r.from, "to": r.to, "expires": r.expires,
+					"from_name": names.get(r.from, "?"), "to_name": names.get(r.to, "?")})
+	return {"trade": Trades.view(social.trade_of(hero_id), hero_id, names), "requests": reqs}
+
+
+# Duels (phase 5) hook in here.
+func _duel_problem(_a: Hero, _b: Hero) -> String:
+	return "not_yet"
+
+
+func _start_duel(_a: Hero, _b: Hero) -> void:
+	pass
+
+
+func _update_duels() -> void:
+	pass
 
 
 ## One drop on the ground for `hero`, scattered near where `enemy` fell (on

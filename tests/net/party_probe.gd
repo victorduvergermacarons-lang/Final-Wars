@@ -62,6 +62,11 @@ func _host(port: int, players: int, scenario: String) -> void:
 	for i in guests.size():
 		guests[i].move.place(town.find_free_tile_near(SPOT + Vector2i(i, 0)))
 	game.session.local_hero().move.place(town.find_free_tile_near(SPOT + Vector2i(0, 3)))
+	if scenario == "trade":
+		game.session.events_received.connect(func(events):
+			for e in events:
+				if e.type == "trade_cancelled" and e.reason == "declined":
+					_second_trade_over = true)
 	match scenario:
 		"loot":
 			await _host_loot(town, guests)
@@ -69,6 +74,8 @@ func _host(port: int, players: int, scenario: String) -> void:
 			await _host_roll(town, guests)
 		"bind":
 			await _host_bind(town, guests)
+		"trade":
+			await _host_trade(town, guests)
 		_:
 			_finish(false, "host: unknown scenario %s" % scenario)
 
@@ -181,6 +188,36 @@ func _host_bind(town: WorldSim, guests: Array) -> void:
 	_finish(true, "host: each guest's looted scroll is bound, tradeable only to the other guest from that fight")
 
 
+## Trading: Guest1 gives a helm and 5 gold for Guest2's 3 pelts (request, both
+## windows, offer, contract, accept). Then a second trade is declined at the
+## contract and everything goes back.
+func _host_trade(town: WorldSim, guests: Array) -> void:
+	var helm: ItemDef = ContentDB.items[&"iron_helm"]
+	var pelt: ItemDef = ContentDB.items[&"wolf_pelt"]
+	guests[0].bag.add(helm)
+	guests[0].gold = 20
+	guests[1].bag.add(pelt, 3)
+	guests[1].gold = 0
+	var traded := func(): return guests[1].bag.count_of(helm) == 1 and guests[0].bag.count_of(pelt) == 3
+	if not await _wait_until(traded):
+		_finish(false, "host: the first trade never completed")
+		return
+	if guests[0].gold != 15 or guests[1].gold != 5:
+		_finish(false, "host: gold after the trade: %d / %d" % [guests[0].gold, guests[1].gold])
+		return
+	var back := func(): return _second_trade_over and town.social.trades.is_empty() \
+			and guests[1].bag.count_of(helm) == 1 and guests[0].bag.count_of(pelt) == 3
+	if not await _wait_until(back):
+		_finish(false, "host: the second trade didn't end with everything back")
+		return
+	await get_tree().create_timer(1.0).timeout
+	_finish(true, "host: a helm and 5 gold went for 3 pelts in one go; a second trade, declined at the contract, returned everything")
+
+
+## Set by watching the host's own world for the second trade's cancel.
+var _second_trade_over := false
+
+
 # --- Guests -------------------------------------------------------------------------
 
 func _join(port: int, players: int, scenario: String, index: int) -> void:
@@ -206,6 +243,8 @@ func _join(port: int, players: int, scenario: String, index: int) -> void:
 			await _join_roll(session, index)
 		"bind":
 			await _join_bind(session)
+		"trade":
+			await _join_trade(session, index)
 		_:
 			_finish(false, "%s: unknown scenario %s" % [me, scenario])
 	game.store.delete(me)
@@ -261,6 +300,78 @@ func _join_bind(session: ClientSession) -> void:
 		_finish(false, "%s: the helm's tooltip lacks Bind on Equip" % me)
 		return
 	_finish(true, "%s: its client shows the looted scroll Soulbound with its trade window, the helm Bind on Equip" % me)
+
+
+func _join_trade(session: ClientSession, index: int) -> void:
+	var hud: Hud = game.get_node("Hud")
+	var hero := func() -> Hero: return session.local_hero()
+	var other := func() -> Hero:
+		for a in session.actors():
+			if a is Hero and a.display_name == ("Guest2" if index == 1 else "Guest1"):
+				return a
+		return null
+	var helm: ItemDef = ContentDB.items[&"iron_helm"]
+	var pelt: ItemDef = ContentDB.items[&"wolf_pelt"]
+	var has_goods := func(): return hero.call().bag.count_of(helm if index == 1 else pelt) >= 1
+	if not await _wait_until(has_goods):
+		_finish(false, "%s: the host never gave us our goods" % me)
+		return
+	for round in 2:
+		if index == 1:
+			await get_tree().create_timer(0.5).timeout
+			hud.ask(other.call().id, "trade") # as the right-click menu does
+		else:
+			if not await _wait_until(func(): return hud.request_window.showing() >= 0):
+				_finish(false, "%s: no trade request window (round %d)" % [me, round + 1])
+				return
+			hud.request_window.answer(true)
+		if not await _wait_until(func(): return hud.trade_window.visible):
+			_finish(false, "%s: the trade window never opened (round %d)" % [me, round + 1])
+			return
+		var bag: Bag = hero.call().bag
+		if round == 0:
+			var mine := helm if index == 1 else pelt
+			session.send_intent({"type": "trade_add", "index": bag.index_of(mine), "count": bag.count_at(bag.index_of(mine))})
+			if index == 1:
+				session.send_intent({"type": "trade_gold", "amount": 5})
+		else:
+			var mine := pelt if index == 1 else helm
+			session.send_intent({"type": "trade_add", "index": bag.index_of(mine), "count": 1})
+		var theirs_in := func():
+			var t := hud.trade_window.trade()
+			return not t.is_empty() and not t.theirs.items.is_empty() and not t.mine.items.is_empty()
+		if not await _wait_until(theirs_in):
+			_finish(false, "%s: both sides never filled (round %d)" % [me, round + 1])
+			return
+		await get_tree().create_timer(0.3).timeout
+		session.send_intent({"type": "trade_offer"})
+		if not await _wait_until(func(): return hud.trade_window.trade().get("stage", "") == "contract"):
+			_finish(false, "%s: the contract never showed (round %d)" % [me, round + 1])
+			return
+		var contract := TradeWindow.contract_text(hud.trade_window.trade())
+		if round == 0:
+			var want := "Wolf Pelt x3" if index == 1 else "Iron Helm, 5 gold"
+			if not contract.contains("You get from %s:[/b] %s" % [other.call().display_name, want]):
+				_finish(false, "%s: the contract reads %s" % [me, contract])
+				return
+			session.send_intent({"type": "trade_accept"})
+			var got := func(): return hero.call().bag.count_of(pelt if index == 1 else helm) >= 1 \
+					and not hud.trade_window.visible
+			if not await _wait_until(got):
+				_finish(false, "%s: never received our side of the trade" % me)
+				return
+		else:
+			if index == 2:
+				hud.trade_window.cancel() # Decline at the contract
+			if not await _wait_until(func(): return not hud.trade_window.visible):
+				_finish(false, "%s: the declined trade stayed open" % me)
+				return
+			await get_tree().create_timer(0.5).timeout
+			var back := pelt if index == 1 else helm
+			if hero.call().bag.count_of(back) < 1:
+				_finish(false, "%s: our item never came back after the decline" % me)
+				return
+	_finish(true, "%s: traded through the request, trade and contract windows; a declined contract gave everything back" % me)
 
 
 func _join_loot(session: ClientSession) -> void:

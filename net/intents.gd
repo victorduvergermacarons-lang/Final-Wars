@@ -57,6 +57,24 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"pick_up":
 			if not _ints(raw, out, ["drop"]):
 				return {}
+		"trade_request", "duel_request":
+			if not _ints(raw, out, ["target"]):
+				return {}
+		"request_answer":
+			if not _ints(raw, out, ["request"]) or typeof(raw.get("accept")) != TYPE_BOOL:
+				return {}
+			out.accept = raw.accept
+		"trade_add":
+			if not _ints(raw, out, ["index"], ["count"]):
+				return {}
+		"trade_remove":
+			if not _ints(raw, out, ["slot"]):
+				return {}
+		"trade_gold":
+			if not _ints(raw, out, ["amount"]):
+				return {}
+		"trade_offer", "trade_accept", "trade_cancel", "duel_forfeit":
+			pass
 		"roll":
 			if not _ints(raw, out, ["roll"]):
 				return {}

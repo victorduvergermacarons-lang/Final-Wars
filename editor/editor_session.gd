@@ -65,6 +65,10 @@ func my_drops() -> Array:
 	return []
 
 
+func social() -> Dictionary:
+	return {"trade": {}, "requests": []}
+
+
 func loot_rolls() -> Array:
 	return []
 

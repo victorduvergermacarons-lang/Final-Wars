@@ -44,6 +44,15 @@ const REASONS := {
 	"choose_reward": "Choose a reward first",
 	"dungeon_needs_quest": "You need the quest for this place first",
 	"dungeon_party_too_small": "You need a party of %d to go in",
+	"busy": "One of you is already trading",
+	"already_asked": "You've already asked",
+	"bound": "That item is bound to you",
+	"cant_trade": "That can't be traded",
+	"trade_full": "The trade window is full",
+	"not_locked": "Both sides must offer first",
+	"no_target": "There's nobody to ask",
+	"no_duel_here": "No duels in dungeons",
+	"duelling": "One of you is already in a duel",
 }
 
 var session
@@ -71,6 +80,10 @@ var dialogue: DialogueBox
 var quest_prompt: QuestPrompt
 var boss_loot: BossLootSummary
 var roll_window: RollWindow
+var request_window: RequestWindow
+var trade_window: TradeWindow
+var player_menu: PopupMenu
+var _menu_hero := -1
 ## "End of Act I": the party's records, then back to the Crossing.
 var act_end: ActEndScreen
 var _act_end_pending := {}
@@ -104,6 +117,8 @@ func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_pa
 	client.action_bar.changed.connect(_on_bar_changed)
 	session.events_received.connect(_on_events)
 	_build()
+	if input != null:
+		input.player_menu_requested.connect(open_player_menu)
 
 
 ## Where the action bar is on screen (the timing bar can sit above it).
@@ -325,6 +340,21 @@ func _build() -> void:
 	roll_window.grow_vertical = Control.GROW_DIRECTION_BOTH
 	roll_window.position.y += 60 # below the boss loot summary
 	_root.add_child(roll_window)
+	trade_window = TradeWindow.new(self)
+	trade_window.set_anchors_preset(Control.PRESET_CENTER)
+	trade_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	trade_window.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_root.add_child(trade_window)
+	request_window = RequestWindow.new(self)
+	request_window.set_anchors_preset(Control.PRESET_CENTER)
+	request_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	request_window.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_root.add_child(request_window)
+	player_menu = PopupMenu.new()
+	player_menu.add_item("Trade", 0)
+	player_menu.add_item("Duel", 1)
+	player_menu.id_pressed.connect(_on_player_menu)
+	_root.add_child(player_menu)
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -686,6 +716,25 @@ func _on_events(events: Array) -> void:
 					client.say("A %s item dropped for you: %s." % [Rarity.NAMES[dropped.rarity], dropped.display_name])
 			"boss_loot":
 				boss_loot.show_summary(e)
+			"request_declined":
+				if e.target == me:
+					client.say("Your request wasn't answered." if e.get("reason", "") == "timeout"
+							else "%s declined." % e.get("name", "They"))
+			"trade_open":
+				if e.source == me or e.target == me:
+					client.say("Trade opened between %s and %s." % [e.a_name, e.b_name])
+			"trade_done":
+				if e.a == me or e.b == me:
+					var mine_gave = e.a_gave if e.a == me else e.b_gave
+					var got = e.b_gave if e.a == me else e.a_gave
+					client.say("Trade complete. You gave %s and got %s." % [TradeWindow._list(mine_gave),
+							TradeWindow._list(got)])
+			"trade_cancelled":
+				if e.a == me or e.b == me:
+					var why := {"declined": "%s declined" % e.get("by", "someone"), "left": "a player left",
+							"too_far": "you moved out of range", "in_combat": "combat started",
+							"bag_full": "a bag couldn't hold the goods", "dead": "a player died"}
+					client.say("Trade cancelled: %s. Everything went back to its owner." % why.get(e.reason, e.reason))
 			"roll_start":
 				var rolled: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				if rolled != null:
@@ -714,6 +763,26 @@ func _on_events(events: Array) -> void:
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:
 					dialogue.open(npc)
+
+
+## Right-click on another player (their unit frame or the hero in the world):
+## Trade and Duel.
+func open_player_menu(hero_id: int, at: Vector2) -> void:
+	_menu_hero = hero_id
+	player_menu.position = Vector2i(at)
+	player_menu.popup()
+
+
+func _on_player_menu(id: int) -> void:
+	ask(_menu_hero, "trade" if id == 0 else "duel")
+
+
+## Asks another player to trade or duel.
+func ask(hero_id: int, kind: String) -> void:
+	session.send_intent({"type": kind + "_request", "target": hero_id})
+	var other: Actor = session.get_actor(hero_id)
+	if other != null:
+		client.say("You ask %s to %s." % [other.display_name, "trade" if kind == "trade" else "duel"])
 
 
 ## The party feed lines of a settled boss roll: "Mara: Need 87 (+25) = 112" for
