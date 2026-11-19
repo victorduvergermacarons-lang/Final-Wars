@@ -182,7 +182,9 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 	var it := item()
 	if it == null:
 		return null
-	return ItemTooltip.label(it, hud.session.local_hero(), hud.session.rules(), kind != Kind.BAG, hud.session.now())
+	var hero: Hero = hud.session.local_hero()
+	var bind: Dictionary = hero.bag.bind_at(index) if kind == Kind.BAG and hero != null else {}
+	return ItemTooltip.label(it, hero, hud.session.rules(), kind != Kind.BAG, hud.session.now(), bind)
 
 
 func _gui_input(event: InputEvent) -> void:

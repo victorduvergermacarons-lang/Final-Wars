@@ -14,7 +14,9 @@ const GREY := UiPalette.GREY
 
 
 ## `now`: sim time, for the hero's current stats and buffs in the amounts shown.
-static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now: float = 0.0) -> String:
+## `bind`: the bag stack's bind state (Binding), shown with the trade window left.
+static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now: float = 0.0,
+		bind: Dictionary = {}) -> String:
 	var lines: PackedStringArray = []
 	lines.append("[color=#%s][b]%s[/b][/color]" % [Rarity.color(item.rarity).to_html(false), item.display_name])
 	var kind: String = EquipSlot.TYPE_NAMES[item.slot] if item.is_equippable() else ""
@@ -22,6 +24,8 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now:
 		lines.append("[color=%s]Quest item[/color]" % UiPalette.GOLD)
 	else:
 		lines.append("[color=%s]%s%s[/color]" % [GREY, Rarity.NAMES[item.rarity], "  ·  " + kind if kind != "" else ""])
+	for line in Binding.describe(item, bind, worn, now):
+		lines.append("[color=%s]%s[/color]" % [UiPalette.GOLD if line.begins_with("Tradeable") else GREY, line])
 	for id in Stat.all():
 		var v := item.stats.get_stat(id)
 		if not is_zero_approx(v):
@@ -69,7 +73,8 @@ static func text(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now:
 
 ## The tooltip control showing text(): what item slots, item buttons and item
 ## labels return from _make_custom_tooltip.
-static func label(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now: float) -> RichTextLabel:
+static func label(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now: float,
+		bind: Dictionary = {}) -> RichTextLabel:
 	var l := RichTextLabel.new()
 	l.bbcode_enabled = true
 	l.fit_content = true
@@ -77,7 +82,7 @@ static func label(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now
 	l.custom_minimum_size = Vector2(TOOLTIP_WIDTH, 0)
 	for font in ["normal_font_size", "bold_font_size", "italics_font_size", "bold_italics_font_size"]:
 		l.add_theme_font_size_override(font, TOOLTIP_FONT_SIZE)
-	l.text = text(item, hero, rules, worn, now)
+	l.text = text(item, hero, rules, worn, now, bind)
 	return l
 
 

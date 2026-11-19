@@ -9,11 +9,15 @@ var _drops: Array = []
 var _next_id := 1
 
 
-func add(owner: int, item: ItemDef, count: int, pos: Vector2, expires: float, source: StringName = &"") -> int:
+## `fight`: the names of the heroes in the fight it dropped in (a Bind on Pickup
+## item can be traded among them for a while); `bind`: a bind state it already has
+## (a boss item won in a roll), else it binds as its kind says on pickup.
+func add(owner: int, item: ItemDef, count: int, pos: Vector2, expires: float, source: StringName = &"",
+		fight: Array = [], bind: Dictionary = {}) -> int:
 	var id := _next_id
 	_next_id += 1
 	_drops.append({"id": id, "owner": owner, "item": item, "count": count, "pos": pos,
-			"expires": expires, "source": source})
+			"expires": expires, "source": source, "fight": fight, "bind": bind})
 	return id
 
 

@@ -67,6 +67,8 @@ func _host(port: int, players: int, scenario: String) -> void:
 			await _host_loot(town, guests)
 		"roll":
 			await _host_roll(town, guests)
+		"bind":
+			await _host_bind(town, guests)
 		_:
 			_finish(false, "host: unknown scenario %s" % scenario)
 
@@ -153,6 +155,32 @@ func _host_roll(town: WorldSim, guests: Array) -> void:
 	_finish(true, "host: Guest1 rolled Need, Guest2 Greed, the host timed out; Need won the helm, no bonus for the silent host or the lost Greed")
 
 
+## Binding: a scroll drops for each guest from a fight they shared; looted, it is
+## bound with a trade window for that fight's members. A helm stays free until worn.
+func _host_bind(town: WorldSim, guests: Array) -> void:
+	var names: Array = guests.map(func(g): return g.display_name)
+	var scroll: ItemDef = ContentDB.items[&"pebble_scroll"]
+	for g in guests:
+		g.bag.remove_item(scroll, g.bag.count_of(scroll))
+		town.drops.add(g.id, scroll, 1, g.move.pos, town.now + 300.0, &"test", names)
+		town.drops.add(g.id, ContentDB.items[&"iron_helm"], 1, g.move.pos, town.now + 300.0, &"test", names)
+	var done := func():
+		for g in guests:
+			if g.bag.count_of(scroll) != 1 or g.bag.count_of(ContentDB.items[&"iron_helm"]) != 1:
+				return false
+		return true
+	if not await _wait_until(done):
+		_finish(false, "host: the guests never looted their scroll and helm")
+		return
+	for g in guests:
+		var b: Dictionary = g.bag.bind_at(g.bag.index_of(scroll))
+		if not Binding.can_trade(b, names[1 - guests.find(g)], town.now) or Binding.can_trade(b, "Host", town.now):
+			_finish(false, "host: %s's scroll window is wrong: %s" % [g.display_name, b])
+			return
+	await get_tree().create_timer(1.5).timeout
+	_finish(true, "host: each guest's looted scroll is bound, tradeable only to the other guest from that fight")
+
+
 # --- Guests -------------------------------------------------------------------------
 
 func _join(port: int, players: int, scenario: String, index: int) -> void:
@@ -176,6 +204,8 @@ func _join(port: int, players: int, scenario: String, index: int) -> void:
 			await _join_loot(session)
 		"roll":
 			await _join_roll(session, index)
+		"bind":
+			await _join_bind(session)
 		_:
 			_finish(false, "%s: unknown scenario %s" % [me, scenario])
 	game.store.delete(me)
@@ -207,6 +237,30 @@ func _join_roll(session: ClientSession, index: int) -> void:
 		_finish(false, "%s: helm in bag: %d" % [me, has])
 		return
 	_finish(true, "%s: answered in its roll window, saw every roll in the feed (%s)" % [me, " / ".join(lines)])
+
+
+func _join_bind(session: ClientSession) -> void:
+	if not await _wait_until(func(): return session.my_drops().size() == 2):
+		_finish(false, "%s: our two drops never showed" % me)
+		return
+	for d in session.my_drops():
+		session.send_intent({"type": "pick_up", "drop": d.id})
+	var scroll: ItemDef = ContentDB.items[&"pebble_scroll"]
+	var helm: ItemDef = ContentDB.items[&"iron_helm"]
+	var hero := func() -> Hero: return session.local_hero()
+	if not await _wait_until(func(): return hero.call().bag.count_of(scroll) == 1 and hero.call().bag.count_of(helm) == 1):
+		_finish(false, "%s: never got the scroll and helm" % me)
+		return
+	var bag: Bag = hero.call().bag
+	var tip := ItemTooltip.text(scroll, hero.call(), session.rules(), false, session.now(), bag.bind_at(bag.index_of(scroll)))
+	if not tip.contains("Soulbound") or not tip.contains("Tradeable to"):
+		_finish(false, "%s: the scroll's tooltip lacks its binding: %s" % [me, tip])
+		return
+	var helm_tip := ItemTooltip.text(helm, hero.call(), session.rules(), false, session.now(), bag.bind_at(bag.index_of(helm)))
+	if not helm_tip.contains("Bind on Equip"):
+		_finish(false, "%s: the helm's tooltip lacks Bind on Equip" % me)
+		return
+	_finish(true, "%s: its client shows the looted scroll Soulbound with its trade window, the helm Bind on Equip" % me)
 
 
 func _join_loot(session: ClientSession) -> void:

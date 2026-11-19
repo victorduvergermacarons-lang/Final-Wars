@@ -68,6 +68,9 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	if typeof(bag_data) == TYPE_ARRAY:
 		bag_data = bag_data.map(func(e): return [_renamed(e[0]), e[1]] if typeof(e) == TYPE_ARRAY and e.size() == 2 else e)
 	hero.bag = Bag.from_array(bag_data if typeof(bag_data) == TYPE_ARRAY else [], content.items)
+	for s in hero.bag.slots: # trade windows ran on a past session's clock: just bound now
+		if s != null and s.has("bind"):
+			s.bind = {"bound": true}
 	# Milestone 3 retired the old abilities and their gear: drop them.
 	var retired := false
 	for i in hero.bag.size():

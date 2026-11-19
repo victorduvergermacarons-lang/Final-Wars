@@ -173,7 +173,7 @@ func equip_from_bag(index: int, requested: int = -1) -> String:
 	bag.remove_at(index, 1)
 	wear(item, s)
 	for d in displaced:
-		bag.add(d)
+		bag.add(d, 1, {"bound": true}) # it was worn: bound (Binding)
 	return ""
 
 
@@ -185,7 +185,7 @@ func unequip_to_bag(slot: int) -> String:
 	if bag.free_slots() == 0:
 		return "bag_full"
 	unequip(slot)
-	bag.add(item)
+	bag.add(item, 1, {"bound": true}) # everything worn is bound (Binding)
 	return ""
 
 

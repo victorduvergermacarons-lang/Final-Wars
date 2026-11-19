@@ -2023,6 +2023,7 @@ func _loot_kill(enemy: Enemy, earners: Array[Hero]) -> void:
 						"boss": s.boss, "ends_at": s.ends_at, "eligible": s.eligible.duplicate()})
 	for h in earners:
 		var got := {"hero": h.id, "name": h.display_name, "gold": shared.gold, "items": []}
+		var fight: Array = earners.map(func(x): return x.display_name)
 		h.gold = mini(h.gold + shared.gold, CharacterData.MAX_GOLD)
 		var materials: Array = []
 		for pair in shared.items:
@@ -2030,7 +2031,7 @@ func _loot_kill(enemy: Enemy, earners: Array[Hero]) -> void:
 			if left < pair[1]:
 				materials.append([pair[0], pair[1] - left])
 			if left > 0:
-				_drop_for(h, pair[0], left, enemy)
+				_drop_for(h, pair[0], left, enemy, fight)
 			got.items.append([String(pair[0].id), pair[1]])
 		if shared.gold > 0 or not materials.is_empty():
 			emit({"type": "loot", "target": h.id, "gold": shared.gold,
@@ -2039,7 +2040,7 @@ func _loot_kill(enemy: Enemy, earners: Array[Hero]) -> void:
 		for pair in personal.items:
 			if boss and LootRolls.is_key_item(pair[0], earners):
 				continue # rolled for the party instead
-			_drop_for(h, pair[0], pair[1], enemy)
+			_drop_for(h, pair[0], pair[1], enemy, fight)
 			got.items.append([String(pair[0].id), pair[1]])
 		summary.append(got)
 	if boss:
@@ -2063,9 +2064,12 @@ func _update_rolls() -> void:
 		if h == null:
 			_store_claim(winner_name, s.item, s.count)
 			continue
-		var left := h.bag.add(s.item, s.count)
+		# A boss key item is Bind on Pickup; the fight's members may still trade it a while.
+		var bind := Binding.on_acquire(s.item, s.names.values(), now + rules.party_play.bop_trade_seconds, true)
+		var left := h.bag.add(s.item, s.count, bind)
 		if left > 0:
-			var id := drops.add(h.id, s.item, left, h.move.pos, now + rules.party_play.drop_seconds, &"roll")
+			var id := drops.add(h.id, s.item, left, h.move.pos, now + rules.party_play.drop_seconds, &"roll",
+					[], bind)
 			emit({"type": "drop", "target": h.id, "drop": id, "item": String(s.item.id), "count": left,
 					"rarity": int(s.item.rarity)})
 
@@ -2091,7 +2095,7 @@ func _deliver_claims() -> void:
 			var item: ItemDef = _content_item(StringName(pair[0]))
 			if item == null:
 				continue
-			var left := h.bag.add(item, int(pair[1]))
+			var left := h.bag.add(item, int(pair[1]), {"bound": true}) # boss items: Bind on Pickup
 			if left < int(pair[1]):
 				emit({"type": "claimed", "target": h.id, "item": String(item.id), "count": int(pair[1]) - left})
 			if left > 0:
@@ -2109,13 +2113,13 @@ func _content_item(id: StringName) -> ItemDef:
 
 ## One drop on the ground for `hero`, scattered near where `enemy` fell (on
 ## walkable ground, else right where it fell).
-func _drop_for(hero: Hero, item: ItemDef, count: int, enemy: Enemy) -> void:
+func _drop_for(hero: Hero, item: ItemDef, count: int, enemy: Enemy, fight: Array = []) -> void:
 	var pp := rules.party_play
 	var at := enemy.move.pos
 	var p := at + Vector2.from_angle(ctx.rng.randf() * TAU) * ctx.rng.randf() * pp.drop_scatter
 	if not grid.is_walkable(MoveState.tile_of(p)):
 		p = at
-	var id := drops.add(hero.id, item, count, p, now + pp.drop_seconds, enemy.def.id)
+	var id := drops.add(hero.id, item, count, p, now + pp.drop_seconds, enemy.def.id, fight)
 	emit({"type": "drop", "target": hero.id, "drop": id, "item": String(item.id), "count": count,
 			"rarity": int(item.rarity)})
 
@@ -2130,7 +2134,9 @@ func _intent_pick_up(hero: Hero, drop_id: int) -> String:
 		return "no_loot"
 	if hero.move.pos.distance_to(d.pos) > rules.party_play.pickup_range:
 		return "too_far"
-	var left := hero.bag.add(d.item, d.count)
+	var bind: Dictionary = d.bind if not d.bind.is_empty() \
+			else Binding.on_acquire(d.item, d.fight, now + rules.party_play.bop_trade_seconds)
+	var left := hero.bag.add(d.item, d.count, bind)
 	if left >= d.count:
 		return "bag_full"
 	var taken: int = d.count - left
