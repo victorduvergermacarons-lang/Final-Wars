@@ -95,3 +95,16 @@ success; logs go to `/tmp/netcheck/`.
 | "The host is using a zone this game doesn't have" | The two copies are different builds. Both players need the same version. |
 | Two windows but keys move nothing | Click the window you want to control first. |
 | Action bar keys changed unexpectedly | Both instances share `user://settings.cfg`; rebinding in one affects the other next launch. |
+
+## Loot, rolls, binding, trading and duels with several clients (2026-11-19)
+
+`tests/net/run_party_check.sh SCENARIO` starts a headless host and two headless clients
+on localhost (env `PLAYERS` for more, `GODOT` for the Godot binary) and plays one scenario
+through the real network code; each process prints `PARTYCHECK OK` or `FAIL`:
+- `loot`: a kill drops each guest its own helm (seen and picked up only by them) and copies
+  gold and pelts to both; each hears the other's pickup in the feed.
+- `roll`: an elite drops a key item; Guest1 Needs, Guest2 Greeds (in their roll windows),
+  the host doesn't answer; Need wins, the feed shows every roll.
+- `bind`: looted scrolls come out Soulbound with a trade window for the fight; gear Bind on Equip.
+- `trade`: a full trade through the request, trade and contract windows, then a declined one.
+- `duel`: request, flag and countdown, a fight to 1 HP, the yield, the announcement.

@@ -32,7 +32,8 @@ attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **F
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
 new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
-`feature/critters-boss-fixes`, 2026-11-19): see that section. Tile steps, step
+`feature/critters-boss-fixes`, 2026-11-19): see that section. **Loot, boss rolls, binding, trading,
+duels**, the Wilds and boss targets removed (branch `feature/loot-trade-duel`, 2026-11-19): see those sections. Tile steps, step
 cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
@@ -441,8 +442,10 @@ merged; files copied). Checklist: `docs/playtest-checklist-hero-art.md`.
   times, as creatures do.
 - **Pixel-perfect:** drawn by the creature drawing at `PixelCamera.ART_SCALE` (2× world
   units per art pixel) with whole-pixel feet, under the whole-pixel camera.
-- **Known flaws in the drafts** (used anyway): getting-hit facing north-west falls to the
-  ground; walk facing north-east has stray white streaks in its last frames.
+- **Known flaws in the drafts** (used anyway): walk facing north-east has stray white streaks
+  in its last frames. (Getting-hit facing west and north-west fell to the ground; since
+  2026-11-19 those facings show east and north-east mirrored: `CreatureArtDef.mirror_rows`,
+  flipped about the feet when drawn, same frames and timing.)
 - Tests: `tests/unit/test_hero_animator.gd`, `test_hero_animation_times_are_the_hosts`
   (`test_snapshot.gd`). Screenshots: `tests/visual/hero_art_shots.tscn` (four heroes, one
   per facing, every animation).
@@ -1118,6 +1121,85 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     (The boss rows, Grizzlehide, the drake and the Foreman, were removed 2026-11-19.)
   - Manual checklist: `docs/playtest-checklist-free-movement.md`.
 
+## Loot, boss rolls, binding, trading, duels (branch `feature/loot-trade-duel`, 2026-11-19)
+
+User brief, eight phases (also: boss balance targets removed, the Wilds, mirrored hit
+animations; see their sections). Built on `feature/critters-boss-fixes`. The host decides
+every roll, award, trade and duel. **Every number** is in one resource:
+`content/rules/party_play.tres` (`PartyPlayDef`, linked as `CombatRules.party_play`).
+Multi-client checks: `tests/net/run_party_check.sh loot | roll | bind | trade | duel` (a host
+and two clients on localhost; each passes).
+- **Personal loot** (`GroundDrops`, `sim/loot/ground_drops.gd`; `WorldSim._loot_kill`):
+  - A kill's gold and crafting materials (`ItemDef.is_material`: nothing to wear, use or learn,
+    no quest) are rolled once and **copied** to every hero who fought (on its threat table),
+    straight into the bag; what doesn't fit drops at their feet.
+  - Everything else is rolled for each fighter and **drops on the ground** for that hero only,
+    scattered within 0.8 tiles: only they are sent it (Snapshot private `drops`), only they can
+    pick it up (E within 1.6 tiles, `pick_up` intent). Drops last 300 s. The old "bag full"
+    loot window is gone (leftovers lie on the ground instead).
+  - Drawn as a light beam in the rarity's colour (white, green, blue, purple, gold;
+    `Rarity.BEAM_COLORS`) with the item's name in your colour.
+  - Party feed on pickup: "<Player> looted <Item> [Rarity]"; a Rare or better drop also says
+    so. Sounds by rarity: `world_loot_common` … `world_loot_legendary` (`Rarity.SOUND_KEYS`,
+    listed in `AUDIO_SPEC.md`).
+  - After a boss (elite or dungeon boss): an end-of-fight summary (`BossLootSummary`, top
+    centre, 12 s) of what each player got; roll winners are added as they're decided.
+  - **Legendary** rarity added (gold; its bag border reuses Epic's until drawn). No chests
+    exist yet; drops are generic, so a chest only needs to call the same code.
+- **Boss rolls** (`LootRolls`, `sim/loot/loot_rolls.gd`; bosses only, user choice):
+  - A boss's **key items** (scrolls, tree weapons, or gear that would raise at least one
+    fighter's stats over what they wear in that place) are rolled once for the party; every
+    fighter gets a window (`RollWindow`: item with tooltip, the boss, a 30 s bar, your bonus,
+    Need / Greed / Pass). No answer or leaving = Pass without the bonus.
+  - Everyone who chose Need or Greed rolls 1-100 + their bonus (all shown); the winner comes
+    from the Needs if any, else the Greeds; ties roll again between the tied (at most 10
+    times, then the lowest id). If everyone passes, nobody gets it.
+  - Bad-luck bonus (`Hero.loot_bonus`, saved with the character): +10 per Need lost, +15 per
+    chosen Pass, 0 on winning.
+  - Feed: "Mara: Need 87 (+25) = 112" per player, then "Mara wins <Item>." (`Hud.roll_lines`).
+  - The winner gets it in the bag (else at their feet). A winner who has left the zone or the
+    game: a **claim box** (`World.claims`, by character name, saved by the host in
+    `user://world.json`), delivered when they're next in the world.
+- **Binding** (`Binding`, `sim/loot/binding.gd`; a bag stack's `bind`):
+  - Bind on Pickup: scrolls, and boss key items won in a roll; bound once they're yours. A
+    looted one can still be traded to a member of the fight it dropped in for 20 min (its
+    `until` and `fight`), shown in the tooltip ("Tradeable to Ana, Bo for 19:42").
+  - Bind on Equip: other gear; free in the bag, bound once worn (everything worn is bound; it
+    comes back to the bag bound).
+  - Unbound: materials, consumables, quest items, gold.
+  - Tooltips show the state ("Bind on Pickup" / "Bind on Equip" / "Not bound" /
+    "Soulbound"). Bound and free stacks never merge. Saves keep "bound" and drop the trade
+    window (it ran on that session's clock).
+- **Trading** (`Trades`, `sim/social/trades.gd`; `TradeWindow`, `RequestWindow`):
+  - Right-click another player (their unit frame, or the hero in the world): Trade / Duel.
+    The target gets a centred request (Accept / Decline, declines itself after 30 s); both
+    within 6 tiles, out of combat, not already trading.
+  - Each side adds tradeable bag stacks (and sets gold): they leave the bag into **escrow** on
+    the host at once (can't be used, dropped or sold). Bound items can't go in, except Bind on
+    Pickup items still in their window going to someone from that fight. 6 slots a side.
+  - Offer locks a side; any change unlocks both. Both offered: the **contract** (exactly what
+    each gives and gets), Accept / Decline. Both accept: one swap of everything (refused, all
+    returned, if a bag can't hold what it gets).
+  - Decline at any stage, a disconnect, moving out of range, dying or entering combat
+    cancels: everything back to its owner (to their feet if the bag is full). Feed lines for
+    done and cancelled trades. A save mid-trade keeps escrowed items (`Hero.escrow`).
+- **Duels** (`WorldSim` "Duels"; WoW rules):
+  - Right-click Duel; the centred request as for trades (within 15 tiles; none in dungeons).
+  - Accepted: a flag at the midpoint with a 10-tile boundary circle, a 3 s countdown over it,
+    then the two are hostile to each other only (`Actor.duel_with`, `duel_live`;
+    `is_hostile_to`, `is_ally_of`). Nobody else can damage or be damaged by them
+    (`Actor.damage_allowed`), and idle enemies don't aggro on them. Pets / companions don't
+    exist yet.
+  - The duel ends when a duelist would drop to 1 HP: they stay at 1 HP, alive, and yield.
+    Also: leaving the boundary shows "Return to the duel area: N" and forfeits after 10 s;
+    a disconnect or leaving the zone forfeits; dying to something else ends it.
+  - At the end: the buffs and debuffs each put on the other are removed; health, cooldowns,
+    items, gold and XP are untouched. Players within 30 tiles of the flag read "<Winner> has
+    defeated <Loser> in a duel." The flag stays 3 s.
+- Tests: `tests/unit/test_loot.gd`, `test_loot_rolls.gd`, `test_binding.gd`, `test_trades.gd`,
+  `test_duels.gd`; screenshots `tests/visual/loot_shots.tscn` (beams, boss summary, roll
+  window, request, trade window, contract, duel flag, the Wilds).
+
 ## The Wilds (2026-11-19)
 
 A 64 x 64 map in place of the Enemy Testing Grounds (`content/zones/wilds.tres`, written by
@@ -1561,7 +1643,7 @@ Input ─► Intent ─► [network] ─► Host WorldSim (validates cooldowns/r
 project.godot, run_tests.sh, .gutconfig.json
 addons/gut/      GUT test framework (vendored)
 autoload/        net (ENet host/join), content_db (loads .tres), audio (music, sound effects, volumes)
-sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/ dungeon/
+sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/ dungeon/ loot/ (ground drops, boss rolls, binding) social/ (requests, trades)
 net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
 content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ encounters/ rules/ audio/ (.tres),
@@ -1585,7 +1667,7 @@ design/          Ability_Tree.xlsx (source of truth for abilities); Item_Databas
                  its stats, growth and every source: tools/item_database.tscn + tools/make_item_database.py)
 tools/once/      one-off content conversions and generators (kept for the record)
 tools/perf/      headless profilers: frame time per map, sim cost per tick
-tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
+tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd), net/run_party_check.sh (loot, rolls, binding, trades, duels with 3 processes),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
 docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor, hero art), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
 ```
@@ -2253,6 +2335,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-19 | Loot, boss rolls, binding, trading, duels: my choices | User brief (phases 1-5; bosses-only rolls and the branch chosen by the user). Mine: gold + materials copied to fighters (threat table), other drops personal on the ground (300 s, pickup 1.6 tiles, E); the old bag-full loot window removed; Legendary rarity (gold; epic border until drawn); feed and boss summary messages; "key item" = scroll, tree weapon, or gear whose summed core stats beat what a fighter wears there; everyone who chose Need or Greed rolls (all shown), all-pass = nobody gets it, ties re-roll up to 10 times; claim box by character name, delivered on next appearance; Bind on Pickup for scrolls and roll winnings, Bind on Equip for other gear, worn = bound, saves drop the trade window; trade range 6, duel request range 15, 6 trade slots, gold escrowed too, a full bag refuses the swap; duels count as combat (no zone exits mid-duel), idle enemies ignore duelists, the flag lingers 3 s, the end message reaches 30 tiles. |
+| 2026-11-19 | Hero hit W / NW mirrored from E / NE | User request (phase 8). The "hit animation" is the getting-hit one (the only `hit` sheet; its NW row was a known flaw). Mirroring is data (`mirror_rows`), applied by the animator for every pick and drawn flipped about the feet, so nothing is duplicated. |
 | 2026-11-19 | The Wilds replace the Enemy Testing Grounds | User request (phase 7; "same gate" and "retire with the map" chosen by the user). My choices: the name; four streams, 22 puddles, fords at path crossings plus four per stream so no bank is cut off; bushes as the blocking vegetation (no tree tiles exist); the testing grounds' file moved to `content/retired/` so ContentDB never loads it; the screenshot scene's creature shots staged on Greenfields. |
 | 2026-11-19 | Boss balance targets removed | User request (phase 6). Removed: the tests `test_grizzlehide_needs_a_group`, `test_sunscale_drake_needs_a_group`, `test_the_foreman_is_a_fight_for_a_group`; the boss rows of `balance_scenarios.gd` (Grizzlehide rows, `FOREMAN_ROWS`, the level-5 group builds used only by them) and of `balance_report.gd`; the bot boss-fight benchmark `BalanceSim.boss_fight` / `boss_average`; the target sentences in this file (Hurled Sunstone win rates, drake "beats a level-7 group", Foreman "tuned with bots", phase-6 measured boss rates, Grizzlehide group targets) and the drake checklist. Boss HP, damage and timers stay as plain values in their .tres files. Older log rows below keep their history. Non-boss balance targets (wolves, Shaman, Brute, Skirmisher, hound) stay. |
 | 2026-11-19 | Critters pack: boar art, a neutral Stag, Foreman x2 damage / +20% speed / +25% areas, targeted casts face their target, leash x1.8, dungeon respawn hold and way out | User brief (branch `feature/critters-boss-fixes`, from `feature/element-start`). See **Critters, the stag, the Foreman, dungeon fixes**. My decisions are in the next rows. |
