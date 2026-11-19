@@ -20,10 +20,11 @@ const PAGE_NAME_SIZE := 13
 const RARITY_BORDERS: Array[Texture2D] = [
 	preload("res://assets/ui/rarity/common.png"), preload("res://assets/ui/rarity/uncommon.png"),
 	preload("res://assets/ui/rarity/rare.png"), preload("res://assets/ui/rarity/epic.png"),
+	preload("res://assets/ui/rarity/epic.png"), # Legendary: placeholder until a gold border is drawn
 ]
 ## A bag slot with an item is tinted with its rarity's colour (the borders' colours),
 ## this much over the paper.
-const RARITY_TINTS: Array[Color] = [Color("696a6a"), Color("629e39"), Color("639bff"), Color("76428a")]
+const RARITY_TINTS: Array[Color] = [Color("696a6a"), Color("629e39"), Color("639bff"), Color("76428a"), Color("d9a520")]
 const BAG_TINT := 0.3
 ## An equipment slot that the hovered or dragged item would go in glows this much.
 const HIGHLIGHT_ALPHA := 0.22

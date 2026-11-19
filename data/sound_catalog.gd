@@ -43,6 +43,11 @@ const WORLD_KEYS := {
 	"world_lift": "a mine lift rattles along its shaft (you ride it)",
 	"world_party_wipe": "the whole party has fallen in a dungeon",
 	"world_wipe_respawn": "the fallen party wakes at the dungeon's entrance",
+	"world_loot_common": "you pick up a Common item (a soft cloth rustle)",
+	"world_loot_uncommon": "you pick up an Uncommon item (a light chime)",
+	"world_loot_rare": "you pick up a Rare item (a bright two-note chime)",
+	"world_loot_epic": "you pick up an Epic item (a rich shimmer)",
+	"world_loot_legendary": "you pick up a Legendary item (a golden fanfare sting)",
 	"world_way_out": "a way out of a cleared dungeon opens (a low chime, light swelling)",
 	"world_act_complete": "an act of the story ends (the end-of-act screen opens)",
 }

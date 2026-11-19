@@ -104,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-235 keys, 0 with a file, 235 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+240 keys, 0 with a file, 240 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -132,6 +132,11 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `world_hero_death` | a hero dies | **missing** |
 | `world_level_up` | a hero levels up | **missing** |
 | `world_lift` | a mine lift rattles along its shaft (you ride it) | **missing** |
+| `world_loot_common` | you pick up a Common item (a soft cloth rustle) | **missing** |
+| `world_loot_epic` | you pick up an Epic item (a rich shimmer) | **missing** |
+| `world_loot_legendary` | you pick up a Legendary item (a golden fanfare sting) | **missing** |
+| `world_loot_rare` | you pick up a Rare item (a bright two-note chime) | **missing** |
+| `world_loot_uncommon` | you pick up an Uncommon item (a light chime) | **missing** |
 | `world_mana_potion_cast` | Mana Potion is used | **missing** |
 | `world_mastered` | a hero masters an ability | **missing** |
 | `world_miss` | an attack misses | **missing** |

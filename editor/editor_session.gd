@@ -61,6 +61,10 @@ func projectiles() -> Array:
 	return []
 
 
+func my_drops() -> Array:
+	return []
+
+
 func way_out() -> Variant:
 	return null
 

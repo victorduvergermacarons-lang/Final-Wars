@@ -64,6 +64,12 @@ func validate() -> PackedStringArray:
 	return errors
 
 
+## A crafting material (pelts, fangs, shards…): nothing to wear, use or learn and no
+## quest's. Gold and materials from a kill are copied to every hero who fought.
+func is_material() -> bool:
+	return not is_equippable() and not is_scroll and use_ability == null and not quest_item and tree == ""
+
+
 func is_equippable() -> bool:
 	return slot != EquipSlot.Type.NONE
 

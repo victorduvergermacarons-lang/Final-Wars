@@ -109,7 +109,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"release"):
 		session.send_intent({"type": "release"})
 	elif event.is_action_pressed(&"interact"):
-		talk_to_nearest()
+		if not pick_up_nearest():
+			talk_to_nearest()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		var picked: Actor = view.actor_at(view.get_global_mouse_position())
 		if picked is Npc:
@@ -330,6 +331,30 @@ static func talk_target(session) -> Actor:
 ## A neutral creature (a grazing stag) isn't a foe until it fights.
 static func _peaceful(a: Actor) -> bool:
 	return a is Enemy and (a as Enemy).def.neutral and (a as Enemy).state != Enemy.State.COMBAT
+
+
+## Your own drop nearest the hero within pickup range, or {}.
+func nearest_drop() -> Dictionary:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return {}
+	var best := {}
+	var best_d: float = session.rules().party_play.pickup_range
+	for d in session.my_drops():
+		var dist: float = hero.move.pos.distance_to(d.pos)
+		if dist <= best_d:
+			best = d
+			best_d = dist
+	return best
+
+
+## E picks up your nearest drop in reach (before talking). True if one was there.
+func pick_up_nearest() -> bool:
+	var d := nearest_drop()
+	if d.is_empty():
+		return false
+	session.send_intent({"type": "pick_up", "drop": d.id})
+	return true
 
 
 func _target_next_enemy() -> void:

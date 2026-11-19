@@ -21,6 +21,8 @@ enum GrowthLimit {
 @export_group("Movement")
 ## Free movement: speeds, acceleration, collisions, falls (content/rules/movement.tres).
 @export var movement: MovementDef = MovementDef.new()
+## Loot, boss rolls, binding, trading and duels (content/rules/party_play.tres).
+@export var party_play: PartyPlayDef = PartyPlayDef.new()
 ## Unused since free movement (every unit moves with `movement`); kept so older
 ## rules files load.
 @export var walk_tile_seconds: float = 0.4

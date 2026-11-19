@@ -69,10 +69,10 @@ var inventory_window: InventoryWindow
 var dialogue: DialogueBox
 ## Co-op: quests a party member just accepted, offered to you.
 var quest_prompt: QuestPrompt
+var boss_loot: BossLootSummary
 ## "End of Act I": the party's records, then back to the Crossing.
 var act_end: ActEndScreen
 var _act_end_pending := {}
-var loot_window: LootWindow
 var vendor_window: VendorWindow
 var quest_log: QuestLogWindow
 var _tracker: RichTextLabel
@@ -220,13 +220,12 @@ func _build() -> void:
 	_character.visible = false
 	inventory_window = InventoryWindow.new(self)
 	inventory_window.visible = false
-	loot_window = LootWindow.new(self)
 	vendor_window = VendorWindow.new(self)
 	_spellbook = SpellbookPanel.new(self)
 	_spellbook.visible = false
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
-	for w in [_character, inventory_window, loot_window, _spellbook, quest_log]:
+	for w in [_character, inventory_window, _spellbook, quest_log]:
 		book.spread.add_child(w)
 	# The shop is a sheet of its own, above the book, so it stays open beside
 	# your inventory.
@@ -314,6 +313,11 @@ func _build() -> void:
 	quest_prompt.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	quest_prompt.position.y += 70
 	_root.add_child(quest_prompt)
+	boss_loot = BossLootSummary.new(self)
+	boss_loot.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	boss_loot.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	boss_loot.position.y += 150
+	_root.add_child(boss_loot)
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -498,7 +502,7 @@ func _toggle(panel: Control) -> void:
 
 ## The windows written in the book.
 func _book_windows() -> Array[Control]:
-	return [_character, inventory_window, loot_window, _spellbook, quest_log, trees_window]
+	return [_character, inventory_window, _spellbook, quest_log, trees_window]
 
 
 ## Shows the book while a menu is open. Each menu fills both pages, so one is
@@ -519,7 +523,7 @@ func _update_book() -> void:
 	if book.visible:
 		book.page_art = (_open_menu as BookSpread).page_art
 		var order := _page_order()
-		var at := order.find(_open_menu) # -1 for loot: the arrows lead to the ends
+		var at := order.find(_open_menu)
 		book.set_turn_labels(_page_name(order[posmod(at - 1, order.size()) if at >= 0 else -1]),
 				_page_name(order[posmod(at + 1, order.size()) if at >= 0 else 0]))
 		book.fit_pages()
@@ -661,9 +665,20 @@ func _on_events(events: Array) -> void:
 				for pair in e.items:
 					var item: ItemDef = ContentDB.items.get(StringName(str(pair[0])))
 					parts.append((item.display_name if item else str(pair[0])) + (" ×%d" % pair[1] if pair[1] > 1 else ""))
-				client.say("You loot " + ", ".join(parts) + ".")
-				if e.left >= 0:
-					client.error("Your bag is full — the rest waits 60 s in the loot window")
+				if not parts.is_empty():
+					client.say("You loot " + ", ".join(parts) + ".")
+			"looted":
+				# The party feed: "<Player> looted <Item> [Rarity]".
+				var it: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if it != null:
+					client.say("%s looted %s%s [%s]" % [e.name, it.display_name,
+							" x%d" % e.count if int(e.count) > 1 else "", Rarity.NAMES[it.rarity]])
+			"drop":
+				var dropped: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if dropped != null and dropped.rarity >= Rarity.Id.RARE:
+					client.say("A %s item dropped for you: %s." % [Rarity.NAMES[dropped.rarity], dropped.display_name])
+			"boss_loot":
+				boss_loot.show_summary(e)
 			"buy":
 				var bought: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				client.say("You buy %s for %d gold." % [bought.display_name if bought else e.item, e.gold])

@@ -150,9 +150,10 @@ func actors() -> Array[Actor]:
 	return mirror.actors()
 
 
-func pending_loot() -> Array:
+## The local hero's own drops on the ground (only theirs are ever sent).
+func my_drops() -> Array:
 	var hero := local_hero()
-	return hero.pending_loot if hero != null else []
+	return hero.drops if hero != null else []
 
 
 func projectiles() -> Array:

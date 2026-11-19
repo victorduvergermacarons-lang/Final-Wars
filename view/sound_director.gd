@@ -217,6 +217,8 @@ func _on_events(events: Array) -> void:
 				Audio.play(&"world_release")
 			"dungeon_enter":
 				Audio.play(&"world_dungeon_enter")
+			"looted":
+				Audio.play(Rarity.SOUND_KEYS[clampi(int(e.get("rarity", 0)), 0, Rarity.SOUND_KEYS.size() - 1)])
 			"lift":
 				Audio.play(&"world_lift")
 			"act_complete":

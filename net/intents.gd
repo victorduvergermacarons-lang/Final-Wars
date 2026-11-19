@@ -54,8 +54,8 @@ static func sanitize(raw: Variant) -> Dictionary:
 		"talk":
 			if not _ints(raw, out, ["npc"]):
 				return {}
-		"take_loot":
-			if not _ints(raw, out, ["loot"]):
+		"pick_up":
+			if not _ints(raw, out, ["drop"]):
 				return {}
 		"use_item":
 			if not _ints(raw, out, ["bag_index"]):

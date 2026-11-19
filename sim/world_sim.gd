@@ -14,7 +14,7 @@ extends RefCounted
 ##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles; also uses objects,
 ##       hands over DELIVER items, and sets an escort off)
 ##   {"type": "examine", "tile": Vector2i}   (an INVESTIGATE spot within 1 tile)
-##   {"type": "take_loot", "loot": int}      (loot that didn't fit in the bag)
+##   {"type": "pick_up", "drop": int}         (one of your own drops on the ground, in reach)
 ##   {"type": "use_item", "bag_index": int}  (consumables, e.g. potions)
 ##   {"type": "buy", "npc": int, "item": StringName, "count": int}
 ##   {"type": "sell", "npc": int, "bag_index": int, "count": int}
@@ -80,9 +80,8 @@ var _terrain_base_walkable := {}
 ## Persistent ground zones: [{"source", "tiles", "ability", "zone_ability", "tick", "next_tick", "until", "bonus"}].
 var _ground_zones: Array = []
 ## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
-var _pending_loot: Array = []
-var _next_loot_id := 1
-const LOOT_WAIT_SECONDS := 60.0
+## Personal loot on the ground (PartyPlayDef "Personal loot").
+var drops := GroundDrops.new()
 var _next_projectile_id := 1
 ## Recent hero positions, for enemies' reaction delay: hero id -> [[time, tile], ...].
 var _history := {}
@@ -360,7 +359,7 @@ func step() -> Array[Dictionary]:
 	_update_terrain_and_zones()
 	_tick_heals_over_time()
 	_update_combat_state()
-	_expire_loot()
+	drops.expire(now)
 	for id in _remove_after_tick:
 		remove_enemy(id)
 	_remove_after_tick.clear()
@@ -1491,8 +1490,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			else:
 				for e in QuestLog.abandon(hero, def):
 					emit(e)
-		"take_loot":
-			reason = _intent_take_loot(hero, intent.get("loot", -1))
+		"pick_up":
+			reason = _intent_pick_up(hero, intent.get("drop", -1))
 		"use_item":
 			reason = _intent_use_item(hero, intent.get("bag_index", -1))
 		"buy":
@@ -1958,7 +1957,8 @@ func _on_death(actor: Actor) -> void:
 					emit(e)
 				for e in ApMastery.award(h, enemy.def.ap_reward):
 					emit(e)
-				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h, quests))
+		if not earners.is_empty():
+			_loot_kill(enemy, earners)
 		enemy.threat.clear()
 		enemy.died_at = now
 		enemy.respawn_at = now + enemy.respawn_delay()
@@ -1991,54 +1991,73 @@ func _tick_heals_over_time() -> void:
 					"amount": healed, "crit": false})
 
 
-## Gold and items straight into the hero's bag; what doesn't fit waits 60 s.
-func _give_loot(hero: Hero, roll: Dictionary) -> void:
-	if roll.gold <= 0 and roll.items.is_empty():
-		return
-	hero.gold = mini(hero.gold + roll.gold, CharacterData.MAX_GOLD)
-	var leftover: Array = []
-	for pair in roll.items:
-		var left := hero.bag.add(pair[0], pair[1])
-		if left > 0:
-			leftover.append([pair[0], left])
-	var loot_id := -1
-	if not leftover.is_empty():
-		loot_id = _next_loot_id
-		_next_loot_id += 1
-		_pending_loot.append({"id": loot_id, "hero": hero.id, "items": leftover,
-				"expires": now + LOOT_WAIT_SECONDS})
-	emit({"type": "loot", "target": hero.id, "gold": roll.gold,
-			"items": Loot.items_to_array(roll.items), "left": loot_id})
-
-
-## Waiting loot for one hero, as plain data: [{"id", "items": [[id, n]], "expires"}].
-func pending_loot_for(hero_id: int) -> Array:
-	var out: Array = []
-	for p in _pending_loot:
-		if p.hero == hero_id:
-			out.append({"id": p.id, "items": Loot.items_to_array(p.items), "expires": p.expires})
-	return out
-
-
-func _intent_take_loot(hero: Hero, loot_id: int) -> String:
-	for p in _pending_loot:
-		if p.id != loot_id or p.hero != hero.id:
-			continue
-		var still: Array = []
-		for pair in p.items:
-			var left := hero.bag.add(pair[0], pair[1])
+## A kill's loot (PartyPlayDef "Personal loot"): gold and crafting materials are
+## rolled once and copied to every hero who fought (into the bag; what doesn't fit
+## drops at their feet); everything else is rolled for each of them and drops on
+## the ground for that hero alone. After a boss, a summary of what everyone got.
+func _loot_kill(enemy: Enemy, earners: Array[Hero]) -> void:
+	var pp := rules.party_play
+	var table := enemy.def.loot
+	var shared := Loot.roll(table, ctx.rng, null, quests, Loot.Part.SHARED)
+	var summary: Array = []
+	for h in earners:
+		var got := {"hero": h.id, "name": h.display_name, "gold": shared.gold, "items": []}
+		h.gold = mini(h.gold + shared.gold, CharacterData.MAX_GOLD)
+		var materials: Array = []
+		for pair in shared.items:
+			var left := h.bag.add(pair[0], pair[1])
+			if left < pair[1]:
+				materials.append([pair[0], pair[1] - left])
 			if left > 0:
-				still.append([pair[0], left])
-		p.items = still
-		if still.is_empty():
-			_pending_loot.erase(p)
-			return ""
+				_drop_for(h, pair[0], left, enemy)
+			got.items.append([String(pair[0].id), pair[1]])
+		if shared.gold > 0 or not materials.is_empty():
+			emit({"type": "loot", "target": h.id, "gold": shared.gold,
+					"items": Loot.items_to_array(materials), "left": -1})
+		var personal := Loot.roll(table, ctx.rng, h, quests, Loot.Part.PERSONAL)
+		for pair in personal.items:
+			_drop_for(h, pair[0], pair[1], enemy)
+			got.items.append([String(pair[0].id), pair[1]])
+		summary.append(got)
+	if enemy.def.elite or enemy.def.dungeon_boss:
+		emit({"type": "boss_loot", "boss": enemy.def.display_name, "received": summary,
+				"seconds": pp.boss_summary_seconds})
+
+
+## One drop on the ground for `hero`, scattered near where `enemy` fell (on
+## walkable ground, else right where it fell).
+func _drop_for(hero: Hero, item: ItemDef, count: int, enemy: Enemy) -> void:
+	var pp := rules.party_play
+	var at := enemy.move.pos
+	var p := at + Vector2.from_angle(ctx.rng.randf() * TAU) * ctx.rng.randf() * pp.drop_scatter
+	if not grid.is_walkable(MoveState.tile_of(p)):
+		p = at
+	var id := drops.add(hero.id, item, count, p, now + pp.drop_seconds, enemy.def.id)
+	emit({"type": "drop", "target": hero.id, "drop": id, "item": String(item.id), "count": count,
+			"rarity": int(item.rarity)})
+
+
+## Picks up one of the hero's own drops within reach: into the bag (what doesn't fit
+## stays on the ground); the party hears who looted what.
+func _intent_pick_up(hero: Hero, drop_id: int) -> String:
+	if not hero.alive:
+		return "dead"
+	var d := drops.find(drop_id)
+	if d.is_empty() or d.owner != hero.id:
+		return "no_loot"
+	if hero.move.pos.distance_to(d.pos) > rules.party_play.pickup_range:
+		return "too_far"
+	var left := hero.bag.add(d.item, d.count)
+	if left >= d.count:
 		return "bag_full"
-	return "no_loot"
-
-
-func _expire_loot() -> void:
-	_pending_loot = _pending_loot.filter(func(p): return p.expires > now)
+	var taken: int = d.count - left
+	if left > 0:
+		d.count = left
+	else:
+		drops.remove(drop_id)
+	emit({"type": "looted", "source": hero.id, "target": hero.id, "name": hero.display_name,
+			"item": String(d.item.id), "count": taken, "rarity": int(d.item.rarity)})
+	return "bag_full" if left > 0 else ""
 
 
 ## Everyone on a fighting enemy's threat table (and the enemy) is in combat.

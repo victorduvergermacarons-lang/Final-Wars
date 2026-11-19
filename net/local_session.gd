@@ -122,8 +122,8 @@ func world_flags() -> Dictionary:
 	return world.world_flags
 
 
-func pending_loot() -> Array:
-	return zone_sim().pending_loot_for(local_hero_id)
+func my_drops() -> Array:
+	return zone_sim().drops.for_owner(local_hero_id)
 
 
 ## Actors in the local hero's zone only.

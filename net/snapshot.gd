@@ -36,7 +36,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 				"learning": String(hero.learning_item.id) if hero.learning_item != null else "",
 				"contrib": hero.mastery_contrib.duplicate(),
 				"quests": hero.quest_state,
-				"loot": world.pending_loot_for(hero.id),
+				"drops": world.drops.for_owner(hero.id),
 				"def": hero.def_id,
 				"ack": world.intent_ack(hero.id),
 			}

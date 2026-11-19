@@ -411,6 +411,7 @@ func _draw() -> void:
 	_draw_flames(grid)
 	_draw_landmarks(grid)
 	_draw_way_out(grid)
+	_draw_drops(grid)
 	_draw_decor_labels(grid)
 	_draw_talk_prompt()
 	for f in _overlay:
@@ -1210,6 +1211,34 @@ func _draw_quest_area(grid: GridModel, p: Vector2i, kind: Variant = true) -> voi
 			c + Vector2(-hw, 0)]), Color(1, 0.85, 0.2, pulse))
 	draw_polyline(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),
 			c + Vector2(-hw, 0), c + Vector2(0, -hh)]), Color(1, 0.95, 0.5, 0.9), 1.5)
+
+
+## Your own loot on the ground (only yours are sent): a light beam in the item's
+## rarity colour (white, green, blue, purple, gold) and its name in your colour.
+func _draw_drops(grid: GridModel) -> void:
+	var mine: Array = session.my_drops()
+	if mine.is_empty():
+		return
+	var pp: PartyPlayDef = session.rules().party_play
+	var hero: Actor = session.local_hero()
+	var tag: Color = HERO_COLORS[(hero.id - 1) % HERO_COLORS.size()] if hero != null else Color.WHITE
+	var pulse := 0.5 + 0.5 * sin(_pulse_ms() * 0.003)
+	for d in mine:
+		var item: ItemDef = ContentDB.items.get(StringName(d.item))
+		if item == null:
+			continue
+		var p: Vector2 = d.pos
+		var t := MoveState.tile_of(p)
+		var base := Iso.to_screen(p, grid.height_at(t) if grid.in_bounds(t) else 0)
+		var c: Color = Rarity.BEAM_COLORS[item.rarity]
+		_draw_ellipse(base, 12.0, 6.0, Color(c, 0.7), 2.0)
+		var top := base + Vector2(0, -pp.beam_height)
+		for k in 3: # soft glow: wide and faint to narrow and bright
+			var w := pp.beam_width * (3.0 - k)
+			draw_line(base, top, Color(c, (0.12 + 0.18 * k) * (0.75 + 0.25 * pulse)), w)
+		draw_circle(base, 3.0, Color(c, 0.9))
+		var label := item.display_name + (" x%d" % d.count if d.count > 1 else "")
+		_draw_label(top + Vector2(0, -6), label, tag, 12)
 
 
 ## The way out of a cleared dungeon: a pulsing golden ring of light on its tile
