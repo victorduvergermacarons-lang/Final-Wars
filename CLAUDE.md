@@ -31,7 +31,8 @@ attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **F
 `docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
-new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. Tile steps, step
+new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
+`feature/critters-boss-fixes`, 2026-11-19): see that section. Tile steps, step
 cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
@@ -268,6 +269,73 @@ table). Numbers as built:
     Breath, Air Sphere, Suffocate, Storm Front, Pressure Lock): 0.6 Phys Atk + 0.4 Magic Def.
   - Scales With takes a coefficient before a stat ("0.45 Magic Atk"; without one,
     `CombatRules.sheet_stat_coefficient`).
+
+## Critters, the stag, the Foreman, dungeon fixes (branch `feature/critters-boss-fixes`, 2026-11-19)
+
+User brief, five parts. Built on `feature/element-start`.
+- **Critters pack art** (`art/critters.zip`, in the repo since the first tileset import;
+  `tools/once/make_critter_sheets.py`): the strips the game uses are copied to
+  `assets/creatures/boar/strips/` and `assets/creatures/stag/strips/`, then laid out as
+  one sheet per animation with a row per facing (SW, SE, NW, NE, like the wolf; the pack
+  draws all four, nothing mirrored), plus `no_shadow/` for the hit flash. Frame sizes,
+  read from the PNGs, all divide evenly: boar idle 7 x 41x30 (NW 40x30), run 4 x 41x30
+  (NE/NW 30 high, SE/SW 25 high); stag idle 24, walk 11, run 10, all 32x41. Cells: boar
+  41x30, bottom-aligned so the feet (frame height - 2) sit at (20.5, 28) in every row;
+  stag 32x41, feet (16, 39).
+  - **Boar** (`content/creatures/boar_art.tres`): idle 7 fps, run 12 fps (both loop).
+    Behaviour, stats, loot and spawns unchanged.
+  - Walks listed in `fps` ("run", "walk") play by time at that rate
+    (`CreatureArtDef.run_frame`); art with a walk walks out of a fight and runs in one.
+  - **Fallbacks for missing art** (`CreatureArtDef` "Missing animations"; used only
+    while the sheet is missing, so real sheets drop in by adding them): no attack
+    sheet: the wind-up holds the last run frame, then a 6 art px lunge toward its facing
+    on the hit (0.2 s); no death sheet: idle's first frame tips over (0.35 s), lies 4 s,
+    fades 1 s. Hits use the usual white flash.
+  - Screenshots: `tests/visual/critter_shots.tscn`.
+- **Stag** (`content/enemies/stag.tres`, neutral): level 3, HP 260, PhysAtk 13, PhysDef 8,
+  MagDef 6, Evasion 6, 3.3 tiles/s, aggro 0, leash 18, 70 XP, 2 AP, respawn 60 s; Antler
+  Thrust (`stag_antler_thrust`: 80° cone, 1.3 tiles, 8 + 1.0 x PhysAtk, 2.5 s, 0.3 s
+  wind-up); loot 1-4 g, Stag Hide 60% (8 g), Stag Antler 35% (10 g).
+  - `EnemyDef.neutral`: never aggros on a hero coming close (even touching it), isn't
+    called by pack howls, and Tab skips it unless it is fighting
+    (`PlayerInput._peaceful`). Damage puts it in combat (only the one hit), it fights
+    through the usual threat table, and resets as any enemy does (its attacker dies or
+    drags it past its leash: it walks home, heals to full, neutral again).
+  - `EnemyDef.wander_radius` (4) and `graze_seconds_min/max` (4-10 s): idle without a
+    patrol it grazes (idle animation) a random while, then walks (40% speed, walk
+    animation) to a random reachable tile within 4 of its spawn; each one rolls its own
+    times (the zone's seeded random numbers).
+  - **Windsteppe:** four stags at (23, 25), (24, 28) by Tsaga's Camp and (42, 30),
+    (44, 33) by the south camp, in place of the two "Herd" groups (7 animal shapes).
+  - Tests: `tests/unit/test_stag.gd`.
+- **The Foreman** (as built on top of `feature/element-start`): damage x2 on every attack
+  (base and Physical Attack coefficient: Hurled Sunstone 36 + 1.8, Ground Slam 24 + 1.2,
+  Mine-Cart Charge 16 + 1.2, Pick-Hammer 28 + 1.5), 2.52 tiles/s (2.1), attack areas
+  +25%: slam circle 1.875 (1.5), pick cone 1.875 (1.5), charge lane 1.5 wide (1.2). The
+  telegraphs are drawn from those shapes. The Hurled Sunstone is a single-target throw
+  (no area), so its range stays 6.
+- **Targeted casts face their target** (user report: Healing Touch faced the cursor):
+  in combat a hero faced the mouse every tick, and the client sends the cursor point
+  with every cast. Now a cast turns the caster toward a targeted ability's target (exact
+  angle, `CastResolver.face_cast`) when it begins and as it goes off, and the hero keeps
+  that facing while casting and 0.5 s after (`Hero.holds_cast_facing`, also in the
+  client's prediction); mouse-aimed abilities still follow the cursor. Test:
+  `tests/unit/test_cast_facing.gd`.
+- **Leash x1.8** for every enemy, written in each enemy file (`EnemyDef.leash_radius`,
+  default 18): Wolf, Bandit Brute, Fen Skirmisher, Goblin Shaman, Human Husk, Stag 18;
+  Boar 16; Iron Wolf, Grizzlehide, Salamander Hound 22; Grey Husk, Sunscale Drake 25;
+  Grey Overseer 14; Foreman 29. Not the Training Dummy (6: how far you walk to drop its
+  fight) or the Grey Heart (it never moves). The testing grounds grew to fit.
+- **Dungeons:**
+  - Enemies in a dungeon copy don't respawn while any hero is inside: the timer starts
+    over each tick, and runs as usual once the last hero has left (`EnemyBrain`, DEAD).
+  - **Way out** (`ZoneDef.cleared_exit`): once every enemy in the copy is dead (summoned
+    adds aside), an exit opens (`WorldSim.way_out_open`, a `way_out` event, sent in
+    snapshots): a pulsing golden ring of light with "Way out" over it, a message ("A way
+    out glows open in the Foreman's chamber") and the key `world_way_out`. Stepping on it
+    works for every hero, like any exit. Silent Shaft: (52, 17) in the Foreman's chamber
+    to Deepcut (34, 12), just outside the mine entrance.
+  - Tests in `tests/unit/test_dungeons.gd`.
 
 ## Map art (tileset, 2026-10-16)
 
@@ -791,7 +859,7 @@ Prince Caedan Ashvale, the Guild's founder, is sincere. Quests written by
   wind-up; Tusk Charge, a 1 s telegraphed rush 2–3 tiles, 8 + PhysAtk) and Human Husk
   (level 7: HP 420, PhysAtk 22, PhysDef 14, MagDef 24, heavy, 1.3 s per tile; Hollow
   Rake 10 + PhysAtk, 0.6 s wind-up; drops Sunstone Shards). Placeholder diamonds until
-  art. `EnemySpawn.level` places an enemy at another level (±15% per level): road
+  art (the Boar has the Critters pack's since 2026-11-19). `EnemySpawn.level` places an enemy at another level (±15% per level): road
   wolves 3, road Bandit Brutes 5 (two ambushes beside the road), iron wolves 4–5,
   Deepcut's hounds 6.
 - **Party size** (`CombatRules` "Party size"): enemies grow with the heroes in their
@@ -1000,7 +1068,7 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     again when the goal changes, every 0.5 s, or when the path runs out.
   - **Speeds** (`EnemyDef.move_speed`, tiles/s): Salamander Hound 3.5, Fen Skirmisher
     3.4, Wolf 3.25, Iron Wolf 3.1, Boar 2.8, Goblin Shaman and Grizzlehide 2.7, Sunscale
-    Drake 2.5, Foreman 2.1, Husks and the Overseer 1.85, Bandit Brute 1.7 (heroes 3).
+    Drake 2.5, Foreman 2.52 (2.1 until 2026-11-19), Husks and the Overseer 1.85, Bandit Brute 1.7 (heroes 3).
     Patrols walk at `EnemyBrain.patrol_pace`. **Colliders** (`collider_radius`):
     wolves, hounds, boars 0.35; Shaman and Skirmisher 0.3; Brute, Husks, Overseer,
     Grizzlehide, Foreman 0.45; the drake 1.35; the Grey Heart 0.6. Free movers push
@@ -2163,6 +2231,15 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-19 | Critters pack: boar art, a neutral Stag, Foreman x2 damage / +20% speed / +25% areas, targeted casts face their target, leash x1.8, dungeon respawn hold and way out | User brief (branch `feature/critters-boss-fixes`, from `feature/element-start`). See **Critters, the stag, the Foreman, dungeon fixes**. My decisions are in the next rows. |
+| 2026-11-19 | The pack was zipped (`art/critters.zip`), not unzipped in the repo; strips copied into `assets/creatures/<name>/strips/`, sheets built from them | Only the strips the game uses (the pack also has per-frame PNGs, sheets and a badger and wolf). One sheet per animation keeps the existing art format; feet line up across rows by bottom-aligning frames in one cell size. |
+| 2026-11-19 | Facing bug was Healing Touch, not Frost Shard | User correction mid-task. Fix covers every targeted cast; hold 0.5 s after it goes off (my number) so the cast animation faces the target. |
+| 2026-11-19 | Stag numbers, loot and placement | Mine: level 3 (between the steppe's boars and iron wolves), stats above, 2 new materials, 4 stags in place of the 2 herds, wander 4 tiles, graze 4-10 s, 40% speed while wandering. |
+| 2026-11-19 | Neutral means: no proximity aggro, no pack call, skipped by Tab until fighting | "Not counted as enemies for aggro/pulls/enemy-nearby checks". Healing someone it fights still puts the healer on its threat table, as with any enemy. |
+| 2026-11-19 | Foreman "radius" = the slam circle, the pick cone's reach and the charge lane's width | The charge's length (how far he rushes) and the Hurled Sunstone's range are distances, not areas, so they stay. |
+| 2026-11-19 | Leash x1.8 written per enemy file; dummy and Grey Heart excluded | A shared multiplier would need the rules where the testing grounds are laid out; per-file values show the real numbers. |
+| 2026-11-19 | Respawn hold for every enemy in any dungeon, not only husks | The Overseer too; the boss never respawns mid-visit anyway. |
+| 2026-11-19 | Way out: opens when every enemy (Overseer included) is dead; a portal-like glow, not a new object | "After every dungeon enemy is dead". Uses the exit system (any hero stepping on it), placed in the Foreman's chamber (where a party ends up), arriving where the mine entrance lets out. |
 | 2026-11-18 | An item database spreadsheet, generated from the game's content | User request (a spreadsheet). `design/Item_Database.xlsx`: Items (kind, slot, rarity, stats, growth per level, price, sells for, what it teaches, where it comes from), Sources (every drop, shop, quest reward and starting kit), Enemy Loot (each enemy's table and where it lives), About. Regenerate with `godot --headless --path . res://tools/item_database.tscn -- <file.json>` then `python3 tools/make_item_database.py <file.json>`; never edit the sheet by hand. |
 | 2026-11-17 | Starting elements, the Foreman's guaranteed hit, faster enemy attacks, eight-facing hero art, a walk that keeps pace on screen, ability rebalance | User brief (seven parts; part 2 waits for the OK on its reward table). My choices: elements as data files; old characters and tool-made ones keep the old kit; shirt / pants numbers; Stone Skin ported from the threat-tanking branch; the Foreman's new ability Hurled Sunstone rather than changing slam, charge or pick, interruptible; wind-up floors 0.63 s for dodgeable attacks (the dodge warning) and 0.2 s for bites, boss telegraphs kept; eight facings by 45° slices of the facing angle; the walk by screen distance with per-facing measured strides; range +2 on every ranged ability (dashes excluded), only the first range number in each text cell; Air control and defense abilities 0.6 Phys Atk + 0.4 Magic Def. See **Starting elements, faster enemies, rebalance**. |
 | 2026-11-17 | The user's map edits merged: Greenfields, the Silent Shaft, Millbrook, Windsteppe, Deepcut, the Road to Deepcut, the Crossing | User's own edits in the map editor. User choices: the Foreman stays at his own level 10 (the edit had set level 1); Greenfields stays as edited: no Goblin Shamans, Fen Skirmishers or graveyard (a release there goes to its hero spawn), so Goblin Fetishes can only be done in the testing grounds for now (to rework later). Mine: the Silent Shaft's top row was trimmed, so the encounter's victory spot and quest 1-07's two places move up a row; tests describing the old maps follow the new ones. |
