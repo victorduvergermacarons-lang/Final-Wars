@@ -263,7 +263,7 @@ func _pick_up_drops(sim: WorldSim) -> void:
 		for d in sim.drops.for_owner(h.id):
 			h.move.pos = d.pos
 			world.submit(h.id, {"type": "pick_up", "drop": d.id})
-	world.step()
+			world.step()
 
 
 ## A boss encounter, short-cut like the other fights but through its phases: the

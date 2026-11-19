@@ -54,6 +54,12 @@ func _kill(enemy_id: StringName, n: int) -> void:
 		enemy.die()
 		fields._on_death(enemy)
 		world.step()
+		# Personal loot lies on the ground (2026-11-19): pick it up (brought to the
+		# hero, so it doesn't wander among the wolves).
+		for d in fields.drops.for_owner(hero.id):
+			fields.drops.find(d.id).pos = hero.move.pos
+			world.submit(hero.id, {"type": "pick_up", "drop": d.id})
+			world.step()
 
 
 func _rejected(events: Array) -> Array:
