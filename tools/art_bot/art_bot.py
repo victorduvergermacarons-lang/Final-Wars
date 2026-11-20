@@ -108,8 +108,9 @@ def load_queue(path: Path) -> list[dict]:
     return entries
 
 
-# Order of the 8 views returned by the rotation endpoint (clockwise from south).
-ROTATION_ORDER = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
+# Order of the 8 views the rotation endpoint returns (checked on Caedan, 2026-11-20): the
+# input view (south-east) first, then counter-clockwise.
+ROTATION_ORDER = ["south-east", "east", "north-east", "north", "north-west", "west", "south-west", "south"]
 
 
 def followups(stills: list[dict], approved: dict[str, Path], progress: dict | None = None) -> list[dict]:
