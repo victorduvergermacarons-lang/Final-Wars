@@ -3203,6 +3203,167 @@
       "preview": [
         "art/NP-02/NP-02-1+8dir_2026-11-20_sheet.png"
       ]
+    },
+    "NP-02-1+fire-cast@south": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02352770049042172
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_preview.gif"
+      ]
+    },
+    "NP-02-1+fire-cast@east": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01929731077618069
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_preview.gif"
+      ]
+    },
+    "NP-02-1+fire-cast@north-east": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01876432920164532
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_preview.gif"
+      ]
+    },
+    "NP-02-1+fire-cast@north": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01982745090458128
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@north_2026-11-20_preview.gif"
+      ]
+    },
+    "NP-02-1+fire-cast@north-west": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018892620782057445
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_preview.gif"
+      ]
+    },
+    "NP-02-1+fire-cast@west": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02108035605483585
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@west_2026-11-20_preview.gif"
+      ]
+    },
+    "NP-02-1+fire-cast@south-west": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02379456833998362
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -3643,6 +3804,20 @@
       "date": "2026-11-20",
       "made": [
         "NP-02-1+8dir"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-20",
+      "made": [
+        "NP-02-1+fire-cast@south",
+        "NP-02-1+fire-cast@east",
+        "NP-02-1+fire-cast@north-east",
+        "NP-02-1+fire-cast@north",
+        "NP-02-1+fire-cast@north-west",
+        "NP-02-1+fire-cast@west",
+        "NP-02-1+fire-cast@south-west"
       ],
       "failed": [],
       "stopped": ""

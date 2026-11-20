@@ -44,6 +44,48 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>Made from approved/NP-02-1.png: 8 directions of the approved picture</sub>
 
+### NP-02-1+fire-cast@south · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+fire-cast@south](art/NP-02/NP-02-1+fire-cast@south_2026-11-20_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
+
+### NP-02-1+fire-cast@east · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+fire-cast@east](art/NP-02/NP-02-1+fire-cast@east_2026-11-20_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
+
+### NP-02-1+fire-cast@north-east · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+fire-cast@north-east](art/NP-02/NP-02-1+fire-cast@north-east_2026-11-20_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
+
+### NP-02-1+fire-cast@north · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+fire-cast@north](art/NP-02/NP-02-1+fire-cast@north_2026-11-20_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
+
+### NP-02-1+fire-cast@north-west · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+fire-cast@north-west](art/NP-02/NP-02-1+fire-cast@north-west_2026-11-20_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
+
+### NP-02-1+fire-cast@west · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+fire-cast@west](art/NP-02/NP-02-1+fire-cast@west_2026-11-20_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
+
+### NP-02-1+fire-cast@south-west · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+fire-cast@south-west](art/NP-02/NP-02-1+fire-cast@south-west_2026-11-20_preview.gif)
+
+<sub>Made from approved/NP-02-1.png: fire cast</sub>
+
 ### NP-02-5 · Caedan Ashvale (2026-11-18)
 
 ![NP-02-5](art/NP-02/NP-02-5_2026-11-18_1.png) ![NP-02-5](art/NP-02/NP-02-5_2026-11-18_2.png)
