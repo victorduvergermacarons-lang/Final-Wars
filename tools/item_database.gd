@@ -128,6 +128,14 @@ static func collect() -> Dictionary:
 			if it != null:
 				sources.append({"item_id": String(it.id), "how": "Quest reward", "from": label, "where": "",
 						"detail": "choice of one of %d" % q.reward_choices.size()})
+		for e in q.element_rewards:
+			for it in q.element_rewards[e]:
+				sources.append({"item_id": String(it.id), "how": "Quest reward", "from": label, "where": "",
+						"detail": "always, for %s heroes" % e})
+		for e in q.element_choices:
+			for it in q.element_choices[e]:
+				sources.append({"item_id": String(it.id), "how": "Quest reward", "from": label, "where": "",
+						"detail": "choice of one, for %s heroes" % e})
 		for it in q.given_items:
 			if it != null:
 				sources.append({"item_id": String(it.id), "how": "Quest item (given)", "from": label, "where": "",

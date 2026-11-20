@@ -30,4 +30,10 @@ objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResourc
 reward_xp = 120
 reward_gold = 15
 reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion")])
-reward_choice_ids = Array[StringName]([&"pebble_scroll", &"open_palm_scroll", &"hunters_shortbow"])
+element_reward_ids = {
+"earth": [&"quarrymans_gloves"],
+"water": [&"riverweave_gloves"],
+"fire": [&"emberstitch_gloves"],
+"air": [&"breezecloth_wraps"]
+}
+reward_choice_ids = Array[StringName]([])

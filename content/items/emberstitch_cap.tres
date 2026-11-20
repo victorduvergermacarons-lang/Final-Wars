@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_stats"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_item"]
+
+[sub_resource type="Resource" id="stats"]
+script = ExtResource("1_stats")
+mag_atk = 1.0
+mag_def = 3.0
+crit_rate = 1.0
+
+[sub_resource type="Resource" id="growth"]
+script = ExtResource("1_stats")
+mag_atk = 0.5
+mag_def = 1.0
+
+[resource]
+script = ExtResource("2_item")
+id = &"emberstitch_cap"
+display_name = "Emberstitch Cap"
+description = "A guild-issue hood, for a Fire adept."
+slot = 0
+price = 12
+stats = SubResource("stats")
+growth = SubResource("growth")
+element = &"fire"

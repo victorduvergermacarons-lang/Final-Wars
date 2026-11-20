@@ -131,8 +131,9 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 
 - **Start (since 2026-11-17):** a new character picks an element on the element screen
   (see **Starting elements**): its first ability mastered (scroll in the bag), its next
-  scroll in the learning slot, its shirt and pants worn; the Rusty Shortsword (Slash)
-  stays. Characters made before, and ones made without the screen (tests, the command
+  scroll in the learning slot, its shirt and pants worn. **No weapon** (since
+  2026-11-20): the first weapons are a choice in main quest 1-05 (see **Element set
+  rewards**); vendors still sell them. Characters made before, and ones made without the screen (tests, the command
   line), keep the old kit: Ember Fist Scroll in the learning slot (Fire Punch), Mender's
   Scroll in the bag (Healing Touch). Adventurer base stats as below.
 - **Keys:** hold an aimed ability's key to aim, release to cast; T ability trees;
@@ -151,8 +152,8 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
   Ocean Spirit 655, Bloodbending 715, Octopus Form 775, Full Moon 835, Tidal Resurgence
   900. Tiers still set AP, rarity, prices and default amounts.
 - **Learning scroll growth per level** (50% applied): Fire MagAtk 3, Mana 6, Fire Mastery 2;
-  Water MagAtk 2, MagDef 2, Mana 8, Water Mastery 2; Earth MagAtk 1, PhysDef 2, HP 8, Earth
-  Mastery 2; Air MagAtk 2, Evasion 1, Mana 6, Air Mastery 2. Weapons: sword PhysAtk 10 /
+  Water MagAtk 2, MagDef 2, Mana 8, Water Mastery 2; Earth PhysDef 3, HP 8, Earth
+  Mastery 2 (Physical Defense instead of Magic Attack since 2026-11-20); Air MagAtk 2, Evasion 1, Mana 6, Air Mastery 2. Weapons: sword PhysAtk 10 /
   Acc 4 (growth PhysAtk 3, HP 8, Sword Mastery 2), bow PhysAtk 13 / Acc 8, hammer PhysAtk
   15 / PhysDef 5 / HP 15; +50% per tier above 1.
 
@@ -269,6 +270,48 @@ table). Numbers as built:
     Breath, Air Sphere, Suffocate, Storm Front, Pressure Lock): 0.6 Phys Atk + 0.4 Magic Def.
   - Scales With takes a coefficient before a stat ("0.45 Magic Atk"; without one,
     `CombatRules.sheet_stat_coefficient`).
+
+## Element set rewards (branch `feature/element-rewards`, 2026-11-20)
+
+User request: the Act I main quests build each hero's set for their element; heroes
+start without a weapon (the first ones from quest 1-05); Earth scrolls grow Physical
+Defense instead of Magic Attack. Written by `tools/once/make_element_set.py`.
+- **Per element** (`QuestDef.element_reward_ids` given, `element_choice_ids` joining the
+  choice of one, by `Hero.element`; `QuestDef.items_for` / `choices_for`). A hero with
+  no element chooses among every element's items instead (they join the choice).
+
+  | Quest | Given | Choice of one |
+  |-------|-------|---------------|
+  | 1-01 | Hands piece (+ 2 health potions) | — |
+  | 1-02 | Head piece | Minor Mana Potion or Minor Health Potion |
+  | 1-03 | Feet piece (+ 2 health potions) | — |
+  | 1-04 | 2 health potions | the ring or the element's next scroll |
+  | 1-05 | potions | the charm, Rusty Shortsword, Hunter's Shortbow or Iron Mallet |
+  | 1-06 | the scroll after that | — |
+  | 1-07 | potions | Fireball, Glacier or Bulwark scroll (unchanged) |
+
+- **Next scrolls** (1-04, then 1-06): Earth Pillar (Raise Pillar), Stomp (Seismic Stomp);
+  Water Mist (Soothing Mist, 40 Water Mastery), Tidal (Tidal Blessing, 65); Fire Spark
+  (Fire Dart), Sun Warrior's Breath; Air Featherstep (Air Step), Gale (Air Blast, tier 2,
+  150 Air Mastery: Wind Snare isn't in the game).
+- **The pieces** (all Common, `ItemDef.element` set). A = the element's attack stat, D its
+  defense (Earth Phys Atk + Phys Def, Water Magic Atk + Phys Def, Fire Magic Atk + Magic
+  Def, Air Phys Atk + Magic Def); growth per level (half applied, as for all gear):
+
+  | Piece | Stats | Growth |
+  |-------|-------|--------|
+  | Hands | A +2, D +1, extra 1 | A 1, D 0.5 |
+  | Head | A +1, D +3, extra 2 | A 0.5, D 1 |
+  | Feet | A +2, D +2, Speed +3 | A 0.5, D 1 |
+  | Ring | A +3, D +2, extra 1 | A 1, D 0.5 |
+  | Charm | A +3, D +3, extra 2 | A 1, D 1 |
+
+  Extras: Earth HP +10 / Accuracy +2; Water Mana +10 / HP +10; Fire Mana +10 / Crit Rate
+  +1; Air Evasion +2 / Speed +3. Names: Earth Quarryman's Gloves, Hood, Boots, Granite
+  Ring, Bedrock Charm; Water Riverweave Gloves, Hood, Sandals, Tidestone Ring, Pearl
+  Pendant; Fire Emberstitch Gloves, Cap, Boots, Cinder Ring, Ashglass Pendant; Air
+  Breezecloth Wraps, Hood, Shoes, Gale Ring, Feather Charm.
+- Tests: `tests/unit/test_element_rewards.gd`.
 
 ## Critters, the stag, the Foreman, dungeon fixes (branch `feature/critters-boss-fixes`, 2026-11-19)
 
@@ -834,11 +877,9 @@ Prince Caedan Ashvale, the Guild's founder, is sincere. Quests written by
   | Pins on the Map (side) | 7 | Guild Board → Maren | reach 4 troubled sites; use the Guild Map | 500 |
 
   Escorts fail if the escortee dies and restart from the giver (milestone 1 rules).
-- **Rewards:** gold, potions, and a choice of one item per main quest teaching an
-  implemented tier-1 ability; across the act every tree comes up (Fire: Spark, Cinder
-  Kick, Sun Warrior's Breath; Water: River Lash, Frost Shard, the Current; Earth:
-  Pebble, Stomp, Pillar; Air: Open Palm, Breeze, Featherstep; Sword: Traveler's
-  Longsword; Bow: Hunter's Shortbow, Yew Longbow; Hammer: Iron Mallet, Quarry Maul).
+- **Rewards:** gold, potions, and since 2026-11-20 the hero's element set and next
+  scrolls (see **Element set rewards**). (Before: a choice of one tier-1 scroll or
+  weapon per main quest.)
 - **Missing tier-1 abilities** (not implemented, so not rewarded): E02 Stone Skin
   (Granite Skin Scroll), A04 Wind Snare (Snaring Wind Scroll), S02 Thrust (Militia
   Rapier), S03 Parry (Duelist's Sabre), B03 Disengage (Ranger's Bow), B04 Hunter's
@@ -2335,6 +2376,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-20 | Element set rewards for the Act I main quests; no starting weapon; Earth scrolls grow Physical Defense | User request and table: 1-01 Hands, 1-02 Head + a choice of mana or health potion, 1-03 Feet, 1-04 the ring or the next scroll (one pick), 1-05 the charm or a first weapon (one pick), 1-06 the next scroll, 1-07 unchanged; all Common; stats, extras and names as proposed; heroes without an element pick any element's piece. My choices: the other quests' always-given potions stay (1-02's two mana potions became its choice); the "next scrolls" follow each element's unlock order among abilities in the game (Air's second is Air Blast, a tier-2 ability, since Wind Snare isn't built); vendors keep selling weapons; Water and Air scroll growth unchanged. |
 | 2026-11-19 | Loot, boss rolls, binding, trading, duels: my choices | User brief (phases 1-5; bosses-only rolls and the branch chosen by the user). Mine: gold + materials copied to fighters (threat table), other drops personal on the ground (300 s, pickup 1.6 tiles, E); the old bag-full loot window removed; Legendary rarity (gold; epic border until drawn); feed and boss summary messages; "key item" = scroll, tree weapon, or gear whose summed core stats beat what a fighter wears there; everyone who chose Need or Greed rolls (all shown), all-pass = nobody gets it, ties re-roll up to 10 times; claim box by character name, delivered on next appearance; Bind on Pickup for scrolls and roll winnings, Bind on Equip for other gear, worn = bound, saves drop the trade window; trade range 6, duel request range 15, 6 trade slots, gold escrowed too, a full bag refuses the swap; duels count as combat (no zone exits mid-duel), idle enemies ignore duelists, the flag lingers 3 s, the end message reaches 30 tiles. |
 | 2026-11-19 | Hero hit W / NW mirrored from E / NE | User request (phase 8). The "hit animation" is the getting-hit one (the only `hit` sheet; its NW row was a known flaw). Mirroring is data (`mirror_rows`), applied by the animator for every pick and drawn flipped about the feet, so nothing is duplicated. |
 | 2026-11-19 | The Wilds replace the Enemy Testing Grounds | User request (phase 7; "same gate" and "retire with the map" chosen by the user). My choices: the name; four streams, 22 puddles, fords at path crossings plus four per stream so no bank is cut off; bushes as the blocking vegetation (no tree tiles exist); the testing grounds' file moved to `content/retired/` so ContentDB never loads it; the screenshot scene's creature shots staged on Greenfields. |

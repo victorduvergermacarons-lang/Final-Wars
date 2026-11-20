@@ -30,24 +30,26 @@ static func objectives_bbcode(hero: Hero, def: QuestDef) -> String:
 	return "\n".join(lines)
 
 
-static func rewards_bbcode(def: QuestDef) -> String:
+static func rewards_bbcode(def: QuestDef, hero: Hero = null) -> String:
+	var element: StringName = hero.element if hero != null else &""
 	var parts: PackedStringArray = []
 	if def.reward_xp > 0:
 		parts.append("%d XP" % def.reward_xp)
 	if def.reward_gold > 0:
 		parts.append("[color=%s]%d gold[/color]" % [GOLD, def.reward_gold])
-	for item in def.reward_items:
+	for item in def.items_for(element):
 		parts.append(item_name(item))
 	var out := "Rewards: " + (", ".join(parts) if not parts.is_empty() else "none")
-	if not def.reward_choices.is_empty():
-		out += "\nChoose one: " + ", ".join(def.reward_choices.map(func(i): return item_name(i)))
+	var choices := def.choices_for(element)
+	if not choices.is_empty():
+		out += "\nChoose one: " + ", ".join(choices.map(func(i): return item_name(i)))
 	return out
 
 
 ## Under a quest offer: its title, main or side and where, what to do, what it pays.
 static func summary_bbcode(hero: Hero, def: QuestDef) -> String:
 	return "[b]%s[/b]  [color=%s]%s[/color]\n%s\n%s" % [def.title, GREY, kind_and_area(def),
-			objectives_bbcode(hero, def), rewards_bbcode(def)]
+			objectives_bbcode(hero, def), rewards_bbcode(def, hero)]
 
 
 ## "Main quest · Greenfields".
@@ -59,7 +61,7 @@ static func kind_and_area(def: QuestDef) -> String:
 ## Offer page: the giver's text, what to do, and what it pays.
 static func offer_bbcode(hero: Hero, def: QuestDef) -> String:
 	return "[b]%s[/b]\n%s\n\n%s\n\n%s" % [def.title, ContentDB.dialogue.text(def.line_id("offer")),
-			objectives_bbcode(hero, def), rewards_bbcode(def)]
+			objectives_bbcode(hero, def), rewards_bbcode(def, hero)]
 
 
 ## Tracker for every active quest (main quests first): title (gold when ready)

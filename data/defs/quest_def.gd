@@ -34,6 +34,15 @@ enum Category {
 ## Ability-tree items by id (ContentDB adds them to the two lists above).
 @export var reward_item_ids: Array[StringName] = []
 @export var reward_choice_ids: Array[StringName] = []
+## Rewards by the hero's starting element (2026-11-20; "earth", "water", "fire",
+## "air" -> item ids): `element_reward_ids` are given, `element_choice_ids` join the
+## choice of one, ahead of `reward_choices`. A hero with no element chooses among
+## every element's items instead (they join the choice too).
+@export var element_reward_ids: Dictionary = {}
+@export var element_choice_ids: Dictionary = {}
+## Linked by ContentDB from the two above: element (String) -> Array[ItemDef].
+var element_rewards: Dictionary = {}
+var element_choices: Dictionary = {}
 ## World flag the host sets when anyone turns this in ("" = none). Its
 ## announcement is the line "quest.<id>.world_flag".
 @export var sets_world_flag: StringName = &""
@@ -41,6 +50,30 @@ enum Category {
 ## end-of-act screen shows the party's stats, then sends them to `return_zone`.
 @export var ends_act: int = 0
 @export var return_zone: StringName = &""
+
+
+## What a hero of this element is given on hand-in.
+func items_for(element: StringName) -> Array[ItemDef]:
+	var out: Array[ItemDef] = []
+	out.append_array(reward_items)
+	if element_rewards.has(String(element)):
+		out.append_array(element_rewards[String(element)])
+	return out
+
+
+## What a hero of this element chooses one of on hand-in (empty = no choice).
+func choices_for(element: StringName) -> Array[ItemDef]:
+	var out: Array[ItemDef] = []
+	var key := String(element)
+	if element_rewards.has(key) or element_choices.has(key):
+		out.append_array(element_choices.get(key, []))
+	else:
+		for e in element_rewards:
+			out.append_array(element_rewards[e])
+		for e in element_choices:
+			out.append_array(element_choices[e])
+	out.append_array(reward_choices)
+	return out
 
 
 func turn_in_npc() -> StringName:

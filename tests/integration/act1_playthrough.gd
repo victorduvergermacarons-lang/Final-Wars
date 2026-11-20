@@ -160,7 +160,7 @@ func play(id: StringName) -> bool:
 	for h in party:
 		_sell_loot(h)
 		place(h, turn_zone, turn_npc.tile())
-		var choice := 0 if not def.reward_choices.is_empty() else -1
+		var choice := 0 if not def.choices_for(h.element).is_empty() else -1
 		var done := send(h, {"type": "turn_in_quest", "npc": turn_npc.id, "quest": id, "choice": choice})
 		for e in done:
 			if e.type == "act_complete" and e.target == h.id: # the last hero's screen: everyone has handed in

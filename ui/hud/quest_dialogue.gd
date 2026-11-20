@@ -67,16 +67,18 @@ static func show_progress(hud: Hud, def: QuestDef) -> void:
 
 static func show_turn_in(hud: Hud, def: QuestDef) -> void:
 	hud.dialogue.show_line(def.line_id("complete"), "Well done.", func():
-		hud.dialogue.append_text("[b]%s[/b]\n%s" % [def.title, QuestText.rewards_bbcode(def)])
+		hud.dialogue.append_text("[b]%s[/b]\n%s" % [def.title, QuestText.rewards_bbcode(def, hud.session.local_hero())])
 		var send := func(choice: int):
 			var npc := hud.dialogue.current_npc()
 			if npc != null:
 				hud.session.send_intent({"type": "turn_in_quest", "npc": npc.id, "quest": def.id, "choice": choice})
-		if def.reward_choices.is_empty():
+		var hero: Hero = hud.session.local_hero()
+		var choices := def.choices_for(hero.element if hero != null else &"")
+		if choices.is_empty():
 			hud.dialogue.add_option("Complete quest", func(): send.call(-1))
 		else:
-			for i in def.reward_choices.size():
-				var item := def.reward_choices[i]
+			for i in choices.size():
+				var item := choices[i]
 				var b := ItemButton.new(hud, item, "Complete and take %s" % item.display_name)
 				b.pressed.connect(func(): send.call(i))
 				hud.dialogue.add_custom_option(b)

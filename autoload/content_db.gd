@@ -87,6 +87,8 @@ func _link_tree_items() -> void:
 	for q in quests.values():
 		_link_list(q.reward_items, q.reward_item_ids)
 		_link_list(q.reward_choices, q.reward_choice_ids)
+		q.element_rewards = _link_by_element(q.element_reward_ids)
+		q.element_choices = _link_by_element(q.element_choice_ids)
 	for e in enemies.values():
 		_time_abilities_to_art(e)
 	for e in enemies.values():
@@ -118,6 +120,19 @@ func _link_list(list: Array, ids: Array) -> void:
 		var item := _item(id)
 		if item != null:
 			list.append(item)
+
+
+## {element: [item ids]} -> {element (String): Array[ItemDef]}.
+func _link_by_element(ids: Dictionary) -> Dictionary:
+	var out := {}
+	for e in ids:
+		var list: Array[ItemDef] = []
+		for id in ids[e]:
+			var item := _item(StringName(id))
+			if item != null:
+				list.append(item)
+		out[String(e)] = list
+	return out
 
 
 func _item(id: StringName) -> ItemDef:
