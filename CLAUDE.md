@@ -1703,14 +1703,14 @@ editor/          map editor (ZoneEdit, ZoneSaver, ZoneCheck, EditorSession, MapE
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator,
-                 write_audio_spec.gd (sound key list in AUDIO_SPEC.md)
+                 write_audio_spec.gd (sound key list in AUDIO_SPEC.md), write_quest_list.gd (docs/quests.md)
 design/          Ability_Tree.xlsx (source of truth for abilities); Item_Database.xlsx (generated: every item,
                  its stats, growth and every source: tools/item_database.tscn + tools/make_item_database.py)
 tools/once/      one-off content conversions and generators (kept for the record)
 tools/perf/      headless profilers: frame time per map, sim cost per tick
 tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd), net/run_party_check.sh (loot, rolls, binding, trades, duels with 3 processes),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor, hero art), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
+docs/            quests.md (every quest, generated), exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor, hero art), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
 ```
 
 ### Build order (milestone 1)
@@ -2376,6 +2376,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-20 | `docs/quests.md`: every quest in one page, generated from the quest files | User request. `tools/write_quest_list.gd` (`godot --headless --path . -s res://tools/write_quest_list.gd`) writes it: a summary table, then per quest its giver and hand-in (with their maps), prerequisites, items handed over, objectives, rewards (per element too), world flag and offer text. A test fails when it is out of date. |
 | 2026-11-20 | Element set rewards for the Act I main quests; no starting weapon; Earth scrolls grow Physical Defense | User request and table: 1-01 Hands, 1-02 Head + a choice of mana or health potion, 1-03 Feet, 1-04 the ring or the next scroll (one pick), 1-05 the charm or a first weapon (one pick), 1-06 the next scroll, 1-07 unchanged; all Common; stats, extras and names as proposed; heroes without an element pick any element's piece. My choices: the other quests' always-given potions stay (1-02's two mana potions became its choice); the "next scrolls" follow each element's unlock order among abilities in the game (Air's second is Air Blast, a tier-2 ability, since Wind Snare isn't built); vendors keep selling weapons; Water and Air scroll growth unchanged. |
 | 2026-11-19 | Loot, boss rolls, binding, trading, duels: my choices | User brief (phases 1-5; bosses-only rolls and the branch chosen by the user). Mine: gold + materials copied to fighters (threat table), other drops personal on the ground (300 s, pickup 1.6 tiles, E); the old bag-full loot window removed; Legendary rarity (gold; epic border until drawn); feed and boss summary messages; "key item" = scroll, tree weapon, or gear whose summed core stats beat what a fighter wears there; everyone who chose Need or Greed rolls (all shown), all-pass = nobody gets it, ties re-roll up to 10 times; claim box by character name, delivered on next appearance; Bind on Pickup for scrolls and roll winnings, Bind on Equip for other gear, worn = bound, saves drop the trade window; trade range 6, duel request range 15, 6 trade slots, gold escrowed too, a full bag refuses the swap; duels count as combat (no zone exits mid-duel), idle enemies ignore duelists, the flag lingers 3 s, the end message reaches 30 tiles. |
 | 2026-11-19 | Hero hit W / NW mirrored from E / NE | User request (phase 8). The "hit animation" is the getting-hit one (the only `hit` sheet; its NW row was a known flaw). Mirroring is data (`mirror_rows`), applied by the animator for every pick and drawn flipped about the feet, so nothing is duplicated. |
