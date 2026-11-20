@@ -101,7 +101,7 @@ func test_pre_milestone_3_character_is_converted() -> void:
 	assert_eq(hero.level, 5)
 	assert_eq(hero.gold, 77)
 	assert_eq(hero.equipped_in(EquipSlot.Id.HEAD).id, &"iron_helm", "armor stays")
-	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"rusty_shortsword")
+	assert_null(hero.equipped_in(EquipSlot.Id.MAIN_HAND), "no starting weapon")
 	assert_null(hero.equipped_in(EquipSlot.Id.OFF_HAND))
 	assert_eq(hero.bag.count_of(db.items[&"staff"]), 0)
 	assert_eq(hero.bag.count_of(db.items[&"minor_health_potion"]), 3)
@@ -128,7 +128,7 @@ func test_new_character_matches_the_starting_kit() -> void:
 	var data := CharacterData.new_character("Bo", db.heroes[&"adventurer"])
 	var hero := CharacterData.restore(1, data, db)
 	assert_eq(hero.display_name, "Bo")
-	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"rusty_shortsword")
+	assert_null(hero.equipped_in(EquipSlot.Id.MAIN_HAND), "no starting weapon")
 	assert_eq(hero.learning_item.id, &"ember_fist_scroll")
 	assert_eq(hero.bag.count_of(db.items[&"menders_scroll"]), 1)
 

@@ -16,6 +16,7 @@ func before_each() -> void:
 	game.start_solo(CharacterData.new_character("Lea", ContentDB.heroes[&"adventurer"]))
 	hud = game.get_node("Hud")
 	hero = game.session.local_hero()
+	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 
 
 func after_each() -> void:

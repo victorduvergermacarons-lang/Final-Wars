@@ -34,7 +34,7 @@ func test_each_element_starts_with_its_kit() -> void:
 		assert_eq(hero.learning_item.id, kit[2], "%s: learning the next scroll" % id)
 		var ids := hero.available_abilities().map(func(a): return a.id)
 		assert_true(ids.has(kit[0]) and ids.has(kit[3]), "%s: both usable: %s" % [id, ids])
-		assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"rusty_shortsword", "keeps the sword")
+		assert_null(hero.equipped_in(EquipSlot.Id.MAIN_HAND), "no weapon at the start")
 		var chest := hero.equipped_in(EquipSlot.Id.CHEST)
 		var legs := hero.equipped_in(EquipSlot.Id.LEGS)
 		assert_true(chest != null and chest.element == id, "%s: a shirt" % id)

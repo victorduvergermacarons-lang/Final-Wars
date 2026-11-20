@@ -29,9 +29,10 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(30)
 	assert_ne(hero.tile(), start, "hero moved")
 
-	# Starting abilities were auto-placed on the bar in order: Slash (the sword in
-	# hand) and Fire Punch (the scroll in the learning slot).
-	assert_eq(game.client.action_bar.slots.slice(0, 2), [&"S01", &"F01"] as Array[StringName])
+	# Heroes start without a weapon: Fire Punch (the scroll in the learning slot)
+	# was auto-placed first on the bar.
+	assert_eq(game.client.action_bar.slots[0], &"F01")
+	assert_false(game.client.action_bar.slots.has(&"S01"), "no sword, no Slash")
 
 	# Put Mender's Scroll in the learning slot: Healing Touch joins the bar.
 	session.send_intent({"type": "learn", "bag_index": hero.bag.index_of(ContentDB.items[&"menders_scroll"])})
@@ -47,6 +48,8 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "heal went through the action bar")
 
 	# Equip a new sword from the inventory window (out of combat): Lunge appears on the bar.
+	hero.wear(ContentDB.items[&"rusty_shortsword"])
+	await wait_physics_frames(6)
 	hero.bag.add(ContentDB.items[&"travelers_longsword"])
 	hud._toggle(hud.inventory_window)
 	hud._toggle(hud._character)
