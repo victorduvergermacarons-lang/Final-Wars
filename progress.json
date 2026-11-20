@@ -3347,6 +3347,29 @@
         "art/NP-02/NP-02-1+fire-cast@south_2026-11-20_preview.gif"
       ],
       "facing": "south"
+    },
+    "NP-02-1+fire-cast@east": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_8.png",
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018861833287609948
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -3801,6 +3824,14 @@
         "NP-02-1+fire-cast@north-west",
         "NP-02-1+fire-cast@west",
         "NP-02-1+fire-cast@south-west"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-20",
+      "made": [
+        "NP-02-1+fire-cast@east"
       ],
       "failed": [],
       "stopped": ""
