@@ -44,6 +44,7 @@ func test_game_sounds_and_combat_music() -> void:
 
 	# Walking plays footsteps; sounds without files are skipped, never fatal.
 	var hero := session.local_hero()
+	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	session.send_intent({"type": "step", "to": hero.tile() + Vector2i.UP})
 	await wait_physics_frames(12)
 	await wait_process_frames(2)

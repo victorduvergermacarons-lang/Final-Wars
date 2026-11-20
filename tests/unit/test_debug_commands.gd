@@ -22,6 +22,7 @@ func before_each() -> void:
 	world = World.new(db.zones.values(), db.rules, 5, &"greenfields", db.quests)
 	world.enable_debug(db)
 	hero = world.add_saved_hero(CharacterData.new_character("Dev", db.heroes[&"adventurer"]), db)
+	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	sim = world.zone_of(hero.id)
 	hero.move.place(Vector2i(10, 20))
 

@@ -23,6 +23,7 @@ func after_all() -> void:
 func before_each() -> void:
 	world = World.new(db.zones.values(), db.rules, 5, &"town", db.quests)
 	hero = world.add_saved_hero(CharacterData.new_character("Blade", db.heroes[&"adventurer"]), db)
+	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	sim = world.zone_of(hero.id)
 	# A wolf right next to the hero, on the first free walkable neighbour.
 	for d in GridModel.DIRECTIONS:

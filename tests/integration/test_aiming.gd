@@ -30,6 +30,7 @@ func before_each() -> void:
 	session.start(ContentDB.zones.values(), &"crossing", ContentDB.rules,
 			CharacterData.new_character("Aimer", ContentDB.heroes[&"adventurer"]))
 	hero = session.local_hero()
+	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	client = ClientState.new()
 	InputActions.apply_action_bar_keys(client.action_bar)
 	view = WorldView.new()
