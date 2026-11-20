@@ -101,13 +101,20 @@ def load_queue(path: Path) -> list[dict]:
                 "no_background": prompt.get("no_background", kind.get("no_background", True)),
                 "rotate": prompt.get("rotate", bool(prompt.get("animations"))),
                 "animations": prompt.get("animations", []),
+                # animations to make in all 8 directions, from this picture's 8-direction views
+                "every_direction": prompt.get("every_direction", []),
                 "frames": prompt.get("frames", DEFAULT_FRAMES),
             })
     return entries
 
 
-def followups(stills: list[dict], approved: dict[str, Path]) -> list[dict]:
-    """8 directions and animations for every approved still that lists them."""
+# Order of the 8 views returned by the rotation endpoint (clockwise from south).
+ROTATION_ORDER = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
+
+
+def followups(stills: list[dict], approved: dict[str, Path], progress: dict | None = None) -> list[dict]:
+    """8 directions and animations for every approved still that lists them. Animations in
+    "every_direction" are also made from each of the other 7 views, once those exist."""
     out = []
     for s in stills:
         if s["key"] not in approved:
@@ -121,6 +128,14 @@ def followups(stills: list[dict], approved: dict[str, Path]) -> list[dict]:
         for action in s["animations"]:
             out.append({**common, "key": f"{s['key']}+{slug(action)}", "op": "animate",
                         "description": action, "frames": s["frames"]})
+        views = ((progress or {}).get("done", {}).get(f"{s['key']}+8dir") or {}).get("files", [])
+        if s.get("every_direction") and len(views) >= 8:
+            for action in s["every_direction"]:
+                for direction, view in zip(ROTATION_ORDER, views):
+                    if direction == "south-east":  # the approved picture already faces south-east
+                        continue
+                    out.append({**common, "key": f"{s['key']}+{slug(action)}@{direction}", "op": "animate",
+                                "description": action, "frames": s["frames"], "base_file": view})
     return out
 
 
@@ -162,7 +177,7 @@ def plan(stills: list[dict], approved: dict[str, Path], progress: dict, count: i
         return not e["base"] or e["base"] in approved or (e.get("base_file") and (DRAFTS / e["base_file"]).exists())
     ready = [e for e in open_stills if has_base(e)]
     waiting = [e for e in open_stills if not has_base(e)]
-    later = pending(followups(stills, approved), progress)
+    later = pending(followups(stills, approved, progress), progress)
     return (ready + later)[:count], waiting  # follow-ups only use what the stills leave
 
 
@@ -389,7 +404,7 @@ def write_review(drafts: Path, stills: list[dict], approved: dict[str, Path], pr
         for key, info in failed.items():
             lines.append(f"- **{key}** ({info['count']}x): {info['last_error'][:160]}")
         lines.append("")
-    by_key = {e["key"]: e for e in stills + followups(stills, approved)}
+    by_key = {e["key"]: e for e in stills + followups(stills, approved, progress)}
     lines += ["## Drafts", ""]
     for key, info in sorted(done.items(), key=lambda kv: kv[1]["date"], reverse=True):
         e = by_key.get(key, {})
