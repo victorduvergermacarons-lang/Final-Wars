@@ -45,9 +45,15 @@ func _cave() -> ZoneDef:
 	lift.tile = Vector2i(5, 2)
 	lift.to_tile = Vector2i(13, 9)
 	z.exits = [lift] as Array[ZoneExit]
+	var way_out := ZoneExit.new() # opens once the cave is cleared
+	way_out.tile = Vector2i(14, 10)
+	way_out.to_zone = &"town"
+	way_out.to_tile = Vector2i(5, 6)
+	z.cleared_exit = way_out
 	var wolf := EnemyDef.new()
 	wolf.id = &"cave_wolf"
 	wolf.stats.hp = 200.0
+	wolf.respawn_seconds = 10.0
 	var spawn := EnemySpawn.new()
 	spawn.enemy = wolf
 	spawn.tile = Vector2i(12, 2)
@@ -203,3 +209,77 @@ func test_no_wipe_outside_dungeons() -> void:
 	var events := world.advance(rules.wipe_respawn_seconds + 0.5)
 	assert_false(events.any(func(e): return e.type == "party_wipe" or e.type == "wipe_respawn"))
 	assert_false(a.alive, "releases as usual")
+
+
+func _kill(copy: WorldSim, by: Hero, e: Enemy) -> Array[Dictionary]:
+	var events: Array[Dictionary] = []
+	AbilityResolver.deal_damage(copy.ctx, by, e, &"test", 100000.0, false, events)
+	copy._emit_resolved(events)
+	return world.step()
+
+
+func test_enemies_stay_dead_while_anyone_is_inside() -> void:
+	rules.dungeon_testing = true
+	var a := _hero()
+	_enter(a)
+	var copy := world.zone_of(a.id)
+	var wolf: Enemy = copy.enemies()[0]
+	_kill(copy, a, wolf)
+	assert_false(wolf.alive)
+	world.advance(25.0) # well past its 10 s respawn
+	assert_false(wolf.alive, "no respawn while a hero is inside")
+	world.move_hero(a.id, &"town", Vector2i(1, 1))
+	world.advance(5.0)
+	assert_false(wolf.alive, "its timer starts once the last hero has left")
+	world.advance(6.0)
+	assert_true(wolf.alive, "then it respawns as usual")
+
+
+func test_a_way_out_opens_when_every_enemy_is_dead() -> void:
+	rules.dungeon_testing = true
+	var a := _hero()
+	var b := _hero()
+	_enter(a)
+	b.move.place(Vector2i(6, 6))
+	world.step()
+	var copy := world.zone_of(a.id)
+	assert_null(copy.way_out(), "shut while an enemy lives")
+	assert_null(copy.exit_at(Vector2i(14, 10)))
+	var events := _kill(copy, a, copy.enemies()[0])
+	assert_true(events.any(func(e): return e.type == "way_out"), "announced")
+	assert_eq(copy.way_out(), Vector2i(14, 10))
+	assert_eq(Snapshot.capture(copy, a.id).way_out, Vector2i(14, 10), "sent to the players")
+	for h in [a, b]:
+		h.move.place(Vector2i(14, 10))
+		events = world.step()
+		assert_true(events.any(func(e): return e.type == "zone_change" and e.target == h.id), h.display_name)
+		assert_eq(world.zone_of(h.id).key, &"town", "back outside")
+		assert_lte(GridModel.distance(h.tile(), Vector2i(5, 6)), 2, "near the entrance")
+
+
+func test_the_silent_shaft_opens_a_way_out_to_deepcut_once_cleared() -> void:
+	var shaft: ZoneDef = ContentDB.zones[&"silent_shaft"]
+	assert_not_null(shaft.cleared_exit)
+	assert_eq(shaft.cleared_exit.to_zone, &"deepcut")
+	var entrance: ZoneExit = shaft.exits.filter(func(e): return e.to_zone == &"deepcut")[0]
+	assert_eq(shaft.cleared_exit.to_tile, entrance.to_tile, "out where the mine entrance leads")
+	var sim := WorldSim.new(shaft, ContentDB.rules, 9)
+	var h := sim.add_hero(ContentDB.heroes[&"adventurer"])
+	h.move.place(Vector2i(3, 13))
+	sim.step()
+	assert_true(sim.grid.is_walkable(shaft.cleared_exit.tile))
+	var foes := sim.enemies()
+	assert_gt(foes.size(), 8)
+	for i in foes.size():
+		var e: Enemy = foes[i]
+		e.invulnerable = false
+		e.min_hp = 0.0
+		var events: Array[Dictionary] = []
+		AbilityResolver.deal_damage(sim.ctx, h, e, &"test", 1.0e7, false, events)
+		sim._emit_resolved(events)
+		var out := sim.step()
+		if i < foes.size() - 1:
+			assert_null(sim.way_out(), "still shut with %d left" % (foes.size() - 1 - i))
+		else:
+			assert_true(out.any(func(ev): return ev.type == "way_out"))
+	assert_eq(sim.way_out(), shaft.cleared_exit.tile)

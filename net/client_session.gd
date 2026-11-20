@@ -150,9 +150,10 @@ func actors() -> Array[Actor]:
 	return mirror.actors()
 
 
-func pending_loot() -> Array:
+## The local hero's own drops on the ground (only theirs are ever sent).
+func my_drops() -> Array:
 	var hero := local_hero()
-	return hero.pending_loot if hero != null else []
+	return hero.drops if hero != null else []
 
 
 func projectiles() -> Array:
@@ -161,6 +162,23 @@ func projectiles() -> Array:
 
 func telegraphs() -> Array:
 	return mirror.telegraphs
+
+
+func way_out() -> Variant:
+	return mirror.way_out
+
+
+func social() -> Dictionary:
+	var hero := local_hero()
+	return hero.social if hero != null else {"trade": {}, "requests": []}
+
+
+func duels() -> Array:
+	return mirror.duels
+
+
+func loot_rolls() -> Array:
+	return mirror.rolls
 
 
 func ground_zones() -> Array:

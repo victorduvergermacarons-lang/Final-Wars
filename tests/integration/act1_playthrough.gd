@@ -160,7 +160,7 @@ func play(id: StringName) -> bool:
 	for h in party:
 		_sell_loot(h)
 		place(h, turn_zone, turn_npc.tile())
-		var choice := 0 if not def.reward_choices.is_empty() else -1
+		var choice := 0 if not def.choices_for(h.element).is_empty() else -1
 		var done := send(h, {"type": "turn_in_quest", "npc": turn_npc.id, "quest": id, "choice": choice})
 		for e in done:
 			if e.type == "act_complete" and e.target == h.id: # the last hero's screen: everyone has handed in
@@ -252,7 +252,18 @@ func _kill_until(enemy_id: StringName, done: Callable) -> bool:
 		sim._emit_resolved(hits)
 		kills += 1
 		world.step()
+		_pick_up_drops(sim)
 	return _fail("gave up killing %s" % enemy_id)
+
+
+## Every hero walks to its own drops and picks them up (quest drops lie on the
+## ground since personal loot, 2026-11-19).
+func _pick_up_drops(sim: WorldSim) -> void:
+	for h in party:
+		for d in sim.drops.for_owner(h.id):
+			h.move.pos = d.pos
+			world.submit(h.id, {"type": "pick_up", "drop": d.id})
+			world.step()
 
 
 ## A boss encounter, short-cut like the other fights but through its phases: the

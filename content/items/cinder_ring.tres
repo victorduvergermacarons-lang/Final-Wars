@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ItemDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_stats"]
+[ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_item"]
+
+[sub_resource type="Resource" id="stats"]
+script = ExtResource("1_stats")
+mana = 10.0
+mag_atk = 3.0
+mag_def = 2.0
+
+[sub_resource type="Resource" id="growth"]
+script = ExtResource("1_stats")
+mag_atk = 1.0
+mag_def = 0.5
+
+[resource]
+script = ExtResource("2_item")
+id = &"cinder_ring"
+display_name = "Cinder Ring"
+description = "A plain ring that hums with Fire."
+slot = 7
+price = 15
+stats = SubResource("stats")
+growth = SubResource("growth")
+element = &"fire"

@@ -34,6 +34,10 @@ var level: int = 1
 var temporary := false
 ## Seconds from death to respawn for this one (< 0 = its type's respawn_seconds).
 var respawn_seconds := -1.0
+## Wandering (EnemyDef.wander_radius): it grazes until this time, then walks to
+## `wander_goal`; < 0 = not rolled yet.
+var wander_at := -1.0
+var wander_goal := Vector2i(-1, -1)
 ## Takes no damage (a boss's heart before its last phase).
 var invulnerable := false
 ## Can't be brought below this much health (a boss its heart keeps alive); 0 = none.
@@ -116,6 +120,8 @@ func reset_at_spawn() -> void:
 	last_attack_at = 0.0
 	home_tile = spawn_tile
 	patrol_index = 0
+	wander_at = -1.0
+	wander_goal = Vector2i(-1, -1)
 	cooldowns = Cooldowns.new()
 	move.place(spawn_tile)
 	Navigator.stop(self)

@@ -6,6 +6,10 @@ extends Actor
 ## Which HeroDef this hero was made from (for saves).
 var def_id: StringName = &"adventurer"
 var level: int = 1
+## The element picked when the character was made (&"earth", &"water", &"fire",
+## &"air"; ContentDB.elements), or empty for characters made before the element
+## screen. Saved, and sent to every player in the snapshot.
+var element: StringName = &""
 var gold: int = 0
 ## Per-quest progress, saved with the character (filled in by the quest system).
 var quest_state := {}
@@ -14,7 +18,18 @@ var quest_state := {}
 ## acts (the acts finished, e.g. [1]).
 var records := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests": 0, "acts": []}
 ## Client copy of loot waiting for this hero (filled from the host's snapshot).
-var pending_loot: Array = []
+## Bad-luck bonus added to boss rolls (LootRolls): +10 per Need roll lost, +15 per
+## chosen Pass, 0 after winning one. Saved with the character.
+var loot_bonus := 0
+## Items and gold this hero has put into a trade window (held by the host until the
+## trade ends): [[item id, count, bind], ...]. Kept so a save made mid-trade keeps
+## them (CharacterData.capture puts them back in the saved bag).
+var escrow: Array = []
+var escrow_gold := 0
+## Client mirror only: this hero's trade and requests (WorldSim.social_view).
+var social := {"trade": {}, "requests": []}
+## Client mirror only: this hero's own drops on the ground (GroundDrops.for_owner).
+var drops: Array = []
 var xp: float = 0.0
 var base_stats: StatBlock = StatBlock.new()
 ## Permanent stats gained from item growth on level-ups.
@@ -165,7 +180,7 @@ func equip_from_bag(index: int, requested: int = -1) -> String:
 	bag.remove_at(index, 1)
 	wear(item, s)
 	for d in displaced:
-		bag.add(d)
+		bag.add(d, 1, {"bound": true}) # it was worn: bound (Binding)
 	return ""
 
 
@@ -177,7 +192,7 @@ func unequip_to_bag(slot: int) -> String:
 	if bag.free_slots() == 0:
 		return "bag_full"
 	unequip(slot)
-	bag.add(item)
+	bag.add(item, 1, {"bound": true}) # everything worn is bound (Binding)
 	return ""
 
 
@@ -253,6 +268,25 @@ func wields(tree: String) -> bool:
 	for item in equipped_items():
 		if item.tree == tree and not item.is_scroll:
 			return true
+	return false
+
+
+## Seconds a hero keeps facing a targeted ability's target after it goes off (its
+## cast animation), before turning back to the mouse.
+const FACE_HOLD_SECONDS := 0.5
+
+
+## Whether it keeps the facing a cast turned it to instead of facing the mouse (in
+## combat): while casting an ability that isn't aimed at the cursor (Healing Touch
+## on an ally: it turned toward the ally when the cast began) and for
+## FACE_HOLD_SECONDS after one goes off. Host and client prediction both ask.
+func holds_cast_facing(t: float) -> bool:
+	var ab = casting.get("ability")
+	if ab is AbilityDef:
+		return not WorldSim.is_mouse_aimed(ab)
+	if t - float(anim.get("act_at", NEVER)) < FACE_HOLD_SECONDS:
+		var done := find_ability(StringName(anim.get("act", &"")))
+		return done != null and not WorldSim.is_mouse_aimed(done)
 	return false
 
 

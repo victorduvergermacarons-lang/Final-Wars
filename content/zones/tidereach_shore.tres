@@ -16,7 +16,7 @@ label = "Tidereach Shore (music test)"
 
 [sub_resource type="Resource" id="edge_0"]
 script = ExtResource("s_edge")
-to_zone = &"enemy_testing"
+to_zone = &"wilds"
 offset = -4
 
 [resource]

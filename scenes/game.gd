@@ -70,7 +70,7 @@ func save_now() -> void:
 	if store != null and hero != null:
 		store.save(CharacterData.capture(hero))
 	if world_store != null and not (session is ClientSession):
-		world_store.save(session.world.world_flags)
+		world_store.save(session.world.world_flags, session.world.claims)
 
 
 func _process(delta: float) -> void:
@@ -83,6 +83,7 @@ func _process(delta: float) -> void:
 func _load_world() -> void:
 	if world_store != null:
 		session.world.world_flags = world_store.load_flags()
+		session.world.claims = world_store.load_claims()
 
 
 ## Every zone in the game; players start (and join) in town.

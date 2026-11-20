@@ -3,6 +3,9 @@ extends Node
 ## Turns the local player's keys and clicks into intents. Only sends intents;
 ## the host decides what actually happens.
 
+## Right-click on another player in the world (the HUD opens Trade / Duel).
+signal player_menu_requested(hero_id: int, at: Vector2)
+
 ## Free movement: the held keys give one of 8 directions on screen (W = up the
 ## screen), sent with the mouse's angle as a `move` intent whenever either
 ## changes, and every sim tick while walking (each predicted tick then has its
@@ -109,11 +112,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"release"):
 		session.send_intent({"type": "release"})
 	elif event.is_action_pressed(&"interact"):
-		talk_to_nearest()
+		if not pick_up_nearest():
+			talk_to_nearest()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		var picked: Actor = view.actor_at(view.get_global_mouse_position())
 		if picked is Npc:
 			session.send_intent({"type": "talk", "npc": picked.id})
+		elif picked is Hero and picked.id != session.local_hero_id:
+			player_menu_requested.emit(picked.id, get_viewport().get_mouse_position())
 	else:
 		for p in ActionBarModel.PAGE_COUNT:
 			if event.is_action_pressed(InputActions.page_action(p), false, true):
@@ -327,11 +333,40 @@ static func talk_target(session) -> Actor:
 	return best
 
 
+## A neutral creature (a grazing stag) isn't a foe until it fights.
+static func _peaceful(a: Actor) -> bool:
+	return a is Enemy and (a as Enemy).def.neutral and (a as Enemy).state != Enemy.State.COMBAT
+
+
+## Your own drop nearest the hero within pickup range, or {}.
+func nearest_drop() -> Dictionary:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return {}
+	var best := {}
+	var best_d: float = session.rules().party_play.pickup_range
+	for d in session.my_drops():
+		var dist: float = hero.move.pos.distance_to(d.pos)
+		if dist <= best_d:
+			best = d
+			best_d = dist
+	return best
+
+
+## E picks up your nearest drop in reach (before talking). True if one was there.
+func pick_up_nearest() -> bool:
+	var d := nearest_drop()
+	if d.is_empty():
+		return false
+	session.send_intent({"type": "pick_up", "drop": d.id})
+	return true
+
+
 func _target_next_enemy() -> void:
 	var hero: Hero = session.local_hero()
 	var candidates: Array = []
 	for a in session.actors():
-		if a.alive and hero.is_hostile_to(a) and not a.evading \
+		if a.alive and hero.is_hostile_to(a) and not a.evading and not _peaceful(a) \
 				and GridModel.distance(hero.tile(), a.tile()) <= TAB_RANGE:
 			candidates.append(a)
 	if candidates.is_empty():

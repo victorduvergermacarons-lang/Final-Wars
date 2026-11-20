@@ -18,8 +18,9 @@ enum Behavior {
 @export var abilities: Array[AbilityDef] = []
 ## Distance at which the enemy notices a hero and aggros.
 @export var aggro_radius: int = 4
-## Distance from its spawn point at which it gives up and walks home.
-@export var leash_radius: int = 10
+## Distance from its spawn point at which it gives up and walks home (every
+## enemy's was raised x1.8 on 2026-11-19, user request).
+@export var leash_radius: int = 18
 ## Unused since free movement (the old seconds per tile in combat; `move_speed`
 ## replaced it). Kept so older content files load.
 @export var combat_step_seconds: float = 0.0
@@ -84,5 +85,15 @@ enum Look { DIAMOND, CRYSTAL }
 ## Animated sprite art (null: drawn as a placeholder diamond). Its frame rates
 ## also time the attacks it lists (see CreatureArtDef.timed_abilities).
 @export var art: CreatureArtDef
+## Neutral (the stag): never aggros on a hero coming close and isn't counted as a
+## foe nearby (wolf pack calls, Tab targeting); it fights only once something
+## damages it, and only that one, then goes back to being neutral when it resets.
+@export var neutral: bool = false
+## Idle without a patrol route: wanders to random walkable tiles within this many
+## tiles of its spawn, at a walk, and grazes (idles) for a random
+## graze_seconds_min..max between walks; 0 = stands still. Each one rolls its own.
+@export var wander_radius: int = 0
+@export var graze_seconds_min: float = 4.0
+@export var graze_seconds_max: float = 10.0
 ## Seconds per tile while walking a patrol route (see EnemySpawn.patrol).
 @export var patrol_step_seconds: float = 1.0

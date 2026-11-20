@@ -253,12 +253,12 @@ func _dodge(session: ClientSession, hero: Hero, me: String) -> bool:
 			if e.type == "damage" and e.target == hero.id and e.get("ability", &"") == &"crushing_blow":
 				hit[0] = true)
 	# Away from the others (a brute in town could pull a guest walking past into
-	# combat, and nobody leaves a zone in combat): the Enemy Testing Grounds.
+	# combat, and nobody leaves a zone in combat): the Wilds, empty of anyone else.
 	var arrived := [false]
 	session.zone_changed.connect(func(_z): arrived[0] = true)
-	session.send_intent({"type": "debug", "line": "goto enemy_testing"})
+	session.send_intent({"type": "debug", "line": "goto wilds"})
 	if not await _wait_until(func(): return arrived[0] and session.local_hero() != null):
-		_finish(false, "%s: couldn't go to the testing grounds" % me)
+		_finish(false, "%s: couldn't go to the Wilds" % me)
 		return false
 	await get_tree().create_timer(0.3).timeout
 	hero = session.local_hero()

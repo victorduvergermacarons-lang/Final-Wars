@@ -82,3 +82,9 @@ func _gui_input(event: InputEvent) -> void:
 		if a != null:
 			hud.client.target_id = a.id
 		accept_event()
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		# Another player's frame: Trade / Duel.
+		var a: Actor = source.call()
+		if a is Hero and a.id != hud.session.local_hero_id:
+			hud.open_player_menu(a.id, get_global_mouse_position())
+		accept_event()

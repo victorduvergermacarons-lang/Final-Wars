@@ -20,7 +20,7 @@ impact_damage = 25.0
 [resource]
 script = ExtResource("3_lrn1s")
 id = &"A05"
-max_range = 3
+max_range = 5
 mana_cost = 12.0
 ranged = true
 effects = Array[ExtResource("1_h8qdt")]([SubResource("Resource_mu3ks"), SubResource("Resource_l5y0l")])

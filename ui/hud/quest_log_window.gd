@@ -104,4 +104,4 @@ func _process(_delta: float) -> void:
 			QuestText.GREY, QuestText.kind_and_area(def),
 			ContentDB.dialogue.text(def.line_id("offer")),
 			QuestText.objectives_bbcode(hero, def), status,
-			QuestText.rewards_bbcode(def)]
+			QuestText.rewards_bbcode(def, hero)]

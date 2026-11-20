@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="EnemyDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="1_ability"]
+[ext_resource type="Script" path="res://data/defs/enemy_def.gd" id="2_enemy"]
+[ext_resource type="Script" path="res://data/defs/stat_block.gd" id="3_stats"]
+[ext_resource type="Resource" path="res://content/loot/stag.tres" id="4_loot"]
+[ext_resource type="Resource" path="res://content/abilities/stag_antler_thrust.tres" id="ab_thrust"]
+[ext_resource type="Resource" path="res://content/creatures/stag_art.tres" id="art_stag"]
+
+[sub_resource type="Resource" id="Resource_stats"]
+script = ExtResource("3_stats")
+hp = 260.0
+phys_atk = 13.0
+phys_def = 8.0
+mag_def = 6.0
+evasion = 6.0
+jump = 1.0
+
+[resource]
+script = ExtResource("2_enemy")
+move_speed = 3.3
+id = &"stag"
+display_name = "Stag"
+level = 3
+stats = SubResource("Resource_stats")
+abilities = Array[ExtResource("1_ability")]([ExtResource("ab_thrust")])
+reaction_seconds = 0.3
+xp_reward = 70
+ap_reward = 2
+loot = ExtResource("4_loot")
+respawn_seconds = 60.0
+aggro_radius = 0
+leash_radius = 18
+neutral = true
+wander_radius = 4
+graze_seconds_min = 4.0
+graze_seconds_max = 10.0
+art = ExtResource("art_stag")

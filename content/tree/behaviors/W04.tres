@@ -20,7 +20,7 @@ buff = ExtResource("3_ofc6l")
 [resource]
 script = ExtResource("4_0g37c")
 id = &"W04"
-max_range = 4
+max_range = 6
 mana_cost = 8.0
 ranged = true
 projectile_speed = 12.0

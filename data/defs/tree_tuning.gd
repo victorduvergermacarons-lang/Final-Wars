@@ -28,7 +28,8 @@ extends Resource
 @export var fire_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 3, Stat.Id.MANA: 6, Stat.Id.FIRE_MASTERY: 2})
 @export var water_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 2, Stat.Id.MAG_DEF: 2, Stat.Id.MANA: 8,
 		Stat.Id.WATER_MASTERY: 2})
-@export var earth_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 1, Stat.Id.PHYS_DEF: 2, Stat.Id.HP: 8,
+## Earth gives Physical Defense, not Magic Attack (2026-11-20, user request).
+@export var earth_scroll_growth: StatBlock = StatBlock.make({Stat.Id.PHYS_DEF: 3, Stat.Id.HP: 8,
 		Stat.Id.EARTH_MASTERY: 2})
 @export var air_scroll_growth: StatBlock = StatBlock.make({Stat.Id.MAG_ATK: 2, Stat.Id.EVASION: 1, Stat.Id.MANA: 6,
 		Stat.Id.AIR_MASTERY: 2})

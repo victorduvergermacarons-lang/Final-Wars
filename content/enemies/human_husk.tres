@@ -29,6 +29,6 @@ xp_reward = 150
 ap_reward = 4
 loot = ExtResource("4_loot")
 aggro_radius = 4
-leash_radius = 10
+leash_radius = 18
 respawn_seconds = 45.0
 weight = 2

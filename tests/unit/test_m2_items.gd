@@ -16,7 +16,8 @@ func after_all() -> void:
 
 
 func _equippables() -> Array:
-	return db.items.values().filter(func(i): return i.is_equippable() and i.tree == "" and not i.retired)
+	return db.items.values().filter(func(i): return i.is_equippable() and i.tree == "" and not i.retired \
+			and i.element == &"") # the starting elements' clothes are their own (test_element_start)
 
 
 ## Milestone 3: armor is stat-only; the old weapons and accessories are retired.

@@ -236,9 +236,9 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Spark Scroll",
-			"effect": "Small bolt of flame, range 4.",
+			"effect": "Small bolt of flame, range 6.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim at an enemy within 4. Fast bolt at any angle; hits the first unit in its path. Very hard to dodge.",
+			"targeting_details": "Aim at an enemy within 6. Fast bolt at any angle; hits the first unit in its path. Very hard to dodge.",
 			"mastery_required_text": "Fire Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -279,7 +279,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 4.5,
+				"range": 6.5,
 				"speed": 16.0,
 				"size": 0.25,
 				"pierce": false
@@ -399,7 +399,7 @@
 			"taught_by": "Lash of Embers Scroll",
 			"effect": "Lash a straight line of 3 tiles.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim one of 8 directions. Instant 3-tile line; hits every enemy in it.",
+			"targeting_details": "Aim one of 8 directions. Instant 5-tile line; hits every enemy in it.",
 			"mastery_required_text": "Fire Mastery 150",
 			"prerequisites_text": "Fire Punch",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -440,7 +440,7 @@
 			},
 			"hitbox": {
 				"shape": "Line",
-				"range": 3.0,
+				"range": 5.0,
 				"width": 0.9,
 				"pierce": true
 			},
@@ -459,9 +459,9 @@
 			"role": "AoE damage",
 			"item_type": "Scroll",
 			"taught_by": "Scroll of the Fireball",
-			"effect": "Range 5; explodes on all tiles within 1 of the target.",
+			"effect": "Range 7; explodes on all tiles within 1 of the target.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 5. The 3x3 blast area flashes for 0.4s before impact; step out to dodge.",
+			"targeting_details": "Pick a tile within 7. The 3x3 blast area flashes for 0.4s before impact; step out to dodge.",
 			"mastery_required_text": "Fire Mastery 150",
 			"prerequisites_text": "Fire Dart",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -502,7 +502,7 @@
 			},
 			"hitbox": {
 				"shape": "Circle",
-				"range": 5.0,
+				"range": 7.0,
 				"radius": 1.5,
 				"pierce": false
 			},
@@ -523,7 +523,7 @@
 			"taught_by": "Scorched Earth Scroll",
 			"effect": "Set a 3x3 area ablaze for 6s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 4. Zone appears instantly; enemies burn only while standing in it.",
+			"targeting_details": "Pick a tile within 6. Zone appears instantly; enemies burn only while standing in it.",
 			"mastery_required_text": "Fire Mastery 150",
 			"prerequisites_text": "Fire Dart",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -564,7 +564,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 4.0,
+				"range": 6.0,
 				"radius": 1.0,
 				"pierce": false
 			},
@@ -746,7 +746,7 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Firestream Scroll",
-			"effect": "Channel a 4-tile line of fire for 2s.",
+			"effect": "Channel a 6-tile line of fire for 2s.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim at any angle. The beam covers the 4 tiles along that line; you can slowly rotate it while channeling.",
 			"mastery_required_text": "Fire Mastery 350",
@@ -779,7 +779,7 @@
 			},
 			"hitbox": {
 				"shape": "Line",
-				"range": 4.0,
+				"range": 6.0,
 				"width": 0.8,
 				"pierce": false
 			},
@@ -903,9 +903,9 @@
 			"role": "AoE damage",
 			"item_type": "Scroll",
 			"taught_by": "Phoenix Scroll",
-			"effect": "Leap to an enemy within 4 tiles and crash down on every tile within 1.",
+			"effect": "Leap to an enemy within 6 tiles and crash down on every tile within 1.",
 			"targeting": "Targeted",
-			"targeting_details": "Pick an enemy within 4. You land on a free tile next to it; the AoE centers on you.",
+			"targeting_details": "Pick an enemy within 6. You land on a free tile next to it; the AoE centers on you.",
 			"mastery_required_text": "Fire Mastery 600",
 			"prerequisites_text": "Flame Wheel",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -936,7 +936,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -956,7 +956,7 @@
 			"taught_by": "Inferno Codex",
 			"effect": "Firestorm over a 5x5 area for 4s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 6. The 5x5 area is outlined for 0.75s before it ignites.",
+			"targeting_details": "Pick a tile within 8. The 5x5 area is outlined for 0.75s before it ignites.",
 			"mastery_required_text": "Fire Mastery 600",
 			"prerequisites_text": "Fire Stream; Breath of Fire",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -987,7 +987,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 6.0,
+				"range": 8.0,
 				"radius": 2.0,
 				"pierce": false
 			},
@@ -1009,7 +1009,7 @@
 			"taught_by": "Storm-Fire Scroll",
 			"effect": "1s charge, then a range-8 strike with doubled crit chance.",
 			"targeting": "Targeted",
-			"targeting_details": "Pick an enemy within 8. Lightning can't miss, but the 1s charge can be interrupted, and it fails if the target breaks line of sight.",
+			"targeting_details": "Pick an enemy within 10. Lightning can't miss, but the 1s charge can be interrupted, and it fails if the target breaks line of sight.",
 			"mastery_required_text": "Fire Mastery 600",
 			"prerequisites_text": "Fire Stream; Air Mastery 350",
 			"scales_with_text": "Fire Mastery, Magic Atk, Crit Rate",
@@ -1043,7 +1043,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 8.0,
+				"range": 10.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -1066,9 +1066,9 @@
 			"role": "Burst damage",
 			"item_type": "Scroll",
 			"taught_by": "Scroll of the Third Eye",
-			"effect": "Telegraphed for 1s, range 10; huge explosion within 1 tile.",
+			"effect": "Telegraphed for 1s, range 12; huge explosion within 1 tile.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 10. The marker is visible to enemies for 1s, then explodes.",
+			"targeting_details": "Pick a tile within 12. The marker is visible to enemies for 1s, then explodes.",
 			"mastery_required_text": "Fire Mastery 600",
 			"prerequisites_text": "Fireball",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -1099,7 +1099,7 @@
 			},
 			"hitbox": {
 				"shape": "Circle",
-				"range": 10.0,
+				"range": 12.0,
 				"radius": 1.5,
 				"pierce": false
 			},
@@ -1269,9 +1269,9 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Pebble Scroll",
-			"effect": "Hurl a rock, range 4.",
+			"effect": "Hurl a rock, range 6.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim at an enemy within 4. The rock arcs over low obstacles and lands on that tile after 0.3s; misses if the target moved.",
+			"targeting_details": "Aim at an enemy within 6. The rock arcs over low obstacles and lands on that tile after 0.3s; misses if the target moved.",
 			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Atk",
@@ -1312,7 +1312,7 @@
 			},
 			"hitbox": {
 				"shape": "Lob",
-				"range": 4.0,
+				"range": 6.0,
 				"radius": 0.5,
 				"pierce": false
 			},
@@ -1329,14 +1329,14 @@
 			"role": "Self buff",
 			"item_type": "Scroll",
 			"taught_by": "Granite Skin Scroll",
-			"effect": "Gain Physical Defense for 10s.",
+			"effect": "Gain +20 Physical Defense for 10s.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
 			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Def",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
-			"notes": "",
+			"notes": "Physical Defense raises all your threat while it lasts; lets Metalbending taunt.",
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "granite_skin_scroll",
@@ -1353,12 +1353,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a self buff."
 			},
 			"hitbox": {
 				"shape": "None",
@@ -1379,7 +1379,7 @@
 			"taught_by": "Pillar Scroll",
 			"effect": "Raise a tile 1 height level for 15s (2 levels at 500 Earth Mastery).",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 3. Any unit on it is lifted with the tile.",
+			"targeting_details": "Pick a tile within 5. Any unit on it is lifted with the tile.",
 			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery",
@@ -1407,7 +1407,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 3.0,
+				"range": 5.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -1475,7 +1475,7 @@
 			"taught_by": "Bulwark Scroll",
 			"effect": "Raise a 3-tile wall (+2 height) that blocks movement and line of sight for 12s. +1 length per 300 Earth Mastery.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 4. The wall rises crosswise to the direction you're facing; skips tiles occupied by units.",
+			"targeting_details": "Pick a tile within 6. The wall rises crosswise to the direction you're facing; skips tiles occupied by units.",
 			"mastery_required_text": "Earth Mastery 150",
 			"prerequisites_text": "Raise Pillar",
 			"scales_with_text": "Earth Mastery",
@@ -1503,7 +1503,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 4.0,
+				"range": 6.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -1524,7 +1524,7 @@
 			"taught_by": "Sinkhole Scroll",
 			"effect": "Lower a tile 1 level; an enemy on it is rooted for 2s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 4. 0.3s rumble, then whoever stands on it is rooted.",
+			"targeting_details": "Pick a tile within 6. 0.3s rumble, then whoever stands on it is rooted.",
 			"mastery_required_text": "Earth Mastery 150",
 			"prerequisites_text": "Raise Pillar",
 			"scales_with_text": "Earth Mastery",
@@ -1552,7 +1552,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 4.0,
+				"range": 6.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -1674,7 +1674,7 @@
 			"taught_by": "Scroll of the Stone Path",
 			"effect": "Shape a ramp so allies can climb up to 3 height levels.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 3 and a direction; the ramp builds from there.",
+			"targeting_details": "Pick a tile within 5 and a direction; the ramp builds from there.",
 			"mastery_required_text": "Earth Mastery 150",
 			"prerequisites_text": "Raise Pillar",
 			"scales_with_text": "Earth Mastery",
@@ -1702,7 +1702,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 3.0,
+				"range": 5.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -1774,7 +1774,7 @@
 			"taught_by": "Quake Scroll",
 			"effect": "3x3 damage and slow; shuffles tile heights by ±1.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 5. Cracks show the 3x3 area for 0.5s first.",
+			"targeting_details": "Pick a tile within 7. Cracks show the 3x3 area for 0.5s first.",
 			"mastery_required_text": "Earth Mastery 350",
 			"prerequisites_text": "Sinkhole",
 			"scales_with_text": "Earth Mastery, Phys Atk",
@@ -1805,7 +1805,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 5.0,
+				"range": 7.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -1826,7 +1826,7 @@
 			"taught_by": "Trench Scroll",
 			"effect": "Carve a 4-tile trench 2 levels deep.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a start tile within 3 and a direction; carves 4 tiles.",
+			"targeting_details": "Pick a start tile within 5 and a direction; carves 4 tiles.",
 			"mastery_required_text": "Earth Mastery 350",
 			"prerequisites_text": "Sinkhole",
 			"scales_with_text": "Earth Mastery",
@@ -1854,7 +1854,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 3.0,
+				"range": 5.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -1973,7 +1973,7 @@
 			"taught_by": "Iron Will Scroll",
 			"effect": "Bend an enemy's armor: lower its Physical Defense and pull it 2 tiles toward you.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 4. Pulls it toward you along a straight tile line; stops at obstacles.",
+			"targeting_details": "Enemy within 6. Pulls it toward you along a straight tile line; stops at obstacles.",
 			"mastery_required_text": "Earth Mastery 600",
 			"prerequisites_text": "Earth Armor",
 			"scales_with_text": "Earth Mastery, Phys Atk",
@@ -2004,7 +2004,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2024,7 +2024,7 @@
 			"taught_by": "Desert Wind Scroll",
 			"effect": "4x4 storm for 6s; enemies inside lose Accuracy.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 5; 4x4 area.",
+			"targeting_details": "Pick a tile within 7; 4x4 area.",
 			"mastery_required_text": "Earth Mastery 600",
 			"prerequisites_text": "Earthquake; Air Mastery 350",
 			"scales_with_text": "Earth Mastery",
@@ -2052,7 +2052,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 5.0,
+				"range": 7.0,
 				"radius": 1.0,
 				"pierce": false
 			},
@@ -2078,7 +2078,7 @@
 			"taught_by": "Molten Core Codex",
 			"effect": "Turn a 3x3 area into lava for 8s; it burns and blocks movement.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 4. The 3x3 area glows for 0.5s before turning to lava.",
+			"targeting_details": "Pick a tile within 6. The 3x3 area glows for 0.5s before turning to lava.",
 			"mastery_required_text": "Earth Mastery 600",
 			"prerequisites_text": "Trench; Fire Mastery 350",
 			"scales_with_text": "Earth Mastery, Magic Atk",
@@ -2109,7 +2109,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 4.0,
+				"range": 6.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -2217,7 +2217,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 3.0,
+				"range": 5.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -2239,7 +2239,7 @@
 			"taught_by": "Tectonic Codex",
 			"effect": "Reshape a 7x7 area, raising and lowering tiles and knocking enemies off their footing.",
 			"targeting": "Ground",
-			"targeting_details": "Centered on a tile within 3. 1s rumble telegraph.",
+			"targeting_details": "Centered on a tile within 5. 1s rumble telegraph.",
 			"mastery_required_text": "Earth Mastery 900",
 			"prerequisites_text": "Earthquake; Trench",
 			"scales_with_text": "Earth Mastery, Phys Atk",
@@ -2270,7 +2270,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 3.0,
+				"range": 5.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -2290,12 +2290,12 @@
 			"role": "Heal",
 			"item_type": "Scroll",
 			"taught_by": "Mender's Scroll",
-			"effect": "Heal yourself or an ally within 2 tiles.",
+			"effect": "Heal yourself or an ally within 4 tiles.",
 			"targeting": "Targeted",
-			"targeting_details": "Yourself or an ally within 2. Can't miss.",
+			"targeting_details": "Yourself or an ally within 4. Can't miss.",
 			"mastery_required_text": "Water Mastery 0",
 			"prerequisites_text": "—",
-			"scales_with_text": "Water Mastery, Magic Atk",
+			"scales_with_text": "Water Mastery, 0.45 Magic Atk, 0.55 Phys Def",
 			"mastery_contribution": "+5 Water Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
@@ -2310,7 +2310,12 @@
 					"mastery": "Water"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "mag_atk",
+					"coef": 0.45
+				},
+				{
+					"stat": "phys_def",
+					"coef": 0.55
 				}
 			],
 			"timing": {
@@ -2328,7 +2333,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 2.0,
+				"range": 4.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2344,9 +2349,9 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "River Lash Scroll",
-			"effect": "Lash an enemy within 3 tiles.",
+			"effect": "Lash an enemy within 5 tiles.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 3. Locks on.",
+			"targeting_details": "Enemy within 5. Locks on.",
 			"mastery_required_text": "Water Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2382,7 +2387,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2400,7 +2405,7 @@
 			"taught_by": "Scroll of the Current",
 			"effect": "You or an ally gain Haste for 30s.",
 			"targeting": "Targeted",
-			"targeting_details": "Yourself or an ally within 3.",
+			"targeting_details": "Yourself or an ally within 5.",
 			"mastery_required_text": "Water Mastery 220",
 			"prerequisites_text": "—",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2431,7 +2436,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2447,9 +2452,9 @@
 			"role": "Damage / CC",
 			"item_type": "Scroll",
 			"taught_by": "Frost Shard Scroll",
-			"effect": "Range 4; damages and slows the target for 2s.",
+			"effect": "Range 6; damages and slows the target for 2s.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim at an enemy within 4. Fast shard at any angle; hits the first unit in its path.",
+			"targeting_details": "Aim at an enemy within 6. Fast shard at any angle; hits the first unit in its path.",
 			"mastery_required_text": "Water Mastery 90",
 			"prerequisites_text": "—",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2485,7 +2490,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 4.5,
+				"range": 6.5,
 				"speed": 12.0,
 				"size": 0.25,
 				"pierce": false
@@ -2503,12 +2508,12 @@
 			"role": "Heal over time",
 			"item_type": "Scroll",
 			"taught_by": "Mist Scroll",
-			"effect": "Heal you or an ally within 3 tiles over 12s.",
+			"effect": "Heal you or an ally within 5 tiles over 12s.",
 			"targeting": "Targeted",
-			"targeting_details": "Yourself or an ally within 4.",
+			"targeting_details": "Yourself or an ally within 6.",
 			"mastery_required_text": "Water Mastery 40",
 			"prerequisites_text": "Healing Touch",
-			"scales_with_text": "Water Mastery, Magic Atk",
+			"scales_with_text": "Water Mastery, 0.45 Magic Atk, 0.55 Phys Def",
 			"mastery_contribution": "+10 Water Mastery when learned, +0.3 per use vs. enemies near your level, up to 70",
 			"notes": "",
 			"tier": 2,
@@ -2523,7 +2528,12 @@
 					"mastery": "Water"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "mag_atk",
+					"coef": 0.45
+				},
+				{
+					"stat": "phys_def",
+					"coef": 0.55
 				}
 			],
 			"timing": {
@@ -2541,7 +2551,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2559,9 +2569,9 @@
 			"role": "Damage / CC",
 			"item_type": "Scroll",
 			"taught_by": "Wave Scroll",
-			"effect": "A wave down a 3-tile line that damages and pushes enemies back 1 tile.",
+			"effect": "A wave down a 5-tile line that damages and pushes enemies back 1 tile.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim one of 8 directions. 3-tile line; pushes enemies along that direction.",
+			"targeting_details": "Aim one of 8 directions. 5-tile line; pushes enemies along that direction.",
 			"mastery_required_text": "Water Mastery 260",
 			"prerequisites_text": "Water Whip",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2597,7 +2607,7 @@
 			},
 			"hitbox": {
 				"shape": "Line",
-				"range": 3.0,
+				"range": 5.0,
 				"width": 1.2,
 				"pierce": true
 			},
@@ -2616,9 +2626,9 @@
 			"role": "Damage / Self heal",
 			"item_type": "Scroll",
 			"taught_by": "Leech Tide Scroll",
-			"effect": "Damage an enemy within 3 tiles and heal yourself for 50% of the damage dealt.",
+			"effect": "Damage an enemy within 5 tiles and heal yourself for 50% of the damage dealt.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 3. The heal applies to you automatically.",
+			"targeting_details": "Enemy within 5. The heal applies to you automatically.",
 			"mastery_required_text": "Water Mastery 150",
 			"prerequisites_text": "Water Whip",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2654,7 +2664,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2674,7 +2684,7 @@
 			"taught_by": "Tidal Scroll",
 			"effect": "You or an ally gain Physical and Magic Defense for 45s.",
 			"targeting": "Targeted",
-			"targeting_details": "Yourself or an ally within 3.",
+			"targeting_details": "Yourself or an ally within 5.",
 			"mastery_required_text": "Water Mastery 65",
 			"prerequisites_text": "—",
 			"scales_with_text": "Water Mastery, Magic Def",
@@ -2705,7 +2715,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2723,7 +2733,7 @@
 			"taught_by": "Glacier Scroll",
 			"effect": "Spikes erupt in a 3x3 area: damage and slow for 3s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 4. Spikes erupt in the 3x3 area after 0.4s.",
+			"targeting_details": "Pick a tile within 6. Spikes erupt in the 3x3 area after 0.4s.",
 			"mastery_required_text": "Water Mastery 300",
 			"prerequisites_text": "Frost Shard",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2759,7 +2769,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 4.0,
+				"range": 6.0,
 				"radius": 1.0,
 				"pierce": false
 			},
@@ -2780,10 +2790,10 @@
 			"taught_by": "Spirit Oasis Scroll",
 			"effect": "Large heal on you or an ally; also removes one debuff.",
 			"targeting": "Targeted",
-			"targeting_details": "Yourself or an ally within 3.",
+			"targeting_details": "Yourself or an ally within 5.",
 			"mastery_required_text": "Water Mastery 185",
 			"prerequisites_text": "Soothing Mist",
-			"scales_with_text": "Water Mastery, Magic Atk",
+			"scales_with_text": "Water Mastery, 0.45 Magic Atk, 0.55 Phys Def",
 			"mastery_contribution": "+15 Water Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
 			"notes": "",
 			"tier": 3,
@@ -2798,7 +2808,12 @@
 					"mastery": "Water"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "mag_atk",
+					"coef": 0.45
+				},
+				{
+					"stat": "phys_def",
+					"coef": 0.55
 				}
 			],
 			"timing": {
@@ -2811,7 +2826,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2862,7 +2877,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 5.0,
+				"range": 7.0,
 				"speed": 14.0,
 				"size": 0.25,
 				"pierce": true
@@ -2884,7 +2899,7 @@
 			"taught_by": "Bubble Ward Scroll",
 			"effect": "Absorb shield on you or an ally for 20s; when it breaks it splashes damage on adjacent enemies.",
 			"targeting": "Targeted",
-			"targeting_details": "Yourself or an ally within 3.",
+			"targeting_details": "Yourself or an ally within 5.",
 			"mastery_required_text": "Water Mastery 20",
 			"prerequisites_text": "—",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2915,7 +2930,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2933,7 +2948,7 @@
 			"taught_by": "Frozen Tomb Scroll",
 			"effect": "Freeze an enemy for 2s; frozen enemies take 25% more damage.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 4. 0.5s cast; fails if the target breaks line of sight.",
+			"targeting_details": "Enemy within 6. 0.5s cast; fails if the target breaks line of sight.",
 			"mastery_required_text": "Water Mastery 440",
 			"prerequisites_text": "Ice Spikes",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -2964,7 +2979,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -2984,7 +2999,7 @@
 			"taught_by": "Scroll of Second Life",
 			"effect": "Resurrect a fallen ally at 30% HP; usable in combat.",
 			"targeting": "Targeted",
-			"targeting_details": "Fallen ally within 3. 2s cast, interrupted by damage.",
+			"targeting_details": "Fallen ally within 5. 2s cast, interrupted by damage.",
 			"mastery_required_text": "Water Mastery 120",
 			"prerequisites_text": "—",
 			"scales_with_text": "Water Mastery",
@@ -3012,7 +3027,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -3061,7 +3076,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 5.0,
+				"range": 7.0,
 				"speed": 3.0,
 				"size": 1.5,
 				"pierce": true
@@ -3134,10 +3149,10 @@
 			"taught_by": "Monsoon Scroll",
 			"effect": "3x3 zone that heals allies inside for 10s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 5; 3x3 zone.",
+			"targeting_details": "Pick a tile within 7; 3x3 zone.",
 			"mastery_required_text": "Water Mastery 390",
 			"prerequisites_text": "Spirit Water",
-			"scales_with_text": "Water Mastery, Magic Atk",
+			"scales_with_text": "Water Mastery, 0.45 Magic Atk, 0.55 Phys Def",
 			"mastery_contribution": "+25 Water Mastery when learned, +1.0 per use vs. enemies near your level, up to 150",
 			"notes": "",
 			"tier": 4,
@@ -3152,7 +3167,12 @@
 					"mastery": "Water"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "mag_atk",
+					"coef": 0.45
+				},
+				{
+					"stat": "phys_def",
+					"coef": 0.55
 				}
 			],
 			"timing": {
@@ -3165,7 +3185,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 5.0,
+				"range": 7.0,
 				"radius": 1.0,
 				"pierce": false
 			},
@@ -3186,7 +3206,7 @@
 			"taught_by": "Steam Scroll",
 			"effect": "4x4 scalding fog for 10s: allies gain Evasion, enemies take damage over time.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 5; 4x4 zone.",
+			"targeting_details": "Pick a tile within 7; 4x4 zone.",
 			"mastery_required_text": "Water Mastery 600",
 			"prerequisites_text": "Ice Prison; Fire Mastery 350",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -3217,7 +3237,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 5.0,
+				"range": 7.0,
 				"radius": 1.0,
 				"pierce": false
 			},
@@ -3243,7 +3263,7 @@
 			"taught_by": "Crimson Moon Codex",
 			"effect": "Control an enemy's movement for 3s and damage it each second.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 4. While it lasts, you stand still and steer its steps with your movement keys.",
+			"targeting_details": "Enemy within 6. While it lasts, you stand still and steer its steps with your movement keys.",
 			"mastery_required_text": "Water Mastery 715",
 			"prerequisites_text": "Ice Prison",
 			"scales_with_text": "Water Mastery, Magic Atk",
@@ -3274,7 +3294,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -3500,7 +3520,7 @@
 			"targeting_details": "Adjacent enemy. Pushes it directly away from you (snapped to 8 directions).",
 			"mastery_required_text": "Air Mastery 0",
 			"prerequisites_text": "—",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+5 Air Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
@@ -3515,7 +3535,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -3554,12 +3574,12 @@
 			"role": "Interrupt / Damage",
 			"item_type": "Scroll",
 			"taught_by": "Breeze Scroll",
-			"effect": "Range 3; light damage and interrupts an enemy's cast.",
+			"effect": "Range 5; light damage and interrupts an enemy's cast.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 3. Instant and can't miss, so interrupts are reliable.",
+			"targeting_details": "Enemy within 5. Instant and can't miss, so interrupts are reliable.",
 			"mastery_required_text": "Air Mastery 0",
 			"prerequisites_text": "—",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+5 Air Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
@@ -3574,7 +3594,12 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk",
+					"coef": 0.6
+				},
+				{
+					"stat": "mag_def",
+					"coef": 0.4
 				}
 			],
 			"timing": {
@@ -3587,7 +3612,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -3650,10 +3675,10 @@
 			"taught_by": "Snaring Wind Scroll",
 			"effect": "Light damage and double an enemy's step cooldown for 4s.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim at an enemy within 4. Fast gust at any angle; hits the first unit in its path.",
+			"targeting_details": "Aim at an enemy within 6. Fast gust at any angle; hits the first unit in its path.",
 			"mastery_required_text": "Air Mastery 0",
 			"prerequisites_text": "—",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+5 Air Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
@@ -3668,7 +3693,12 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk",
+					"coef": 0.6
+				},
+				{
+					"stat": "mag_def",
+					"coef": 0.4
 				}
 			],
 			"timing": {
@@ -3681,7 +3711,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 4.0,
+				"range": 6.0,
 				"speed": 14.0,
 				"size": 0.25,
 				"pierce": false
@@ -3701,10 +3731,10 @@
 			"taught_by": "Gale Scroll",
 			"effect": "Knock an enemy back 3 tiles; bonus damage if it hits a wall or ledge.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 3. Knockback follows the line from you to it, snapped to 8 directions.",
+			"targeting_details": "Enemy within 5. Knockback follows the line from you to it, snapped to 8 directions.",
 			"mastery_required_text": "Air Mastery 150",
 			"prerequisites_text": "Air Palm",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
 			"notes": "",
 			"tier": 2,
@@ -3719,7 +3749,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -3742,7 +3772,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -3762,10 +3792,10 @@
 			"taught_by": "Vortex Scroll",
 			"effect": "Pull all enemies within 2 tiles of a point toward the center, dealing light damage.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 5; enemies within 2 of it are pulled toward it.",
+			"targeting_details": "Pick a tile within 7; enemies within 2 of it are pulled toward it.",
 			"mastery_required_text": "Air Mastery 150",
 			"prerequisites_text": "Wind Snare",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
 			"notes": "",
 			"tier": 2,
@@ -3780,7 +3810,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -3793,7 +3823,7 @@
 			},
 			"hitbox": {
 				"shape": "Circle",
-				"range": 5.0,
+				"range": 7.0,
 				"radius": 2.5,
 				"pierce": false
 			},
@@ -3814,10 +3844,10 @@
 			"taught_by": "Hushing Scroll",
 			"effect": "Light damage and silence an enemy for 2s.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 3.",
+			"targeting_details": "Enemy within 5.",
 			"mastery_required_text": "Air Mastery 150",
 			"prerequisites_text": "Gust",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
 			"notes": "",
 			"tier": 2,
@@ -3832,7 +3862,12 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk",
+					"coef": 0.6
+				},
+				{
+					"stat": "mag_def",
+					"coef": 0.4
 				}
 			],
 			"timing": {
@@ -3845,7 +3880,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -3915,7 +3950,7 @@
 			"targeting_details": "No target; damage applies to any enemy you step into.",
 			"mastery_required_text": "Air Mastery 150",
 			"prerequisites_text": "Air Step",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+10 Air Mastery when learned, +0.6 per use vs. enemies near your level, up to 70",
 			"notes": "",
 			"tier": 2,
@@ -3930,7 +3965,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -3965,7 +4000,7 @@
 			"targeting_details": "Aim one of 8 directions. The tornado travels slowly; enemies can step out of its path.",
 			"mastery_required_text": "Air Mastery 350",
 			"prerequisites_text": "Vortex",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
 			"notes": "",
 			"tier": 3,
@@ -3980,7 +4015,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -3993,7 +4028,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 5.0,
+				"range": 7.0,
 				"speed": 2.5,
 				"size": 0.6,
 				"pierce": true
@@ -4015,10 +4050,10 @@
 			"taught_by": "Sphere Scroll",
 			"effect": "Reflect projectiles aimed at an ally for 4s; reflected shots deal bonus damage.",
 			"targeting": "Targeted",
-			"targeting_details": "Yourself or an ally within 4.",
+			"targeting_details": "Yourself or an ally within 6.",
 			"mastery_required_text": "Air Mastery 350",
 			"prerequisites_text": "Gust",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
 			"notes": "",
 			"tier": 3,
@@ -4033,7 +4068,12 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk",
+					"coef": 0.6
+				},
+				{
+					"stat": "mag_def",
+					"coef": 0.4
 				}
 			],
 			"timing": {
@@ -4046,7 +4086,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -4066,10 +4106,10 @@
 			"taught_by": "Vacuum Scroll",
 			"effect": "Channel: stun an enemy for up to 3s, dealing damage each second.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 3. Channel breaks if line of sight breaks.",
+			"targeting_details": "Enemy within 5. Channel breaks if line of sight breaks.",
 			"mastery_required_text": "Air Mastery 350",
 			"prerequisites_text": "Stolen Breath",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+15 Air Mastery when learned, +1.6 per use vs. enemies near your level, up to 100",
 			"notes": "",
 			"tier": 3,
@@ -4084,7 +4124,12 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk",
+					"coef": 0.6
+				},
+				{
+					"stat": "mag_def",
+					"coef": 0.4
 				}
 			],
 			"timing": {
@@ -4097,7 +4142,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 3.0,
+				"range": 5.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -4120,7 +4165,7 @@
 			"targeting_details": "All 8 tiles around you.",
 			"mastery_required_text": "Air Mastery 350",
 			"prerequisites_text": "Air Blast; Vortex",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
 			"notes": "",
 			"tier": 3,
@@ -4135,7 +4180,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -4172,7 +4217,7 @@
 			"targeting_details": "Pick any tile within 7. Instant.",
 			"mastery_required_text": "Air Mastery 350",
 			"prerequisites_text": "Glide",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+15 Air Mastery when learned, +0.8 per use vs. enemies near your level, up to 100",
 			"notes": "",
 			"tier": 3,
@@ -4187,7 +4232,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -4220,10 +4265,10 @@
 			"taught_by": "Hurricane Codex",
 			"effect": "5x5 storm for 6s: enemies are damaged, slowed and randomly shoved.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 6. 0.5s telegraph.",
+			"targeting_details": "Pick a tile within 8. 0.5s telegraph.",
 			"mastery_required_text": "Air Mastery 600",
 			"prerequisites_text": "Tornado",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
 			"notes": "",
 			"tier": 4,
@@ -4238,7 +4283,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -4251,7 +4296,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 6.0,
+				"range": 8.0,
 				"radius": 2.0,
 				"pierce": false
 			},
@@ -4272,10 +4317,10 @@
 			"taught_by": "Updraft Scroll",
 			"effect": "Launch an enemy into the air for 2s (stunned, untargetable), then slam it down for damage.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 4. 0.3s wind-up.",
+			"targeting_details": "Enemy within 6. 0.3s wind-up.",
 			"mastery_required_text": "Air Mastery 600",
 			"prerequisites_text": "Suffocate",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
 			"notes": "",
 			"tier": 4,
@@ -4290,7 +4335,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -4303,7 +4348,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -4323,10 +4368,10 @@
 			"taught_by": "Storm Front Scroll",
 			"effect": "4x4 zone for 8s: enemies are damaged and slowed, allies gain Haste.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 5; 4x4 zone.",
+			"targeting_details": "Pick a tile within 7; 4x4 zone.",
 			"mastery_required_text": "Air Mastery 600",
 			"prerequisites_text": "Tornado; Water Mastery 350",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
 			"notes": "",
 			"tier": 4,
@@ -4341,7 +4386,12 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk",
+					"coef": 0.6
+				},
+				{
+					"stat": "mag_def",
+					"coef": 0.4
 				}
 			],
 			"timing": {
@@ -4354,7 +4404,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 5.0,
+				"range": 7.0,
 				"radius": 1.0,
 				"pierce": false
 			},
@@ -4383,7 +4433,7 @@
 			"targeting_details": "All enemies within 2 tiles.",
 			"mastery_required_text": "Air Mastery 600",
 			"prerequisites_text": "Suffocate",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+25 Air Mastery when learned, +2.0 per use vs. enemies near your level, up to 150",
 			"notes": "",
 			"tier": 4,
@@ -4398,7 +4448,12 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk",
+					"coef": 0.6
+				},
+				{
+					"stat": "mag_def",
+					"coef": 0.4
 				}
 			],
 			"timing": {
@@ -4526,10 +4581,10 @@
 			"taught_by": "Eye of the Storm Codex",
 			"effect": "7x7 cyclone: enemies are pulled to the center, damaged and stunned for 2s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 6. 1s swirling telegraph before the pull.",
+			"targeting_details": "Pick a tile within 8. 1s swirling telegraph before the pull.",
 			"mastery_required_text": "Air Mastery 900",
 			"prerequisites_text": "Hurricane; Pressure Lock",
-			"scales_with_text": "Air Mastery, Magic Atk",
+			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+50 Air Mastery when learned, +10.0 per use vs. enemies near your level, up to 200",
 			"notes": "",
 			"tier": 5,
@@ -4544,7 +4599,7 @@
 					"mastery": "Air"
 				},
 				{
-					"stat": "mag_atk"
+					"stat": "phys_atk"
 				}
 			],
 			"timing": {
@@ -4557,7 +4612,7 @@
 			},
 			"hitbox": {
 				"shape": "Circle",
-				"range": 6.0,
+				"range": 8.0,
 				"radius": 3.5,
 				"pierce": false
 			},
@@ -4637,7 +4692,7 @@
 			"role": "Damage",
 			"item_type": "Sword",
 			"taught_by": "Militia Rapier",
-			"effect": "Strike an enemy up to 2 tiles away in a straight line.",
+			"effect": "Strike an enemy up to 4 tiles away in a straight line.",
 			"targeting": "Skillshot",
 			"targeting_details": "Pick one of 8 directions; hits whoever is on the 2 tiles in that line.",
 			"mastery_required_text": "Sword Mastery 0",
@@ -4670,7 +4725,7 @@
 			},
 			"hitbox": {
 				"shape": "Line",
-				"range": 2.0,
+				"range": 4.0,
 				"width": 0.8,
 				"pierce": false
 			},
@@ -4937,7 +4992,7 @@
 			"role": "Damage",
 			"item_type": "Sword",
 			"taught_by": "Needle Estoc",
-			"effect": "Hit both enemies in a 2-tile line, ignoring some defense.",
+			"effect": "Hit both enemies in a 4-tile line, ignoring some defense.",
 			"targeting": "Skillshot",
 			"targeting_details": "Pick one of 8 directions; hits both tiles in the line.",
 			"mastery_required_text": "Sword Mastery 150",
@@ -4970,7 +5025,7 @@
 			},
 			"hitbox": {
 				"shape": "Line",
-				"range": 2.0,
+				"range": 4.0,
 				"width": 0.8,
 				"pierce": true
 			},
@@ -5390,9 +5445,9 @@
 			"role": "Mobility",
 			"item_type": "Sword",
 			"taught_by": "Shadowfang",
-			"effect": "Teleport behind an enemy within 4 tiles; your next hit is a guaranteed crit.",
+			"effect": "Teleport behind an enemy within 6 tiles; your next hit is a guaranteed crit.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 4. You land on the tile behind it (or the nearest free tile).",
+			"targeting_details": "Enemy within 6. You land on the tile behind it (or the nearest free tile).",
 			"mastery_required_text": "Sword Mastery 600",
 			"prerequisites_text": "Blade Dance",
 			"scales_with_text": "Sword Mastery",
@@ -5420,7 +5475,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 4.0,
+				"range": 6.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -5596,9 +5651,9 @@
 			"role": "Damage",
 			"item_type": "Bow",
 			"taught_by": "Hunter's Shortbow",
-			"effect": "Fast shot, range 5.",
+			"effect": "Fast shot, range 7.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 5. Fast arrow that can't miss; blocked by walls.",
+			"targeting_details": "Enemy within 7. Fast arrow that can't miss; blocked by walls.",
 			"mastery_required_text": "Bow Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -5634,7 +5689,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 5.0,
+				"range": 7.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -5650,9 +5705,9 @@
 			"role": "Damage",
 			"item_type": "Bow",
 			"taught_by": "Yew Longbow",
-			"effect": "1s draw, range 7, heavy damage.",
+			"effect": "1s draw, range 9, heavy damage.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim at an enemy within 7. Direction locks on release after the 1s draw; any angle; hits the first unit in its path.",
+			"targeting_details": "Aim at an enemy within 9. Direction locks on release after the 1s draw; any angle; hits the first unit in its path.",
 			"mastery_required_text": "Bow Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -5698,7 +5753,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 7.0,
+				"range": 9.0,
 				"speed": 14.0,
 				"size": 0.3,
 				"pierce": false
@@ -5765,7 +5820,7 @@
 			"taught_by": "Tracker's Bow",
 			"effect": "The marked enemy takes extra damage from every source for 15s.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 6.",
+			"targeting_details": "Enemy within 8.",
 			"mastery_required_text": "Bow Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Bow Mastery",
@@ -5793,7 +5848,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 6.0,
+				"range": 8.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -5842,7 +5897,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 5.0,
+				"range": 7.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -5893,7 +5948,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 6.0,
+				"range": 8.0,
 				"speed": 14.0,
 				"size": 0.25,
 				"pierce": true
@@ -5915,7 +5970,7 @@
 			"taught_by": "Viper Bow",
 			"effect": "Poison an enemy for 10s.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 5.",
+			"targeting_details": "Enemy within 7.",
 			"mastery_required_text": "Bow Mastery 150",
 			"prerequisites_text": "Hunter's Mark",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -5946,7 +6001,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 5.0,
+				"range": 7.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -5966,7 +6021,7 @@
 			"taught_by": "Pinning Recurve",
 			"effect": "Root an enemy for 2s.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim at an enemy within 5. Any angle; the first unit hit is rooted.",
+			"targeting_details": "Aim at an enemy within 7. Any angle; the first unit hit is rooted.",
 			"mastery_required_text": "Bow Mastery 150",
 			"prerequisites_text": "Disengage",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -5997,7 +6052,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 5.0,
+				"range": 7.0,
 				"speed": 14.0,
 				"size": 0.25,
 				"pierce": false
@@ -6066,7 +6121,7 @@
 			"taught_by": "Volley Bow",
 			"effect": "Arrows rain on a 3x3 area.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 7. 0.5s telegraph.",
+			"targeting_details": "Pick a tile within 9. 0.5s telegraph.",
 			"mastery_required_text": "Bow Mastery 350",
 			"prerequisites_text": "Multi-Shot",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -6097,7 +6152,7 @@
 			},
 			"hitbox": {
 				"shape": "Circle",
-				"range": 7.0,
+				"range": 9.0,
 				"radius": 1.5,
 				"pierce": false
 			},
@@ -6116,9 +6171,9 @@
 			"role": "Burst damage",
 			"item_type": "Bow",
 			"taught_by": "Sniper's Greatbow",
-			"effect": "2s draw, range 10.",
+			"effect": "2s draw, range 12.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 10. 2s draw; cancels if the target breaks line of sight.",
+			"targeting_details": "Enemy within 12. 2s draw; cancels if the target breaks line of sight.",
 			"mastery_required_text": "Bow Mastery 350",
 			"prerequisites_text": "Piercing Arrow; High Ground",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -6149,7 +6204,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 10.0,
+				"range": 12.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -6170,7 +6225,7 @@
 			"taught_by": "Trapper's Bow",
 			"effect": "Place a hidden trap that explodes when an enemy steps on it.",
 			"targeting": "Ground",
-			"targeting_details": "Pick an empty tile within 3. Invisible to enemies.",
+			"targeting_details": "Pick an empty tile within 5. Invisible to enemies.",
 			"mastery_required_text": "Bow Mastery 350",
 			"prerequisites_text": "Pinning Shot",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -6201,7 +6256,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 3.0,
+				"range": 5.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -6253,7 +6308,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 5.0,
+				"range": 7.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -6320,7 +6375,7 @@
 			"taught_by": "Rainmaker",
 			"effect": "5x5 barrage for 4s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 8. 0.75s telegraph.",
+			"targeting_details": "Pick a tile within 10. 0.75s telegraph.",
 			"mastery_required_text": "Bow Mastery 600",
 			"prerequisites_text": "Volley",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -6351,7 +6406,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 8.0,
+				"range": 10.0,
 				"radius": 2.0,
 				"pierce": false
 			},
@@ -6370,9 +6425,9 @@
 			"role": "CC / Damage",
 			"item_type": "Bow",
 			"taught_by": "Windstring Bow",
-			"effect": "Range 12; knocks the target back 3 tiles.",
+			"effect": "Range 14; knocks the target back 3 tiles.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim at any angle, range 12. Very fast; knockback follows the arrow's path.",
+			"targeting_details": "Aim at any angle, range 14. Very fast; knockback follows the arrow's path.",
 			"mastery_required_text": "Bow Mastery 600",
 			"prerequisites_text": "Snipe; Air Mastery 350",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -6403,7 +6458,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 12.0,
+				"range": 14.0,
 				"speed": 14.0,
 				"size": 0.25,
 				"pierce": false
@@ -6430,7 +6485,7 @@
 			"taught_by": "Executioner's Bow",
 			"effect": "Only usable on enemies below 20% HP; huge damage.",
 			"targeting": "Targeted",
-			"targeting_details": "Enemy within 8 below 20% HP. Can't miss.",
+			"targeting_details": "Enemy within 10 below 20% HP. Can't miss.",
 			"mastery_required_text": "Bow Mastery 600",
 			"prerequisites_text": "Snipe",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -6461,7 +6516,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 8.0,
+				"range": 10.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -6512,7 +6567,7 @@
 			},
 			"hitbox": {
 				"shape": "Targeted",
-				"range": 5.0,
+				"range": 7.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -6583,7 +6638,7 @@
 			"taught_by": "Stormcaller Bow",
 			"effect": "7x7 barrage for 5s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 8. 1s telegraph.",
+			"targeting_details": "Pick a tile within 10. 1s telegraph.",
 			"mastery_required_text": "Bow Mastery 900",
 			"prerequisites_text": "Rain of Arrows; Ricochet",
 			"scales_with_text": "Bow Mastery, Phys Atk",
@@ -6614,7 +6669,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 8.0,
+				"range": 10.0,
 				"radius": 3.0,
 				"pierce": false
 			},
@@ -6884,7 +6939,7 @@
 			},
 			"hitbox": {
 				"shape": "Projectile",
-				"range": 4.0,
+				"range": 6.0,
 				"speed": 10.0,
 				"size": 0.5,
 				"pierce": true
@@ -7111,7 +7166,7 @@
 			"taught_by": "Crater Maul",
 			"effect": "Smash a 3x3 area down 1 height level.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 2; 3x3 area.",
+			"targeting_details": "Pick a tile within 4; 3x3 area.",
 			"mastery_required_text": "Hammer Mastery 350",
 			"prerequisites_text": "Leap Slam",
 			"scales_with_text": "Hammer Mastery, Phys Atk",
@@ -7142,7 +7197,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 2.0,
+				"range": 4.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -7266,7 +7321,7 @@
 			"taught_by": "Tremor Maul",
 			"effect": "3x3 slow and damage for 6s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 4; 3x3 zone.",
+			"targeting_details": "Pick a tile within 6; 3x3 zone.",
 			"mastery_required_text": "Hammer Mastery 350",
 			"prerequisites_text": "Shockwave; Earth Mastery 350",
 			"scales_with_text": "Hammer Mastery, Phys Atk",
@@ -7297,7 +7352,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 4.0,
+				"range": 6.0,
 				"radius": 1.0,
 				"pierce": false
 			},
@@ -7582,7 +7637,7 @@
 			"taught_by": "Worldbreaker",
 			"effect": "Huge strike over a 5x5 area.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 3. 1s wind-up.",
+			"targeting_details": "Pick a tile within 5. 1s wind-up.",
 			"mastery_required_text": "Hammer Mastery 900",
 			"prerequisites_text": "Meteor Leap; Earthshatter",
 			"scales_with_text": "Hammer Mastery, Phys Atk",
@@ -7613,7 +7668,7 @@
 			},
 			"hitbox": {
 				"shape": "Circle",
-				"range": 3.0,
+				"range": 5.0,
 				"radius": 2.5,
 				"pierce": false
 			},

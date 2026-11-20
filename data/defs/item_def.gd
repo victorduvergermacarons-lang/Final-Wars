@@ -33,6 +33,9 @@ extends Resource
 @export var tree: String = ""
 @export var tier: int = 0
 @export var is_scroll: bool = false
+## The element this gear is made for (&"earth", &"water", &"fire", &"air"; empty for
+## none): starting clothes, and quest rewards offered first to heroes of that element.
+@export var element: StringName = &""
 
 
 ## The tree ability this item teaches, or null.
@@ -59,6 +62,12 @@ func validate() -> PackedStringArray:
 		else:
 			errors.append_array(ability.validate())
 	return errors
+
+
+## A crafting material (pelts, fangs, shards…): nothing to wear, use or learn and no
+## quest's. Gold and materials from a kill are copied to every hero who fought.
+func is_material() -> bool:
+	return not is_equippable() and not is_scroll and use_ability == null and not quest_item and tree == ""
 
 
 func is_equippable() -> bool:

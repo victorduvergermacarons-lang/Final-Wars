@@ -46,7 +46,7 @@ func test_data_and_art() -> void:
 		assert_true(art.flash_sheets.has(anim), "flash sheet for " + anim)
 	var bite: AbilityDef = ContentDB.abilities[&"hound_bite"]
 	var pounce: AbilityDef = ContentDB.abilities[&"cinder_pounce"]
-	assert_almost_eq(bite.windup_seconds, 0.3, 0.001, "jaws on frame 6 at 20 fps")
+	assert_almost_eq(bite.windup_seconds, 0.2, 0.001, "jaws on frame 6 at 30 fps (20 fps until 2026-11-17)")
 	assert_almost_eq(pounce.windup_seconds, 6.0 / 9.0, 0.001, "springs on frame 6 at 9 fps")
 	assert_eq(pounce.cooldown_seconds, 8.0)
 

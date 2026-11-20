@@ -157,64 +157,6 @@ static func tree_fight(content, specs: Array, enemy_id: StringName, count: int, 
 			"mana_left_pct": roundi(mana * 100)}
 
 
-## The Silent Shaft's boss (the Foreman and the Grey Heart) in its real chamber,
-## with its encounter: the bots fight the Foreman, and the Heart once it opens in
-## phase 3, killing any add that reaches them first (before phase 3). Won when the Heart breaks; lost at the
-## first party wipe. Returns like tree_fight(), plus "phase" (the furthest reached).
-static func boss_fight(content, specs: Array, seed: int = 1, hero_level: int = 10) -> Dictionary:
-	var world := WorldSim.new(content.zones[&"silent_shaft"], content.rules, seed)
-	var heroes: Array[Hero] = []
-	for i in specs.size():
-		var h := make_bot(world, content, specs[i], hero_level)
-		h.move.place(world.find_free_tile_near(Vector2i(52, 12 + i * 2)))
-		heroes.append(h)
-	world.step() # scaled for the party
-	var enc := world.encounter
-	enc.boss(world).threat.add(heroes[0].id, 300.0) # the tank (first) pulls and holds a lead
-	enc.boss(world).state = Enemy.State.COMBAT
-	var t := world.now
-	var start := t
-	var min_hp_frac := 1.0
-	var phase := 1
-	while t - start < 300.0 and not enc.defeated:
-		if heroes.all(func(h): return not h.alive):
-			break
-		var heart := enc.heart(world)
-		# Adds first (as players would), then the Heart once it opens, else the Foreman.
-		var focus: Enemy = heart if enc.phase == 3 and heart.alive else enc.boss(world)
-		for e in world.enemies():
-			if enc.phase < 3 and e.temporary and e.alive and heroes.any(func(h): return h.alive and TileGeometry.distance(h.tile(), e.tile()) <= 2):
-				focus = e # an add that has reached the party
-				break
-		var foes := world.enemies().filter(func(e): return e.alive and not e.evading and e.state == Enemy.State.COMBAT)
-		bot_turn(world, content, heroes, specs, foes, focus, true)
-		world.step()
-		t = world.now
-		phase = maxi(phase, enc.phase)
-		for h in heroes:
-			min_hp_frac = minf(min_hp_frac, h.hp / h.stats.hp)
-	var mana := 1.0
-	for h in heroes:
-		mana = minf(mana, h.mana / maxf(h.stats.mana, 1.0))
-	return {"seconds": snappedf(t - start, 0.05), "hp_lost_pct": roundi((1.0 - min_hp_frac) * 100),
-			"won": enc.defeated, "mana_left_pct": roundi(mana * 100), "phase": phase}
-
-
-static func boss_average(content, specs: Array, runs: int = 6, hero_level: int = 10) -> Dictionary:
-	var secs := 0.0
-	var wins := 0
-	var phases := 0.0
-	var lost := 0.0
-	for i in runs:
-		var r := boss_fight(content, specs, i + 1, hero_level)
-		secs += r.seconds
-		wins += 1 if r.won else 0
-		phases += r.phase
-		lost += r.hp_lost_pct
-	return {"seconds": snappedf(secs / runs, 0.1), "win_rate": float(wins) / runs,
-			"phase": snappedf(phases / runs, 0.1), "hp_lost_pct": roundi(lost / runs)}
-
-
 ## A bot hero built from `spec` (see tree_fight) at `hero_level`, in `world`.
 static func make_bot(world: WorldSim, content, spec: Dictionary, hero_level: int) -> Hero:
 	var h := world.add_hero(content.heroes[&"adventurer"])

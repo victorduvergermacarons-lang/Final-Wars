@@ -12,6 +12,7 @@ const DIRS := {
 	"buffs": "res://content/buffs",
 	"npcs": "res://content/npcs",
 	"quests": "res://content/quests",
+	"elements": "res://content/elements",
 }
 
 var rules: CombatRules
@@ -23,6 +24,8 @@ var zones := {} # id -> ZoneDef
 var buffs := {} # id -> BuffDef
 var npcs := {} # id -> NpcDef
 var quests := {} # id -> QuestDef
+## The four elements a new character picks from (the element screen), by id.
+var elements := {} # id -> StartingElementDef
 ## Every line of dialogue (content/dialogue/act1.json), by id.
 var dialogue: DialogueLines
 ## Ability trees from design/Ability_Tree.xlsx (via tools/import_ability_tree.gd).
@@ -47,6 +50,7 @@ func reload() -> void:
 	buffs = _load_dir(DIRS.buffs)
 	npcs = _load_dir(DIRS.npcs)
 	quests = _load_dir(DIRS.quests)
+	elements = _load_dir(DIRS.elements)
 	dialogue = DialogueLines.load_file()
 	tree = AbilityTreeData.load_file()
 	tilesets = TilesetData.load_all()
@@ -83,6 +87,8 @@ func _link_tree_items() -> void:
 	for q in quests.values():
 		_link_list(q.reward_items, q.reward_item_ids)
 		_link_list(q.reward_choices, q.reward_choice_ids)
+		q.element_rewards = _link_by_element(q.element_reward_ids)
+		q.element_choices = _link_by_element(q.element_choice_ids)
 	for e in enemies.values():
 		_time_abilities_to_art(e)
 	for e in enemies.values():
@@ -116,6 +122,19 @@ func _link_list(list: Array, ids: Array) -> void:
 			list.append(item)
 
 
+## {element: [item ids]} -> {element (String): Array[ItemDef]}.
+func _link_by_element(ids: Dictionary) -> Dictionary:
+	var out := {}
+	for e in ids:
+		var list: Array[ItemDef] = []
+		for id in ids[e]:
+			var item := _item(StringName(id))
+			if item != null:
+				list.append(item)
+		out[String(e)] = list
+	return out
+
+
 func _item(id: StringName) -> ItemDef:
 	if not items.has(id):
 		push_error("Content names an unknown item: %s" % id)
@@ -134,6 +153,19 @@ func validate() -> PackedStringArray:
 		errors.append_array(z.validate())
 	for t in tilesets.values():
 		errors.append_array(t.validate())
+	for e: StartingElementDef in elements.values():
+		var mastered: AbilityDef = abilities.get(e.mastered_ability_id)
+		var scroll: ItemDef = items.get(e.mastered_scroll_id)
+		var learning: ItemDef = items.get(e.learning_scroll_id)
+		if mastered == null or not mastered.implemented:
+			errors.append("Element %s: its first ability %s isn't built" % [e.id, e.mastered_ability_id])
+		if scroll == null or scroll.tree_ability() != mastered:
+			errors.append("Element %s: %s doesn't teach %s" % [e.id, e.mastered_scroll_id, e.mastered_ability_id])
+		if learning == null or learning.tree_ability() == null or not learning.tree_ability().implemented:
+			errors.append("Element %s: its learning scroll %s teaches nothing built" % [e.id, e.learning_scroll_id])
+		for c in e.clothes_ids:
+			if not items.has(c):
+				errors.append("Element %s: unknown starting item %s" % [e.id, c])
 	for z in zones.values():
 		if z.has_terrain():
 			errors.append_array(z.validate_terrain(tilesets.get(z.tileset)))

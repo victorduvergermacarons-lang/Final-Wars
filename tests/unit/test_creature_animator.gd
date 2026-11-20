@@ -60,18 +60,20 @@ func test_bite_plays_from_the_wind_up_and_lands_on_frame_12() -> void:
 	_start_bite(2.0)
 	assert_eq(anim.pick(wolf, art, 2.0).anim, "bite")
 	assert_eq(anim.pick(wolf, art, 2.0).frame, 0)
-	var hit := anim.pick(wolf, art, 2.0 + 0.4)
+	var hit := anim.pick(wolf, art, 2.0 + ContentDB.abilities[&"wolf_bite"].windup_seconds)
 	assert_eq(hit.frame, 12, "the wind-up ends (damage) on the jaw frame")
 
 
 func test_bite_recovery_plays_after_the_wind_up_ends() -> void:
 	_start_bite(2.0)
-	anim.pick(wolf, art, 2.3)
-	wolf.casting = {} # the host resolved it at 2.4
-	var after := anim.pick(wolf, art, 2.45)
+	var fps := art.anim_fps("bite")
+	var w: float = ContentDB.abilities[&"wolf_bite"].windup_seconds # 12 frames
+	anim.pick(wolf, art, 2.0 + w - 0.05)
+	wolf.casting = {} # the host resolved it at the end of the wind-up
+	var after := anim.pick(wolf, art, 2.0 + 13.5 / fps)
 	assert_eq(after.anim, "bite")
 	assert_eq(after.frame, 13)
-	assert_eq(anim.pick(wolf, art, 2.6).anim, "idle", "15 frames done")
+	assert_eq(anim.pick(wolf, art, 2.0 + 16.0 / fps).anim, "idle", "15 frames done")
 
 
 func test_cancelled_bite_stops_at_once() -> void:
@@ -112,7 +114,7 @@ func test_wolf_stays_put_during_the_bite_and_its_recovery() -> void:
 			break
 		assert_eq(wolf.tile(), start_tile, "doesn't move while winding up")
 	assert_gt(bitten_at, 0.0, "it bit")
-	assert_almost_eq(wolf.busy_until, bitten_at + 2.0 / 30.0, 0.001, "busy for 2 recovery frames")
+	assert_almost_eq(wolf.busy_until, bitten_at + 2.0 / art.anim_fps("bite"), 0.001, "busy for 2 recovery frames")
 
 
 func test_death_plays_once_then_the_corpse_lies_and_fades() -> void:

@@ -19,6 +19,10 @@ south-east art).
 4. Writes assets/heroes/pl01/<anim>.png: 9 frames of 48x48 in a row, one row per
    facing: SW, SE, NW, NE (CreatureArtDef.rows).
 
+2026-11-17: eight facings. The four screen directions drawn on 2026-11-17 (south,
+east, north, west) are rows 5-8, and the walk stride is measured per facing along
+the way it walks on screen (CreatureArtDef.run_px_per_frame).
+
 Run from the project root: python3 tools/once/make_hero_sheets.py
 """
 import glob
@@ -29,7 +33,10 @@ from PIL import Image
 
 F = 48
 FEET = (24, 38)  # the common feet point every facing is shifted onto
-FACINGS = ["south-west", "south-east", "north-west", "north-east"]  # sheet rows
+FACINGS = ["south-west", "south-east", "north-west", "north-east",
+           "south", "east", "north", "west"]  # sheet rows (CreatureArtDef.rows)
+ROWS = ["sw", "se", "nw", "ne", "s", "e", "n", "w"]
+NEW = {"south", "east", "north", "west"}  # drawn 2026-11-17
 OUT = "assets/heroes/pl01"
 DST = "art/heroes"
 
@@ -53,7 +60,9 @@ def frame_paths(folder, who, anim, se_stem, facing):
     """The 9 frame files of one animation in one facing (south-east has no facing
     in its name, except the weapon sets, which name it)."""
     base = f"{DST}/{folder}/{who}+{anim}"
-    if facing == "south-east" and folder == "PL-01":
+    if facing in NEW:
+        pattern = f"{base}_{facing}_2026-11-17_[1-9].png"
+    elif facing == "south-east" and folder == "PL-01":
         pattern = f"{base}_{se_stem}_[1-9].png"
     else:
         pattern = f"{base}_{facing}_2026-11-16_[1-9].png"
@@ -180,20 +189,26 @@ def main():
             weapon_shifts[who][facing] = (sx + ox, sy + oy)
             print(f"  {who} {facing:11s} lines up with PL-01-1 moved by ({ox}, {oy}) "
                   f"({score:.0%} of the body overlaps)  shift {weapon_shifts[who][facing]}")
-    # Walk stride.
-    steps = []
-    for facing in FACINGS:
-        gaps = [abs(s[0][0] - s[1][0]) for p in frame_paths(*ANIMS["run"], facing)
-                for s in [soles(Image.open(p).convert("RGBA"))] if len(s) == 2]
-        steps.append(max(gaps))
-        print(f"  walk {facing:11s} widest step {max(gaps):.1f} art px across")
-    step_tiles = sum(steps) / len(steps) / 16.0
-    print(f"walk: a 9-frame cycle (two steps) covers {2 * step_tiles:.2f} tiles: "
-          f"{9 / (2 * step_tiles):.1f} frames per tile")
+    # Walk stride, per facing, along the way it walks on screen: east/west across,
+    # north/south up and down, the diagonals (grid axes, 16 px across and 8 down per
+    # tile) along their slope. A 9-frame cycle is two steps.
+    px_per_frame = {}
+    for facing, row in zip(FACINGS, ROWS):
+        steps = []
+        for p in frame_paths(*ANIMS["run"], facing):
+            s = soles(Image.open(p).convert("RGBA"))
+            if len(s) == 2:
+                dx, dy = abs(s[0][0] - s[1][0]), abs(s[0][1] - s[1][1])
+                steps.append(dy if facing in ("north", "south") else
+                             dx if facing in ("east", "west") else dx * (16 ** 2 + 8 ** 2) ** 0.5 / 16)
+        step = max(steps)
+        px_per_frame[row] = round(2 * step / 9, 3)
+        print(f"  walk {facing:11s} widest step {step:.1f} art px: {px_per_frame[row]} px per frame")
+    print("run_px_per_frame =", px_per_frame)
     # Sheets.
     for name, (folder, who, anim, se_stem) in ANIMS.items():
         table = weapon_shifts.get(who, shifts)
-        sheet = Image.new("RGBA", (9 * F, 4 * F))
+        sheet = Image.new("RGBA", (9 * F, len(FACINGS) * F))
         for row, facing in enumerate(FACINGS):
             dx, dy = table[facing]
             for i, path in enumerate(frame_paths(folder, who, anim, se_stem, facing)):

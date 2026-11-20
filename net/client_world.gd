@@ -26,6 +26,12 @@ var _actors := {} # id -> Actor
 var projectiles: Array = []
 ## Telegraphed areas and lobbed shots: [{"source", "ability", "tiles", "at"}].
 var telegraphs: Array = []
+## Boss rolls in progress (LootRolls.to_array).
+var rolls: Array = []
+## Duels in this zone (WorldSim.duels_view).
+var duels: Array = []
+## The open way out of a cleared dungeon (a tile), or null.
+var way_out: Variant = null
 ## Ground zones: [{"source", "ability", "tiles", "until"}].
 var ground_zones: Array = []
 ## Tiles the host changed (pillars, walls…), as applied to `grid`: tile -> true.
@@ -134,7 +140,8 @@ func _step_local(hero: Hero, wish: Vector2, face: float, t: float) -> void:
 			Mover.separate_pair(hero, a, false, true)
 	Mover.resolve_terrain(hero, grid)
 	if hero.in_combat(t):
-		hero.face_angle(face)
+		if not hero.holds_cast_facing(t):
+			hero.face_angle(face)
 	elif hero.move.vel.length() > 0.3:
 		hero.face_angle(hero.move.vel.angle())
 
@@ -168,6 +175,9 @@ func apply_snapshot(snap: Dictionary) -> void:
 	rules.dungeon_testing = snap.get("dungeon_testing", rules.dungeon_testing)
 	projectiles = snap.get("projectiles", [])
 	telegraphs = snap.get("telegraphs", [])
+	way_out = snap.get("way_out")
+	rolls = snap.get("rolls", [])
+	duels = snap.get("duels", [])
 	ground_zones = snap.get("zones", [])
 	_apply_terrain(snap.get("terrain", []))
 	world_flags.clear()
@@ -212,6 +222,9 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 	a.mana = d.mana
 	a.alive = d.alive
 	a.evading = d.evading
+	var duel: Array = d.get("duel", [-1, false])
+	a.duel_with = int(duel[0])
+	a.duel_live = bool(duel[1])
 	a.combat_until = d.combat_until
 	a.move.buffered = a.id != local_hero_id
 	a.move.apply_dict(d.move, now)
@@ -240,6 +253,7 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 
 func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
+	h.element = StringName(d.get("element", ""))
 	var anim: Dictionary = d.get("anim", {})
 	for k in ["died", "down", "up", "hit", "act_at"]:
 		h.anim[k] = float(anim.get(k, Hero.NEVER))
@@ -268,7 +282,12 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 		if ability != null:
 			h.mastered[StringName(id)] = ability
 	h.quest_state = p.quests
-	h.pending_loot = p.get("loot", [])
+	h.drops = p.get("drops", [])
+	h.loot_bonus = int(p.get("loot_bonus", 0))
+	h.social = p.get("social", {"trade": {}, "requests": []})
+	var mine: Dictionary = h.social.get("trade", {}).get("mine", {})
+	h.escrow = mine.get("items", [])
+	h.escrow_gold = int(mine.get("gold", 0))
 	h.learning_item = content.items.get(StringName(p.get("learning", "")))
 	h.mastery_contrib = {}
 	for id in p.get("contrib", {}):
@@ -294,7 +313,7 @@ func _apply_local_hero(h: Hero, d: Dictionary) -> void:
 		return # first snapshot, or a forced move the host drives
 	for tk in _ticks:
 		_step_local(h, tk.wish, tk.face, now)
-	if not _ticks.is_empty():
+	if not _ticks.is_empty() and not h.holds_cast_facing(now):
 		h.face_angle(predicted_angle)
 	# Keep drawing on the predicted timeline (same tick times as before); the
 	# difference to the old prediction fades out rather than popping.

@@ -16,6 +16,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		var d := _actor(hero)
 		d.kind = KIND_HERO
 		d.level = hero.level
+		d.element = String(hero.element)
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:
@@ -35,7 +36,9 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 				"learning": String(hero.learning_item.id) if hero.learning_item != null else "",
 				"contrib": hero.mastery_contrib.duplicate(),
 				"quests": hero.quest_state,
-				"loot": world.pending_loot_for(hero.id),
+				"drops": world.drops.for_owner(hero.id),
+				"loot_bonus": hero.loot_bonus,
+				"social": world.social_view(hero.id),
 				"def": hero.def_id,
 				"ack": world.intent_ack(hero.id),
 			}
@@ -60,7 +63,8 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 	var projectiles: Array = world.projectiles().map(func(p): return p.to_dict())
 	return {"tick": world.tick_count, "now": world.now, "zone": world.zone.id, "actors": actors,
 			"projectiles": projectiles, "flags": world.world_flags.keys(), "telegraphs": world.pending_hits(),
-			"terrain": world.changed_terrain(), "zones": world.ground_zones()}
+			"terrain": world.changed_terrain(), "zones": world.ground_zones(), "way_out": world.way_out(),
+			"rolls": world.rolls.to_array(), "duels": world.duels_view()}
 
 
 static func _actor(a: Actor) -> Dictionary:
@@ -71,6 +75,7 @@ static func _actor(a: Actor) -> Dictionary:
 		"mana": a.mana,
 		"alive": a.alive,
 		"evading": a.evading,
+		"duel": [a.duel_with, a.duel_live],
 		"combat_until": a.combat_until,
 		"stats": a.stats.to_dict(),
 		"move": a.move.to_dict(),

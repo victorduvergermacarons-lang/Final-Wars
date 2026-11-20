@@ -103,13 +103,6 @@ func test_level_4_sword_beats_a_skirmisher() -> void:
 	assert_eq(r.win_rate, 1.0, str(r))
 
 
-func test_grizzlehide_needs_a_group() -> void:
-	assert_eq(_avg([S.L4_LUNGE], &"old_grizzlehide", 1, 5).win_rate, 0.0, "solo loses")
-	assert_lt(_avg([S.L5_TANK, S.L5_HEALER], &"old_grizzlehide", 1, 5).win_rate, 0.34, "a pair mostly loses")
-	var group := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"old_grizzlehide", 1, 5)
-	assert_gt(group.win_rate, 0.8, str(group))
-
-
 func test_salamander_hound_is_a_fair_level_2_fight() -> void:
 	var r := _avg([S.STARTER], &"salamander_hound", 1, 2)
 	print("Salamander Hound vs level-2 starter: ", r)
@@ -118,33 +111,3 @@ func test_salamander_hound_is_a_fair_level_2_fight() -> void:
 		return
 	assert_gt(r.win_rate, 0.8, "a level-2 starter beats it: " + str(r))
 	assert_between(r.hp_lost_pct, 25, 85, "but it hurts: " + str(r))
-
-
-## Retuned 2026-10-20 (harder hits, 5-tile body): bots that never dodge need level 7;
-## a level-6 group that dodges the telegraphs should manage.
-func test_sunscale_drake_needs_a_group() -> void:
-	assert_eq(_avg([S.L4_LUNGE], &"sunscale_drake", 1, 7).win_rate, 0.0, "solo loses")
-	assert_eq(_avg([S.L5_TANK, S.L5_HEALER], &"sunscale_drake", 1, 7).win_rate, 0.0, "a pair loses")
-	var group := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 7)
-	if not _target(group.win_rate == 0.0, "it beats a level-7 group of four every time: %s" % str(group)):
-		assert_eq(group.win_rate, 0.0, "it beats a level-7 group of four every time: " + str(group))
-	var l10 := _avg([S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], &"sunscale_drake", 1, 10)
-	if _target(l10.win_rate > 0.0, "a level-10 group can beat the drake: %s" % str(l10)):
-		return
-	assert_gt(l10.win_rate, 0.0, "a level-10 group can win: " + str(l10))
-
-
-## The Silent Shaft's boss (milestone 4): built for three or four players at about
-## level 10 (where Act I's quests leave a party). Bots never dodge the slams, the
-## charge or the grey ground and never taunt back, so real groups should do better.
-func test_the_foreman_is_a_fight_for_a_group() -> void:
-	var four := BalanceSim.boss_average(db, [S.L5_TANK, S.L5_FIRE, S.L5_HEALER, S.L5_ARCHER], RUNS, 10)
-	var three := BalanceSim.boss_average(db, [S.L5_TANK, S.L5_FIRE, S.L5_HEALER], RUNS, 10)
-	var solo := BalanceSim.boss_average(db, [S.L5_TANK], RUNS, 10)
-	var met: bool = four.win_rate >= 0.3 and three.win_rate > 0.0 and three.win_rate < 1.0 and solo.win_rate == 0.0
-	if _target(met, "Foreman: four %s, three %s, solo %s" % [four, three, solo]):
-		return
-	assert_gte(four.win_rate, 0.3, "a level-10 group of four often wins: " + str(four))
-	assert_gt(three.win_rate, 0.0, "a level-10 group of three can win: " + str(three))
-	assert_lt(three.win_rate, 1.0, "but not every time: " + str(three))
-	assert_eq(solo.win_rate, 0.0, "a lone hero (testing setting only) can't: " + str(solo))

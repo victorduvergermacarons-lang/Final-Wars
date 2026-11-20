@@ -104,7 +104,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-225 keys, 0 with a file, 225 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+240 keys, 0 with a file, 240 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -132,12 +132,18 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `world_hero_death` | a hero dies | **missing** |
 | `world_level_up` | a hero levels up | **missing** |
 | `world_lift` | a mine lift rattles along its shaft (you ride it) | **missing** |
+| `world_loot_common` | you pick up a Common item (a soft cloth rustle) | **missing** |
+| `world_loot_epic` | you pick up an Epic item (a rich shimmer) | **missing** |
+| `world_loot_legendary` | you pick up a Legendary item (a golden fanfare sting) | **missing** |
+| `world_loot_rare` | you pick up a Rare item (a bright two-note chime) | **missing** |
+| `world_loot_uncommon` | you pick up an Uncommon item (a light chime) | **missing** |
 | `world_mana_potion_cast` | Mana Potion is used | **missing** |
 | `world_mastered` | a hero masters an ability | **missing** |
 | `world_miss` | an attack misses | **missing** |
 | `world_party_wipe` | the whole party has fallen in a dungeon | **missing** |
 | `world_release` | a hero releases to a graveyard | **missing** |
 | `world_shrine_reset` | the Reset Shrine resets the testing grounds | **missing** |
+| `world_way_out` | a way out of a cleared dungeon opens (a low chime, light swelling) | **missing** |
 | `world_whiff` | an attack hits nothing | **missing** |
 | `world_wipe_respawn` | the fallen party wakes at the dungeon's entrance | **missing** |
 | `world_zone_enter` | you walk into another map | **missing** |
@@ -237,6 +243,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `earth_rock_throw_cast` | Rock Throw is used | **missing** |
 | `earth_rock_throw_hit` | Rock Throw lands on someone | **missing** |
 | `earth_seismic_stomp_cast` | Seismic Stomp is used | **missing** |
+| `earth_stone_skin_cast` | Stone Skin is used | **missing** |
 | `earth_wall_cast` | Earth Wall is used | **missing** |
 | `earth_wall_hit` | Earth Wall lands on someone | **missing** |
 
@@ -281,6 +288,8 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_foreman_enrage` | The Foreman enrages (Grey Fury, phase 3) | **missing** |
 | `creature_foreman_ground_slam` | Ground Slam is used | **missing** |
 | `creature_foreman_ground_slam_hit` | Ground Slam lands on someone | **missing** |
+| `creature_foreman_hurled_sunstone` | Hurled Sunstone is used | **missing** |
+| `creature_foreman_hurled_sunstone_hit` | Hurled Sunstone lands on someone | **missing** |
 | `creature_foreman_hurt` | The Foreman takes damage | **missing** |
 | `creature_foreman_mine_cart_charge` | Mine-Cart Charge is used | **missing** |
 | `creature_foreman_mine_cart_charge_hit` | Mine-Cart Charge lands on someone | **missing** |
@@ -342,6 +351,12 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_salamander_hound_embers_hit` | Ember Trail: its ground zone hurts someone standing in it | **missing** |
 | `creature_salamander_hound_hurt` | Salamander Hound takes damage | **missing** |
 | `creature_salamander_hound_step` | Salamander Hound moves one tile (paws, wings...) | **missing** |
+| `creature_stag_aggro` | Stag notices a hero and starts a fight | **missing** |
+| `creature_stag_antler_thrust` | Antler Thrust is used | **missing** |
+| `creature_stag_antler_thrust_hit` | Antler Thrust lands on someone | **missing** |
+| `creature_stag_death` | Stag dies | **missing** |
+| `creature_stag_hurt` | Stag takes damage | **missing** |
+| `creature_stag_step` | Stag moves one tile (paws, wings...) | **missing** |
 | `creature_sunscale_drake_aggro` | Sunscale Drake notices a hero and starts a fight | **missing** |
 | `creature_sunscale_drake_death` | Sunscale Drake dies | **missing** |
 | `creature_sunscale_drake_enrage` | Sunscale Drake enrages (Molten Fury) | **missing** |
@@ -374,11 +389,11 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `ambience_crossing` | background loop in The Crossing (Ambience bus, OGG) | **missing** |
 | `ambience_deepcut` | background loop in Deepcut (Ambience bus, OGG) | **missing** |
 | `ambience_deepcut_road` | background loop in Road to Deepcut (Ambience bus, OGG) | **missing** |
-| `ambience_enemy_testing` | background loop in Enemy Testing Grounds (Ambience bus, OGG) | **missing** |
 | `ambience_greenfields` | background loop in Greenfields (Ambience bus, OGG) | **missing** |
 | `ambience_silent_shaft` | background loop in The Silent Shaft (Ambience bus, OGG) | **missing** |
 | `ambience_tidereach_shore` | background loop in Tidereach Shore (test) (Ambience bus, OGG) | **missing** |
 | `ambience_town` | background loop in Millbrook (Ambience bus, OGG) | **missing** |
+| `ambience_wilds` | background loop in The Wilds (Ambience bus, OGG) | **missing** |
 | `ambience_windsteppe` | background loop in Windsteppe (Ambience bus, OGG) | **missing** |
 
 <!-- sound keys end -->

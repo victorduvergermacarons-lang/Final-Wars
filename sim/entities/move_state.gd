@@ -44,6 +44,11 @@ var draw_h := 0.0
 var prev_draw_h := 0.0
 ## Total distance walked (tiles): run animations and footsteps for free movers.
 var odometer := 0.0
+## The same distance as it shows on screen, in art pixels (PixelCamera.ART_SCALE
+## world px each): a tile across the screen is 22.6, along a grid line 17.9, up
+## or down the screen 11.3. A walk cycle follows it, so the feet keep pace with
+## the ground on screen in every direction (CreatureArtDef.run_px_per_frame).
+var screen_odometer := 0.0
 ## Clients only. Other actors are drawn INTERP_DELAY behind the newest snapshot,
 ## between buffered snapshots ([time, pos, height]), so uneven arrival never shows.
 const INTERP_DELAY := 0.1
@@ -220,7 +225,7 @@ func height_at_time(t: float) -> float:
 
 func to_dict() -> Dictionary:
 	var d := {"pos": pos, "vel": vel, "z": z, "vz": vz, "g": ground_h, "ff": fall_from, "h": draw_h,
-			"free": free, "r": radius, "odo": odometer}
+			"free": free, "r": radius, "odo": odometer, "sodo": screen_odometer}
 	if gliding or duration > 0.0:
 		d.glide = [from_point, to_point, start_time, duration]
 	return d
@@ -242,6 +247,7 @@ func apply_dict(d: Dictionary, now: float) -> void:
 	fall_from = fresh.fall_from
 	draw_h = fresh.draw_h
 	odometer = fresh.odometer
+	screen_odometer = fresh.screen_odometer
 	free = fresh.free
 	radius = fresh.radius
 	gliding = fresh.gliding
@@ -267,6 +273,7 @@ static func from_dict(d: Dictionary) -> MoveState:
 	m.fall_from = d.get("ff", 0)
 	m.draw_h = d.get("h", 0.0)
 	m.odometer = d.get("odo", 0.0)
+	m.screen_odometer = d.get("sodo", 0.0)
 	m.prev_draw_h = m.draw_h
 	m.free = d.get("free", false)
 	m.radius = d.get("r", 0.3)
@@ -280,3 +287,9 @@ static func from_dict(d: Dictionary) -> MoveState:
 	m.from_point = m.from_point if m.gliding else m.pos
 	m.to_point = m.to_point if m.gliding else m.pos
 	return m
+
+
+## How long a move of `d` tiles looks on screen, in art pixels (the isometric
+## projection: Iso.to_screen, halved for art pixels).
+static func screen_length(d: Vector2) -> float:
+	return Vector2((d.x - d.y) * 16.0, (d.x + d.y) * 8.0).length()

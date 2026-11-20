@@ -96,4 +96,21 @@ func _run() -> void:
 		heroes[i].move.vel = Vector2(FACINGS[i]) * 3.0
 		heroes[i].move.odometer = 0.4
 	await _shot("ha10_walking")
+	# Getting hit in all eight facings (2026-11-19: W and NW are E and NE mirrored).
+	# Top row: E, NE, then mirrored W, NW; bottom row: S, SE, SW, N.
+	var eight := {"e": -PI / 4.0, "ne": -PI / 2.0, "w": 3.0 * PI / 4.0, "nw": PI,
+			"s": PI / 4.0, "se": 0.0, "sw": PI / 2.0, "n": -3.0 * PI / 4.0}
+	var order := ["e", "ne", "w", "nw", "s", "se", "sw", "n"]
+	while heroes.size() < 8:
+		heroes.append(sim.add_hero(ContentDB.heroes[&"adventurer"]))
+	for i in 8:
+		var h: Hero = heroes[i]
+		h.move.vel = Vector2.ZERO
+		h.move.place(Vector2i(13 + (i % 4) * 2 - (i / 4) * 2, 17 - (i % 4) * 2 + (i / 4) * 4) if false else Vector2i(12 + (i % 4) * 2, 16 + (i / 4) * 3))
+		h.face_angle(eight[order[i]])
+		h.anim.hit = t - art.duration("hit") * 0.45
+	for i in 6:
+		await get_tree().process_frame
+	view.camera.follow(view.actor_screen_pos(heroes[1]).lerp(view.actor_screen_pos(heroes[6]), 0.5), 0.0, true)
+	await _shot("ha11_hit_eight_facings")
 	get_tree().quit()

@@ -19,7 +19,7 @@ buff = ExtResource("3_5pgnn")
 [resource]
 script = ExtResource("4_ebr4x")
 id = &"W09"
-max_range = 4
+max_range = 6
 mana_cost = 15.0
 ranged = true
 effects = Array[ExtResource("1_m7qie")]([SubResource("Resource_65jkp"), SubResource("Resource_jd22h")])

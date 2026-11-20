@@ -27,6 +27,18 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## travels per frame; the cycle may span several tiles).
 @export var fps: Dictionary = {"idle": 6.0, "bite": 30.0, "howl": 10.0, "death": 10.0}
 @export var run_frames_per_tile: int = 4
+## Optional, per facing (a `rows` name): art pixels the body moves on screen per
+## run frame, measured from the planted foot. When set, the run cycle follows
+## the distance walked on screen (MoveState.screen_odometer) instead of tiles, so
+## the feet match the ground whichever way it walks (the hero: walking up the
+## screen covers half the pixels of walking across it).
+@export var run_px_per_frame: Dictionary = {}
+## Facings drawn as another facing's row, flipped left to right: animation ->
+## {facing: source facing}. The hero's getting-hit animation: west shows east and
+## north-west shows north-east, mirrored (2026-11-19; the drawn W and NW rows looked
+## wrong). Same frames, same timing; the flip is about the feet point, so anything
+## drawn in the frames (and the body's offset) lands on the mirrored side.
+@export var mirror_rows: Dictionary = {}
 ## Animations that loop (others play once and hold their last frame).
 @export var looping: PackedStringArray = PackedStringArray(["idle", "run"])
 ## Ability id -> [animation, hit frame]: the ability winds up for exactly
@@ -44,6 +56,19 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 @export var fade_seconds: float = 1.0
 ## The sprite flashes white this long when the creature takes damage.
 @export var flash_seconds: float = 0.1
+
+@export_group("Missing animations (fallbacks)")
+## Used only while the sheet they stand in for is missing, so real sheets drop in
+## later by adding them (plus `timed_abilities` for an attack) with no code change.
+## No attack sheet for an ability it uses (not in `timed_abilities`): during the
+## wind-up it holds the last frame of `fallback_attack_anim`, then lunges this many
+## art pixels toward its facing on the hit and back over `fallback_lunge_seconds`.
+@export var fallback_attack_anim: String = "run"
+@export var fallback_lunge_px: float = 6.0
+@export var fallback_lunge_seconds: float = 0.2
+## No "death" sheet: it holds idle's first frame and tips over onto its side over
+## this many seconds, lies `corpse_seconds`, then fades over `fade_seconds`.
+@export var fallback_death_tip_seconds: float = 0.35
 
 @export_group("Recolour")
 ## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
@@ -96,9 +121,15 @@ func windup_for(ability_id: StringName) -> float:
 	return hit / anim_fps(anim)
 
 
+## Seconds the death takes before the corpse lies still (the death animation, or
+## the tip-over fallback).
+func death_length() -> float:
+	return duration("death") if sheets.has("death") else fallback_death_tip_seconds
+
+
 ## Seconds from death until the corpse has faded away.
 func corpse_total() -> float:
-	return duration("death") + corpse_seconds + fade_seconds
+	return death_length() + corpse_seconds + fade_seconds
 
 
 ## Seconds after the hit frame the creature stays busy (recovery frames).
@@ -128,6 +159,38 @@ func build_sprite_frames(from: Dictionary = {}) -> SpriteFrames:
 				at.region = Rect2(Vector2(c * frame_size.x, r * frame_size.y), Vector2(frame_size))
 				sf.add_frame(name, at)
 	return sf
+
+
+## Applies `mirror_rows` to a pick ({"anim", "dir", ...}): the source row and
+## "flip": true when that facing is drawn mirrored.
+func mirrored(pick: Dictionary) -> Dictionary:
+	var m: Dictionary = mirror_rows.get(pick.get("anim", ""), {})
+	if m.has(pick.get("dir", "")):
+		pick.dir = m[pick.dir]
+		pick.flip = true
+	return pick
+
+
+## The run frame after walking `move` (MoveState) facing `dir`. A walk listed in
+## `fps` ("run" / "walk", the Critters pack) plays by time at that rate instead.
+func run_frame(move: MoveState, dir: String, anim: String = "run", t: float = 0.0) -> int:
+	var n := maxi(frame_count(anim), 1)
+	if fps.has(anim):
+		return int(t * anim_fps(anim)) % n
+	var px := float(run_px_per_frame.get(dir, 0.0))
+	if px > 0.0:
+		return int(move.screen_odometer / px) % n
+	return int(move.odometer * run_frames_per_tile) % n
+
+
+## Art with 8 rows (the hero): the screen facing for a grid-space angle, in eight
+## equal slices of 45° (grid axes are the diagonal views, grid diagonals the
+## straight ones: screen up is grid (-1, -1)). Otherwise the 4-way facing.
+func direction_for_angle(angle: float, facing: Vector2i) -> String:
+	if rows.size() < 8:
+		return direction_for(facing)
+	var k := posmod(roundi(angle / (PI / 4.0)), 8)
+	return ["se", "s", "sw", "w", "nw", "n", "ne", "e"][k]
 
 
 ## The screen facing for a grid facing (4-way).

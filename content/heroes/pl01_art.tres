@@ -44,6 +44,23 @@ fps = {
 "sword_slash": 20.0
 }
 run_frames_per_tile = 8
+run_px_per_frame = {
+"e": 2.0,
+"n": 1.2,
+"ne": 2.24,
+"nw": 2.24,
+"s": 1.2,
+"se": 2.24,
+"sw": 2.24,
+"w": 2.0
+}
+rows = PackedStringArray("sw", "se", "nw", "ne", "s", "e", "n", "w")
+mirror_rows = {
+"hit": {
+"nw": "ne",
+"w": "e"
+}
+}
 looping = PackedStringArray("idle", "run")
 ability_anims = {
 &"B01": ["bow_quick_shot", "Bow"],

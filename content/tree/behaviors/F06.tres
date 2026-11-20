@@ -14,7 +14,7 @@ power = 1.1
 [resource]
 script = ExtResource("3_qefix")
 id = &"F06"
-max_range = 3
+max_range = 5
 mana_cost = 10.0
 effects = Array[ExtResource("1_sweiq")]([SubResource("Resource_tt53n")])
 targeting = 2

@@ -285,17 +285,18 @@ static func refresh(hero: Hero, quests: Dictionary) -> Array[Dictionary]:
 
 
 ## Hands in a READY quest: takes COLLECT items, pays XP, gold and items (one of
-## `reward_choices` by index `choice`). Returns {"reason": "" or why not, "events"}.
+## `choices_for` the hero's element by index `choice`). Returns {"reason": "" or why not, "events"}.
 static func turn_in(hero: Hero, def: QuestDef, choice: int, rules: CombatRules) -> Dictionary:
 	var events: Array[Dictionary] = []
 	if status(hero, def) != Status.READY:
 		return {"reason": "quest_not_ready", "events": events}
 	var rewards: Array[ItemDef] = []
-	rewards.append_array(def.reward_items)
-	if not def.reward_choices.is_empty():
-		if choice < 0 or choice >= def.reward_choices.size():
+	rewards.append_array(def.items_for(hero.element))
+	var choices := def.choices_for(hero.element)
+	if not choices.is_empty():
+		if choice < 0 or choice >= choices.size():
 			return {"reason": "choose_reward", "events": events}
-		rewards.append(def.reward_choices[choice])
+		rewards.append(choices[choice])
 	# Try it on a copy first so a full bag changes nothing.
 	var trial := hero.bag.copy()
 	for o in def.objectives:

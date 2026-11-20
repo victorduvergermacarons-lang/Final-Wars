@@ -33,7 +33,7 @@ rows = PackedStringArray("sw", "se", "nw", "ne")
 feet = Vector2(24, 33)
 head_y = 11.0
 fps = {
-"bite": 20.0,
+"bite": 30.0,
 "death": 10.0,
 "idle": 10.0,
 "pounce": 9.0

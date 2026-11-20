@@ -41,7 +41,7 @@ fps = {
 "death": 10.0,
 "dive": 10.0,
 "idle": 8.0,
-"rake": 10.0
+"rake": 16.6667
 }
 run_frames_per_tile = 8
 looping = PackedStringArray("idle", "run")

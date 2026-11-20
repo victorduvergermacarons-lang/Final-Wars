@@ -13,7 +13,7 @@ sheet_scaling = true
 [resource]
 script = ExtResource("3_qj5dx")
 id = &"F03"
-max_range = 4
+max_range = 6
 mana_cost = 10.0
 ranged = true
 projectile_speed = 16.0

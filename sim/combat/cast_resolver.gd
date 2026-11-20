@@ -28,6 +28,12 @@ static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 		return AbilityResolver.Result.CASTER_DEAD
 	if pay_mode == Pay.INSTANT and not caster.casting.is_empty():
 		return AbilityResolver.Result.BUSY
+	# A locked-on cast already under way only needs its target alive.
+	if ability.locks_on and pay_mode != Pay.INSTANT:
+		if not AbilityResolver._is_valid_target(caster, ability, target):
+			return AbilityResolver.Result.INVALID_TARGET
+		return AbilityResolver.Result.OK if pay_mode == Pay.FREE \
+				else AbilityResolver._check_cost(ctx, caster, ability, false)
 	if ability.uses_hitbox():
 		var r := HitboxResolver.validate(ctx, caster, ability, target, aim)
 		if r != AbilityResolver.Result.OK or pay_mode == Pay.FREE:
@@ -107,7 +113,7 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 	ctx.cast_dir = TileGeometry.snap8(point - Vector2(caster.tile()))
 	ctx.cast_tiles = []
 	if ability.targeting != AbilityDef.TargetingMode.SELF or aim != null:
-		_face(caster, point)
+		face_cast(caster, ability, target, aim)
 	# The caster's own effects first: a Lunge dashes, then strikes.
 	AbilityResolver.apply_caster_effects(ctx, caster, ability, events)
 	var trail: Array = ctx.cast_tiles.duplicate() # tiles a dash went through (Flame Dash)
@@ -116,7 +122,7 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			events.append({"type": "cast", "source": caster.id, "target": target.id, "ability": ability.id})
 			if AbilityResolver.has_target_effects(ability):
 				var reach := ability.hit_range if ability.hit_range >= 0 else ability.max_range
-				if target == caster or Actor.body_distance(caster, target) <= reach:
+				if target == caster or ability.locks_on or Actor.body_distance(caster, target) <= reach:
 					AbilityResolver.apply_effects(ctx, caster, ability, target, events)
 				else:
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": target.tile()})
@@ -265,6 +271,26 @@ static func _pending(caster: Actor, ability: AbilityDef, tiles: Array[Vector2i],
 
 
 ## Turns the caster (4-way facing) toward a point.
+## Turns the caster toward what it casts at, as the cast begins (and again as it
+## goes off): a targeted ability's target, wherever the cursor is (a client sends
+## the mouse point with every cast); else the aim point. Exact angle, so an
+## 8-facing hero looks straight at it.
+static func face_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> void:
+	var point: Variant
+	if target != null and target != caster and not WorldSim.is_mouse_aimed(ability):
+		point = target.move.pos
+	else:
+		point = aim_point(caster, target, aim)
+	if point == null:
+		return
+	var d: Vector2 = point - caster.move.pos
+	if d.length_squared() < 0.0001:
+		return
+	caster.face_angle(d.angle())
+	if caster is Hero:
+		(caster as Hero).aim_angle = caster.facing_angle # kept until the mouse moves (like Hero.face)
+
+
 static func _face(caster: Actor, point: Vector2) -> void:
 	var d := point - Vector2(caster.tile())
 	if d.length_squared() < 0.01:

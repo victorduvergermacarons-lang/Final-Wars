@@ -14,7 +14,7 @@ power = 1.2
 [resource]
 script = ExtResource("3_lbstm")
 id = &"F07"
-max_range = 5
+max_range = 7
 mana_cost = 15.0
 ranged = true
 effects = Array[ExtResource("1_lpfdy")]([SubResource("Resource_m3hv6")])

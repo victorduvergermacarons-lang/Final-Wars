@@ -96,6 +96,11 @@ var sheet_hitbox: HitboxDef
 ## A big enemy attack players are meant to dodge by moving: debug builds warn at
 ## load when its warning time (wind-up, telegraph, flight) is too short for that.
 @export var dodgeable: bool = false
+## A guaranteed hit: never rolls Accuracy against Evasion, and once its cast starts
+## the target can't escape it (range and line of sight aren't checked again), so it
+## can't be sidestepped. Give it a cast time, so its bar warns the target. Only a
+## stun or an interrupt stops it. (The Foreman's Hurled Sunstone.)
+@export var locks_on: bool = false
 ## Cast time: resolves after this many seconds; moving, a stun or an interrupt
 ## cancels it (mana and cooldown are only spent when it goes off).
 @export var cast_seconds: float = 0.0

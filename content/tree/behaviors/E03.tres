@@ -16,7 +16,7 @@ max_extra = 1
 [resource]
 script = ExtResource("3_jklb0")
 id = &"E03"
-max_range = 3
+max_range = 5
 mana_cost = 8.0
 effects = Array[ExtResource("1_6kh8h")]([SubResource("Resource_dlpl1")])
 targeting = 3

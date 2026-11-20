@@ -171,6 +171,7 @@ func test_learn_intents() -> void:
 
 func test_weapon_learns_automatically_when_the_slot_is_empty() -> void:
 	var hero := Hero.from_def(1, ContentDB.heroes[&"adventurer"])
+	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	TreeRules.stop_learning(hero) # the Ember Fist Scroll goes back to the bag
 	assert_null(hero.learning_item)
 	assert_eq(hero.active_learning_item().id, &"rusty_shortsword", "the sword in hand learns")

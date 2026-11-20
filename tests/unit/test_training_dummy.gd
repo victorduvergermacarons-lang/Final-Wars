@@ -92,12 +92,3 @@ func test_no_mastery_from_practice() -> void:
 		_run(2.5)
 	assert_lt(dummy.hp, dummy.stats.hp, "the punches landed")
 	assert_eq(Mastery.permanent(h, "Fire"), before)
-
-
-func test_stands_by_the_testing_grounds_entrance_not_in_a_pen() -> void:
-	var zone: ZoneDef = ContentDB.zones[&"enemy_testing"]
-	var spawns := zone.enemy_spawns.filter(func(s): return s.enemy.id == &"training_dummy")
-	assert_eq(spawns.size(), 1)
-	assert_eq(spawns[0].tile, TestingGrounds.DUMMY)
-	assert_lt(spawns[0].tile.x, TestingGrounds.ENTRANCE_WIDTH - 1, "west of the first pen's wall")
-	assert_false(zone.landmarks.any(func(l): return l.name.begins_with("Training Dummy")), "no pen sign")

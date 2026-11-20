@@ -29,5 +29,10 @@ min_level = 2
 objectives = Array[ExtResource("1_obj")]([SubResource("Objective_0"), SubResource("Objective_1")])
 reward_xp = 150
 reward_gold = 20
-reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_mana_potion"), ExtResource("item_minor_mana_potion")])
-reward_choice_ids = Array[StringName]([&"spark_scroll", &"river_lash_scroll", &"iron_mallet"])
+element_reward_ids = {
+"earth": [&"quarrymans_hood"],
+"water": [&"riverweave_hood"],
+"fire": [&"emberstitch_cap"],
+"air": [&"breezecloth_hood"]
+}
+reward_choice_ids = Array[StringName]([&"minor_mana_potion", &"minor_health_potion"])

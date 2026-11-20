@@ -300,19 +300,26 @@ func _run() -> void:
 	await _snap_camera(hero)
 	await _shot("21_pack_closing_in")
 	view4.camera.step_zoom(-1)
-	# 18. Millbrook's gate to the Enemy Testing Grounds (north-east hedge).
+	# 18. Millbrook's gate to the Wilds (north-east hedge; the testing grounds' old gate).
 	hero.hp = hero.current_stats(session.now()).hp
 	session.world.move_hero(hero.id, &"town", Vector2i(16, 2))
 	await get_tree().process_frame
 	await _snap_camera(hero)
 	await _shot("22_millbrook_gate")
-	# 19. The testing grounds: entrance with the Reset Shrine, then pens.
-	session.world.move_hero(hero.id, &"enemy_testing", Vector2i(4, 11))
+	# 19. The Wilds, from its gate (streams, puddles, thickets; empty for now).
+	session.world.move_hero(hero.id, &"wilds", Vector2i(4, 60))
 	await get_tree().process_frame
 	await _snap_camera(hero)
-	await _shot("23_testing_entrance")
-	var tz := session.world.zone(&"enemy_testing")
-	var hound: Enemy = tz.enemies().filter(func(e): return e.def.id == &"salamander_hound")[0]
+	await _shot("23_wilds_gate")
+	# The staged creature shots below happen on Greenfields' fields (the testing
+	# grounds, where they used to stand, are retired).
+	session.world.move_hero(hero.id, &"greenfields", Vector2i(14, 13))
+	var tz := session.world.zone(&"greenfields")
+	for e in tz.enemies():
+		e.move.place(Vector2i(28, 1)) # out of the way
+		e.def = e.def.duplicate()
+		e.def.aggro_radius = 0
+	var hound: Enemy = tz.add_enemy(cd.enemies[&"salamander_hound"], tz.find_free_tile_near(Vector2i(14, 6)))
 	hero.move.place(hound.spawn_tile + Vector2i(0, 7))
 	await _snap_camera(hero)
 	await _shot("24_hound_pen")
@@ -348,16 +355,16 @@ func _run() -> void:
 	await get_tree().create_timer(1.6).timeout
 	await _snap_camera(hero)
 	await _shot("29_ember_trail")
-	# 22. The Boss Arena at the far end.
+	# 22. Old Grizzlehide on Greenfields (the testing grounds' Boss Arena is retired).
 	var boss: Enemy = tz.enemies().filter(func(e): return e.def.elite)[0]
+	boss.move.place(tz.find_free_tile_near(Vector2i(20, 12)))
 	view5.camera.step_zoom(-1)
-	hero.move.place(boss.spawn_tile + Vector2i(-14, 8))
+	hero.move.place(tz.find_free_tile_near(boss.tile() + Vector2i(-3, 3)))
 	await _snap_camera(hero)
 	await _shot("30_boss_arena")
 	# 23. Sunscale Drakes: one facing each way (recoloured gold and crimson). Staged
 	# away from the drake's own pen so it stays out of these shots.
-	var drake: Enemy = tz.enemies().filter(func(e): return e.def.id == &"sunscale_drake")[0]
-	var base := drake.spawn_tile + Vector2i(-9, 5)
+	var base := Vector2i(12, 8)
 	var still_drake: EnemyDef = cd.enemies[&"sunscale_drake"].duplicate()
 	still_drake.aggro_radius = 0
 	var drakes: Array = []

@@ -44,6 +44,15 @@ const REASONS := {
 	"choose_reward": "Choose a reward first",
 	"dungeon_needs_quest": "You need the quest for this place first",
 	"dungeon_party_too_small": "You need a party of %d to go in",
+	"busy": "One of you is already trading",
+	"already_asked": "You've already asked",
+	"bound": "That item is bound to you",
+	"cant_trade": "That can't be traded",
+	"trade_full": "The trade window is full",
+	"not_locked": "Both sides must offer first",
+	"no_target": "There's nobody to ask",
+	"no_duel_here": "No duels in dungeons",
+	"duelling": "One of you is already in a duel",
 }
 
 var session
@@ -69,10 +78,17 @@ var inventory_window: InventoryWindow
 var dialogue: DialogueBox
 ## Co-op: quests a party member just accepted, offered to you.
 var quest_prompt: QuestPrompt
+var boss_loot: BossLootSummary
+var roll_window: RollWindow
+var request_window: RequestWindow
+var trade_window: TradeWindow
+var player_menu: PopupMenu
+var _menu_hero := -1
+## "Return to the duel area: 7" while the local duelist is outside the boundary.
+var duel_warning: Label
 ## "End of Act I": the party's records, then back to the Crossing.
 var act_end: ActEndScreen
 var _act_end_pending := {}
-var loot_window: LootWindow
 var vendor_window: VendorWindow
 var quest_log: QuestLogWindow
 var _tracker: RichTextLabel
@@ -103,6 +119,8 @@ func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_pa
 	client.action_bar.changed.connect(_on_bar_changed)
 	session.events_received.connect(_on_events)
 	_build()
+	if input != null:
+		input.player_menu_requested.connect(open_player_menu)
 
 
 ## Where the action bar is on screen (the timing bar can sit above it).
@@ -220,13 +238,12 @@ func _build() -> void:
 	_character.visible = false
 	inventory_window = InventoryWindow.new(self)
 	inventory_window.visible = false
-	loot_window = LootWindow.new(self)
 	vendor_window = VendorWindow.new(self)
 	_spellbook = SpellbookPanel.new(self)
 	_spellbook.visible = false
 	quest_log = QuestLogWindow.new(self)
 	quest_log.visible = false
-	for w in [_character, inventory_window, loot_window, _spellbook, quest_log]:
+	for w in [_character, inventory_window, _spellbook, quest_log]:
 		book.spread.add_child(w)
 	# The shop is a sheet of its own, above the book, so it stays open beside
 	# your inventory.
@@ -314,6 +331,43 @@ func _build() -> void:
 	quest_prompt.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	quest_prompt.position.y += 70
 	_root.add_child(quest_prompt)
+	boss_loot = BossLootSummary.new(self)
+	boss_loot.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	boss_loot.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	boss_loot.position.y += 150
+	_root.add_child(boss_loot)
+	roll_window = RollWindow.new(self)
+	roll_window.set_anchors_preset(Control.PRESET_CENTER)
+	roll_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	roll_window.grow_vertical = Control.GROW_DIRECTION_BOTH
+	roll_window.position.y += 60 # below the boss loot summary
+	_root.add_child(roll_window)
+	trade_window = TradeWindow.new(self)
+	trade_window.set_anchors_preset(Control.PRESET_CENTER)
+	trade_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	trade_window.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_root.add_child(trade_window)
+	request_window = RequestWindow.new(self)
+	request_window.set_anchors_preset(Control.PRESET_CENTER)
+	request_window.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	request_window.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_root.add_child(request_window)
+	player_menu = PopupMenu.new()
+	player_menu.add_item("Trade", 0)
+	player_menu.add_item("Duel", 1)
+	player_menu.id_pressed.connect(_on_player_menu)
+	_root.add_child(player_menu)
+	duel_warning = Label.new()
+	duel_warning.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	duel_warning.position.y = 180
+	duel_warning.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	duel_warning.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	duel_warning.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	duel_warning.add_theme_color_override("font_outline_color", Color.BLACK)
+	duel_warning.add_theme_constant_override("outline_size", 5)
+	duel_warning.add_theme_font_size_override("font_size", 24)
+	duel_warning.visible = false
+	_root.add_child(duel_warning)
 	_error = Label.new()
 	_error.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_error.position.y = 140
@@ -344,6 +398,7 @@ func _process(_delta: float) -> void:
 		act_end.open(_act_end_pending)
 		_act_end_pending = {}
 	_update_book()
+	_update_duel_warning()
 	var hero: Hero = session.local_hero()
 	if hero == null:
 		return
@@ -498,7 +553,7 @@ func _toggle(panel: Control) -> void:
 
 ## The windows written in the book.
 func _book_windows() -> Array[Control]:
-	return [_character, inventory_window, loot_window, _spellbook, quest_log, trees_window]
+	return [_character, inventory_window, _spellbook, quest_log, trees_window]
 
 
 ## Shows the book while a menu is open. Each menu fills both pages, so one is
@@ -519,7 +574,7 @@ func _update_book() -> void:
 	if book.visible:
 		book.page_art = (_open_menu as BookSpread).page_art
 		var order := _page_order()
-		var at := order.find(_open_menu) # -1 for loot: the arrows lead to the ends
+		var at := order.find(_open_menu)
 		book.set_turn_labels(_page_name(order[posmod(at - 1, order.size()) if at >= 0 else -1]),
 				_page_name(order[posmod(at + 1, order.size()) if at >= 0 else 0]))
 		book.fit_pages()
@@ -583,6 +638,8 @@ func _on_events(events: Array) -> void:
 				session.rules().dungeon_testing = e.on
 				game_menu.show_dungeon_testing(e.on)
 				client.say("Dungeon testing %s." % ("on: any party size may enter" if e.on else "off"))
+			"way_out":
+				client.say("The last of them falls. A way out glows open in the Foreman's chamber.")
 			"lift":
 				if e.target == me:
 					client.say("The lift rattles along its shaft.")
@@ -659,9 +716,75 @@ func _on_events(events: Array) -> void:
 				for pair in e.items:
 					var item: ItemDef = ContentDB.items.get(StringName(str(pair[0])))
 					parts.append((item.display_name if item else str(pair[0])) + (" ×%d" % pair[1] if pair[1] > 1 else ""))
-				client.say("You loot " + ", ".join(parts) + ".")
-				if e.left >= 0:
-					client.error("Your bag is full — the rest waits 60 s in the loot window")
+				if not parts.is_empty():
+					client.say("You loot " + ", ".join(parts) + ".")
+			"looted":
+				# The party feed: "<Player> looted <Item> [Rarity]".
+				var it: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if it != null:
+					client.say("%s looted %s%s [%s]" % [e.name, it.display_name,
+							" x%d" % e.count if int(e.count) > 1 else "", Rarity.NAMES[it.rarity]])
+			"drop":
+				var dropped: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if dropped != null and dropped.rarity >= Rarity.Id.RARE:
+					client.say("A %s item dropped for you: %s." % [Rarity.NAMES[dropped.rarity], dropped.display_name])
+			"boss_loot":
+				boss_loot.show_summary(e)
+			"request_declined":
+				if e.target == me:
+					client.say("Your request wasn't answered." if e.get("reason", "") == "timeout"
+							else "%s declined." % e.get("name", "They"))
+			"trade_open":
+				if e.source == me or e.target == me:
+					client.say("Trade opened between %s and %s." % [e.a_name, e.b_name])
+			"trade_done":
+				if e.a == me or e.b == me:
+					var mine_gave = e.a_gave if e.a == me else e.b_gave
+					var got = e.b_gave if e.a == me else e.a_gave
+					client.say("Trade complete. You gave %s and got %s." % [TradeWindow._list(mine_gave),
+							TradeWindow._list(got)])
+			"trade_cancelled":
+				if e.a == me or e.b == me:
+					var why := {"declined": "%s declined" % e.get("by", "someone"), "left": "a player left",
+							"too_far": "you moved out of range", "in_combat": "combat started",
+							"bag_full": "a bag couldn't hold the goods", "dead": "a player died"}
+					client.say("Trade cancelled: %s. Everything went back to its owner." % why.get(e.reason, e.reason))
+			"duel_start":
+				client.say("Duel: %s against %s. It begins in %d…" % [e.a_name, e.b_name,
+						roundi(session.rules().party_play.duel_countdown)])
+			"duel_fight":
+				if e.source == me or e.target == me:
+					client.say("Fight!")
+			"duel_out":
+				if e.target == me:
+					client.error("Return to the duel area within %d s or you forfeit" % roundi(e.seconds))
+			"duel_end":
+				var mine_hero: Actor = session.local_hero()
+				if mine_hero != null and mine_hero.move.pos.distance_to(e.flag) <= float(e.radius):
+					match e.reason:
+						"fled":
+							client.say("%s has fled from %s in a duel." % [e.loser_name, e.winner_name])
+						"left":
+							client.say("%s left; %s wins the duel." % [e.loser_name, e.winner_name])
+						_:
+							client.say("%s has defeated %s in a duel." % [e.winner_name, e.loser_name])
+			"roll_start":
+				var rolled: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if rolled != null:
+					client.say("Roll for %s [%s] from %s." % [rolled.display_name, Rarity.NAMES[rolled.rarity], e.boss])
+			"roll_result":
+				for line in roll_lines(e):
+					client.say(line)
+				var won: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				if won != null and int(e.winner) >= 0:
+					boss_loot.add_line("%s won the roll for [color=%s]%s[/color]" % [e.winner_name,
+							Rarity.COLORS[won.rarity].to_html(false), won.display_name])
+			"claim_stored":
+				var kept: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				client.say("%s is away: %s waits in their claim box." % [e.name, kept.display_name if kept else e.item])
+			"claimed":
+				var got_item: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+				client.say("From your claim box: %s." % (got_item.display_name if got_item else e.item))
 			"buy":
 				var bought: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				client.say("You buy %s for %d gold." % [bought.display_name if bought else e.item, e.gold])
@@ -673,6 +796,57 @@ func _on_events(events: Array) -> void:
 				var npc: Actor = session.get_actor(e.npc)
 				if npc is Npc:
 					dialogue.open(npc)
+
+
+func _update_duel_warning() -> void:
+	var me: int = session.local_hero_id
+	var left := -1.0
+	for d in session.duels():
+		var out: Dictionary = d.get("out", {})
+		if out.has(me):
+			left = float(out[me])
+	duel_warning.visible = left >= 0.0
+	if duel_warning.visible:
+		duel_warning.text = "Return to the duel area: %d" % ceili(left)
+
+
+## Right-click on another player (their unit frame or the hero in the world):
+## Trade and Duel.
+func open_player_menu(hero_id: int, at: Vector2) -> void:
+	_menu_hero = hero_id
+	player_menu.position = Vector2i(at)
+	player_menu.popup()
+
+
+func _on_player_menu(id: int) -> void:
+	ask(_menu_hero, "trade" if id == 0 else "duel")
+
+
+## Asks another player to trade or duel.
+func ask(hero_id: int, kind: String) -> void:
+	session.send_intent({"type": kind + "_request", "target": hero_id})
+	var other: Actor = session.get_actor(hero_id)
+	if other != null:
+		client.say("You ask %s to %s." % [other.display_name, "trade" if kind == "trade" else "duel"])
+
+
+## The party feed lines of a settled boss roll: "Mara: Need 87 (+25) = 112" for
+## each player, then the winner (or that everyone passed).
+static func roll_lines(e: Dictionary) -> PackedStringArray:
+	var out: PackedStringArray = []
+	var item: ItemDef = ContentDB.items.get(StringName(str(e.item)))
+	var name := item.display_name if item != null else str(e.item)
+	for l in e.lines:
+		match l.choice:
+			"pass":
+				out.append("%s: Pass%s" % [l.name, " (no answer)" if l.timeout else ""])
+			_:
+				out.append("%s: %s %d (+%d) = %d" % [l.name, String(l.choice).capitalize(), l.roll, l.bonus, l.total])
+	if int(e.winner) >= 0:
+		out.append("%s wins %s." % [e.winner_name, name])
+	else:
+		out.append("Everyone passed on %s." % name)
+	return out
 
 
 ## What an NPC says when a quest event happens in your conversation with them:

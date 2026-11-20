@@ -31,7 +31,9 @@ attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **F
 `docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
-new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. Tile steps, step
+new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
+`feature/critters-boss-fixes`, 2026-11-19): see that section. **Loot, boss rolls, binding, trading,
+duels**, the Wilds and boss targets removed (branch `feature/loot-trade-duel`, 2026-11-19): see those sections. Tile steps, step
 cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
@@ -127,8 +129,13 @@ numbers, prerequisites, items) plus behavior files in `content/tree/behaviors/`
 (targeting, range, effects, mana). Decisions 13–27 below describe the rules; tuned
 values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`.
 
-- **Start:** Rusty Shortsword in hand (Slash), Ember Fist Scroll in the learning slot
-  (Fire Punch), Mender's Scroll in the bag (Healing Touch). Adventurer base stats as below.
+- **Start (since 2026-11-17):** a new character picks an element on the element screen
+  (see **Starting elements**): its first ability mastered (scroll in the bag), its next
+  scroll in the learning slot, its shirt and pants worn. **No weapon** (since
+  2026-11-20): the first weapons are a choice in main quest 1-05 (see **Element set
+  rewards**); vendors still sell them. Characters made before, and ones made without the screen (tests, the command
+  line), keep the old kit: Ember Fist Scroll in the learning slot (Fire Punch), Mender's
+  Scroll in the bag (Healing Touch). Adventurer base stats as below.
 - **Keys:** hold an aimed ability's key to aim, release to cast; T ability trees;
   ` debug console (debug builds).
 - **Amounts:** (tier default + Scales With stats) × effect power × (1 + 0.1% per tree
@@ -145,8 +152,8 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
   Ocean Spirit 655, Bloodbending 715, Octopus Form 775, Full Moon 835, Tidal Resurgence
   900. Tiers still set AP, rarity, prices and default amounts.
 - **Learning scroll growth per level** (50% applied): Fire MagAtk 3, Mana 6, Fire Mastery 2;
-  Water MagAtk 2, MagDef 2, Mana 8, Water Mastery 2; Earth MagAtk 1, PhysDef 2, HP 8, Earth
-  Mastery 2; Air MagAtk 2, Evasion 1, Mana 6, Air Mastery 2. Weapons: sword PhysAtk 10 /
+  Water MagAtk 2, MagDef 2, Mana 8, Water Mastery 2; Earth PhysDef 3, HP 8, Earth
+  Mastery 2 (Physical Defense instead of Magic Attack since 2026-11-20); Air MagAtk 2, Evasion 1, Mana 6, Air Mastery 2. Weapons: sword PhysAtk 10 /
   Acc 4 (growth PhysAtk 3, HP 8, Sword Mastery 2), bow PhysAtk 13 / Acc 8, hammer PhysAtk
   15 / PhysDef 5 / HP 15; +50% per tier above 1.
 
@@ -192,6 +199,186 @@ any-angle skillshot; Grizzlehide Cleave the same swipe with a 0.4 s wind-up, Cha
 telegraphed tile then rush + maul. Goblin Shaman Magic Attack 12; Old Grizzlehide HP 2000. Weight (knockbacks/pulls ±1
 tile): Shaman and Skirmisher light, Brute and Grizzlehide heavy, everyone else medium. Hilda: potions, Iron Helm,
 Swift Boots and the 20 implemented tier-1 scrolls (25 g) and weapons (30 g).
+
+## Starting elements, faster enemies, rebalance (branch `feature/element-start`, 2026-11-17)
+
+User brief, seven parts (part 2, element quest rewards, waits for the user's OK on its
+table). Numbers as built:
+- **Starting elements** (`StartingElementDef`, `content/elements/`, written by
+  `tools/once/make_element_start.py`; `ElementScreen`, `ui/element_screen.gd`, opened by
+  the main menu's Create; `CharacterData.apply_element`):
+
+  | Element | Mastered (scroll kept) | Learning | Key stats | Shirt / pants (Common) |
+  |---------|------------------------|----------|-----------|------------------------|
+  | Earth | Rock Throw (Pebble Scroll) | Stone Skin (Granite Skin Scroll) | Phys Atk, Phys Def | Quarryman's Shirt / Trousers |
+  | Water | Healing Touch (Mender's Scroll) | Water Whip (River Lash Scroll) | Magic Atk, Phys Def | Riverweave Shirt / Breeches |
+  | Fire | Fire Punch (Ember Fist Scroll) | Fire Kick (Cinder Kick Scroll) | Magic Atk, Magic Def | Emberstitch Shirt / Trousers |
+  | Air | Air Palm (Open Palm Scroll) | Gust (Breeze Scroll) | Phys Atk, Magic Def | Breezecloth Shirt / Leggings |
+
+  Shirt: attack stat +2, defense stat +2 (growth 1 / 0.5); pants: +1 / +2 (growth
+  0.5 / 1). `Hero.element` is saved (`"element"`) and sent in every snapshot; an unknown
+  or missing element reads as none. Stone Skin (E02) is built as on the
+  `feature/threat-tanking` branch (+20 Physical Defense, 10 s). `ItemDef.element` marks
+  gear made for an element.
+- **The Foreman's Hurled Sunstone** (`foreman_hurl`, first in his list): a 1.5 s cast bar,
+  range 6, 18 + 0.9 x Physical Attack, cooldown 12 s, at whoever holds his eye.
+  `AbilityDef.locks_on`: never rolls Accuracy against Evasion, and once it starts the
+  target can't escape it (range and line of sight aren't checked again); a stun or an
+  interrupt (Gust) still stops it. (Boss win-rate targets were removed 2026-11-19: bosses
+  are tuned by playtesting.)
+- **Faster enemy attacks:** wind-ups cut up to 40%, never below the warning a dodgeable
+  attack needs (0.63 s: a tile at walking speed plus 0.3 s; `CastResolver.dodge_warnings`)
+  nor 0.2 s for quick bites. Art frame rates raised so bites land on their hit frame
+  (wolf and iron wolf bite 30 -> 50 fps, hound bite 20 -> 30, drake rake 10 -> 16.7).
+
+  | Ability | Before | After |
+  |---------|--------|-------|
+  | Wolf / Iron Wolf Bite | 0.4 | 0.24 |
+  | Hound Bite | 0.3 | 0.2 |
+  | Quick Slash (Skirmisher) | 0.3 | 0.2 |
+  | Boar Gore | 0.4 | 0.24 |
+  | Talon Rake (drake) | 0.5 | 0.3 |
+  | Crushing Blow (Brute) | 0.8 | 0.64 |
+  | Cleave (Grizzlehide), Hollow Rake (Husk), Overseer's Crush, Pick-Hammer (Foreman) | 0.7 | 0.64 |
+  | Charge (Grizzlehide), Tusk Charge (Boar) | 1.0 | 0.64 |
+
+  Kept: Foreman's Ground Slam (1.0 s telegraph) and Mine-Cart Charge (1.1 s), the drake's
+  Sunfire Breath (0.8 s) and Searing Dive (1.0 s), Cinder Pounce (0.67 s, already at the
+  floor), Shadow Bolt (a projectile, 0.71 s of flight), the wolf's howl (not an attack).
+- **Hero art:** eight facings: the straight screen directions drawn 2026-11-17 are rows
+  5-8 (s, e, n, w) of every sheet (`tools/once/make_hero_sheets.py`);
+  `CreatureArtDef.direction_for_angle` picks one of eight 45° slices of the facing angle.
+- **Hero walk:** the cycle follows the distance walked on screen
+  (`MoveState.screen_odometer`, art pixels) at a pace per facing
+  (`CreatureArtDef.run_px_per_frame`: 2.24 px per frame on the diagonals, 2.0 across,
+  1.2 up and down), measured from the planted foot; north and south can't be measured
+  (the soles barely part on screen) and use the iso-foreshortened stride. Slows, haste
+  and Earth Armor change it by themselves; it stops with the hero. GIF:
+  `tests/visual/hero_walk_shots.tscn` + `tools/once/make_walk_gif.py`.
+- **Ability rebalance** (`tools/once/ability_rebalance.py` on the sheet; the built
+  abilities' behavior files too):
+  - every ranged ability +2 tiles: Hitbox Range and the range in its Effect / Targeting
+    Details text (Targeted beyond adjacent, Projectile, Lob, Circle, Line, ground Tiles;
+    not dashes, leaps, blinks, cones or adjacent attacks). Built ones: Healing Touch 4,
+    Water Whip / Flow State / Leeching Tide / Tidal Blessing / Water Pulse / Gust / Air
+    Blast / Fire Whip / Raise Pillar 5, Frost Shard / Soothing Mist / Ice Spikes / Fire
+    Dart / Burning Ground / Rock Throw / Earth Wall 6, Fireball / Quick Shot 7, Aimed
+    Shot 9.
+  - Water's heals (Healing Touch, Soothing Mist, Spirit Water, Healing Rain): 0.45 Magic
+    Atk + 0.55 Phys Def.
+  - Air: Phys Atk instead of Magic Atk; control and defense (Gust, Wind Snare, Stolen
+    Breath, Air Sphere, Suffocate, Storm Front, Pressure Lock): 0.6 Phys Atk + 0.4 Magic Def.
+  - Scales With takes a coefficient before a stat ("0.45 Magic Atk"; without one,
+    `CombatRules.sheet_stat_coefficient`).
+
+## Element set rewards (branch `feature/element-rewards`, 2026-11-20)
+
+User request: the Act I main quests build each hero's set for their element; heroes
+start without a weapon (the first ones from quest 1-05); Earth scrolls grow Physical
+Defense instead of Magic Attack. Written by `tools/once/make_element_set.py`.
+- **Per element** (`QuestDef.element_reward_ids` given, `element_choice_ids` joining the
+  choice of one, by `Hero.element`; `QuestDef.items_for` / `choices_for`). A hero with
+  no element chooses among every element's items instead (they join the choice).
+
+  | Quest | Given | Choice of one |
+  |-------|-------|---------------|
+  | 1-01 | Hands piece (+ 2 health potions) | — |
+  | 1-02 | Head piece | Minor Mana Potion or Minor Health Potion |
+  | 1-03 | Feet piece (+ 2 health potions) | — |
+  | 1-04 | 2 health potions | the ring or the element's next scroll |
+  | 1-05 | potions | the charm, Rusty Shortsword, Hunter's Shortbow or Iron Mallet |
+  | 1-06 | the scroll after that | — |
+  | 1-07 | potions | Fireball, Glacier or Bulwark scroll (unchanged) |
+
+- **Next scrolls** (1-04, then 1-06): Earth Pillar (Raise Pillar), Stomp (Seismic Stomp);
+  Water Mist (Soothing Mist, 40 Water Mastery), Tidal (Tidal Blessing, 65); Fire Spark
+  (Fire Dart), Sun Warrior's Breath; Air Featherstep (Air Step), Gale (Air Blast, tier 2,
+  150 Air Mastery: Wind Snare isn't in the game).
+- **The pieces** (all Common, `ItemDef.element` set). A = the element's attack stat, D its
+  defense (Earth Phys Atk + Phys Def, Water Magic Atk + Phys Def, Fire Magic Atk + Magic
+  Def, Air Phys Atk + Magic Def); growth per level (half applied, as for all gear):
+
+  | Piece | Stats | Growth |
+  |-------|-------|--------|
+  | Hands | A +2, D +1, extra 1 | A 1, D 0.5 |
+  | Head | A +1, D +3, extra 2 | A 0.5, D 1 |
+  | Feet | A +2, D +2, Speed +3 | A 0.5, D 1 |
+  | Ring | A +3, D +2, extra 1 | A 1, D 0.5 |
+  | Charm | A +3, D +3, extra 2 | A 1, D 1 |
+
+  Extras: Earth HP +10 / Accuracy +2; Water Mana +10 / HP +10; Fire Mana +10 / Crit Rate
+  +1; Air Evasion +2 / Speed +3. Names: Earth Quarryman's Gloves, Hood, Boots, Granite
+  Ring, Bedrock Charm; Water Riverweave Gloves, Hood, Sandals, Tidestone Ring, Pearl
+  Pendant; Fire Emberstitch Gloves, Cap, Boots, Cinder Ring, Ashglass Pendant; Air
+  Breezecloth Wraps, Hood, Shoes, Gale Ring, Feather Charm.
+- Tests: `tests/unit/test_element_rewards.gd`.
+
+## Critters, the stag, the Foreman, dungeon fixes (branch `feature/critters-boss-fixes`, 2026-11-19)
+
+User brief, five parts. Built on `feature/element-start`.
+- **Critters pack art** (`art/critters.zip`, in the repo since the first tileset import;
+  `tools/once/make_critter_sheets.py`): the strips the game uses are copied to
+  `assets/creatures/boar/strips/` and `assets/creatures/stag/strips/`, then laid out as
+  one sheet per animation with a row per facing (SW, SE, NW, NE, like the wolf; the pack
+  draws all four, nothing mirrored), plus `no_shadow/` for the hit flash. Frame sizes,
+  read from the PNGs, all divide evenly: boar idle 7 x 41x30 (NW 40x30), run 4 x 41x30
+  (NE/NW 30 high, SE/SW 25 high); stag idle 24, walk 11, run 10, all 32x41. Cells: boar
+  41x30, bottom-aligned so the feet (frame height - 2) sit at (20.5, 28) in every row;
+  stag 32x41, feet (16, 39).
+  - **Boar** (`content/creatures/boar_art.tres`): idle 7 fps, run 12 fps (both loop).
+    Behaviour, stats, loot and spawns unchanged.
+  - Walks listed in `fps` ("run", "walk") play by time at that rate
+    (`CreatureArtDef.run_frame`); art with a walk walks out of a fight and runs in one.
+  - **Fallbacks for missing art** (`CreatureArtDef` "Missing animations"; used only
+    while the sheet is missing, so real sheets drop in by adding them): no attack
+    sheet: the wind-up holds the last run frame, then a 6 art px lunge toward its facing
+    on the hit (0.2 s); no death sheet: idle's first frame tips over (0.35 s), lies 4 s,
+    fades 1 s. Hits use the usual white flash.
+  - Screenshots: `tests/visual/critter_shots.tscn`.
+- **Stag** (`content/enemies/stag.tres`, neutral): level 3, HP 260, PhysAtk 13, PhysDef 8,
+  MagDef 6, Evasion 6, 3.3 tiles/s, aggro 0, leash 18, 70 XP, 2 AP, respawn 60 s; Antler
+  Thrust (`stag_antler_thrust`: 80° cone, 1.3 tiles, 8 + 1.0 x PhysAtk, 2.5 s, 0.3 s
+  wind-up); loot 1-4 g, Stag Hide 60% (8 g), Stag Antler 35% (10 g).
+  - `EnemyDef.neutral`: never aggros on a hero coming close (even touching it), isn't
+    called by pack howls, and Tab skips it unless it is fighting
+    (`PlayerInput._peaceful`). Damage puts it in combat (only the one hit), it fights
+    through the usual threat table, and resets as any enemy does (its attacker dies or
+    drags it past its leash: it walks home, heals to full, neutral again).
+  - `EnemyDef.wander_radius` (4) and `graze_seconds_min/max` (4-10 s): idle without a
+    patrol it grazes (idle animation) a random while, then walks (40% speed, walk
+    animation) to a random reachable tile within 4 of its spawn; each one rolls its own
+    times (the zone's seeded random numbers).
+  - **Windsteppe:** four stags at (23, 25), (24, 28) by Tsaga's Camp and (42, 30),
+    (44, 33) by the south camp, in place of the two "Herd" groups (7 animal shapes).
+  - Tests: `tests/unit/test_stag.gd`.
+- **The Foreman** (as built on top of `feature/element-start`): damage x2 on every attack
+  (base and Physical Attack coefficient: Hurled Sunstone 36 + 1.8, Ground Slam 24 + 1.2,
+  Mine-Cart Charge 16 + 1.2, Pick-Hammer 28 + 1.5), 2.52 tiles/s (2.1), attack areas
+  +25%: slam circle 1.875 (1.5), pick cone 1.875 (1.5), charge lane 1.5 wide (1.2). The
+  telegraphs are drawn from those shapes. The Hurled Sunstone is a single-target throw
+  (no area), so its range stays 6.
+- **Targeted casts face their target** (user report: Healing Touch faced the cursor):
+  in combat a hero faced the mouse every tick, and the client sends the cursor point
+  with every cast. Now a cast turns the caster toward a targeted ability's target (exact
+  angle, `CastResolver.face_cast`) when it begins and as it goes off, and the hero keeps
+  that facing while casting and 0.5 s after (`Hero.holds_cast_facing`, also in the
+  client's prediction); mouse-aimed abilities still follow the cursor. Test:
+  `tests/unit/test_cast_facing.gd`.
+- **Leash x1.8** for every enemy, written in each enemy file (`EnemyDef.leash_radius`,
+  default 18): Wolf, Bandit Brute, Fen Skirmisher, Goblin Shaman, Human Husk, Stag 18;
+  Boar 16; Iron Wolf, Grizzlehide, Salamander Hound 22; Grey Husk, Sunscale Drake 25;
+  Grey Overseer 14; Foreman 29. Not the Training Dummy (6: how far you walk to drop its
+  fight) or the Grey Heart (it never moves). The testing grounds grew to fit.
+- **Dungeons:**
+  - Enemies in a dungeon copy don't respawn while any hero is inside: the timer starts
+    over each tick, and runs as usual once the last hero has left (`EnemyBrain`, DEAD).
+  - **Way out** (`ZoneDef.cleared_exit`): once every enemy in the copy is dead (summoned
+    adds aside), an exit opens (`WorldSim.way_out_open`, a `way_out` event, sent in
+    snapshots): a pulsing golden ring of light with "Way out" over it, a message ("A way
+    out glows open in the Foreman's chamber") and the key `world_way_out`. Stepping on it
+    works for every hero, like any exit. Silent Shaft: (52, 17) in the Foreman's chamber
+    to Deepcut (34, 12), just outside the mine entrance.
+  - Tests in `tests/unit/test_dungeons.gd`.
 
 ## Map art (tileset, 2026-10-16)
 
@@ -298,8 +485,10 @@ merged; files copied). Checklist: `docs/playtest-checklist-hero-art.md`.
   times, as creatures do.
 - **Pixel-perfect:** drawn by the creature drawing at `PixelCamera.ART_SCALE` (2× world
   units per art pixel) with whole-pixel feet, under the whole-pixel camera.
-- **Known flaws in the drafts** (used anyway): getting-hit facing north-west falls to the
-  ground; walk facing north-east has stray white streaks in its last frames.
+- **Known flaws in the drafts** (used anyway): walk facing north-east has stray white streaks
+  in its last frames. (Getting-hit facing west and north-west fell to the ground; since
+  2026-11-19 those facings show east and north-east mirrored: `CreatureArtDef.mirror_rows`,
+  flipped about the feet when drawn, same frames and timing.)
 - Tests: `tests/unit/test_hero_animator.gd`, `test_hero_animation_times_are_the_hosts`
   (`test_snapshot.gd`). Screenshots: `tests/visual/hero_art_shots.tscn` (four heroes, one
   per facing, every animation).
@@ -443,9 +632,8 @@ A flying elite (`content/enemies/sunscale_drake.tres`), level 6, MELEE AI, heavy
 - **Molten Fury:** below 30% HP (`enrage_below`) it gains `molten_fury`: cooldowns ×0.7,
   and its ground zones last 2 s longer (`BuffDef.zone_seconds_bonus`), so the breath's
   fire burns 5 s. It glows hotter and the message log announces it. Evading clears it.
-- **Balance** (`tests/balance/test_balance.gd`, bots that never dodge): it beats a
-  level-7 group of four every time (user request, 2026-10-21); see the decisions log for
-  the measured rates. A pair or a lone hero loses.
+- **Balance:** no target any more (boss balance targets removed 2026-11-19); its numbers
+  above are plain values, tuned by playtesting.
 - **Chasing:** it heads for any tile where its body is beside its target
   (`Pathfinder.find_path`'s `arrived` test), not the target's own tile, which its body
   can never reach. A chase search that finds nothing waits 0.5 s before the next.
@@ -689,11 +877,9 @@ Prince Caedan Ashvale, the Guild's founder, is sincere. Quests written by
   | Pins on the Map (side) | 7 | Guild Board → Maren | reach 4 troubled sites; use the Guild Map | 500 |
 
   Escorts fail if the escortee dies and restart from the giver (milestone 1 rules).
-- **Rewards:** gold, potions, and a choice of one item per main quest teaching an
-  implemented tier-1 ability; across the act every tree comes up (Fire: Spark, Cinder
-  Kick, Sun Warrior's Breath; Water: River Lash, Frost Shard, the Current; Earth:
-  Pebble, Stomp, Pillar; Air: Open Palm, Breeze, Featherstep; Sword: Traveler's
-  Longsword; Bow: Hunter's Shortbow, Yew Longbow; Hammer: Iron Mallet, Quarry Maul).
+- **Rewards:** gold, potions, and since 2026-11-20 the hero's element set and next
+  scrolls (see **Element set rewards**). (Before: a choice of one tier-1 scroll or
+  weapon per main quest.)
 - **Missing tier-1 abilities** (not implemented, so not rewarded): E02 Stone Skin
   (Granite Skin Scroll), A04 Wind Snare (Snaring Wind Scroll), S02 Thrust (Militia
   Rapier), S03 Parry (Duelist's Sabre), B03 Disengage (Ranger's Bow), B04 Hunter's
@@ -715,7 +901,7 @@ Prince Caedan Ashvale, the Guild's founder, is sincere. Quests written by
   wind-up; Tusk Charge, a 1 s telegraphed rush 2–3 tiles, 8 + PhysAtk) and Human Husk
   (level 7: HP 420, PhysAtk 22, PhysDef 14, MagDef 24, heavy, 1.3 s per tile; Hollow
   Rake 10 + PhysAtk, 0.6 s wind-up; drops Sunstone Shards). Placeholder diamonds until
-  art. `EnemySpawn.level` places an enemy at another level (±15% per level): road
+  art (the Boar has the Critters pack's since 2026-11-19). `EnemySpawn.level` places an enemy at another level (±15% per level): road
   wolves 3, road Bandit Brutes 5 (two ambushes beside the road), iron wolves 4–5,
   Deepcut's hounds 6.
 - **Party size** (`CombatRules` "Party size"): enemies grow with the heroes in their
@@ -788,7 +974,8 @@ Checklist: `docs/playtest-checklist-act1-full.md`.
     the Heart opens and pulses every 9 s (8 grey tiles, no husks). He can't fall below 5% while it
     beats. **Breaking the Heart ends the fight:** he falls with it (his kill and XP go to the
     party), adds and grey fade, and Caedan comes down to the chamber door (50, 15).
-  - Numbers tuned with bots in the real chamber (`BalanceSim.boss_fight`; see the decisions log).
+  - Its numbers are plain values, tuned by playtesting (the bot boss-fight benchmark and its
+    targets were removed 2026-11-19).
 - **Quest 1-07 The Silent Shaft** (main, level 8, Caedan at the hall → Caedan in the shaft):
   ride the lift to the deep seams, find where the silence comes from (the chamber), break the
   Grey Heart, speak with Caedan. Shaken, he recruits the party into the Ember Hand (a dialogue
@@ -815,8 +1002,8 @@ Checklist: `docs/playtest-checklist-act1-full.md`.
 - **Debug:** `goto silent_shaft` goes straight into the party's copy.
 - **Tests:** `tests/unit/test_dungeons.gd` (entry rules, testing setting, copies, closing,
   lifts, wipes), `tests/integration/test_foreman.gd` (phases with 1 and 4 heroes, greyed
-  ground, the wipe reset, threat), `tests/integration/test_act_end_screen.gd`, the balance test
-  `test_the_foreman_is_a_fight_for_a_group`, and `Act1Playthrough` now plays 1-01 to 1-07, the
+  ground, the wipe reset, threat), `tests/integration/test_act_end_screen.gd`, and
+  `Act1Playthrough` now plays 1-01 to 1-07, the
   end screen and the walk home.
 
 ## Free movement (branch `feature/free-movement`, 2026-11-01)
@@ -924,7 +1111,7 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     again when the goal changes, every 0.5 s, or when the path runs out.
   - **Speeds** (`EnemyDef.move_speed`, tiles/s): Salamander Hound 3.5, Fen Skirmisher
     3.4, Wolf 3.25, Iron Wolf 3.1, Boar 2.8, Goblin Shaman and Grizzlehide 2.7, Sunscale
-    Drake 2.5, Foreman 2.1, Husks and the Overseer 1.85, Bandit Brute 1.7 (heroes 3).
+    Drake 2.5, Foreman 2.52 (2.1 until 2026-11-19), Husks and the Overseer 1.85, Bandit Brute 1.7 (heroes 3).
     Patrols walk at `EnemyBrain.patrol_pace`. **Colliders** (`collider_radius`):
     wolves, hounds, boars 0.35; Shaman and Skirmisher 0.3; Brute, Husks, Overseer,
     Grizzlehide, Foreman 0.45; the drake 1.35; the Grey Heart 0.6. Free movers push
@@ -971,12 +1158,115 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     dealers and healer dodge; tanks hold still.
   - Measured (bots): starter vs a Wolf 9.0 s, 36% HP lost (dodging: 10%); sword, bow or
     hammer alone win; a pair beats 2 Wolves (70%); a caster spends 64% of its mana on a
-    Wolf and beats the Shaman; heals + dodges beat the Brute (54%), standing still loses;
-    a group of 4 beats Grizzlehide; the drake: level 7 group 0%, level 10 group 83%; the
-    Foreman at level 10: solo 0%, pair 17%, three 83%, four 67%.
+    Wolf and beats the Shaman; heals + dodges beat the Brute (54%), standing still loses.
+    (The boss rows, Grizzlehide, the drake and the Foreman, were removed 2026-11-19.)
   - Manual checklist: `docs/playtest-checklist-free-movement.md`.
 
-## Enemy Testing Grounds (2026-10-20)
+## Loot, boss rolls, binding, trading, duels (branch `feature/loot-trade-duel`, 2026-11-19)
+
+User brief, eight phases (also: boss balance targets removed, the Wilds, mirrored hit
+animations; see their sections). Built on `feature/critters-boss-fixes`. The host decides
+every roll, award, trade and duel. **Every number** is in one resource:
+`content/rules/party_play.tres` (`PartyPlayDef`, linked as `CombatRules.party_play`).
+Multi-client checks: `tests/net/run_party_check.sh loot | roll | bind | trade | duel` (a host
+and two clients on localhost; each passes).
+- **Personal loot** (`GroundDrops`, `sim/loot/ground_drops.gd`; `WorldSim._loot_kill`):
+  - A kill's gold and crafting materials (`ItemDef.is_material`: nothing to wear, use or learn,
+    no quest) are rolled once and **copied** to every hero who fought (on its threat table),
+    straight into the bag; what doesn't fit drops at their feet.
+  - Everything else is rolled for each fighter and **drops on the ground** for that hero only,
+    scattered within 0.8 tiles: only they are sent it (Snapshot private `drops`), only they can
+    pick it up (E within 1.6 tiles, `pick_up` intent). Drops last 300 s. The old "bag full"
+    loot window is gone (leftovers lie on the ground instead).
+  - Drawn as a light beam in the rarity's colour (white, green, blue, purple, gold;
+    `Rarity.BEAM_COLORS`) with the item's name in your colour.
+  - Party feed on pickup: "<Player> looted <Item> [Rarity]"; a Rare or better drop also says
+    so. Sounds by rarity: `world_loot_common` … `world_loot_legendary` (`Rarity.SOUND_KEYS`,
+    listed in `AUDIO_SPEC.md`).
+  - After a boss (elite or dungeon boss): an end-of-fight summary (`BossLootSummary`, top
+    centre, 12 s) of what each player got; roll winners are added as they're decided.
+  - **Legendary** rarity added (gold; its bag border reuses Epic's until drawn). No chests
+    exist yet; drops are generic, so a chest only needs to call the same code.
+- **Boss rolls** (`LootRolls`, `sim/loot/loot_rolls.gd`; bosses only, user choice):
+  - A boss's **key items** (scrolls, tree weapons, or gear that would raise at least one
+    fighter's stats over what they wear in that place) are rolled once for the party; every
+    fighter gets a window (`RollWindow`: item with tooltip, the boss, a 30 s bar, your bonus,
+    Need / Greed / Pass). No answer or leaving = Pass without the bonus.
+  - Everyone who chose Need or Greed rolls 1-100 + their bonus (all shown); the winner comes
+    from the Needs if any, else the Greeds; ties roll again between the tied (at most 10
+    times, then the lowest id). If everyone passes, nobody gets it.
+  - Bad-luck bonus (`Hero.loot_bonus`, saved with the character): +10 per Need lost, +15 per
+    chosen Pass, 0 on winning.
+  - Feed: "Mara: Need 87 (+25) = 112" per player, then "Mara wins <Item>." (`Hud.roll_lines`).
+  - The winner gets it in the bag (else at their feet). A winner who has left the zone or the
+    game: a **claim box** (`World.claims`, by character name, saved by the host in
+    `user://world.json`), delivered when they're next in the world.
+- **Binding** (`Binding`, `sim/loot/binding.gd`; a bag stack's `bind`):
+  - Bind on Pickup: scrolls, and boss key items won in a roll; bound once they're yours. A
+    looted one can still be traded to a member of the fight it dropped in for 20 min (its
+    `until` and `fight`), shown in the tooltip ("Tradeable to Ana, Bo for 19:42").
+  - Bind on Equip: other gear; free in the bag, bound once worn (everything worn is bound; it
+    comes back to the bag bound).
+  - Unbound: materials, consumables, quest items, gold.
+  - Tooltips show the state ("Bind on Pickup" / "Bind on Equip" / "Not bound" /
+    "Soulbound"). Bound and free stacks never merge. Saves keep "bound" and drop the trade
+    window (it ran on that session's clock).
+- **Trading** (`Trades`, `sim/social/trades.gd`; `TradeWindow`, `RequestWindow`):
+  - Right-click another player (their unit frame, or the hero in the world): Trade / Duel.
+    The target gets a centred request (Accept / Decline, declines itself after 30 s); both
+    within 6 tiles, out of combat, not already trading.
+  - Each side adds tradeable bag stacks (and sets gold): they leave the bag into **escrow** on
+    the host at once (can't be used, dropped or sold). Bound items can't go in, except Bind on
+    Pickup items still in their window going to someone from that fight. 6 slots a side.
+  - Offer locks a side; any change unlocks both. Both offered: the **contract** (exactly what
+    each gives and gets), Accept / Decline. Both accept: one swap of everything (refused, all
+    returned, if a bag can't hold what it gets).
+  - Decline at any stage, a disconnect, moving out of range, dying or entering combat
+    cancels: everything back to its owner (to their feet if the bag is full). Feed lines for
+    done and cancelled trades. A save mid-trade keeps escrowed items (`Hero.escrow`).
+- **Duels** (`WorldSim` "Duels"; WoW rules):
+  - Right-click Duel; the centred request as for trades (within 15 tiles; none in dungeons).
+  - Accepted: a flag at the midpoint with a 10-tile boundary circle, a 3 s countdown over it,
+    then the two are hostile to each other only (`Actor.duel_with`, `duel_live`;
+    `is_hostile_to`, `is_ally_of`). Nobody else can damage or be damaged by them
+    (`Actor.damage_allowed`), and idle enemies don't aggro on them. Pets / companions don't
+    exist yet.
+  - The duel ends when a duelist would drop to 1 HP: they stay at 1 HP, alive, and yield.
+    Also: leaving the boundary shows "Return to the duel area: N" and forfeits after 10 s;
+    a disconnect or leaving the zone forfeits; dying to something else ends it.
+  - At the end: the buffs and debuffs each put on the other are removed; health, cooldowns,
+    items, gold and XP are untouched. Players within 30 tiles of the flag read "<Winner> has
+    defeated <Loser> in a duel." The flag stays 3 s.
+- Tests: `tests/unit/test_loot.gd`, `test_loot_rolls.gd`, `test_binding.gd`, `test_trades.gd`,
+  `test_duels.gd`; screenshots `tests/visual/loot_shots.tscn` (beams, boss summary, roll
+  window, request, trade window, contract, duel flag, the Wilds).
+
+## The Wilds (2026-11-19)
+
+A 64 x 64 map in place of the Enemy Testing Grounds (`content/zones/wilds.tres`, written by
+`tools/once/make_wilds.py`; edit the file or use the map editor now). Region Heartland,
+explore music. Reached through the same gate in Millbrook's north-east hedge (town north edge,
+offset -12: its x 15-16 lands on our x 3-4 at the south row) and from Tidereach Shore's east
+side (our west column, rows 2-9). Spawn and graveyard in the clearing by the south gate.
+- Four winding streams (`water`, not walkable) with stone-slab fords (`ford`, the tileset's
+  only wadeable water) where the paths cross and at a few other points; 22 puddles of
+  `light_water` (not walkable, shoreline pieces picked by the tileset).
+- Dense vegetation over most of the land: tall and dense grass (walkable), leafy-bush
+  thickets (not walkable, like Millbrook's hedge), flowers, weeds, logs and stumps (logs,
+  stumps and rocks block movement); a few low hummocks (height 1); a bush hedge along the
+  border but for the two gates. Every walkable tile is reachable from the gate (pockets the
+  generator cut off became thicket). The tileset has no trees: bushes, logs and stumps stand in.
+- Empty: no enemies, people, quests or loot yet.
+- Tests: `tests/unit/test_wilds.gd`. Screenshots: `wilds0_gate`, `wilds1_inland` in
+  `tests/visual/loot_shots.tscn`.
+
+## Enemy Testing Grounds (2026-10-20; retired 2026-11-19)
+
+**Retired:** nothing loads it any more. Its zone file moved to `content/retired/enemy_testing.tres`
+(outside the folders ContentDB reads), Millbrook's gate and Tidereach Shore lead to the Wilds,
+`goto` lists `wilds`, and its tests (`test_testing_grounds.gd`, the walkthrough) were removed;
+`data/testing_grounds.gd`, the Training Dummy and the Reset Shrine stay in the repo, unused. The
+network check's brute-dodging guest now does it in the Wilds. As it was:
 
 - **Getting there:** a 2-tile gate in Millbrook's north-east hedge at (15–16, 0), with an
   "Enemy Testing Grounds" sign at (17, 1) and a dirt road down to the town's main path.
@@ -1341,8 +1631,8 @@ Ranger's Gloves and the Mantle come from the new enemies and the elite.
 XP by level: +10% per enemy level above you (max +50%); from 3 levels below, −20% per
 level (3 below = 80%), never under 20%. Balance report (bots stand still and always face the enemy): a level-3 sword
 hero who just trades blows with a Brute loses, but wins by healing itself (~95% HP lost) or with a shield, staff hero beats a Shaman at level 2 (~40%),
-sword hero beats a Skirmisher at level 4 80% of the time; Grizzlehide kills a lone or
-paired level-5 hero but a level-5 group of four wins (~46 s).
+sword hero beats a Skirmisher at level 4 80% of the time. (Grizzlehide's group target was
+removed with every boss target, 2026-11-19.)
 
 ### Milestone 2 quests (step 17)
 | Quest | Giver → hand in | Needs | Objectives | Rewards |
@@ -1394,7 +1684,7 @@ Input ─► Intent ─► [network] ─► Host WorldSim (validates cooldowns/r
 project.godot, run_tests.sh, .gutconfig.json
 addons/gut/      GUT test framework (vendored)
 autoload/        net (ENet host/join), content_db (loads .tres), audio (music, sound effects, volumes)
-sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/ dungeon/
+sim/             world (all zones), world_sim (one zone) + grid/ stats/ combat/ progression/ entities/ ai/ quests/ dungeon/ loot/ (ground drops, boss rolls, binding) social/ (requests, trades)
 net/             intents, snapshot, server_session, client_session
 data/defs/       Resource scripts (*_def.gd, stat_block.gd, combat_rules.gd)
 content/         items/ abilities/ buffs/ enemies/ loot/ npcs/ quests/ heroes/ zones/ encounters/ rules/ audio/ (.tres),
@@ -1413,13 +1703,14 @@ editor/          map editor (ZoneEdit, ZoneSaver, ZoneCheck, EditorSession, MapE
 input/           player input → intents
 scenes/          main.tscn and other top-level scenes
 tools/           ability spreadsheet importer (xlsx reader, converter, CLI), behavior generator,
-                 write_audio_spec.gd (sound key list in AUDIO_SPEC.md)
-design/          Ability_Tree.xlsx (source of truth for abilities)
+                 write_audio_spec.gd (sound key list in AUDIO_SPEC.md), write_quest_list.gd (docs/quests.md)
+design/          Ability_Tree.xlsx (source of truth for abilities); Item_Database.xlsx (generated: every item,
+                 its stats, growth and every source: tools/item_database.tscn + tools/make_item_database.py)
 tools/once/      one-off content conversions and generators (kept for the record)
 tools/perf/      headless profilers: frame time per map, sim cost per tick
-tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd),
+tests/           unit/ integration/ balance/ (GUT, test_*.gd; balance builds in balance_scenarios.gd), net/run_party_check.sh (loot, rolls, binding, trades, duels with 3 processes),
 				 net/ (multi-process check), visual/ (screenshot scene), fixtures/ (legacy M1 hero)
-docs/            exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor, hero art), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
+docs/            quests.md (every quest, generated), exporting, local multiplayer testing, playtest checklists (M2, M3, tiles, wolves, testing grounds, Sunscale Drake, audio, Act I, Act I zones, Act I quests, Act I full, free movement, map editor, hero art), ability import, tilesets, quests and dialogue, the free movement plan, the map editor
 ```
 
 ### Build order (milestone 1)
@@ -2039,9 +2330,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 	  dodging starter loses under half the HP; sword, bow or hammer alone beats a
 	  Wolf; a Wolf costs a Fire Dart caster over 60% of its mana; a level-2 caster
 	  beats a Shaman; a level-3 hero trading blows with a Brute loses, but healing and
-	  dodging the 0.6 s wind-up wins; a level-4 Lunge sword beats a Skirmisher;
-	  Grizzlehide kills a lone level-5 hero and mostly a pair, a group of four wins
-	  (~21 s).
+	  dodging the 0.6 s wind-up wins; a level-4 Lunge sword beats a Skirmisher.
+	  (Grizzlehide's target removed 2026-11-19 with every boss target.)
 	- The dodge warning counts wind-up time as time to react.
 24. **Aiming UI (as built in step 12):** pressing a Skillshot or Ground ability's key
 	starts aiming; the exact tiles it would affect are highlighted (blue; red when out
@@ -2086,6 +2376,23 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-20 | `docs/quests.md`: every quest in one page, generated from the quest files | User request. `tools/write_quest_list.gd` (`godot --headless --path . -s res://tools/write_quest_list.gd`) writes it: a summary table, then per quest its giver and hand-in (with their maps), prerequisites, items handed over, objectives, rewards (per element too), world flag and offer text. A test fails when it is out of date. |
+| 2026-11-20 | Element set rewards for the Act I main quests; no starting weapon; Earth scrolls grow Physical Defense | User request and table: 1-01 Hands, 1-02 Head + a choice of mana or health potion, 1-03 Feet, 1-04 the ring or the next scroll (one pick), 1-05 the charm or a first weapon (one pick), 1-06 the next scroll, 1-07 unchanged; all Common; stats, extras and names as proposed; heroes without an element pick any element's piece. My choices: the other quests' always-given potions stay (1-02's two mana potions became its choice); the "next scrolls" follow each element's unlock order among abilities in the game (Air's second is Air Blast, a tier-2 ability, since Wind Snare isn't built); vendors keep selling weapons; Water and Air scroll growth unchanged. |
+| 2026-11-19 | Loot, boss rolls, binding, trading, duels: my choices | User brief (phases 1-5; bosses-only rolls and the branch chosen by the user). Mine: gold + materials copied to fighters (threat table), other drops personal on the ground (300 s, pickup 1.6 tiles, E); the old bag-full loot window removed; Legendary rarity (gold; epic border until drawn); feed and boss summary messages; "key item" = scroll, tree weapon, or gear whose summed core stats beat what a fighter wears there; everyone who chose Need or Greed rolls (all shown), all-pass = nobody gets it, ties re-roll up to 10 times; claim box by character name, delivered on next appearance; Bind on Pickup for scrolls and roll winnings, Bind on Equip for other gear, worn = bound, saves drop the trade window; trade range 6, duel request range 15, 6 trade slots, gold escrowed too, a full bag refuses the swap; duels count as combat (no zone exits mid-duel), idle enemies ignore duelists, the flag lingers 3 s, the end message reaches 30 tiles. |
+| 2026-11-19 | Hero hit W / NW mirrored from E / NE | User request (phase 8). The "hit animation" is the getting-hit one (the only `hit` sheet; its NW row was a known flaw). Mirroring is data (`mirror_rows`), applied by the animator for every pick and drawn flipped about the feet, so nothing is duplicated. |
+| 2026-11-19 | The Wilds replace the Enemy Testing Grounds | User request (phase 7; "same gate" and "retire with the map" chosen by the user). My choices: the name; four streams, 22 puddles, fords at path crossings plus four per stream so no bank is cut off; bushes as the blocking vegetation (no tree tiles exist); the testing grounds' file moved to `content/retired/` so ContentDB never loads it; the screenshot scene's creature shots staged on Greenfields. |
+| 2026-11-19 | Boss balance targets removed | User request (phase 6). Removed: the tests `test_grizzlehide_needs_a_group`, `test_sunscale_drake_needs_a_group`, `test_the_foreman_is_a_fight_for_a_group`; the boss rows of `balance_scenarios.gd` (Grizzlehide rows, `FOREMAN_ROWS`, the level-5 group builds used only by them) and of `balance_report.gd`; the bot boss-fight benchmark `BalanceSim.boss_fight` / `boss_average`; the target sentences in this file (Hurled Sunstone win rates, drake "beats a level-7 group", Foreman "tuned with bots", phase-6 measured boss rates, Grizzlehide group targets) and the drake checklist. Boss HP, damage and timers stay as plain values in their .tres files. Older log rows below keep their history. Non-boss balance targets (wolves, Shaman, Brute, Skirmisher, hound) stay. |
+| 2026-11-19 | Critters pack: boar art, a neutral Stag, Foreman x2 damage / +20% speed / +25% areas, targeted casts face their target, leash x1.8, dungeon respawn hold and way out | User brief (branch `feature/critters-boss-fixes`, from `feature/element-start`). See **Critters, the stag, the Foreman, dungeon fixes**. My decisions are in the next rows. |
+| 2026-11-19 | The pack was zipped (`art/critters.zip`), not unzipped in the repo; strips copied into `assets/creatures/<name>/strips/`, sheets built from them | Only the strips the game uses (the pack also has per-frame PNGs, sheets and a badger and wolf). One sheet per animation keeps the existing art format; feet line up across rows by bottom-aligning frames in one cell size. |
+| 2026-11-19 | Facing bug was Healing Touch, not Frost Shard | User correction mid-task. Fix covers every targeted cast; hold 0.5 s after it goes off (my number) so the cast animation faces the target. |
+| 2026-11-19 | Stag numbers, loot and placement | Mine: level 3 (between the steppe's boars and iron wolves), stats above, 2 new materials, 4 stags in place of the 2 herds, wander 4 tiles, graze 4-10 s, 40% speed while wandering. |
+| 2026-11-19 | Neutral means: no proximity aggro, no pack call, skipped by Tab until fighting | "Not counted as enemies for aggro/pulls/enemy-nearby checks". Healing someone it fights still puts the healer on its threat table, as with any enemy. |
+| 2026-11-19 | Foreman "radius" = the slam circle, the pick cone's reach and the charge lane's width | The charge's length (how far he rushes) and the Hurled Sunstone's range are distances, not areas, so they stay. |
+| 2026-11-19 | Leash x1.8 written per enemy file; dummy and Grey Heart excluded | A shared multiplier would need the rules where the testing grounds are laid out; per-file values show the real numbers. |
+| 2026-11-19 | Respawn hold for every enemy in any dungeon, not only husks | The Overseer too; the boss never respawns mid-visit anyway. |
+| 2026-11-19 | Way out: opens when every enemy (Overseer included) is dead; a portal-like glow, not a new object | "After every dungeon enemy is dead". Uses the exit system (any hero stepping on it), placed in the Foreman's chamber (where a party ends up), arriving where the mine entrance lets out. |
+| 2026-11-18 | An item database spreadsheet, generated from the game's content | User request (a spreadsheet). `design/Item_Database.xlsx`: Items (kind, slot, rarity, stats, growth per level, price, sells for, what it teaches, where it comes from), Sources (every drop, shop, quest reward and starting kit), Enemy Loot (each enemy's table and where it lives), About. Regenerate with `godot --headless --path . res://tools/item_database.tscn -- <file.json>` then `python3 tools/make_item_database.py <file.json>`; never edit the sheet by hand. |
+| 2026-11-17 | Starting elements, the Foreman's guaranteed hit, faster enemy attacks, eight-facing hero art, a walk that keeps pace on screen, ability rebalance | User brief (seven parts; part 2 waits for the OK on its reward table). My choices: elements as data files; old characters and tool-made ones keep the old kit; shirt / pants numbers; Stone Skin ported from the threat-tanking branch; the Foreman's new ability Hurled Sunstone rather than changing slam, charge or pick, interruptible; wind-up floors 0.63 s for dodgeable attacks (the dodge warning) and 0.2 s for bites, boss telegraphs kept; eight facings by 45° slices of the facing angle; the walk by screen distance with per-facing measured strides; range +2 on every ranged ability (dashes excluded), only the first range number in each text cell; Air control and defense abilities 0.6 Phys Atk + 0.4 Magic Def. See **Starting elements, faster enemies, rebalance**. |
 | 2026-11-17 | The user's map edits merged: Greenfields, the Silent Shaft, Millbrook, Windsteppe, Deepcut, the Road to Deepcut, the Crossing | User's own edits in the map editor. User choices: the Foreman stays at his own level 10 (the edit had set level 1); Greenfields stays as edited: no Goblin Shamans, Fen Skirmishers or graveyard (a release there goes to its hero spawn), so Goblin Fetishes can only be done in the testing grounds for now (to rework later). Mine: the Silent Shaft's top row was trimmed, so the encounter's victory spot and quest 1-07's two places move up a row; tests describing the old maps follow the new ones. |
 | 2026-11-17 | Maps need not be rectangles: a Shape tool removes and adds tiles; a missing tile is a wall that shots fly over | User request and choice (a hole is a wall like the map's outside, not a pit). My choices: a space in `height_rows`/`terrain_rows` marks a missing tile, so existing maps are unchanged; maps stay stored as their bounding rectangle; adding past a side grows the map with 3 spare rows of holes and saving trims every empty side; new tiles take the Ground list's choice at the Level box's height; things already on removed tiles stay and are warned about; holes can't be painted or hold things; a map keeps at least one tile; fliers can't cross holes either; ground areas and terrain changes skip them. |
 | 2026-11-16 | The hero shows PL-01-1 in all four facings, with the PL-02 sword and bow attacks; frames picked from host times | User brief (replaces the 2026-11-15 mirrored south-east art and back stills). User choices: downed for stuns as well as while dead; animations play when the ability goes off, not over the timing bar; hammer arts and potions play the plain cast until they have their own; revived also after a release at a graveyard; death take 1 (was take 4). |

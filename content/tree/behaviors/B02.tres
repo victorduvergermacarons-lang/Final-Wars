@@ -13,7 +13,7 @@ power = 1.8
 [resource]
 script = ExtResource("3_hhnql")
 id = &"B02"
-max_range = 7
+max_range = 9
 ranged = true
 projectile_speed = 14.0
 effects = Array[ExtResource("1_464ro")]([SubResource("Resource_e2td7")])

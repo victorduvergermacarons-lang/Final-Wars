@@ -61,6 +61,26 @@ func projectiles() -> Array:
 	return []
 
 
+func my_drops() -> Array:
+	return []
+
+
+func social() -> Dictionary:
+	return {"trade": {}, "requests": []}
+
+
+func duels() -> Array:
+	return []
+
+
+func loot_rolls() -> Array:
+	return []
+
+
+func way_out() -> Variant:
+	return null
+
+
 func telegraphs() -> Array:
 	return []
 

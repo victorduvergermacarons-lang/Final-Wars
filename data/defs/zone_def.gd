@@ -36,6 +36,10 @@ extends Resource
 ## Placeholder objects (wells, tents, carts…) drawn as shapes with labels; they
 ## block their tile (baked into walk_rows / sight_rows for tiled zones).
 @export var decor: Array[ZoneDecor] = []
+## Dungeons: a way out that opens once every enemy in the copy is dead (the
+## Silent Shaft: a portal in the Foreman's chamber back to Deepcut's mine
+## entrance); null = none. It works like any exit, for every hero who steps on it.
+@export var cleared_exit: ZoneExit
 ## Map sides that lead into other zones (walk off the edge).
 @export var edges: Array[ZoneEdge] = []
 @export var npcs: Array[NpcSpawn] = []

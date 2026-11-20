@@ -81,6 +81,7 @@ static func _slide(actor: Actor, delta: Vector2, grid: GridModel, md: MovementDe
 		m.pos += delta / n
 		resolve_terrain(actor, grid, flying)
 		m.odometer += before.distance_to(m.pos)
+		m.screen_odometer += MoveState.screen_length(m.pos - before)
 		if _update_ground(actor, grid, md, flying):
 			fell = true
 	return fell

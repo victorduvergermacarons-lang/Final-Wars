@@ -14,7 +14,13 @@ extends RefCounted
 ##   {"type": "talk", "npc": int}            (within TALK_RANGE tiles; also uses objects,
 ##       hands over DELIVER items, and sets an escort off)
 ##   {"type": "examine", "tile": Vector2i}   (an INVESTIGATE spot within 1 tile)
-##   {"type": "take_loot", "loot": int}      (loot that didn't fit in the bag)
+##   {"type": "pick_up", "drop": int}         (one of your own drops on the ground, in reach)
+##   {"type": "roll", "roll": int, "choice": "need" | "greed" | "pass"}   (a boss item roll)
+##   {"type": "trade_request", "target": int}   {"type": "duel_request", "target": int}
+##   {"type": "request_answer", "request": int, "accept": bool}
+##   {"type": "trade_add", "index": int, "count": int}   (a bag stack into your side of the trade)
+##   {"type": "trade_remove", "slot": int}   {"type": "trade_gold", "amount": int}
+##   {"type": "trade_offer"}   {"type": "trade_accept"}   {"type": "trade_cancel"}
 ##   {"type": "use_item", "bag_index": int}  (consumables, e.g. potions)
 ##   {"type": "buy", "npc": int, "item": StringName, "count": int}
 ##   {"type": "sell", "npc": int, "bag_index": int, "count": int}
@@ -80,9 +86,14 @@ var _terrain_base_walkable := {}
 ## Persistent ground zones: [{"source", "tiles", "ability", "zone_ability", "tick", "next_tick", "until", "bonus"}].
 var _ground_zones: Array = []
 ## Loot that didn't fit in a hero's bag: {"id", "hero", "items": [[ItemDef, n]], "expires"}.
-var _pending_loot: Array = []
-var _next_loot_id := 1
-const LOOT_WAIT_SECONDS := 60.0
+## Personal loot on the ground (PartyPlayDef "Personal loot").
+var drops := GroundDrops.new()
+## Need / Greed / Pass rolls for boss key items (PartyPlayDef "Boss rolls").
+var rolls := LootRolls.new()
+## Shared with every zone (World.claims): winnings for players who were offline.
+var claims := {}
+## Trade and duel requests, and trades (PartyPlayDef "Trading").
+var social := Trades.new()
 var _next_projectile_id := 1
 ## Recent hero positions, for enemies' reaction delay: hero id -> [[time, tile], ...].
 var _history := {}
@@ -219,12 +230,35 @@ func nearest_graveyard(near: Vector2i) -> Vector2i:
 	return best
 
 
-## The exit on `tile`, or null.
+## The exit on `tile`, or null (the way out of a cleared dungeon too, once open).
 func exit_at(tile: Vector2i) -> ZoneExit:
 	for e in zone.exits:
 		if e.tile == tile:
 			return e
+	if way_out_open and zone.cleared_exit.tile == tile:
+		return zone.cleared_exit
 	return null
+
+
+## The open way out's tile (ZoneDef.cleared_exit), or null.
+func way_out() -> Variant:
+	return zone.cleared_exit.tile if way_out_open else null
+
+
+## Opens the way out once every enemy here is dead (summoned adds don't count).
+func _update_way_out() -> void:
+	if way_out_open or zone.cleared_exit == null or heroes().is_empty():
+		return
+	var any := false
+	for enemy in enemies():
+		if enemy.temporary:
+			continue
+		if enemy.alive:
+			return
+		any = true
+	if any:
+		way_out_open = true
+		emit({"type": "way_out", "tile": zone.cleared_exit.tile})
 
 
 func add_npc(def: NpcDef, tile: Vector2i, facing: Vector2i = Vector2i.DOWN) -> Npc:
@@ -270,6 +304,11 @@ func remove_enemy(id: int) -> void:
 
 
 func remove_hero(id: int) -> void:
+	# A trade ends with everything back to its owner before they go.
+	var t := social.trade_of(id)
+	if not t.is_empty():
+		_cancel_trade(t, "left")
+	social.requests = social.requests.filter(func(r): return r.from != id and r.to != id)
 	for enemy in enemies():
 		enemy.threat.remove(id)
 	_heroes.erase(id)
@@ -337,7 +376,10 @@ func step() -> Array[Dictionary]:
 	_update_terrain_and_zones()
 	_tick_heals_over_time()
 	_update_combat_state()
-	_expire_loot()
+	drops.expire(now)
+	_update_rolls()
+	_deliver_claims()
+	_update_social()
 	for id in _remove_after_tick:
 		remove_enemy(id)
 	_remove_after_tick.clear()
@@ -346,6 +388,7 @@ func step() -> Array[Dictionary]:
 		encounter.update(self) # after regen: a reset boss never heals past its phase
 	_update_escorts()
 	_update_wipe()
+	_update_way_out()
 	_remove_gone_npcs()
 	_update_quests()
 	_track_hero_anims()
@@ -405,7 +448,8 @@ func _move_heroes() -> void:
 		if wish != Vector2.ZERO:
 			_check_edge(hero, wish)
 		if hero.in_combat(now):
-			hero.face_angle(hero.aim_angle)
+			if not hero.holds_cast_facing(now):
+				hero.face_angle(hero.aim_angle)
 		elif m.vel.length() > 0.3:
 			hero.face_angle(m.vel.angle())
 
@@ -538,6 +582,8 @@ func _separate_units() -> void:
 var _wipe_at := -1.0
 ## The boss fight of this map (ZoneDef.encounter), if any.
 var encounter: BossEncounter = null
+## A cleared dungeon's way out is open (ZoneDef.cleared_exit).
+var way_out_open := false
 
 
 ## A dungeon party wipe: everyone in it is dead at once. After
@@ -802,8 +848,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 		kind = "timing"
 		seconds = ability.timing_bar.seconds
 	var point: Variant = CastResolver.aim_point(caster, target, aim)
-	if point != null:
-		CastResolver._face(caster, point)
+	CastResolver.face_cast(caster, ability, target, aim)
 	var gcd_before := caster.cooldowns.gcd_timer()
 	if kind == "cast" or kind == "timing":
 		if ability.on_gcd:
@@ -1160,6 +1205,10 @@ func _handle_requests() -> void:
 						"zone_ability": r.zone_ability, "tick": r.tick, "next_tick": now + r.tick,
 						"until": r.until, "bonus": r.bonus})
 				emit({"type": "zone", "source": r.source, "ability": r.ability.id, "tiles": r.tiles, "until": r.until})
+			"duel_yield":
+				for d in _duels:
+					if d.state == "live" and (d.a == r.loser or d.b == r.loser):
+						_end_duel(d, r.winner, r.loser, "yield")
 			"counter":
 				var owner := get_actor(r.owner)
 				var attacker := get_actor(r.target)
@@ -1465,8 +1514,21 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			else:
 				for e in QuestLog.abandon(hero, def):
 					emit(e)
-		"take_loot":
-			reason = _intent_take_loot(hero, intent.get("loot", -1))
+		"pick_up":
+			reason = _intent_pick_up(hero, intent.get("drop", -1))
+		"trade_request":
+			reason = _intent_request(hero, "trade", intent.get("target", -1))
+		"duel_request":
+			reason = _intent_request(hero, "duel", intent.get("target", -1))
+		"request_answer":
+			reason = _intent_answer(hero, intent.get("request", -1), bool(intent.get("accept", false)))
+		"trade_add", "trade_remove", "trade_gold", "trade_offer", "trade_accept", "trade_cancel":
+			reason = _intent_trade(hero, kind, intent)
+		"roll":
+			reason = rolls.choose(hero.id, intent.get("roll", -1), str(intent.get("choice", "")))
+			if reason == "":
+				emit({"type": "roll_chosen", "roll": intent.roll, "source": hero.id, "target": hero.id,
+						"choice": intent.choice})
 		"use_item":
 			reason = _intent_use_item(hero, intent.get("bag_index", -1))
 		"buy":
@@ -1932,7 +1994,8 @@ func _on_death(actor: Actor) -> void:
 					emit(e)
 				for e in ApMastery.award(h, enemy.def.ap_reward):
 					emit(e)
-				_give_loot(h, Loot.roll(enemy.def.loot, ctx.rng, h, quests))
+		if not earners.is_empty():
+			_loot_kill(enemy, earners)
 		enemy.threat.clear()
 		enemy.died_at = now
 		enemy.respawn_at = now + enemy.respawn_delay()
@@ -1965,54 +2028,401 @@ func _tick_heals_over_time() -> void:
 					"amount": healed, "crit": false})
 
 
-## Gold and items straight into the hero's bag; what doesn't fit waits 60 s.
-func _give_loot(hero: Hero, roll: Dictionary) -> void:
-	if roll.gold <= 0 and roll.items.is_empty():
-		return
-	hero.gold = mini(hero.gold + roll.gold, CharacterData.MAX_GOLD)
-	var leftover: Array = []
-	for pair in roll.items:
-		var left := hero.bag.add(pair[0], pair[1])
+## A kill's loot (PartyPlayDef "Personal loot"): gold and crafting materials are
+## rolled once and copied to every hero who fought (into the bag; what doesn't fit
+## drops at their feet); everything else is rolled for each of them and drops on
+## the ground for that hero alone. After a boss, a summary of what everyone got.
+func _loot_kill(enemy: Enemy, earners: Array[Hero]) -> void:
+	var pp := rules.party_play
+	var table := enemy.def.loot
+	var shared := Loot.roll(table, ctx.rng, null, quests, Loot.Part.SHARED)
+	var summary: Array = []
+	var boss := enemy.def.elite or enemy.def.dungeon_boss
+	if boss:
+		# Its key items are rolled once for the party (Need / Greed / Pass).
+		var party := Loot.roll(table, ctx.rng, earners[0], quests, Loot.Part.PERSONAL)
+		for pair in party.items:
+			if LootRolls.is_key_item(pair[0], earners):
+				var s := rolls.start(pair[0], pair[1], enemy.def.display_name, earners, now, pp)
+				emit({"type": "roll_start", "roll": s.id, "item": String(pair[0].id), "count": pair[1],
+						"boss": s.boss, "ends_at": s.ends_at, "eligible": s.eligible.duplicate()})
+	for h in earners:
+		var got := {"hero": h.id, "name": h.display_name, "gold": shared.gold, "items": []}
+		var fight: Array = earners.map(func(x): return x.display_name)
+		h.gold = mini(h.gold + shared.gold, CharacterData.MAX_GOLD)
+		var materials: Array = []
+		for pair in shared.items:
+			var left := h.bag.add(pair[0], pair[1])
+			if left < pair[1]:
+				materials.append([pair[0], pair[1] - left])
+			if left > 0:
+				_drop_for(h, pair[0], left, enemy, fight)
+			got.items.append([String(pair[0].id), pair[1]])
+		if shared.gold > 0 or not materials.is_empty():
+			emit({"type": "loot", "target": h.id, "gold": shared.gold,
+					"items": Loot.items_to_array(materials), "left": -1})
+		var personal := Loot.roll(table, ctx.rng, h, quests, Loot.Part.PERSONAL)
+		for pair in personal.items:
+			if boss and LootRolls.is_key_item(pair[0], earners):
+				continue # rolled for the party instead
+			_drop_for(h, pair[0], pair[1], enemy, fight)
+			got.items.append([String(pair[0].id), pair[1]])
+		summary.append(got)
+	if boss:
+		emit({"type": "boss_loot", "boss": enemy.def.display_name, "received": summary,
+				"seconds": pp.boss_summary_seconds})
+
+
+## Settles the boss rolls whose players have all chosen or whose timer ran out:
+## everyone's rolls go to the party feed, the winner gets the item (bag, else the
+## ground at their feet; the mailbox if they have left the zone or the game).
+func _update_rolls() -> void:
+	for s in rolls.due(now):
+		var res := LootRolls.resolve(s, _heroes, ctx.rng, rules.party_play)
+		var winner: int = res.winner
+		var winner_name: String = s.names.get(winner, "") if winner >= 0 else ""
+		emit({"type": "roll_result", "roll": s.id, "item": String(s.item.id), "count": s.count,
+				"boss": s.boss, "lines": res.lines, "winner": winner, "winner_name": winner_name})
+		if winner < 0:
+			continue
+		var h: Hero = _heroes.get(winner)
+		if h == null:
+			_store_claim(winner_name, s.item, s.count)
+			continue
+		# A boss key item is Bind on Pickup; the fight's members may still trade it a while.
+		var bind := Binding.on_acquire(s.item, s.names.values(), now + rules.party_play.bop_trade_seconds, true)
+		var left := h.bag.add(s.item, s.count, bind)
 		if left > 0:
-			leftover.append([pair[0], left])
-	var loot_id := -1
-	if not leftover.is_empty():
-		loot_id = _next_loot_id
-		_next_loot_id += 1
-		_pending_loot.append({"id": loot_id, "hero": hero.id, "items": leftover,
-				"expires": now + LOOT_WAIT_SECONDS})
-	emit({"type": "loot", "target": hero.id, "gold": roll.gold,
-			"items": Loot.items_to_array(roll.items), "left": loot_id})
+			var id := drops.add(h.id, s.item, left, h.move.pos, now + rules.party_play.drop_seconds, &"roll",
+					[], bind)
+			emit({"type": "drop", "target": h.id, "drop": id, "item": String(s.item.id), "count": left,
+					"rarity": int(s.item.rarity)})
 
 
-## Waiting loot for one hero, as plain data: [{"id", "items": [[id, n]], "expires"}].
-func pending_loot_for(hero_id: int) -> Array:
+## A won item waits (by character name) for a player who isn't here.
+func _store_claim(hero_name: String, item: ItemDef, count: int) -> void:
+	var list: Array = claims.get(hero_name, [])
+	list.append([String(item.id), count])
+	claims[hero_name] = list
+	emit({"type": "claim_stored", "name": hero_name, "item": String(item.id), "count": count})
+
+
+## Delivers waiting winnings to their owners here, as far as their bags allow.
+func _deliver_claims() -> void:
+	if claims.is_empty():
+		return
+	for h in heroes():
+		var list: Array = claims.get(h.display_name, [])
+		if list.is_empty():
+			continue
+		var still: Array = []
+		for pair in list:
+			var item: ItemDef = _content_item(StringName(pair[0]))
+			if item == null:
+				continue
+			var left := h.bag.add(item, int(pair[1]), {"bound": true}) # boss items: Bind on Pickup
+			if left < int(pair[1]):
+				emit({"type": "claimed", "target": h.id, "item": String(item.id), "count": int(pair[1]) - left})
+			if left > 0:
+				still.append([pair[0], left])
+		if still.is_empty():
+			claims.erase(h.display_name)
+		else:
+			claims[h.display_name] = still
+
+
+## An item by id from the game's content (the mailbox stores ids).
+func _content_item(id: StringName) -> ItemDef:
+	return ContentDB.items.get(id)
+
+
+# --- Trades (and the requests duels share) -----------------------------------------
+
+## Why `a` can't trade with (or duel) `b` right now ("" = it can).
+func _pair_problem(a: Hero, b: Hero, kind: String) -> String:
+	if b == null or b == a or not _heroes.has(b.id):
+		return "no_target"
+	if not a.alive or not b.alive:
+		return "dead"
+	if a.in_combat(now) or b.in_combat(now):
+		return "in_combat"
+	var pp := rules.party_play
+	var reach := pp.trade_range if kind == "trade" else pp.duel_request_range
+	if a.move.pos.distance_to(b.move.pos) > reach:
+		return "too_far"
+	return ""
+
+
+func _intent_request(hero: Hero, kind: String, target_id: int) -> String:
+	var target: Hero = _heroes.get(target_id)
+	var why := _pair_problem(hero, target, kind)
+	if why != "":
+		return why
+	if social.pending_between(hero.id, target.id, kind):
+		return "already_asked"
+	if kind == "trade" and (not social.trade_of(hero.id).is_empty() or not social.trade_of(target.id).is_empty()):
+		return "busy"
+	if kind == "duel":
+		var no := _duel_problem(hero, target)
+		if no != "":
+			return no
+	var r := social.request(kind, hero.id, target.id, now, rules.party_play)
+	emit({"type": "request", "request": r.id, "kind": kind, "source": hero.id, "target": target.id,
+			"from_name": hero.display_name, "to_name": target.display_name, "expires": r.expires})
+	return ""
+
+
+func _intent_answer(hero: Hero, request_id: int, accept: bool) -> String:
+	var r := social.find_request(request_id)
+	if r.is_empty() or r.to != hero.id:
+		return "no_request"
+	social.requests.erase(r)
+	var from: Hero = _heroes.get(r.from)
+	if not accept or from == null:
+		emit({"type": "request_declined", "request": r.id, "kind": r.kind, "source": hero.id,
+				"target": r.from, "name": hero.display_name})
+		return ""
+	var why := _pair_problem(from, hero, r.kind)
+	if why != "":
+		emit({"type": "request_declined", "request": r.id, "kind": r.kind, "source": hero.id,
+				"target": r.from, "name": hero.display_name, "reason": why})
+		return why
+	if r.kind == "trade":
+		if not social.trade_of(from.id).is_empty() or not social.trade_of(hero.id).is_empty():
+			return "busy"
+		var t := social.open(from.id, hero.id)
+		emit({"type": "trade_open", "trade": t.id, "source": from.id, "target": hero.id,
+				"a_name": from.display_name, "b_name": hero.display_name})
+	else:
+		_start_duel(from, hero)
+	return ""
+
+
+func _intent_trade(hero: Hero, kind: String, intent: Dictionary) -> String:
+	var t := social.trade_of(hero.id)
+	if t.is_empty():
+		return "no_trade"
+	var other: Hero = _heroes.get(Trades.other(t, hero.id))
+	if other == null:
+		_cancel_trade(t, "left")
+		return "no_trade"
+	match kind:
+		"trade_add":
+			return social.add_item(t, hero, other.display_name, intent.get("index", -1), intent.get("count", 1),
+					now, rules.party_play)
+		"trade_remove":
+			return social.remove_item(t, hero, intent.get("slot", -1), _escrow_drop)
+		"trade_gold":
+			return social.set_gold(t, hero, intent.get("amount", 0))
+		"trade_offer":
+			social.offer(t, hero.id)
+		"trade_accept":
+			if t.stage != "contract":
+				return "not_locked"
+			if social.accept(t, hero.id):
+				var a: Hero = _heroes.get(t.a)
+				var b: Hero = _heroes.get(t.b)
+				var gave := {t.a: Trades.view(t, t.a, {}).mine, t.b: Trades.view(t, t.b, {}).mine}
+				var why := social.complete(t, a, b)
+				if why != "":
+					_cancel_trade(t, why)
+					return why
+				emit({"type": "trade_done", "trade": t.id, "source": a.id, "target": b.id, "a": a.id, "b": b.id,
+						"a_name": a.display_name, "b_name": b.display_name, "a_gave": gave[t.a], "b_gave": gave[t.b]})
+		"trade_cancel":
+			_cancel_trade(t, "declined", hero.display_name)
+	return ""
+
+
+## Cancels a trade, everything back to its owner, and says why.
+func _cancel_trade(t: Dictionary, reason: String, by: String = "") -> void:
+	social.cancel(t, _heroes, _escrow_drop)
+	emit({"type": "trade_cancelled", "trade": t.id, "source": t.a, "target": t.b, "a": t.a, "b": t.b,
+			"reason": reason, "by": by})
+
+
+## What an escrow return can't fit in the bag lands at the owner's feet (theirs only).
+func _escrow_drop(hero: Hero, item: ItemDef, count: int, bind: Dictionary) -> void:
+	var id := drops.add(hero.id, item, count, hero.move.pos, now + rules.party_play.drop_seconds, &"trade", [], bind)
+	emit({"type": "drop", "target": hero.id, "drop": id, "item": String(item.id), "count": count,
+			"rarity": int(item.rarity)})
+
+
+## Requests time out; trades end when someone leaves, walks out of range, dies or
+## enters combat.
+func _update_social() -> void:
+	for r in social.requests.duplicate():
+		if now >= r.expires or not _heroes.has(r.from) or not _heroes.has(r.to):
+			social.requests.erase(r)
+			emit({"type": "request_declined", "request": r.id, "kind": r.kind, "source": r.to, "target": r.from,
+					"reason": "timeout"})
+	for t in social.trades.duplicate():
+		var a: Hero = _heroes.get(t.a)
+		var b: Hero = _heroes.get(t.b)
+		if a == null or b == null:
+			_cancel_trade(t, "left")
+		elif not a.alive or not b.alive:
+			_cancel_trade(t, "dead")
+		elif a.in_combat(now) or b.in_combat(now):
+			_cancel_trade(t, "in_combat")
+		elif a.move.pos.distance_to(b.move.pos) > rules.party_play.trade_range:
+			_cancel_trade(t, "too_far")
+	_update_duels()
+
+
+## Plain data for one hero's snapshot: its trade, and requests to or from it.
+func social_view(hero_id: int) -> Dictionary:
+	var names := {}
+	for h in heroes():
+		names[h.id] = h.display_name
+	var reqs: Array = []
+	for r in social.requests:
+		if r.from == hero_id or r.to == hero_id:
+			reqs.append({"id": r.id, "kind": r.kind, "from": r.from, "to": r.to, "expires": r.expires,
+					"from_name": names.get(r.from, "?"), "to_name": names.get(r.to, "?")})
+	return {"trade": Trades.view(social.trade_of(hero_id), hero_id, names), "requests": reqs}
+
+
+# --- Duels (WoW rules; PartyPlayDef "Duels") -----------------------------------------
+
+## {id, a, b, flag: Vector2, state: "countdown" | "live" | "over", starts_at,
+##  out: {hero id: time it left the boundary}, ended_at}
+var _duels: Array = []
+var _next_duel := 1
+
+
+func _duel_problem(a: Hero, b: Hero) -> String:
+	if zone.dungeon:
+		return "no_duel_here"
+	if a.duel_with >= 0 or b.duel_with >= 0:
+		return "duelling"
+	return ""
+
+
+## Accepted: a flag at the midpoint, the countdown, then the two fight each other only.
+func _start_duel(a: Hero, b: Hero) -> void:
+	var why := _duel_problem(a, b)
+	if why != "":
+		return
+	var pp := rules.party_play
+	var d := {"id": _next_duel, "a": a.id, "b": b.id, "flag": (a.move.pos + b.move.pos) * 0.5,
+			"state": "countdown", "starts_at": now + pp.duel_countdown, "out": {}, "ended_at": -1.0}
+	_next_duel += 1
+	_duels.append(d)
+	a.duel_with = b.id
+	b.duel_with = a.id
+	emit({"type": "duel_start", "duel": d.id, "source": a.id, "target": b.id, "a_name": a.display_name,
+			"b_name": b.display_name, "flag": d.flag, "starts_at": d.starts_at})
+
+
+func _update_duels() -> void:
+	var pp := rules.party_play
+	for d in _duels.duplicate():
+		if d.state == "over":
+			if now - d.ended_at >= pp.duel_flag_linger:
+				_duels.erase(d)
+			continue
+		var a: Hero = _heroes.get(d.a)
+		var b: Hero = _heroes.get(d.b)
+		if a == null or b == null:
+			# A disconnect (or leaving the zone) forfeits.
+			_end_duel(d, d.b if a == null else d.a, d.a if a == null else d.b, "left")
+			continue
+		if not a.alive or not b.alive:
+			# Died to something else.
+			_end_duel(d, b.id if not a.alive else a.id, a.id if not a.alive else b.id, "died")
+			continue
+		if d.state == "countdown":
+			if now >= d.starts_at:
+				d.state = "live"
+				a.duel_live = true
+				b.duel_live = true
+				emit({"type": "duel_fight", "duel": d.id, "source": a.id, "target": b.id})
+			continue
+		for h in [a, b]:
+			h.combat_until = combat_until_from_now() # dueling is combat
+			var outside: bool = h.move.pos.distance_to(d.flag) > pp.duel_radius
+			if outside and not d.out.has(h.id):
+				d.out[h.id] = now
+				emit({"type": "duel_out", "duel": d.id, "target": h.id, "seconds": pp.duel_out_of_bounds_seconds})
+			elif not outside and d.out.has(h.id):
+				d.out.erase(h.id)
+				emit({"type": "duel_back", "duel": d.id, "target": h.id})
+			elif outside and now - float(d.out[h.id]) >= pp.duel_out_of_bounds_seconds:
+				_end_duel(d, a.id if h == b else b.id, h.id, "fled")
+				break
+
+
+## Ends a duel: nothing lost but the duel; the buffs and debuffs the two put on each
+## other go (health and cooldowns stay); everyone near the flag hears who won.
+func _end_duel(d: Dictionary, winner_id: int, loser_id: int, reason: String) -> void:
+	if d.state == "over":
+		return
+	d.state = "over"
+	d.ended_at = now
+	var names := {}
+	for id in [d.a, d.b]:
+		var h: Hero = _heroes.get(id)
+		if h == null:
+			continue
+		names[id] = h.display_name
+		h.duel_with = -1
+		h.duel_live = false
+		h.buffs.remove_from(d.b if id == d.a else d.a)
+		h.combat_until = combat_until_from_now() # out of combat next tick, as after any fight
+	emit({"type": "duel_end", "duel": d.id, "source": winner_id, "target": loser_id, "reason": reason,
+			"winner_name": names.get(winner_id, "?"), "loser_name": names.get(loser_id, "?"), "flag": d.flag,
+			"radius": rules.party_play.duel_announce_radius})
+
+
+## Duels in this zone as plain data (everyone near sees the flag).
+func duels_view() -> Array:
 	var out: Array = []
-	for p in _pending_loot:
-		if p.hero == hero_id:
-			out.append({"id": p.id, "items": Loot.items_to_array(p.items), "expires": p.expires})
+	for d in _duels:
+		var out_left := {}
+		for id in d.out:
+			out_left[id] = maxf(rules.party_play.duel_out_of_bounds_seconds - (now - float(d.out[id])), 0.0)
+		out.append({"id": d.id, "a": d.a, "b": d.b, "flag": d.flag, "state": d.state, "starts_at": d.starts_at,
+				"radius": rules.party_play.duel_radius, "out": out_left})
 	return out
 
 
-func _intent_take_loot(hero: Hero, loot_id: int) -> String:
-	for p in _pending_loot:
-		if p.id != loot_id or p.hero != hero.id:
-			continue
-		var still: Array = []
-		for pair in p.items:
-			var left := hero.bag.add(pair[0], pair[1])
-			if left > 0:
-				still.append([pair[0], left])
-		p.items = still
-		if still.is_empty():
-			_pending_loot.erase(p)
-			return ""
+## One drop on the ground for `hero`, scattered near where `enemy` fell (on
+## walkable ground, else right where it fell).
+func _drop_for(hero: Hero, item: ItemDef, count: int, enemy: Enemy, fight: Array = []) -> void:
+	var pp := rules.party_play
+	var at := enemy.move.pos
+	var p := at + Vector2.from_angle(ctx.rng.randf() * TAU) * ctx.rng.randf() * pp.drop_scatter
+	if not grid.is_walkable(MoveState.tile_of(p)):
+		p = at
+	var id := drops.add(hero.id, item, count, p, now + pp.drop_seconds, enemy.def.id, fight)
+	emit({"type": "drop", "target": hero.id, "drop": id, "item": String(item.id), "count": count,
+			"rarity": int(item.rarity)})
+
+
+## Picks up one of the hero's own drops within reach: into the bag (what doesn't fit
+## stays on the ground); the party hears who looted what.
+func _intent_pick_up(hero: Hero, drop_id: int) -> String:
+	if not hero.alive:
+		return "dead"
+	var d := drops.find(drop_id)
+	if d.is_empty() or d.owner != hero.id:
+		return "no_loot"
+	if hero.move.pos.distance_to(d.pos) > rules.party_play.pickup_range:
+		return "too_far"
+	var bind: Dictionary = d.bind if not d.bind.is_empty() \
+			else Binding.on_acquire(d.item, d.fight, now + rules.party_play.bop_trade_seconds)
+	var left := hero.bag.add(d.item, d.count, bind)
+	if left >= d.count:
 		return "bag_full"
-	return "no_loot"
-
-
-func _expire_loot() -> void:
-	_pending_loot = _pending_loot.filter(func(p): return p.expires > now)
+	var taken: int = d.count - left
+	if left > 0:
+		d.count = left
+	else:
+		drops.remove(drop_id)
+	emit({"type": "looted", "source": hero.id, "target": hero.id, "name": hero.display_name,
+			"item": String(d.item.id), "count": taken, "rarity": int(d.item.rarity)})
+	return "bag_full" if left > 0 else ""
 
 
 ## Everyone on a fighting enemy's threat table (and the enemy) is in combat.

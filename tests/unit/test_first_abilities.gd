@@ -5,7 +5,7 @@ extends GutTest
 const ContentDBScript := preload("res://autoload/content_db.gd")
 const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09",
 		"W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09",
-		"A01", "A02", "A03", "A05", "E01", "E03", "E04", "E05",
+		"A01", "A02", "A03", "A05", "E01", "E02", "E03", "E04", "E05",
 		"S01", "S04", "B01", "B02", "H01", "H02"]
 
 var db
@@ -315,7 +315,7 @@ func test_each_ability_has_the_planned_hitbox() -> void:
 		"F06": H.RECT, "F07": H.CIRCLE, "F08": H.TILES, "F09": H.TARGETED, "W01": H.TARGETED,
 		"W02": H.TARGETED, "W03": H.TARGETED, "W04": H.PROJECTILE, "W05": H.TARGETED, "W06": H.RECT,
 		"W07": H.TARGETED, "W08": H.TARGETED, "W09": H.TILES, "A01": H.TARGETED, "A02": H.TARGETED,
-		"A03": H.NONE, "A05": H.TARGETED, "E01": H.LOB, "E03": H.TILES, "E04": H.SELF_CIRCLE,
+		"A03": H.NONE, "A05": H.TARGETED, "E01": H.LOB, "E02": H.NONE, "E03": H.TILES, "E04": H.SELF_CIRCLE,
 		"E05": H.TILES, "S01": H.CONE, "S04": H.DASH, "B01": H.TARGETED, "B02": H.PROJECTILE,
 		"H01": H.CONE, "H02": H.SELF_CIRCLE}
 	assert_eq(want.size(), FIRST.size())

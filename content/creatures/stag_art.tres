@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="CreatureArtDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/creature_art_def.gd" id="1_art"]
+[ext_resource type="Texture2D" path="res://assets/creatures/stag/stag-idle.png" id="2_idle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/stag/stag-walk.png" id="3_walk"]
+[ext_resource type="Texture2D" path="res://assets/creatures/stag/stag-run.png" id="4_run"]
+[ext_resource type="Texture2D" path="res://assets/creatures/stag/no_shadow/stag-idle.png" id="5_fidle"]
+[ext_resource type="Texture2D" path="res://assets/creatures/stag/no_shadow/stag-walk.png" id="6_fwalk"]
+[ext_resource type="Texture2D" path="res://assets/creatures/stag/no_shadow/stag-run.png" id="7_frun"]
+
+[resource]
+script = ExtResource("1_art")
+sheets = {
+"idle": ExtResource("2_idle"),
+"run": ExtResource("4_run"),
+"walk": ExtResource("3_walk")
+}
+flash_sheets = {
+"idle": ExtResource("5_fidle"),
+"run": ExtResource("7_frun"),
+"walk": ExtResource("6_fwalk")
+}
+frame_size = Vector2i(32, 41)
+rows = PackedStringArray("sw", "se", "nw", "ne")
+feet = Vector2(16, 39)
+head_y = 3.0
+fps = {
+"idle": 7.0,
+"run": 12.0,
+"walk": 10.0
+}
+looping = PackedStringArray("idle", "walk", "run")
+recovery_frames = {}

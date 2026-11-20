@@ -110,6 +110,22 @@ func telegraphs() -> Array:
 	return zone_sim().pending_hits()
 
 
+func way_out() -> Variant:
+	return zone_sim().way_out()
+
+
+func social() -> Dictionary:
+	return zone_sim().social_view(local_hero_id)
+
+
+func duels() -> Array:
+	return zone_sim().duels_view()
+
+
+func loot_rolls() -> Array:
+	return zone_sim().rolls.to_array()
+
+
 func ground_zones() -> Array:
 	return zone_sim().ground_zones()
 
@@ -118,8 +134,8 @@ func world_flags() -> Dictionary:
 	return world.world_flags
 
 
-func pending_loot() -> Array:
-	return zone_sim().pending_loot_for(local_hero_id)
+func my_drops() -> Array:
+	return zone_sim().drops.for_owner(local_hero_id)
 
 
 ## Actors in the local hero's zone only.

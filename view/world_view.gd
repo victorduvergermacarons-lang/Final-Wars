@@ -410,6 +410,9 @@ func _draw() -> void:
 	_draw_projectiles(grid)
 	_draw_flames(grid)
 	_draw_landmarks(grid)
+	_draw_way_out(grid)
+	_draw_drops(grid)
+	_draw_duels(grid)
 	_draw_decor_labels(grid)
 	_draw_talk_prompt()
 	for f in _overlay:
@@ -779,6 +782,19 @@ func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef =
 	var now: float = session.now()
 	if e is Enemy and e.alive and e.def.enrage_buff != null and e.buffs.has(e.def.enrage_buff.id, now):
 		color = Color(ENRAGE_TINT, color.a) # Molten Fury: glowing hotter
+	var lunge := float(pick.get("lunge", 0.0))
+	if lunge != 0.0:
+		# Attack fallback (no attack art): a short lunge toward its facing.
+		var toward := Iso.to_screen(e.facing_vector(), 0.0) - Iso.to_screen(Vector2.ZERO, 0.0)
+		feet += (toward.normalized() * lunge * s).round()
+	var tip := float(pick.get("tip", 0.0))
+	var flip: bool = pick.get("flip", false)
+	if tip > 0.0 or flip:
+		# Death fallback (no death art): tips over onto its side about its feet.
+		# Mirrored rows (CreatureArtDef.mirror_rows): flipped left to right about the feet.
+		var side := -1.0 if pick.dir in ["sw", "nw"] else 1.0
+		draw_set_transform(feet, side * tip * PI * 0.45, Vector2(-1.0 if flip else 1.0, 1.0))
+		feet = Vector2.ZERO
 	var rect := Rect2(feet - art.feet * s, Vector2(art.frame_size) * s)
 	draw_texture_rect(tex, rect, false, color)
 	if session.render_time() < float(_flash_until.get(e.id, -1.0)):
@@ -787,6 +803,8 @@ func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef =
 		var plain: SpriteFrames = _frames_cache[art][1]
 		var body := plain.get_frame_texture(name, mini(pick.frame, plain.get_frame_count(name) - 1)) if plain != null else tex
 		draw_texture_rect(body, rect, false, Color(FLASH_STRENGTH, FLASH_STRENGTH, FLASH_STRENGTH, color.a))
+	if tip > 0.0 or flip:
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	return true
 
 
@@ -1196,6 +1214,74 @@ func _draw_quest_area(grid: GridModel, p: Vector2i, kind: Variant = true) -> voi
 			c + Vector2(-hw, 0)]), Color(1, 0.85, 0.2, pulse))
 	draw_polyline(PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh),
 			c + Vector2(-hw, 0), c + Vector2(0, -hh)]), Color(1, 0.95, 0.5, 0.9), 1.5)
+
+
+## Duels: a flag at the midpoint and the boundary circle; the countdown above
+## the flag.
+func _draw_duels(grid: GridModel) -> void:
+	for d in session.duels():
+		var p: Vector2 = d.flag
+		var t := MoveState.tile_of(p)
+		var h := grid.height_at(t) if grid.in_bounds(t) else 0
+		var base := Iso.to_screen(p, h)
+		var c := Color(0.95, 0.3, 0.2, 0.55 if d.state != "over" else 0.25)
+		var ring := PackedVector2Array()
+		for i in 49:
+			var a := TAU * i / 48.0
+			ring.append(Iso.to_screen(p + Vector2.from_angle(a) * float(d.radius), h))
+		draw_polyline(ring, c, 2.0)
+		draw_line(base, base + Vector2(0, -50), Color(0.35, 0.25, 0.15), 3.0)
+		var cloth := PackedVector2Array([base + Vector2(1, -50), base + Vector2(24, -44), base + Vector2(1, -36)])
+		draw_colored_polygon(cloth, Color(0.85, 0.15, 0.15))
+		draw_colored_polygon(PackedVector2Array([base + Vector2(1, -36), base + Vector2(24, -42), base + Vector2(1, -30)]),
+				Color(0.95, 0.95, 0.9))
+		if d.state == "countdown":
+			var left := ceili(float(d.starts_at) - session.render_time())
+			_draw_label(base + Vector2(0, -62), str(maxi(left, 1)), Color(1, 0.85, 0.3), 22)
+
+
+## Your own loot on the ground (only yours are sent): a light beam in the item's
+## rarity colour (white, green, blue, purple, gold) and its name in your colour.
+func _draw_drops(grid: GridModel) -> void:
+	var mine: Array = session.my_drops()
+	if mine.is_empty():
+		return
+	var pp: PartyPlayDef = session.rules().party_play
+	var hero: Actor = session.local_hero()
+	var tag: Color = HERO_COLORS[(hero.id - 1) % HERO_COLORS.size()] if hero != null else Color.WHITE
+	var pulse := 0.5 + 0.5 * sin(_pulse_ms() * 0.003)
+	for d in mine:
+		var item: ItemDef = ContentDB.items.get(StringName(d.item))
+		if item == null:
+			continue
+		var p: Vector2 = d.pos
+		var t := MoveState.tile_of(p)
+		var base := Iso.to_screen(p, grid.height_at(t) if grid.in_bounds(t) else 0)
+		var c: Color = Rarity.BEAM_COLORS[item.rarity]
+		_draw_ellipse(base, 12.0, 6.0, Color(c, 0.7), 2.0)
+		var top := base + Vector2(0, -pp.beam_height)
+		for k in 3: # soft glow: wide and faint to narrow and bright
+			var w := pp.beam_width * (3.0 - k)
+			draw_line(base, top, Color(c, (0.12 + 0.18 * k) * (0.75 + 0.25 * pulse)), w)
+		draw_circle(base, 3.0, Color(c, 0.9))
+		var label := item.display_name + (" x%d" % d.count if d.count > 1 else "")
+		_draw_label(top + Vector2(0, -6), label, tag, 12)
+
+
+## The way out of a cleared dungeon: a pulsing golden ring of light on its tile
+## with "Way out" over it, so nobody misses it.
+func _draw_way_out(grid: GridModel) -> void:
+	var tile: Variant = session.way_out()
+	if tile == null or not grid.in_bounds(tile):
+		return
+	var base := Iso.to_screen(Vector2(tile), grid.height_at(tile))
+	var pulse := 0.5 + 0.5 * sin(_pulse_ms() * 0.004)
+	for i in 3:
+		var k := 1.0 - i * 0.28
+		_draw_ellipse(base, 30.0 * k, 15.0 * k, Color(1.0, 0.85, 0.35, (0.45 + 0.4 * pulse) * k), 3.0)
+	draw_line(base, base + Vector2(0, -46), Color(1.0, 0.9, 0.5, 0.35 + 0.3 * pulse), 10.0)
+	draw_line(base, base + Vector2(0, -46), Color(1.0, 0.97, 0.8, 0.6 + 0.3 * pulse), 3.0)
+	_draw_label(base + Vector2(0, -54), "Way out", Color(1, 0.9, 0.4), 15)
 
 
 ## Named places: a banner on a pole and the name in gold.
