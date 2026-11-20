@@ -3181,6 +3181,28 @@
       "preview": [
         "art/NP-02/NP-02-1+fire-cast_2026-11-18_preview.gif"
       ]
+    },
+    "NP-02-1+8dir": {
+      "date": "2026-11-20",
+      "files": [
+        "art/NP-02/NP-02-1+8dir_2026-11-20_1.png",
+        "art/NP-02/NP-02-1+8dir_2026-11-20_2.png",
+        "art/NP-02/NP-02-1+8dir_2026-11-20_3.png",
+        "art/NP-02/NP-02-1+8dir_2026-11-20_4.png",
+        "art/NP-02/NP-02-1+8dir_2026-11-20_5.png",
+        "art/NP-02/NP-02-1+8dir_2026-11-20_6.png",
+        "art/NP-02/NP-02-1+8dir_2026-11-20_7.png",
+        "art/NP-02/NP-02-1+8dir_2026-11-20_8.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01900591605239444
+      },
+      "preview": [
+        "art/NP-02/NP-02-1+8dir_2026-11-20_sheet.png"
+      ]
     }
   },
   "failures": {},
@@ -3613,6 +3635,14 @@
         "BO-06-1",
         "NP-02-1+talking",
         "NP-02-1+fire-cast"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-20",
+      "made": [
+        "NP-02-1+8dir"
       ],
       "failed": [],
       "stopped": ""

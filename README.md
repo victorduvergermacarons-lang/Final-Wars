@@ -38,6 +38,12 @@ keepers into the game's `assets/` folder by hand.
 
 ## Drafts
 
+### NP-02-1+8dir · Caedan Ashvale (2026-11-20)
+
+![NP-02-1+8dir](art/NP-02/NP-02-1+8dir_2026-11-20_sheet.png)
+
+<sub>Made from approved/NP-02-1.png: 8 directions of the approved picture</sub>
+
 ### NP-02-5 · Caedan Ashvale (2026-11-18)
 
 ![NP-02-5](art/NP-02/NP-02-5_2026-11-18_1.png) ![NP-02-5](art/NP-02/NP-02-5_2026-11-18_2.png)
