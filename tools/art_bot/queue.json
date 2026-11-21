@@ -1407,7 +1407,8 @@
      ],
      "rotate": false,
      "animations": [
-      "the spiralling wind sweeps outward to the right, widening and swirling, then fades away"
+      "the spiralling wind sweeps outward to the right, widening and swirling, then fades away",
+      "the spiral of wind spins and shoots to the right, then thins out and fades away"
      ]
     },
     {
@@ -1420,6 +1421,61 @@
      "rotate": false,
      "animations": [
       "the spiralling wind sweeps outward to the right, widening and swirling, then fades away"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-10",
+   "asset": "Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "a single rough brown-grey rock about 14 px wide, centred, on its own: no pebbles, no shadow, no ground under it. Game spell/attack effect sprite, isometric view, 24x24 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      24,
+      24
+     ],
+     "rotate": false,
+     "animations": [
+      "the rock smashes into the ground and breaks into fragments, a small puff of dust spreads and fades"
+     ]
+    },
+    {
+     "subject": "a single rough brown-grey rock about 14 px wide near the left edge of the canvas, alone in empty space: no pebbles, no shadow, no ground, nothing else. Game spell/attack effect sprite, isometric view, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it"
+     ]
+    },
+    {
+     "subject": "an open crescent of orange and yellow flame shaped like a half moon open on the right side, thick in the middle and tapering to sharp points at both ends, a few trailing embers, not a full circle. Game spell/attack effect sprite, isometric view, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame arc sweeps around fast in a half circle, then fades into embers"
+     ]
+    },
+    {
+     "subject": "a sweeping C-shaped slash of fire, an open arc and not a full ring, bright yellow leading edge fading to red at the tail, small embers trailing behind. Game spell/attack effect sprite, isometric view, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame arc sweeps around fast in a half circle, then fades into embers"
      ]
     }
    ]
