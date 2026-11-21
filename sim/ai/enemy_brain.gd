@@ -58,6 +58,10 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 					return
 				enemy.threat.add(hero.id, 0.0)
 				world.emit({"type": "aggro", "source": enemy.id, "target": hero.id})
+			else:
+				# Pulled in by damage (a neutral stag only ever is): it turns hostile
+				# now, so it gets its aggro too, once, at the start of the fight.
+				world.emit({"type": "aggro", "source": enemy.id, "target": enemy.threat.top()})
 			enemy.state = Enemy.State.COMBAT
 			enemy.home_tile = enemy.tile()
 			enemy.last_attack_at = world.now

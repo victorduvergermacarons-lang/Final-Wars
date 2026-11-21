@@ -53,7 +53,7 @@ const WORLD_KEYS := {
 }
 
 const CREATURE_EVENTS := {
-	"aggro": "notices a hero and starts a fight",
+	"aggro": "starts a fight (spots a hero, or is attacked first)",
 	"hurt": "takes damage",
 	"death": "dies",
 	"step": "moves one tile (paws, wings...)",
