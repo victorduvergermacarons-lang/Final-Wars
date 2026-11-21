@@ -5300,6 +5300,223 @@
       "preview": [
         "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_preview.gif"
       ]
+    },
+    "FX-09-1": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-09/FX-09-1_2026-11-21_1.png",
+        "art/FX-09/FX-09-1_2026-11-21_2.png"
+      ],
+      "usage": {
+        "seconds": 21.908227682113647
+      }
+    },
+    "FX-09-2": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-09/FX-09-2_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-08-1": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-1_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-08-2": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-2_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-08-3": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-3_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-08-4": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-4_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-08-5": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-5_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-08-6": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-6_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "PL-01-3+8dir": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+8dir_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+8dir_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+8dir_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+8dir_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+8dir_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+8dir_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+8dir_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+8dir_2026-11-21_8.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023854707770877413
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+8dir_2026-11-21_sheet.png"
+      ]
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.027801029781500494
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-07-1+boulder-bursts-up-out-of-cracked-ground-": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_1.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_2.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_3.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_4.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_5.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_6.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_7.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_8.png",
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018919314391083186
+      },
+      "preview": [
+        "art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-07-1+boulder-bobs-gently-up-and-down-in-the-a": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_1.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_2.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_3.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_4.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_5.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_6.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_7.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_8.png",
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01895283791091707
+      },
+      "preview": [
+        "art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-07-1+boulder-tumbles-end-over-end-through-the": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_1.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_2.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_3.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_4.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_5.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_6.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_7.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_8.png",
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.027723277992672386
+      },
+      "preview": [
+        "art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-07-1+boulder-smashes-into-the-ground-rock-fra": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_1.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_2.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_3.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_4.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_5.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_6.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_7.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_8.png",
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.024518431888686285
+      },
+      "preview": [
+        "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -5858,6 +6075,27 @@
         "PL-01-1+firebending-kick-fast-roundhouse-kick-at@west",
         "PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west",
         "PL-01-1+firebending-kick-fast-roundhouse-kick-at@south"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-21",
+      "made": [
+        "FX-09-1",
+        "FX-09-2",
+        "FX-08-1",
+        "FX-08-2",
+        "FX-08-3",
+        "FX-08-4",
+        "FX-08-5",
+        "FX-08-6",
+        "PL-01-3+8dir",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o",
+        "FX-07-1+boulder-bursts-up-out-of-cracked-ground-",
+        "FX-07-1+boulder-bobs-gently-up-and-down-in-the-a",
+        "FX-07-1+boulder-tumbles-end-over-end-through-the",
+        "FX-07-1+boulder-smashes-into-the-ground-rock-fra"
       ],
       "failed": [],
       "stopped": ""

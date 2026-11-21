@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-90 of 90 stills done. Newest first. These are drafts: copy the
+98 of 98 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -9,7 +9,6 @@ keepers into the game's `assets/` folder by hand.
 
 ## Approve to animate
 
-- `approved/PL-01-3.png` unlocks 8 directions, stone armour cracks all over and falls off the body in chunks and dust
 - `approved/PL-02-1.png` unlocks 8 directions, sword slash, sword lunge
 - `approved/PL-02-2.png` unlocks 8 directions, quick bow shot, aimed bow shot
 - `approved/NP-01-1.png` unlocks 8 directions, idle, talking
@@ -36,7 +35,6 @@ keepers into the game's `assets/` folder by hand.
 - `approved/EN-08-2.png` unlocks 8 directions, idle, move, attack
 - `approved/BO-04-1.png` unlocks 8 directions, idle, cast, winding up a big attack, death
 - `approved/BO-06-1.png` unlocks 8 directions, powering up between phases, capstone cast, death
-- `approved/FX-07-1.png` unlocks boulder bursts up out of cracked ground and rises to float, boulder bobs gently up and down in the air, pebbles falling, boulder tumbles end over end through the air with a short dust trail, boulder smashes into the ground, rock fragments fly outward and a ring of dust spreads and fades
 - `approved/FX-07-2.png` unlocks water ribbon lashes out to the right, snaps straight, then splashes apart
 - `approved/FX-07-3.png` unlocks droplets rise and spiral together into the glowing water ball
 - `approved/FX-07-4.png` unlocks water ribbons spiral up from the ground, then burst into rising sparkles and a soft mist that fades
@@ -44,16 +42,24 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-07-6.png` unlocks wind cone spreads wider toward the right, leaves tumbling, then fades
 - `approved/FX-07-7.png` unlocks fire burst blasts to the right and breaks into embers
 - `approved/FX-07-8.png` unlocks flame crescent sweeps around in a fast arc, then fades into embers
+- `approved/FX-09-1.png` unlocks a tiny curl of water grows into a large S-shaped lash, snaps, then breaks apart into flying droplets and bursts into a star-shaped splash that fades
+- `approved/FX-09-2.png` unlocks a tiny curl of water grows into a large S-shaped lash, snaps, then breaks apart into flying droplets and bursts into a star-shaped splash that fades
+- `approved/FX-08-1.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
+- `approved/FX-08-2.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
+- `approved/FX-08-3.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
+- `approved/FX-08-4.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
+- `approved/FX-08-5.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
+- `approved/FX-08-6.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
 
 ## Drafts
 
-### PL-01-3 · Hero base body (2026-11-21)
+### PL-01-3 · Hero base body (2026-11-21) ✓ approved
 
 ![PL-01-3](art/PL-01/PL-01-3_2026-11-21_1.png) ![PL-01-3](art/PL-01/PL-01-3_2026-11-21_2.png)
 
 <sub>Made from approved/PL-01-1.png: standing in a deep, wide rooted earthbending stance, the whole body covered in grey-brown stone plates like cracked river-stone armour, thin glowing amber seams between the plates</sub>
 
-### FX-07-1 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+### FX-07-1 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21) ✓ approved
 
 ![FX-07-1](art/FX-07/FX-07-1_2026-11-21.png)
 
@@ -580,6 +586,90 @@ keepers into the game's `assets/` folder by hand.
 ![PL-01-1+firebending-kick-fast-roundhouse-kick-at@south](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_preview.gif)
 
 <sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### FX-09-1 · Water whip effect, remade from the user's reference strip (2026-11-21)
+
+![FX-09-1](art/FX-09/FX-09-1_2026-11-21_1.png) ![FX-09-1](art/FX-09/FX-09-1_2026-11-21_2.png)
+
+<sub>Made from approved/FX-09-REF.png: redraw this water lash in clean pixel art: a thick, glossy ribbon of bright blue water curling in a big S shape, a darker blue edge, white highlights along its length, small droplets flying off it, same shape and size. Game spell/attack effect sprite, isometric view, glowing, bright readable colors,</sub>
+
+### FX-09-2 · Water whip effect, remade from the user's reference strip (2026-11-21)
+
+![FX-09-2](art/FX-09/FX-09-2_2026-11-21.png)
+
+<sub>a thick, glossy ribbon of bright blue water curling in a big S shape, darker blue edge, white highlights along its length, small droplets flying off the curve. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outli</sub>
+
+### FX-08-1 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-1](art/FX-08/FX-08-1_2026-11-21.png)
+
+<sub>a small spiralling vortex of semi-transparent pale white and sky-blue wind, curled lines winding inward, see-through so the ground shows through, pointing to the right. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no d</sub>
+
+### FX-08-2 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-2](art/FX-08/FX-08-2_2026-11-21.png)
+
+<sub>a palm-shaped burst of translucent white wind made of three curling spiral strands, soft and see-through, small swirl at its tip, pointing to the right. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, lim</sub>
+
+### FX-08-3 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-3](art/FX-08/FX-08-3_2026-11-21.png)
+
+<sub>a corkscrew of faint, semi-transparent air currents twisting forward to the right, thin white and pale cyan spiral lines with soft glow. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, so</sub>
+
+### FX-08-4 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-4](art/FX-08/FX-08-4_2026-11-21.png)
+
+<sub>a wide cone of translucent swirling wind spreading to the right, made of many curling spiral streaks, see-through, a few leaves caught in it. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palett</sub>
+
+### FX-08-5 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-5](art/FX-08/FX-08-5_2026-11-21.png)
+
+<sub>a rolling spiral gust of semi-transparent pale blue and white air, like a sideways whirlwind moving to the right, soft edges. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light fr</sub>
+
+### FX-08-6 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-6](art/FX-08/FX-08-6_2026-11-21.png)
+
+<sub>several overlapping see-through spiral curls of wind fanning out to the right, thin white lines with a faint cyan glow. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top</sub>
+
+### PL-01-3+8dir · Hero base body (2026-11-21)
+
+![PL-01-3+8dir](art/PL-01/PL-01-3+8dir_2026-11-21_sheet.png)
+
+<sub>Made from approved/PL-01-3.png: 8 directions of the approved picture</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### FX-07-1+boulder-bursts-up-out-of-cracked-ground- · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-1+boulder-bursts-up-out-of-cracked-ground-](art/FX-07/FX-07-1+boulder-bursts-up-out-of-cracked-ground-_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-07-1.png: boulder bursts up out of cracked ground and rises to float</sub>
+
+### FX-07-1+boulder-bobs-gently-up-and-down-in-the-a · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-1+boulder-bobs-gently-up-and-down-in-the-a](art/FX-07/FX-07-1+boulder-bobs-gently-up-and-down-in-the-a_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-07-1.png: boulder bobs gently up and down in the air, pebbles falling</sub>
+
+### FX-07-1+boulder-tumbles-end-over-end-through-the · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-1+boulder-tumbles-end-over-end-through-the](art/FX-07/FX-07-1+boulder-tumbles-end-over-end-through-the_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-07-1.png: boulder tumbles end over end through the air with a short dust trail</sub>
+
+### FX-07-1+boulder-smashes-into-the-ground-rock-fra · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-1+boulder-smashes-into-the-ground-rock-fra](art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-07-1.png: boulder smashes into the ground, rock fragments fly outward and a ring of dust spreads and fades</sub>
 
 ### NP-02-1+8dir · Caedan Ashvale (2026-11-20)
 
