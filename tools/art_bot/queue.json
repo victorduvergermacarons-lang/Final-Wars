@@ -1311,6 +1311,118 @@
      ]
     }
    ]
+  },
+  {
+   "id": "FX-09",
+   "asset": "Water whip effect, remade from the user's reference strip",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "redraw this water lash in clean pixel art: a thick, glossy ribbon of bright blue water curling in a big S shape, a darker blue edge, white highlights along its length, small droplets flying off it, same shape and size. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "a tiny curl of water grows into a large S-shaped lash, snaps, then breaks apart into flying droplets and bursts into a star-shaped splash that fades"
+     ],
+     "base": "FX-09-REF",
+     "base_file": "reference/fx/FX-09-whip-ref_64px.png"
+    },
+    {
+     "subject": "a thick, glossy ribbon of bright blue water curling in a big S shape, darker blue edge, white highlights along its length, small droplets flying off the curve. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "a tiny curl of water grows into a large S-shaped lash, snaps, then breaks apart into flying droplets and bursts into a star-shaped splash that fades"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-08",
+   "asset": "Air effects, spiral and transparent (options for Air Palm and Gust)",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "a small spiralling vortex of semi-transparent pale white and sky-blue wind, curled lines winding inward, see-through so the ground shows through, pointing to the right. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spiral of wind spins and shoots to the right, then thins out and fades away"
+     ]
+    },
+    {
+     "subject": "a palm-shaped burst of translucent white wind made of three curling spiral strands, soft and see-through, small swirl at its tip, pointing to the right. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spiral of wind spins and shoots to the right, then thins out and fades away"
+     ]
+    },
+    {
+     "subject": "a corkscrew of faint, semi-transparent air currents twisting forward to the right, thin white and pale cyan spiral lines with soft glow. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spiral of wind spins and shoots to the right, then thins out and fades away"
+     ]
+    },
+    {
+     "subject": "a wide cone of translucent swirling wind spreading to the right, made of many curling spiral streaks, see-through, a few leaves caught in it. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spiralling wind sweeps outward to the right, widening and swirling, then fades away"
+     ]
+    },
+    {
+     "subject": "a rolling spiral gust of semi-transparent pale blue and white air, like a sideways whirlwind moving to the right, soft edges. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spiralling wind sweeps outward to the right, widening and swirling, then fades away"
+     ]
+    },
+    {
+     "subject": "several overlapping see-through spiral curls of wind fanning out to the right, thin white lines with a faint cyan glow. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spiralling wind sweeps outward to the right, widening and swirling, then fades away"
+     ]
+    }
+   ]
   }
  ]
 }
