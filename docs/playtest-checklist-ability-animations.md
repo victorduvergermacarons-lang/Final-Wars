@@ -15,7 +15,7 @@ straight up, down, left and right. Move the mouse around your hero to turn.
 - [ ] First press: the hero drops into a rooted stance, and a rock rises out of the ground
       beside them. Then the hero holds the pose (a slow loop) and the rock bobs gently.
 - [ ] A timing bar runs (3 seconds). While it runs, the hero can't walk.
-- [ ] Second press (right-click or Space): the hero punches, and the rock leaves on the
+- [ ] Second press (its key again, right-click or Space): the hero punches, and the rock leaves on the
       punch. It flies in an arc to where your mouse points, spinning, then breaks apart
       where it lands.
 - [ ] An enemy standing where it lands takes damage. One a little to the side doesn't.

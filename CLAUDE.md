@@ -526,7 +526,7 @@ ability changes that go with them. Checklist: `docs/playtest-checklist-ability-a
   Mana and the cooldown are paid when it goes off.
 - **Rock Throw (E01):** first press: a 3 s bar; the rock (`assets/effects/rock.png`,
   `AbilityDef.fx_carried`) rises beside the hero while earth_root plays, then bobs;
-  Cast Move Speed 0 (the hero can't walk). Second press (right-click or Space, as every
+  Cast Move Speed 0 (the hero can't walk). Second press (its key again, right-click or Space, as every
   bar): earth_punch, and on its strike frame the rock flies along a parabola (peak 1.6
   levels, two turns of spin) to the cursor, clamped to range 6, then `rock_impact` and
   the damage in a 0.5-tile circle. No press: the client presses for the player at the
@@ -1577,9 +1577,10 @@ Speed stat, haste and slows still count).
   a new one during that run. The "dodging halves the HP lost" target, already failing on
   `main` (38% vs 51%), moved to 55% vs 51%: a dodging bot now cancels its bar for every
   quick wolf bite; for the combat pacing pass.
-- **Playing a bar (since 2026-11-21):** right-click or **Space** (`timing_press` action,
-  reserved from keybinds); letting either go ends a hold. Pressing the ability's own
-  hotkey again during its bar does nothing (it used to play the bar, 2026-11-15). Another
+- **Playing a bar (since 2026-11-21):** right-click, **Space** (`timing_press` action,
+  reserved from keybinds) or the ability's own hotkey pressed again (the 2026-11-15
+  second press; removed earlier on 2026-11-21, restored the same day at the user's
+  request); letting go of whichever started it ends a hold. Another
   ability's hotkey stops the bar unplayed (`cancel_bar` intent: nothing paid, its global
   cooldown given back) and starts the new ability. An aimed ability without a bar
   (Lunge, Flame Dash, Raise Pillar, Earth Wall) still fires when its key is let go, and
@@ -2467,6 +2468,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-21 | Pressing an ability's key again during its timing bar plays the bar again, alongside right-click and Space | User request after testing the ability animations: the second press had been removed that morning (Space added instead). Both stay: right-click, Space or the key; letting go of the key ends a hold, as before. |
 | 2026-11-21 | Ability animations and effects; Rock Throw two presses; Stone Skin's look and shatter; Fire Punch instant; Water Whip from 0.45 s | User brief (all eight facings, user choice; "defaults fine": the phase model, walking shows the ability's pose, stone look on Stone Skin, my frame rates). My choices: strike frames read off the art (table in **Ability animations and effects**); hits on strike frames without delaying taps, by playing the frames before the strike during the bar and the rest from the strike when it goes off (heroes had no strike timing before: only creatures' `timed_abilities`); Rock Throw keeps a timing bar, adapted (3 s, tap 0.6–2.6, crit 0.9–1.1, no press throws at miss power through a client press at the end, Cast Move Speed 0); the throw and the whip go off after a release delay taken from the art (0.15 s, 0.29 s), paying mana and cooldown then and not re-checking range; the flying rock is the still moved and spun in code (FX-10-2 barely tumbles); effects drawn in the back-to-front pass on the tile under them; stone tint baked once per sheet; the mound cut from stone_shatter by height and colours (thin scraps remain). |
 | 2026-11-21 | Timing bars are played with right-click or Space only; the ability's own key no longer plays its bar | User request. My choices: Space is a new reserved action (`timing_press`), so it can't be bound to an action bar slot; letting Space go ends a hold, like right-click; a second press of the ability's key during its bar is ignored (another ability's key still switches). |
 | 2026-11-21 | Walking while casting slows instead of cancelling (per-ability Cast Move Speed, default 30%); Esc cancels your cast; a Gameplay test switch turns timing bars on or off | User request and choices: the percentage in a new sheet column, default 30%, of the hero's current speed; stuns, interrupts, knockbacks and falls still cancel. My choices: Esc as the way to cancel a cast on purpose (walking no longer does), giving back a cast's or bar's global cooldown; enemies unchanged; the timing-bar switch host-only like the game speed; balance bots cancel before dodging. See **Moving while casting**. |
