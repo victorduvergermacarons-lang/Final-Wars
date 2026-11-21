@@ -5517,9 +5517,251 @@
       "preview": [
         "art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_preview.gif"
       ]
+    },
+    "FX-10-2": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-2_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-10-3": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-3_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-10-4": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-4_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01875508393181695
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.026406523240937126
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019170567638344235
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01861723768048816
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018615482336945002
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018293820036782156
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-3+stone-armour-cracks-all-over-and-falls-o@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.026803143401940663
+      },
+      "preview": [
+        "art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-08-5+the-spiralling-wind-sweeps-outward-to-th": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_1.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_2.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_3.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_4.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_5.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_6.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_7.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_8.png",
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018715631352530585
+      },
+      "preview": [
+        "art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_1.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_2.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_3.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_4.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_5.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_6.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_7.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_8.png",
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018807244486278955
+      },
+      "preview": [
+        "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_preview.gif"
+      ]
     }
   },
-  "failures": {},
+  "failures": {
+    "FX-10-1": {
+      "count": 1,
+      "last_error": "HTTP 422: {\"detail\":\"Canvas must be size 32x32 area or larger\"}"
+    }
+  },
   "runs": [
     {
       "date": "2026-11-06",
@@ -6098,6 +6340,27 @@
         "FX-07-1+boulder-smashes-into-the-ground-rock-fra"
       ],
       "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-21",
+      "made": [
+        "FX-10-2",
+        "FX-10-3",
+        "FX-10-4",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o@east",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o@north",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o@west",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west",
+        "PL-01-3+stone-armour-cracks-all-over-and-falls-o@south",
+        "FX-08-5+the-spiralling-wind-sweeps-outward-to-th",
+        "FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t"
+      ],
+      "failed": [
+        "FX-10-1"
+      ],
       "stopped": ""
     }
   ],

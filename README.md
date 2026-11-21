@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-98 of 98 stills done. Newest first. These are drafts: copy the
+101 of 102 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -48,8 +48,14 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-08-2.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
 - `approved/FX-08-3.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
 - `approved/FX-08-4.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
-- `approved/FX-08-5.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
 - `approved/FX-08-6.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
+- `approved/FX-10-2.png` unlocks the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it
+- `approved/FX-10-3.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
+- `approved/FX-10-4.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
+
+## Failed (retried next run, skipped after 3 tries)
+
+- **FX-10-1** (1x): HTTP 422: {"detail":"Canvas must be size 32x32 area or larger"}
 
 ## Drafts
 
@@ -623,7 +629,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a wide cone of translucent swirling wind spreading to the right, made of many curling spiral streaks, see-through, a few leaves caught in it. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palett</sub>
 
-### FX-08-5 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+### FX-08-5 · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21) ✓ approved
 
 ![FX-08-5](art/FX-08/FX-08-5_2026-11-21.png)
 
@@ -670,6 +676,78 @@ keepers into the game's `assets/` folder by hand.
 ![FX-07-1+boulder-smashes-into-the-ground-rock-fra](art/FX-07/FX-07-1+boulder-smashes-into-the-ground-rock-fra_2026-11-21_preview.gif)
 
 <sub>Made from approved/FX-07-1.png: boulder smashes into the ground, rock fragments fly outward and a ring of dust spreads and fades</sub>
+
+### FX-10-2 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-2](art/FX-10/FX-10-2_2026-11-21.png)
+
+<sub>a single rough brown-grey rock about 14 px wide near the left edge of the canvas, alone in empty space: no pebbles, no shadow, no ground, nothing else. Game spell/attack effect sprite, isometric view, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-</sub>
+
+### FX-10-3 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-3](art/FX-10/FX-10-3_2026-11-21.png)
+
+<sub>an open crescent of orange and yellow flame shaped like a half moon open on the right side, thick in the middle and tapering to sharp points at both ends, a few trailing embers, not a full circle. Game spell/attack effect sprite, isometric view, 64x64 canvas. pixel art, isometric 2:1 view, no dark o</sub>
+
+### FX-10-4 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-4](art/FX-10/FX-10-4_2026-11-21.png)
+
+<sub>a sweeping C-shaped slash of fire, an open arc and not a full ring, bright yellow leading edge fading to red at the tail, small embers trailing behind. Game spell/attack effect sprite, isometric view, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o@east · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o@east](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o@north · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o@north](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o@west · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o@west](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### PL-01-3+stone-armour-cracks-all-over-and-falls-o@south · Hero base body (2026-11-21)
+
+![PL-01-3+stone-armour-cracks-all-over-and-falls-o@south](art/PL-01/PL-01-3+stone-armour-cracks-all-over-and-falls-o@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-3.png: stone armour cracks all over and falls off the body in chunks and dust</sub>
+
+### FX-08-5+the-spiralling-wind-sweeps-outward-to-th · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-5+the-spiralling-wind-sweeps-outward-to-th](art/FX-08/FX-08-5+the-spiralling-wind-sweeps-outward-to-th_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-08-5.png: the spiralling wind sweeps outward to the right, widening and swirling, then fades away</sub>
+
+### FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t · Air effects, spiral and transparent (options for Air Palm and Gust) (2026-11-21)
+
+![FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t](art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-08-5.png: the spiral of wind spins and shoots to the right, then thins out and fades away</sub>
 
 ### NP-02-1+8dir · Caedan Ashvale (2026-11-20)
 
