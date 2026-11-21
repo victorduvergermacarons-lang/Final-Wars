@@ -204,6 +204,10 @@ static func footstep_key(terrain: String) -> StringName:
 	return StringName("footstep_%s" % (slug(terrain) if terrain != "" else "default"))
 
 
+## Loops beside water near the local hero (WaterAmbience).
+const WATER_AMBIENCE := &"ambience_water"
+
+
 static func ambience_key(zone: ZoneDef) -> StringName:
 	return zone.ambience if zone.ambience != &"" else StringName("ambience_%s" % zone.id)
 
@@ -244,6 +248,7 @@ func _collect_keys(content) -> void:
 			_keys[creature_key(enc.boss.id, "reset")] = "%s goes back to the start of its phase (after a party wipe)" % enc.boss.display_name
 			_keys[creature_key(enc.heart.id, "pulse")] = "%s pulses: adds climb out, the floor turns grey" % enc.heart.display_name
 			_keys[creature_key(enc.heart.id, "break")] = "%s breaks and the fight is won" % enc.heart.display_name
+	_keys[WATER_AMBIENCE] = "water nearby: loops beside rivers, ponds and lakes close to you, a few at once (Ambience bus, OGG, mono; see AudioConfig water_…)"
 	for z in content.zones.values():
 		_keys[ambience_key(z)] = "background loop in %s (Ambience bus, OGG)" % z.display_name
 		if not z.has_terrain():

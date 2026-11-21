@@ -47,6 +47,25 @@ const BUSES := ["Master", "Music", "Ambience", "SFX", "UI"]
 ## Tuning per key (optional; see SfxDef).
 @export var sfx: Array[SfxDef] = []
 
+@export_group("Water")
+## Water sound near the local hero (WaterAmbience, client side): looping emitters of
+## SoundCatalog.WATER_AMBIENCE at the nearest water tile of each cluster of water
+## within this many tiles; loudest at the water, silent at this distance.
+@export var water_radius_tiles: float = 10.0
+## At most this many emitters at once (the nearest clusters).
+@export var water_max_emitters: int = 3
+## How often the water tiles around the hero are looked at again.
+@export var water_update_seconds: float = 0.5
+## Fade in when an emitter appears or jumps, fade out when it goes.
+@export var water_fade_seconds: float = 1.0
+## Level of each emitter at the water's edge (dB, 0 = as mastered).
+@export var water_volume_db: float = 0.0
+## How the level falls with distance: gain = (1 - distance / radius) ^ this.
+@export var water_falloff: float = 1.5
+## A cluster's nearest tile that moved less than this (tiles) glides there; further
+## and the emitter fades out and a new one fades in at the new spot.
+@export var water_glide_tiles: float = 3.0
+
 const ROOT := "res://audio"
 
 
