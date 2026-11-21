@@ -143,21 +143,11 @@
 			],
 			"timing": {
 				"status": "manual",
-				"seconds": 1.0,
-				"taps": [
-					[
-						0.7,
-						0.3
-					]
-				],
-				"crits": [
-					[
-						0.9,
-						0.1
-					]
-				],
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
 				"holds": [],
-				"notes": "Designer's bar: both zones at the very end."
+				"notes": "Instant since 2026-11-21: no bar; damage lands as the key is pressed (was 1 s, Tap 0.7–1.0; Crit 0.9–1.0)."
 			},
 			"hitbox": {
 				"shape": "Targeted",
@@ -1294,21 +1284,21 @@
 			],
 			"timing": {
 				"status": "generated",
-				"seconds": 1.6,
+				"seconds": 3.0,
 				"taps": [
 					[
-						1.1,
-						0.4
+						0.6,
+						2.0
 					]
 				],
 				"crits": [
 					[
-						1.25,
-						0.1
+						0.9,
+						0.2
 					]
 				],
 				"holds": [],
-				"notes": "Earth: one heavy beat, a wide window late in a long bar."
+				"notes": "Two presses (2026-11-21): the first raises the rock, the second (right-click or Space) throws it; no press, it throws itself at the bar's end. Was 1.6 s, Tap 1.1–1.5; Crit 1.25–1.35."
 			},
 			"hitbox": {
 				"shape": "Lob",
@@ -1316,6 +1306,7 @@
 				"radius": 0.5,
 				"pierce": false
 			},
+			"cast_move_speed_pct": 0.0,
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2379,11 +2370,11 @@
 				"crits": [],
 				"holds": [
 					[
-						0.75,
-						2.0
+						0.45,
+						2.3
 					]
 				],
-				"notes": "Designer's bar: hold 2 s, ending 0.25 s before the bar."
+				"notes": "Designer's bar: the hold starts at 0.45 s (was 0.75 s, 2026-11-21) and ends 0.25 s before the bar."
 			},
 			"hitbox": {
 				"shape": "Targeted",

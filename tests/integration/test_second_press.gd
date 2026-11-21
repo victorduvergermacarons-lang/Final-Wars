@@ -130,12 +130,14 @@ func test_another_abilitys_key_switches_without_casting_either() -> void:
 	_press(&"S01")
 	await wait_physics_frames(4)
 	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"S01"], "Slash's bar runs")
-	_press(&"F01", &"action_slot_2") # Fire Punch's key
+	hero.bag.add(ContentDB.items[&"river_lash_scroll"]) # Fire Punch is instant since 2026-11-21
+	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
+	_press(&"W02", &"action_slot_2") # Water Whip's key
 	await wait_physics_frames(4)
-	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"F01"],
-			"switched to Fire Punch's bar (the global cooldown Slash took was given back)")
+	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"W02"],
+			"switched to Water Whip's bar (the global cooldown Slash took was given back)")
 	assert_eq(hero.cooldowns.ability_remaining(&"S01", session.now()), 0.0, "Slash didn't go off")
-	assert_eq(hero.cooldowns.ability_remaining(&"F01", session.now()), 0.0, "nor Fire Punch, yet")
+	assert_eq(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0, "nor Water Whip, yet")
 	assert_eq(hero.mana, mana, "nothing paid")
 
 

@@ -145,17 +145,13 @@ func test_timing_scales_healing_too() -> void:
 	assert_almost_eq(miss / good, db.rules.timing_miss_power / TimingBarDef.hold_power(accuracy, db.rules.timing_miss_power), 0.03)
 
 
-func test_fire_punch_zones_are_at_the_end() -> void:
-	var bar: TimingBarDef = db.abilities[&"F01"].timing_bar
-	assert_eq(bar.seconds, 1.0)
-	assert_eq(bar.judge(0.5), TimingBarDef.Grade.MISS)
-	assert_eq(bar.judge(0.75), TimingBarDef.Grade.GOOD)
-	assert_eq(bar.judge(0.95), TimingBarDef.Grade.PERFECT)
-	assert_eq(bar.judge(1.0), TimingBarDef.Grade.PERFECT, "right up to the bar's end")
+func test_fire_punch_has_no_bar() -> void:
+	# Instant since 2026-11-21 (it was a 1 s bar, tap 0.7–1.0, crit 0.9–1.0).
+	assert_null(db.abilities[&"F01"].timing_bar)
 
 
-## Water Whip: a 3 s bar; hold right-click from 0.75 s to 2.75 s (the blue zone
-## ends 0.25 s before the bar).
+## Water Whip: a 3 s bar; hold right-click from 0.45 s to 2.75 s (the blue zone
+## ends 0.25 s before the bar; it started at 0.75 s until 2026-11-21).
 func _whip() -> void:
 	sim.cast(hero, db.abilities[&"W02"], wolf)
 	world.step()
@@ -192,9 +188,9 @@ static func _whip_hit(events: Array) -> Dictionary:
 func test_water_whip_bar() -> void:
 	var bar: TimingBarDef = db.abilities[&"W02"].timing_bar
 	assert_eq(bar.seconds, 3.0)
-	assert_eq(bar.hold_zones, [Vector2(0.75, 2.0)] as Array[Vector2])
-	assert_null(bar.hold_zone_at(0.5), "more than 0.2 s early: just a tap")
-	assert_not_null(bar.hold_zone_at(0.6), "a little early starts the hold")
+	assert_eq(bar.hold_zones, [Vector2(0.45, 2.3)] as Array[Vector2], "0.45 s to 2.75 s (2026-11-21)")
+	assert_null(bar.hold_zone_at(0.2), "more than 0.2 s early: just a tap")
+	assert_not_null(bar.hold_zone_at(0.3), "a little early starts the hold")
 
 
 func test_hold_zones_end_before_their_bar() -> void:
@@ -227,32 +223,32 @@ func test_hold_accuracy_loses_the_mistiming_in_proportion() -> void:
 func test_letting_go_as_the_zone_ends_is_a_crit() -> void:
 	_whip()
 	assert_eq(hero.casting.get("kind", ""), "timing")
-	var events := _hold(0.75, 2.75)
+	var events := _hold(0.45, 2.75)
 	assert_eq(_result(events).get("grade", ""), "perfect")
 	assert_true(_whip_hit(events).get("crit", false), "a sure crit")
 
 
 func test_letting_go_early_loses_power_in_proportion() -> void:
 	_whip()
-	var events := _hold(0.75, 2.35) # 0.4 s early: 80%
+	var events := _hold(0.45, 2.35) # 0.4 s early of 2.3 s: 83%
 	assert_eq(_result(events).get("grade", ""), "good")
-	assert_almost_eq(float(_result(events).accuracy), 0.8, 0.02)
+	assert_almost_eq(float(_result(events).accuracy), 1.0 - 0.4 / 2.3, 0.02)
 	_whip_again()
-	events = _hold(0.75, 1.5) # under half: a miss
+	events = _hold(0.45, 1.5) # under half: a miss
 	assert_eq(_result(events).get("grade", ""), "miss")
 	assert_false(_whip_hit(events).is_empty(), "still hits, softer")
 
 
 func test_still_holding_when_the_bar_ends_counts_the_overhold() -> void:
 	_whip()
-	var events := _hold(0.75, -1.0) # never let go: 0.25 s too long
+	var events := _hold(0.45, -1.0) # never let go: 0.25 s too long
 	assert_eq(_result(events).get("grade", ""), "good")
-	assert_almost_eq(float(_result(events).accuracy), 0.875, 0.02)
+	assert_almost_eq(float(_result(events).accuracy), 1.0 - 0.25 / 2.3, 0.02)
 
 
 func test_pressing_long_before_the_blue_zone_is_a_missed_tap() -> void:
 	_whip()
-	var events := _hold(0.3, -1.0)
+	var events := _hold(0.2, -1.0)
 	assert_eq(_result(events).get("grade", ""), "miss")
 
 
