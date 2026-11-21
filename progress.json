@@ -5774,6 +5774,98 @@
         "type": "generations",
         "generations": 1.0
       }
+    },
+    "FX-09-1+a-tiny-curl-of-water-grows-into-a-large-": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_1.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_2.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_3.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_4.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_5.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_6.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_7.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_8.png",
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018859608464770847
+      },
+      "preview": [
+        "art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-10-1+the-rock-smashes-into-the-ground-and-bre": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_1.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_2.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_3.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_4.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_5.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_6.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_7.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_8.png",
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.026388946208688945
+      },
+      "preview": [
+        "art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-10-2+the-rock-flies-forward-to-the-right-acro": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_1.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_2.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_3.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_4.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_5.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_6.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_7.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_8.png",
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.016224288403987885
+      },
+      "preview": [
+        "art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_preview.gif"
+      ]
+    },
+    "FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_1.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_2.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_3.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_4.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_5.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_6.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_7.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_8.png",
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02607314310471217
+      },
+      "preview": [
+        "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -6383,6 +6475,17 @@
       "made": [
         "FX-10-1",
         "FX-10-5"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-21",
+      "made": [
+        "FX-09-1+a-tiny-curl-of-water-grows-into-a-large-",
+        "FX-10-1+the-rock-smashes-into-the-ground-and-bre",
+        "FX-10-2+the-rock-flies-forward-to-the-right-acro",
+        "FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha"
       ],
       "failed": [],
       "stopped": ""

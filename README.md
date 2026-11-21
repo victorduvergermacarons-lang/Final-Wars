@@ -42,17 +42,13 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-07-6.png` unlocks wind cone spreads wider toward the right, leaves tumbling, then fades
 - `approved/FX-07-7.png` unlocks fire burst blasts to the right and breaks into embers
 - `approved/FX-07-8.png` unlocks flame crescent sweeps around in a fast arc, then fades into embers
-- `approved/FX-09-1.png` unlocks a tiny curl of water grows into a large S-shaped lash, snaps, then breaks apart into flying droplets and bursts into a star-shaped splash that fades
 - `approved/FX-09-2.png` unlocks a tiny curl of water grows into a large S-shaped lash, snaps, then breaks apart into flying droplets and bursts into a star-shaped splash that fades
 - `approved/FX-08-1.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
 - `approved/FX-08-2.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
 - `approved/FX-08-3.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
 - `approved/FX-08-4.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
 - `approved/FX-08-6.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
-- `approved/FX-10-1.png` unlocks the rock smashes into the ground and breaks into fragments, a small puff of dust spreads and fades
-- `approved/FX-10-2.png` unlocks the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it
 - `approved/FX-10-3.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
-- `approved/FX-10-4.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
 - `approved/FX-10-5.png` unlocks the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it
 
 ## Drafts
@@ -591,7 +587,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
 
-### FX-09-1 · Water whip effect, remade from the user's reference strip (2026-11-21)
+### FX-09-1 · Water whip effect, remade from the user's reference strip (2026-11-21) ✓ approved
 
 ![FX-09-1](art/FX-09/FX-09-1_2026-11-21_1.png) ![FX-09-1](art/FX-09/FX-09-1_2026-11-21_2.png)
 
@@ -675,7 +671,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>Made from approved/FX-07-1.png: boulder smashes into the ground, rock fragments fly outward and a ring of dust spreads and fades</sub>
 
-### FX-10-2 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+### FX-10-2 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21) ✓ approved
 
 ![FX-10-2](art/FX-10/FX-10-2_2026-11-21.png)
 
@@ -687,7 +683,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>an open crescent of orange and yellow flame shaped like a half moon open on the right side, thick in the middle and tapering to sharp points at both ends, a few trailing embers, not a full circle. Game spell/attack effect sprite, isometric view, 64x64 canvas. pixel art, isometric 2:1 view, no dark o</sub>
 
-### FX-10-4 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+### FX-10-4 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21) ✓ approved
 
 ![FX-10-4](art/FX-10/FX-10-4_2026-11-21.png)
 
@@ -747,7 +743,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>Made from approved/FX-08-5.png: the spiral of wind spins and shoots to the right, then thins out and fades away</sub>
 
-### FX-10-1 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+### FX-10-1 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21) ✓ approved
 
 ![FX-10-1](art/FX-10/FX-10-1_2026-11-21.png)
 
@@ -758,6 +754,30 @@ keepers into the game's `assets/` folder by hand.
 ![FX-10-5](art/FX-10/FX-10-5_2026-11-21.png)
 
 <sub>one smooth, solid, rounded brown-grey rock about 14 px wide, a single piece with no loose stones around it, no dark rim, no shadow, no ground, floating alone near the left edge of the canvas, empty space to the right. Game spell/attack effect sprite, isometric view, 64x32 canvas. pixel art, isometri</sub>
+
+### FX-09-1+a-tiny-curl-of-water-grows-into-a-large- · Water whip effect, remade from the user's reference strip (2026-11-21)
+
+![FX-09-1+a-tiny-curl-of-water-grows-into-a-large-](art/FX-09/FX-09-1+a-tiny-curl-of-water-grows-into-a-large-_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-09-1.png: a tiny curl of water grows into a large S-shaped lash, snaps, then breaks apart into flying droplets and bursts into a star-shaped splash that fades</sub>
+
+### FX-10-1+the-rock-smashes-into-the-ground-and-bre · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-1+the-rock-smashes-into-the-ground-and-bre](art/FX-10/FX-10-1+the-rock-smashes-into-the-ground-and-bre_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-10-1.png: the rock smashes into the ground and breaks into fragments, a small puff of dust spreads and fades</sub>
+
+### FX-10-2+the-rock-flies-forward-to-the-right-acro · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-2+the-rock-flies-forward-to-the-right-acro](art/FX-10/FX-10-2+the-rock-flies-forward-to-the-right-acro_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-10-2.png: the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it</sub>
+
+### FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha](art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_preview.gif)
+
+<sub>Made from approved/FX-10-4.png: the flame arc sweeps around fast in a half circle, then fades into embers</sub>
 
 ### NP-02-1+8dir · Caedan Ashvale (2026-11-20)
 
