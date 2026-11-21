@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-101 of 102 stills done. Newest first. These are drafts: copy the
+103 of 103 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -49,13 +49,11 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-08-3.png` unlocks the spiral of wind spins and shoots to the right, then thins out and fades away
 - `approved/FX-08-4.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
 - `approved/FX-08-6.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
+- `approved/FX-10-1.png` unlocks the rock smashes into the ground and breaks into fragments, a small puff of dust spreads and fades
 - `approved/FX-10-2.png` unlocks the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it
 - `approved/FX-10-3.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
 - `approved/FX-10-4.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
-
-## Failed (retried next run, skipped after 3 tries)
-
-- **FX-10-1** (1x): HTTP 422: {"detail":"Canvas must be size 32x32 area or larger"}
+- `approved/FX-10-5.png` unlocks the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it
 
 ## Drafts
 
@@ -748,6 +746,18 @@ keepers into the game's `assets/` folder by hand.
 ![FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t](art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_preview.gif)
 
 <sub>Made from approved/FX-08-5.png: the spiral of wind spins and shoots to the right, then thins out and fades away</sub>
+
+### FX-10-1 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-1](art/FX-10/FX-10-1_2026-11-21.png)
+
+<sub>a single rough brown-grey rock about 14 px wide, centred, on its own: no pebbles, no shadow, no ground under it. Game spell/attack effect sprite, isometric view, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fant</sub>
+
+### FX-10-5 · Rock remade at hero scale (about 14 px), its flight; fire kick arc remade as an open crescent (2026-11-21)
+
+![FX-10-5](art/FX-10/FX-10-5_2026-11-21.png)
+
+<sub>one smooth, solid, rounded brown-grey rock about 14 px wide, a single piece with no loose stones around it, no dark rim, no shadow, no ground, floating alone near the left edge of the canvas, empty space to the right. Game spell/attack effect sprite, isometric view, 64x32 canvas. pixel art, isometri</sub>
 
 ### NP-02-1+8dir · Caedan Ashvale (2026-11-20)
 

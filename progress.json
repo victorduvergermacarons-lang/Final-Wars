@@ -5754,14 +5754,29 @@
       "preview": [
         "art/FX-08/FX-08-5+the-spiral-of-wind-spins-and-shoots-to-t_2026-11-21_preview.gif"
       ]
-    }
-  },
-  "failures": {
+    },
     "FX-10-1": {
-      "count": 1,
-      "last_error": "HTTP 422: {\"detail\":\"Canvas must be size 32x32 area or larger\"}"
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-1_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-10-5": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-10/FX-10-5_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
     }
   },
+  "failures": {},
   "runs": [
     {
       "date": "2026-11-06",
@@ -6361,6 +6376,15 @@
       "failed": [
         "FX-10-1"
       ],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-21",
+      "made": [
+        "FX-10-1",
+        "FX-10-5"
+      ],
+      "failed": [],
       "stopped": ""
     }
   ],
