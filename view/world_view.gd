@@ -773,6 +773,13 @@ func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef =
 		var sheets: Dictionary = CreatureRecolor.sheets(art, get_tree().root) if art.recolor else {}
 		_frames_cache[art] = [art.build_sprite_frames(sheets), art.build_sprite_frames(art.flash_sheets) if not art.flash_sheets.is_empty() else null]
 	var frames: SpriteFrames = _frames_cache[art][0]
+	# A buff's look (Stone Skin: grey stone), except while its own end animation plays.
+	var look: StringName = e.buffs.look(session.now()) if e.alive else &""
+	if look != &"" and art.looks.has(look) and pick.anim != str((e as Hero).anim.get("buff_end_anim", "") if e is Hero else ""):
+		var key := [art, look]
+		if not _frames_cache.has(key):
+			_frames_cache[key] = [art.build_sprite_frames(CreatureRecolor.sheets(art, get_tree().root, look)), null]
+		frames = _frames_cache[key][0]
 	var name := StringName("%s_%s" % [pick.anim, pick.dir])
 	if not frames.has_animation(name):
 		return false

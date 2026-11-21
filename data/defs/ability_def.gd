@@ -130,6 +130,27 @@ var sheet_hitbox: HitboxDef
 @export var charges_base: int = 0
 @export var mastery_per_charge: float = 0.0
 
+@export_group("Animation and effects (2026-11-21)")
+## Effect (FxDef id, content/effects/) played when it goes off, from the caster
+## toward its target or aim ("" = none).
+@export var fx_cast: StringName = &""
+## Effect played where it lands (a lob's landing; "" = none).
+@export var fx_land: StringName = &""
+## Sprite of what it throws while it flies (a lob: the rock), and while it waits
+## beside the caster during its bar ("" = drawn as before).
+@export var fx_carried: StringName = &""
+## A timing bar with no press goes off at the bar's end with the cursor's aim (the
+## client presses for the player): Rock Throw throws itself.
+@export var bar_goes_off_at_end: bool = false
+## Where its release delay comes from (set at load, see release_delay_seconds):
+## "anim" = the hero's animation's strike frame (Rock Throw: the rock leaves on
+## earth_punch's strike), "fx" = fx_cast's hit frame (Water Whip: the lash's snap),
+## "" = none.
+@export var release_delay_from: String = ""
+## Seconds between the release (the bar's last input: the animation and fx_cast
+## start, for every player) and the ability going off. Set by ContentDB from the art.
+var release_delay_seconds: float = 0.0
+
 @export_group("Ability tree")
 ## Set for abilities from design/Ability_Tree.xlsx ("" = not a tree ability).
 @export var tree: String = ""

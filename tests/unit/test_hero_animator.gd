@@ -23,7 +23,9 @@ func _pick(t := T) -> Dictionary:
 
 func test_every_sheet_has_eight_facings_of_nine_frames() -> void:
 	for anim in ["idle", "run", "cast", "hit", "death", "downed", "revived",
-			"sword_slash", "sword_lunge", "bow_quick_shot", "bow_aimed_shot"]:
+			"sword_slash", "sword_lunge", "bow_quick_shot", "bow_aimed_shot",
+			"earth_root", "earth_hold", "earth_punch", "fire_punch", "fire_kick", "water_heal",
+			"water_whip", "air_palm", "air_gust", "stone_shatter"]:
 		var tex: Texture2D = art.sheets.get(anim)
 		assert_not_null(tex, anim)
 		if tex != null:
@@ -90,7 +92,7 @@ func test_grid_facings_pick_the_diagonal_rows() -> void:
 
 
 func test_element_spells_and_hammer_arts_cast() -> void:
-	hero.anim.act = &"F01"
+	hero.anim.act = &"F03" # Fire Dart: no animation of its own yet
 	hero.anim.act_at = T - 0.1
 	assert_eq(_pick().anim, "cast")
 	assert_eq(_pick().frame, 1, "18 fps")
@@ -172,3 +174,66 @@ func test_west_and_north_west_hits_are_east_and_north_east_mirrored() -> void:
 	hero.facing_angle = angle.w
 	assert_false(_pick().get("flip", false), "only the hit is mirrored (west idle is drawn)")
 	assert_eq(art.feet.x, art.frame_size.x / 2.0, "the feet sit mid-frame, so mirroring keeps them in place")
+
+
+# --- Ability animations (2026-11-21) ----------------------------------------------
+
+func test_an_element_ability_plays_from_its_strike_frame() -> void:
+	hero.anim.act = &"F01" # Fire Punch: instant, the punch lands as it shows
+	hero.anim.act_at = T
+	assert_eq(_pick().anim, "fire_punch")
+	assert_eq(_pick().frame, art.ability_anim(&"F01").strike, "starts on its strike frame")
+	assert_eq(_pick(T + 2.0 / 24.0 + 0.001).frame, art.ability_anim(&"F01").strike + 2, "24 fps")
+	assert_eq(_pick(T + 1.0).anim, "idle", "then it's over")
+
+
+func test_a_bar_plays_the_frames_before_the_strike_and_holds() -> void:
+	hero.casting = {"ability": ContentDB.abilities[&"F02"], "kind": "timing", "start": T, "end": T + 1.2}
+	assert_eq(_pick(T + 0.001).anim, "fire_kick")
+	assert_eq(_pick(T + 0.001).frame, 0)
+	var strike: int = art.ability_anim(&"F02").strike
+	assert_eq(_pick(T + 1.0).frame, strike - 1, "held just before the kick")
+	hero.casting = {}
+	hero.anim.act = &"F02"
+	hero.anim.act_at = T + 1.0
+	assert_eq(_pick(T + 1.001).frame, strike, "the kick lands on its strike frame")
+
+
+func test_rock_throw_roots_holds_then_punches_from_the_start() -> void:
+	hero.casting = {"ability": ContentDB.abilities[&"E01"], "kind": "timing", "start": T, "end": T + 3.0}
+	assert_eq(_pick(T + 0.1).anim, "earth_root")
+	var rooted := T + art.duration("earth_root") + 0.01
+	assert_eq(_pick(rooted).anim, "earth_hold", "then the hold, looping")
+	assert_eq(_pick(rooted + art.duration("earth_hold")).anim, "earth_hold")
+	hero.casting = {}
+	hero.anim.act = &"E01"
+	hero.anim.act_at = T + 2.0
+	assert_eq(_pick(T + 2.001).anim, "earth_punch")
+	assert_eq(_pick(T + 2.001).frame, 0, "from the start: the rock leaves on the strike frame")
+	assert_almost_eq(art.strike_seconds(&"E01"), 3.0 / 20.0, 0.001)
+	assert_almost_eq(ContentDB.abilities[&"E01"].release_delay_seconds, art.strike_seconds(&"E01"), 0.001,
+			"the rock flies on earth_punch's strike frame")
+
+
+func test_stone_skin_roots_then_shatters_when_it_ends() -> void:
+	hero.anim.act = &"E02"
+	hero.anim.act_at = T
+	assert_eq(_pick(T + 0.01).anim, "earth_root")
+	hero.anim.act = &""
+	hero.anim.buff_end = T + 5.0
+	hero.anim.buff_end_anim = "stone_shatter"
+	assert_eq(_pick(T + 5.01).anim, "stone_shatter")
+	assert_eq(_pick(T + 5.0 + art.duration("stone_shatter") + 0.01).anim, "idle", "then the hero, without stone")
+	assert_true(art.looks.has(&"stone"), "the grey-stone look")
+	assert_eq(ContentDB.buffs[&"stone_skin"].look, &"stone")
+
+
+func test_the_host_records_when_stone_skin_ends() -> void:
+	var world := WorldSim.new(ContentDB.zones[&"town"], ContentDB.rules, 1)
+	var h := world.add_hero(ContentDB.heroes[&"adventurer"])
+	h.buffs.apply(ContentDB.buffs[&"stone_skin"], world.now, 0.0, h.id)
+	world.step()
+	assert_eq(float(h.anim.buff_end), Hero.NEVER)
+	world.advance(ContentDB.buffs[&"stone_skin"].duration_seconds + 0.1)
+	assert_gt(float(h.anim.buff_end), 0.0, "noted when it ended")
+	assert_eq(h.anim.buff_end_anim, "stone_shatter")

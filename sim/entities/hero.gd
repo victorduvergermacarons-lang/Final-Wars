@@ -57,7 +57,7 @@ var death_tile := Vector2i.ZERO
 ## the state last tick (the host's own bookkeeping).
 const NEVER := -1.0e9
 var anim := {"died": NEVER, "down": NEVER, "up": NEVER, "hit": NEVER, "act": &"", "act_at": NEVER,
-		"alive": true, "stunned": false}
+		"alive": true, "stunned": false, "buff_end": NEVER, "buff_end_anim": "", "ending": {}}
 ## One buffered step, taken as soon as the current walk arrives, so holding a
 ## direction stays smooth despite network latency.
 var pending_step: Variant = null # unused since free movement (kept for old callers)

@@ -15,9 +15,12 @@ static var _baked := {} # CreatureArtDef -> {anim: Texture2D}
 
 ## The recoloured sheets of `art` (anim -> texture), made on first use under
 ## `root`. They show from the next rendered frame on.
-static func sheets(art: CreatureArtDef, root: Node) -> Dictionary:
-	if _baked.has(art):
-		return _baked[art]
+## `look`: one of the art's CreatureArtDef.looks (its own colours, e.g. Stone Skin's
+## grey stone) instead of its recolour; "" = the recolour.
+static func sheets(art: CreatureArtDef, root: Node, look: StringName = &"") -> Dictionary:
+	var bake_key := [art, look]
+	if _baked.has(bake_key):
+		return _baked[bake_key]
 	var holder := root.get_node_or_null(HOLDER)
 	if holder == null:
 		holder = Node.new()
@@ -37,17 +40,19 @@ static func sheets(art: CreatureArtDef, root: Node) -> Dictionary:
 		rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		var mat := ShaderMaterial.new()
 		mat.shader = SHADER
-		var params := art.recolor_params()
+		var params: Dictionary = art.recolor_params() if look == &"" else art.looks.get(look, {})
 		for key in params:
 			mat.set_shader_parameter(key, params[key])
 		rect.material = mat
 		vp.add_child(rect)
 		holder.add_child(vp)
 		out[anim] = vp.get_texture()
-	_baked[art] = out
+	_baked[bake_key] = out
 	return out
 
 
 ## Re-renders `art`'s sheets with its current colours (e.g. after tuning them live).
 static func refresh(art: CreatureArtDef) -> void:
-	_baked.erase(art)
+	for key in _baked.keys():
+		if key[0] == art:
+			_baked.erase(key)

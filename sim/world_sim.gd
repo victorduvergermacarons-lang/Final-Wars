@@ -770,6 +770,14 @@ func _track_hero_anims() -> void:
 			a.up = now
 		a.alive = hero.alive
 		a.stunned = stunned
+		# A buff with an end animation (Stone Skin: the armour shatters) that has just
+		# ended, while alive.
+		var ending := hero.buffs.ending_anims(now)
+		for id in a.ending:
+			if not ending.has(id) and hero.alive:
+				a.buff_end = now
+				a.buff_end_anim = a.ending[id]
+		a.ending = ending
 
 
 # --- Shared actions (used by intents and EnemyBrain) -----------------------------

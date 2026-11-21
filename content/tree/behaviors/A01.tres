@@ -19,6 +19,7 @@ base_amount = 1.0
 [resource]
 script = ExtResource("3_pejv3")
 id = &"A01"
+fx_cast = &"air_palm_spiral"
 mana_cost = 6.0
 effects = Array[ExtResource("1_ghhsq")]([SubResource("Resource_yvjmt"), SubResource("Resource_lcruq")])
 targeting = 1
