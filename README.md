@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-81 of 81 stills done. Newest first. These are drafts: copy the
+90 of 90 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -9,6 +9,7 @@ keepers into the game's `assets/` folder by hand.
 
 ## Approve to animate
 
+- `approved/PL-01-3.png` unlocks 8 directions, stone armour cracks all over and falls off the body in chunks and dust
 - `approved/PL-02-1.png` unlocks 8 directions, sword slash, sword lunge
 - `approved/PL-02-2.png` unlocks 8 directions, quick bow shot, aimed bow shot
 - `approved/NP-01-1.png` unlocks 8 directions, idle, talking
@@ -35,8 +36,550 @@ keepers into the game's `assets/` folder by hand.
 - `approved/EN-08-2.png` unlocks 8 directions, idle, move, attack
 - `approved/BO-04-1.png` unlocks 8 directions, idle, cast, winding up a big attack, death
 - `approved/BO-06-1.png` unlocks 8 directions, powering up between phases, capstone cast, death
+- `approved/FX-07-1.png` unlocks boulder bursts up out of cracked ground and rises to float, boulder bobs gently up and down in the air, pebbles falling, boulder tumbles end over end through the air with a short dust trail, boulder smashes into the ground, rock fragments fly outward and a ring of dust spreads and fades
+- `approved/FX-07-2.png` unlocks water ribbon lashes out to the right, snaps straight, then splashes apart
+- `approved/FX-07-3.png` unlocks droplets rise and spiral together into the glowing water ball
+- `approved/FX-07-4.png` unlocks water ribbons spiral up from the ground, then burst into rising sparkles and a soft mist that fades
+- `approved/FX-07-5.png` unlocks wind puff shoots to the right with a small burst of air, then dissolves
+- `approved/FX-07-6.png` unlocks wind cone spreads wider toward the right, leaves tumbling, then fades
+- `approved/FX-07-7.png` unlocks fire burst blasts to the right and breaks into embers
+- `approved/FX-07-8.png` unlocks flame crescent sweeps around in a fast arc, then fades into embers
 
 ## Drafts
+
+### PL-01-3 · Hero base body (2026-11-21)
+
+![PL-01-3](art/PL-01/PL-01-3_2026-11-21_1.png) ![PL-01-3](art/PL-01/PL-01-3_2026-11-21_2.png)
+
+<sub>Made from approved/PL-01-1.png: standing in a deep, wide rooted earthbending stance, the whole body covered in grey-brown stone plates like cracked river-stone armour, thin glowing amber seams between the plates</sub>
+
+### FX-07-1 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-1](art/FX-07/FX-07-1_2026-11-21.png)
+
+<sub>a rough brown-grey boulder about 12 px wide floating in the middle of the canvas, small pebbles and dust falling from its underside. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft l</sub>
+
+### FX-07-2 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-2](art/FX-07/FX-07-2_2026-11-21.png)
+
+<sub>a long ribbon of clear blue water lashing from the left edge toward the right in a curving S shape, a spray of droplets at the tip. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft li</sub>
+
+### FX-07-3 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-3](art/FX-07/FX-07-3_2026-11-21.png)
+
+<sub>a small glowing teal ball of water with soft white highlights, in the middle of the canvas. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent backgroun</sub>
+
+### FX-07-4 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-4](art/FX-07/FX-07-4_2026-11-21.png)
+
+<sub>ribbons of glowing teal water spiralling upward in a column as tall as a standing person, with green-blue sparkles. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-lef</sub>
+
+### FX-07-5 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-5](art/FX-07/FX-07-5_2026-11-21.png)
+
+<sub>a palm-shaped puff of pale white-blue wind with curved swirl lines, pointing to the right. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background</sub>
+
+### FX-07-6 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-6](art/FX-07/FX-07-6_2026-11-21.png)
+
+<sub>a wide cone of pale white-blue wind streaks carrying small leaves and dust, spreading from the left edge toward the right. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from </sub>
+
+### FX-07-7 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-7](art/FX-07/FX-07-7_2026-11-21.png)
+
+<sub>a short burst of orange and yellow fire with a bright white-hot core, blasting toward the right. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent back</sub>
+
+### FX-07-8 · Ability effects for the animation rework (rock, stone, water, air, fire) (2026-11-21)
+
+![FX-07-8](art/FX-07/FX-07-8_2026-11-21.png)
+
+<sub>a crescent-shaped arc of orange and yellow flame, bright at its leading edge, trailing embers. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent backgr</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey- · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide@east · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide@east](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide@north-east](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide@north · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide@north](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide@north-west](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide@west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide@west](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide@south-west](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-root-drops-into-a-very-wide@south · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-root-drops-into-a-very-wide@south](art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south](art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending hold: keeps a deep, wide horse stance with fists at chest height, straining slightly, feet planted, subtle breathing</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south · Hero base body (2026-11-21)
+
+![PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south](art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earthbending punch: from a wide rooted horse stance, throws one powerful straight punch forward, twisting the torso, feet stay planted</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south · Hero base body (2026-11-21)
+
+![PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south](art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: stone skin: in a wide rooted stance, grey-brown stone plates grow up from the feet and cover the whole body like stone armour</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south](art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending heal: one hand sweeps low and draws upward, both hands circle slowly in front of the chest, then push gently forward with open palms</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one@east · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one@east](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one@north · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one@north](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one@west · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one@west](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+waterbending-whip-quick-pull-back-of-one@south · Hero base body (2026-11-21)
+
+![PL-01-1+waterbending-whip-quick-pull-back-of-one@south](art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: waterbending whip: quick pull back of one arm, then a sharp sideways crack of the wrist and arm like snapping a whip, brief recovery</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus@east · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus@east](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus@north-east](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus@north · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus@north](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus@north-west](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus@west · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus@west](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus@south-west](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-palm-light-step-forward-thrus@south · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-palm-light-step-forward-thrus@south](art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s@east · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s@east](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s@north · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s@north](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s@west · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s@west](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+airbending-gust-winds-both-arms-to-one-s@south · Hero base body (2026-11-21)
+
+![PL-01-1+airbending-gust-winds-both-arms-to-one-s@south](art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab@east · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab@east](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab@north-east](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab@north · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab@north](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab@north-west](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab@west · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab@west](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab@south-west](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-punch-very-fast-straight-jab@south · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-punch-very-fast-straight-jab@south](art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at@east · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at@east](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at@north · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at@north](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at@west · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at@west](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
+
+### PL-01-1+firebending-kick-fast-roundhouse-kick-at@south · Hero base body (2026-11-21)
+
+![PL-01-1+firebending-kick-fast-roundhouse-kick-at@south](art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground</sub>
 
 ### NP-02-1+8dir · Caedan Ashvale (2026-11-20)
 

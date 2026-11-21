@@ -3370,6 +3370,1936 @@
       "preview": [
         "art/NP-02/NP-02-1+fire-cast@east_2026-11-20_preview.gif"
       ]
+    },
+    "PL-01-3": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-3_2026-11-21_1.png",
+        "art/PL-01/PL-01-3_2026-11-21_2.png"
+      ],
+      "usage": {
+        "seconds": 14.00619888305664
+      }
+    },
+    "FX-07-1": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-1_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-07-2": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-2_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-07-3": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-3_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-07-4": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-4_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-07-5": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-5_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-07-6": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-6_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-07-7": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-7_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-07-8": {
+      "date": "2026-11-21",
+      "files": [
+        "art/FX-07/FX-07-8_2026-11-21.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023824908978409234
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023188415401511724
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.032001268095440336
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01877967315912247
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01948432852824529
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018667677614423964
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.030472838911745286
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019684841341442532
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018521053208245174
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018385563161638047
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019494330008824667
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019212188435925377
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.027105962461895415
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018619476318359376
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02357901587088903
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018703919728597005
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-root-drops-into-a-very-wide@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018497777197096082
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-root-drops-into-a-very-wide@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.024204147279262542
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019648385140630935
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02604426333639357
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.0237579311993387
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018718053109116024
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01861015937725703
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018574419147438473
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01865444443623225
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018775173167387645
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018535514765315585
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01940636779864629
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018311874197589027
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019370259708828396
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018544567737314437
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02378125774198108
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019711764289273154
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019353601654370625
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02336555387576421
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023799825701448653
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.022109700050618915
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.0188656071556939
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023978312624825374
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.024261712339189317
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.022312045627170138
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02386435302760866
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01970009211699168
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023928794728385078
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.026820607549614378
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019625787642267016
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018757849024401772
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019009798400931886
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018632306264506446
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01861920126941469
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023949871367878385
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+waterbending-whip-quick-pull-back-of-one@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023230569978555042
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+waterbending-whip-quick-pull-back-of-one@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018515266332361432
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.027171450859970518
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01854555027352439
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018875885956817204
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.025221743444601694
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018234290089872148
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-palm-light-step-forward-thrus@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.031440499438179864
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-palm-light-step-forward-thrus@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018898318648338318
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01855101945002874
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01861081494225396
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018534447113672893
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02403230353196462
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01866943165991041
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+airbending-gust-winds-both-arms-to-one-s@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018700906243589187
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+airbending-gust-winds-both-arms-to-one-s@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02069003814458847
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023314832356241013
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01860738315847185
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01882300039132436
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01858902441793018
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018619689709610407
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-punch-very-fast-straight-jab@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018467155668470594
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-punch-very-fast-straight-jab@south_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at@east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018529346307118735
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019541299309995437
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at@north": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01900957749949561
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01924488365650177
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at@west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018705565015474955
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019111793253156872
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west_2026-11-21_preview.gif"
+      ]
+    },
+    "PL-01-1+firebending-kick-fast-roundhouse-kick-at@south": {
+      "date": "2026-11-21",
+      "files": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_1.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_2.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_3.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_4.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_5.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_6.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_7.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_8.png",
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01826464236444897
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+firebending-kick-fast-roundhouse-kick-at@south_2026-11-21_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -3832,6 +5762,102 @@
       "date": "2026-11-20",
       "made": [
         "NP-02-1+fire-cast@east"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-21",
+      "made": [
+        "PL-01-3",
+        "FX-07-1",
+        "FX-07-2",
+        "FX-07-3",
+        "FX-07-4",
+        "FX-07-5",
+        "FX-07-6",
+        "FX-07-7",
+        "FX-07-8",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one",
+        "PL-01-1+airbending-palm-light-step-forward-thrus",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s",
+        "PL-01-1+firebending-punch-very-fast-straight-jab",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide@east",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide@north-east",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide@north",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide@north-west",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide@west",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide@south-west",
+        "PL-01-1+earthbending-root-drops-into-a-very-wide@south",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@east",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-east",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@north-west",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@west",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south-west",
+        "PL-01-1+earthbending-hold-keeps-a-deep-wide-hors@south",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@east",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-east",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@north-west",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@west",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south-west",
+        "PL-01-1+earthbending-punch-from-a-wide-rooted-ho@south",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@east",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-east",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@north-west",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@west",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south-west",
+        "PL-01-1+stone-skin-in-a-wide-rooted-stance-grey-@south",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@east",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-east",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@north-west",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@west",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south-west",
+        "PL-01-1+waterbending-heal-one-hand-sweeps-low-an@south",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one@east",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one@north-east",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one@north",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one@north-west",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one@west",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one@south-west",
+        "PL-01-1+waterbending-whip-quick-pull-back-of-one@south",
+        "PL-01-1+airbending-palm-light-step-forward-thrus@east",
+        "PL-01-1+airbending-palm-light-step-forward-thrus@north-east",
+        "PL-01-1+airbending-palm-light-step-forward-thrus@north",
+        "PL-01-1+airbending-palm-light-step-forward-thrus@north-west",
+        "PL-01-1+airbending-palm-light-step-forward-thrus@west",
+        "PL-01-1+airbending-palm-light-step-forward-thrus@south-west",
+        "PL-01-1+airbending-palm-light-step-forward-thrus@south",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s@east",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-east",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s@north",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s@north-west",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s@west",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s@south-west",
+        "PL-01-1+airbending-gust-winds-both-arms-to-one-s@south",
+        "PL-01-1+firebending-punch-very-fast-straight-jab@east",
+        "PL-01-1+firebending-punch-very-fast-straight-jab@north-east",
+        "PL-01-1+firebending-punch-very-fast-straight-jab@north",
+        "PL-01-1+firebending-punch-very-fast-straight-jab@north-west",
+        "PL-01-1+firebending-punch-very-fast-straight-jab@west",
+        "PL-01-1+firebending-punch-very-fast-straight-jab@south-west",
+        "PL-01-1+firebending-punch-very-fast-straight-jab@south",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at@east",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-east",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at@north",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at@north-west",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at@west",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at@south-west",
+        "PL-01-1+firebending-kick-fast-roundhouse-kick-at@south"
       ],
       "failed": [],
       "stopped": ""
