@@ -309,7 +309,7 @@ func test_music_switches_by_region_when_walking_between_regions() -> void:
 	game.start_solo(CharacterData.new_character("Listener", ContentDB.heroes[&"adventurer"]))
 	var session: LocalSession = game.session
 	await wait_process_frames(3)
-	assert_eq(Audio.current_track.id, &"idle_draft", "Millbrook: the draft (town)")
+	assert_eq(Audio.current_track.id, &"town_millbrook", "Millbrook: its own track (town)")
 	# The Tidereach shore (debug goto) plays the water track.
 	session.send_intent({"type": "debug", "line": "goto tidereach_shore"})
 	await wait_physics_frames(4)
