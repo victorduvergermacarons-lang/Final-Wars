@@ -13,10 +13,10 @@ Click someone, or Tab, to target · Esc: clear the target
 1–9, 0: use the action bar · Shift+1–6 (or < >): switch action bar page
 Aimed abilities go where the mouse points
 Hold an aimed ability's key to aim, release to cast (or press it again) · Esc or right-click: cancel
-Timing bar (Slash, Fire Punch, Water Whip): right-click, or press the ability's key
-again, on a green zone for full power, on a yellow zone for a sure critical strike;
-on a blue zone press and hold until it ends; moving cancels the bar, and another
-ability's key switches to that one
+Timing bar: right-click or Space on a green zone for full power, on a yellow zone for
+a sure critical strike; on a blue zone press and hold until it ends. Walking while
+casting slows you down; Esc cancels the cast, and another ability's key switches to
+that one
 R: release to the graveyard when dead · mouse wheel: zoom
 
 [b]Menus[/b] (the menu book)
@@ -55,6 +55,7 @@ var _bind: Button
 var _speed_slider: HSlider
 var _speed_box: SpinBox
 var _dungeon_testing: CheckBox
+var _timing_bars: CheckBox
 ## The Sound tab: a volume slider per audio bus, saved per player.
 var sound: SettingsWindow
 
@@ -154,6 +155,14 @@ func _speed_tab() -> Control:
 	mode.select(mode.get_item_index(hud.timing_bar.mode))
 	mode.item_selected.connect(func(i: int): hud.set_timing_bar_mode(mode.get_item_id(i)))
 	page.add_child(mode)
+	# The timing bar mechanic itself, on or off (off: abilities go off at once).
+	_timing_bars = CheckBox.new()
+	_timing_bars.focus_mode = Control.FOCUS_NONE
+	_timing_bars.text = "Timing bars: play abilities through their timing bar (off: they go off at once)"
+	_timing_bars.set_pressed_no_signal(hud.session.rules().timing_bars_enabled)
+	_timing_bars.toggled.connect(func(on: bool):
+		hud.session.send_intent({"type": "timing_bars", "on": on}))
+	page.add_child(_timing_bars)
 	# Dungeons: the smallest party allowed in (CombatRules.min_dungeon_party).
 	page.add_child(HSeparator.new())
 	_dungeon_testing = CheckBox.new()
@@ -172,6 +181,12 @@ func _speed_tab() -> Control:
 			_set_speed(_speed_slider.value))
 	_speed_box.value_changed.connect(_set_speed)
 	return page
+
+
+## Shows the timing bars setting without sending it.
+func show_timing_bars(on: bool) -> void:
+	if _timing_bars != null:
+		_timing_bars.set_pressed_no_signal(on)
 
 
 ## Shows the dungeon testing setting without sending it.

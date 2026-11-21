@@ -22,6 +22,10 @@ var _held := Vector2i.ZERO
 var _sent_dir := Vector2i(99, 99)
 var _sent_angle := 999.0
 var _sent_at := -999.0
+## When a direction key was last held (render time), and how long "stop" is re-sent
+## after it (movement travels unreliably over the network).
+var _walked_at := -999.0
+const STOP_RESEND_SECONDS := 0.5
 ## Aiming a skillshot or ground ability: {"ability", "action" (key to release, or
 ## &"" when started by clicking the bar: then a left click fires), "mouse" (where
 ## the mouse was when aiming started)}.
@@ -52,8 +56,15 @@ func _physics_process(_delta: float) -> void:
 		angle = mouse_angle(hero, world_mouse())
 	var t: float = session.render_time()
 	var tick: float = session.rules().tick_seconds
+	# Every tick while walking; on a client also for STOP_RESEND_SECONDS after
+	# stopping, since movement travels unreliably (Net.send_intent) and a lost "stop"
+	# must not keep you walking.
+	if _held != Vector2i.ZERO:
+		_walked_at = t
+	var resend: bool = _held != Vector2i.ZERO \
+			or (session is ClientSession and t - _walked_at < STOP_RESEND_SECONDS)
 	if _held != _sent_dir or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
-			or (_held != Vector2i.ZERO and t - _sent_at >= tick - 0.001):
+			or (resend and t - _sent_at >= tick - 0.001):
 		_send_move(_held, angle)
 
 
@@ -94,9 +105,11 @@ func held_direction() -> Vector2i:
 func _unhandled_input(event: InputEvent) -> void:
 	if session == null:
 		return
-	# A right-click during a timing bar is the press (before anything else uses it).
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT \
-			and press_timing_bar():
+	# A right-click or Space during a timing bar is the press (before anything else
+	# uses it). The ability's own key doesn't play its bar (_second_press).
+	var bar_press: bool = (event is InputEventMouseButton and event.pressed \
+			and event.button_index == MOUSE_BUTTON_RIGHT) or event.is_action_pressed(&"timing_press")
+	if bar_press and press_timing_bar():
 		get_viewport().set_input_as_handled()
 		return
 	if not _aiming.is_empty() and _aim_input(event):
@@ -189,13 +202,12 @@ func _with_aim(intent: Dictionary) -> Dictionary:
 
 
 func _input(event: InputEvent) -> void:
-	# Letting go of right-click ends a hold, wherever the pointer is (even over the HUD).
+	# Letting go of right-click (or Space) ends a hold, wherever the pointer is
+	# (even over the HUD).
 	if session != null and event is InputEventMouseButton and not event.pressed \
 			and event.button_index == MOUSE_BUTTON_RIGHT:
 		release_timing_bar()
-	# So does letting go of the hotkey that played the bar (a second press).
-	if session != null and _bar_key != &"" and event.is_action_released(_bar_key):
-		_bar_key = &""
+	if session != null and event.is_action_released(&"timing_press"):
 		release_timing_bar()
 
 
@@ -229,11 +241,6 @@ func use_item(item_id: StringName) -> void:
 	client.error("You don't have any left")
 
 
-## The hotkey that started (or played) the running timing bar: letting it go ends a
-## hold, like letting go of right-click.
-var _bar_key: StringName = &""
-
-
 func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
 	if hero != null and _second_press(hero, ability, key):
@@ -255,24 +262,21 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target})
 
 
-## Pressing an ability's key while it is already chosen uses it; pressing another
-## ability's key switches to that one without using either (2026-11-15).
-## - Its timing bar is running: the press plays the bar, exactly like a right-click
-##   (aimed at the cursor), and letting the key go ends a hold.
+## Pressing an ability's key while it is already chosen; pressing another ability's
+## key switches to that one without using either (2026-11-15).
+## - Its timing bar is running: nothing happens (since 2026-11-21 only right-click
+##   or Space play a bar, so a second press of the key can't play it by accident).
 ## - It is being aimed (no bar): the press fires it where the cursor points.
 ## - Another ability's bar is running: that bar stops unplayed (the host gives its
 ##   global cooldown back) and the new ability starts as if nothing ran.
 ## Key repeat never counts: held keys send no repeated presses (allow_echo off).
 ## True if the press was handled here.
-func _second_press(hero: Hero, ability: AbilityDef, key: StringName) -> bool:
+func _second_press(hero: Hero, ability: AbilityDef, _key: StringName) -> bool:
 	var c: Dictionary = hero.casting
 	if c.get("kind", "") == "timing" and hero.alive:
 		if c.ability.id == ability.id:
-			_bar_key = key
-			press_timing_bar()
 			return true
 		session.send_intent({"type": "cancel_bar"}) # then the new ability, below
-		_bar_key = &""
 		cancel_aiming()
 		return false
 	if not _aiming.is_empty() and not _aiming.get("during_bar", false) and _aiming.ability.id == ability.id:
@@ -445,6 +449,11 @@ func cancel_aiming() -> void:
 
 func is_aiming() -> bool:
 	return not _aiming.is_empty()
+
+
+## Only the cursor preview of a running timing bar (Esc then cancels the cast, not an aim).
+func is_aiming_bar() -> bool:
+	return _aiming.get("during_bar", false)
 
 
 func _process(_delta: float) -> void:

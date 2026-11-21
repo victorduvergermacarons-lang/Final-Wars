@@ -62,8 +62,15 @@ func send_join(character: Dictionary) -> void:
 	_c2s_join.rpc_id(1, character)
 
 
+## Movement goes unreliable (newest wins, a lost one is replaced by the next tick's:
+## PlayerInput sends it every tick); everything else reliable. A reliable channel
+## holds every later message back until a lost one is resent, which stalled the
+## host's view of a joining player's hero.
 func send_intent(intent: Dictionary) -> void:
-	_c2s_intent.rpc_id(1, intent)
+	if intent.get("type", "") == "move":
+		_c2s_move.rpc_id(1, intent)
+	else:
+		_c2s_intent.rpc_id(1, intent)
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -79,6 +86,12 @@ func _c2s_join(character: Dictionary) -> void:
 
 @rpc("any_peer", "call_remote", "reliable")
 func _c2s_intent(intent: Dictionary) -> void:
+	if handler != null and multiplayer.is_server():
+		handler.on_remote_intent(multiplayer.get_remote_sender_id(), intent)
+
+
+@rpc("any_peer", "call_remote", "unreliable_ordered")
+func _c2s_move(intent: Dictionary) -> void:
 	if handler != null and multiplayer.is_server():
 		handler.on_remote_intent(multiplayer.get_remote_sender_id(), intent)
 

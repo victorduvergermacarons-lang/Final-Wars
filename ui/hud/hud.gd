@@ -482,8 +482,13 @@ func _escape() -> bool:
 	if game_menu.visible:
 		game_menu.visible = false
 		return true
-	if input != null and input.is_aiming():
+	if input != null and input.is_aiming() and not input.is_aiming_bar():
 		return false
+	# Then your own cast (walking doesn't cancel one any more).
+	var hero: Hero = session.local_hero()
+	if hero != null and not hero.casting.is_empty():
+		session.send_intent({"type": "cancel_cast"})
+		return true
 	var closed := false
 	if book.visible:
 		close_menus()
@@ -638,6 +643,10 @@ func _on_events(events: Array) -> void:
 				session.rules().dungeon_testing = e.on
 				game_menu.show_dungeon_testing(e.on)
 				client.say("Dungeon testing %s." % ("on: any party size may enter" if e.on else "off"))
+			"timing_bars":
+				session.rules().timing_bars_enabled = e.on
+				game_menu.show_timing_bars(e.on)
+				client.say("Timing bars %s." % ("on" if e.on else "off: abilities go off at once"))
 			"way_out":
 				client.say("The last of them falls. A way out glows open in the Foreman's chamber.")
 			"lift":

@@ -194,7 +194,8 @@ static func bot_turn(world: WorldSim, content, heroes: Array[Hero], specs: Array
 		if not h.alive:
 			continue
 		# "dodge": run out of a telegraph (a marked shape or a wind-up aimed at you),
-		# even mid-cast (moving cancels it, as a player would).
+		# even mid-cast: it cancels the cast first (Esc), as a player would, since
+		# walking while casting only slows you down.
 		if spec.get("dodge", false):
 			var away := _dodge_direction(world, h, foes)
 			if away != Vector2.ZERO:
@@ -207,9 +208,17 @@ static func bot_turn(world: WorldSim, content, heroes: Array[Hero], specs: Array
 						escape = tile
 						break
 				if escape != null:
+					if not h.casting.is_empty():
+						world.submit(h.id, {"type": "cancel_cast"})
 					if h.walk_target == null or Vector2(escape).distance_to(h.walk_target) > 0.5:
 						world.submit(h.id, {"type": "step", "to": escape})
+					h.set_meta("escaping", true)
 					continue
+			# Still running out: no new cast yet (casting would slow the escape).
+			if h.get_meta("escaping", false):
+				if h.walk_target != null:
+					continue
+				h.set_meta("escaping", false)
 		if h.casting.get("kind", "") == "timing":
 			play_timing_bar(world, h, spec.get("timing", "good"))
 		if not h.casting.is_empty():

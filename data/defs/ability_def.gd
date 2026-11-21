@@ -120,6 +120,11 @@ var sheet_hitbox: HitboxDef
 ## Where that timing design comes from: "manual" (the designer's), "generated"
 ## (an AI draft, not yet confirmed) or "none".
 @export var timing_status: String = "none"
+## Share of the caster's speed (0–1) while casting it (cast bar, wind-up, channel or
+## timing bar): walking slows them to this instead of cancelling. < 0: the rules'
+## default (CombatRules.cast_move_speed_default). Tree abilities take it from the
+## sheet's Cast Move Speed (%) column.
+@export var cast_move_speed: float = -1.0
 ## Charges: uses stored up to max (base + 1 per mastery_per_charge tree Mastery);
 ## each recharges in cooldown_seconds, one at a time. 0 = no charges.
 @export var charges_base: int = 0

@@ -37,7 +37,7 @@ const HITBOX_KEYS := {"Hitbox Range": "range", "Hitbox Angle": "angle", "Hitbox 
 	"Hitbox Radius": "radius", "Projectile Speed": "speed", "Projectile Size": "size"}
 ## Optional numeric columns the designer may add later (decision M3-1).
 const OPTIONAL_NUMBERS := {"Base": "base", "Mana Cost": "mana_cost", "Range": "range",
-	"Duration": "duration"}
+	"Duration": "duration", "Cast Move Speed (%)": "cast_move_speed_pct"}
 const TARGETING := ["Targeted", "Skillshot", "Ground", "Self"]
 const ELEMENTS := ["Fire", "Earth", "Water", "Air"]
 ## Scales With names -> stat keys used by the game.
@@ -165,6 +165,8 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 					extra[h] = v
 		if not extra.is_empty():
 			a.extra = extra
+		if a.has("cast_move_speed_pct") and (a.cast_move_speed_pct < 0.0 or a.cast_move_speed_pct > 100.0):
+			errors.append("%s: Cast Move Speed (%%) \"%s\" isn't between 0 and 100" % [where, a.cast_move_speed_pct])
 		abilities.append(a)
 		by_id[id] = a
 		if a.name != "":

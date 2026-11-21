@@ -26,6 +26,7 @@ const OTHER := {
 	&"toggle_trees": [KEY_T],
 	&"toggle_console": [KEY_QUOTELEFT],
 	&"interact": [KEY_E],
+	&"timing_press": [KEY_SPACE], ## plays a timing bar, like right-click
 }
 
 

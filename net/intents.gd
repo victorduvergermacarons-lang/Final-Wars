@@ -49,7 +49,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
 					return {}
 				out.aim = aim
-		"release", "cancel_bar":
+		"release", "cancel_bar", "cancel_cast":
 			pass
 		"talk":
 			if not _ints(raw, out, ["npc"]):
@@ -125,7 +125,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
 				return {}
 			out.value = clampf(float(value), CombatRules.GAME_SPEED_MIN, CombatRules.GAME_SPEED_MAX)
-		"dungeon_testing":
+		"dungeon_testing", "timing_bars":
 			var on = raw.get("on")
 			if typeof(on) != TYPE_BOOL:
 				return {}
