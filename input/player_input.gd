@@ -22,6 +22,10 @@ var _held := Vector2i.ZERO
 var _sent_dir := Vector2i(99, 99)
 var _sent_angle := 999.0
 var _sent_at := -999.0
+## When a direction key was last held (render time), and how long "stop" is re-sent
+## after it (movement travels unreliably over the network).
+var _walked_at := -999.0
+const STOP_RESEND_SECONDS := 0.5
 ## Aiming a skillshot or ground ability: {"ability", "action" (key to release, or
 ## &"" when started by clicking the bar: then a left click fires), "mouse" (where
 ## the mouse was when aiming started)}.
@@ -52,8 +56,15 @@ func _physics_process(_delta: float) -> void:
 		angle = mouse_angle(hero, world_mouse())
 	var t: float = session.render_time()
 	var tick: float = session.rules().tick_seconds
+	# Every tick while walking; on a client also for STOP_RESEND_SECONDS after
+	# stopping, since movement travels unreliably (Net.send_intent) and a lost "stop"
+	# must not keep you walking.
+	if _held != Vector2i.ZERO:
+		_walked_at = t
+	var resend: bool = _held != Vector2i.ZERO \
+			or (session is ClientSession and t - _walked_at < STOP_RESEND_SECONDS)
 	if _held != _sent_dir or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
-			or (_held != Vector2i.ZERO and t - _sent_at >= tick - 0.001):
+			or (resend and t - _sent_at >= tick - 0.001):
 		_send_move(_held, angle)
 
 

@@ -173,10 +173,12 @@ func progress(now: float) -> float:
 ## Where to draw it at time `t`: along the glide, from the snapshot buffer (other
 ## actors on a client), or between the last two ticks (plus a fading correction).
 func position_at(t: float) -> Vector2:
-	if gliding or (duration > 0.0 and t < start_time + duration):
-		return from_point.lerp(to_point, clampf((t - start_time) / maxf(duration, 0.0001), 0.0, 1.0))
+	# Other actors on a client follow the snapshots (a knockback or charge included:
+	# every snapshot carries the position along it), all INTERP_DELAY behind.
 	if buffered and samples.size() >= 2:
 		return _sampled(t - INTERP_DELAY, 1)
+	if gliding or (duration > 0.0 and t < start_time + duration):
+		return from_point.lerp(to_point, clampf((t - start_time) / maxf(duration, 0.0001), 0.0, 1.0))
 	return _ticked(t) + _fading_offset(t)
 
 
@@ -215,7 +217,7 @@ func _sampled(at: float, i: int) -> Variant:
 
 ## The height to draw at time `t` (levels): smoothed steps, or a fall.
 func height_at_time(t: float) -> float:
-	if buffered and samples.size() >= 2 and not gliding:
+	if buffered and samples.size() >= 2:
 		return _sampled(t - INTERP_DELAY, 2)
 	var span := time - prev_time
 	if span <= 0.0:
@@ -226,7 +228,10 @@ func height_at_time(t: float) -> float:
 func to_dict() -> Dictionary:
 	var d := {"pos": pos, "vel": vel, "z": z, "vz": vz, "g": ground_h, "ff": fall_from, "h": draw_h,
 			"free": free, "r": radius, "odo": odometer, "sodo": screen_odometer}
-	if gliding or duration > 0.0:
+	# Only while it lasts: `duration` outlives the glide, and a client receiving a
+	# finished glide would hold the actor at its end point (a pushed hero stayed
+	# drawn where the push left it while they walked on).
+	if gliding:
 		d.glide = [from_point, to_point, start_time, duration]
 	return d
 

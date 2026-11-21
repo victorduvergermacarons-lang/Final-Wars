@@ -142,8 +142,30 @@ func _physics_process(delta: float) -> void:
 		mirror.predict_tick(render_time())
 
 
+## The client's clock (sim seconds) for drawing and prediction: it runs with real
+## time and leans toward the host's (the newest snapshot's time plus the time since
+## it arrived), at most CATCH_UP faster or slower, and never runs backwards. Taking
+## the host's time straight from each snapshot made it jump back and forth as
+## snapshots arrived unevenly, and everything drawn from it stuttered.
 func render_time() -> float:
-	return mirror.now + minf((_clock() - _snapshot_received_at) * mirror.time_scale, MAX_EXTRAPOLATION)
+	var real := _clock()
+	var target := mirror.now + minf((real - _snapshot_received_at) * mirror.time_scale, MAX_EXTRAPOLATION)
+	if _smooth_time < 0.0 or absf(target - _smooth_time) > SNAP_SECONDS:
+		_smooth_time = target # first snapshot, or far off (a hitch): jump
+	else:
+		var dt := (real - _smooth_at) * mirror.time_scale
+		var error := target - (_smooth_time + dt)
+		_smooth_time += maxf(dt + clampf(error, -dt * CATCH_UP, dt * CATCH_UP), 0.0)
+	_smooth_at = real
+	return _smooth_time
+
+
+## How much faster or slower than real time the clock may run to catch the host's.
+const CATCH_UP := 0.1
+## Further off than this, the clock jumps to the host's.
+const SNAP_SECONDS := 0.3
+var _smooth_time := -1.0
+var _smooth_at := 0.0
 
 
 func actors() -> Array[Actor]:
@@ -198,4 +220,4 @@ func local_hero() -> Hero:
 
 
 static func _clock() -> float:
-	return Time.get_ticks_msec() / 1000.0
+	return Time.get_ticks_usec() / 1000000.0
