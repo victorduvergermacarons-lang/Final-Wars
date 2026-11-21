@@ -81,6 +81,7 @@ cut through.
 |------|-----------|-------|
 | `audio/music/music_idle_draft.ogg` | title screen, town (and, until they have their own, explore and dungeon) | first draft; converted from the MP3 (kept in `art/audio/`). The MP3 started with 43 ms of silence and ended at full level, so the loop clicked: the OGG has the silence trimmed, a 10 ms fade-in and a 120 ms fade-out. |
 | `audio/music/music_explore_tidereach.ogg` | explore in Tidereach zones (none in Act I: hear it on the Tidereach Shore test map, west of the Enemy Testing Grounds, or with the debug command `goto tidereach_shore`) | "Water Idle", converted from the uploaded WAV (kept in `art/audio/music_explore_tidereach_master.wav`) to OGG Vorbis quality 6, not edited otherwise. **It doesn't loop cleanly yet:** it starts with 2.35 s of near-silence (−80 to −63 dB) and ends at full level (about −26 dB RMS in the last 50 ms, no fade), so every loop drops from full volume into that 2.35 s gap. A version that ends on the material it starts with (or with the lead-in trimmed) would loop seamlessly. |
+| `audio/music/music_town_heartland.ogg` | town and explore in Heartland zones (Millbrook, the Crossing, Greenfields, the testing grounds) | "Millbrook / Greenfields", converted from the uploaded WAV (kept in `art/audio/music_town_heartland_master.wav`) to OGG Vorbis quality 6 and raised 12.5 dB (the WAV measured −33 LUFS, peak −14 dB; the OGG is −20 LUFS, peak −1.4 dB). Not edited otherwise. **It doesn't loop cleanly yet:** it fades in over the first 0.4 s and fades out to about −28 dB at the end, so every loop dips. |
 
 Combat and boss music: until those tracks exist, fights keep the current music.
 
@@ -93,7 +94,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-172 keys, 0 with a file, 172 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+172 keys, 9 with a file, 163 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -107,8 +108,8 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `ui_learn` | placing an item in the learning slot | **missing** |
 | `ui_loot` | loot goes into your bag | **missing** |
 | `ui_open` | a window opens (inventory, quests, trees, settings...) | **missing** |
-| `ui_quest_accept` | a quest is accepted | **missing** |
-| `ui_quest_complete` | a quest is handed in | **missing** |
+| `ui_quest_accept` | a quest is accepted | yes |
+| `ui_quest_complete` | a quest is handed in | yes |
 
 ### World events (audio/sfx/world)
 
@@ -117,7 +118,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `world_event` | a world event is announced (the bells of Millbrook) | **missing** |
 | `world_health_potion_cast` | Health Potion is used | **missing** |
 | `world_hero_death` | a hero dies | **missing** |
-| `world_level_up` | a hero levels up | **missing** |
+| `world_level_up` | a hero levels up | yes |
 | `world_mana_potion_cast` | Mana Potion is used | **missing** |
 | `world_mastered` | a hero masters an ability | **missing** |
 | `world_miss` | an attack misses | **missing** |
@@ -198,7 +199,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `water_frost_shard_cast` | Frost Shard is used | **missing** |
 | `water_frost_shard_hit` | Frost Shard lands on someone | **missing** |
 | `water_healing_touch_cast` | Healing Touch is used | **missing** |
-| `water_healing_touch_hit` | Healing Touch lands on someone | **missing** |
+| `water_healing_touch_hit` | Healing Touch lands on someone | yes |
 | `water_ice_spikes_cast` | Ice Spikes is used | **missing** |
 | `water_ice_spikes_hit` | Ice Spikes lands on someone | **missing** |
 | `water_leeching_tide_cast` | Leeching Tide is used | **missing** |
@@ -208,7 +209,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `water_soothing_mist_cast` | Soothing Mist is used | **missing** |
 | `water_tidal_blessing_cast` | Tidal Blessing is used | **missing** |
 | `water_whip_cast` | Water Whip is used | **missing** |
-| `water_whip_hit` | Water Whip lands on someone | **missing** |
+| `water_whip_hit` | Water Whip lands on someone | yes |
 
 ### Earth (audio/sfx/earth)
 
@@ -227,10 +228,10 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 |-----|-----------|------|
 | `air_blast_cast` | Air Blast is used | **missing** |
 | `air_blast_hit` | Air Blast lands on someone | **missing** |
-| `air_gust_cast` | Gust is used | **missing** |
+| `air_gust_cast` | Gust is used | yes |
 | `air_gust_hit` | Gust lands on someone | **missing** |
 | `air_palm_cast` | Air Palm is used | **missing** |
-| `air_palm_hit` | Air Palm lands on someone | **missing** |
+| `air_palm_hit` | Air Palm lands on someone | yes |
 | `air_step_cast` | Air Step is used | **missing** |
 
 ### Creatures (audio/sfx/creatures)
@@ -256,7 +257,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_goblin_shaman_shadow_bolt_hit` | Shadow Bolt lands on someone | **missing** |
 | `creature_goblin_shaman_step` | Goblin Shaman moves one tile (paws, wings...) | **missing** |
 | `creature_iron_wolf_aggro` | Iron Wolf notices a hero and starts a fight | **missing** |
-| `creature_iron_wolf_bite` | Bite is used | **missing** |
+| `creature_iron_wolf_bite` | Bite is used | yes |
 | `creature_iron_wolf_bite_hit` | Bite lands on someone | **missing** |
 | `creature_iron_wolf_death` | Iron Wolf dies | **missing** |
 | `creature_iron_wolf_howl` | Howl is used | **missing** |
@@ -297,7 +298,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_training_dummy_hurt` | Training Dummy takes damage | **missing** |
 | `creature_training_dummy_step` | Training Dummy moves one tile (paws, wings...) | **missing** |
 | `creature_wolf_aggro` | Wolf notices a hero and starts a fight | **missing** |
-| `creature_wolf_bite` | Bite is used | **missing** |
+| `creature_wolf_bite` | Bite is used | yes |
 | `creature_wolf_bite_hit` | Bite lands on someone | **missing** |
 | `creature_wolf_death` | Wolf dies | **missing** |
 | `creature_wolf_howl` | Howl is used | **missing** |

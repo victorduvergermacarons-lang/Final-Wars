@@ -410,8 +410,15 @@ is missing from it.
   the uploaded MP3 (now `art/audio/`). The MP3 had 43 ms of encoder silence at the start
   and ended at full level, so it clicked when looping. The OGG trims the silence and
   fades 10 ms in and 120 ms out.
-- No sound effect or ambience files exist yet: all 152 keys are listed as missing in
-  `AUDIO_SPEC.md`.
+- **First sound effects** (2026-11-20, the user's uploads): `world_level_up`,
+  `ui_quest_accept`, `ui_quest_complete`, `water_healing_touch_hit`, `water_whip_hit`,
+  `air_palm_hit`, `air_gust_cast`, `creature_wolf_bite` and `creature_iron_wolf_bite`
+  (the same file). Each was trimmed of lead-in silence, made mono (UI stays stereo),
+  levelled to `AUDIO_SPEC.md`'s targets with a peak limiter, faded out over 30 ms and
+  saved as 16-bit 44.1 kHz WAV. No ambience files yet.
+- **Heartland music:** `audio/music/music_town_heartland.ogg` ("Millbrook / Greenfields",
+  master in `art/audio/`), town and explore in Heartland (`town_heartland.tres`). Raised
+  12.5 dB (the WAV was −33 LUFS); it doesn't loop cleanly yet (fades in and out).
 
 ## Act I: quests and dialogue (milestone 1 of 4, 2026-10-26)
 
@@ -1651,6 +1658,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-20 | First sound effects and the Heartland track added from the user's uploads | User request ("add the sounds"). My choices: timing-bar abilities (Water Whip, Healing Touch, Air Palm) get their sound on `_hit`, which plays when the ability goes off, because `_cast` plays at the start of the bar; Gust has no bar, so `_cast`. The wolf attack also serves the iron wolf. Levels: abilities and creatures −18 LUFS, level-up −16, UI −20 (a limiter keeps peaks at −1 / −3 dBTP; Water Whip and Air Palm stop near −21 because of their sharp peaks). The Millbrook / Greenfields track plays for town and explore in all of Heartland (music picks by region, not zone) and was raised 12.5 dB, unlike the Tidereach track, because at −33 LUFS it was too quiet to hear beside the draft. "Sound of the rivers" waits for the user to say what it is for. |
 | 2026-11-05 | Art bot builds on approved pictures: prompts that reuse a character are edits of an approved base, and approved character stills get 8 directions and animations | User correction (PixelLab doesn't know "the same young adventurer"; feed the base image) and approval of the plan, including approval by copying a draft to `approved/<KEY>.png` on the `art-drafts` branch. My choices: PL-01-2, PL-02-1/2 and PL-03-1/2 build on PL-01-1, BO-06-1 on NP-02-1, and wait until it's approved; edits via `edit-image-pixen` (fallback `edit-image`), 8 directions via `generate-8-rotations-v3`, animations via `animate-with-text-v3`, 8 frames, from the approved south-east picture; follow-ups only after every still that can be made is done (the tracker: animations after every reference), using what the stills leave of the day; animation lists from the tracker's Detail column, sword and bow attacks named after the game's Slash, Lunge, Quick Shot and Aimed Shot; no follow-ups for PL-01-2 and the PL-03 armor layers; frames saved with a one-row sheet and a GIF preview. |
 | 2026-11-05 | Daily PixelLab art bot: a GitHub Action spends the day's 5 generations on the next art tracker prompts and commits the pictures to an `art-drafts` branch | User request (a cloud bot using the daily PixelLab credits; drafts in a local folder, by pulling from GitHub; tracker order). My choices: `tools/art_bot/` (Python, standard library) and `.github/workflows/art-bot.yml`, daily at 14:17 UTC; the queue is `tools/art_bot/queue.json`: the live art tracker's prompts word for word (read 2026-11-05; user request, after the project's `art-tracker.md` snapshot turned out older), 73 prompts in tracker order, minus "clean 1px dark outline" in the 29 world and effect prompts (user request; the tracker itself still has it); skipped EN-01, BO-05, IC-01/02, WO-10; canvas size from the prompt's own "NxN canvas", else mine; one still per prompt with PixFlux (`/create-image-pixflux`, v2 API); tile and icon sets at 128×128; the drafts branch is an orphan holding only `art/<ID>/`, `progress.json` and a review page, so the game branches never get bot commits; out of generations = stop till tomorrow, a prompt failing 3 times is skipped; the key lives only in the `PIXELLAB_SECRET` repository secret (the repo is public). How-to: `tools/art_bot/README.md`. |
 | 2026-10-27 | Act I milestone 2 of 4: zones (Millbrook rebuilt, the Crossing, Road to Deepcut, Deepcut, Windsteppe), region music, the Tidereach track | User brief ("list every decision"). See **Act I: zones and region music**. My decisions are in the next rows. |

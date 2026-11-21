@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MusicTrackDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/music_track_def.gd" id="1_music"]
+
+[resource]
+script = ExtResource("1_music")
+id = &"town_heartland"
+display_name = "Final Wars (Millbrook / Greenfields)"
+file = "res://audio/music/music_town_heartland.ogg"
+contexts = Array[int]([1, 2])
+regions = Array[int]([0])
