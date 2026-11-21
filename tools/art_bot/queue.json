@@ -1431,11 +1431,11 @@
    "act": "Prototype",
    "prompts": [
     {
-     "subject": "a single rough brown-grey rock about 14 px wide, centred, on its own: no pebbles, no shadow, no ground under it. Game spell/attack effect sprite, isometric view, 24x24 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a single rough brown-grey rock about 14 px wide, centred, on its own: no pebbles, no shadow, no ground under it. Game spell/attack effect sprite, isometric view, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
-      24,
-      24
+      32,
+      32
      ],
      "rotate": false,
      "animations": [
@@ -1476,6 +1476,18 @@
      "rotate": false,
      "animations": [
       "the flame arc sweeps around fast in a half circle, then fades into embers"
+     ]
+    },
+    {
+     "subject": "one smooth, solid, rounded brown-grey rock about 14 px wide, a single piece with no loose stones around it, no dark rim, no shadow, no ground, floating alone near the left edge of the canvas, empty space to the right. Game spell/attack effect sprite, isometric view, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it"
      ]
     }
    ]
