@@ -13,6 +13,7 @@ const DIRS := {
 	"npcs": "res://content/npcs",
 	"quests": "res://content/quests",
 	"elements": "res://content/elements",
+	"effects": "res://content/effects",
 }
 
 var rules: CombatRules
@@ -26,6 +27,8 @@ var npcs := {} # id -> NpcDef
 var quests := {} # id -> QuestDef
 ## The four elements a new character picks from (the element screen), by id.
 var elements := {} # id -> StartingElementDef
+## Effect animations drawn in the world (FxDef), by id.
+var effects := {} # id -> FxDef
 ## Every line of dialogue (content/dialogue/act1.json), by id.
 var dialogue: DialogueLines
 ## Ability trees from design/Ability_Tree.xlsx (via tools/import_ability_tree.gd).
@@ -51,6 +54,7 @@ func reload() -> void:
 	npcs = _load_dir(DIRS.npcs)
 	quests = _load_dir(DIRS.quests)
 	elements = _load_dir(DIRS.elements)
+	effects = _load_dir(DIRS.effects)
 	dialogue = DialogueLines.load_file()
 	tree = AbilityTreeData.load_file()
 	tilesets = TilesetData.load_all()
@@ -65,9 +69,26 @@ func reload() -> void:
 	abilities.merge(built.abilities)
 	items.merge(built.items)
 	_link_tree_items()
+	_time_releases()
 	if OS.is_debug_build():
 		for w in CastResolver.dodge_warnings(abilities.values(), rules):
 			print("DODGE WARNING: " + w)
+
+
+## Abilities whose hit follows their art (AbilityDef.release_delay_from): the rock
+## leaves on the hero's strike frame, the whip lands on the lash's snap.
+func _time_releases() -> void:
+	for a in abilities.values():
+		a.release_delay_seconds = 0.0
+		match a.release_delay_from:
+			"anim":
+				for h in heroes.values():
+					if h.art != null and h.art.strike_seconds(a.id) > 0.0:
+						a.release_delay_seconds = h.art.strike_seconds(a.id)
+			"fx":
+				var fx: FxDef = effects.get(a.fx_cast)
+				if fx != null:
+					a.release_delay_seconds = fx.hit_seconds()
 
 
 ## Again after the map editor reloaded some files (safe to repeat).

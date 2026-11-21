@@ -17,6 +17,9 @@ var force_crit: bool = false
 ## A timing bar's power for the ability being resolved right now (1 otherwise),
 ## for its healing and shields; its damage gets it through damage_bonus.
 var timing_power: float = 1.0
+## A released ability going off on its strike (WorldSim._update_releases): its range
+## was checked at the release, not again.
+var release_locked: bool = false
 ## The cast being resolved: aimed tile, its 8-way direction from the caster, and
 ## its tiles (area / line). Set by CastResolver.
 var cast_aim := Vector2i.ZERO

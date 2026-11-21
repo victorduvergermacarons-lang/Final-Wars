@@ -256,9 +256,10 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
 	h.element = StringName(d.get("element", ""))
 	var anim: Dictionary = d.get("anim", {})
-	for k in ["died", "down", "up", "hit", "act_at"]:
+	for k in ["died", "down", "up", "hit", "act_at", "buff_end"]:
 		h.anim[k] = float(anim.get(k, Hero.NEVER))
 	h.anim.act = StringName(anim.get("act", ""))
+	h.anim.buff_end_anim = str(anim.get("buff_end_anim", ""))
 	var eq := {}
 	for slot in d.eq:
 		var item: ItemDef = content.items.get(StringName(d.eq[slot]))

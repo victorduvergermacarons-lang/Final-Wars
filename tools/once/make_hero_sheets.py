@@ -23,6 +23,15 @@ south-east art).
 east, north, west) are rows 5-8, and the walk stride is measured per facing along
 the way it walks on screen (CreatureArtDef.run_px_per_frame).
 
+2026-11-21: ability animations (NEW_ANIMS: earth_root, earth_hold, earth_punch, fire_punch,
+fire_kick, water_heal, water_whip, air_palm, air_gust, stone_shatter), all eight facings,
+named <who>+<slug>[@<facing>]_2026-11-21_<n>.png (no facing = south-east). Each one's
+feet are measured on its own first frame in each facing (the soles, as for idle) and
+the row shifted by whole pixels onto FEET. stone_shatter is the stone-armoured body
+(PL-01-3) standing on a dirt mound: everything below its feet line (its lowest pixel
+that isn't dirt) is cut, and dirt-coloured pixels just above it, before measuring.
+PL-01-1+stone-skin-in-a-wide-rooted-stance-grey- is not used (no stone appears).
+
 Run from the project root: python3 tools/once/make_hero_sheets.py
 """
 import glob
@@ -56,6 +65,110 @@ ANIMS = {
 }
 
 
+# 2026-11-21: game animation -> (character, art slug); art/PL-01/, every facing.
+NEW_ANIMS = {
+    "earth_root": ("PL-01-1", "earthbending-root-drops-into-a-very-wide"),
+    "earth_hold": ("PL-01-1", "earthbending-hold-keeps-a-deep-wide-hors"),
+    "earth_punch": ("PL-01-1", "earthbending-punch-from-a-wide-rooted-ho"),
+    "fire_punch": ("PL-01-1", "firebending-punch-very-fast-straight-jab"),
+    "fire_kick": ("PL-01-1", "firebending-kick-fast-roundhouse-kick-at"),
+    "water_heal": ("PL-01-1", "waterbending-heal-one-hand-sweeps-low-an"),
+    "water_whip": ("PL-01-1", "waterbending-whip-quick-pull-back-of-one"),
+    "air_palm": ("PL-01-1", "airbending-palm-light-step-forward-thrus"),
+    "air_gust": ("PL-01-1", "airbending-gust-winds-both-arms-to-one-s"),
+    "stone_shatter": ("PL-01-3", "stone-armour-cracks-all-over-and-falls-o"),
+}
+NEW_DATE = "2026-11-21"
+MOUND = {"stone_shatter"}  # drawn standing on a dirt mound
+
+
+def new_frame_paths(who, slug, facing):
+    at = "" if facing == "south-east" else f"@{facing}"
+    paths = [f"{DST}/PL-01/{who}+{slug}{at}_{NEW_DATE}_{i}.png" for i in range(1, 10)]
+    for p in paths:
+        if not os.path.exists(p):
+            raise SystemExit(f"{p} is missing")
+    return paths
+
+
+def is_dirt(c):
+    """The mound's brown earth (not the armour's grey, olive or glowing orange)."""
+    r, g, b, a = c
+    return a > 128 and r < 190 and r > g + 18 and g > b + 4 and r - b > 40
+
+
+def is_outline(c):
+    return c[3] > 128 and max(c[:3]) < 56
+
+
+def mound_palette(img, line):
+    """The mound's own colours: the ones below the soles (`line`) that never appear in
+    the upper body (rows 6-28), outline black aside (the boots share it)."""
+    px = img.load()
+    body = {px[x, y] for y in range(6, 29) for x in range(F) if px[x, y][3] > 128}
+    below = {px[x, y] for y in range(line + 1, F) for x in range(F) if px[x, y][3] > 128}
+    return {c for c in below - body if not is_outline(c)}
+
+
+BODY_HEIGHT = 32  # PL-01-1, head to soles; the stone-armoured body is drawn as tall
+
+
+def feet_line(img):
+    """The soles' row on the stone-armoured body: its top row + BODY_HEIGHT - 1 (the
+    boots stand inside the mound, so no colour test finds them reliably)."""
+    px = img.load()
+    top = min(y for y in range(F) for x in range(F) if px[x, y][3] > 128)
+    return top + BODY_HEIGHT - 1
+
+
+def leg_columns(img, line):
+    """The legs' columns just above the soles: the non-outline pixels in rows
+    line-5..line-2 of the middle (x 10-38)."""
+    px = img.load()
+    xs = [x for y in range(line - 5, line - 1) for x in range(10, 39)
+          if px[x, y][3] > 128 and not is_outline(px[x, y])]
+    return (min(xs), max(xs)) if xs else (10, 38)
+
+
+def mound_feet(img, line):
+    """The feet point of the stone-armoured body: midway across its legs, on the soles."""
+    lo, hi = leg_columns(img, line)
+    return ((lo + hi) / 2, float(line))
+
+
+def cut_mound(img, line, palette):
+    """Removes the dirt mound: everything below the feet line `line`, and the mound's
+    own colours `palette` from row 26 down, and in the 3 rows above the soles every
+    colour found under them (and dirt brown); then outline
+    pixels left touching nothing opaque but outline."""
+    px = img.load()
+    # Every colour under the soles, black aside: the rim just above the soles goes too.
+    under = {px[x, y] for y in range(line + 1, F) for x in range(F)
+             if px[x, y][3] > 128 and not is_outline(px[x, y])}
+    for y in range(F):
+        for x in range(F):
+            c = px[x, y]
+            if y > line or (y >= 26 and c in palette) or (y >= line - 2 and (c in under or is_dirt(c))):
+                px[x, y] = (0, 0, 0, 0)
+    lo, hi = leg_columns(img, line)
+    for y in range(line - 1, line + 1):  # scraps beside the feet on the soles' rows
+        for x in range(F):
+            if (x < lo - 1 or x > hi + 1) and px[x, y][3] > 128:
+                px[x, y] = (0, 0, 0, 0)
+    for _ in range(2):
+        gone = []
+        for y in range(26, line + 1):
+            for x in range(F):
+                if is_outline(px[x, y]):
+                    near = [px[x + dx, y + dy] for dx in (-1, 0, 1) for dy in (-1, 0, 1)
+                            if 0 <= x + dx < F and 0 <= y + dy < F and (dx or dy)]
+                    if not any(n[3] > 128 and not is_outline(n) for n in near):
+                        gone.append((x, y))
+        for q in gone:
+            px[q] = (0, 0, 0, 0)
+    return img
+
+
 def frame_paths(folder, who, anim, se_stem, facing):
     """The 9 frame files of one animation in one facing (south-east has no facing
     in its name, except the weapon sets, which name it)."""
@@ -86,6 +199,12 @@ def copy_from_drafts():
     stills = ("art/PL-01/PL-01-1_no-bracelets_", "art/PL-02/PL-02-1_take1_", "art/PL-02/PL-02-2_take1_")
     wanted += ["approved/PL-01-1.png"] + [f for f in files if f.startswith(stills)
                                           and f.endswith(".png") and "8dir" not in f]
+    # 2026-11-21: the ability sets (every facing, frames only), and PL-01-3's stills.
+    for who, slug in NEW_ANIMS.values():
+        wanted += [f for f in files if f.startswith(f"art/PL-01/{who}+{slug}")
+                   and f.rsplit("_", 1)[-1][:-4].isdigit() and NEW_DATE in f]
+    wanted += [f for f in files if f.startswith("art/PL-01/PL-01-3") and "+" not in f.split("/")[-1]
+               or f.startswith("art/PL-01/PL-01-3+8dir")]
     copied = 0
     for f in sorted(set(wanted)):
         dst = f"{DST}/{f[len('art/'):]}" if f.startswith("art/") else f"{DST}/PL-01/{f.rsplit('/', 1)[-1]}"
@@ -220,6 +339,33 @@ def main():
                 sheet.alpha_composite(cell, (i * F, row * F))
         sheet.save(f"{OUT}/{name}.png")
         print(f"wrote {OUT}/{name}.png")
+    # 2026-11-21: the ability animations, each measured on its own first frame.
+    print("ability animations: feet on the first frame, shift onto", FEET)
+    for name, (who, slug) in NEW_ANIMS.items():
+        sheet = Image.new("RGBA", (9 * F, len(FACINGS) * F))
+        notes = []
+        for row, facing in enumerate(FACINGS):
+            frames = [Image.open(p).convert("RGBA") for p in new_frame_paths(who, slug, facing)]
+            for p, img in zip(new_frame_paths(who, slug, facing), frames):
+                if img.size != (F, F):
+                    raise SystemExit(f"{p}: {img.size}, expected {F}x{F}")
+            if name in MOUND:  # the feet line and the rim from the first frame, for all
+                line = feet_line(frames[0])
+                palette = set()
+                for img in frames:
+                    palette |= mound_palette(img, line)
+                frames = [cut_mound(img, line, palette) for img in frames]
+                fx, fy = mound_feet(frames[0], line)
+            else:
+                fx, fy = feet_point(frames[0])
+            dx, dy = round(FEET[0] - fx), round(FEET[1] - fy)
+            notes.append(f"{ROWS[row]} ({fx:.1f}, {fy:.1f}) -> ({dx}, {dy})")
+            for i, img in enumerate(frames):
+                cell = Image.new("RGBA", (F, F))
+                cell.paste(img, (dx, dy), img)
+                sheet.alpha_composite(cell, (i * F, row * F))
+        sheet.save(f"{OUT}/{name}.png")
+        print(f"  {name:14s} " + "; ".join(notes))
 
 
 if __name__ == "__main__":

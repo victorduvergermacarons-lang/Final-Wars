@@ -45,9 +45,17 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## hit frame / fps seconds, so its effect lands on that frame. A hit frame of -1
 ## means the whole animation (e.g. a howl that calls the pack when it ends).
 @export var timed_abilities: Dictionary = {}
-## Heroes: ability id -> [animation, weapon tree] for abilities with their own
-## animation (Slash -> sword_slash while a Sword is in hand). Any other ability, or
-## one whose weapon isn't in hand, plays "cast".
+## Heroes: ability id -> its own animation, as [animation, weapon tree] (Slash ->
+## sword_slash while a Sword is in hand) or, since 2026-11-21, a Dictionary:
+##   "anim": played when it goes off, from frame "strike" (the hit lands on the
+##     strike frame), or from frame 0 when "from_start" (its release delay waits
+##     for the strike: Rock Throw's rock leaves on earth_punch's strike frame);
+##   "weapon": the weapon tree it needs in hand ("" = none);
+##   "strike": its strike frame (0-based);
+##   while its cast or timing bar runs: "windup" once, then "loop" (Rock Throw:
+##     earth_root, then earth_hold), or without them the frames before "strike",
+##     holding the last (Fire Kick's wind-up).
+## Any other ability, or one whose weapon isn't in hand, plays "cast".
 @export var ability_anims: Dictionary = {}
 ## Frames still played after an attack's hit frame, during which it stays put.
 @export var recovery_frames: Dictionary = {"bite": 2}
@@ -69,6 +77,12 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## No "death" sheet: it holds idle's first frame and tips over onto its side over
 ## this many seconds, lies `corpse_seconds`, then fades over `fade_seconds`.
 @export var fallback_death_tip_seconds: float = 0.35
+
+## Looks a buff can give (BuffDef.look) -> creature_recolor.gdshader parameters
+## ("dark_color", "mid_color", "light_color", "strength", "keep_saturation_above",
+## "center", "contrast"): the sheets are baked once through the shader with them
+## and drawn instead while the buff lasts (Stone Skin's grey stone).
+@export var looks: Dictionary = {}
 
 @export_group("Recolour")
 ## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
@@ -101,6 +115,27 @@ func frame_count(anim: String) -> int:
 
 func anim_fps(anim: String) -> float:
 	return float(fps.get(anim, 8.0))
+
+
+## `ability_id`'s entry in ability_anims as a Dictionary ({} if none): "anim",
+## "weapon", "strike", "windup", "loop", "from_start".
+func ability_anim(ability_id: StringName) -> Dictionary:
+	var e = ability_anims.get(ability_id)
+	if e is Array and e.size() == 2:
+		return {"anim": str(e[0]), "weapon": str(e[1]), "strike": 0, "windup": "", "loop": "", "from_start": false}
+	if e is Dictionary:
+		return {"anim": str(e.get("anim", "")), "weapon": str(e.get("weapon", "")), "strike": int(e.get("strike", 0)),
+				"windup": str(e.get("windup", "")), "loop": str(e.get("loop", "")),
+				"from_start": bool(e.get("from_start", false))}
+	return {}
+
+
+## Seconds from the start of `ability_id`'s animation to its strike frame (0: none).
+func strike_seconds(ability_id: StringName) -> float:
+	var e := ability_anim(ability_id)
+	if e.is_empty() or e.strike <= 0 or not sheets.has(e.anim):
+		return 0.0
+	return e.strike / anim_fps(e.anim)
 
 
 ## Seconds the whole animation takes (one cycle for loops).

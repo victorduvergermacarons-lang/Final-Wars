@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+[ext_resource type="Texture2D" path="res://assets/effects/fire_arc.png" id="2_sheet"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"fire_arc"
+sheet = ExtResource("2_sheet")
+frame_size = Vector2i(64, 64)
+frames = 9
+fps = 24.0
+loop = false
+pivot = Vector2(32, 32)
+anchor = 0
+forward_tiles = 0.7
+height_levels = 0.9
+rotate = true
+alpha = 1.0
+hit_frame = -1

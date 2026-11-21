@@ -204,7 +204,8 @@ func test_the_sheet_gives_the_game_its_bars() -> void:
 	assert_eq(slash.timing_status, "manual")
 	assert_eq(slash.timing_bar.seconds, 1.0)
 	var whip: AbilityDef = ContentDB.abilities[&"W02"]
-	assert_eq(whip.timing_bar.hold_zones, [Vector2(0.75, 2.0)] as Array[Vector2])
+	assert_eq(whip.timing_bar.hold_zones, [Vector2(0.45, 2.3)] as Array[Vector2], "0.45–2.75 s since 2026-11-21")
+	assert_null(ContentDB.abilities[&"F01"].timing_bar, "Fire Punch is instant since 2026-11-21")
 	assert_eq(ContentDB.abilities[&"F05"].timing_status, "generated")
 	assert_null(ContentDB.abilities[&"F05"].timing_bar, "a dash: no bar")
 	assert_eq(ContentDB.abilities[&"F10"].timing_status, "none")

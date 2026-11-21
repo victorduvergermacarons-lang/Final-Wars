@@ -1,7 +1,8 @@
 extends GutTest
 ## Pressing an ability's hotkey a second time (2026-11-15, playtest item 5): during
-## its timing bar it does nothing (since 2026-11-21: only right-click or Space play a
-## bar); while aiming it fires. Another ability's key switches without casting
+## its timing bar it plays the bar like a right-click or Space, aimed at the cursor
+## (briefly removed on 2026-11-21, restored the same day at the user's request);
+## while aiming it fires. Another ability's key switches without casting
 ## either. Held keys (key repeat) never count as a second press.
 
 var session: LocalSession
@@ -79,7 +80,7 @@ func _space(pressed: bool) -> void:
 		input._input(ev)
 
 
-func test_a_second_press_of_slash_does_nothing_and_space_plays_it() -> void:
+func test_a_second_press_of_slash_plays_its_bar_aimed_at_the_cursor() -> void:
 	_point_at(_a(5, 11)) # away from the wolf when the bar starts
 	_press(&"S01")
 	await wait_physics_frames(4)
@@ -90,15 +91,57 @@ func test_a_second_press_of_slash_does_nothing_and_space_plays_it() -> void:
 	_point_at(_a(6, 8)) # onto the wolf
 	var z := _first_zone()
 	await _until(z.x + z.y / 2.0)
-	_press(&"S01") # the ability's own key: nothing
-	await wait_physics_frames(2)
-	assert_eq(hero.casting.get("kind", ""), "timing", "the key doesn't play the bar")
+	_press(&"S01") # the second press: like a right-click, in the green zone
+	await wait_physics_frames(3)
+	assert_true(hero.casting.is_empty(), "the swing went off")
+	assert_gt(hero.cooldowns.ability_remaining(&"S01", session.now()), 0.0)
+	assert_lt(wolf.hp, hp, "toward the cursor at the second press")
+
+
+func test_space_plays_slash_s_bar() -> void:
+	_point_at(_a(5, 11)) # away from the wolf when the bar starts
+	_press(&"S01")
+	await wait_physics_frames(4)
+	assert_eq(hero.casting.get("kind", ""), "timing", "the first press starts the bar")
+	if hero.casting.is_empty():
+		return
+	var hp := wolf.hp
+	_point_at(_a(6, 8)) # onto the wolf
+	var z := _first_zone()
+	await _until(z.x + z.y / 2.0)
 	_space(true) # Space: like a right-click, in the green zone
 	_space(false)
 	await wait_physics_frames(3)
 	assert_true(hero.casting.is_empty(), "the swing went off")
 	assert_gt(hero.cooldowns.ability_remaining(&"S01", session.now()), 0.0)
 	assert_lt(wolf.hp, hp, "toward the cursor at the Space press")
+
+
+func test_letting_go_of_the_key_ends_a_hold() -> void:
+	# Water Whip: one blue hold zone. Second press = start the hold; let go of the
+	# key at the zone's end = a well-held bar.
+	hero.bag.add(ContentDB.items[&"river_lash_scroll"])
+	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
+	client.target_id = wolf.id
+	_press(&"W02", &"action_slot_2")
+	await wait_physics_frames(4)
+	assert_eq(hero.casting.get("kind", ""), "timing")
+	if hero.casting.is_empty():
+		return
+	var z := _first_zone()
+	await _until(z.x + 0.02)
+	_press(&"W02", &"action_slot_2")
+	await wait_physics_frames(2)
+	assert_true(hero.casting.has("hold_from"), "the second press started the hold")
+	await _until(z.x + z.y - 0.03)
+	var release := InputEventAction.new()
+	release.action = &"action_slot_2"
+	release.pressed = false
+	input._input(release)
+	await wait_physics_frames(3)
+	assert_true(hero.casting.is_empty(), "letting go of the key ended the hold and released the lash")
+	await wait_seconds(ContentDB.abilities[&"W02"].release_delay_seconds + 0.15)
+	assert_gt(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0)
 
 
 func test_letting_go_of_space_ends_a_hold() -> void:
@@ -120,7 +163,9 @@ func test_letting_go_of_space_ends_a_hold() -> void:
 	await _until(z.x + z.y - 0.03)
 	_space(false)
 	await wait_physics_frames(3)
-	assert_true(hero.casting.is_empty(), "letting go of Space ended the hold and cast it")
+	assert_true(hero.casting.is_empty(), "letting go of Space ended the hold and released the lash")
+	# It goes off on the lash's snap (AbilityDef.release_delay_seconds, since 2026-11-21).
+	await wait_seconds(ContentDB.abilities[&"W02"].release_delay_seconds + 0.15)
 	assert_gt(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0)
 
 
@@ -130,12 +175,14 @@ func test_another_abilitys_key_switches_without_casting_either() -> void:
 	_press(&"S01")
 	await wait_physics_frames(4)
 	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"S01"], "Slash's bar runs")
-	_press(&"F01", &"action_slot_2") # Fire Punch's key
+	hero.bag.add(ContentDB.items[&"river_lash_scroll"]) # Fire Punch is instant since 2026-11-21
+	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
+	_press(&"W02", &"action_slot_2") # Water Whip's key
 	await wait_physics_frames(4)
-	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"F01"],
-			"switched to Fire Punch's bar (the global cooldown Slash took was given back)")
+	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"W02"],
+			"switched to Water Whip's bar (the global cooldown Slash took was given back)")
 	assert_eq(hero.cooldowns.ability_remaining(&"S01", session.now()), 0.0, "Slash didn't go off")
-	assert_eq(hero.cooldowns.ability_remaining(&"F01", session.now()), 0.0, "nor Fire Punch, yet")
+	assert_eq(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0, "nor Water Whip, yet")
 	assert_eq(hero.mana, mana, "nothing paid")
 
 

@@ -12,6 +12,16 @@
 [ext_resource type="Texture2D" path="res://assets/heroes/pl01/sword_lunge.png" id="10_lunge"]
 [ext_resource type="Texture2D" path="res://assets/heroes/pl01/bow_quick_shot.png" id="11_quick"]
 [ext_resource type="Texture2D" path="res://assets/heroes/pl01/bow_aimed_shot.png" id="12_aimed"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/earth_root.png" id="20_earth_root"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/earth_hold.png" id="21_earth_hold"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/earth_punch.png" id="22_earth_punch"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/fire_punch.png" id="23_fire_punch"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/fire_kick.png" id="24_fire_kick"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/water_heal.png" id="25_water_heal"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/water_whip.png" id="26_water_whip"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/air_palm.png" id="27_air_palm"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/air_gust.png" id="28_air_gust"]
+[ext_resource type="Texture2D" path="res://assets/heroes/pl01/stone_shatter.png" id="29_stone_shatter"]
 
 [resource]
 script = ExtResource("1_art")
@@ -26,7 +36,17 @@ sheets = {
 "revived": ExtResource("8_revived"),
 "run": ExtResource("3_run"),
 "sword_lunge": ExtResource("10_lunge"),
-"sword_slash": ExtResource("9_slash")
+"sword_slash": ExtResource("9_slash"),
+"earth_root": ExtResource("20_earth_root"),
+"earth_hold": ExtResource("21_earth_hold"),
+"earth_punch": ExtResource("22_earth_punch"),
+"fire_punch": ExtResource("23_fire_punch"),
+"fire_kick": ExtResource("24_fire_kick"),
+"water_heal": ExtResource("25_water_heal"),
+"water_whip": ExtResource("26_water_whip"),
+"air_palm": ExtResource("27_air_palm"),
+"air_gust": ExtResource("28_air_gust"),
+"stone_shatter": ExtResource("29_stone_shatter")
 }
 frame_size = Vector2i(48, 48)
 feet = Vector2(24, 38)
@@ -41,7 +61,17 @@ fps = {
 "idle": 6.0,
 "revived": 12.0,
 "sword_lunge": 18.0,
-"sword_slash": 20.0
+"sword_slash": 20.0,
+"earth_root": 15.0,
+"earth_hold": 8.0,
+"earth_punch": 20.0,
+"fire_punch": 24.0,
+"fire_kick": 20.0,
+"water_heal": 14.0,
+"water_whip": 20.0,
+"air_palm": 20.0,
+"air_gust": 18.0,
+"stone_shatter": 12.0
 }
 run_frames_per_tile = 8
 run_px_per_frame = {
@@ -61,11 +91,22 @@ mirror_rows = {
 "w": "e"
 }
 }
-looping = PackedStringArray("idle", "run")
+looping = PackedStringArray("idle", "run", "earth_hold")
 ability_anims = {
+&"A01": {"anim": "air_palm", "strike": 4},
+&"A02": {"anim": "air_gust", "strike": 3},
 &"B01": ["bow_quick_shot", "Bow"],
 &"B02": ["bow_aimed_shot", "Bow"],
+&"E01": {"anim": "earth_punch", "strike": 3, "from_start": true, "windup": "earth_root", "loop": "earth_hold"},
+&"E02": {"anim": "earth_root"},
+&"F01": {"anim": "fire_punch", "strike": 4},
+&"F02": {"anim": "fire_kick", "strike": 5},
 &"S01": ["sword_slash", "Sword"],
-&"S04": ["sword_lunge", "Sword"]
+&"S04": ["sword_lunge", "Sword"],
+&"W01": {"anim": "water_heal", "strike": 5},
+&"W02": {"anim": "water_whip", "strike": 7}
+}
+looks = {
+"stone": {"dark_color": Color(0.16, 0.16, 0.17, 1), "mid_color": Color(0.46, 0.45, 0.44, 1), "light_color": Color(0.78, 0.77, 0.74, 1), "strength": 0.9, "keep_saturation_above": 1.0, "center": 0.42, "contrast": 1.6}
 }
 recovery_frames = {}
