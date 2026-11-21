@@ -722,8 +722,48 @@ is missing from it.
   the uploaded MP3 (now `art/audio/`). The MP3 had 43 ms of encoder silence at the start
   and ended at full level, so it clicked when looping. The OGG trims the silence and
   fades 10 ms in and 120 ms out.
-- No sound effect or ambience files exist yet: all 152 keys are listed as missing in
-  `AUDIO_SPEC.md`.
+- **Zone music** (2026-11-21, branch `audio/new-sounds`; every track levelled to -18 LUFS,
+  masters in `art/audio/`): "Millbrook / Greenfields" (`town_millbrook.tres`: town and
+  explore, zones town and greenfields), "The Crossing" (`town_crossing.tres`), "The Silent
+  Shaft" (`dungeon_silentshaft.tres`, also through the Foreman's fight until
+  `music_boss_foreman.ogg` exists). What plays where (`tests/unit/test_zone_music.gd`):
+
+  | Zone | Its context plays | Combat / boss |
+  |------|-------------------|---------------|
+  | Millbrook (town), Greenfields (explore) | Millbrook / Greenfields | keep |
+  | The Crossing (town) | The Crossing | keep |
+  | The Silent Shaft (dungeon) | The Silent Shaft | keep (boss_foreman once its file exists) |
+  | Windsteppe (explore, Vael) | Windsteppe | keep |
+  | Tidereach Shore (explore, Tidereach) | Water Idle | keep |
+  | Deepcut (town), Road to Deepcut and the Wilds (explore → town) | the draft | keep |
+  | title screen | the draft | — |
+
+- **First sound effects** (same branch; trimmed and levelled, world sounds mono; notes in
+  `AUDIO_SPEC.md` "Sound effects now"): `ui_click`, `ui_quest_accept`, `ui_quest_complete`,
+  `world_level_up`, `water_healing_touch_hit`, `water_whip_hit`, `air_palm_hit`,
+  `air_gust_cast`, `creature_wolf_bite` = `creature_iron_wolf_bite` (one Mixkit file),
+  `creature_old_grizzlehide_cleave`, `creature_stag_aggro`. Abilities with a timing bar
+  use `_hit` (their `_cast` plays when the bar starts). An enemy pulled into a fight by
+  damage now sends `aggro` too, once, when it switches from idle to fighting
+  (`EnemyBrain`), so the neutral stag bellows when attacked.
+- **Water near the hero** (`WaterAmbience`, `view/water_ambience.gd`, made by
+  SoundDirector; plain functions in `WaterSound`, `view/water_sound.gd`): a zone's water
+  tiles (terrains whose tiles the tileset catalog puts in the "water" category:
+  `water`, `deep_water`, `light_water`, `grey_water`; fords and rocks in water are stone)
+  are indexed in 8×8 buckets when the map loads. Every `water_update_seconds` (0.5) the
+  tiles within `water_radius_tiles` (10) are grouped into clusters (diagonals touch) and
+  the nearest tile of each of the `water_max_emitters` (3) nearest clusters gets a looping
+  `ambience_water` emitter (`AudioStreamPlayer2D`, Ambience bus, a random start in the
+  loop). Level: `water_volume_db` (0) × (1 − distance / radius)^`water_falloff` (1.5),
+  from the grid distance (Godot's own fade is off: screen pixels per tile differ by
+  direction); panned from the listener. A spot within `water_glide_tiles` (3) of an
+  emitter glides there; otherwise the old one fades out and a new one fades in over
+  `water_fade_seconds` (1). A new zone fades every emitter out. The emitters sit under
+  WaterAmbience, not the world view (freed with its map). Plays beside the zone's
+  ambience. Cost (`tools/perf/water_profile.tscn`): indexing 0.5 ms once per map; a look
+  around 0.03 ms on average (0.33 ms at worst) on Greenfields and Millbrook, twice a
+  second. Tests: `tests/unit/test_water_sound.gd`, `tests/integration/test_water_ambience.gd`.
+- 13 of the 241 keys have a file (`AUDIO_SPEC.md`).
 
 ## Act I: quests and dialogue (milestone 1 of 4, 2026-10-26)
 
@@ -2376,6 +2416,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-21 | First sound effects, zone music and water near the hero (branch `audio/new-sounds`) | User brief. Theirs: the files (trimmed, levelled; music at -18 LUFS so zones never jump in volume); Healing Touch, Water Whip and Air Palm on `_hit` (their `_cast` plays when the timing bar starts), Gust on `_cast` (no bar); the Mixkit wolf bite shared with the iron wolf (free for games, no credit); the stag's first bellow cut from a 6 s take; "Millbrook / Greenfields" for town and explore in those two zones, "The Crossing", the draft kept for the title screen and zones with no track; the water emitters (approved): radius 10, at most 3, every 0.5 s, 1 s fades, client side, Ambience bus, numbers in AudioConfig. Mine: water = terrains whose tiles the catalog puts in "water" (fords and rocks in water are stone); clusters touch diagonally; a spot that moves under 3 tiles glides (walking along a river would otherwise fade every half second), further it crossfades; level from the grid distance with falloff 1.5 and 0 dB at the water; emitters kept outside the world view so they fade out on a zone change; every enemy pulled into a fight by damage sends `aggro` (not only the stag), once per fight. |
 | 2026-11-20 | `docs/quests.md`: every quest in one page, generated from the quest files | User request. `tools/write_quest_list.gd` (`godot --headless --path . -s res://tools/write_quest_list.gd`) writes it: a summary table, then per quest its giver and hand-in (with their maps), prerequisites, items handed over, objectives, rewards (per element too), world flag and offer text. A test fails when it is out of date. |
 | 2026-11-20 | Element set rewards for the Act I main quests; no starting weapon; Earth scrolls grow Physical Defense | User request and table: 1-01 Hands, 1-02 Head + a choice of mana or health potion, 1-03 Feet, 1-04 the ring or the next scroll (one pick), 1-05 the charm or a first weapon (one pick), 1-06 the next scroll, 1-07 unchanged; all Common; stats, extras and names as proposed; heroes without an element pick any element's piece. My choices: the other quests' always-given potions stay (1-02's two mana potions became its choice); the "next scrolls" follow each element's unlock order among abilities in the game (Air's second is Air Blast, a tier-2 ability, since Wind Snare isn't built); vendors keep selling weapons; Water and Air scroll growth unchanged. |
 | 2026-11-19 | Loot, boss rolls, binding, trading, duels: my choices | User brief (phases 1-5; bosses-only rolls and the branch chosen by the user). Mine: gold + materials copied to fighters (threat table), other drops personal on the ground (300 s, pickup 1.6 tiles, E); the old bag-full loot window removed; Legendary rarity (gold; epic border until drawn); feed and boss summary messages; "key item" = scroll, tree weapon, or gear whose summed core stats beat what a fighter wears there; everyone who chose Need or Greed rolls (all shown), all-pass = nobody gets it, ties re-roll up to 10 times; claim box by character name, delivered on next appearance; Bind on Pickup for scrolls and roll winnings, Bind on Equip for other gear, worn = bound, saves drop the trade window; trade range 6, duel request range 15, 6 trade slots, gold escrowed too, a full bag refuses the swap; duels count as combat (no zone exits mid-duel), idle enemies ignore duelists, the flag lingers 3 s, the end message reaches 30 tiles. |
