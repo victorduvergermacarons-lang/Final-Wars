@@ -458,6 +458,11 @@ func is_aiming() -> bool:
 	return not _aiming.is_empty()
 
 
+## Only the cursor preview of a running timing bar (Esc then cancels the cast, not an aim).
+func is_aiming_bar() -> bool:
+	return _aiming.get("during_bar", false)
+
+
 func _process(_delta: float) -> void:
 	if _aiming.get("during_bar", false):
 		_follow_bar_aiming()

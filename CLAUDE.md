@@ -1485,9 +1485,34 @@ and the player right-clicks on its zones.
 - **Rules (a cast kind `timing`):**
   - The GCD starts with the bar; mana and cooldown are paid when it goes off.
   - A tap that is the last input casts the ability at once, a hold when let go.
-  - Moving, a stun, an interrupt or the target leaving range cancels it (cooldown
-	not spent).
+  - A stun, an interrupt, a knockback, a fall, the target leaving range or Esc
+	cancels it (cooldown not spent). Walking doesn't (since 2026-11-21): it slows you
+	to the ability's Cast Move Speed (see **Moving while casting**).
   - Enemies cast these abilities without a bar.
+  - **On or off** (2026-11-21): the Escape menu's Gameplay test tab has a "Timing
+	bars" switch (`timing_bars` intent, host-only like the game speed, debug builds;
+	`CombatRules.timing_bars_enabled`, sent in snapshots). Off: abilities go off at once.
+
+## Moving while casting (2026-11-21)
+
+User request. Walking during a cast bar, wind-up, channel or timing bar no longer
+cancels it: the hero keeps casting and walks at the ability's share of their current
+speed (`Mover.cast_move_factor`, inside `Mover.speed_of`, so client prediction agrees;
+Speed stat, haste and slows still count).
+- **Per ability:** `AbilityDef.cast_move_speed` (0–1; < 0 = the default), from the sheet's
+  **Cast Move Speed (%)** column (Abilities tab, after Pierce; 0–100, checked on import;
+  empty = default). Default `CombatRules.cast_move_speed_default` = 0.3. No ability sets
+  its own yet. A note on the Timing Rules tab explains it
+  (`tools/once/add_cast_move_speed_column.ps1`).
+- **Still cancels:** a stun, an interrupt, a knockback or pull, a fall, the target
+  leaving range or sight, another ability's key during a bar, and **Esc** (new,
+  `cancel_cast` intent: the first thing Esc does after cancelling an aim; a cast bar or
+  timing bar gives its global cooldown back, a wind-up or channel stays paid).
+- Enemies stay planted while they attack.
+- Balance bots cancel their cast (Esc) before running out of a telegraph and don't start
+  a new one during that run. The "dodging halves the HP lost" target, already failing on
+  `main` (38% vs 51%), moved to 55% vs 51%: a dodging bot now cancels its bar for every
+  quick wolf bite; for the combat pacing pass.
 - **Second press (2026-11-15):** pressing the ability's hotkey again during its bar is a
   right-click press (aimed at the cursor), and letting that key go ends a hold. Another
   ability's hotkey stops the bar unplayed (`cancel_bar` intent: nothing paid, its global
@@ -2376,6 +2401,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-21 | Walking while casting slows instead of cancelling (per-ability Cast Move Speed, default 30%); Esc cancels your cast; a Gameplay test switch turns timing bars on or off | User request and choices: the percentage in a new sheet column, default 30%, of the hero's current speed; stuns, interrupts, knockbacks and falls still cancel. My choices: Esc as the way to cancel a cast on purpose (walking no longer does), giving back a cast's or bar's global cooldown; enemies unchanged; the timing-bar switch host-only like the game speed; balance bots cancel before dodging. See **Moving while casting**. |
 | 2026-11-21 | Online fixes: a pushed hero (or charging enemy) no longer stays drawn at the push's end on a joining player's screen; the client's clock runs steadily; movement travels unreliably | User report (jittery online play; after Air Palm the pushed friend stayed put on the joiner's screen while abilities used their real position). Causes: `MoveState.to_dict` kept sending a finished glide (its `duration` outlives it), and a client drew any actor with a glide at its end point forever (the host's own view didn't); the client's clock jumped to each snapshot's time, back and forth with uneven arrival; every input went reliable, so one lost packet held all later ones. Fixes: glides sent only while they last, other actors on a client always follow the snapshot buffer (pushes included); `ClientSession.render_time` runs with real time and leans toward the host's at most 10% faster or slower, jumping only when 0.3 s off, never backwards; `move` intents on an `unreliable_ordered` RPC (`Net._c2s_move`), sent every tick while walking and for 0.5 s after stopping. Checked: `run_net_check.sh` with and without `NETCHECK_DELAY=0.1`, the duel, trade and loot party checks. Three tests already failing on `main` still fail (a dodge balance target, the export probe, the settings window). |
 | 2026-11-20 | `docs/quests.md`: every quest in one page, generated from the quest files | User request. `tools/write_quest_list.gd` (`godot --headless --path . -s res://tools/write_quest_list.gd`) writes it: a summary table, then per quest its giver and hand-in (with their maps), prerequisites, items handed over, objectives, rewards (per element too), world flag and offer text. A test fails when it is out of date. |
 | 2026-11-20 | Element set rewards for the Act I main quests; no starting weapon; Earth scrolls grow Physical Defense | User request and table: 1-01 Hands, 1-02 Head + a choice of mana or health potion, 1-03 Feet, 1-04 the ring or the next scroll (one pick), 1-05 the charm or a first weapon (one pick), 1-06 the next scroll, 1-07 unchanged; all Common; stats, extras and names as proposed; heroes without an element pick any element's piece. My choices: the other quests' always-given potions stay (1-02's two mana potions became its choice); the "next scrolls" follow each element's unlock order among abilities in the game (Air's second is Air Blast, a tier-2 ability, since Wind Snare isn't built); vendors keep selling weapons; Water and Air scroll growth unchanged. |

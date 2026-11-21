@@ -120,6 +120,20 @@ func test_game_speed_is_set_by_the_host_and_refused_without_debug() -> void:
 	db.rules.game_speed = 1.0
 
 
+func test_timing_bars_are_switched_by_the_host_and_refused_without_debug() -> void:
+	world.submit(hero.id, {"type": "timing_bars", "on": false})
+	var events := world.step()
+	assert_false(db.rules.timing_bars_enabled, "off")
+	assert_true(events.any(func(e): return e.type == "timing_bars" and e.on == false))
+	world.enable_debug(null)
+	world.submit(hero.id, {"type": "timing_bars", "on": true})
+	events = world.step()
+	assert_true(events.any(func(e): return e.type == "rejected" and e.reason == "debug_disabled"))
+	assert_false(db.rules.timing_bars_enabled, "unchanged")
+	db.rules.timing_bars_enabled = true
+	assert_eq(Intents.sanitize({"type": "timing_bars", "on": "yes"}), {})
+
+
 func test_game_speed_intent_is_clamped() -> void:
 	assert_eq(Intents.sanitize({"type": "game_speed", "value": 5}).value, CombatRules.GAME_SPEED_MAX)
 	assert_eq(Intents.sanitize({"type": "game_speed", "value": 0.0}).value, CombatRules.GAME_SPEED_MIN)

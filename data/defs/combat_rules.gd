@@ -43,6 +43,10 @@ const GAME_SPEED_MAX := 2.0
 
 @export_group("Abilities")
 @export var gcd_seconds: float = 1.0
+## Walking while casting (a cast bar, wind-up, channel or timing bar) doesn't cancel
+## it: the caster moves at this share of their speed, unless the ability sets its
+## own (`AbilityDef.cast_move_speed`, the sheet's Cast Move Speed column).
+@export var cast_move_speed_default: float = 0.3
 
 @export_group("Timing bar")
 ## Off: heroes cast every ability straight away, without its bar (tests of

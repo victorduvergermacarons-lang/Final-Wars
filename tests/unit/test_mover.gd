@@ -258,10 +258,13 @@ func test_faces_where_it_walks_and_the_mouse_in_combat() -> void:
 	assert_eq(hero.facing, Vector2i.DOWN)
 
 
-func test_moving_cancels_a_cast_bar() -> void:
+func test_walking_slows_a_casting_hero_instead_of_cancelling() -> void:
+	_move(Vector2i(1, 1), 0.5)
+	var full := _speed()
 	hero.casting = {"ability": AbilityDef.new(), "kind": "cast", "start": 0.0, "end": 99.0, "target": -1}
-	_move(Vector2i(1, 1), 0.1)
-	assert_true(hero.casting.is_empty())
+	_move(Vector2i(1, 1), 0.5)
+	assert_false(hero.casting.is_empty(), "still casting")
+	assert_almost_eq(_speed(), full * rules.cast_move_speed_default, 0.05, "at the ability's share of its speed")
 
 
 func test_positions_interpolate_between_ticks() -> void:
