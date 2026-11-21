@@ -28,7 +28,9 @@ and `docs/playtest-checklist-act1-zones.md`. **Milestone 3 of 4** (the Act I que
 checklist `docs/playtest-checklist-act1-full.md`. **Free movement** (branch
 `feature/free-movement`, 2026-11-01, all 6 phases): units move freely instead of tile by tile,
 attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **Free movement**,
-`docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Map editor**
+`docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Ability animations and effects** (branch
+`feature/ability-animations`, 2026-11-21): Rock Throw's two presses, Stone Skin's stone look, Fire
+Punch instant; see that section and `docs/playtest-checklist-ability-animations.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
 new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
@@ -159,8 +161,8 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 
 | ID | Ability | Item | Targeting | Effect (power × tier default) | Mana | CD |
 |----|---------|------|-----------|-------------------------------|------|----|
-| F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent, **1 s timing bar** (zones at the end) | 1.0 magical | 4 | 2 |
-| F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent | 0.8 + burn 0.6 over 3 s | 8 | 4 |
+| F01 | Fire Punch | Ember Fist Scroll | Targeted, adjacent, **instant** (no bar since 2026-11-21; damage as the key is pressed) | 1.0 magical | 4 | 2 |
+| F02 | Fire Kick | Cinder Kick Scroll | Targeted, adjacent; fire_kick + a flame arc (2026-11-21) | 0.8 + burn 0.6 over 3 s | 8 | 4 |
 | F03 | Fire Dart | Spark Scroll | Skillshot, any angle, 4, 16 t/s | 1.0 | 10 | 2 |
 | F04 | Sun Warrior's Breath | Sun Warrior's Breath Scroll | Self | next 3 Fire casts +30% (20 s), +10% max Mana over 10 s, off GCD | 10 | 20 |
 | F05 | Flame Dash | Scroll of Burning Feet | Ground 8-way, 3 | dash 3, trail burns 3 s (0.4/s); charges 1 +1/300 | 10 | 8 |
@@ -168,8 +170,8 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | F07 | Fireball | Scroll of the Fireball | Ground 5, 3×3, 0.4 s telegraph | 1.2 | 15 | 8 |
 | F08 | Burning Ground | Scorched Earth Scroll | Ground 4, 3×3 zone 6 s | 0.35 per s | 15 | 14 |
 | F09 | Blazing Combo | Blazing Fist Scroll | Targeted, adjacent | 3 × 0.5, knockback 1 | 12 | 10 |
-| W01 | Healing Touch | Mender's Scroll | Targeted ally, 2 | heal 1.0 | 8 | 3 |
-| W02 | Water Whip | River Lash Scroll | Targeted, 3, **3 s timing bar** (hold 0.75–2.75 s) | 1.0 | 6 | 2 |
+| W01 | Healing Touch | Mender's Scroll | Targeted ally, 2; water_heal (2026-11-21) | heal 1.0 | 8 | 3 |
+| W02 | Water Whip | River Lash Scroll | Targeted, 3, **3 s timing bar** (hold 0.45–2.75 s since 2026-11-21; was 0.75); the lash's hit lands on its snap, 0.29 s after the release | 1.0 | 6 | 2 |
 | W03 | Flow State | Scroll of the Current | Targeted ally, 3 | Haste 30 s | 10 | 20 |
 | W04 | Frost Shard | Frost Shard Scroll | Skillshot, 4, 12 t/s | 0.9 + slow ×1.5 2 s | 8 | 4 |
 | W05 | Soothing Mist | Mist Scroll | Targeted ally, 4 | heal 1.5 over 12 s | 12 | 8 |
@@ -177,11 +179,11 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | W07 | Leeching Tide | Leech Tide Scroll | Targeted, 3 | 1.0, heals you 50% | 12 | 10 |
 | W08 | Tidal Blessing | Tidal Scroll | Targeted ally, 3 | +20 PhysDef/MagDef 45 s | 12 | 25 |
 | W09 | Ice Spikes | Glacier Scroll | Ground 4, 3×3, 0.4 s telegraph | 1.0 + slow ×1.5 3 s | 15 | 10 |
-| A01 | Air Palm | Open Palm Scroll | Targeted, adjacent | 0.6 + knockback 1 | 6 | 4 |
-| A02 | Gust | Breeze Scroll | Targeted, 3 | 0.5 + interrupt, off GCD | 8 | 10 |
+| A01 | Air Palm | Open Palm Scroll | Targeted, adjacent; air_palm + a wind spiral (2026-11-21) | 0.6 + knockback 1 | 6 | 4 |
+| A02 | Gust | Breeze Scroll | Targeted, 3; air_gust + a wind spiral (2026-11-21) | 0.5 + interrupt, off GCD | 8 | 10 |
 | A03 | Air Step | Featherstep Scroll | Self | +40% speed for 4 s (free movement), off GCD | 8 | 10 |
 | A05 | Air Blast | Gale Scroll | Targeted, 3 | 0.6 + knockback 3, +25 on impact | 12 | 10 |
-| E01 | Rock Throw | Pebble Scroll | Skillshot lob 0.3 s, 4 | 1.0 physical | 6 | 3 |
+| E01 | Rock Throw | Pebble Scroll | **Two presses** (2026-11-21): a 3 s bar while the rock waits (rooted), the second press throws it (lob 0.3 s to the cursor, range 6); no press: it throws itself at the bar's end | 1.0 physical | 6 | 3 |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
 | E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
 | E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth); lifts units on it, enemies take 10 + 0.02 per Earth Mastery | 15 | 15 |
@@ -492,6 +494,65 @@ merged; files copied). Checklist: `docs/playtest-checklist-hero-art.md`.
 - Tests: `tests/unit/test_hero_animator.gd`, `test_hero_animation_times_are_the_hosts`
   (`test_snapshot.gd`). Screenshots: `tests/visual/hero_art_shots.tscn` (four heroes, one
   per facing, every animation).
+
+## Ability animations and effects (branch `feature/ability-animations`, 2026-11-21)
+
+User brief: the element abilities' own hero animations, their effects, and the
+ability changes that go with them. Checklist: `docs/playtest-checklist-ability-animations.md`.
+- **Hero sheets** (`tools/once/make_hero_sheets.py`, NEW_ANIMS; all eight facings, the
+  frames kept in `art/heroes/PL-01/`): earth_root, earth_hold, earth_punch, fire_punch,
+  fire_kick, water_heal, water_whip, air_palm, air_gust (PL-01-1) and stone_shatter
+  (PL-01-3, the stone-armoured body). Each set's feet measured on its own first frame
+  (the same standing pose: every set gets idle's shifts) and shifted onto (24, 38).
+  stone_shatter stands on a dirt mound: everything under its soles (its top row + 31,
+  PL-01-1's height) is cut, then the mound's own colours and scraps beside the feet;
+  its feet are midway across its legs. Thin dark scraps remain on the soles' row in a
+  few facings. Not used: `stone-skin-in-a-wide-rooted-stance-grey-` (no stone appears).
+  Frame rates (`pl01_art.tres`): fire_punch 24, fire_kick / water_whip / air_palm /
+  earth_punch 20, air_gust 18, earth_root 15, water_heal 14, stone_shatter 12,
+  earth_hold 8 (loops).
+- **Phases** (`CreatureArtDef.ability_anims` entries can be Dictionaries: "anim",
+  "weapon", "strike", "windup", "loop", "from_start"; `CreatureAnimator.pick_hero`):
+  when the ability goes off its animation plays from its **strike frame** (the hit
+  lands as it shows): Fire Punch 5, Fire Kick 6, Healing Touch 6, Water Whip 8, Air Palm
+  5, Gust 4 (1-based). While its timing bar runs: the frames before the strike, holding
+  the last; Rock Throw: earth_root once, then earth_hold looping. Stone Skin plays
+  earth_root when cast.
+- **Release delay** (`AbilityDef.release_delay_from` / `release_delay_seconds`, set at
+  load): a bar's last input releases the ability (a `release` event: its animation and
+  effect start for every player) and it goes off a moment later without range being
+  checked again: Rock Throw on earth_punch's strike (frame 4 at 20 fps, 0.15 s; it plays
+  from frame 1, `from_start`), Water Whip on the lash's snap (frame 8 at 24 fps, 0.29 s).
+  Mana and the cooldown are paid when it goes off.
+- **Rock Throw (E01):** first press: a 3 s bar; the rock (`assets/effects/rock.png`,
+  `AbilityDef.fx_carried`) rises beside the hero while earth_root plays, then bobs;
+  Cast Move Speed 0 (the hero can't walk). Second press (its key again, right-click or Space, as every
+  bar): earth_punch, and on its strike frame the rock flies along a parabola (peak 1.6
+  levels, two turns of spin) to the cursor, clamped to range 6, then `rock_impact` and
+  the damage in a 0.5-tile circle. No press: the client presses for the player at the
+  bar's end with the cursor's aim (`AbilityDef.bar_goes_off_at_end`; past every window:
+  miss power). The cooldown starts on the throw. The flight is the still rock moved and
+  spun in code: FX-10-2 (the "flying rock") mostly slides across its frame without
+  tumbling. Every player sees the rise and hold (the cast state) and the arc (the lob's
+  pending hit carries `from` and `start`).
+- **Stone Skin (E02):** earth_root on cast; while it lasts the hero is tinted grey stone
+  (`BuffDef.look` = &"stone": `CreatureArtDef.looks.stone`, the sheets baked once
+  through `creature_recolor.gdshader`, `CreatureRecolor.sheets(art, root, look)`); when it
+  ends, stone_shatter (`BuffDef.end_anim`; the host notes when, `Hero.anim.buff_end`, in
+  snapshots), then the hero without the tint.
+- **Effects** (`FxDef`, `content/effects/`; sheets `assets/effects/` from
+  `tools/once/make_effect_sheets.py`): water_lash (FX-09-1, 64×64, 24 fps, hit frame 8),
+  fire_arc (FX-10-4, 64×64, 24 fps), air_palm_spiral and air_gust_spiral (FX-08-5, 64×64,
+  60% opacity), rock_impact (FX-10-1, 32×32), rock (the approved still, 32×32, 20×18
+  drawn). `AbilityDef.fx_cast` (from the caster toward its target, rotated, kept upright
+  pointing left), `fx_land` (where a lob lands). The host sends `fx` events with host
+  times; `FxPainter` turns them, held rocks and thrown rocks into items `WorldView`
+  draws on the tile under them in its back-to-front pass (after the actors there; the
+  cached-terrain pass covers them like actors). Healing Touch has no effect art yet.
+- Tests: `tests/unit/test_ability_animations.gd` (two-press throw, the throw at the bar's
+  end, Fire Punch instant, Water Whip's window and hit on the snap, effects), new cases
+  in `test_hero_animator.gd`. Screenshots: `ha12`–`ha23` in
+  `tests/visual/hero_art_shots.tscn`, `tests/visual/fx_shots.tscn`.
 
 ## Map editor (2026-11-16)
 
@@ -1489,9 +1550,12 @@ and the player right-clicks on its zones.
   builds each `TimingBarDef`; `AbilityDef.timing_status` keeps manual / generated / none.
   Behavior files no longer hold bars. No runtime cost: the import runs offline.
 - **Which abilities** (test lengths, not balanced):
-  - Manual (the user's): Slash 1 s (tap 0.35–0.65, crit 0.45–0.55), Fire Punch 1 s
-    (tap 0.7–1.0, crit 0.9–1.0), Water Whip 3 s (hold 0.75–2.75), Quick Shot 2 s (hold
+  - Manual (the user's): Slash 1 s (tap 0.35–0.65, crit 0.45–0.55), Water Whip 3 s
+    (hold 0.45–2.75 since 2026-11-21; was 0.75–2.75), Quick Shot 2 s (hold
     0.25–1.75), Aimed Shot 4 s (tap 0.2–0.6 with crit 0.35–0.45, then hold 1.0–3.75).
+    Fire Punch is instant since 2026-11-21 (it was 1 s, tap 0.7–1.0, crit 0.9–1.0).
+  - Rock Throw (2026-11-21, AI draft): 3 s, tap 0.6–2.6, crit 0.9–1.1, the two-press
+    throw (see **Ability animations and effects**); was 1.6 s, tap 1.1–1.5.
   - Generated (AI drafts, in the game, to be confirmed), by tree feel: Fire late snaps
     (F02, F03, F06–F09), Water holds (W01, W04–W07, W09), Air early beats (A01, A05),
     Earth one heavy late beat (E01), Hammer late heavy beats (H01, H02). Instants
@@ -1553,9 +1617,10 @@ Speed stat, haste and slows still count).
   a new one during that run. The "dodging halves the HP lost" target, already failing on
   `main` (38% vs 51%), moved to 55% vs 51%: a dodging bot now cancels its bar for every
   quick wolf bite; for the combat pacing pass.
-- **Playing a bar (since 2026-11-21):** right-click or **Space** (`timing_press` action,
-  reserved from keybinds); letting either go ends a hold. Pressing the ability's own
-  hotkey again during its bar does nothing (it used to play the bar, 2026-11-15). Another
+- **Playing a bar (since 2026-11-21):** right-click, **Space** (`timing_press` action,
+  reserved from keybinds) or the ability's own hotkey pressed again (the 2026-11-15
+  second press; removed earlier on 2026-11-21, restored the same day at the user's
+  request); letting go of whichever started it ends a hold. Another
   ability's hotkey stops the bar unplayed (`cancel_bar` intent: nothing paid, its global
   cooldown given back) and starts the new ability. An aimed ability without a bar
   (Lunge, Flame Dash, Raise Pillar, Earth Wall) still fires when its key is let go, and
@@ -1759,6 +1824,7 @@ audio/           music/ (OGG), ambience/ (OGG), sfx/<category>/ (WAV); see AUDIO
 assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
 assets/heroes/   hero sprite sheets (art data in content/heroes/; source frames in art/heroes/)
+assets/effects/  effect sprite sheets (FxDef data in content/effects/; source frames in art/effects/)
 assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera, decor painter (placeholder objects)
@@ -2443,6 +2509,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 | Date | Decision | Notes |
 |------|----------|-------|
 | 2026-11-21 | First sound effects, zone music and water near the hero (branch `audio/new-sounds`) | User brief. Theirs: the files (trimmed, levelled; music at -18 LUFS so zones never jump in volume); Healing Touch, Water Whip and Air Palm on `_hit` (their `_cast` plays when the timing bar starts), Gust on `_cast` (no bar); the Mixkit wolf bite shared with the iron wolf (free for games, no credit); the stag's first bellow cut from a 6 s take; "Millbrook / Greenfields" for town and explore in those two zones, "The Crossing", the draft kept for the title screen and zones with no track; the water emitters (approved): radius 10, at most 3, every 0.5 s, 1 s fades, client side, Ambience bus, numbers in AudioConfig. Mine: water = terrains whose tiles the catalog puts in "water" (fords and rocks in water are stone); clusters touch diagonally; a spot that moves under 3 tiles glides (walking along a river would otherwise fade every half second), further it crossfades; level from the grid distance with falloff 1.5 and 0 dB at the water; emitters kept outside the world view so they fade out on a zone change; every enemy pulled into a fight by damage sends `aggro` (not only the stag), once per fight. |
+| 2026-11-21 | Pressing an ability's key again during its timing bar plays the bar again, alongside right-click and Space | User request after testing the ability animations: the second press had been removed that morning (Space added instead). Both stay: right-click, Space or the key; letting go of the key ends a hold, as before. |
+| 2026-11-21 | Ability animations and effects; Rock Throw two presses; Stone Skin's look and shatter; Fire Punch instant; Water Whip from 0.45 s | User brief (all eight facings, user choice; "defaults fine": the phase model, walking shows the ability's pose, stone look on Stone Skin, my frame rates). My choices: strike frames read off the art (table in **Ability animations and effects**); hits on strike frames without delaying taps, by playing the frames before the strike during the bar and the rest from the strike when it goes off (heroes had no strike timing before: only creatures' `timed_abilities`); Rock Throw keeps a timing bar, adapted (3 s, tap 0.6–2.6, crit 0.9–1.1, no press throws at miss power through a client press at the end, Cast Move Speed 0); the throw and the whip go off after a release delay taken from the art (0.15 s, 0.29 s), paying mana and cooldown then and not re-checking range; the flying rock is the still moved and spun in code (FX-10-2 barely tumbles); effects drawn in the back-to-front pass on the tile under them; stone tint baked once per sheet; the mound cut from stone_shatter by height and colours (thin scraps remain). |
 | 2026-11-21 | Timing bars are played with right-click or Space only; the ability's own key no longer plays its bar | User request. My choices: Space is a new reserved action (`timing_press`), so it can't be bound to an action bar slot; letting Space go ends a hold, like right-click; a second press of the ability's key during its bar is ignored (another ability's key still switches). |
 | 2026-11-21 | Walking while casting slows instead of cancelling (per-ability Cast Move Speed, default 30%); Esc cancels your cast; a Gameplay test switch turns timing bars on or off | User request and choices: the percentage in a new sheet column, default 30%, of the hero's current speed; stuns, interrupts, knockbacks and falls still cancel. My choices: Esc as the way to cancel a cast on purpose (walking no longer does), giving back a cast's or bar's global cooldown; enemies unchanged; the timing-bar switch host-only like the game speed; balance bots cancel before dodging. See **Moving while casting**. |
 | 2026-11-21 | Online fixes: a pushed hero (or charging enemy) no longer stays drawn at the push's end on a joining player's screen; the client's clock runs steadily; movement travels unreliably | User report (jittery online play; after Air Palm the pushed friend stayed put on the joiner's screen while abilities used their real position). Causes: `MoveState.to_dict` kept sending a finished glide (its `duration` outlives it), and a client drew any actor with a glide at its end point forever (the host's own view didn't); the client's clock jumped to each snapshot's time, back and forth with uneven arrival; every input went reliable, so one lost packet held all later ones. Fixes: glides sent only while they last, other actors on a client always follow the snapshot buffer (pushes included); `ClientSession.render_time` runs with real time and leans toward the host's at most 10% faster or slower, jumping only when 0.3 s off, never backwards; `move` intents on an `unreliable_ordered` RPC (`Net._c2s_move`), sent every tick while walking and for 0.5 s after stopping. Checked: `run_net_check.sh` with and without `NETCHECK_DELAY=0.1`, the duel, trade and loot party checks. Three tests already failing on `main` still fail (a dodge balance target, the export probe, the settings window). |

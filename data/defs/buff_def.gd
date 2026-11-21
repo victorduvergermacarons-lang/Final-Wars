@@ -6,6 +6,11 @@ extends Resource
 @export var id: StringName = &""
 @export var display_name: String = ""
 @export var duration_seconds: float = 5.0
+## A look the hero wears while it lasts (CreatureArtDef.looks, e.g. &"stone": the
+## sprite tinted grey-stone by a shader; "" = none).
+@export var look: StringName = &""
+## The hero animation played once when it ends (e.g. "stone_shatter"; "" = none).
+@export var end_anim: String = ""
 @export var modifiers: Array[StatModifier] = []
 ## Movement: multiplies the step cooldown (2.0 = half speed). 1.0 = no change.
 @export var step_cooldown_multiplier: float = 1.0

@@ -57,6 +57,8 @@ const FLAME_SECONDS := 0.7
 ## Enraged creatures (EnemyDef.enrage_buff) are drawn this much hotter.
 const ENRAGE_TINT := Color(1.35, 0.85, 0.7)
 var _animator := CreatureAnimator.new()
+## Effect animations (FxDef): played from "fx" events, held rocks, thrown rocks.
+var _fx := FxPainter.new()
 static var _frames_cache := {} # CreatureArtDef -> SpriteFrames
 ## Actor id -> render time its hit flash ends.
 var _flash_until := {}
@@ -394,6 +396,16 @@ func _draw() -> void:
 					_must_follow(after, q, t)
 	var quest_areas := _quest_area_tiles()
 	var marks := _tile_marks()
+	# Effects take their place in the back-to-front drawing on the tile under them.
+	var fx_by_tile := {}
+	for item in _fx.items(t_now, session.actors(), session.telegraphs(), ContentDB.abilities, ContentDB.effects,
+			func(x): return _hero_art(x)):
+		var ft := MoveState.tile_of(item.pos)
+		if not grid.in_bounds(ft):
+			continue
+		if not fx_by_tile.has(ft):
+			fx_by_tile[ft] = []
+		fx_by_tile[ft].append(item)
 	_overlay.clear()
 	_labels.clear()
 	if not _cached():
@@ -404,8 +416,10 @@ func _draw() -> void:
 				_draw_tile_with_marks(grid, p, quest_areas, marks)
 				for a in actors_by_tile.get(p, []):
 					_draw_actor(a)
+				for item in fx_by_tile.get(p, []):
+					_draw_fx(grid, item)
 	else:
-		_draw_over_cache(grid, actors_by_tile, after, quest_areas, marks)
+		_draw_over_cache(grid, actors_by_tile, after, quest_areas, marks, fx_by_tile)
 	_draw_outlines(grid)
 	_draw_projectiles(grid)
 	_draw_flames(grid)
@@ -424,7 +438,7 @@ func _draw() -> void:
 ## With the terrain cached underneath: the same back-to-front pass, limited to
 ## the tiles carrying actors or highlights and the tiles that cover them.
 func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictionary, quest_areas: Dictionary,
-		marks: Dictionary) -> void:
+		marks: Dictionary, fx_by_tile: Dictionary = {}) -> void:
 	var members := {} # depth -> {tile: true}: what this pass visits
 	var items := []
 	for p in actors_by_tile:
@@ -434,6 +448,10 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 	for p in marks.keys() + quest_areas.keys():
 		_add_member(members, p)
 		items.append({"rect": _mark_rect(grid, p), "depth": Iso.depth(p)})
+	for p in fx_by_tile:
+		_add_member(members, p)
+		for item in fx_by_tile[p]:
+			items.append({"rect": _fx_rect(grid, item), "depth": Iso.depth(p)})
 	var clusters := _clusters(items)
 	for c in clusters:
 		_collect_cover(grid, c, members)
@@ -452,6 +470,37 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 				_draw_tile_mark(grid, p, color)
 			for a in actors_by_tile.get(p, []):
 				_draw_actor(a)
+			for item in fx_by_tile.get(p, []):
+				_draw_fx(grid, item)
+
+
+## Where an effect item (FxPainter.items) sits on screen: its anchor, `lift` levels
+## above the ground under it.
+func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
+	var tile := MoveState.tile_of(item.pos)
+	return Iso.to_screen(item.pos, float(grid.height_at(tile)) + float(item.lift))
+
+
+func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
+	var fx: FxDef = item.fx
+	var r := maxf(fx.frame_size.x, fx.frame_size.y) * PixelCamera.ART_SCALE
+	return Rect2(_fx_anchor(grid, item) - Vector2(r, r), Vector2(r, r) * 2.0)
+
+
+## Draws one effect frame: its pivot on the anchor, at the art scale, turned toward
+## where it was sent (kept upright when it points left), at its opacity.
+func _draw_fx(grid: GridModel, item: Dictionary) -> void:
+	var fx: FxDef = item.fx
+	if fx.sheet == null:
+		return
+	var s := PixelCamera.ART_SCALE
+	var angle: float = item.angle if item.rotate else 0.0
+	var flip: bool = item.rotate and not item.get("spin", false) and cos(angle) < 0.0
+	draw_set_transform(_fx_anchor(grid, item).round(), angle, Vector2(s, -s if flip else s))
+	var size := Vector2(fx.frame_size)
+	draw_texture_rect_region(fx.sheet, Rect2(-fx.pivot, size), Rect2(Vector2(item.frame * size.x, 0), size),
+			Color(1, 1, 1, fx.alpha))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 static func _must_follow(after: Dictionary, tile: Vector2i, first: Vector2i) -> void:
@@ -773,6 +822,13 @@ func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef =
 		var sheets: Dictionary = CreatureRecolor.sheets(art, get_tree().root) if art.recolor else {}
 		_frames_cache[art] = [art.build_sprite_frames(sheets), art.build_sprite_frames(art.flash_sheets) if not art.flash_sheets.is_empty() else null]
 	var frames: SpriteFrames = _frames_cache[art][0]
+	# A buff's look (Stone Skin: grey stone), except while its own end animation plays.
+	var look: StringName = e.buffs.look(session.now()) if e.alive else &""
+	if look != &"" and art.looks.has(look) and pick.anim != str((e as Hero).anim.get("buff_end_anim", "") if e is Hero else ""):
+		var key := [art, look]
+		if not _frames_cache.has(key):
+			_frames_cache[key] = [art.build_sprite_frames(CreatureRecolor.sheets(art, get_tree().root, look)), null]
+		frames = _frames_cache[key][0]
 	var name := StringName("%s_%s" % [pick.anim, pick.dir])
 	if not frames.has_animation(name):
 		return false
@@ -1072,6 +1128,7 @@ func _queue_float_texts() -> void:
 
 
 func _on_events(events: Array) -> void:
+	_fx.on_events(events, ContentDB.effects)
 	var t: float = session.render_time()
 	for e in events:
 		match e.type:

@@ -96,7 +96,7 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 			if AbilityResolver.has_target_effects(ability):
 				var reach := float(ability.hit_range) if ability.hit_range >= 0 else hb.reach
 				# A locked-on throw (Hurled Sunstone) reaches its target wherever it went.
-				if target == caster or ability.locks_on or Hitbox.gap(caster, target) <= reach + 0.05:
+				if target == caster or ability.locks_on or ctx.release_locked or Hitbox.gap(caster, target) <= reach + 0.05:
 					AbilityResolver.apply_effects(ctx, caster, ability, target, events)
 				else:
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": target.tile()})
@@ -268,5 +268,7 @@ static func shape_outline(ctx: CombatContext, caster: Actor, ability: AbilityDef
 ## A delayed circle (a telegraph or a lob's landing).
 static func pending_circle(caster: Actor, ability: AbilityDef, center: Vector2, radius: float, at: float) -> Dictionary:
 	return {"caster": caster.id, "ability": ability, "tiles": [] as Array[Vector2i], "at": at, "grace": 0.0,
-			"bonus": 1.0, "circle": [center, radius],
+			"bonus": 1.0, "circle": [center, radius], "from": caster.move.pos,
+			"start": at - (ability.arc_seconds if ability.hitbox != null and ability.hitbox.shape == HitboxDef.Shape.LOB \
+					else ability.telegraph_seconds),
 			"outline": Hitbox.outline("circle", center, Vector2.RIGHT, radius, 0.0, center)}

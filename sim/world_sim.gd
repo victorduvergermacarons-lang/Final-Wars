@@ -81,6 +81,9 @@ const QUEST_SHARE_RADIUS := 15
 var _projectiles: Array[Projectile] = []
 ## Telegraphed areas and lobbed shots waiting to land (CastResolver pending hits).
 var _pending_hits: Array = []
+## Released abilities waiting for their strike (AbilityDef.release_delay_seconds):
+## [{"caster", "ability", "target", "aim", "bonus", "power", "crit", "at"}].
+var _releases: Array = []
 ## Temporary terrain changes: [{"delta": {tile: levels added}, "blocked": {tile: true}, "until"}].
 var _terrain: Array = []
 ## Walkability of changed tiles before any change touched them.
@@ -373,6 +376,7 @@ func step() -> Array[Dictionary]:
 		ctx.actors[id].move.update_glide(now)
 	_separate_units()
 	_update_casts()
+	_update_releases()
 	_update_projectiles()
 	_update_pending_hits()
 	_update_terrain_and_zones()
@@ -720,9 +724,19 @@ func _record(e: Dictionary) -> void:
 	match e.type:
 		"cast":
 			var by: Hero = _heroes.get(e.get("source", -1))
+			# A released ability's animation started at its release (it is still playing).
+			if by != null and not (by.anim.get("released", &"") == e.get("ability", &"") \
+					and now - float(by.anim.act_at) < 1.0):
+				by.anim.act = e.get("ability", &"")
+				by.anim.act_at = now
+			if by != null:
+				by.anim.released = &""
+		"release":
+			var by: Hero = _heroes.get(e.get("source", -1))
 			if by != null:
 				by.anim.act = e.get("ability", &"")
 				by.anim.act_at = now
+				by.anim.released = e.get("ability", &"")
 		"use_item":
 			var by: Hero = _heroes.get(e.get("target", -1))
 			if by != null:
@@ -770,6 +784,14 @@ func _track_hero_anims() -> void:
 			a.up = now
 		a.alive = hero.alive
 		a.stunned = stunned
+		# A buff with an end animation (Stone Skin: the armour shatters) that has just
+		# ended, while alive.
+		var ending := hero.buffs.ending_anims(now)
+		for id in a.ending:
+			if not ending.has(id) and hero.alive:
+				a.buff_end = now
+				a.buff_end_anim = a.ending[id]
+		a.ending = ending
 
 
 # --- Shared actions (used by intents and EnemyBrain) -----------------------------
@@ -1082,6 +1104,15 @@ func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float, power:
 		power = rules.timing_miss_power if grade == TimingBarDef.Grade.MISS else 1.0
 	emit({"type": "timing_result", "source": caster.id, "ability": ability.id,
 			"grade": TimingBarDef.grade_name(grade), "at": at, "accuracy": accuracy})
+	if ability.release_delay_seconds > 0.0 and caster is Hero:
+		# Released: the animation and its effect start now, for every player; the
+		# ability goes off on its strike (the rock leaves the fist, the lash snaps).
+		emit({"type": "release", "source": caster.id, "ability": ability.id, "target": c.target})
+		_emit_fx(caster, ability, ability.fx_cast, get_actor(c.target), c.aim)
+		_releases.append({"caster": caster.id, "ability": ability, "target": c.target, "aim": c.aim,
+				"bonus": c.bonus * power, "power": power, "crit": grade == TimingBarDef.Grade.PERFECT,
+				"at": now + ability.release_delay_seconds})
+		return
 	ctx.force_crit = grade == TimingBarDef.Grade.PERFECT
 	ctx.timing_power = power # healing and shields (damage: through the bonus)
 	var r := _finish_cast(caster, ability, get_actor(c.target), c.aim, CastResolver.Pay.COMPLETE, c.bonus * power)
@@ -1090,6 +1121,45 @@ func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float, power:
 	if r != AbilityResolver.Result.OK:
 		emit({"type": "cast_failed", "source": caster.id, "ability": ability.id,
 				"reason": AbilityResolver.Result.keys()[r].to_lower()})
+
+
+## Released abilities whose strike has come go off now. Range isn't checked again
+## (it was valid when released, like a locked-on throw); a dead caster or target
+## stops it.
+func _update_releases() -> void:
+	var waiting: Array = []
+	for r in _releases:
+		if now + 0.0001 < r.at:
+			waiting.append(r)
+			continue
+		var caster := get_actor(r.caster)
+		if caster == null:
+			continue
+		ctx.force_crit = r.crit
+		ctx.timing_power = r.power
+		ctx.release_locked = true
+		var res := _finish_cast(caster, r.ability, get_actor(r.target), r.aim, CastResolver.Pay.COMPLETE, r.bonus)
+		ctx.release_locked = false
+		ctx.force_crit = false
+		ctx.timing_power = 1.0
+		if res != AbilityResolver.Result.OK:
+			emit({"type": "cast_failed", "source": caster.id, "ability": r.ability.id,
+					"reason": AbilityResolver.Result.keys()[res].to_lower()})
+	_releases = waiting
+
+
+## An effect (FxDef id) for every player: from the caster toward its target (else
+## the aim, else ahead), on the host's clock.
+func _emit_fx(caster: Actor, ability: AbilityDef, fx: StringName, target: Actor, aim: Variant) -> void:
+	if fx == &"" or caster == null:
+		return
+	var to: Vector2 = caster.move.pos + caster.facing_vector()
+	if target != null and target != caster:
+		to = target.move.pos
+	elif aim is Vector2 or aim is Vector2i:
+		to = Vector2(aim)
+	emit({"type": "fx", "fx": fx, "source": caster.id, "ability": ability.id, "from": caster.move.pos, "to": to,
+			"at": now})
 
 
 func cancel_cast(actor: Actor, reason: String) -> void:
@@ -1115,6 +1185,8 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 		_pending_hits.append(out.pending)
 	else:
 		_credit_mastery(caster, ability, out.events)
+	if ability.release_delay_seconds <= 0.0 or not (caster is Hero) or not _has_timing_bar(caster, ability):
+		_emit_fx(caster, ability, ability.fx_cast, target, aim) # released ones played theirs at the release
 	return out.result
 
 
@@ -1122,7 +1194,9 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 ## [{"source", "ability", "tiles", "at"}].
 func pending_hits() -> Array:
 	var out := _pending_hits.map(func(h): return {"source": h.caster, "ability": h.ability.id,
-			"tiles": h.tiles, "at": h.at, "outline": h.get("outline", PackedVector2Array())})
+			"tiles": h.tiles, "at": h.at, "outline": h.get("outline", PackedVector2Array()),
+			"from": h.get("from", Vector2.ZERO), "start": h.get("start", h.at),
+			"to": h.circle[0] if h.has("circle") else Vector2.ZERO})
 	# Wind-ups aimed at the ground (Grizzlehide's Charge) or swipes (Crushing Blow,
 	# Cleave) are telegraphed too.
 	for id in _sorted(ctx.actors):
@@ -1171,6 +1245,9 @@ func _update_pending_hits() -> void:
 		ctx.force_crit = false
 		_emit_resolved(events)
 		_credit_mastery(caster, h.ability, events)
+		if h.ability.fx_land != &"" and h.has("circle"):
+			emit({"type": "fx", "fx": h.ability.fx_land, "source": caster.id, "ability": h.ability.id,
+					"from": h.circle[0], "to": h.circle[0], "at": now})
 	_pending_hits = waiting
 
 

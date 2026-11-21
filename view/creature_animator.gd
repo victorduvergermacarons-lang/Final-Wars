@@ -15,9 +15,14 @@ var _attacks := {} # actor id -> {"anim", "start", "hit_at", "resolved"}
 ##   up and fall twice);
 ## - stunned: "downed" (falls) and lies there until the stun ends;
 ## - just up again (stun over, resurrected, released): "revived" once;
+## - a buff with an end animation just ended (BuffDef.end_anim: Stone Skin ->
+##   "stone_shatter", the stone armour cracks off), once;
 ## - an ability just went off: its own animation (Slash, Lunge, Quick Shot, Aimed
-##   Shot, while that weapon type is in hand; CreatureArtDef.ability_anims), else
-##   "cast" (element spells, hammer arts, potions);
+##   Shot, while that weapon type is in hand; the element abilities since
+##   2026-11-21; CreatureArtDef.ability_anims), from its strike frame, else "cast"
+##   (other spells, hammer arts, potions);
+## - casting an ability with its own animation: its wind-up (Rock Throw's root,
+##   then its hold looping; or the frames before the strike, holding the last);
 ## - just hit: "hit" once;
 ## - walking: "run", following the distance walked; else "idle".
 func pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
@@ -38,10 +43,18 @@ func _pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	var up := t - float(times.get("up", Hero.NEVER))
 	if up >= 0.0 and up < art.duration("revived"):
 		return _once(art, "revived", dir, up, false)
+	var ended := t - float(times.get("buff_end", Hero.NEVER))
+	var end_anim := str(times.get("buff_end_anim", ""))
+	if end_anim != "" and art.sheets.has(end_anim) and ended >= 0.0 and ended < art.duration(end_anim):
+		return _once(art, end_anim, dir, ended, false)
 	var act := action_anim(hero, art)
 	var acted := t - float(times.get("act_at", Hero.NEVER))
-	if act != "" and acted >= 0.0 and acted < art.duration(act):
-		return _once(art, act, dir, acted, false)
+	var first := action_first_frame(hero, art)
+	if act != "" and acted >= 0.0 and acted < (art.frame_count(act) - first) / art.anim_fps(act):
+		return _from(art, act, dir, first, acted)
+	var windup := _windup(hero, art, dir, t)
+	if not windup.is_empty():
+		return windup
 	var hit := t - float(times.get("hit", Hero.NEVER))
 	if hit >= 0.0 and hit < art.duration("hit"):
 		return _once(art, "hit", dir, hit, false)
@@ -56,10 +69,62 @@ func _pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 static func action_anim(hero: Hero, art: CreatureArtDef) -> String:
 	if hero == null:
 		return "cast"
-	var own: Array = art.ability_anims.get(StringName(hero.anim.act), [])
-	if own.size() == 2 and hero.wields(own[1]) and art.sheets.has(own[0]):
-		return own[0]
-	return "cast"
+	var own := _own(hero, art, StringName(hero.anim.act))
+	return own.anim if not own.is_empty() else "cast"
+
+
+## The frame the last ability's animation starts at when it goes off: its strike
+## frame (the hit lands as it shows), or 0 for "cast" and "from_start" entries.
+static func action_first_frame(hero: Hero, art: CreatureArtDef) -> int:
+	if hero == null:
+		return 0
+	var own := _own(hero, art, StringName(hero.anim.act))
+	if own.is_empty() or own.from_start:
+		return 0
+	return mini(own.strike, maxi(art.frame_count(own.anim) - 1, 0))
+
+
+## The ability's own animation entry if the hero can play it now (its weapon in
+## hand, its sheet in the art), else {}.
+static func _own(hero: Hero, art: CreatureArtDef, ability_id: StringName) -> Dictionary:
+	var own := art.ability_anim(ability_id)
+	if own.is_empty() or not art.sheets.has(own.anim):
+		return {}
+	if own.weapon != "" and not hero.wields(own.weapon):
+		return {}
+	return own
+
+
+## While the hero casts an ability with its own animation (cast bar, wind-up or
+## timing bar, from the cast's host start time): its "windup" once then its "loop",
+## or the frames before its strike frame, holding the last. {} otherwise.
+func _windup(hero: Hero, art: CreatureArtDef, dir: String, t: float) -> Dictionary:
+	if hero == null or hero.casting.is_empty():
+		return {}
+	var ability = hero.casting.get("ability")
+	if ability == null:
+		return {}
+	var own := _own(hero, art, ability.id)
+	if own.is_empty():
+		return {}
+	var since := t - float(hero.casting.get("start", t))
+	if own.windup != "" and art.sheets.has(own.windup):
+		var w := art.duration(own.windup)
+		if since < w or own.loop == "" or not art.sheets.has(own.loop):
+			return _once(art, own.windup, dir, since, true)
+		var n := maxi(art.frame_count(own.loop), 1)
+		return {"anim": own.loop, "dir": dir, "frame": int((since - w) * art.anim_fps(own.loop)) % n}
+	if own.strike > 0 and not own.from_start:
+		var f := mini(floori(maxf(since, 0.0) * art.anim_fps(own.anim) + 0.0001), own.strike - 1)
+		return {"anim": own.anim, "dir": dir, "frame": f}
+	return {}
+
+
+## Plays `anim` once from frame `first`, `since` seconds after it started there.
+static func _from(art: CreatureArtDef, anim: String, dir: String, first: int, since: float) -> Dictionary:
+	var n := maxi(art.frame_count(anim), 1)
+	var frame := first + floori(maxf(since, 0.0) * art.anim_fps(anim) + 0.0001)
+	return {"anim": anim, "dir": dir, "frame": clampi(frame, 0, n - 1)}
 
 
 static func _since(times: Dictionary, key: String, t: float) -> float:

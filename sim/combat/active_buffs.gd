@@ -50,6 +50,25 @@ func clear() -> void:
 	_active.clear()
 
 
+## The look of the first active buff that has one (BuffDef.look), else &"".
+func look(now: float) -> StringName:
+	for id in _active:
+		var def: BuffDef = _active[id].def
+		if def.look != &"" and has(id, now):
+			return def.look
+	return &""
+
+
+## Active buffs that play an animation when they end: id -> BuffDef.end_anim.
+func ending_anims(now: float) -> Dictionary:
+	var out := {}
+	for id in _active:
+		var def: BuffDef = _active[id].def
+		if def.end_anim != "" and has(id, now):
+			out[id] = def.end_anim
+	return out
+
+
 func has(id: StringName, now: float) -> bool:
 	return _active.has(id) and _active[id].expires > now + Cooldowns.EPSILON
 

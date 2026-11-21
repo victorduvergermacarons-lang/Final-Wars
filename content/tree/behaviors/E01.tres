@@ -12,6 +12,10 @@ sheet_scaling = true
 [resource]
 script = ExtResource("3_axfpq")
 id = &"E01"
+fx_land = &"rock_impact"
+fx_carried = &"rock"
+bar_goes_off_at_end = true
+release_delay_from = "anim"
 max_range = 6
 mana_cost = 6.0
 ranged = true
