@@ -1513,8 +1513,9 @@ Speed stat, haste and slows still count).
   a new one during that run. The "dodging halves the HP lost" target, already failing on
   `main` (38% vs 51%), moved to 55% vs 51%: a dodging bot now cancels its bar for every
   quick wolf bite; for the combat pacing pass.
-- **Second press (2026-11-15):** pressing the ability's hotkey again during its bar is a
-  right-click press (aimed at the cursor), and letting that key go ends a hold. Another
+- **Playing a bar (since 2026-11-21):** right-click or **Space** (`timing_press` action,
+  reserved from keybinds); letting either go ends a hold. Pressing the ability's own
+  hotkey again during its bar does nothing (it used to play the bar, 2026-11-15). Another
   ability's hotkey stops the bar unplayed (`cancel_bar` intent: nothing paid, its global
   cooldown given back) and starts the new ability. An aimed ability without a bar
   (Lunge, Flame Dash, Raise Pillar, Earth Wall) still fires when its key is let go, and
@@ -2401,6 +2402,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-21 | Timing bars are played with right-click or Space only; the ability's own key no longer plays its bar | User request. My choices: Space is a new reserved action (`timing_press`), so it can't be bound to an action bar slot; letting Space go ends a hold, like right-click; a second press of the ability's key during its bar is ignored (another ability's key still switches). |
 | 2026-11-21 | Walking while casting slows instead of cancelling (per-ability Cast Move Speed, default 30%); Esc cancels your cast; a Gameplay test switch turns timing bars on or off | User request and choices: the percentage in a new sheet column, default 30%, of the hero's current speed; stuns, interrupts, knockbacks and falls still cancel. My choices: Esc as the way to cancel a cast on purpose (walking no longer does), giving back a cast's or bar's global cooldown; enemies unchanged; the timing-bar switch host-only like the game speed; balance bots cancel before dodging. See **Moving while casting**. |
 | 2026-11-21 | Online fixes: a pushed hero (or charging enemy) no longer stays drawn at the push's end on a joining player's screen; the client's clock runs steadily; movement travels unreliably | User report (jittery online play; after Air Palm the pushed friend stayed put on the joiner's screen while abilities used their real position). Causes: `MoveState.to_dict` kept sending a finished glide (its `duration` outlives it), and a client drew any actor with a glide at its end point forever (the host's own view didn't); the client's clock jumped to each snapshot's time, back and forth with uneven arrival; every input went reliable, so one lost packet held all later ones. Fixes: glides sent only while they last, other actors on a client always follow the snapshot buffer (pushes included); `ClientSession.render_time` runs with real time and leans toward the host's at most 10% faster or slower, jumping only when 0.3 s off, never backwards; `move` intents on an `unreliable_ordered` RPC (`Net._c2s_move`), sent every tick while walking and for 0.5 s after stopping. Checked: `run_net_check.sh` with and without `NETCHECK_DELAY=0.1`, the duel, trade and loot party checks. Three tests already failing on `main` still fail (a dodge balance target, the export probe, the settings window). |
 | 2026-11-20 | `docs/quests.md`: every quest in one page, generated from the quest files | User request. `tools/write_quest_list.gd` (`godot --headless --path . -s res://tools/write_quest_list.gd`) writes it: a summary table, then per quest its giver and hand-in (with their maps), prerequisites, items handed over, objectives, rewards (per element too), world flag and offer text. A test fails when it is out of date. |
