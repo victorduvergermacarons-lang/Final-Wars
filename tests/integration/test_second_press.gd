@@ -1,7 +1,7 @@
 extends GutTest
-## Pressing an ability's hotkey a second time uses it (2026-11-15, playtest item 5):
-## during its timing bar the press plays the bar like a right-click, aimed at the
-## cursor; while aiming it fires. Another ability's key switches without casting
+## Pressing an ability's hotkey a second time (2026-11-15, playtest item 5): during
+## its timing bar it does nothing (since 2026-11-21: only right-click or Space play a
+## bar); while aiming it fires. Another ability's key switches without casting
 ## either. Held keys (key repeat) never count as a second press.
 
 var session: LocalSession
@@ -68,7 +68,18 @@ func _first_zone() -> Vector2:
 	return hero.casting.ability.timing_bar.inputs()[0].zone # start, length
 
 
-func test_a_second_press_of_slash_plays_its_bar_aimed_at_the_cursor() -> void:
+## A Space press or release, as Godot would deliver it.
+func _space(pressed: bool) -> void:
+	var ev := InputEventAction.new()
+	ev.action = &"timing_press"
+	ev.pressed = pressed
+	if pressed:
+		input._unhandled_input(ev)
+	else:
+		input._input(ev)
+
+
+func test_a_second_press_of_slash_does_nothing_and_space_plays_it() -> void:
 	_point_at(_a(5, 11)) # away from the wolf when the bar starts
 	_press(&"S01")
 	await wait_physics_frames(4)
@@ -79,16 +90,20 @@ func test_a_second_press_of_slash_plays_its_bar_aimed_at_the_cursor() -> void:
 	_point_at(_a(6, 8)) # onto the wolf
 	var z := _first_zone()
 	await _until(z.x + z.y / 2.0)
-	_press(&"S01") # the second press: like a right-click, in the green zone
+	_press(&"S01") # the ability's own key: nothing
+	await wait_physics_frames(2)
+	assert_eq(hero.casting.get("kind", ""), "timing", "the key doesn't play the bar")
+	_space(true) # Space: like a right-click, in the green zone
+	_space(false)
 	await wait_physics_frames(3)
 	assert_true(hero.casting.is_empty(), "the swing went off")
 	assert_gt(hero.cooldowns.ability_remaining(&"S01", session.now()), 0.0)
-	assert_lt(wolf.hp, hp, "toward the cursor at the second press")
+	assert_lt(wolf.hp, hp, "toward the cursor at the Space press")
 
 
-func test_letting_go_of_the_key_ends_a_hold() -> void:
-	# Water Whip: one blue hold zone. Second press = start the hold; let go of the
-	# key at the zone's end = a well-held bar.
+func test_letting_go_of_space_ends_a_hold() -> void:
+	# Water Whip: one blue hold zone. Space = start the hold; let go of Space at the
+	# zone's end = a well-held bar.
 	hero.bag.add(ContentDB.items[&"river_lash_scroll"])
 	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
 	client.target_id = wolf.id
@@ -99,16 +114,13 @@ func test_letting_go_of_the_key_ends_a_hold() -> void:
 		return
 	var z := _first_zone()
 	await _until(z.x + 0.02)
-	_press(&"W02", &"action_slot_2")
+	_space(true)
 	await wait_physics_frames(2)
-	assert_true(hero.casting.has("hold_from"), "the second press started the hold")
+	assert_true(hero.casting.has("hold_from"), "Space started the hold")
 	await _until(z.x + z.y - 0.03)
-	var release := InputEventAction.new()
-	release.action = &"action_slot_2"
-	release.pressed = false
-	input._input(release)
+	_space(false)
 	await wait_physics_frames(3)
-	assert_true(hero.casting.is_empty(), "letting go of the key ended the hold and cast it")
+	assert_true(hero.casting.is_empty(), "letting go of Space ended the hold and cast it")
 	assert_gt(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0)
 
 

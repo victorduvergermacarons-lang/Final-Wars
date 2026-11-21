@@ -160,7 +160,7 @@ func test_speed_buffs_change_how_fast_you_move() -> void:
 	assert_gt(hero.move.pos.distance_to(start), base * 0.5 * 1.5, "covers more ground")
 
 
-func test_cast_time_resolves_later_and_moving_cancels_it() -> void:
+func test_cast_time_resolves_later_and_walking_only_slows_it() -> void:
 	var slow := _ability(AbilityEffect.Kind.DAMAGE, 50, {"cast_seconds": 1.0, "mana_cost": 20.0, "cooldown_seconds": 5.0})
 	assert_eq(world.cast(hero, slow, foe), AbilityResolver.Result.OK)
 	assert_eq(_lost(foe), 0.0)
@@ -168,14 +168,41 @@ func test_cast_time_resolves_later_and_moving_cancels_it() -> void:
 	world.advance(1.05)
 	assert_eq(_lost(foe), 50.0)
 	assert_eq(hero.mana, 480.0)
+	# Walking while casting doesn't cancel it: the hero shuffles at 30% of their speed.
 	hero.cooldowns = Cooldowns.new()
+	foe.hp = foe.stats.hp
+	var full := Mover.speed_of(hero, rules, world.now)
+	world.cast(hero, slow, foe)
+	assert_almost_eq(Mover.speed_of(hero, rules, world.now), full * rules.cast_move_speed_default, 0.001)
+	var start := hero.move.pos
+	_walk_to(Vector2i(4, 5))
+	world.advance(0.5)
+	assert_false(hero.casting.is_empty(), "still casting while walking")
+	assert_gt(hero.move.pos.distance_to(start), 0.05, "it does move")
+	assert_lt(hero.move.pos.distance_to(start), full * 0.55 * 0.5, "but slowly")
+	world.advance(0.6)
+	assert_eq(_lost(foe), 50.0, "and the cast lands")
+	assert_almost_eq(Mover.speed_of(hero, rules, world.now), full, 0.001, "full speed once it's done")
+
+
+func test_an_ability_sets_its_own_speed_while_casting() -> void:
+	var light := _ability(AbilityEffect.Kind.DAMAGE, 50, {"cast_seconds": 1.0, "cast_move_speed": 0.75})
+	var full := Mover.speed_of(hero, rules, world.now)
+	world.cast(hero, light, foe)
+	assert_almost_eq(Mover.speed_of(hero, rules, world.now), full * 0.75, 0.001)
+
+
+func test_esc_cancels_a_cast_and_gives_back_its_cost() -> void:
+	var slow := _ability(AbilityEffect.Kind.DAMAGE, 50, {"cast_seconds": 1.0, "mana_cost": 20.0, "cooldown_seconds": 5.0})
 	world.cast(hero, slow, foe)
 	world.advance(0.5)
-	_walk_to(Vector2i(5, 4))
+	world.submit(hero.id, {"type": "cancel_cast"})
+	world.step()
+	assert_true(hero.casting.is_empty(), "cancelled")
 	world.advance(1.0)
-	assert_eq(_lost(foe), 50.0, "cancelled by moving")
-	assert_eq(hero.mana, 480.0, "no mana spent")
-	assert_true(hero.cooldowns.can_use(slow, world.now), "no cooldown spent")
+	assert_eq(_lost(foe), 0.0)
+	assert_eq(hero.mana, 500.0, "no mana spent")
+	assert_true(hero.cooldowns.can_use(slow, world.now), "no cooldown or global cooldown left")
 
 
 func test_cast_fails_if_the_target_leaves_range() -> void:
@@ -187,13 +214,11 @@ func test_cast_fails_if_the_target_leaves_range() -> void:
 	assert_true(hero.casting.is_empty())
 
 
-func test_moving_cancels_a_windup() -> void:
+func test_walking_doesnt_cancel_a_windup() -> void:
 	var smash := _ability(AbilityEffect.Kind.DAMAGE, 50, {"windup_seconds": 0.3, "max_range": 1})
 	world.cast(hero, smash, foe)
 	_walk_to(Vector2i(5, 4))
-	assert_true(hero.casting.is_empty(), "the wind-up is cancelled")
-	world.advance(0.4)
-	assert_eq(_lost(foe), 0.0)
+	assert_false(hero.casting.is_empty(), "the wind-up goes on (the hero only slows down)")
 
 
 func test_the_target_can_step_away_from_a_windup() -> void:
@@ -211,17 +236,18 @@ func test_the_target_can_step_away_from_a_windup() -> void:
 	assert_eq(_lost(foe), 50.0)
 
 
-func test_channel_ticks_and_ends_when_moving() -> void:
+func test_channel_ticks_through_walking_and_ends_on_esc() -> void:
 	var beam := _ability(AbilityEffect.Kind.DAMAGE, 10, {"channel_seconds": 3.0, "channel_tick_seconds": 1.0})
 	world.cast(hero, beam, foe)
+	_walk_to(Vector2i(5, 4))
 	world.advance(3.1)
-	assert_eq(_lost(foe), 30.0, "3 ticks")
+	assert_eq(_lost(foe), 30.0, "3 ticks, walking or not")
 	foe.hp = foe.stats.hp
 	world.cast(hero, beam, foe)
 	world.advance(1.05)
-	_walk_to(Vector2i(5, 4))
+	world.submit(hero.id, {"type": "cancel_cast"})
 	world.advance(3.0)
-	assert_eq(_lost(foe), 10.0, "moving ended it")
+	assert_eq(_lost(foe), 10.0, "Esc ended it")
 
 
 func test_interrupt_cancels_a_cast() -> void:

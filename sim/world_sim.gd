@@ -40,9 +40,11 @@ extends RefCounted
 ##   {"type": "debug", "line": String}   (debug console; only if debug_content is set)
 ##   {"type": "game_speed", "value": float}   (game clock speed, 0.1–2; same rule as debug)
 ##   {"type": "dungeon_testing", "on": bool}   (dungeons open to parties of one; same rule)
+##   {"type": "timing_bars", "on": bool}   (timing bars on or off for every hero; same rule)
 ##   {"type": "timing_press", "at": float, "aim"?: Vector2}   (right-click on a timing bar: seconds since it started; aimed abilities: the cursor)
 ##   {"type": "timing_release", "at": float, "aim"?: Vector2}   (right-click let go, ending a hold on a timing bar)
 ##   {"type": "cancel_bar"}   (another ability picked during a timing bar: it stops unplayed, GCD given back)
+##   {"type": "cancel_cast"}   (Esc: stops your cast, wind-up, channel or bar; a cast or bar gives its GCD back)
 ## Output: step() returns the tick's events (plain Dictionaries) for clients/UI.
 ## Invalid intents produce {"type": "rejected", "target": hero, "intent", "reason"}.
 
@@ -437,8 +439,8 @@ func _move_heroes() -> void:
 		var wish := hero.wish
 		if hero.walk_target != null:
 			wish = _walk_wish(hero, dt)
-		if wish != Vector2.ZERO and not m.gliding and not hero.casting.is_empty():
-			cancel_cast(hero, "moved") # moving cancels anything with a cast bar
+		# Walking while casting slows the hero (Mover.cast_move_factor) instead of
+		# cancelling; a fall still cancels, and knockbacks do where they're resolved.
 		var r := Mover.step(hero, wish, dt, grid, rules, now)
 		if r.fell:
 			cancel_cast(hero, "moved")
@@ -862,7 +864,8 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 	if kind == "timing": # the inputs played so far (TimingBarDef.inputs, in order)
 		caster.casting.results = []
 		caster.casting.next_input = 0
-		caster.casting.gcd_before = gcd_before # given back if the player switches away (cancel_bar)
+	if kind == "timing" or kind == "cast":
+		caster.casting.gcd_before = gcd_before # given back if the player cancels (cancel_bar / cancel_cast)
 	# A wound-up swipe or lob shows the tiles it will hit (dodge by leaving them).
 	if kind == "windup" and ability.targeting == AbilityDef.TargetingMode.SKILLSHOT and point != null \
 			and ability.projectile_speed <= 0.0 and not ability.uses_hitbox():
@@ -967,6 +970,19 @@ func _intent_timing_press(hero: Hero, at: float, aim: Variant = null) -> String:
 ## The player picked another ability while a timing bar ran: the bar stops without
 ## going off (nothing was paid: mana and cooldown are paid when it goes off) and the
 ## global cooldown it started is given back, so the new choice isn't blocked by it.
+## Esc: the hero stops casting (walking no longer does). A cast or timing bar has
+## paid nothing yet, so its global cooldown is given back; a wind-up or channel was
+## paid up front and stays paid.
+func _intent_cancel_cast(hero: Hero) -> String:
+	var c: Dictionary = hero.casting
+	if c.is_empty():
+		return ""
+	if c.has("gcd_before"):
+		hero.cooldowns.restore_gcd(c.gcd_before)
+	cancel_cast(hero, "cancelled")
+	return ""
+
+
 func _intent_cancel_bar(hero: Hero) -> String:
 	var c: Dictionary = hero.casting
 	if c.is_empty() or c.get("kind", "") != "timing":
@@ -1486,6 +1502,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_timing_press(hero, intent.get("at", 0.0), intent.get("aim"))
 		"timing_release":
 			reason = _intent_timing_release(hero, intent.get("at", 0.0), intent.get("aim"))
+		"cancel_cast":
+			reason = _intent_cancel_cast(hero)
 		"cancel_bar":
 			reason = _intent_cancel_bar(hero)
 		"talk":
@@ -1570,6 +1588,14 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			else:
 				rules.dungeon_testing = intent.get("on", false)
 				emit({"type": "dungeon_testing", "on": rules.dungeon_testing})
+		"timing_bars":
+			# Timing bars on or off (playtests: with or without the mechanic), for every
+			# hero in every zone; a bar already running finishes as it is.
+			if debug_content == null:
+				reason = "debug_disabled"
+			else:
+				rules.timing_bars_enabled = intent.get("on", true)
+				emit({"type": "timing_bars", "on": rules.timing_bars_enabled})
 		"destroy_item":
 			var index: int = intent.get("index", -1)
 			var item := hero.bag.item_at(index)

@@ -33,6 +33,8 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 			ability.mana_cost = float(row.mana_cost)
 		ability.sheet = row
 		_apply_timing(ability, row.get("timing", {}))
+		# Walking while casting it: the sheet's percentage, else the rules' default.
+		ability.cast_move_speed = float(row.cast_move_speed_pct) / 100.0 if row.has("cast_move_speed_pct") else -1.0
 		if row.has("hitbox"):
 			ability.sheet_hitbox = HitboxDef.from_data(row.hitbox)
 			# Free movement: implemented abilities use their sheet hitbox (a behavior

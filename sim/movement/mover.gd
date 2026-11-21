@@ -27,8 +27,19 @@ static func speed_of(actor: Actor, rules: CombatRules, now: float) -> float:
 	var stat := maxf(actor.current_stats(now).speed, 0.0)
 	s *= clampf((rules.speed_half_point + stat) / rules.speed_half_point, 0.25,
 			rules.combat_step_base_seconds / rules.combat_step_min_seconds)
+	s *= cast_move_factor(actor, rules)
 	var mult := actor.buffs.step_multiplier(now)
 	return s / mult if mult > 0.0 else s
+
+
+## While casting (cast bar, wind-up, channel, timing bar) a unit walks at the
+## ability's share of its speed; 1 otherwise.
+static func cast_move_factor(actor: Actor, rules: CombatRules) -> float:
+	var ability = actor.casting.get("ability")
+	if not ability is AbilityDef:
+		return 1.0
+	var share: float = ability.cast_move_speed if ability.cast_move_speed >= 0.0 else rules.cast_move_speed_default
+	return clampf(share, 0.0, 1.0)
 
 
 ## Moves `actor` for `dt` seconds toward `wish` (grid space, length 0..1).

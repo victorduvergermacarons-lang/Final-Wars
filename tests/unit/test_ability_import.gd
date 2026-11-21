@@ -164,6 +164,27 @@ func test_timing_columns() -> void:
 	assert_false(a[0].has("extra"), "timing columns aren't extras")
 
 
+func test_cast_move_speed_column() -> void:
+	var book := _book([_row("F01", "A"), _row("F02", "B"), _row("F03", "C")])
+	var table: Array = book.sheets.Abilities
+	table[0] = HEADER + ["Cast Move Speed (%)"]
+	table[1] = table[1] + ["60"]
+	table[2] = table[2] + [""]
+	table[3] = table[3] + ["150"]
+	var result := AbilityTreeImporter.convert(book)
+	assert_string_contains("\n".join(result.errors), "F03 (row 4): Cast Move Speed (%)")
+	assert_string_contains("\n".join(result.errors), "isn't between 0 and 100")
+	table[3][table[3].size() - 1] = "0"
+	result = AbilityTreeImporter.convert(book)
+	assert_eq(result.errors, PackedStringArray())
+	var a: Array = result.data.abilities
+	assert_eq(a[0].cast_move_speed_pct, 60.0)
+	assert_false(a[1].has("cast_move_speed_pct"), "empty: the default")
+	assert_eq(a[2].cast_move_speed_pct, 0.0, "0: standing still while casting")
+	assert_false(a[0].has("extra"), "not an extra column")
+	assert_eq(ContentDB.abilities[&"F07"].cast_move_speed, -1.0, "the shipped sheet leaves it to the default")
+
+
 func test_timing_validation() -> void:
 	var errs := func(timing: Array) -> String:
 		return "\n".join(AbilityTreeImporter.convert(_timed_book([timing])).errors)
