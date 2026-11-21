@@ -120,7 +120,9 @@ func test_letting_go_of_space_ends_a_hold() -> void:
 	await _until(z.x + z.y - 0.03)
 	_space(false)
 	await wait_physics_frames(3)
-	assert_true(hero.casting.is_empty(), "letting go of Space ended the hold and cast it")
+	assert_true(hero.casting.is_empty(), "letting go of Space ended the hold and released the lash")
+	# It goes off on the lash's snap (AbilityDef.release_delay_seconds, since 2026-11-21).
+	await wait_seconds(ContentDB.abilities[&"W02"].release_delay_seconds + 0.15)
 	assert_gt(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0)
 
 

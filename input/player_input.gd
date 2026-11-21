@@ -175,6 +175,30 @@ func press_timing_bar() -> bool:
 	return true
 
 
+## A bar that goes off by itself (AbilityDef.bar_goes_off_at_end: Rock Throw) and
+## hasn't been pressed: at its end the client presses for the player, with the
+## cursor's aim, so it goes where they point (past every window: miss power).
+func _go_off_at_bar_end() -> void:
+	if session == null:
+		return
+	var hero: Hero = session.local_hero()
+	if hero == null or hero.casting.get("kind", "") != "timing":
+		return
+	var ability: AbilityDef = hero.casting.ability
+	if not ability.bar_goes_off_at_end:
+		return
+	var start := float(hero.casting.start)
+	var state: Dictionary = client.timing_press
+	if float(state.get("start", -1.0)) == start and not state.get("presses", []).is_empty():
+		return # pressed already (or pressed for them)
+	var at: float = session.render_time() - start
+	if at < ability.timing_bar.seconds - session.rules().tick_seconds:
+		return
+	client.timing_press = {"start": start, "next": ability.timing_bar.inputs().size(),
+			"presses": [{"index": -1, "at": at, "holding": false}]}
+	session.send_intent(_with_aim({"type": "timing_press", "at": at}))
+
+
 ## Letting go of right-click during a hold ends it (the host judges how long it was).
 func release_timing_bar() -> void:
 	var state: Dictionary = client.timing_press
@@ -457,6 +481,7 @@ func is_aiming_bar() -> bool:
 
 
 func _process(_delta: float) -> void:
+	_go_off_at_bar_end()
 	if _aiming.get("during_bar", false):
 		_follow_bar_aiming()
 	elif not _aiming.is_empty():
