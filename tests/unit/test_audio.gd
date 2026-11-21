@@ -239,9 +239,9 @@ func test_walking_between_regions_crossfades() -> void:
 func test_a_zones_own_track_wins_there_and_plays_nowhere_else() -> void:
 	var draft: MusicTrackDef = audio.pick_track(MusicTrackDef.Context.DUNGEON).track
 	var shaft := _track(&"shaft_theme", [MusicTrackDef.Context.DUNGEON])
-	shaft.zones.assign([&"silent_shaft"])
+	shaft.zones.assign([&"test_cave"]) # a zone with no track of its own yet
 	audio.tracks.append(shaft)
-	assert_eq(audio.pick_track(MusicTrackDef.Context.DUNGEON, 1.0, Regions.Id.BEDRUN, &"silent_shaft").track, shaft)
+	assert_eq(audio.pick_track(MusicTrackDef.Context.DUNGEON, 1.0, Regions.Id.BEDRUN, &"test_cave").track, shaft)
 	assert_eq(audio.pick_track(MusicTrackDef.Context.DUNGEON, 1.0, Regions.Id.BEDRUN, &"deepcut").track, draft,
 			"another zone keeps the fallback")
 

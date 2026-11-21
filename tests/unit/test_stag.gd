@@ -114,6 +114,24 @@ func test_only_the_stag_that_is_hit_fights_back() -> void:
 	assert_true(other.threat.is_empty())
 
 
+func test_it_bellows_once_when_it_turns_hostile() -> void:
+	hero.move.place(Vector2i(21, 20))
+	var aggro := []
+	for i in 80: # 4 s of fighting, hit again and again
+		if i % 10 == 0:
+			var events: Array[Dictionary] = []
+			AbilityResolver.deal_damage(world.ctx, hero, stag, &"test", 5.0, false, events)
+			world._emit_resolved(events)
+		for e in world.step():
+			if e.type == "aggro":
+				aggro.append(e)
+	assert_eq(aggro.size(), 1, "one aggro for the fight, not one per hit")
+	assert_eq(aggro[0].source, stag.id)
+	assert_eq(aggro[0].target, hero.id)
+	assert_eq(SoundCatalog.creature_key(&"stag", "aggro"), &"creature_stag_aggro")
+	assert_true(ResourceLoader.exists("res://audio/sfx/creatures/creature_stag_aggro.wav"), "its bellow is in")
+
+
 func test_it_resets_when_its_attacker_dies() -> void:
 	hero.move.place(Vector2i(21, 20))
 	_hurt(stag, 40.0)

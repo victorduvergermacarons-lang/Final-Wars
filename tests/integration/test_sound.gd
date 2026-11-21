@@ -40,7 +40,7 @@ func test_game_sounds_and_combat_music() -> void:
 	await wait_process_frames(2)
 	assert_eq(sound.music_context(), MusicTrackDef.Context.TOWN, "Millbrook plays town music")
 	assert_eq(Audio.context, MusicTrackDef.Context.TOWN)
-	assert_eq(Audio.current_track.id, &"idle_draft")
+	assert_eq(Audio.current_track.id, &"town_millbrook", "Millbrook has its own track")
 
 	# Walking plays footsteps; sounds without files are skipped, never fatal.
 	var hero := session.local_hero()

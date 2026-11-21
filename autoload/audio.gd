@@ -379,6 +379,12 @@ func _on_finished(player: Node, key: StringName) -> void:
 		player.queue_free()
 
 
+## The stream of sound key `key` (null when its file is missing): for players kept
+## outside Audio, like the water emitters.
+func stream(key: StringName) -> AudioStream:
+	return _sfx_stream(key)
+
+
 func _sfx_stream(key: StringName) -> AudioStream:
 	var path := config.file_for(key)
 	if path == "":

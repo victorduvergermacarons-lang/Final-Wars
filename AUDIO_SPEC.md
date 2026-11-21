@@ -81,19 +81,50 @@ cut through.
 
 ## Music now
 
+Every track is levelled to **-18 LUFS** (integrated), so walking from one zone to the
+next never jumps in volume. Masters are kept in `art/audio/`. What plays where:
+`tests/unit/test_zone_music.gd`.
+
 | File | Plays for | Notes |
 |------|-----------|-------|
-| `audio/music/music_idle_draft.ogg` | title screen, town (and, until they have their own, explore and dungeon) | first draft; converted from the MP3 (kept in `art/audio/`). The MP3 started with 43 ms of silence and ended at full level, so the loop clicked: the OGG has the silence trimmed, a 10 ms fade-in and a 120 ms fade-out. |
-| `audio/music/music_explore_tidereach.ogg` | explore in Tidereach zones (none in Act I: hear it on the Tidereach Shore test map, west of the Enemy Testing Grounds, or with the debug command `goto tidereach_shore`) | "Water Idle", converted from the uploaded WAV (kept in `art/audio/music_explore_tidereach_master.wav`) to OGG Vorbis quality 6, not edited otherwise. **It doesn't loop cleanly yet:** it starts with 2.35 s of near-silence (−80 to −63 dB) and ends at full level (about −26 dB RMS in the last 50 ms, no fade), so every loop drops from full volume into that 2.35 s gap. A version that ends on the material it starts with (or with the lead-in trimmed) would loop seamlessly. |
+| `audio/music/music_town_millbrook.ogg` ("Millbrook / Greenfields") | Millbrook (town) and Greenfields (explore) | Master: `art/audio/music_town_millbrook_master.wav`. Fades in at the start and out at the end, so every loop dips to silence and comes back. |
+| `audio/music/music_town_crossing.ogg` ("The Crossing") | the Crossing (town) | Master: `art/audio/music_town_crossing_master.mp3`. The master started with 0.8 s of silence, trimmed in the OGG. It ends with a fade, so it dips at every loop. |
+| `audio/music/music_dungeon_silentshaft.ogg` ("The Silent Shaft") | the Silent Shaft (dungeon); also through the Foreman's fight until his own track exists | Master: `art/audio/music_dungeon_silentshaft_master.mp3`. It ends in a fade, so it dips at every loop. |
+| `audio/music/music_explore_windsteppe.ogg` ("Windsteppe") | explore in Vael (the Windsteppe) | the user's upload, not edited; it loops with a small dip (starts about 10 dB quieter than it ends, no gap). |
+| `audio/music/music_explore_tidereach.ogg` ("Water Idle") | explore in Tidereach (the Tidereach Shore test map, west of the Wilds, or `goto tidereach_shore`) | Converted from the uploaded WAV (kept in `art/audio/music_explore_tidereach_master.wav`) to OGG Vorbis quality 6, not edited otherwise. **It doesn't loop cleanly yet:** it starts with 2.35 s of near-silence (−80 to −63 dB) and ends at full level (about −26 dB RMS in the last 50 ms, no fade), so every loop drops from full volume into that 2.35 s gap. |
+| `audio/music/music_idle_draft.ogg` | the title screen, and zones with no track of their own: Deepcut (town), the Road to Deepcut and the Wilds (explore → town) | First draft; converted from the MP3 (kept in `art/audio/`). The MP3 started with 43 ms of silence and ended at full level, so the loop clicked: the OGG has the silence trimmed, a 10 ms fade-in and a 120 ms fade-out. |
 
 ### Waiting for their file (listed in `content/audio/music/`)
 
 | File | Plays for | Until then |
 |------|-----------|------------|
-| `audio/music/music_dungeon_silentshaft.ogg` | exploring the Silent Shaft (Act I's dungeon, quest 1-07) | the draft (dungeon → explore → town) |
-| `audio/music/music_boss_foreman.ogg` | the fight with the Foreman and the Grey Heart (an elite fighting within 12 tiles of you) | whatever is playing (boss → combat → keep) |
+| `audio/music/music_boss_foreman.ogg` | the fight with the Foreman and the Grey Heart (an elite fighting within 12 tiles of you) | whatever is playing: the Silent Shaft's track (boss → combat → keep) |
 
 Combat and boss music: until those tracks exist, fights keep the current music.
+
+## Sound effects now
+
+Trimmed and levelled to the targets above; world sounds are mono.
+
+| File | Notes |
+|------|-------|
+| `ui/ui_click.wav`, `ui/ui_quest_accept.wav`, `ui/ui_quest_complete.wav` | interface |
+| `world/world_level_up.wav` | ducks the music |
+| `water/water_healing_touch_hit.wav`, `water/water_whip_hit.wav`, `air/air_palm_hit.wav` | `_hit`, not `_cast`, on purpose: these abilities have a timing bar, and `_cast` plays when the bar starts; the sound belongs to the moment the ability lands |
+| `air/air_gust_cast.wav` | Gust has no bar, so `_cast` |
+| `creatures/creature_wolf_bite.wav`, `creatures/creature_iron_wolf_bite.wav` | the same file for both. **Source: the Mixkit sound library (mixkit.co), free for games, no credit required.** |
+| `creatures/creature_old_grizzlehide_cleave.wav` | Old Grizzlehide's swipe |
+| `creatures/creature_stag_aggro.wav` | the stag's first bellow, cut from a 6 s take; plays once when it turns hostile (it only fights when attacked) |
+| `ambience/ambience_water.ogg` | a mono, 31.5 s seamless loop built from the user's "Sound of the rivers" (random windows of the take, slightly re-pitched and re-levelled, crossfaded, the end flowing into the start). Plays beside water near you (below). |
+
+### Water near you
+
+`ambience_water` isn't a zone loop: up to 3 copies play at the water closest to you
+(the nearest tile of each river, pond or lake within 10 tiles; water is every terrain
+the tileset catalog puts in its "water" category), loudest at the water's edge and
+gone about 10 tiles away. They fade in and out over about 1 s, start at different
+points of the loop, and play on the Ambience bus beside the zone's own ambience.
+Tuning: the `water_…` numbers in `content/audio/audio_config.tres`.
 
 ## Sound keys
 
@@ -104,13 +135,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-240 keys, 0 with a file, 240 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+241 keys, 13 with a file, 228 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
 | Key | Plays when | File |
 |-----|-----------|------|
-| `ui_click` | any button is pressed | **missing** |
+| `ui_click` | any button is pressed | yes |
 | `ui_close` | a window closes | **missing** |
 | `ui_coins` | buying or selling at a vendor | **missing** |
 | `ui_equip` | putting on or taking off gear | **missing** |
@@ -118,8 +149,8 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `ui_learn` | placing an item in the learning slot | **missing** |
 | `ui_loot` | loot goes into your bag | **missing** |
 | `ui_open` | a window opens (inventory, quests, trees, settings...) | **missing** |
-| `ui_quest_accept` | a quest is accepted | **missing** |
-| `ui_quest_complete` | a quest is handed in | **missing** |
+| `ui_quest_accept` | a quest is accepted | yes |
+| `ui_quest_complete` | a quest is handed in | yes |
 
 ### World events (audio/sfx/world)
 
@@ -130,7 +161,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `world_event` | a world event is announced (the bells of Millbrook) | **missing** |
 | `world_health_potion_cast` | Health Potion is used | **missing** |
 | `world_hero_death` | a hero dies | **missing** |
-| `world_level_up` | a hero levels up | **missing** |
+| `world_level_up` | a hero levels up | yes |
 | `world_lift` | a mine lift rattles along its shaft (you ride it) | **missing** |
 | `world_loot_common` | you pick up a Common item (a soft cloth rustle) | **missing** |
 | `world_loot_epic` | you pick up an Epic item (a rich shimmer) | **missing** |
@@ -223,7 +254,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `water_frost_shard_cast` | Frost Shard is used | **missing** |
 | `water_frost_shard_hit` | Frost Shard lands on someone | **missing** |
 | `water_healing_touch_cast` | Healing Touch is used | **missing** |
-| `water_healing_touch_hit` | Healing Touch lands on someone | **missing** |
+| `water_healing_touch_hit` | Healing Touch lands on someone | yes |
 | `water_ice_spikes_cast` | Ice Spikes is used | **missing** |
 | `water_ice_spikes_hit` | Ice Spikes lands on someone | **missing** |
 | `water_leeching_tide_cast` | Leeching Tide is used | **missing** |
@@ -233,7 +264,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `water_soothing_mist_cast` | Soothing Mist is used | **missing** |
 | `water_tidal_blessing_cast` | Tidal Blessing is used | **missing** |
 | `water_whip_cast` | Water Whip is used | **missing** |
-| `water_whip_hit` | Water Whip lands on someone | **missing** |
+| `water_whip_hit` | Water Whip lands on someone | yes |
 
 ### Earth (audio/sfx/earth)
 
@@ -253,23 +284,23 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 |-----|-----------|------|
 | `air_blast_cast` | Air Blast is used | **missing** |
 | `air_blast_hit` | Air Blast lands on someone | **missing** |
-| `air_gust_cast` | Gust is used | **missing** |
+| `air_gust_cast` | Gust is used | yes |
 | `air_gust_hit` | Gust lands on someone | **missing** |
 | `air_palm_cast` | Air Palm is used | **missing** |
-| `air_palm_hit` | Air Palm lands on someone | **missing** |
+| `air_palm_hit` | Air Palm lands on someone | yes |
 | `air_step_cast` | Air Step is used | **missing** |
 
 ### Creatures (audio/sfx/creatures)
 
 | Key | Plays when | File |
 |-----|-----------|------|
-| `creature_bandit_brute_aggro` | Bandit Brute notices a hero and starts a fight | **missing** |
+| `creature_bandit_brute_aggro` | Bandit Brute starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_bandit_brute_crushing_blow` | Crushing Blow is used | **missing** |
 | `creature_bandit_brute_crushing_blow_hit` | Crushing Blow lands on someone | **missing** |
 | `creature_bandit_brute_death` | Bandit Brute dies | **missing** |
 | `creature_bandit_brute_hurt` | Bandit Brute takes damage | **missing** |
 | `creature_bandit_brute_step` | Bandit Brute moves one tile (paws, wings...) | **missing** |
-| `creature_boar_aggro` | Boar notices a hero and starts a fight | **missing** |
+| `creature_boar_aggro` | Boar starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_boar_death` | Boar dies | **missing** |
 | `creature_boar_gore` | Gore is used | **missing** |
 | `creature_boar_gore_hit` | Gore lands on someone | **missing** |
@@ -277,13 +308,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_boar_step` | Boar moves one tile (paws, wings...) | **missing** |
 | `creature_boar_tusk_charge` | Tusk Charge is used | **missing** |
 | `creature_boar_tusk_charge_hit` | Tusk Charge lands on someone | **missing** |
-| `creature_fen_skirmisher_aggro` | Fen Skirmisher notices a hero and starts a fight | **missing** |
+| `creature_fen_skirmisher_aggro` | Fen Skirmisher starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_fen_skirmisher_death` | Fen Skirmisher dies | **missing** |
 | `creature_fen_skirmisher_hurt` | Fen Skirmisher takes damage | **missing** |
 | `creature_fen_skirmisher_quick_slash` | Quick Slash is used | **missing** |
 | `creature_fen_skirmisher_quick_slash_hit` | Quick Slash lands on someone | **missing** |
 | `creature_fen_skirmisher_step` | Fen Skirmisher moves one tile (paws, wings...) | **missing** |
-| `creature_foreman_aggro` | The Foreman notices a hero and starts a fight | **missing** |
+| `creature_foreman_aggro` | The Foreman starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_foreman_death` | The Foreman dies | **missing** |
 | `creature_foreman_enrage` | The Foreman enrages (Grey Fury, phase 3) | **missing** |
 | `creature_foreman_ground_slam` | Ground Slam is used | **missing** |
@@ -298,51 +329,51 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_foreman_pick_hammer_hit` | Pick-Hammer lands on someone | **missing** |
 | `creature_foreman_reset` | The Foreman goes back to the start of its phase (after a party wipe) | **missing** |
 | `creature_foreman_step` | The Foreman moves one tile (paws, wings...) | **missing** |
-| `creature_goblin_shaman_aggro` | Goblin Shaman notices a hero and starts a fight | **missing** |
+| `creature_goblin_shaman_aggro` | Goblin Shaman starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_goblin_shaman_death` | Goblin Shaman dies | **missing** |
 | `creature_goblin_shaman_hurt` | Goblin Shaman takes damage | **missing** |
 | `creature_goblin_shaman_shadow_bolt` | Shadow Bolt is used | **missing** |
 | `creature_goblin_shaman_shadow_bolt_hit` | Shadow Bolt lands on someone | **missing** |
 | `creature_goblin_shaman_step` | Goblin Shaman moves one tile (paws, wings...) | **missing** |
-| `creature_grey_heart_aggro` | The Grey Heart notices a hero and starts a fight | **missing** |
+| `creature_grey_heart_aggro` | The Grey Heart starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_grey_heart_break` | The Grey Heart breaks and the fight is won | **missing** |
 | `creature_grey_heart_death` | The Grey Heart dies | **missing** |
 | `creature_grey_heart_hurt` | The Grey Heart takes damage | **missing** |
 | `creature_grey_heart_pulse` | The Grey Heart pulses: adds climb out, the floor turns grey | **missing** |
-| `creature_grey_husk_aggro` | Grey Husk notices a hero and starts a fight | **missing** |
+| `creature_grey_husk_aggro` | Grey Husk starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_grey_husk_death` | Grey Husk dies | **missing** |
 | `creature_grey_husk_hollow_rake` | Hollow Rake is used | **missing** |
 | `creature_grey_husk_hollow_rake_hit` | Hollow Rake lands on someone | **missing** |
 | `creature_grey_husk_hurt` | Grey Husk takes damage | **missing** |
 | `creature_grey_husk_step` | Grey Husk moves one tile (paws, wings...) | **missing** |
-| `creature_grey_overseer_aggro` | Grey Overseer notices a hero and starts a fight | **missing** |
+| `creature_grey_overseer_aggro` | Grey Overseer starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_grey_overseer_death` | Grey Overseer dies | **missing** |
 | `creature_grey_overseer_hurt` | Grey Overseer takes damage | **missing** |
 | `creature_grey_overseer_overseer_s_crush` | Overseer's Crush is used | **missing** |
 | `creature_grey_overseer_overseer_s_crush_hit` | Overseer's Crush lands on someone | **missing** |
 | `creature_grey_overseer_step` | Grey Overseer moves one tile (paws, wings...) | **missing** |
-| `creature_human_husk_aggro` | Human Husk notices a hero and starts a fight | **missing** |
+| `creature_human_husk_aggro` | Human Husk starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_human_husk_death` | Human Husk dies | **missing** |
 | `creature_human_husk_hollow_rake` | Hollow Rake is used | **missing** |
 | `creature_human_husk_hollow_rake_hit` | Hollow Rake lands on someone | **missing** |
 | `creature_human_husk_hurt` | Human Husk takes damage | **missing** |
 | `creature_human_husk_step` | Human Husk moves one tile (paws, wings...) | **missing** |
-| `creature_iron_wolf_aggro` | Iron Wolf notices a hero and starts a fight | **missing** |
-| `creature_iron_wolf_bite` | Bite is used | **missing** |
+| `creature_iron_wolf_aggro` | Iron Wolf starts a fight (spots a hero, or is attacked first) | **missing** |
+| `creature_iron_wolf_bite` | Bite is used | yes |
 | `creature_iron_wolf_bite_hit` | Bite lands on someone | **missing** |
 | `creature_iron_wolf_death` | Iron Wolf dies | **missing** |
 | `creature_iron_wolf_howl` | Howl is used | **missing** |
 | `creature_iron_wolf_hurt` | Iron Wolf takes damage | **missing** |
 | `creature_iron_wolf_step` | Iron Wolf moves one tile (paws, wings...) | **missing** |
-| `creature_old_grizzlehide_aggro` | Old Grizzlehide notices a hero and starts a fight | **missing** |
+| `creature_old_grizzlehide_aggro` | Old Grizzlehide starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_old_grizzlehide_charge` | Charge is used | **missing** |
 | `creature_old_grizzlehide_charge_hit` | Charge lands on someone | **missing** |
-| `creature_old_grizzlehide_cleave` | Cleave is used | **missing** |
+| `creature_old_grizzlehide_cleave` | Cleave is used | yes |
 | `creature_old_grizzlehide_cleave_hit` | Cleave lands on someone | **missing** |
 | `creature_old_grizzlehide_death` | Old Grizzlehide dies | **missing** |
 | `creature_old_grizzlehide_hurt` | Old Grizzlehide takes damage | **missing** |
 | `creature_old_grizzlehide_step` | Old Grizzlehide moves one tile (paws, wings...) | **missing** |
-| `creature_salamander_hound_aggro` | Salamander Hound notices a hero and starts a fight | **missing** |
+| `creature_salamander_hound_aggro` | Salamander Hound starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_salamander_hound_bite` | Bite is used | **missing** |
 | `creature_salamander_hound_bite_hit` | Bite lands on someone | **missing** |
 | `creature_salamander_hound_cinder_pounce` | Cinder Pounce is used | **missing** |
@@ -351,13 +382,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_salamander_hound_embers_hit` | Ember Trail: its ground zone hurts someone standing in it | **missing** |
 | `creature_salamander_hound_hurt` | Salamander Hound takes damage | **missing** |
 | `creature_salamander_hound_step` | Salamander Hound moves one tile (paws, wings...) | **missing** |
-| `creature_stag_aggro` | Stag notices a hero and starts a fight | **missing** |
+| `creature_stag_aggro` | Stag starts a fight (spots a hero, or is attacked first) | yes |
 | `creature_stag_antler_thrust` | Antler Thrust is used | **missing** |
 | `creature_stag_antler_thrust_hit` | Antler Thrust lands on someone | **missing** |
 | `creature_stag_death` | Stag dies | **missing** |
 | `creature_stag_hurt` | Stag takes damage | **missing** |
 | `creature_stag_step` | Stag moves one tile (paws, wings...) | **missing** |
-| `creature_sunscale_drake_aggro` | Sunscale Drake notices a hero and starts a fight | **missing** |
+| `creature_sunscale_drake_aggro` | Sunscale Drake starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_sunscale_drake_death` | Sunscale Drake dies | **missing** |
 | `creature_sunscale_drake_enrage` | Sunscale Drake enrages (Molten Fury) | **missing** |
 | `creature_sunscale_drake_grounded` | Sunscale Drake is knocked out of the air | **missing** |
@@ -370,12 +401,12 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_sunscale_drake_sunfire_hit` | Sunfire Breath: its ground zone hurts someone standing in it | **missing** |
 | `creature_sunscale_drake_talon_rake` | Talon Rake is used | **missing** |
 | `creature_sunscale_drake_talon_rake_hit` | Talon Rake lands on someone | **missing** |
-| `creature_training_dummy_aggro` | Training Dummy notices a hero and starts a fight | **missing** |
+| `creature_training_dummy_aggro` | Training Dummy starts a fight (spots a hero, or is attacked first) | **missing** |
 | `creature_training_dummy_death` | Training Dummy dies | **missing** |
 | `creature_training_dummy_hurt` | Training Dummy takes damage | **missing** |
 | `creature_training_dummy_step` | Training Dummy moves one tile (paws, wings...) | **missing** |
-| `creature_wolf_aggro` | Wolf notices a hero and starts a fight | **missing** |
-| `creature_wolf_bite` | Bite is used | **missing** |
+| `creature_wolf_aggro` | Wolf starts a fight (spots a hero, or is attacked first) | **missing** |
+| `creature_wolf_bite` | Bite is used | yes |
 | `creature_wolf_bite_hit` | Bite lands on someone | **missing** |
 | `creature_wolf_death` | Wolf dies | **missing** |
 | `creature_wolf_howl` | Howl is used | **missing** |
@@ -393,6 +424,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `ambience_silent_shaft` | background loop in The Silent Shaft (Ambience bus, OGG) | **missing** |
 | `ambience_tidereach_shore` | background loop in Tidereach Shore (test) (Ambience bus, OGG) | **missing** |
 | `ambience_town` | background loop in Millbrook (Ambience bus, OGG) | **missing** |
+| `ambience_water` | water nearby: loops beside rivers, ponds and lakes close to you, a few at once (Ambience bus, OGG, mono; see AudioConfig water_…) | yes |
 | `ambience_wilds` | background loop in The Wilds (Ambience bus, OGG) | **missing** |
 | `ambience_windsteppe` | background loop in Windsteppe (Ambience bus, OGG) | **missing** |
 

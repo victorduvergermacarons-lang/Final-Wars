@@ -783,8 +783,48 @@ is missing from it.
   the uploaded MP3 (now `art/audio/`). The MP3 had 43 ms of encoder silence at the start
   and ended at full level, so it clicked when looping. The OGG trims the silence and
   fades 10 ms in and 120 ms out.
-- No sound effect or ambience files exist yet: all 152 keys are listed as missing in
-  `AUDIO_SPEC.md`.
+- **Zone music** (2026-11-21, branch `audio/new-sounds`; every track levelled to -18 LUFS,
+  masters in `art/audio/`): "Millbrook / Greenfields" (`town_millbrook.tres`: town and
+  explore, zones town and greenfields), "The Crossing" (`town_crossing.tres`), "The Silent
+  Shaft" (`dungeon_silentshaft.tres`, also through the Foreman's fight until
+  `music_boss_foreman.ogg` exists). What plays where (`tests/unit/test_zone_music.gd`):
+
+  | Zone | Its context plays | Combat / boss |
+  |------|-------------------|---------------|
+  | Millbrook (town), Greenfields (explore) | Millbrook / Greenfields | keep |
+  | The Crossing (town) | The Crossing | keep |
+  | The Silent Shaft (dungeon) | The Silent Shaft | keep (boss_foreman once its file exists) |
+  | Windsteppe (explore, Vael) | Windsteppe | keep |
+  | Tidereach Shore (explore, Tidereach) | Water Idle | keep |
+  | Deepcut (town), Road to Deepcut and the Wilds (explore → town) | the draft | keep |
+  | title screen | the draft | — |
+
+- **First sound effects** (same branch; trimmed and levelled, world sounds mono; notes in
+  `AUDIO_SPEC.md` "Sound effects now"): `ui_click`, `ui_quest_accept`, `ui_quest_complete`,
+  `world_level_up`, `water_healing_touch_hit`, `water_whip_hit`, `air_palm_hit`,
+  `air_gust_cast`, `creature_wolf_bite` = `creature_iron_wolf_bite` (one Mixkit file),
+  `creature_old_grizzlehide_cleave`, `creature_stag_aggro`. Abilities with a timing bar
+  use `_hit` (their `_cast` plays when the bar starts). An enemy pulled into a fight by
+  damage now sends `aggro` too, once, when it switches from idle to fighting
+  (`EnemyBrain`), so the neutral stag bellows when attacked.
+- **Water near the hero** (`WaterAmbience`, `view/water_ambience.gd`, made by
+  SoundDirector; plain functions in `WaterSound`, `view/water_sound.gd`): a zone's water
+  tiles (terrains whose tiles the tileset catalog puts in the "water" category:
+  `water`, `deep_water`, `light_water`, `grey_water`; fords and rocks in water are stone)
+  are indexed in 8×8 buckets when the map loads. Every `water_update_seconds` (0.5) the
+  tiles within `water_radius_tiles` (10) are grouped into clusters (diagonals touch) and
+  the nearest tile of each of the `water_max_emitters` (3) nearest clusters gets a looping
+  `ambience_water` emitter (`AudioStreamPlayer2D`, Ambience bus, a random start in the
+  loop). Level: `water_volume_db` (0) × (1 − distance / radius)^`water_falloff` (1.5),
+  from the grid distance (Godot's own fade is off: screen pixels per tile differ by
+  direction); panned from the listener. A spot within `water_glide_tiles` (3) of an
+  emitter glides there; otherwise the old one fades out and a new one fades in over
+  `water_fade_seconds` (1). A new zone fades every emitter out. The emitters sit under
+  WaterAmbience, not the world view (freed with its map). Plays beside the zone's
+  ambience. Cost (`tools/perf/water_profile.tscn`): indexing 0.5 ms once per map; a look
+  around 0.03 ms on average (0.33 ms at worst) on Greenfields and Millbrook, twice a
+  second. Tests: `tests/unit/test_water_sound.gd`, `tests/integration/test_water_ambience.gd`.
+- 13 of the 241 keys have a file (`AUDIO_SPEC.md`).
 
 ## Act I: quests and dialogue (milestone 1 of 4, 2026-10-26)
 
@@ -2468,6 +2508,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-21 | First sound effects, zone music and water near the hero (branch `audio/new-sounds`) | User brief. Theirs: the files (trimmed, levelled; music at -18 LUFS so zones never jump in volume); Healing Touch, Water Whip and Air Palm on `_hit` (their `_cast` plays when the timing bar starts), Gust on `_cast` (no bar); the Mixkit wolf bite shared with the iron wolf (free for games, no credit); the stag's first bellow cut from a 6 s take; "Millbrook / Greenfields" for town and explore in those two zones, "The Crossing", the draft kept for the title screen and zones with no track; the water emitters (approved): radius 10, at most 3, every 0.5 s, 1 s fades, client side, Ambience bus, numbers in AudioConfig. Mine: water = terrains whose tiles the catalog puts in "water" (fords and rocks in water are stone); clusters touch diagonally; a spot that moves under 3 tiles glides (walking along a river would otherwise fade every half second), further it crossfades; level from the grid distance with falloff 1.5 and 0 dB at the water; emitters kept outside the world view so they fade out on a zone change; every enemy pulled into a fight by damage sends `aggro` (not only the stag), once per fight. |
 | 2026-11-21 | Pressing an ability's key again during its timing bar plays the bar again, alongside right-click and Space | User request after testing the ability animations: the second press had been removed that morning (Space added instead). Both stay: right-click, Space or the key; letting go of the key ends a hold, as before. |
 | 2026-11-21 | Ability animations and effects; Rock Throw two presses; Stone Skin's look and shatter; Fire Punch instant; Water Whip from 0.45 s | User brief (all eight facings, user choice; "defaults fine": the phase model, walking shows the ability's pose, stone look on Stone Skin, my frame rates). My choices: strike frames read off the art (table in **Ability animations and effects**); hits on strike frames without delaying taps, by playing the frames before the strike during the bar and the rest from the strike when it goes off (heroes had no strike timing before: only creatures' `timed_abilities`); Rock Throw keeps a timing bar, adapted (3 s, tap 0.6–2.6, crit 0.9–1.1, no press throws at miss power through a client press at the end, Cast Move Speed 0); the throw and the whip go off after a release delay taken from the art (0.15 s, 0.29 s), paying mana and cooldown then and not re-checking range; the flying rock is the still moved and spun in code (FX-10-2 barely tumbles); effects drawn in the back-to-front pass on the tile under them; stone tint baked once per sheet; the mound cut from stone_shatter by height and colours (thin scraps remain). |
 | 2026-11-21 | Timing bars are played with right-click or Space only; the ability's own key no longer plays its bar | User request. My choices: Space is a new reserved action (`timing_press`), so it can't be bound to an action bar slot; letting Space go ends a hold, like right-click; a second press of the ability's key during its bar is ignored (another ability's key still switches). |
