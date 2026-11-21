@@ -94,13 +94,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-172 keys, 9 with a file, 163 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+172 keys, 11 with a file, 161 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
 | Key | Plays when | File |
 |-----|-----------|------|
-| `ui_click` | any button is pressed | **missing** |
+| `ui_click` | any button is pressed | yes |
 | `ui_close` | a window closes | **missing** |
 | `ui_coins` | buying or selling at a vendor | **missing** |
 | `ui_equip` | putting on or taking off gear | **missing** |
@@ -266,7 +266,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `creature_old_grizzlehide_aggro` | Old Grizzlehide notices a hero and starts a fight | **missing** |
 | `creature_old_grizzlehide_charge` | Charge is used | **missing** |
 | `creature_old_grizzlehide_charge_hit` | Charge lands on someone | **missing** |
-| `creature_old_grizzlehide_cleave` | Cleave is used | **missing** |
+| `creature_old_grizzlehide_cleave` | Cleave is used | yes |
 | `creature_old_grizzlehide_cleave_hit` | Cleave lands on someone | **missing** |
 | `creature_old_grizzlehide_death` | Old Grizzlehide dies | **missing** |
 | `creature_old_grizzlehide_hurt` | Old Grizzlehide takes damage | **missing** |

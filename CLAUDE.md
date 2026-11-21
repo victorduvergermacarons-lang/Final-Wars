@@ -413,7 +413,8 @@ is missing from it.
 - **First sound effects** (2026-11-20, the user's uploads): `world_level_up`,
   `ui_quest_accept`, `ui_quest_complete`, `water_healing_touch_hit`, `water_whip_hit`,
   `air_palm_hit`, `air_gust_cast`, `creature_wolf_bite` and `creature_iron_wolf_bite`
-  (the same file). Each was trimmed of lead-in silence, made mono (UI stays stereo),
+  (the same file, from Mixkit), then `ui_click` (levelled by peak, −6 dB: too short to
+  measure loudness) and `creature_old_grizzlehide_cleave`. Each was trimmed of lead-in silence, made mono (UI stays stereo),
   levelled to `AUDIO_SPEC.md`'s targets with a peak limiter, faded out over 30 ms and
   saved as 16-bit 44.1 kHz WAV. No ambience files yet.
 - **Heartland music:** `audio/music/music_town_heartland.ogg` ("Millbrook / Greenfields",
