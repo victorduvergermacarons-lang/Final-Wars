@@ -61,7 +61,7 @@ func _run() -> void:
 	var art: CreatureArtDef = ContentDB.heroes[&"adventurer"].art
 	await _shot("ha0_idle")
 	# Abilities: element (cast), then the weapon sets with their weapon in hand.
-	for shot in [["ha1_cast", &"F01", null], ["ha2_sword_slash", &"S01", &"travelers_longsword"],
+	for shot in [["ha1_cast", &"F03", null], ["ha2_sword_slash", &"S01", &"travelers_longsword"],
 			["ha3_sword_lunge", &"S04", &"travelers_longsword"], ["ha4_bow_quick_shot", &"B01", &"hunters_shortbow"],
 			["ha5_bow_aimed_shot", &"B02", &"hunters_shortbow"]]:
 		for h in heroes:
@@ -113,4 +113,38 @@ func _run() -> void:
 		await get_tree().process_frame
 	view.camera.follow(view.actor_screen_pos(heroes[1]).lerp(view.actor_screen_pos(heroes[6]), 0.5), 0.0, true)
 	await _shot("ha11_hit_eight_facings")
+	for h in heroes:
+		h.anim.hit = Hero.NEVER
+	# 2026-11-21: the ability animations, eight facings each (same layout). A frame
+	# from the middle of what plays when it goes off (or its wind-up during a bar).
+	var shots := [["ha12_fire_punch", &"F01"], ["ha13_fire_kick", &"F02"], ["ha14_water_heal", &"W01"],
+			["ha15_water_whip", &"W02"], ["ha16_air_palm", &"A01"], ["ha17_air_gust", &"A02"],
+			["ha18_earth_punch", &"E01"], ["ha19_stone_skin_cast", &"E02"]]
+	for shot in shots:
+		for h in heroes:
+			h.anim.act = shot[1]
+			var own := art.ability_anim(shot[1])
+			var first := CreatureAnimator.action_first_frame(h, art)
+			var left := (art.frame_count(own.anim) - first) / art.anim_fps(own.anim)
+			h.anim.act_at = t - left * 0.5
+		await _shot(shot[0])
+	for h in heroes:
+		h.anim.act_at = Hero.NEVER
+	# Rock Throw's wind-up: the root (with the rock rising), then the hold.
+	for pair in [["ha20_earth_root", 0.5], ["ha21_earth_hold", 1.6]]:
+		for h in heroes:
+			h.casting = {"ability": ContentDB.abilities[&"E01"], "kind": "timing",
+					"start": t - art.duration("earth_root") * pair[1], "end": t + 3.0}
+		await _shot(pair[0])
+	for h in heroes:
+		h.casting = {}
+	# Stone Skin: the grey-stone look while it lasts, then the armour shattering.
+	for h in heroes:
+		h.buffs.apply(ContentDB.buffs[&"stone_skin"], session.now(), 0.0, h.id)
+	await _shot("ha22_stone_skin_look")
+	for h in heroes:
+		h.buffs.remove(&"stone_skin")
+		h.anim.buff_end = t - art.duration("stone_shatter") * 0.4
+		h.anim.buff_end_anim = "stone_shatter"
+	await _shot("ha23_stone_shatter")
 	get_tree().quit()
