@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MusicTrackDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/music_track_def.gd" id="1_music"]
+
+[resource]
+script = ExtResource("1_music")
+id = &"town_millbrook"
+display_name = "Millbrook / Greenfields"
+file = "res://audio/music/music_town_millbrook.ogg"
+contexts = Array[int]([1, 2])
+zones = Array[StringName]([&"town", &"greenfields"])

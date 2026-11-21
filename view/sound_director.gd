@@ -24,6 +24,8 @@ var _hurt_at := {} # enemy id -> last hurt sound time (not every tick of fire)
 const HURT_GAP := 0.4
 const MUSIC_EVERY := 0.25
 var _music_wait := 0.0
+## Water near the local hero (looping emitters; WaterAmbience).
+var water: WaterAmbience
 
 
 func setup(p_session, p_client: ClientState, p_view: WorldView) -> void:
@@ -31,6 +33,10 @@ func setup(p_session, p_client: ClientState, p_view: WorldView) -> void:
 	client = p_client
 	catalog = SoundCatalog.new(ContentDB)
 	view = p_view
+	water = WaterAmbience.new()
+	water.name = "WaterAmbience"
+	add_child(water)
+	water.setup(session, view, Audio.config)
 	session.events_received.connect(_on_events)
 	_update_music(true)
 
@@ -92,6 +98,8 @@ func _update_music(zone_changed: bool = false) -> void:
 ## A new map: new listener, ambience and music.
 func on_zone_changed(new_view: WorldView) -> void:
 	view = new_view
+	if water != null:
+		water.set_view(new_view)
 	_update_music(true)
 	Audio.play(&"world_zone_enter")
 
