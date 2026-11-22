@@ -76,7 +76,8 @@ func reload() -> void:
 	if not _icons_checked:
 		_icons_checked = true
 		for id in Icons.missing(items, abilities):
-			push_warning("No icon for %s (shows the placeholder): add it with tools/pull_icons.py" % id)
+			push_warning("No icon for %s: add it with tools/pull_icons.py (until then it shows %s)"
+					% [id, "its name" if Icons.KEEP_NAME.has(StringName(id.get_slice(" ", 1))) else "the placeholder"])
 	if OS.is_debug_build():
 		for w in CastResolver.dodge_warnings(abilities.values(), rules):
 			print("DODGE WARNING: " + w)

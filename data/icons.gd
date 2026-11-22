@@ -161,7 +161,7 @@ static func bbcode(tex: Texture2D, screen_scale: float = -1.0) -> String:
 		screen_scale = window_scale()
 	var k := maxi(floori(screen_scale + 0.0001), 1)
 	var size := Vector2(tex.get_size()) * k / maxf(screen_scale, 0.01)
-	return "[img width=%s height=%s]%s[/img]" % [str(size.x), str(size.y), tex.resource_path]
+	return "[img width=%d height=%d]%s[/img]" % [roundi(size.x), roundi(size.y), tex.resource_path]
 
 
 ## A tooltip control: the icon (at 1x in screen pixels) beside `text`, in the
