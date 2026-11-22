@@ -6746,6 +6746,811 @@
         "type": "generations",
         "generations": 1.0
       }
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.0235363908873664
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-3-drops-into-a-low-springy-c": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019848435984717475
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-4-presses-the-palms-together": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023316835628615487
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019516676240497167
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+earth-stance-2-plants-the-feet-and-slams": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01850425440735287
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+earth-stance-3-steps-into-a-very-wide-lo": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019022660195827483
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+earth-stance-4-lifts-both-arms-high-over": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.020632575538423327
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+earth-stance-5-spreads-both-arms-wide-an": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018219851248794133
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+water-stance-1-one-hand-draws-up-from-th": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018649371537897322
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+water-stance-2-both-hands-trace-a-large-": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.026939697947767044
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+water-stance-3-both-hands-gather-in-fron": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02327501618199878
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+water-stance-4-both-arms-swing-up-and-ou": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.027301354163222845
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+water-stance-5-raises-both-arms-high-and": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01984984400537279
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+air-stance-1-light-hop-onto-the-balls-of": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019435792009035745
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+air-stance-2-turns-once-on-the-spot-with": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018728927671909333
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+air-stance-3-hops-up-and-lands-balanced-": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018765257636706036
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.03202033770746655
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+air-stance-5-raises-both-arms-straight-u": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.0189854690167639
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-push-thrusts-both-open-palms-str": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01937684479686949
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-channel-holds-both-palms-forward": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.022301527195506626
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-overhead-slam-raises-both-arms-h": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018529976235495675
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-ground-press-crouches-and-presse": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018669595539569855
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-breath-inhales-deeply-with-the-c": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.026603617575433516
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+lightning-bending-two-fingers-trace-a-qu": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01824419797129101
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+combustion-focus-brings-both-hands-up-be": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019867855979336633
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-spin-attack-spins-a-full-turn-wi": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018360806485017138
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-leap-strike-jumps-forward-and-up": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.0237603298690584
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-dash-crouches-and-bursts-forward": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019292576392491656
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-flight-airborne-loop-the-body-le": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023745836277802787
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+air-scooter-ride-loop-of-crouching-and-b": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018550381640593208
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-blessing-a-gentle-two-handed-ges": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023827169126934476
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-revive-kneels-on-one-knee-and-sl": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019852938804361557
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-control-both-hands-clawed-and-tw": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019539747854073843
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-taunt-stomps-forward-with-the-ch": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018773619949817657
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+bending-storm-call-both-arms-circle-over": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.027149394187662337
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -7468,6 +8273,48 @@
         "FX-15-15",
         "FX-15-16",
         "FX-15-17"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-22",
+      "made": [
+        "PL-01-1+fire-stance-2-settles-into-a-firebending",
+        "PL-01-1+fire-stance-3-drops-into-a-low-springy-c",
+        "PL-01-1+fire-stance-4-presses-the-palms-together",
+        "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide",
+        "PL-01-1+earth-stance-2-plants-the-feet-and-slams",
+        "PL-01-1+earth-stance-3-steps-into-a-very-wide-lo",
+        "PL-01-1+earth-stance-4-lifts-both-arms-high-over",
+        "PL-01-1+earth-stance-5-spreads-both-arms-wide-an",
+        "PL-01-1+water-stance-1-one-hand-draws-up-from-th",
+        "PL-01-1+water-stance-2-both-hands-trace-a-large-",
+        "PL-01-1+water-stance-3-both-hands-gather-in-fron",
+        "PL-01-1+water-stance-4-both-arms-swing-up-and-ou",
+        "PL-01-1+water-stance-5-raises-both-arms-high-and",
+        "PL-01-1+air-stance-1-light-hop-onto-the-balls-of",
+        "PL-01-1+air-stance-2-turns-once-on-the-spot-with",
+        "PL-01-1+air-stance-3-hops-up-and-lands-balanced-",
+        "PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir",
+        "PL-01-1+air-stance-5-raises-both-arms-straight-u",
+        "PL-01-1+bending-push-thrusts-both-open-palms-str",
+        "PL-01-1+bending-channel-holds-both-palms-forward",
+        "PL-01-1+bending-overhead-slam-raises-both-arms-h",
+        "PL-01-1+bending-ground-press-crouches-and-presse",
+        "PL-01-1+bending-breath-inhales-deeply-with-the-c",
+        "PL-01-1+lightning-bending-two-fingers-trace-a-qu",
+        "PL-01-1+combustion-focus-brings-both-hands-up-be",
+        "PL-01-1+bending-spin-attack-spins-a-full-turn-wi",
+        "PL-01-1+bending-leap-strike-jumps-forward-and-up",
+        "PL-01-1+bending-dash-crouches-and-bursts-forward",
+        "PL-01-1+bending-flight-airborne-loop-the-body-le",
+        "PL-01-1+air-scooter-ride-loop-of-crouching-and-b",
+        "PL-01-1+bending-blessing-a-gentle-two-handed-ges",
+        "PL-01-1+bending-revive-kneels-on-one-knee-and-sl",
+        "PL-01-1+bending-control-both-hands-clawed-and-tw",
+        "PL-01-1+bending-taunt-stomps-forward-with-the-ch",
+        "PL-01-1+bending-storm-call-both-arms-circle-over"
       ],
       "failed": [],
       "stopped": ""

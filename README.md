@@ -669,6 +669,216 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a column of pale wind rising around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprit</sub>
 
+### PL-01-1+fire-stance-2-settles-into-a-firebending · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
+
+### PL-01-1+fire-stance-4-presses-the-palms-together · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
+### PL-01-1+earth-stance-2-plants-the-feet-and-slams · Hero base body (2026-11-22)
+
+![PL-01-1+earth-stance-2-plants-the-feet-and-slams](art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earth stance 2: plants the feet and slams both forearms together in front of the chest, ending with fists raised in a heavy guard</sub>
+
+### PL-01-1+earth-stance-3-steps-into-a-very-wide-lo · Hero base body (2026-11-22)
+
+![PL-01-1+earth-stance-3-steps-into-a-very-wide-lo](art/PL-01/PL-01-1+earth-stance-3-steps-into-a-very-wide-lo_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earth stance 3: steps into a very wide low barefoot stance and presses one palm toward the ground, head tilted as if listening to it</sub>
+
+### PL-01-1+earth-stance-4-lifts-both-arms-high-over · Hero base body (2026-11-22)
+
+![PL-01-1+earth-stance-4-lifts-both-arms-high-over](art/PL-01/PL-01-1+earth-stance-4-lifts-both-arms-high-over_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earth stance 4: lifts both arms high overhead with straining effort as if holding a huge boulder above the head, and holds it there</sub>
+
+### PL-01-1+earth-stance-5-spreads-both-arms-wide-an · Hero base body (2026-11-22)
+
+![PL-01-1+earth-stance-5-spreads-both-arms-wide-an](art/PL-01/PL-01-1+earth-stance-5-spreads-both-arms-wide-an_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earth stance 5: spreads both arms wide and turns slowly in place as if raising a ring of boulders around the body, ending feet wide</sub>
+
+### PL-01-1+water-stance-1-one-hand-draws-up-from-th · Hero base body (2026-11-22)
+
+![PL-01-1+water-stance-1-one-hand-draws-up-from-th](art/PL-01/PL-01-1+water-stance-1-one-hand-draws-up-from-th_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: water stance 1: one hand draws up from the hip and circles once overhead as if pulling a rope of water around the body, ending relaxed</sub>
+
+### PL-01-1+water-stance-2-both-hands-trace-a-large- · Hero base body (2026-11-22)
+
+![PL-01-1+water-stance-2-both-hands-trace-a-large-](art/PL-01/PL-01-1+water-stance-2-both-hands-trace-a-large-_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: water stance 2: both hands trace a large circle around the waist as if spinning a hoop of water around the body, knees softly bent</sub>
+
+### PL-01-1+water-stance-3-both-hands-gather-in-fron · Hero base body (2026-11-22)
+
+![PL-01-1+water-stance-3-both-hands-gather-in-fron](art/PL-01/PL-01-1+water-stance-3-both-hands-gather-in-fron_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: water stance 3: both hands gather in front of the chest as if cradling a floating sphere of water, rocking gently forward</sub>
+
+### PL-01-1+water-stance-4-both-arms-swing-up-and-ou · Hero base body (2026-11-22)
+
+![PL-01-1+water-stance-4-both-arms-swing-up-and-ou](art/PL-01/PL-01-1+water-stance-4-both-arms-swing-up-and-ou_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: water stance 4: both arms swing up and outward, then hang heavy and curved at the sides as if wrapped in long arms of water</sub>
+
+### PL-01-1+water-stance-5-raises-both-arms-high-and · Hero base body (2026-11-22)
+
+![PL-01-1+water-stance-5-raises-both-arms-high-and](art/PL-01/PL-01-1+water-stance-5-raises-both-arms-high-and_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: water stance 5: raises both arms high and lets them sway like tentacles, ending in a wide swaying stance (octopus form)</sub>
+
+### PL-01-1+air-stance-1-light-hop-onto-the-balls-of · Hero base body (2026-11-22)
+
+![PL-01-1+air-stance-1-light-hop-onto-the-balls-of](art/PL-01/PL-01-1+air-stance-1-light-hop-onto-the-balls-of_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: air stance 1: light hop onto the balls of the feet, one open palm circles in front of the chest as if stirring a small swirl of wind</sub>
+
+### PL-01-1+air-stance-2-turns-once-on-the-spot-with · Hero base body (2026-11-22)
+
+![PL-01-1+air-stance-2-turns-once-on-the-spot-with](art/PL-01/PL-01-1+air-stance-2-turns-once-on-the-spot-with_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: air stance 2: turns once on the spot with both hands sweeping around the waist as if spinning a ring of air, ending light-footed</sub>
+
+### PL-01-1+air-stance-3-hops-up-and-lands-balanced- · Hero base body (2026-11-22)
+
+![PL-01-1+air-stance-3-hops-up-and-lands-balanced-](art/PL-01/PL-01-1+air-stance-3-hops-up-and-lands-balanced-_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: air stance 3: hops up and lands balanced on one foot as if standing on a small ball of air, arms out for balance</sub>
+
+### PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir · Hero base body (2026-11-22)
+
+![PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir](art/PL-01/PL-01-1+air-stance-4-both-arms-whirl-in-fast-cir_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: air stance 4: both arms whirl in fast circles at the sides as if wrapped in small cyclones, ending with palms forward</sub>
+
+### PL-01-1+air-stance-5-raises-both-arms-straight-u · Hero base body (2026-11-22)
+
+![PL-01-1+air-stance-5-raises-both-arms-straight-u](art/PL-01/PL-01-1+air-stance-5-raises-both-arms-straight-u_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: air stance 5: raises both arms straight up and spins slowly as if a column of wind rises around the body, clothes lifting</sub>
+
+### PL-01-1+bending-push-thrusts-both-open-palms-str · Hero base body (2026-11-22)
+
+![PL-01-1+bending-push-thrusts-both-open-palms-str](art/PL-01/PL-01-1+bending-push-thrusts-both-open-palms-str_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending push: thrusts both open palms straight forward from the chest in a short sharp push, then recovers</sub>
+
+### PL-01-1+bending-channel-holds-both-palms-forward · Hero base body (2026-11-22)
+
+![PL-01-1+bending-channel-holds-both-palms-forward](art/PL-01/PL-01-1+bending-channel-holds-both-palms-forward_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending channel: holds both palms forward with the body braced and shaking slightly as if pushing out a strong stream, then releases</sub>
+
+### PL-01-1+bending-overhead-slam-raises-both-arms-h · Hero base body (2026-11-22)
+
+![PL-01-1+bending-overhead-slam-raises-both-arms-h](art/PL-01/PL-01-1+bending-overhead-slam-raises-both-arms-h_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending overhead slam: raises both arms high overhead, then brings both down hard toward the ground in front, knees bending with the impact</sub>
+
+### PL-01-1+bending-ground-press-crouches-and-presse · Hero base body (2026-11-22)
+
+![PL-01-1+bending-ground-press-crouches-and-presse](art/PL-01/PL-01-1+bending-ground-press-crouches-and-presse_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending ground press: crouches and presses both palms flat down toward the ground, then rises</sub>
+
+### PL-01-1+bending-breath-inhales-deeply-with-the-c · Hero base body (2026-11-22)
+
+![PL-01-1+bending-breath-inhales-deeply-with-the-c](art/PL-01/PL-01-1+bending-breath-inhales-deeply-with-the-c_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending breath: inhales deeply with the chest rising, then leans forward and exhales hard with both hands framing the mouth</sub>
+
+### PL-01-1+lightning-bending-two-fingers-trace-a-qu · Hero base body (2026-11-22)
+
+![PL-01-1+lightning-bending-two-fingers-trace-a-qu](art/PL-01/PL-01-1+lightning-bending-two-fingers-trace-a-qu_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: lightning bending: two fingers trace a quick circle at the side, then the arm thrusts forward with two fingers pointed</sub>
+
+### PL-01-1+combustion-focus-brings-both-hands-up-be · Hero base body (2026-11-22)
+
+![PL-01-1+combustion-focus-brings-both-hands-up-be](art/PL-01/PL-01-1+combustion-focus-brings-both-hands-up-be_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: combustion focus: brings both hands up beside the forehead, leans forward and snaps the head forward as if firing a blast from the brow</sub>
+
+### PL-01-1+bending-spin-attack-spins-a-full-turn-wi · Hero base body (2026-11-22)
+
+![PL-01-1+bending-spin-attack-spins-a-full-turn-wi](art/PL-01/PL-01-1+bending-spin-attack-spins-a-full-turn-wi_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending spin attack: spins a full turn with one leg kicked out at waist height, then lands back in stance</sub>
+
+### PL-01-1+bending-leap-strike-jumps-forward-and-up · Hero base body (2026-11-22)
+
+![PL-01-1+bending-leap-strike-jumps-forward-and-up](art/PL-01/PL-01-1+bending-leap-strike-jumps-forward-and-up_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending leap strike: jumps forward and up, then crashes down with a downward kick, landing in a deep crouch</sub>
+
+### PL-01-1+bending-dash-crouches-and-bursts-forward · Hero base body (2026-11-22)
+
+![PL-01-1+bending-dash-crouches-and-bursts-forward](art/PL-01/PL-01-1+bending-dash-crouches-and-bursts-forward_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending dash: crouches and bursts forward in a fast, low dash, ending in a short skid</sub>
+
+### PL-01-1+bending-flight-airborne-loop-the-body-le · Hero base body (2026-11-22)
+
+![PL-01-1+bending-flight-airborne-loop-the-body-le](art/PL-01/PL-01-1+bending-flight-airborne-loop-the-body-le_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending flight: airborne loop, the body leaning forward in the air, legs together, arms swept back, gently bobbing</sub>
+
+### PL-01-1+air-scooter-ride-loop-of-crouching-and-b · Hero base body (2026-11-22)
+
+![PL-01-1+air-scooter-ride-loop-of-crouching-and-b](art/PL-01/PL-01-1+air-scooter-ride-loop-of-crouching-and-b_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: air scooter ride: loop of crouching and balancing on a small spinning ball of air under the feet, arms out</sub>
+
+### PL-01-1+bending-blessing-a-gentle-two-handed-ges · Hero base body (2026-11-22)
+
+![PL-01-1+bending-blessing-a-gentle-two-handed-ges](art/PL-01/PL-01-1+bending-blessing-a-gentle-two-handed-ges_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending blessing: a gentle two-handed gesture, palms lifting from low to high toward someone in front, calm and graceful</sub>
+
+### PL-01-1+bending-revive-kneels-on-one-knee-and-sl · Hero base body (2026-11-22)
+
+![PL-01-1+bending-revive-kneels-on-one-knee-and-sl](art/PL-01/PL-01-1+bending-revive-kneels-on-one-knee-and-sl_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending revive: kneels on one knee and slowly lifts both palms from the ground upward as if raising someone</sub>
+
+### PL-01-1+bending-control-both-hands-clawed-and-tw · Hero base body (2026-11-22)
+
+![PL-01-1+bending-control-both-hands-clawed-and-tw](art/PL-01/PL-01-1+bending-control-both-hands-clawed-and-tw_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending control: both hands clawed and twisting slowly as if pulling invisible strings, body tense and leaning forward</sub>
+
+### PL-01-1+bending-taunt-stomps-forward-with-the-ch · Hero base body (2026-11-22)
+
+![PL-01-1+bending-taunt-stomps-forward-with-the-ch](art/PL-01/PL-01-1+bending-taunt-stomps-forward-with-the-ch_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending taunt: stomps forward with the chest out and both arms flung wide in a shout</sub>
+
+### PL-01-1+bending-storm-call-both-arms-circle-over · Hero base body (2026-11-22)
+
+![PL-01-1+bending-storm-call-both-arms-circle-over](art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: bending storm call: both arms circle overhead faster and faster, then thrust straight up</sub>
+
 ### PL-01-3 · Hero base body (2026-11-21) ✓ approved
 
 ![PL-01-3](art/PL-01/PL-01-3_2026-11-21_1.png) ![PL-01-3](art/PL-01/PL-01-3_2026-11-21_2.png)
