@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_stats"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_item"]
+[ext_resource type="Texture2D" uid="uid://dtmp8jfgshf5v" path="res://assets/icons/items/stag_hide.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_growth"]
 script = ExtResource("1_stats")
@@ -13,6 +14,7 @@ script = ExtResource("1_stats")
 script = ExtResource("2_item")
 id = &"stag_hide"
 display_name = "Stag Hide"
+icon = ExtResource("icon_tex")
 description = "A soft red-brown hide from a steppe stag. Tanners pay for these."
 price = 8
 max_stack = 20

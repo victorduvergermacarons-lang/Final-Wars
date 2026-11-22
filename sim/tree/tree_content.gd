@@ -32,6 +32,7 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 		if row.has("mana_cost"):
 			ability.mana_cost = float(row.mana_cost)
 		ability.sheet = row
+		ability.icon = Icons.load_icon(row.get("icon", ""))
 		_apply_timing(ability, row.get("timing", {}))
 		# Walking while casting it: the sheet's percentage, else the rules' default.
 		ability.cast_move_speed = float(row.cast_move_speed_pct) / 100.0 if row.has("cast_move_speed_pct") else -1.0
@@ -46,6 +47,7 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 		var item := ItemDef.new()
 		item.id = StringName(row.item_id)
 		item.display_name = row.taught_by
+		item.icon = Icons.load_icon(Icons.item_path(item.id))
 		item.tree = row.tree
 		item.tier = row.tier
 		item.is_scroll = row.item_type == "Scroll"

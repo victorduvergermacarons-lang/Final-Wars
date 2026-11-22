@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_ywftc"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_7c3ou"]
 [ext_resource type="Resource" path="res://content/abilities/aimed_shot.tres" id="4_f5uc7"]
+[ext_resource type="Texture2D" uid="uid://chx2jyvjyl5oy" path="res://assets/icons/items/hunting_bow.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_mtgdo"]
 script = ExtResource("1_5veqp")
@@ -19,6 +20,7 @@ accuracy = 8.0
 script = ExtResource("2_ywftc")
 id = &"hunting_bow"
 display_name = "Hunting Bow"
+icon = ExtResource("icon_tex")
 slot = 8
 price = 40
 retired = true

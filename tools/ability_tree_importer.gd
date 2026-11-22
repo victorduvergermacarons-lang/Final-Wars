@@ -38,6 +38,10 @@ const HITBOX_KEYS := {"Hitbox Range": "range", "Hitbox Angle": "angle", "Hitbox 
 ## Optional numeric columns the designer may add later (decision M3-1).
 const OPTIONAL_NUMBERS := {"Base": "base", "Mana Cost": "mana_cost", "Range": "range",
 	"Duration": "duration", "Cast Move Speed (%)": "cast_move_speed_pct"}
+## Icon column (optional, 2026-11-22): the ability's icon, a path in the project
+## (assets/icons/abilities/<ID>.png). Empty: no icon (the game shows its name).
+const ICON_COLUMN := "Icon"
+const ICON_FOLDER := "assets/icons/"
 const TARGETING := ["Targeted", "Skillshot", "Ground", "Self"]
 const ELEMENTS := ["Fire", "Earth", "Water", "Air"]
 ## Scales With names -> stat keys used by the game.
@@ -154,9 +158,13 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 		var hitbox := _hitbox(cell, col, where, errors)
 		if not hitbox.is_empty():
 			a.hitbox = hitbox
+		var icon := _icon(cell.call(ICON_COLUMN) if col.has(ICON_COLUMN) else "", where, errors, warnings)
+		if icon != "":
+			a.icon = icon
 		var extra := {}
 		for h in col:
-			if not REQUIRED_COLUMNS.has(h) and not TIMING_COLUMNS.has(h) and not HITBOX_COLUMNS.has(h):
+			if not REQUIRED_COLUMNS.has(h) and not TIMING_COLUMNS.has(h) and not HITBOX_COLUMNS.has(h) \
+					and h != ICON_COLUMN:
 				var v: String = cell.call(h)
 				if OPTIONAL_NUMBERS.has(h):
 					if v != "":
@@ -195,6 +203,20 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 	var data := {"source": source, "tiers": tier_list, "trees": trees, "abilities": abilities,
 			"items": items, "rules": _rules(sheets.get(RULES, []))}
 	return {"data": data, "errors": errors, "warnings": warnings}
+
+
+## The Icon cell: a .png path under assets/icons/ (an error otherwise); a file that
+## doesn't exist is a warning (the game shows the placeholder icon).
+static func _icon(v: String, where: String, errors: PackedStringArray, warnings: PackedStringArray) -> String:
+	v = v.strip_edges().trim_prefix("res://")
+	if v == "":
+		return ""
+	if not v.begins_with(ICON_FOLDER) or not v.ends_with(".png"):
+		errors.append("%s: Icon \"%s\" isn't a .png under %s" % [where, v, ICON_FOLDER])
+		return ""
+	if not FileAccess.file_exists("res://" + v):
+		warnings.append("%s: Icon file %s doesn't exist" % [where, v])
+	return v
 
 
 ## Item / id slug: "Scroll of the Fireball" -> "scroll_of_the_fireball".

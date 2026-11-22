@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_62vdx"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_oml8x"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_tyira"]
+[ext_resource type="Texture2D" uid="uid://v8b23fw6k2iy" path="res://assets/icons/items/iron_helm.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_favgx"]
 script = ExtResource("1_62vdx")
@@ -18,6 +19,7 @@ phys_def = 12.0
 script = ExtResource("2_oml8x")
 id = &"iron_helm"
 display_name = "Iron Helm"
+icon = ExtResource("icon_tex")
 slot = 0
 price = 30
 stats = SubResource("Resource_lvts5")

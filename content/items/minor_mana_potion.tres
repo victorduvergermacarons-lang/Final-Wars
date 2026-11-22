@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_72ll0"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_yc7gx"]
 [ext_resource type="Resource" path="res://content/abilities/drink_mana_potion.tres" id="4_enita"]
+[ext_resource type="Texture2D" uid="uid://c5u4n24paw3f6" path="res://assets/icons/items/minor_mana_potion.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_rerbn"]
 script = ExtResource("1_lfhfx")
@@ -15,6 +16,7 @@ script = ExtResource("1_lfhfx")
 script = ExtResource("2_72ll0")
 id = &"minor_mana_potion"
 display_name = "Minor Mana Potion"
+icon = ExtResource("icon_tex")
 description = "Restores 40% of your max Mana. Shares a 30 s cooldown with other potions."
 price = 20
 max_stack = 20

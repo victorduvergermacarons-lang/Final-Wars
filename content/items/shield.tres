@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_ridx4"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_5icf3"]
 [ext_resource type="Resource" path="res://content/abilities/block.tres" id="4_dl15q"]
+[ext_resource type="Texture2D" uid="uid://beg3qbghiqaec" path="res://assets/icons/items/shield.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_10sm4"]
 script = ExtResource("1_ocxbd")
@@ -19,6 +20,7 @@ phys_def = 30.0
 script = ExtResource("2_ridx4")
 id = &"shield"
 display_name = "Shield"
+icon = ExtResource("icon_tex")
 slot = 6
 price = 25
 retired = true

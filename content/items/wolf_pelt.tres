@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_0cekb"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_y5d6t"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_6se53"]
+[ext_resource type="Texture2D" uid="uid://bfuwycki8iwli" path="res://assets/icons/items/wolf_pelt.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_4wsec"]
 script = ExtResource("1_0cekb")
@@ -14,6 +15,7 @@ script = ExtResource("1_0cekb")
 script = ExtResource("2_y5d6t")
 id = &"wolf_pelt"
 display_name = "Wolf Pelt"
+icon = ExtResource("icon_tex")
 description = "A thick grey pelt. Hilda pays for these."
 price = 8
 max_stack = 20

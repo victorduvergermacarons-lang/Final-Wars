@@ -48,14 +48,14 @@ def main(path):
     wb = Workbook()
     ws = wb.active
     ws.title = "Items"
-    cols = ["ID", "Name", "Kind", "Slot", "Rarity", "Tree", "Tier", "Element", "Teaches"]
+    cols = ["ID", "Name", "Icon", "Kind", "Slot", "Rarity", "Tree", "Tier", "Element", "Teaches"]
     cols += used + [f"{s} / level" for s in used]
     cols += ["Price", "Sells for", "Stack", "Retired", "Obtained from", "Description"]
     header(ws, cols)
     for i in data["items"]:
         got = "; ".join(sorted({f"{s['how']}: {s['from']}" + (f" ({s['detail']})" if s["detail"] else "")
                                 for s in by_item.get(i["id"], [])}))
-        row = [i["id"], i["name"], i["kind"], i["slot"], i["rarity"], i["tree"], i["tier"] or None,
+        row = [i["id"], i["name"], i.get("icon") or "(no icon yet)", i["kind"], i["slot"], i["rarity"], i["tree"], i["tier"] or None,
                i["element"].capitalize() or None, i["teaches"] or None]
         row += [i["stats"].get(s) for s in used] + [i["growth"].get(s) for s in used]
         row += [i["price"], i["sells_for"], i["stack"], "yes" if i["retired"] else None,
@@ -63,7 +63,7 @@ def main(path):
         ws.append(row)
         fill = RARITY_FILL.get(i["rarity"])
         if fill and fill != "FFFFFF":
-            ws.cell(ws.max_row, 5).fill = PatternFill("solid", fgColor=fill)
+            ws.cell(ws.max_row, 6).fill = PatternFill("solid", fgColor=fill)
     widths(ws)
 
     ws = wb.create_sheet("Sources")
@@ -90,6 +90,7 @@ def main(path):
         "(a hero gains 50% of the growth of everything worn, and of the scroll in the learning slot, at each level-up).",
         "Scrolls and tree weapons (145) are built from design/Ability_Tree.xlsx and content/tree/tuning.tres.",
         "Sells for: what a vendor pays (25% of the price).",
+        "Icon: the item's icon file (36x36 pixel art; see CLAUDE.md, Icons). Swap one on the art-drafts branch, then tools/pull_icons.py.",
         "Enemy drops: personal loot, rolled for each hero who fought; a quest drop only rolls while you still need it.",
     ]:
         ws.append([line])

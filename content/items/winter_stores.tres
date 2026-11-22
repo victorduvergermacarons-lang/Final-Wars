@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_stats"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_item"]
+[ext_resource type="Texture2D" uid="uid://dxrne08bh7xjv" path="res://assets/icons/items/winter_stores.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_growth"]
 script = ExtResource("1_stats")
@@ -13,6 +14,7 @@ script = ExtResource("1_stats")
 script = ExtResource("2_item")
 id = &"winter_stores"
 display_name = "Winter Stores"
+icon = ExtResource("icon_tex")
 description = "Sacks of oats and dried meat from the Crossing, for a clan that has lost its herds."
 quest_item = true
 max_stack = 20

@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_loubc"]
 [ext_resource type="Resource" path="res://content/abilities/heal.tres" id="4_5v4vl"]
 [ext_resource type="Resource" path="res://content/abilities/resurrect.tres" id="5_6peby"]
+[ext_resource type="Texture2D" uid="uid://c8e4se7cex0aq" path="res://assets/icons/items/holy_charm.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_cana0"]
 script = ExtResource("1_7f18q")
@@ -22,6 +23,7 @@ mag_def = 5.0
 script = ExtResource("2_pcx0w")
 id = &"holy_charm"
 display_name = "Holy Charm"
+icon = ExtResource("icon_tex")
 slot = 7
 price = 25
 retired = true

@@ -70,6 +70,10 @@ func reload() -> void:
 	items.merge(built.items)
 	_link_tree_items()
 	_time_releases()
+	# One warning per item or bending ability without an icon file (it shows the
+	# placeholder; see Icons), the way missing sound files warn and play nothing.
+	for id in Icons.missing(items, abilities):
+		push_warning("No icon for %s (shows the placeholder): add it with tools/pull_icons.py" % id)
 	if OS.is_debug_build():
 		for w in CastResolver.dodge_warnings(abilities.values(), rules):
 			print("DODGE WARNING: " + w)
