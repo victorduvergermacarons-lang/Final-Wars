@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-103 of 103 stills done. Newest first. These are drafts: copy the
+123 of 191 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -50,8 +50,148 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-08-6.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
 - `approved/FX-10-3.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
 - `approved/FX-10-5.png` unlocks the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it
+- `approved/FX-11-1.png` unlocks the fire burst blasts to the right and breaks into embers
+- `approved/FX-11-2.png` unlocks the flame bolt flickers as it flies to the right, the flame bolt pops into a small burst of sparks
+- `approved/FX-11-3.png` unlocks the sparks crackle and flicker, then fade
+- `approved/FX-11-4.png` unlocks the golden flames rise up around the ring and fade into embers
+- `approved/FX-11-5.png` unlocks the band of flame flickers and roars in a seamless loop
+- `approved/FX-11-6.png` unlocks the low flames flicker across the tile in a seamless loop
+- `approved/FX-11-7.png` unlocks the heat haze shimmers and embers rise in a loop, the heat bursts outward in a ring of flame and fades
+- `approved/FX-11-8.png` unlocks the flame puffs flare up and die down
+- `approved/FX-11-9.png` unlocks the fire lash snaps out to the right, cracks straight, then breaks into embers
+- `approved/FX-11-10.png` unlocks the flame jets roar and flicker in a seamless loop
+- `approved/FX-11-11.png` unlocks the lightning circles faster and faster, then shoots out to the right
+- `approved/FX-11-12.png` unlocks the fire ring explodes outward and the flame wings rise, then fade
+- `approved/FX-11-13.png` unlocks the fireball flickers as it flies to the right, the fireball explodes into a round burst of flame and smoke
+- `approved/FX-11-14.png` unlocks the sun halo pulses and its rays turn slowly in a loop
+- `approved/FX-11-15.png` unlocks the lightning bolt strikes across in a bright flash and flickers out
+- `approved/FX-11-16.png` unlocks the ring of fire spins around and flares, then fades
+- `approved/FX-11-17.png` unlocks the firestorm swirls and roars in a seamless loop
+- `approved/FX-11-18.png` unlocks the cone of fire breath blasts outward to the right, then thins into embers
+- `approved/FX-11-19.png` unlocks the explosion bursts from a bright point, a shockwave ring spreads, then smoke fades
+- `approved/FX-12-1.png` unlocks the ground shock spreads outward from the middle in a ring of dust and fades
 
 ## Drafts
+
+### FX-11-1 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-1](art/FX-11/FX-11-1_2026-11-22.png)
+
+<sub>a short burst of orange and yellow fire about 16 px long with a white-hot core, blasting to the right from a point near the left edge. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright rea</sub>
+
+### FX-11-2 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-2](art/FX-11/FX-11-2_2026-11-22.png)
+
+<sub>a small bolt of flame about 10 px long with a short flickering tail, pointing to the right, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, </sub>
+
+### FX-11-3 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-3](art/FX-11/FX-11-3_2026-11-22.png)
+
+<sub>a small crackle of blue-white electric sparks about 14 px across, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, i</sub>
+
+### FX-11-4 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-4](art/FX-11/FX-11-4_2026-11-22.png)
+
+<sub>warm golden flames rising softly from the ground in a ring the width of a standing person, the middle left empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 c</sub>
+
+### FX-11-5 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-5](art/FX-11/FX-11-5_2026-11-22.png)
+
+<sub>a straight band of orange flame running from the left edge to the right edge, about 10 px thick. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art,</sub>
+
+### FX-11-6 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-6](art/FX-11/FX-11-6_2026-11-22.png)
+
+<sub>one flat isometric ground tile, a 32x16 diamond, covered in low flickering flames. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1</sub>
+
+### FX-11-7 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-7](art/FX-11/FX-11-7_2026-11-22.png)
+
+<sub>a glowing red-orange heat haze with rising embers around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, </sub>
+
+### FX-11-8 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-8](art/FX-11/FX-11-8_2026-11-22.png)
+
+<sub>a few small flame puffs on the ground, about 12 px across. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, </sub>
+
+### FX-11-9 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-9](art/FX-11/FX-11-9_2026-11-22.png)
+
+<sub>a long thin lash of fire curving from the left edge to the right edge in a gentle S, bright tip. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art,</sub>
+
+### FX-11-10 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-10](art/FX-11/FX-11-10_2026-11-22.png)
+
+<sub>two short jets of flame pointing straight down, side by side, about 12 px long, as if shooting from a person's feet. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x3</sub>
+
+### FX-11-11 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-11](art/FX-11/FX-11-11_2026-11-22.png)
+
+<sub>blue-white lightning curling in a circle around an empty middle, about 40 px across. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2</sub>
+
+### FX-11-12 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-12](art/FX-11/FX-11-12_2026-11-22.png)
+
+<sub>a ring of fire bursting outward from the ground with two flame shapes like phoenix wings rising at the sides. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canva</sub>
+
+### FX-11-13 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-13](art/FX-11/FX-11-13_2026-11-22.png)
+
+<sub>a round fireball about 12 px wide with a short flame tail, pointing to the right, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canv</sub>
+
+### FX-11-14 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-14](art/FX-11/FX-11-14_2026-11-22.png)
+
+<sub>a blazing golden sun halo floating where a standing person's head and shoulders would be, rays pointing outward. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 ca</sub>
+
+### FX-11-15 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-15](art/FX-11/FX-11-15_2026-11-22.png)
+
+<sub>a jagged bolt of blue-white lightning crossing the canvas from the left edge to the right edge. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, </sub>
+
+### FX-11-16 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-16](art/FX-11/FX-11-16_2026-11-22.png)
+
+<sub>a flat ring of fire on the ground, an isometric ellipse about 56 px wide, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isom</sub>
+
+### FX-11-17 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-17](art/FX-11/FX-11-17_2026-11-22.png)
+
+<sub>one flat isometric ground tile, a 32x16 diamond, with tall swirling flames, a raging firestorm. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, </sub>
+
+### FX-11-18 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-18](art/FX-11/FX-11-18_2026-11-22.png)
+
+<sub>a cone of orange fire spreading from a point at the left edge toward the right, widening as it goes. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel </sub>
+
+### FX-11-19 · Fire ability effects for the stance rework (2026-11-22)
+
+![FX-11-19](art/FX-11/FX-11-19_2026-11-22.png)
+
+<sub>a large explosion of fire and white shockwave, round, filling most of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 </sub>
+
+### FX-12-1 · Earth ability effects for the stance rework (2026-11-22)
+
+![FX-12-1](art/FX-12/FX-12-1_2026-11-22.png)
+
+<sub>a flat ring of dust and small pebbles on the ground around an empty middle, an isometric ellipse about 48 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 </sub>
 
 ### PL-01-3 · Hero base body (2026-11-21) ✓ approved
 

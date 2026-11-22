@@ -5866,6 +5866,206 @@
       "preview": [
         "art/FX-10/FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha_2026-11-21_preview.gif"
       ]
+    },
+    "FX-11-1": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-1_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-2": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-2_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-3": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-3_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-4": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-4_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-5": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-5_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-6": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-6_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-7": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-7_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-8": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-8_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-9": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-9_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-10": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-10_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-11": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-11_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-12": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-12_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-13": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-13_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-14": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-14_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-15": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-15_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-16": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-16_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-17": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-17_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-18": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-18_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-11-19": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-11/FX-11-19_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-12-1": {
+      "date": "2026-11-22",
+      "files": [
+        "art/FX-12/FX-12-1_2026-11-22.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
     }
   },
   "failures": {},
@@ -6486,6 +6686,33 @@
         "FX-10-1+the-rock-smashes-into-the-ground-and-bre",
         "FX-10-2+the-rock-flies-forward-to-the-right-acro",
         "FX-10-4+the-flame-arc-sweeps-around-fast-in-a-ha"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-22",
+      "made": [
+        "FX-11-1",
+        "FX-11-2",
+        "FX-11-3",
+        "FX-11-4",
+        "FX-11-5",
+        "FX-11-6",
+        "FX-11-7",
+        "FX-11-8",
+        "FX-11-9",
+        "FX-11-10",
+        "FX-11-11",
+        "FX-11-12",
+        "FX-11-13",
+        "FX-11-14",
+        "FX-11-15",
+        "FX-11-16",
+        "FX-11-17",
+        "FX-11-18",
+        "FX-11-19",
+        "FX-12-1"
       ],
       "failed": [],
       "stopped": ""
