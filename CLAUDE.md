@@ -30,7 +30,8 @@ checklist `docs/playtest-checklist-act1-full.md`. **Free movement** (branch
 attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **Free movement**,
 `docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Ability animations and effects** (branch
 `feature/ability-animations`, 2026-11-21): Rock Throw's two presses, Stone Skin's stone look, Fire
-Punch instant; see that section and `docs/playtest-checklist-ability-animations.md`. **Map editor**
+Punch instant; see that section and `docs/playtest-checklist-ability-animations.md`. **Icons** (branch `feature/icons`, 2026-11-22):
+every bending ability and nearly every item; see **Icons**. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
 new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
@@ -1405,6 +1406,64 @@ network check's brute-dodging guest now does it in the Wilds. As it was:
   - projectiles, telegraphs, ground zones and raised terrain are cleared
   - every buff and debuff in the zone is removed, and heroes there leave combat
 
+## Icons (branch `feature/icons`, 2026-11-22)
+
+Every Fire, Earth, Water and Air ability (85) and almost every item (172) has an icon,
+cut from four bought sprite sheets on the `art-drafts` branch (`icons/`, with a README,
+two CSV maps, contact sheets and every sliced icon). Helper: `Icons` (`data/icons.gd`).
+- **Where they live:** `assets/icons/abilities/<ID>.png` (33×33: a 32 px tile plus a 1 px
+  shadow; named by ability ID, so renaming an ability keeps its icon) and
+  `assets/icons/items/<item_id>.png` (36×36, with room around the art for glows), plus
+  `assets/icons/placeholder.png` (a "?" tile).
+- **In the data:**
+  - Abilities: the **Icon** column at the end of the Abilities tab of
+    `design/Ability_Tree.xlsx` (a path such as `assets/icons/abilities/F07.png`; added by
+    `tools/once/add_icon_column.py`), read by the importer (an error if it isn't a .png
+    under `assets/icons/`, a warning if the file is missing) into `ability_tree.json`
+    (`icon`), and set as `AbilityDef.icon` by `TreeContent`. Sword, Bow and Hammer rows are
+    empty: those abilities keep showing their name.
+  - Items: `ItemDef.icon`. The item files in `content/items/` point at their PNG
+    (`tools/once/link_item_icons.py`); scrolls and tree weapons (built from the sheet) get
+    `assets/icons/items/<item_id>.png` by id in `TreeContent`. The six retired items have
+    icons too. `design/Item_Database.xlsx` has an **Icon** column (`tools/item_database.gd`).
+- **Missing:** the placeholder, and one warning per missing id when the content first
+  loads (`ContentDB`, once per run), never a crash. Exceptions: weapon-tree abilities
+  (their name) and the five Legs items in `Icons.KEEP_NAME` (their name). Known gaps
+  today (`tests/unit/test_icons.gd`): those five Legs items (the sheets have no trousers)
+  and the 20 element set pieces of 2026-11-20 (the placeholder).
+- **Import settings** (pixel art): lossless (`compress/mode=0`), no mipmaps, no
+  fix-alpha-border, in each icon's `.import` file. Godot has no per-folder import presets,
+  so `tools/pull_icons.py` writes these for every icon it copies, and a test checks every
+  file. Nearest filtering is the project's default for every texture.
+- **Drawing:** never stretched; always a whole number of **screen** pixels per art pixel,
+  centred (`Icons.fit_rect` / `draw_fitted`, `screen_scale_of` counts the window's stretch,
+  like the world camera). In text (`Icons.bbcode`): k screen pixels per art pixel, k = the
+  whole part of the window's stretch.
+
+  | Where | 1280×720 | 1920×1080 |
+  |-------|----------|-----------|
+  | Action bar (56 UI px; under the cooldown and global sweep; key and potion count kept) | 1× | 2× |
+  | Ability tree nodes (44 UI px square left of the text; greyscale and dimmed while locked or not in the game) | 1× | 2× |
+  | Bag slots on the book page (art frame 26) | 1× | 2× |
+  | Equipment and learning slots (inside the rarity border) | 1× | 2× |
+  | Dark item slots (64 UI px) | 1× | 2× |
+  | Spellbook rows, item buttons (quest reward choices) | 1× | 1× |
+  | Text: item tooltips, ability tooltips (action bar, tree, spellbook), shop, trade and roll rows, quest rewards, boss loot summary, loot feed (Log tab) | 1× | 1× (24 UI px) |
+  | Loot on the ground (at the beam's top, half the world art's pixel size) | 1× | 2× |
+
+  Tree nodes are 14 UI px apart (were 22) with 12 px text beside an icon, so names keep
+  a word per line.
+- **Add or swap an icon:** change it on `art-drafts` (`icons/abilities/` or
+  `icons/items/`, cut from `icons/sliced/`), then
+  `git fetch origin art-drafts && python3 tools/pull_icons.py [IDs…]` and
+  `godot --headless --path . --import`. A new ability also needs its Icon cell on the
+  sheet (then re-import the sheet); a new item file, `icon = ExtResource(...)` (or run
+  `tools/once/link_item_icons.py`). Take a gap off `KNOWN_GAPS` in the test once its art
+  is in. Never merge `art-drafts`.
+- Tests: `tests/unit/test_icons.gd`. Screenshots: `tests/visual/icon_shots.tscn` (action
+  bar, trees, inventory with every rarity, tooltips, spellbook, ground loot, boss
+  summary, roll and trade windows, at both sizes).
+
 ## Menu book (branch `ui-book-menus`, 2026-10-21; work in progress)
 
 - **Art:** `art/menu_book.aseprite` (the user's "livre menu", still being drawn; marks
@@ -1424,7 +1483,8 @@ network check's brute-dodging guest now does it in the Wilds. As it was:
   Accessory (165, 140), boots = Feet (130, 178) (confirmed by the user). An empty slot
   draws nothing (the picture shows). A filled equipment slot covers its picture with
   paper and shows the full rarity border, centred as drawn; a filled bag slot is tinted
-  30% with the rarity's colour. Then the item name in ink, until items have icons.
+  30% with the rarity's colour. Then the item's icon (since 2026-11-22; the name in ink
+  for items with no art).
   "Equipment" and "Bag" head the pages; the learning text sits left of the boots, gold
   centred under the bag. Other menus (loot) keep the dark slots.
 - **Item tooltips** (`ItemTooltip.text` / `label`, text 13, 280 wide; every tooltip opens
@@ -1825,6 +1885,7 @@ assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
 assets/heroes/   hero sprite sheets (art data in content/heroes/; source frames in art/heroes/)
 assets/effects/  effect sprite sheets (FxDef data in content/effects/; source frames in art/effects/)
+assets/icons/    ability and item icons (pixel art; tools/pull_icons.py brings them from art-drafts)
 assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera, decor painter (placeholder objects)
@@ -2508,6 +2569,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-22 | Icons for every bending ability and item, from the art-drafts icons/ folder | User brief and choices ("go with your recommendations"): the 20 element set pieces with no art are known gaps showing the placeholder (with a warning), like the five Legs items (which keep their name); whole-number scales count screen pixels (1× at 720p, 2× at 1080p where a slot fits it); 1× rich-text icons accepted in the loot feed and lists (taller lines). My choices: an Icon column on the sheet; `ItemDef.icon` / `AbilityDef.icon`; per-file import settings (Godot has no folder presets) written by `tools/pull_icons.py` and checked by a test; the action bar shows the icon instead of the name (weapon arts keep their name); tree nodes closer together (14) with 12 px text beside the icon; locked or not-in-game abilities in greyscale; ground loot icons at half the world art's pixel size (full size covered the hero); a warning once per run. **Need art:** `acolytes_leggings`, `emberstitch_trousers`, `riverweave_breeches`, `quarrymans_trousers`, `breezecloth_leggings` (no leg art in the sheets), and the 20 element set pieces (`quarrymans_gloves`, `_hood`, `_boots`, `granite_ring`, `bedrock_charm`; `riverweave_gloves`, `_hood`, `_sandals`, `tidestone_ring`, `pearl_pendant`; `emberstitch_gloves`, `_cap`, `_boots`, `cinder_ring`, `ashglass_pendant`; `breezecloth_wraps`, `_hood`, `_shoes`, `gale_ring`, `feather_charm`). |
 | 2026-11-21 | First sound effects, zone music and water near the hero (branch `audio/new-sounds`) | User brief. Theirs: the files (trimmed, levelled; music at -18 LUFS so zones never jump in volume); Healing Touch, Water Whip and Air Palm on `_hit` (their `_cast` plays when the timing bar starts), Gust on `_cast` (no bar); the Mixkit wolf bite shared with the iron wolf (free for games, no credit); the stag's first bellow cut from a 6 s take; "Millbrook / Greenfields" for town and explore in those two zones, "The Crossing", the draft kept for the title screen and zones with no track; the water emitters (approved): radius 10, at most 3, every 0.5 s, 1 s fades, client side, Ambience bus, numbers in AudioConfig. Mine: water = terrains whose tiles the catalog puts in "water" (fords and rocks in water are stone); clusters touch diagonally; a spot that moves under 3 tiles glides (walking along a river would otherwise fade every half second), further it crossfades; level from the grid distance with falloff 1.5 and 0 dB at the water; emitters kept outside the world view so they fade out on a zone change; every enemy pulled into a fight by damage sends `aggro` (not only the stag), once per fight. |
 | 2026-11-21 | Pressing an ability's key again during its timing bar plays the bar again, alongside right-click and Space | User request after testing the ability animations: the second press had been removed that morning (Space added instead). Both stay: right-click, Space or the key; letting go of the key ends a hold, as before. |
 | 2026-11-21 | Ability animations and effects; Rock Throw two presses; Stone Skin's look and shatter; Fire Punch instant; Water Whip from 0.45 s | User brief (all eight facings, user choice; "defaults fine": the phase model, walking shows the ability's pose, stone look on Stone Skin, my frame rates). My choices: strike frames read off the art (table in **Ability animations and effects**); hits on strike frames without delaying taps, by playing the frames before the strike during the bar and the rest from the strike when it goes off (heroes had no strike timing before: only creatures' `timed_abilities`); Rock Throw keeps a timing bar, adapted (3 s, tap 0.6–2.6, crit 0.9–1.1, no press throws at miss power through a client press at the end, Cast Move Speed 0); the throw and the whip go off after a release delay taken from the art (0.15 s, 0.29 s), paying mana and cooldown then and not re-checking range; the flying rock is the still moved and spun in code (FX-10-2 barely tumbles); effects drawn in the back-to-front pass on the tile under them; stone tint baked once per sheet; the mound cut from stone_shatter by height and colours (thin scraps remain). |
