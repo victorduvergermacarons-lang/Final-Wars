@@ -1,0 +1,178 @@
+Item ID,Name,Kind,Slot,Rarity,Tree,Retired,Icon source,File
+acolytes_leggings,Acolyte's Leggings,Equipment,Legs,Uncommon,,,no leg art in the sheets,
+emberstitch_shirt,Emberstitch Shirt,Equipment,Chest,Common,,,chestpiece_39,icons/items/emberstitch_shirt.png
+glacier_scroll,Glacier Scroll,Scroll,,Uncommon,Water,,parchment + ice_01,icons/items/glacier_scroll.png
+scroll_of_the_fireball,Scroll of the Fireball,Scroll,,Uncommon,Fire,,parchment + fire_20,icons/items/scroll_of_the_fireball.png
+menders_scroll,Mender's Scroll,Scroll,,Common,Water,,parchment + water_06,icons/items/menders_scroll.png
+ember_fist_scroll,Ember Fist Scroll,Scroll,,Common,Fire,,parchment + fire_27,icons/items/ember_fist_scroll.png
+rusty_shortsword,Rusty Shortsword,Weapon,Main Hand,Common,Sword,,sword_06,icons/items/rusty_shortsword.png
+titans_maul,Titan's Maul,Weapon,Two Hand,Epic,Hammer,,warhammer_27,icons/items/titans_maul.png
+worldbreaker,Worldbreaker,Weapon,Two Hand,Epic,Hammer,,warhammer_34,icons/items/worldbreaker.png
+juggernaut_maul,Juggernaut Maul,Weapon,Two Hand,Epic,Hammer,,warhammer_22,icons/items/juggernaut_maul.png
+thunder_hammer,Thunder Hammer,Weapon,Two Hand,Epic,Hammer,,warhammer_29,icons/items/thunder_hammer.png
+earthshatter,Earthshatter,Weapon,Two Hand,Epic,Hammer,,warhammer_32,icons/items/earthshatter.png
+meteor_maul,Meteor Maul,Weapon,Two Hand,Epic,Hammer,,warhammer_31,icons/items/meteor_maul.png
+unyielding_hammer,Unyielding Hammer,Weapon,Two Hand,Rare,Hammer,,warhammer_15,icons/items/unyielding_hammer.png
+tremor_maul,Tremor Maul,Weapon,Two Hand,Rare,Hammer,,warhammer_25,icons/items/tremor_maul.png
+armorbreaker,Armorbreaker,Weapon,Two Hand,Rare,Hammer,,warhammer_23,icons/items/armorbreaker.png
+cyclone_hammer,Cyclone Hammer,Weapon,Two Hand,Rare,Hammer,,warhammer_28,icons/items/cyclone_hammer.png
+crater_maul,Crater Maul,Weapon,Two Hand,Rare,Hammer,,warhammer_20,icons/items/crater_maul.png
+pendulum_hammer,Pendulum Hammer,Weapon,Two Hand,Uncommon,Hammer,,warhammer_10,icons/items/pendulum_hammer.png
+sweeper_maul,Sweeper Maul,Weapon,Two Hand,Uncommon,Hammer,,warhammer_17,icons/items/sweeper_maul.png
+wyvern_maul,Wyvern Maul,Weapon,Two Hand,Uncommon,Hammer,,warhammer_13,icons/items/wyvern_maul.png
+skullcracker,Skullcracker,Weapon,Two Hand,Uncommon,Hammer,,warhammer_16,icons/items/skullcracker.png
+shockwave_maul,Shockwave Maul,Weapon,Two Hand,Uncommon,Hammer,,warhammer_11,icons/items/shockwave_maul.png
+broad_maul,Broad Maul,Weapon,Two Hand,Common,Hammer,,warhammer_04,icons/items/broad_maul.png
+bulwark_hammer,Bulwark Hammer,Weapon,Two Hand,Common,Hammer,,warhammer_01,icons/items/bulwark_hammer.png
+stormcaller_bow,Stormcaller Bow,Weapon,Two Hand,Epic,Bow,,bow_23,icons/items/stormcaller_bow.png
+deadeye_greatbow,Deadeye Greatbow,Weapon,Two Hand,Epic,Bow,,bow_14,icons/items/deadeye_greatbow.png
+ricochet_bow,Ricochet Bow,Weapon,Two Hand,Epic,Bow,,bow_30,icons/items/ricochet_bow.png
+executioners_bow,Executioner's Bow,Weapon,Two Hand,Epic,Bow,,bow_37,icons/items/executioners_bow.png
+windstring_bow,Windstring Bow,Weapon,Two Hand,Epic,Bow,,bow_20,icons/items/windstring_bow.png
+rainmaker,Rainmaker,Weapon,Two Hand,Epic,Bow,,bow_33,icons/items/rainmaker.png
+shadow_bow,Shadow Bow,Weapon,Two Hand,Rare,Bow,,bow_22,icons/items/shadow_bow.png
+repeater_bow,Repeater Bow,Weapon,Two Hand,Rare,Bow,,bow_24,icons/items/repeater_bow.png
+trappers_bow,Trapper's Bow,Weapon,Two Hand,Rare,Bow,,bow_17,icons/items/trappers_bow.png
+snipers_greatbow,Sniper's Greatbow,Weapon,Two Hand,Rare,Bow,,bow_31,icons/items/snipers_greatbow.png
+volley_bow,Volley Bow,Weapon,Two Hand,Rare,Bow,,bow_13,icons/items/volley_bow.png
+eagles_perch_bow,Eagle's Perch Bow,Weapon,Two Hand,Uncommon,Bow,,bow_16,icons/items/eagles_perch_bow.png
+pinning_recurve,Pinning Recurve,Weapon,Two Hand,Uncommon,Bow,,bow_15,icons/items/pinning_recurve.png
+viper_bow,Viper Bow,Weapon,Two Hand,Uncommon,Bow,,bow_28,icons/items/viper_bow.png
+piercer_longbow,Piercer Longbow,Weapon,Two Hand,Uncommon,Bow,,bow_11,icons/items/piercer_longbow.png
+triple_string_bow,Triple-String Bow,Weapon,Two Hand,Uncommon,Bow,,bow_12,icons/items/triple_string_bow.png
+trackers_bow,Tracker's Bow,Weapon,Two Hand,Common,Bow,,bow_10,icons/items/trackers_bow.png
+rangers_bow,Ranger's Bow,Weapon,Two Hand,Common,Bow,,bow_03,icons/items/rangers_bow.png
+saintblade,Saintblade,Weapon,Main Hand,Epic,Sword,,sword_56,icons/items/saintblade.png
+masterwork_odachi,Masterwork Odachi,Weapon,Main Hand,Epic,Sword,,sword_33,icons/items/masterwork_odachi.png
+runeblade,Runeblade,Weapon,Main Hand,Epic,Sword,,sword_38,icons/items/runeblade.png
+shadowfang,Shadowfang,Weapon,Main Hand,Epic,Sword,,sword_45,icons/items/shadowfang.png
+mirror_blade,Mirror Blade,Weapon,Main Hand,Epic,Sword,,sword_36,icons/items/mirror_blade.png
+thousand_edge_katana,Thousand-Edge Katana,Weapon,Main Hand,Epic,Sword,,sword_50,icons/items/thousand_edge_katana.png
+focus_blade,Focus Blade,Weapon,Main Hand,Rare,Sword,,sword_34,icons/items/focus_blade.png
+dancers_katana,Dancer's Katana,Weapon,Main Hand,Rare,Sword,,sword_31,icons/items/dancers_katana.png
+headsmans_sword,Headsman's Sword,Weapon,Main Hand,Rare,Sword,,sword_13,icons/items/headsmans_sword.png
+guardians_broadsword,Guardian's Broadsword,Weapon,Main Hand,Rare,Sword,,sword_32,icons/items/guardians_broadsword.png
+whirling_scimitar,Whirling Scimitar,Weapon,Main Hand,Rare,Sword,,sword_10,icons/items/whirling_scimitar.png
+tricksters_blade,Trickster's Blade,Weapon,Main Hand,Uncommon,Sword,,sword_28,icons/items/tricksters_blade.png
+needle_estoc,Needle Estoc,Weapon,Main Hand,Uncommon,Sword,,sword_21,icons/items/needle_estoc.png
+serrated_cutlass,Serrated Cutlass,Weapon,Main Hand,Uncommon,Sword,,sword_26,icons/items/serrated_cutlass.png
+riposte_foil,Riposte Foil,Weapon,Main Hand,Uncommon,Sword,,sword_19,icons/items/riposte_foil.png
+twinfang_blade,Twinfang Blade,Weapon,Main Hand,Uncommon,Sword,,sword_24,icons/items/twinfang_blade.png
+duelists_sabre,Duelist's Sabre,Weapon,Main Hand,Common,Sword,,sword_20,icons/items/duelists_sabre.png
+militia_rapier,Militia Rapier,Weapon,Main Hand,Common,Sword,,sword_17,icons/items/militia_rapier.png
+eye_of_the_storm_codex,Eye of the Storm Codex,Scroll,,Epic,Air,,air tome + air_10,icons/items/eye_of_the_storm_codex.png
+codex_of_weightlessness,Codex of Weightlessness,Scroll,,Epic,Air,,air tome + air_07,icons/items/codex_of_weightlessness.png
+sky_dancer_codex,Sky Dancer Codex,Scroll,,Epic,Air,,air tome + air_06,icons/items/sky_dancer_codex.png
+pressure_scroll,Pressure Scroll,Scroll,,Epic,Air,,parchment + air_20,icons/items/pressure_scroll.png
+storm_front_scroll,Storm Front Scroll,Scroll,,Epic,Air,,parchment + lightning_02,icons/items/storm_front_scroll.png
+updraft_scroll,Updraft Scroll,Scroll,,Epic,Air,,parchment + air_18,icons/items/updraft_scroll.png
+hurricane_codex,Hurricane Codex,Scroll,,Epic,Air,,air tome + air_02,icons/items/hurricane_codex.png
+wind_walker_scroll,Wind Walker Scroll,Scroll,,Rare,Air,,parchment + air_14,icons/items/wind_walker_scroll.png
+cyclone_scroll,Cyclone Scroll,Scroll,,Rare,Air,,parchment + air_03,icons/items/cyclone_scroll.png
+vacuum_scroll,Vacuum Scroll,Scroll,,Rare,Air,,parchment + air_17,icons/items/vacuum_scroll.png
+sphere_scroll,Sphere Scroll,Scroll,,Rare,Air,,parchment + air_05,icons/items/sphere_scroll.png
+twister_scroll,Twister Scroll,Scroll,,Rare,Air,,parchment + air_04,icons/items/twister_scroll.png
+rolling_wind_scroll,Rolling Wind Scroll,Scroll,,Uncommon,Air,,parchment + air_12,icons/items/rolling_wind_scroll.png
+glider_scroll,Glider Scroll,Scroll,,Uncommon,Air,,parchment + air_11,icons/items/glider_scroll.png
+hushing_scroll,Hushing Scroll,Scroll,,Uncommon,Air,,parchment + air_09,icons/items/hushing_scroll.png
+vortex_scroll,Vortex Scroll,Scroll,,Uncommon,Air,,parchment + air_01,icons/items/vortex_scroll.png
+snaring_wind_scroll,Snaring Wind Scroll,Scroll,,Common,Air,,parchment + air_13,icons/items/snaring_wind_scroll.png
+codex_of_returning_tides,Codex of Returning Tides,Scroll,,Epic,Water,,water tome + water_05,icons/items/codex_of_returning_tides.png
+ocean_spirit_codex,Ocean Spirit Codex,Scroll,,Epic,Water,,water tome + water_25,icons/items/ocean_spirit_codex.png
+full_moon_codex,Full Moon Codex,Scroll,,Epic,Water,,water tome + ice_26,icons/items/full_moon_codex.png
+eight_arms_scroll,Eight Arms Scroll,Scroll,,Epic,Water,,parchment + water_23,icons/items/eight_arms_scroll.png
+crimson_moon_codex,Crimson Moon Codex,Scroll,,Epic,Water,,water tome + blood_11,icons/items/crimson_moon_codex.png
+steam_scroll,Steam Scroll,Scroll,,Epic,Water,,parchment + water_03,icons/items/steam_scroll.png
+monsoon_scroll,Monsoon Scroll,Scroll,,Epic,Water,,parchment + water_09,icons/items/monsoon_scroll.png
+rising_tide_scroll,Rising Tide Scroll,Scroll,,Epic,Water,,parchment + water_11,icons/items/rising_tide_scroll.png
+tsunami_codex,Tsunami Codex,Scroll,,Epic,Water,,water tome + water_20,icons/items/tsunami_codex.png
+scroll_of_second_life,Scroll of Second Life,Scroll,,Rare,Water,,parchment + water_21,icons/items/scroll_of_second_life.png
+frozen_tomb_scroll,Frozen Tomb Scroll,Scroll,,Rare,Water,,parchment + water_13,icons/items/frozen_tomb_scroll.png
+bubble_ward_scroll,Bubble Ward Scroll,Scroll,,Rare,Water,,parchment + water_08,icons/items/bubble_ward_scroll.png
+pressure_jet_scroll,Pressure Jet Scroll,Scroll,,Rare,Water,,parchment + water_02,icons/items/pressure_jet_scroll.png
+spirit_oasis_scroll,Spirit Oasis Scroll,Scroll,,Rare,Water,,parchment + water_10,icons/items/spirit_oasis_scroll.png
+tectonic_codex,Tectonic Codex,Scroll,,Epic,Earth,,earth tome + earth_14,icons/items/tectonic_codex.png
+citadel_codex,Citadel Codex,Scroll,,Epic,Earth,,earth tome + earth_26,icons/items/citadel_codex.png
+mountain_codex,Mountain Codex,Scroll,,Epic,Earth,,earth tome + earth_09,icons/items/mountain_codex.png
+molten_core_codex,Molten Core Codex,Scroll,,Epic,Earth,,earth tome + fire_09,icons/items/molten_core_codex.png
+desert_wind_scroll,Desert Wind Scroll,Scroll,,Epic,Earth,,parchment + earth_10,icons/items/desert_wind_scroll.png
+iron_will_scroll,Iron Will Scroll,Scroll,,Epic,Earth,,parchment + earth_22,icons/items/iron_will_scroll.png
+stone_armor_codex,Stone Armor Codex,Scroll,,Rare,Earth,,earth tome + earth_13,icons/items/stone_armor_codex.png
+scroll_of_seismic_sight,Scroll of Seismic Sight,Scroll,,Rare,Earth,,parchment + earth_04,icons/items/scroll_of_seismic_sight.png
+trench_scroll,Trench Scroll,Scroll,,Rare,Earth,,parchment + earth_19,icons/items/trench_scroll.png
+quake_scroll,Quake Scroll,Scroll,,Rare,Earth,,parchment + earth_05,icons/items/quake_scroll.png
+fortress_scroll,Fortress Scroll,Scroll,,Rare,Earth,,parchment + earth_07,icons/items/fortress_scroll.png
+scroll_of_the_stone_path,Scroll of the Stone Path,Scroll,,Uncommon,Earth,,parchment + earth_27,icons/items/scroll_of_the_stone_path.png
+rumble_scroll,Rumble Scroll,Scroll,,Uncommon,Earth,,parchment + earth_12,icons/items/rumble_scroll.png
+boulder_scroll,Boulder Scroll,Scroll,,Uncommon,Earth,,parchment + earth_23,icons/items/boulder_scroll.png
+sinkhole_scroll,Sinkhole Scroll,Scroll,,Uncommon,Earth,,parchment + earth_16,icons/items/sinkhole_scroll.png
+codex_of_the_zenith_sun,Codex of the Zenith Sun,Scroll,,Epic,Fire,,fire tome + fire_04,icons/items/codex_of_the_zenith_sun.png
+azure_flame_codex,Azure Flame Codex,Scroll,,Epic,Fire,,fire tome + blue_fire,icons/items/azure_flame_codex.png
+scroll_of_redirected_lightning,Scroll of Redirected Lightning,Scroll,,Epic,Fire,,parchment + lightning_19,icons/items/scroll_of_redirected_lightning.png
+scroll_of_the_third_eye,Scroll of the Third Eye,Scroll,,Epic,Fire,,parchment + fire_26,icons/items/scroll_of_the_third_eye.png
+storm_fire_scroll,Storm-Fire Scroll,Scroll,,Epic,Fire,,parchment + lightning_12,icons/items/storm_fire_scroll.png
+inferno_codex,Inferno Codex,Scroll,,Epic,Fire,,fire tome + fire_01,icons/items/inferno_codex.png
+phoenix_scroll,Phoenix Scroll,Scroll,,Epic,Fire,,parchment + fire_05,icons/items/phoenix_scroll.png
+dragons_breath_scroll,Dragon's Breath Scroll,Scroll,,Rare,Fire,,parchment + fire_29,icons/items/dragons_breath_scroll.png
+shimmering_heat_scroll,Shimmering Heat Scroll,Scroll,,Rare,Fire,,parchment + fire_06,icons/items/shimmering_heat_scroll.png
+firestream_scroll,Firestream Scroll,Scroll,,Rare,Fire,,parchment + fire_11,icons/items/firestream_scroll.png
+scroll_of_rising_jets,Scroll of Rising Jets,Scroll,,Rare,Fire,,parchment + fire_13,icons/items/scroll_of_rising_jets.png
+wheel_of_flame_scroll,Wheel of Flame Scroll,Scroll,,Rare,Fire,,parchment + fire_12,icons/items/wheel_of_flame_scroll.png
+granite_skin_scroll,Granite Skin Scroll,Scroll,,Common,Earth,,parchment + earth_08,icons/items/granite_skin_scroll.png
+quarry_maul,Quarry Maul,Weapon,Two Hand,Common,Hammer,,warhammer_06,icons/items/quarry_maul.png
+iron_mallet,Iron Mallet,Weapon,Two Hand,Common,Hammer,,warhammer_02,icons/items/iron_mallet.png
+shield,Shield,Equipment,Off Hand,Common,,yes,shield_16,icons/items/shield.png
+yew_longbow,Yew Longbow,Weapon,Two Hand,Common,Bow,,bow_02,icons/items/yew_longbow.png
+open_palm_scroll,Open Palm Scroll,Scroll,,Common,Air,,parchment + air_16,icons/items/open_palm_scroll.png
+breeze_scroll,Breeze Scroll,Scroll,,Common,Air,,parchment + air_08,icons/items/breeze_scroll.png
+featherstep_scroll,Featherstep Scroll,Scroll,,Common,Air,,parchment + air_15,icons/items/featherstep_scroll.png
+pebble_scroll,Pebble Scroll,Scroll,,Common,Earth,,parchment + earth_03,icons/items/pebble_scroll.png
+pillar_scroll,Pillar Scroll,Scroll,,Common,Earth,,parchment + earth_25,icons/items/pillar_scroll.png
+stomp_scroll,Stomp Scroll,Scroll,,Common,Earth,,parchment + earth_01,icons/items/stomp_scroll.png
+travelers_longsword,Traveler's Longsword,Weapon,Main Hand,Common,Sword,,sword_07,icons/items/travelers_longsword.png
+hunters_shortbow,Hunter's Shortbow,Weapon,Two Hand,Common,Bow,,bow_01,icons/items/hunters_shortbow.png
+frost_shard_scroll,Frost Shard Scroll,Scroll,,Common,Water,,parchment + ice_06,icons/items/frost_shard_scroll.png
+scroll_of_the_current,Scroll of the Current,Scroll,,Common,Water,,parchment + water_19,icons/items/scroll_of_the_current.png
+cinder_kick_scroll,Cinder Kick Scroll,Scroll,,Common,Fire,,parchment + fire_07,icons/items/cinder_kick_scroll.png
+spark_scroll,Spark Scroll,Scroll,,Common,Fire,,parchment + fire_10,icons/items/spark_scroll.png
+sun_warriors_breath_scroll,Sun Warrior's Breath Scroll,Scroll,,Common,Fire,,parchment + fire_16,icons/items/sun_warriors_breath_scroll.png
+river_lash_scroll,River Lash Scroll,Scroll,,Common,Water,,parchment + water_12,icons/items/river_lash_scroll.png
+wave_scroll,Wave Scroll,Scroll,,Uncommon,Water,,parchment + water_22,icons/items/wave_scroll.png
+leech_tide_scroll,Leech Tide Scroll,Scroll,,Uncommon,Water,,parchment + water_17,icons/items/leech_tide_scroll.png
+gale_scroll,Gale Scroll,Scroll,,Uncommon,Air,,parchment + air_19,icons/items/gale_scroll.png
+scroll_of_burning_feet,Scroll of Burning Feet,Scroll,,Uncommon,Fire,,parchment + fire_21,icons/items/scroll_of_burning_feet.png
+mist_scroll,Mist Scroll,Scroll,,Uncommon,Water,,parchment + water_04,icons/items/mist_scroll.png
+scorched_earth_scroll,Scorched Earth Scroll,Scroll,,Uncommon,Fire,,parchment + fire_18,icons/items/scorched_earth_scroll.png
+tidal_scroll,Tidal Scroll,Scroll,,Uncommon,Water,,parchment + water_24,icons/items/tidal_scroll.png
+lash_of_embers_scroll,Lash of Embers Scroll,Scroll,,Uncommon,Fire,,parchment + fire_14,icons/items/lash_of_embers_scroll.png
+wolf_pelt,Wolf Pelt,Material,,Common,,,crafting_080,icons/items/wolf_pelt.png
+bulwark_scroll,Bulwark Scroll,Scroll,,Uncommon,Earth,,parchment + earth_02,icons/items/bulwark_scroll.png
+wolf_fang,Wolf Fang,Material,,Common,,,crafting_090,icons/items/wolf_fang.png
+sword,Sword,Equipment,Main Hand,Common,,yes,sword_01,icons/items/sword.png
+winter_stores,Winter Stores,Quest item,,Common,,,misc_02,icons/items/winter_stores.png
+swift_boots,Swift Boots,Equipment,Feet,Common,,,boots_21,icons/items/swift_boots.png
+stag_hide,Stag Hide,Material,,Common,,,crafting_105,icons/items/stag_hide.png
+sunstone_shard,Sunstone Shard,Material,,Common,,,crafting_006,icons/items/sunstone_shard.png
+stag_antler,Stag Antler,Material,,Common,,,crafting_083,icons/items/stag_antler.png
+staff,Staff,Equipment,Main Hand,Common,,yes,staff_17,icons/items/staff.png
+riverweave_shirt,Riverweave Shirt,Equipment,Chest,Common,,,chestpiece_34,icons/items/riverweave_shirt.png
+rangers_gloves,Ranger's Gloves,Equipment,Hands,Rare,,,gloves_03,icons/items/rangers_gloves.png
+riverweave_breeches,Riverweave Breeches,Equipment,Legs,Common,,,no leg art in the sheets,
+quarrymans_trousers,Quarryman's Trousers,Equipment,Legs,Common,,,no leg art in the sheets,
+iron_helm,Iron Helm,Equipment,Head,Common,,,headpiece_12,icons/items/iron_helm.png
+iron_wolf_pelt,Iron Wolf Pelt,Quest item,,Common,,,custom/iron_wolf_pelt,icons/items/iron_wolf_pelt.png
+minor_health_potion,Minor Health Potion,Consumable,,Common,,,potions_02,icons/items/minor_health_potion.png
+minor_mana_potion,Minor Mana Potion,Consumable,,Common,,,potions_11,icons/items/minor_mana_potion.png
+quarrymans_shirt,Quarryman's Shirt,Equipment,Chest,Common,,,chestpiece_48,icons/items/quarrymans_shirt.png
+hunting_bow,Hunting Bow,Equipment,Two Hand,Common,,yes,bow_05,icons/items/hunting_bow.png
+holy_charm,Holy Charm,Equipment,Accessory,Common,,yes,amulet_21,icons/items/holy_charm.png
+grizzlehide_mantle,Grizzlehide Mantle,Equipment,Chest,Epic,,,chestpiece_26,icons/items/grizzlehide_mantle.png
+greataxe,Greataxe,Equipment,Two Hand,Uncommon,,yes,greataxe_01,icons/items/greataxe.png
+goblin_fetish,Goblin Fetish,Quest item,,Common,,,misc_54,icons/items/goblin_fetish.png
+fever_draught,Fever Draught,Quest item,,Common,,,potions_20,icons/items/fever_draught.png
+emberstitch_trousers,Emberstitch Trousers,Equipment,Legs,Common,,,no leg art in the sheets,
+breezecloth_shirt,Breezecloth Shirt,Equipment,Chest,Common,,,chestpiece_45,icons/items/breezecloth_shirt.png
+breezecloth_leggings,Breezecloth Leggings,Equipment,Legs,Common,,,no leg art in the sheets,
+boar_tusk,Boar Tusk,Material,,Common,,,crafting_079,icons/items/boar_tusk.png
+frostweave_robe,Frostweave Robe,Equipment,Chest,Uncommon,,,chestpiece_27,icons/items/frostweave_robe.png
+blazing_fist_scroll,Blazing Fist Scroll,Scroll,,Uncommon,Fire,,parchment + fire_15,icons/items/blazing_fist_scroll.png

@@ -1,0 +1,86 @@
+Ability ID,Ability,Branch,Mastery Required,Icon source,File
+F01,Fire Punch,Flame Martial,Fire Mastery 0,fire_27,icons/abilities/F01.png
+F02,Fire Kick,Flame Martial,Fire Mastery 0,fire_07,icons/abilities/F02.png
+F03,Fire Dart,Fire Blasts,Fire Mastery 0,fire_10,icons/abilities/F03.png
+F04,Sun Warrior's Breath,Fire Blasts,Fire Mastery 0,fire_16,icons/abilities/F04.png
+F05,Flame Dash,Flame Martial,Fire Mastery 150,fire_21,icons/abilities/F05.png
+F06,Fire Whip,Flame Martial,Fire Mastery 150,fire_14,icons/abilities/F06.png
+F07,Fireball,Fire Blasts,Fire Mastery 150,fire_20,icons/abilities/F07.png
+F08,Burning Ground,Fire Blasts,Fire Mastery 150,fire_18,icons/abilities/F08.png
+F09,Blazing Combo,Flame Martial,Fire Mastery 150,fire_15,icons/abilities/F09.png
+F10,Flame Wheel,Flame Martial,Fire Mastery 350,fire_12,icons/abilities/F10.png
+F11,Jet Propulsion,Flame Martial,Fire Mastery 350,fire_13,icons/abilities/F11.png
+F12,Fire Stream,Fire Blasts,Fire Mastery 350,fire_11,icons/abilities/F12.png
+F13,Heat Wave,Fire Blasts,Fire Mastery 350,fire_06,icons/abilities/F13.png
+F14,Breath of Fire,Fire Blasts,Fire Mastery 350,fire_29,icons/abilities/F14.png
+F15,Phoenix Kick,Flame Martial,Fire Mastery 600,fire_05,icons/abilities/F15.png
+F16,Inferno,Fire Blasts,Fire Mastery 600,fire_01,icons/abilities/F16.png
+F17,Lightning Bolt,Advanced Fire,Fire Mastery 600,lightning_12,icons/abilities/F17.png
+F18,Combustion Blast,Advanced Fire,Fire Mastery 600,fire_26,icons/abilities/F18.png
+F19,Lightning Redirection,Advanced Fire,Fire Mastery 900,lightning_19,icons/abilities/F19.png
+F20,Blue Fire,Advanced Fire,Fire Mastery 900,custom/blue_fire,icons/abilities/F20.png
+F21,Solar Zenith,Flame Martial,Fire Mastery 900,fire_04,icons/abilities/F21.png
+E01,Rock Throw,Stone Guard,Earth Mastery 0,earth_03,icons/abilities/E01.png
+E02,Stone Skin,Stone Guard,Earth Mastery 0,earth_08,icons/abilities/E02.png
+E03,Raise Pillar,Terraform,Earth Mastery 0,earth_25,icons/abilities/E03.png
+E04,Seismic Stomp,Stone Guard,Earth Mastery 0,earth_01,icons/abilities/E04.png
+E05,Earth Wall,Terraform,Earth Mastery 150,earth_02,icons/abilities/E05.png
+E06,Sinkhole,Terraform,Earth Mastery 150,earth_16,icons/abilities/E06.png
+E07,Boulder Shield,Stone Guard,Earth Mastery 150,earth_23,icons/abilities/E07.png
+E08,Rumbling Taunt,Stone Guard,Earth Mastery 150,earth_12,icons/abilities/E08.png
+E09,Earth Ramp,Terraform,Earth Mastery 150,earth_27,icons/abilities/E09.png
+E10,Fortress Stance,Stone Guard,Earth Mastery 350,earth_07,icons/abilities/E10.png
+E11,Earthquake,Terraform,Earth Mastery 350,earth_05,icons/abilities/E11.png
+E12,Trench,Terraform,Earth Mastery 350,earth_19,icons/abilities/E12.png
+E13,Seismic Sense,Stone Guard,Earth Mastery 350,earth_04,icons/abilities/E13.png
+E14,Earth Armor,Stone Guard,Earth Mastery 350,earth_13,icons/abilities/E14.png
+E15,Metalbending,Specialty Bending,Earth Mastery 600,earth_22,icons/abilities/E15.png
+E16,Sandstorm,Specialty Bending,Earth Mastery 600,earth_10,icons/abilities/E16.png
+E17,Lavabending,Specialty Bending,Earth Mastery 600,fire_09,icons/abilities/E17.png
+E18,Mountain's Stand,Stone Guard,Earth Mastery 600,earth_09,icons/abilities/E18.png
+E19,Living Fortress,Stone Guard,Earth Mastery 900,earth_26,icons/abilities/E19.png
+E20,Tectonic Shift,Terraform,Earth Mastery 900,earth_14,icons/abilities/E20.png
+W01,Healing Touch,Healing,Water Mastery 0,water_06,icons/abilities/W01.png
+W02,Water Whip,Currents,Water Mastery 0,water_12,icons/abilities/W02.png
+W03,Flow State,Blessings,Water Mastery 220,water_19,icons/abilities/W03.png
+W04,Frost Shard,Ice,Water Mastery 90,ice_06,icons/abilities/W04.png
+W05,Soothing Mist,Healing,Water Mastery 40,water_04,icons/abilities/W05.png
+W06,Water Pulse,Currents,Water Mastery 260,water_22,icons/abilities/W06.png
+W07,Leeching Tide,Currents,Water Mastery 150,water_17,icons/abilities/W07.png
+W08,Tidal Blessing,Blessings,Water Mastery 65,water_24,icons/abilities/W08.png
+W09,Ice Spikes,Ice,Water Mastery 300,ice_01,icons/abilities/W09.png
+W10,Spirit Water,Healing,Water Mastery 185,water_10,icons/abilities/W10.png
+W11,Water Jet,Currents,Water Mastery 345,water_02,icons/abilities/W11.png
+W12,Water Shield,Blessings,Water Mastery 20,water_08,icons/abilities/W12.png
+W13,Ice Prison,Ice,Water Mastery 440,water_13,icons/abilities/W13.png
+W14,Revive,Healing,Water Mastery 120,water_21,icons/abilities/W14.png
+W15,Tidal Wave,Currents,Water Mastery 545,water_20,icons/abilities/W15.png
+W16,Rising Tide,Blessings,Water Mastery 490,water_11,icons/abilities/W16.png
+W17,Healing Rain,Healing,Water Mastery 390,water_09,icons/abilities/W17.png
+W18,Steam Veil,Ice,Water Mastery 600,water_03,icons/abilities/W18.png
+W19,Bloodbending,Ice,Water Mastery 715,blood_11,icons/abilities/W19.png
+W20,Octopus Form,Currents,Water Mastery 775,water_23,icons/abilities/W20.png
+W21,Full Moon,Blessings,Water Mastery 835,ice_26,icons/abilities/W21.png
+W22,Ocean Spirit,Healing,Water Mastery 655,water_25,icons/abilities/W22.png
+W23,Tidal Resurgence,Healing,Water Mastery 900,water_05,icons/abilities/W23.png
+A01,Air Palm,Winds,Air Mastery 0,air_16,icons/abilities/A01.png
+A02,Gust,Breath,Air Mastery 0,air_08,icons/abilities/A02.png
+A03,Air Step,Flight,Air Mastery 0,air_15,icons/abilities/A03.png
+A04,Wind Snare,Winds,Air Mastery 0,air_13,icons/abilities/A04.png
+A05,Air Blast,Winds,Air Mastery 150,air_19,icons/abilities/A05.png
+A06,Vortex,Winds,Air Mastery 150,air_01,icons/abilities/A06.png
+A07,Stolen Breath,Breath,Air Mastery 150,air_09,icons/abilities/A07.png
+A08,Glide,Flight,Air Mastery 150,air_11,icons/abilities/A08.png
+A09,Air Scooter,Flight,Air Mastery 150,air_12,icons/abilities/A09.png
+A10,Tornado,Winds,Air Mastery 350,air_04,icons/abilities/A10.png
+A11,Air Sphere,Breath,Air Mastery 350,air_05,icons/abilities/A11.png
+A12,Suffocate,Breath,Air Mastery 350,air_17,icons/abilities/A12.png
+A13,Cyclone Spin,Winds,Air Mastery 350,air_03,icons/abilities/A13.png
+A14,Wind Walk,Flight,Air Mastery 350,air_14,icons/abilities/A14.png
+A15,Hurricane,Winds,Air Mastery 600,air_02,icons/abilities/A15.png
+A16,Updraft,Breath,Air Mastery 600,air_18,icons/abilities/A16.png
+A17,Storm Front,Winds,Air Mastery 600,lightning_02,icons/abilities/A17.png
+A18,Pressure Lock,Breath,Air Mastery 600,air_20,icons/abilities/A18.png
+A19,Sky Dancer,Flight,Air Mastery 600,air_06,icons/abilities/A19.png
+A20,Weightless,Flight,Air Mastery 900,air_07,icons/abilities/A20.png
+A21,Eye of the Storm,Winds,Air Mastery 900,air_10,icons/abilities/A21.png
