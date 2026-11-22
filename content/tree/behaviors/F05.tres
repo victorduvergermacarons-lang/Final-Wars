@@ -8,7 +8,7 @@
 script = ExtResource("1_achvs")
 kind = 13
 applies = 1
-base_amount = 3.0
+base_amount = 6.0
 
 [sub_resource type="Resource" id="Resource_ugjnb"]
 script = ExtResource("2_llol7")
@@ -40,7 +40,7 @@ zone_ability = SubResource("Resource_ttld7")
 [resource]
 script = ExtResource("3_a8nmm")
 id = &"F05"
-max_range = 3
+max_range = 6
 mana_cost = 10.0
 requires_line_of_sight = false
 effects = Array[ExtResource("1_achvs")]([SubResource("Resource_327yf"), SubResource("Resource_247vg")])

@@ -144,6 +144,9 @@ var sheet_hitbox: HitboxDef
 @export var charge_seconds_per_level: float = 0.5
 ## Hitting your own raised terrain (a pillar) slides it this many tiles (Stone Fist).
 @export var slides_pillar_tiles: int = 0
+## The caster steps this far (tiles) toward the aim as it goes off (Fire Punch,
+## Fire Kick), stopping at walls and units; it hits from where it started.
+@export var lunge_tiles: float = 0.0
 
 
 ## Extra levels for holding its button seconds (0 if it isn't charged).
@@ -151,6 +154,45 @@ func charge_levels(seconds: float) -> int:
 	if charge_max_extra <= 0 or charge_seconds_per_level <= 0.0:
 		return 0
 	return clampi(int(floor(seconds / charge_seconds_per_level)), 0, charge_max_extra)
+
+
+## Copies of this ability at a smaller size, by size step (sized()).
+var _sized := {}
+
+
+## This ability with its area at `fraction` of full size (2026-11-22: a held
+## ability let go early goes off where its growing area had got to). Lengths
+## (cones, lines, projectiles, dashes, throws) and radii scale; a dash's distance
+## too. Same id, cooldown, cost and damage. Itself at full size or without a hitbox.
+func sized(fraction: float) -> AbilityDef:
+	var f := snappedf(clampf(fraction, 0.05, 1.0), 0.05)
+	if f >= 1.0 or hitbox == null:
+		return self
+	if _sized.has(f):
+		return _sized[f]
+	var a: AbilityDef = duplicate(false)
+	var hb: HitboxDef = hitbox.duplicate()
+	match hb.shape:
+		HitboxDef.Shape.CONE, HitboxDef.Shape.RECT, HitboxDef.Shape.PROJECTILE, HitboxDef.Shape.DASH:
+			hb.reach *= f
+		HitboxDef.Shape.CIRCLE, HitboxDef.Shape.SELF_CIRCLE, HitboxDef.Shape.LEAP:
+			hb.radius *= f
+		HitboxDef.Shape.LOB:
+			hb.reach *= f
+			hb.radius = maxf(hb.radius * f, 0.3)
+	hb.reach = maxf(hb.reach, hb.min_reach)
+	a.hitbox = hb
+	var effects: Array[AbilityEffect] = []
+	for e in a.effects:
+		if e != null and e.kind == AbilityEffect.Kind.DASH_TO:
+			e = e.duplicate()
+			e.base_amount *= f
+		effects.append(e)
+	a.effects = effects
+	_sized[f] = a
+	return a
+
+
 const WHEEL_SLOTS := ["X", "Y", "A", "B"]
 ## Charges: uses stored up to max (base + 1 per mastery_per_charge tree Mastery);
 ## each recharges in cooldown_seconds, one at a time. 0 = no charges.

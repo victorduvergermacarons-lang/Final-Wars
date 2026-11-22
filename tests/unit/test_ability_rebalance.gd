@@ -21,7 +21,7 @@ func test_ranged_abilities_reach_two_tiles_further() -> void:
 		assert_eq(_a(id).max_range, want[id], id)
 	assert_eq(_a("W01").hitbox.reach, 4.0, "the hitbox too")
 	assert_eq(_a("F03").hitbox.reach, 6.5)
-	assert_eq(_a("F05").max_range, 3, "a dash isn't a ranged attack")
+	assert_eq(_a("F05").max_range, 6, "a dash isn't a ranged attack (6 since 2026-11-22: Flame Dash held goes up to 6)")
 	assert_eq(_a("S04").max_range, 3)
 	assert_eq(_a("S01").hitbox.reach, 1.4, "melee stays melee")
 

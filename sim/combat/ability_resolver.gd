@@ -315,7 +315,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				return
 			if ctx.continuous:
 				# Toward the aim (or the target), stopping beside whatever is in the way.
-				var want := float(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now))
+				var want := effect.base_amount + float(_extra(caster, ability, effect, ctx.now))
 				var to_aim := caster.move.pos.distance_to(ctx.cast_point)
 				var r := Hitbox.slide(ctx, caster, ctx.cast_vec, minf(want, to_aim), 0.12)
 				ctx.cast_tiles = r.path

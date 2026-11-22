@@ -61,6 +61,12 @@ static func sanitize(raw: Variant) -> Dictionary:
 				if (typeof(charge) != TYPE_FLOAT and typeof(charge) != TYPE_INT) or not is_finite(float(charge)):
 					return {}
 				out.charge = clampf(float(charge), 0.0, 30.0)
+			# A held ability let go early: its area as a share of full size.
+			var size = raw.get("size")
+			if size != null:
+				if (typeof(size) != TYPE_FLOAT and typeof(size) != TYPE_INT) or not is_finite(float(size)):
+					return {}
+				out.size = clampf(float(size), 0.05, 1.0)
 		"release", "cancel_bar", "cancel_cast":
 			pass
 		"talk":

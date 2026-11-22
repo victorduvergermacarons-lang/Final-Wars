@@ -1743,11 +1743,20 @@ Checklist: `docs/playtest-checklist-controller.md` (section 7).
   | | X (weapon) | Y | A | B | RT / Space |
   |---|---|---|---|---|---|
   | Sword / Bow / Hammer | Slash · hold Lunge / Quick Shot · hold Aimed Shot / Smash · hold Ground Slam | | | | |
-  | Fire | weapon | Fire Dart · hold Fire Whip | Flame Dash | Punch, Punch, Kick | — |
+  | Fire | weapon | Fire Dart · hold Fire Whip | Flame Dash (2 tiles, held up to 6) | Punch, Punch, Kick (each steps forward) | — |
   | Water | weapon | Water Whip | Water Pulse | Healing Touch (two presses) | to Ice |
   | Ice | weapon | Frost Shard | Ice Slide | Frost Ring | to Water |
   | Earth | weapon | Stone Fist · hold Rock Throw | Stone Skin (tap up to 3×) · hold Seismic Stomp (taunt) | Raise Pillar, held to grow | — |
   | Air | weapon | Air Blast | Air Step (long dash) | Air Palm | — |
+- **Held abilities grow** (2026-11-22, user request; `PlayerInput._growing`, `AbilityDef.sized`): a hold
+  shows its area in red (`PlayerInput.HOLD_AIM_COLOR`; also a charged pillar's tile) and the area grows: past
+  `tap_seconds` (0.2; a quicker press is the tap) from `hold_min_size` (30%) to full at the hold time, where it
+  goes off by itself; let go earlier, it goes off at the size reached (the cast intent's `size`, 0.05-1, in 5%
+  steps). Lengths (cones, lines, projectiles, dashes and their distance, throws) and radii scale; damage, cost
+  and cooldown don't. A **grow** button (Flame Dash: `{"grow": "F05", "min": 0.333}`) has no tap: 2 tiles on a
+  press, up to 6 held 1 s (its hitbox range and dash are 6 now).
+- **Punches step forward** (`AbilityDef.lunge_tiles`, after the hit, stopping at walls and units, toward each
+  press's aim): Fire Punch 0.35 tiles, Fire Kick 0.7.
 - **Dashes go the way you walk** (user request; `PlayerInput.is_dash` / `dash_point`): any ability with a
   Dash hitbox or a dash effect (Flame Dash, Air Step, Ice Slide, Lunge) aims its full reach along the
   held keys or left stick (else the way the hero is moving, else its facing), never at the cursor,
@@ -2643,6 +2652,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-22 | Held abilities show a red area that grows until they go off; let go early, they go off at that size; punches and the kick step forward; Flame Dash 2 tiles on a tap, up to 6 held | User request. Mine: a press under 0.2 s is still the tap; the area starts at 30%; what scales per shape (lengths, radii, a dash's distance; not damage); 5% size steps; the step comes after the hit (0.35 / 0.7 tiles), toward each press's aim; Flame Dash is a hold with no tap on the element hold time (1 s). |
 | 2026-11-22 | Dashes go the way you walk; weapon holds 2 s | User request (weapon holds were 3 s). Mine: a dash with no movement goes the way the hero faces; Lunge counts as a dash. |
 | 2026-11-22 | Element kits (Hades style): per-element buttons with taps, holds, combos and modes; attacks without targets; heals on allies in two presses; temporary instant hero combat; Stone Fist, Ice Slide, Frost Ring; stacking Stone Skin, charged Raise Pillar, a punch slides the pillar 5 tiles; Air Step a dash filling wind charges spent by Air Palm and Air Blast; four test characters | User brief and choices: Air Y Air Blast / B Air Palm, +30% damage and +1 knockback per charge with a stun at 3; holds 3 s for weapons and 1 s for elements; the punch slides the pillar 5 tiles; the hero stands still while choosing an ally. Mine: the kits in a JSON file; 'thrust chart' read as Frost Shard; the new abilities' numbers; Fire combo reset 1 s, Fire Punch 0.4 s and Fire Kick 1.2 s cooldowns; Stone Skin 0.3 s cooldown; pillar +1 level per 0.6 s up to +2; the slide's damage and knockback; Air Step 5 tiles every 2.5 s; a 0.25 s global cooldown while combat is instant; tests keep the classic rules; heroes without an element keep the plain wheel. |
 | 2026-11-22 | Wheel slots by role: the weapon on X, ranged attacks on Y, a dash (Fire, Air) or Earth's resistance buff on A, the rest on B | User request. Mine: a Wheel Slot column in the sheet (weapon arts need none); the Y and A lists; Air Step counts as Air's dash; a newcomer takes its slot back from an auto-placed ability that doesn't belong there, never from one the player dragged; no-role abilities go B, X, Y, A; older saved layouts start over. |

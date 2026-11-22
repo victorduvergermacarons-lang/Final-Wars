@@ -107,6 +107,12 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 			var poly := shape_outline(ctx, caster, ability, point)
 			events.append({"type": "cast", "source": caster.id, "target": -1, "ability": ability.id, "outline": poly})
 			hit_shape(ctx, caster, ability, origin, dir, point, events)
+			if ability.lunge_tiles > 0.0 and caster.alive:
+				# A punch steps forward (Fire Punch, Fire Kick), after the hit.
+				var r := Hitbox.slide(ctx, caster, dir, ability.lunge_tiles, 0.1)
+				if r.end.distance_to(r.from) > 0.01:
+					events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
+							"from": MoveState.tile_of(r.from), "to": MoveState.tile_of(r.end), "end": r.end})
 		HitboxDef.Shape.CIRCLE, HitboxDef.Shape.LOB:
 			var center := clamp_point(caster, point, hb.reach)
 			var poly := Hitbox.outline("circle", center, dir, hb.radius, 0.0, center)

@@ -978,7 +978,7 @@ func _draw_outlines(grid: GridModel) -> void:
 	if client != null and not client.aim.is_empty():
 		var poly: PackedVector2Array = client.aim.get("outline", PackedVector2Array())
 		if poly.size() >= 3:
-			_draw_ground_poly(grid, poly, AIM_COLOR if client.aim.valid else AIM_BAD_COLOR)
+			_draw_ground_poly(grid, poly, client.aim.get("color", AIM_COLOR if client.aim.valid else AIM_BAD_COLOR))
 
 
 ## A grid-space polygon drawn flat on the ground, at the height under its centre
@@ -1251,7 +1251,7 @@ func _tile_marks() -> Dictionary:
 		for t in h.tiles:
 			_mark(marks, t, c)
 	if client != null and not client.aim.is_empty():
-		var c := AIM_COLOR if client.aim.valid else AIM_BAD_COLOR
+		var c: Color = client.aim.get("color", AIM_COLOR if client.aim.valid else AIM_BAD_COLOR)
 		for t in client.aim.tiles:
 			_mark(marks, t, c)
 	return marks

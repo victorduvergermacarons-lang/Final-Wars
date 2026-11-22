@@ -24,7 +24,7 @@ static func modes(element: StringName) -> Array:
 
 
 ## What button `slot` (0 X, 1 Y, 2 A, 3 B) does for `hero` in `mode` (an index in
-## modes): {"tap", "hold", "combo", "charge", "in_front", "weapon": bool} with
+## modes): {"tap", "hold", "combo", "charge", "grow", "min", "in_front", "weapon": bool} with
 ## AbilityDefs (missing keys: nothing), or {} if the kit doesn't cover it (the
 ## wheel's own slot is used then).
 static func entry(hero: Hero, slot: int, mode: int) -> Dictionary:
@@ -45,7 +45,9 @@ static func entry(hero: Hero, slot: int, mode: int) -> Dictionary:
 	if raw.is_empty():
 		return {}
 	var out := {"weapon": weapon, "in_front": bool(raw.get("in_front", false))}
-	for key in ["tap", "hold", "charge"]:
+	if raw.has("min"):
+		out.min = float(raw.min)
+	for key in ["tap", "hold", "charge", "grow"]:
 		var a: AbilityDef = ContentDB.abilities.get(StringName(raw.get(key, "")))
 		if a != null:
 			out[key] = a
@@ -65,6 +67,16 @@ static func hold_seconds(weapon: bool) -> float:
 	return float(h.get("weapon" if weapon else "element", 2.0 if weapon else 1.0))
 
 
+## A button held longer than this is a hold, not a tap: its area starts growing.
+static func tap_seconds() -> float:
+	return float(data().get("tap_seconds", 0.2))
+
+
+## A hold's area when it starts growing, as a share of the full area.
+static func hold_min_size() -> float:
+	return float(data().get("hold_min_size", 0.3))
+
+
 static func combo_reset_seconds() -> float:
 	return float(data().get("combo_reset_seconds", 1.0))
 
@@ -81,7 +93,7 @@ static func all_ability_ids(element: StringName) -> Array[StringName]:
 	var kit: Dictionary = data().elements.get(String(element), {})
 	for mode in kit.get("modes", []):
 		for b in kit.get(mode, {}).values():
-			for key in ["tap", "hold", "charge"]:
+			for key in ["tap", "hold", "charge", "grow"]:
 				if b.has(key) and not out.has(StringName(b[key])):
 					out.append(StringName(b[key]))
 			for id in b.get("combo", []):

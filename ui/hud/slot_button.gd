@@ -60,7 +60,7 @@ func _kit() -> Dictionary:
 func _kit_ability(e: Dictionary) -> AbilityDef:
 	if e.has("combo"):
 		return e.combo[0]
-	return e.get("tap", e.get("charge", e.get("hold")))
+	return e.get("tap", e.get("charge", e.get("grow", e.get("hold"))))
 
 
 func _ability() -> AbilityDef:

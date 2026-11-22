@@ -869,37 +869,102 @@ func press_button(slot: int) -> void:
 		_combo = {"slot": slot, "step": step, "at": session.render_time()}
 		kit_fire(combo[step])
 		return
-	if e.has("hold") or e.has("charge"):
+	if e.has("hold") or e.has("charge") or e.has("grow"):
 		_pressed[slot] = {"entry": e, "start": session.render_time(), "fired": false}
 		return
 	if e.has("tap"):
 		kit_fire(e.tap, e)
 
 
-## A button let go: a tap if it wasn't held long enough, or the charge's release.
+## A button let go: a quick tap is the tap; a held ability goes off at the size
+## its area had grown to; a charge goes off with the time it was held.
 func release_button(slot: int) -> void:
 	var p: Dictionary = _pressed.get(slot, {})
 	_pressed.erase(slot)
+	_clear_hold_aim()
 	if p.is_empty() or p.fired:
 		return
 	var held: float = session.render_time() - float(p.start)
 	if p.entry.has("charge"):
 		kit_fire(p.entry.charge, p.entry, held)
+		return
+	var g := _growing(p)
+	if not g.is_empty():
+		kit_fire(g.ability, p.entry, 0.0, g.size)
 	elif p.entry.has("tap"):
 		kit_fire(p.entry.tap, p.entry)
 
 
-## Holds that reached their time go off by themselves.
+## What a held button is growing (2026-11-22): {"ability", "size" (share of the
+## full area)}, or {} while it is still a tap. A hold grows once held past
+## ElementKits.tap_seconds(), from hold_min_size to full at hold_seconds; a grow
+## (Flame Dash) from its "min" as soon as it is pressed.
+func _growing(p: Dictionary) -> Dictionary:
+	var held: float = session.render_time() - float(p.start)
+	var full := ElementKits.hold_seconds(p.entry.weapon)
+	if p.entry.has("grow"):
+		var lo := float(p.entry.get("min", ElementKits.hold_min_size()))
+		return {"ability": p.entry.grow, "size": lerpf(lo, 1.0, clampf(held / full, 0.0, 1.0))}
+	if p.entry.has("hold"):
+		var tap := ElementKits.tap_seconds() if p.entry.has("tap") else 0.0
+		if held < tap:
+			return {}
+		var t := clampf((held - tap) / maxf(full - tap, 0.01), 0.0, 1.0)
+		return {"ability": p.entry.hold, "size": lerpf(ElementKits.hold_min_size(), 1.0, t)}
+	return {}
+
+
+## Holds that reached full size go off by themselves; the others show their area
+## growing, in red.
 func _update_holds() -> void:
 	if session == null:
 		return
+	var shown := false
 	for slot in _pressed.keys():
 		var p: Dictionary = _pressed[slot]
-		if p.fired or not p.entry.has("hold"):
+		if p.fired:
 			continue
-		if session.render_time() - float(p.start) >= ElementKits.hold_seconds(p.entry.weapon):
+		var held: float = session.render_time() - float(p.start)
+		if (p.entry.has("hold") or p.entry.has("grow")) and held >= ElementKits.hold_seconds(p.entry.weapon):
 			p.fired = true
-			kit_fire(p.entry.hold, p.entry)
+			_clear_hold_aim()
+			kit_fire(p.entry.get("hold", p.entry.get("grow")), p.entry)
+			continue
+		if not shown:
+			shown = _show_hold_aim(p)
+	if not shown:
+		_clear_hold_aim()
+
+
+## Red area of a held button: the shape it would cover if let go now.
+func _show_hold_aim(p: Dictionary) -> bool:
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive or view == null:
+		return false
+	var ability: AbilityDef
+	var point: Vector2
+	if p.entry.has("charge"):
+		ability = p.entry.charge
+	else:
+		var g := _growing(p)
+		if g.is_empty():
+			return false
+		ability = (g.ability as AbilityDef).sized(g.size)
+	point = _in_front_tile(hero) if p.entry.get("in_front", false) else point_for(ability)
+	var pv := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ability, point,
+			null, session.now())
+	client.aim = {"ability": ability, "tiles": pv.tiles, "point": point, "valid": true, "hold": true,
+			"color": HOLD_AIM_COLOR, "outline": pv.get("outline", PackedVector2Array())}
+	return true
+
+
+## The growing area of a held ability.
+const HOLD_AIM_COLOR := Color(1.0, 0.15, 0.1, 0.45)
+
+
+func _clear_hold_aim() -> void:
+	if client != null and client.aim.get("hold", false):
+		client.aim = {}
 
 
 ## How far button `slot`'s hold has come (0..1), or -1 if it isn't being held
@@ -909,7 +974,7 @@ func hold_progress(slot: int) -> float:
 	if p.is_empty() or p.fired:
 		return -1.0
 	var held: float = session.render_time() - float(p.start)
-	if p.entry.has("hold"):
+	if p.entry.has("hold") or p.entry.has("grow"):
 		return clampf(held / ElementKits.hold_seconds(p.entry.weapon), 0.0, 1.0)
 	if p.entry.has("charge"):
 		var a: AbilityDef = p.entry.charge
@@ -918,10 +983,20 @@ func hold_progress(slot: int) -> float:
 	return -1.0
 
 
+## The tile in front of the hero, the way it aims (in_front abilities).
+func _in_front_tile(hero: Hero) -> Vector2:
+	var facing := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
+	if InputDevice.using_pad() and InputDevice.right_stick() != Vector2.ZERO:
+		facing = Mover.stick_to_grid(InputDevice.right_stick()).angle()
+	elif not InputDevice.using_pad() and view != null:
+		facing = mouse_angle(hero, world_mouse())
+	return Vector2(MoveState.tile_of(hero.move.position_at(session.render_time()) + Vector2.from_angle(facing)))
+
+
 ## Uses a kit ability: aimed where the hero aims (the cursor, or the controller's
 ## stick or lock), at the tile in front for in_front ones; heals and buffs on
 ## allies start the ally choice instead. `charge`: seconds the button was held.
-func kit_fire(ability: AbilityDef, e: Dictionary = {}, charge := 0.0) -> void:
+func kit_fire(ability: AbilityDef, e: Dictionary = {}, charge := 0.0, size := 1.0) -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null or not hero.alive:
 		return
@@ -937,12 +1012,7 @@ func kit_fire(ability: AbilityDef, e: Dictionary = {}, charge := 0.0) -> void:
 			and ability.hitbox.shape in [HitboxDef.Shape.NONE, HitboxDef.Shape.SELF_CIRCLE]):
 		intent.target = hero.id
 	elif e.get("in_front", false):
-		var facing := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
-		if InputDevice.using_pad() and InputDevice.right_stick() != Vector2.ZERO:
-			facing = Mover.stick_to_grid(InputDevice.right_stick()).angle()
-		elif not InputDevice.using_pad() and view != null:
-			facing = mouse_angle(hero, world_mouse())
-		intent.aim = Vector2(MoveState.tile_of(hero.move.position_at(session.render_time()) + Vector2.from_angle(facing)))
+		intent.aim = _in_front_tile(hero)
 	else:
 		intent.aim = point_for(ability)
 		var picked := _target_for(hero, ability)
@@ -950,6 +1020,8 @@ func kit_fire(ability: AbilityDef, e: Dictionary = {}, charge := 0.0) -> void:
 			intent.target = picked.id
 	if charge > 0.0:
 		intent.charge = charge
+	if size < 1.0:
+		intent.size = size
 	session.send_intent(intent)
 
 

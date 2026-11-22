@@ -16,3 +16,4 @@ id = &"F01"
 mana_cost = 4.0
 effects = Array[ExtResource("1_mqvph")]([SubResource("Resource_wuhwu")])
 targeting = 2
+lunge_tiles = 0.35

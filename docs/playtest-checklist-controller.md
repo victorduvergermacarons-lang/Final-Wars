@@ -80,3 +80,10 @@ B = Circle, LB/RB = L1/R1, LT/RT = L2/R2, View = Share, Menu = Options.
 - [ ] **Air:** three empty dots over the hero. A: a long dash, a dot fills. Y Air Blast or
       B Air Palm: the dots empty; with all three the enemy is pushed further and stunned.
 - [ ] Attacks go off at once (no timing bar), quick to chain.
+- [ ] Holding a button (X, Fire Y, Earth A / Y / B, Flame Dash) shows the ability's area
+      in red, growing until it goes off by itself. Let go before: it goes off at once,
+      only in the red area you saw. A quick tap still does the tap ability.
+- [ ] **Flame Dash:** a quick press dashes 2 tiles; hold A and it goes further, up to 6
+      tiles at 1 s.
+- [ ] **Fire punches:** each punch steps the hero a little forward, toward where you aim
+      (turn between punches to change it); the kick steps a bit further.

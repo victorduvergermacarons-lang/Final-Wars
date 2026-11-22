@@ -1,6 +1,8 @@
 {
-	"about": "What each button does per element (2026-11-22, the Hades-style kits). Buttons: X (weapon), Y, A, B, and RT (switch). Per button: tap (pressed and let go), hold (held hold_seconds: it goes off by itself), combo (presses in a row, reset after combo_reset_seconds), charge (held, let go: longer = stronger), in_front (aimed at the tile in front of you). Heals and buffs on allies take two presses: the first picks an ally (left stick or arrows), the second casts. Edit freely; the game reads it at start.",
+	"about": "What each button does per element (2026-11-22, the Hades-style kits). Buttons: X (weapon), Y, A, B, and RT (switch). Per button: tap (pressed and let go), hold (held past tap_seconds, its area grows from hold_min_size to full at hold_seconds, where it goes off by itself; let go earlier, it goes off at the size reached), grow (like a hold with no tap: from min on the first press, e.g. Flame Dash 2 tiles to 6), combo (presses in a row, reset after combo_reset_seconds), charge (held, let go: longer = stronger), in_front (aimed at the tile in front of you). Heals and buffs on allies take two presses: the first picks an ally (left stick or arrows), the second casts. Edit freely; the game reads it at start.",
 	"hold_seconds": {"weapon": 2.0, "element": 1.0},
+	"tap_seconds": 0.2,
+	"hold_min_size": 0.3,
 	"combo_reset_seconds": 1.0,
 	"weapons": {
 		"Sword": {"tap": "S01", "hold": "S04"},
@@ -12,7 +14,7 @@
 			"modes": ["Fire"],
 			"Fire": {
 				"Y": {"tap": "F03", "hold": "F06"},
-				"A": {"tap": "F05"},
+				"A": {"grow": "F05", "min": 0.333},
 				"B": {"combo": ["F01", "F01", "F02"]}
 			}
 		},

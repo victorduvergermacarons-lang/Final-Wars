@@ -1679,7 +1679,7 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_face(hero, intent.get("dir", Vector2i.ZERO))
 		"cast":
 			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1), intent.get("aim"),
-					float(intent.get("charge", 0.0)))
+					float(intent.get("charge", 0.0)), float(intent.get("size", 1.0)))
 		"release":
 			reason = _intent_release(hero)
 		"timing_press":
@@ -1847,10 +1847,14 @@ func _intent_face(hero: Hero, dir: Vector2i) -> String:
 	return ""
 
 
-func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Variant = null, charge: float = 0.0) -> String:
+func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Variant = null, charge: float = 0.0,
+		size: float = 1.0) -> String:
 	var ability := hero.find_ability(ability_id)
 	if ability == null:
 		return "unknown_ability"
+	# A held ability let go before full size goes off at the size it had grown to.
+	if size < 1.0:
+		ability = ability.sized(size)
 	var walking: Variant = hero.walk_target
 	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
 	# A charged ability (Raise Pillar) gains a level per charge_seconds_per_level held.
