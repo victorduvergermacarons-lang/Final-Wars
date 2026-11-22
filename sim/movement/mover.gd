@@ -204,6 +204,22 @@ static func fall_damage(levels: int, max_hp: float, md: MovementDef) -> float:
 ## W = up the screen = grid (−1, −1). Two keys walk exactly along a grid line
 ## (on the 2:1 isometric grid those run at 26.6° on screen, not 45°):
 ## W+A = grid (−1, 0), W+D = grid (0, −1), S+D = grid (1, 0), S+A = grid (0, 1).
+## A stick direction on screen (x right, y down, length 0..1: how far it's pushed)
+## as a grid-space wish of the same length. Unlike the keys' 8 directions, any
+## angle: straight up the screen is between grid up and grid left.
+static func stick_to_grid(stick: Vector2) -> Vector2:
+	var s := stick.limit_length(1.0)
+	var g := Vector2(s.x * 0.5 + s.y, s.y - s.x * 0.5)
+	return g.normalized() * s.length() if g != Vector2.ZERO else Vector2.ZERO
+
+
+## The wish of a move intent: the stick if it has one, else the held keys.
+static func wish_of(intent: Dictionary) -> Vector2:
+	if intent.get("stick") is Vector2:
+		return stick_to_grid(intent.stick)
+	return screen_to_grid(intent.get("dir", Vector2i.ZERO))
+
+
 static func screen_to_grid(dir: Vector2i) -> Vector2:
 	var sx := clampi(dir.x, -1, 1)
 	var sy := clampi(dir.y, -1, 1)

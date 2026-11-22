@@ -64,10 +64,10 @@ func test_drag_a_usable_ability_onto_the_bar() -> void:
 	assert_null(canvas.node(&"F03").drag_payload(), "not usable yet: no drag")
 	var data = canvas.node(&"F01").drag_payload()
 	assert_eq(data, {"ability": &"F01"})
-	var slot: SlotButton = hud.find_children("*", "SlotButton", true, false)[9]
+	var slot: SlotButton = hud.find_children("*", "SlotButton", true, false)[3]
 	assert_true(slot._can_drop_data(Vector2.ZERO, data))
 	slot._drop_data(Vector2.ZERO, data)
-	assert_eq(game.client.action_bar.slots[9], &"F01")
+	assert_eq(game.client.action_bar.slots[3], &"F01")
 
 
 func test_water_shows_each_abilitys_own_step() -> void:

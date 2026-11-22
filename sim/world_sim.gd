@@ -1566,7 +1566,7 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 	var reason := ""
 	match kind:
 		"move":
-			reason = _intent_move(hero, intent.get("dir", Vector2i.ZERO), intent.get("face", hero.aim_angle))
+			reason = _intent_move(hero, Mover.wish_of(intent), intent.get("face", hero.aim_angle))
 		"step":
 			reason = _intent_step(hero, intent.get("to", hero.tile()))
 		"face":
@@ -1687,9 +1687,9 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 		emit({"type": "rejected", "target": hero.id, "intent": kind, "reason": reason})
 
 
-## Free movement: the held direction (screen-relative, 8 ways) and the mouse angle.
-func _intent_move(hero: Hero, dir: Vector2i, face: float) -> String:
-	hero.wish = Mover.screen_to_grid(dir)
+## Free movement: the wish (from the held keys or the stick, grid space) and the aim angle.
+func _intent_move(hero: Hero, wish: Vector2, face: float) -> String:
+	hero.wish = wish
 	if hero.wish != Vector2.ZERO:
 		hero.walk_target = null
 	if is_finite(face):

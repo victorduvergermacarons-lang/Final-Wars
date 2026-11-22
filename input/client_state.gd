@@ -7,6 +7,11 @@ var target_id: int = -1
 ## "valid", "point"}; empty otherwise. WorldView highlights the tiles.
 var aim := {}
 var action_bar := ActionBarModel.new()
+## How the controller aims when the right stick is let go (a per-player setting):
+## AUTO_LOCK at the nearest enemy ahead, TWIN_STICK the way the stick last pointed.
+## Abilities marked Manual Aim always use the right stick.
+enum PadAim { AUTO_LOCK, TWIN_STICK }
+var pad_aim: PadAim = PadAim.AUTO_LOCK
 ## The local right-clicks on the current timing bar, before the host answers:
 ## {"start": the bar's start time, "next": the next input to play, "presses":
 ## [{"index": the input, "at": seconds into the bar, "holding": a hold started,

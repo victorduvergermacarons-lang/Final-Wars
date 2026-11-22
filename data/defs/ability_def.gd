@@ -125,6 +125,14 @@ var sheet_hitbox: HitboxDef
 ## default (CombatRules.cast_move_speed_default). Tree abilities take it from the
 ## sheet's Cast Move Speed (%) column.
 @export var cast_move_speed: float = -1.0
+## On a controller, always aimed by hand with the right stick (hold, aim, let go),
+## whatever the player's aim setting. From the sheet's Manual Aim column.
+@export var manual_aim: bool = false
+## Where it first goes on the ability wheel: an index in WHEEL_SLOTS (0 X attack,
+## 1 Y ranged, 2 A dash / defense, 3 B the rest); -1 = by itself (weapon arts on X,
+## the rest on B). From the sheet's Wheel Slot column.
+@export var wheel_slot: int = -1
+const WHEEL_SLOTS := ["X", "Y", "A", "B"]
 ## Charges: uses stored up to max (base + 1 per mastery_per_charge tree Mastery);
 ## each recharges in cooldown_seconds, one at a time. 0 = no charges.
 @export var charges_base: int = 0

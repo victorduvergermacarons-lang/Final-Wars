@@ -1,9 +1,11 @@
 class_name SlotButton
 extends Control
-## One action bar slot: click to use, right-click to clear, drag to move (or off
-## the bar to clear), drop an ability from the spellbook onto it. Draws its own cooldown sweep.
+## One slot of the ability wheel: click to use, right-click to clear, drag to move
+## (or off the wheel to clear), drop an ability from the spellbook onto it. Draws its
+## own cooldown sweep and the button that fires it (keyboard or controller, whichever
+## was used last).
 
-const SIZE := Vector2(56, 56)
+const SIZE := Vector2(64, 64)
 const TINTS := {
 	Targeting.Usability.READY: Color(0.22, 0.24, 0.3),
 	Targeting.Usability.COOLDOWN: Color(0.22, 0.24, 0.3),
@@ -74,14 +76,13 @@ func _draw() -> void:
 		usable = Targeting.usability(hero, ability, hud.session.get_actor(hud.client.target_id),
 				hud.session.grid(), hud.session.rules(), now, hud.session.actors())
 	draw_rect(rect, TINTS[usable] if ability != null else Color(0.1, 0.1, 0.12, 0.8))
-	var hovered := hud.bind_mode and hud.hovered_slot == index
-	draw_rect(rect, Color(1, 0.85, 0.2) if hovered else Color(0.5, 0.5, 0.55), false, 2.0 if hovered else 1.0)
+	draw_rect(rect, Color(0.5, 0.5, 0.55), false, 1.0)
 	if ability != null:
 		var name := ability.display_name if ability.display_name != "" else String(ability.id)
 		if item != null:
 			name = item.display_name.trim_prefix("Minor ")
 			_text(str(held), Vector2(size.x - 14, size.y - 20), 12, Color(1, 1, 0.7))
-		_text(name.left(8), Vector2(4, size.y - 8), 11, Color.WHITE)
+		_text(name.left(10), Vector2(4, size.y - 8), 11, Color.WHITE)
 		if hero != null:
 			var cd := hero.cooldowns.ability_remaining(ability.cooldown_key(), now)
 			var frac := hero.cooldowns.ability_fraction(ability.cooldown_key(), now)
@@ -91,7 +92,9 @@ func _draw() -> void:
 				_draw_sweep(rect, frac)
 			if cd > hero.cooldowns.gcd_remaining(now) and cd > 0.0:
 				_text("%d" % ceili(cd) if cd >= 1.0 else "%.1f" % cd, Vector2(size.x * 0.5 - 8, size.y * 0.5 + 6), 16, Color(1, 1, 0.6))
-	_text(hud.client.action_bar.key_label(index), Vector2(size.x - 14, 13), 11, Color(0.85, 0.85, 0.9))
+	var key := InputActions.hint(InputActions.slot_action(index))
+	var w := _font.get_string_size(key, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+	_text(key, Vector2(size.x - w - 4, 13), 11, Color(0.85, 0.85, 0.9))
 
 
 func _draw_sweep(rect: Rect2, fraction: float) -> void:
@@ -133,7 +136,7 @@ static func _tooltip(a: AbilityDef) -> String:
 
 
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and not hud.bind_mode:
+	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			hud.input.use_slot(index)
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
@@ -142,11 +145,7 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_MOUSE_ENTER:
-		hud.hovered_slot = index
-	elif what == NOTIFICATION_MOUSE_EXIT and hud.hovered_slot == index:
-		hud.hovered_slot = -1
-	elif what == NOTIFICATION_DRAG_END and _dragging:
+	if what == NOTIFICATION_DRAG_END and _dragging:
 		_dragging = false
 		if not get_viewport().gui_is_drag_successful():
 			drop_off_bar()

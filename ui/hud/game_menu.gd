@@ -1,33 +1,42 @@
 class_name GameMenu
 extends PanelContainer
-## The Escape menu: Resume, Keybinds, Leave game, and five tabs: the message log
-## (everything that has happened this session), the controls (every how-to that
-## used to sit on screen and in the menus), how keybinding works, the volumes
+## The Escape menu: Resume, Leave game, and four tabs: the message log
+## (everything that has happened this session), the controls (keyboard and
+## controller, and every how-to), the volumes
 ## (Sound), and test settings (game speed). Plain boxes
 ## for now (Godot's default look), not the menu book.
 
-const CONTROLS := """[b]Moving and fighting[/b]
-WASD or the arrow keys: move (two keys walk along the grid) · the mouse: face that way
-E: talk to the person next to you · right-click someone to talk
-Click someone, or Tab, to target · Esc: clear the target
-1–9, 0: use the action bar · Shift+1–6 (or < >): switch action bar page
-Aimed abilities go where the mouse points
-Hold an aimed ability's key to aim, release to cast (or press it again) · Esc or right-click: cancel
-Timing bar: right-click, Space or the ability's key again on a green zone for full power, on a yellow zone for
-a sure critical strike; on a blue zone press and hold until it ends. Walking while
-casting slows you down; Esc cancels the cast, and another ability's key switches to
-that one
-R: release to the graveyard when dead · mouse wheel: zoom
+## The Controls tab: one row per control, keyboard and controller (from
+## InputActions, so it always matches the game), then how things work.
+const CONTROL_ROWS := [
+	["Move", "WASD (two keys walk along the grid)", "Left stick (any angle)"],
+	["Aim", "The mouse", "Right stick, or auto-lock (Gameplay test tab)"],
+	["Slot 1: your weapon", &"action_slot_1"],
+	["Slot 2: ranged attack", &"action_slot_2"],
+	["Slot 3: dash (Earth: defense)", &"action_slot_3"],
+	["Slot 4: the rest", &"action_slot_4"],
+	["Timing bar (tap / hold)", &"timing_press"],
+	["Element power", &"element_power"],
+	["Talk, use, pick up; release when dead", &"interact"],
+	["Next target", &"target_next"],
+	["Clear target, cancel aim", &"cancel_aim"],
+	["Health potion", &"potion_health"],
+	["Mana potion", &"potion_mana"],
+	["Menu book (inventory)", &"toggle_inventory"],
+	["Cancel cast, close menus, this menu", &"target_clear"],
+]
+
+const CONTROLS_NOTES := """[b]How it works[/b]
+Aimed abilities: hold the ability's button, aim, let go to cast. Melee swings go off at once where you aim.
+Timing bar: press the timing button on a green zone for full power, on a yellow zone for a sure critical strike;
+on a blue zone press and hold until it ends. Walking while casting slows you down.
+Another ability's button switches to that one; the cancel button stops the cast.
+Mouse wheel: zoom.
 
 [b]Menus[/b] (the menu book)
 P Spellbook · T Ability trees · C Character · B Inventory · L Quests
+Drag an ability from the Spellbook or the trees onto a slot of the wheel (bottom right).
 Drag the book's top edge to move it.
-
-[b]Spellbook and trees[/b]
-Drag an ability onto the action bar.
-
-[b]Character[/b]
-Permanent Mastery unlocks a tree's abilities, each at its own level; Mastery from gear only adds power.
 
 [b]Inventory[/b]
 Drag to move or equip · right-click to equip or take off
@@ -35,23 +44,30 @@ Shift+click to split a stack · Ctrl+right-click to destroy
 Drop a scroll (or your weapon) on the learning slot to learn its ability.
 
 [b]Shop[/b]
-Right-click an item in your bag to sell it. Drag the shop by its title to move it.
+Right-click an item in your bag to sell it. Drag the shop by its title to move it."""
 
-[b]Escape[/b]
-Esc cancels aiming, then closes open menus, then clears your target, then opens
-this menu."""
 
-const KEYBINDS := """[b]Keybinds[/b]
-Press [b]Keybinds[/b] above, then hover an action bar slot and press the key you want
-for it. Esc, or the Keybinds button again, finishes.
-
-Movement, targeting and menu keys are reserved and can't be bound to a slot.
-Your keybinds and action bar layout are saved on this computer."""
+## The Controls tab's text.
+static func controls_text() -> String:
+	var table := "[table=3][cell][b]Action[/b]   [/cell][cell][b]Keyboard / mouse[/b]   [/cell][cell][b]Controller[/b][/cell]"
+	for row in CONTROL_ROWS:
+		var keys: String
+		var pad: String
+		if row.size() == 3:
+			keys = row[1]
+			pad = row[2]
+		else:
+			keys = InputActions.hint(row[1], InputDevice.Kind.KEYBOARD)
+			pad = InputActions.hint(row[1], InputDevice.Kind.GAMEPAD)
+		table += "[cell]%s   [/cell][cell]%s   [/cell][cell]%s[/cell]" % [row[0], keys if keys != "" else "—",
+				pad if pad != "" else "—"]
+	return "[b]Controls[/b] (keyboard and mouse · controller)\n" + table + "[/table]\n\n" + CONTROLS_NOTES
 
 var hud: Hud
 var _log: RichTextLabel
 var _shown_lines := -1
-var _bind: Button
+var _controls: RichTextLabel
+var _controls_revision := -1
 var _speed_slider: HSlider
 var _speed_box: SpinBox
 var _dungeon_testing: CheckBox
@@ -80,18 +96,13 @@ func _init(p_hud: Hud) -> void:
 	var buttons := HBoxContainer.new()
 	box.add_child(buttons)
 	buttons.add_child(_button("Resume (Esc)", func(): visible = false))
-	_bind = _button("Keybinds", func():
-		hud.set_bind_mode(not hud.bind_mode)
-		visible = false)
-	buttons.add_child(_bind)
 	buttons.add_child(_button("Leave game", func(): hud.leave_requested.emit()))
 	var tabs := TabContainer.new()
 	tabs.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(tabs)
 	_log = _text_tab(tabs, "Log")
 	_log.scroll_following = true
-	_text_tab(tabs, "Controls").text = CONTROLS
-	_text_tab(tabs, "Keybinds").text = KEYBINDS
+	_controls = _text_tab(tabs, "Controls")
 	sound = SettingsWindow.new()
 	sound.name = "Sound"
 	sound.embedded = true
@@ -143,7 +154,7 @@ func _speed_tab() -> Control:
 	var place := OptionButton.new()
 	place.focus_mode = Control.FOCUS_NONE
 	place.add_item("Under your hero", TimingBarView.Place.BELOW_HERO)
-	place.add_item("Above the action bar", TimingBarView.Place.ACTION_BAR)
+	place.add_item("At the bottom of the screen", TimingBarView.Place.ACTION_BAR)
 	place.select(place.get_item_index(hud.timing_bar.place))
 	place.item_selected.connect(func(i: int): hud.set_timing_bar_place(place.get_item_id(i)))
 	place_row.add_child(place)
@@ -155,6 +166,20 @@ func _speed_tab() -> Control:
 	mode.select(mode.get_item_index(hud.timing_bar.mode))
 	mode.item_selected.connect(func(i: int): hud.set_timing_bar_mode(mode.get_item_id(i)))
 	page.add_child(mode)
+	# How the controller aims when the right stick is let go.
+	var aim_row := HBoxContainer.new()
+	aim_row.add_theme_constant_override("separation", 10)
+	page.add_child(aim_row)
+	var aim_label := Label.new()
+	aim_label.text = "Controller aim"
+	aim_row.add_child(aim_label)
+	var aim := OptionButton.new()
+	aim.focus_mode = Control.FOCUS_NONE
+	aim.add_item("Auto-lock: the nearest enemy ahead (the right stick overrides)", ClientState.PadAim.AUTO_LOCK)
+	aim.add_item("Twin-stick: always the right stick", ClientState.PadAim.TWIN_STICK)
+	aim.select(aim.get_item_index(hud.client.pad_aim))
+	aim.item_selected.connect(func(i: int): hud.set_pad_aim(aim.get_item_id(i)))
+	aim_row.add_child(aim)
 	# The timing bar mechanic itself, on or off (off: abilities go off at once).
 	_timing_bars = CheckBox.new()
 	_timing_bars.focus_mode = Control.FOCUS_NONE
@@ -213,7 +238,9 @@ static func speed_text(value: float) -> String:
 func _process(_delta: float) -> void:
 	if not visible:
 		return
-	_bind.text = "Done binding" if hud.bind_mode else "Keybinds"
+	if _controls_revision != InputDevice.revision:
+		_controls_revision = InputDevice.revision
+		_controls.text = controls_text()
 	var lines: Array[String] = hud.client.history
 	if lines.size() != _shown_lines:
 		_shown_lines = lines.size()

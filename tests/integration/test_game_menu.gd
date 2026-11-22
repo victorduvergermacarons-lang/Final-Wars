@@ -54,11 +54,13 @@ func test_the_log_tab_shows_everything_said() -> void:
 	assert_string_contains(hud.game_menu._log.text, "Message 7")
 
 
-func test_keybinds_button_starts_keybind_mode() -> void:
+func test_the_controls_tab_lists_keyboard_and_controller() -> void:
 	hud.game_menu.visible = true
-	hud.game_menu._bind.pressed.emit()
-	assert_true(hud.bind_mode)
-	assert_false(hud.game_menu.visible, "the menu gets out of the way of the action bar")
+	await wait_process_frames(1)
+	var text: String = hud.game_menu._controls.text
+	assert_string_contains(text, "Left click", "slot 1 on the mouse")
+	assert_string_contains(text, "RT", "the timing bar on the controller")
+	assert_string_contains(text, "Element power")
 
 
 func test_the_book_arrows_turn_through_the_menus() -> void:

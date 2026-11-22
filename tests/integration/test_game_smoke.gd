@@ -30,8 +30,8 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_ne(hero.tile(), start, "hero moved")
 
 	# Heroes start without a weapon: Fire Punch (the scroll in the learning slot)
-	# was auto-placed first on the bar.
-	assert_eq(game.client.action_bar.slots[0], &"F01")
+	# has no slot of its own, so it went to B.
+	assert_eq(game.client.action_bar.slots[3], &"F01")
 	assert_false(game.client.action_bar.slots.has(&"S01"), "no sword, no Slash")
 
 	# Put Mender's Scroll in the learning slot: Healing Touch joins the bar.
@@ -66,6 +66,7 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(6)
 	await wait_process_frames(2)
 	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"travelers_longsword")
+	assert_eq(game.client.action_bar.slots[0], &"S01", "the first weapon's art took X")
 	assert_eq(hero.bag.count_of(ContentDB.items[&"rusty_shortsword"]), 1, "the old sword went to the bag")
 	assert_true(game.client.action_bar.slots.has(&"S04"))
 	assert_true(game.client.action_bar.slots.has(&"S01"), "Slash's slot stays (dimmed)")
@@ -94,18 +95,18 @@ func test_solo_game_runs_with_hud() -> void:
 	var potion: ItemDef = ContentDB.items[&"minor_health_potion"]
 	assert_eq(hero.bag.count_of(potion), 1, "bought")
 	assert_eq(hero.gold, 80)
-	var slot: SlotButton = hud.find_children("*", "SlotButton", true, false)[6]
+	var slot: SlotButton = hud.find_children("*", "SlotButton", true, false)[3]
 	slot._drop_data(Vector2.ZERO, {"item_from": ItemSlotView.Kind.BAG, "index": hero.bag.index_of(potion)})
-	assert_eq(game.client.action_bar.slots[6], &"item:minor_health_potion")
+	assert_eq(game.client.action_bar.slots[3], &"item:minor_health_potion")
 	hero.hp = 10
-	input.use_slot(6)
+	input.use_slot(3)
 	await wait_physics_frames(6)
 	assert_gt(hero.hp, 50.0, "drank it")
 	assert_eq(hero.bag.count_of(potion), 0)
 	# Dragging it off the bar (dropped anywhere but a slot) clears the slot.
-	slot._dragged_entry = game.client.action_bar.slots[6]
+	slot._dragged_entry = game.client.action_bar.slots[3]
 	slot.drop_off_bar()
-	assert_eq(game.client.action_bar.slots[6], &"", "dragged off the bar")
+	assert_eq(game.client.action_bar.slots[3], &"", "dragged off the bar")
 
 	hero.move.place(Vector2i(22, 18))
 	await wait_process_frames(2)

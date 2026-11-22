@@ -91,14 +91,12 @@ func _run() -> void:
 	var session: LocalSession = game.session
 	var hero := session.local_hero()
 	var hud: Hud = game.get_node("Hud")
-	# 1. Town next to Rowan, quest tracked, bar 2 shown.
+	# 1. Town next to Rowan, quest tracked.
 	hero.move.place(Vector2i(11, 9))
 	hero.face(Vector2i.RIGHT)
 	QuestLog.accept(hero, cd.quests[&"word_to_hilda"])
-	game.client.action_bar.set_page(1)
 	await _shot("1_town_rowan")
 	# 2. Inventory + quest log open: tracker hidden.
-	game.client.action_bar.set_page(0)
 	hud.inventory_window.visible = true
 	await _shot("2_inventory_open")
 	hud.inventory_window.visible = false

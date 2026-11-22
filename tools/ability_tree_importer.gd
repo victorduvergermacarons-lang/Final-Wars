@@ -158,7 +158,17 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 		for h in col:
 			if not REQUIRED_COLUMNS.has(h) and not TIMING_COLUMNS.has(h) and not HITBOX_COLUMNS.has(h):
 				var v: String = cell.call(h)
-				if OPTIONAL_NUMBERS.has(h):
+				if h == "Manual Aim":
+					if v not in ["", "Yes", "No"]:
+						errors.append("%s: Manual Aim \"%s\" isn't Yes or No" % [where, v])
+					elif v == "Yes":
+						a.manual_aim = true
+				elif h == "Wheel Slot":
+					if v not in ["", "X", "Y", "A", "B"]:
+						errors.append("%s: Wheel Slot \"%s\" isn't X, Y, A or B" % [where, v])
+					elif v != "":
+						a.wheel_slot = v
+				elif OPTIONAL_NUMBERS.has(h):
 					if v != "":
 						a[OPTIONAL_NUMBERS[h]] = _number(v, where, h, errors)
 				elif v != "":

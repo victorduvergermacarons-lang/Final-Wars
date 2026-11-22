@@ -32,7 +32,6 @@ func before_each() -> void:
 	hero = session.local_hero()
 	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	client = ClientState.new()
-	InputActions.apply_action_bar_keys(client.action_bar)
 	view = WorldView.new()
 	add_child(view)
 	view.setup(session, client, ContentDB.zones[&"crossing"])
@@ -248,3 +247,51 @@ func test_off_the_map_the_aim_still_points_toward_the_cursor() -> void:
 	var d := (p - hero.move.pos).normalized()
 	assert_lt(d.x, -0.5)
 	assert_lt(d.y, -0.5)
+
+
+# --- Controller (2026-11-22) ---------------------------------------------------
+
+func test_a_controller_auto_locks_on_the_enemy_ahead() -> void:
+	InputDevice.set_kind(InputDevice.Kind.GAMEPAD)
+	client.pad_aim = ClientState.PadAim.AUTO_LOCK
+	var dart: AbilityDef = ContentDB.abilities[&"F03"]
+	hero.move.place(_t(4, 8))
+	assert_eq(input.locked_enemy(hero, 0.0), wolf, "the wolf, four tiles ahead")
+	assert_almost_eq(input.pad_point(dart).distance_to(wolf.move.pos), 0.0, 0.01, "aims at it")
+	assert_null(input.locked_enemy(hero, PI), "facing away and out of close range: nothing")
+	client.pad_aim = ClientState.PadAim.TWIN_STICK
+	var p := input.pad_point(dart)
+	assert_almost_eq(p.distance_to(hero.move.pos), dart.hitbox.reach, 0.01, "twin-stick: straight ahead at full reach")
+	InputDevice.set_kind(InputDevice.Kind.KEYBOARD)
+
+
+func test_manual_aim_abilities_ignore_the_lock() -> void:
+	InputDevice.set_kind(InputDevice.Kind.GAMEPAD)
+	client.pad_aim = ClientState.PadAim.AUTO_LOCK
+	var fireball: AbilityDef = ContentDB.abilities[&"F07"]
+	assert_true(fireball.manual_aim, "Fireball is Manual Aim in the sheet")
+	input._pad_aim_angle = PI / 2.0 # the right stick last pointed grid-down
+	var p := input.pad_point(fireball)
+	assert_gt(p.y - hero.move.pos.y, 0.5, "goes where the stick pointed, not at the wolf")
+	assert_false(ContentDB.abilities[&"F03"].manual_aim)
+	InputDevice.set_kind(InputDevice.Kind.KEYBOARD)
+
+
+func test_a_targeted_ability_with_nothing_targeted_picks_the_foe_at_the_cursor() -> void:
+	client.target_id = -1
+	input.mouse_override = Iso.to_screen(wolf.move.pos, session.grid().height_at(wolf.tile()))
+	var gust := ContentDB.abilities.get(&"A02") as AbilityDef
+	assert_eq(input._target_for(hero, gust), wolf)
+
+
+func test_the_starting_kits_go_to_their_slots() -> void:
+	# Earth: Rock Throw (ranged) on Y, Stone Skin (defense) on A; Fire's Flame Dash
+	# on A; a weapon's art on X.
+	assert_eq(Hud.wheel_slot_of(&"E01"), 1)
+	assert_eq(Hud.wheel_slot_of(&"E02"), 2)
+	assert_eq(Hud.wheel_slot_of(&"F05"), 2)
+	assert_eq(Hud.wheel_slot_of(&"A03"), 2)
+	assert_eq(Hud.wheel_slot_of(&"F03"), 1)
+	assert_eq(Hud.wheel_slot_of(&"S01"), 0)
+	assert_eq(Hud.wheel_slot_of(&"B01"), 0, "Quick Shot is ranged but it's the weapon")
+	assert_eq(Hud.wheel_slot_of(&"F01"), -1, "Fire Punch: the rest")

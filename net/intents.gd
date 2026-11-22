@@ -34,6 +34,12 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if (typeof(face) != TYPE_FLOAT and typeof(face) != TYPE_INT) or not is_finite(float(face)):
 				return {}
 			out.face = wrapf(float(face), -PI, PI)
+			# A controller's left stick: any screen direction, length 0..1 (replaces dir).
+			var stick = raw.get("stick")
+			if stick != null:
+				if typeof(stick) != TYPE_VECTOR2 or not stick.is_finite():
+					return {}
+				out.stick = stick.limit_length(1.0)
 		"cast":
 			var ability = raw.get("ability")
 			if typeof(ability) != TYPE_STRING and typeof(ability) != TYPE_STRING_NAME:

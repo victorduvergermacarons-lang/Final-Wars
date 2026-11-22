@@ -90,18 +90,40 @@ func test_out_of_combat_the_hero_faces_where_it_walks() -> void:
 	assert_almost_eq(hero.facing_angle, Mover.screen_to_grid(Vector2i(0, 1)).angle(), 0.1)
 
 
-func test_shift_number_switches_the_action_bar_page() -> void:
-	var client: ClientState = input.client
-	var ev := InputEventKey.new()
-	ev.physical_keycode = KEY_3
-	ev.shift_pressed = true
-	ev.pressed = true
-	Input.parse_input_event(ev)
-	await wait_process_frames(2)
-	assert_eq(client.action_bar.page, 2, "Shift+3 shows bar 3")
-	var plain := InputEventKey.new()
-	plain.physical_keycode = KEY_3
-	plain.pressed = true
-	Input.parse_input_event(plain)
-	await wait_process_frames(2)
-	assert_eq(client.action_bar.page, 2, "plain 3 is a slot key, not a page switch")
+func test_the_stick_walks_any_angle_as_fast_as_it_is_pushed() -> void:
+	# A controller's left stick: straight up the screen (between grid up and grid
+	# left), full push; then the same at half push.
+	var start := hero.move.pos
+	for i in 12:
+		session.send_intent({"type": "move", "dir": Vector2i.ZERO, "face": 0.0, "stick": Vector2(0, -1)})
+		await wait_physics_frames(1)
+	var full := hero.move.pos - start
+	assert_almost_eq(full.normalized().angle(), Mover.stick_to_grid(Vector2(0, -1)).angle(), 0.1, "up the screen")
+	session.send_intent({"type": "move", "dir": Vector2i.ZERO, "face": 0.0})
+	await wait_physics_frames(10)
+	hero.move.place(start)
+	await wait_physics_frames(2)
+	for i in 12:
+		session.send_intent({"type": "move", "dir": Vector2i.ZERO, "face": 0.0, "stick": Vector2(0, -0.5)})
+		await wait_physics_frames(1)
+	var half := hero.move.pos - start
+	assert_almost_eq(half.length(), full.length() * 0.5, full.length() * 0.15, "half push, half speed")
+
+
+func test_the_last_device_touched_is_the_one_in_use() -> void:
+	InputDevice.set_kind(InputDevice.Kind.KEYBOARD)
+	var b := InputEventJoypadButton.new()
+	b.button_index = JOY_BUTTON_A
+	b.pressed = true
+	assert_true(InputDevice.note(b))
+	assert_true(InputDevice.using_pad())
+	assert_eq(InputActions.hint(&"action_slot_1"), "X", "slot 1 on the left face button")
+	var nudge := InputEventMouseMotion.new()
+	nudge.relative = Vector2(2, 0)
+	assert_false(InputDevice.note(nudge), "a tiny mouse nudge doesn't switch")
+	var k := InputEventKey.new()
+	k.physical_keycode = KEY_Q
+	k.pressed = true
+	assert_true(InputDevice.note(k))
+	assert_eq(InputActions.hint(&"action_slot_1"), "Left click")
+	assert_eq(InputActions.hint(&"timing_press", InputDevice.Kind.GAMEPAD), "RT")

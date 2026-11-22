@@ -5,7 +5,7 @@ extends CanvasLayer
 signal leave_requested
 ## An act of the story ended for the local hero (Game saves the character then).
 signal act_completed(act: int)
-## In-game HUD: unit frames, action bar (with keybind mode), the menu book, the
+## In-game HUD: unit frames, the ability wheel, the menu book, the
 ## shop sheet, the quest tracker, death panel, mid-screen errors, and the Escape
 ## menu (message log, controls, keybinds, leave game).
 
@@ -60,8 +60,6 @@ var client: ClientState
 var input: PlayerInput
 var settings_path := SettingsStore.DEFAULT_PATH
 
-var bind_mode := false
-var hovered_slot := -1
 ## The bag item under the mouse, and the item being dragged (ItemSlotView): the
 ## equipment slots it would go in light up.
 var hovered_item: ItemDef
@@ -98,14 +96,12 @@ var _tracker_dragging := false
 ## The Escape menu (log, controls, keybinds, leave game).
 var game_menu: GameMenu
 var timing_bar: TimingBarView
-var _action_bar: Control
-var _page_label: Label
+var _action_bar: AbilityWheel
 var _spellbook: SpellbookPanel
 var trees_window: AbilityTreeWindow
 var console: DebugConsole
 var _character: CharacterSheet
 var _death: PanelContainer
-var _bind_banner: Label
 var _error: Label
 
 
@@ -115,7 +111,8 @@ func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_pa
 	input = p_input
 	settings_path = p_settings_path
 	SettingsStore.load_action_bar(client.action_bar, settings_path)
-	InputActions.apply_action_bar_keys(client.action_bar)
+	var aim := int(SettingsStore.load_ui("pad_aim", ClientState.PadAim.AUTO_LOCK, settings_path))
+	client.pad_aim = aim if aim in ClientState.PadAim.values() else ClientState.PadAim.AUTO_LOCK
 	client.action_bar.changed.connect(_on_bar_changed)
 	session.events_received.connect(_on_events)
 	_build()
@@ -123,12 +120,25 @@ func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_pa
 		input.player_menu_requested.connect(open_player_menu)
 
 
-## Where the action bar is on screen (the timing bar can sit above it).
+## Where the timing bar's "bottom of the screen" place is: a line across the bottom
+## centre (the timing bar sits above it). The ability wheel is in the corner.
 func action_bar_rect() -> Rect2:
-	return _action_bar.get_global_rect()
+	var screen: Vector2 = _root.size if _root != null else Vector2(1280, 720)
+	return Rect2(screen.x / 2.0, screen.y - 24.0, 0.0, 0.0)
+
+
+## The ability wheel (bottom right).
+func ability_wheel() -> AbilityWheel:
+	return _action_bar
 
 
 ## Puts the timing bar under the hero or above the action bar, and saves the choice.
+## The controller's aim setting (Gameplay test tab), saved for this player.
+func set_pad_aim(mode: int) -> void:
+	client.pad_aim = mode
+	SettingsStore.save_ui("pad_aim", mode, settings_path)
+
+
 func set_timing_bar_place(place: int) -> void:
 	timing_bar.place = place
 	SettingsStore.save_ui("timing_bar_place", place, settings_path)
@@ -167,28 +177,14 @@ func _build() -> void:
 	left.add_child(_party)
 	top.add_child(UnitFrame.new(self, func(): return session.get_actor(client.target_id), 220))
 
-	# Bottom centre: the action bar (menus open with their keys; Keybinds and Leave
-	# game are in the Escape menu), with a banner above it in keybind mode.
-	var bottom := VBoxContainer.new()
-	bottom.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	bottom.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	bottom.position.y -= 10
-	_root.add_child(bottom)
-	_bind_banner = Label.new()
-	_bind_banner.text = "Keybind mode: hover a slot and press a key. Esc to finish."
-	_bind_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_bind_banner.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
-	_bind_banner.add_theme_color_override("font_outline_color", Color.BLACK)
-	_bind_banner.add_theme_constant_override("outline_size", 4)
-	_bind_banner.visible = false
-	bottom.add_child(_bind_banner)
-	var bar := HBoxContainer.new()
-	bar.add_theme_constant_override("separation", 4)
-	for i in ActionBarModel.SLOT_COUNT:
-		bar.add_child(SlotButton.new(i, self))
-	bottom.add_child(bar)
-	_action_bar = bar
+	# Bottom-right: the ability wheel (four slots laid out like a pad's face buttons:
+	# attack left, special top, cast bottom, mobility right).
+	_action_bar = AbilityWheel.new(self)
+	_action_bar.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_action_bar.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_action_bar.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_action_bar.position = -_action_bar.custom_minimum_size - Vector2(16, 16)
+	_root.add_child(_action_bar)
 
 	# The local hero's timing bar (right-click on its zones), under the hero or
 	# above the action bar.
@@ -198,40 +194,6 @@ func _build() -> void:
 	var saved_mode := int(SettingsStore.load_ui("timing_bar_mode", TimingBarView.Mode.LENGTH, settings_path))
 	timing_bar.mode = saved_mode if saved_mode in TimingBarView.Mode.values() else TimingBarView.Mode.LENGTH
 	_root.add_child(timing_bar)
-
-	# Bottom-right: which action bar page is shown (Shift+1–6, or the arrows).
-	var pager := PanelContainer.new()
-	pager.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	pager.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	pager.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	pager.position = Vector2(-10, -10)
-	pager.tooltip_text = "Action bar page. Shift+1 to Shift+%d switch pages." % ActionBarModel.PAGE_COUNT
-	_root.add_child(pager)
-	var pager_box := VBoxContainer.new()
-	pager_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	pager.add_child(pager_box)
-	var pager_title := Label.new()
-	pager_title.text = "Action bar"
-	pager_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	pager_title.add_theme_font_size_override("font_size", 12)
-	pager_box.add_child(pager_title)
-	var pager_row := HBoxContainer.new()
-	pager_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	pager_box.add_child(pager_row)
-	pager_row.add_child(_small_button("<", func(): client.action_bar.set_page(client.action_bar.page - 1)))
-	_page_label = Label.new()
-	_page_label.custom_minimum_size = Vector2(34, 0)
-	_page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_page_label.add_theme_font_size_override("font_size", 28)
-	_page_label.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
-	pager_row.add_child(_page_label)
-	pager_row.add_child(_small_button(">", func(): client.action_bar.set_page(client.action_bar.page + 1)))
-	var pager_hint := Label.new()
-	pager_hint.text = "Shift+1–%d" % ActionBarModel.PAGE_COUNT
-	pager_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	pager_hint.add_theme_font_size_override("font_size", 11)
-	pager_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
-	pager_box.add_child(pager_hint)
 
 	# Menus fill the book's two pages, one at a time (see _update_book).
 	_character = CharacterSheet.new(self)
@@ -312,7 +274,7 @@ func _build() -> void:
 	dead_label.text = "You have died."
 	dead_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	death_box.add_child(dead_label)
-	death_box.add_child(_small_button("Release to graveyard (R)", func(): session.send_intent({"type": "release"})))
+	death_box.add_child(_small_button("Release to graveyard (%s)" % InputActions.hint(&"interact"), func(): session.send_intent({"type": "release"})))
 	var wait_label := Label.new()
 	wait_label.text = "…or wait for an ally to resurrect you."
 	death_box.add_child(wait_label)
@@ -405,10 +367,9 @@ func _process(_delta: float) -> void:
 	var ids: Array[StringName] = []
 	for a in hero.available_abilities():
 		ids.append(a.id)
-	client.action_bar.auto_place(ids)
+	client.action_bar.auto_place(ids, wheel_slot_of)
 	_death.visible = not hero.alive
 	_sync_party(hero)
-	_page_label.text = str(client.action_bar.page + 1)
 	_update_quest_markers(hero)
 	var tracker_text := QuestText.tracker_bbcode(hero, ContentDB.quests)
 	if tracker_text != _tracker.text:
@@ -418,7 +379,17 @@ func _process(_delta: float) -> void:
 	var age := Time.get_ticks_msec() / 1000.0 - client.error_at
 	_error.text = client.error_text if age < ERROR_SECONDS else ""
 	_error.modulate.a = clampf((ERROR_SECONDS - age) / 0.5, 0.0, 1.0)
-	_bind_banner.visible = bind_mode
+
+
+## Where an ability first goes on the wheel: weapon arts on X (the weapon in hand),
+## else its sheet Wheel Slot (Y ranged, A dash / defense), else -1 (B, then any).
+static func wheel_slot_of(id: StringName) -> int:
+	var a: AbilityDef = ContentDB.abilities.get(id)
+	if a == null:
+		return -1
+	if a.needs_weapon():
+		return 0
+	return a.wheel_slot
 
 
 func _sync_party(me: Hero) -> void:
@@ -456,23 +427,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle(inventory_window)
 	elif event.is_action_pressed(&"toggle_quest_log"):
 		_toggle(quest_log)
-
-
-## Keybind mode grabs key presses before anything else sees them.
-func _input(event: InputEvent) -> void:
-	if not bind_mode or not (event is InputEventKey) or not event.pressed or event.echo:
-		return
-	get_viewport().set_input_as_handled()
-	var key: int = event.physical_keycode
-	if key == KEY_ESCAPE:
-		set_bind_mode(false)
-	elif hovered_slot >= 0 and not client.action_bar.set_key(hovered_slot, key):
-		client.error("%s is used for something else" % OS.get_keycode_string(key))
-
-
-## Keybind mode (from the Escape menu): hover an action bar slot, press a key.
-func set_bind_mode(on: bool) -> void:
-	bind_mode = on
 
 
 ## Esc, WoW-style: the Escape menu closes if open; otherwise open windows close
@@ -616,7 +570,6 @@ func _close_menu(w: Control) -> void:
 
 
 func _on_bar_changed() -> void:
-	InputActions.apply_action_bar_keys(client.action_bar)
 	SettingsStore.save_action_bar(client.action_bar, settings_path)
 
 

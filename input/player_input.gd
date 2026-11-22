@@ -1,7 +1,8 @@
 class_name PlayerInput
 extends Node
-## Turns the local player's keys and clicks into intents. Only sends intents;
-## the host decides what actually happens.
+## Turns the local player's keys, clicks and controller into intents. Only sends
+## intents; the host decides what actually happens. The layout (2026-11-22, Hades
+## style) is in InputActions; which device is in use, in InputDevice.
 
 ## Right-click on another player in the world (the HUD opens Trade / Duel).
 signal player_menu_requested(hero_id: int, at: Vector2)
@@ -19,6 +20,9 @@ var client: ClientState
 var view: WorldView
 
 var _held := Vector2i.ZERO
+## The left stick (screen space, 0..1) while it's pushed, else zero.
+var _stick := Vector2.ZERO
+var _sent_stick := Vector2.ZERO
 var _sent_dir := Vector2i(99, 99)
 var _sent_angle := 999.0
 var _sent_at := -999.0
@@ -26,6 +30,8 @@ var _sent_at := -999.0
 ## after it (movement travels unreliably over the network).
 var _walked_at := -999.0
 const STOP_RESEND_SECONDS := 0.5
+## The stick is resent once it has moved this much (0..1).
+const STICK_STEP := 0.05
 ## Aiming a skillshot or ground ability: {"ability", "action" (key to release, or
 ## &"" when started by clicking the bar: then a left click fires), "mouse" (where
 ## the mouse was when aiming started)}.
@@ -36,6 +42,21 @@ func setup(p_session, p_client: ClientState, p_view: WorldView) -> void:
 	session = p_session
 	client = p_client
 	view = p_view
+	if not Input.joy_connection_changed.is_connected(_on_joy_connection):
+		Input.joy_connection_changed.connect(_on_joy_connection)
+
+
+## A controller plugged in or out: say so; unplugging the one in use goes back to
+## the keyboard and mouse.
+func _on_joy_connection(device: int, connected: bool) -> void:
+	if client == null:
+		return
+	if connected:
+		client.say("Controller connected: %s" % Input.get_joy_name(device))
+	else:
+		client.say("Controller disconnected")
+		if InputDevice.using_pad() and Input.get_connected_joypads().is_empty():
+			InputDevice.set_kind(InputDevice.Kind.KEYBOARD)
 
 
 func _physics_process(_delta: float) -> void:
@@ -50,20 +71,25 @@ func _physics_process(_delta: float) -> void:
 	# Typing in a text box (debug console) doesn't walk.
 	var typing := get_viewport().gui_get_focus_owner() is LineEdit if is_inside_tree() else false
 	_held = Vector2i.ZERO if typing else held_direction()
+	_stick = Vector2.ZERO if typing or _held != Vector2i.ZERO else InputDevice.left_stick()
 	# Without a view (tests), keep the last angle sent.
 	var angle := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
-	if view != null and is_inside_tree():
+	if InputDevice.using_pad():
+		angle = pad_facing(hero, angle)
+	elif view != null and is_inside_tree():
 		angle = mouse_angle(hero, world_mouse())
 	var t: float = session.render_time()
 	var tick: float = session.rules().tick_seconds
 	# Every tick while walking; on a client also for STOP_RESEND_SECONDS after
 	# stopping, since movement travels unreliably (Net.send_intent) and a lost "stop"
 	# must not keep you walking.
-	if _held != Vector2i.ZERO:
+	var walking := _held != Vector2i.ZERO or _stick != Vector2.ZERO
+	if walking:
 		_walked_at = t
-	var resend: bool = _held != Vector2i.ZERO \
+	var resend: bool = walking \
 			or (session is ClientSession and t - _walked_at < STOP_RESEND_SECONDS)
-	if _held != _sent_dir or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
+	if _held != _sent_dir or _stick.distance_to(_sent_stick) > STICK_STEP \
+			or absf(angle_difference(angle, _sent_angle)) > ANGLE_STEP \
 			or (resend and t - _sent_at >= tick - 0.001):
 		_send_move(_held, angle)
 
@@ -71,8 +97,12 @@ func _physics_process(_delta: float) -> void:
 func _send_move(dir: Vector2i, angle: float) -> void:
 	_sent_dir = dir
 	_sent_angle = angle
+	_sent_stick = _stick if dir == Vector2i.ZERO else Vector2.ZERO
 	_sent_at = session.render_time()
-	session.send_intent({"type": "move", "dir": dir, "face": angle})
+	var intent := {"type": "move", "dir": dir, "face": angle}
+	if _sent_stick != Vector2.ZERO:
+		intent.stick = _sent_stick
+	session.send_intent(intent)
 
 
 ## The grid-space angle from the hero to a point on the map (world coordinates).
@@ -105,45 +135,67 @@ func held_direction() -> Vector2i:
 func _unhandled_input(event: InputEvent) -> void:
 	if session == null:
 		return
-	# A right-click or Space during a timing bar is the press (before anything else
-	# uses it). So is the ability's own key again (_second_press).
-	var bar_press: bool = (event is InputEventMouseButton and event.pressed \
-			and event.button_index == MOUSE_BUTTON_RIGHT) or event.is_action_pressed(&"timing_press")
-	if bar_press and press_timing_bar():
+	# The timing button (Space, RT) during a timing bar is the press (before anything
+	# else uses it). So is the ability's own button again (_second_press).
+	if event.is_action_pressed(&"timing_press") and press_timing_bar():
 		get_viewport().set_input_as_handled()
 		return
 	if not _aiming.is_empty() and _aim_input(event):
 		get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed(&"select_target"):
-		var picked: Actor = view.actor_at(view.get_global_mouse_position())
-		client.target_id = picked.id if picked != null else -1
-	elif event.is_action_pressed(&"target_next"):
+	if event.is_action_pressed(&"target_next"):
 		_target_next_enemy()
-	elif event.is_action_pressed(&"target_clear"):
+	elif event.is_action_pressed(&"target_clear") or event.is_action_pressed(&"cancel_aim"):
 		client.target_id = -1
-	elif event.is_action_pressed(&"release"):
-		session.send_intent({"type": "release"})
 	elif event.is_action_pressed(&"interact"):
-		if not pick_up_nearest():
+		var hero: Hero = session.local_hero()
+		if hero != null and not hero.alive:
+			session.send_intent({"type": "release"}) # dead: back to the graveyard
+		elif not pick_up_nearest():
 			talk_to_nearest()
-	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
-		var picked: Actor = view.actor_at(view.get_global_mouse_position())
-		if picked is Npc:
-			session.send_intent({"type": "talk", "npc": picked.id})
-		elif picked is Hero and picked.id != session.local_hero_id:
-			player_menu_requested.emit(picked.id, get_viewport().get_mouse_position())
+	elif event.is_action_pressed(&"potion_health"):
+		use_potion("health")
+	elif event.is_action_pressed(&"potion_mana"):
+		use_potion("mana")
+	elif event.is_action_pressed(&"element_power"):
+		client.error("Element powers aren't in the game yet")
+	elif _player_menu(event):
+		pass
 	else:
-		for p in ActionBarModel.PAGE_COUNT:
-			if event.is_action_pressed(InputActions.page_action(p), false, true):
-				client.action_bar.set_page(p)
-				get_viewport().set_input_as_handled()
-				return
 		for i in ActionBarModel.SLOT_COUNT:
 			if event.is_action_pressed(InputActions.slot_action(i), false, true):
 				use_slot(i, InputActions.slot_action(i))
 				get_viewport().set_input_as_handled()
 				return
+
+
+## Right-click on another player out of combat opens Trade / Duel (in combat the
+## right button is your special). True if it did.
+func _player_menu(event: InputEvent) -> bool:
+	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT):
+		return false
+	var hero: Hero = session.local_hero()
+	if view == null or hero == null or hero.in_combat(session.now()):
+		return false
+	var picked: Actor = view.actor_at(view.get_global_mouse_position())
+	if picked is Hero and picked.id != session.local_hero_id:
+		player_menu_requested.emit(picked.id, get_viewport().get_mouse_position())
+		get_viewport().set_input_as_handled()
+		return true
+	return false
+
+
+## D-pad up / 1: the first health potion in the bag; down / 2: mana.
+func use_potion(kind: String) -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return
+	for i in hero.bag.size():
+		var item := hero.bag.item_at(i)
+		if item != null and item.use_ability != null and String(item.id).contains(kind + "_potion"):
+			session.send_intent({"type": "use_item", "bag_index": i})
+			return
+	client.error("You have no %s potion" % kind)
 
 
 ## Presses the local hero's timing bar, if one is running: sends how far into
@@ -226,11 +278,10 @@ func _with_aim(intent: Dictionary) -> Dictionary:
 
 
 func _input(event: InputEvent) -> void:
-	# Letting go of right-click (or Space) ends a hold, wherever the pointer is
-	# (even over the HUD).
-	if session != null and event is InputEventMouseButton and not event.pressed \
-			and event.button_index == MOUSE_BUTTON_RIGHT:
-		release_timing_bar()
+	# Every event says which device is in use (button hints, aiming, movement).
+	InputDevice.note(event)
+	# Letting go of the timing button (Space, RT) ends a hold, wherever the pointer
+	# is (even over the HUD).
 	if session != null and event.is_action_released(&"timing_press"):
 		release_timing_bar()
 	# So does letting go of the hotkey that played the bar (a second press).
@@ -281,14 +332,15 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	if AimPreview.is_aimed(ability) and aims_during_bar(ability):
 		_start_bar_aiming(ability)
 		return
-	if ability.uses_hitbox() and ability.hitbox.shape == HitboxDef.Shape.CONE:
+	if ability.uses_hitbox() and ability.hitbox.shape == HitboxDef.Shape.CONE \
+			and not (ability.manual_aim and InputDevice.using_pad()):
 		# A melee swing goes off at once toward the mouse (no hold to aim).
-		session.send_intent({"type": "cast", "ability": ability.id, "target": -1, "aim": mouse_point(ability)})
+		session.send_intent({"type": "cast", "ability": ability.id, "target": -1, "aim": point_for(ability)})
 		return
 	if AimPreview.is_aimed(ability):
 		start_aiming(ability, key)
 		return
-	var picked := Targeting.pick(hero, ability, session.get_actor(client.target_id))
+	var picked := Targeting.pick(hero, ability, _target_for(hero, ability))
 	if picked.error != "":
 		client.error(picked.error)
 		return
@@ -505,7 +557,15 @@ func _process(_delta: float) -> void:
 ## cursor (2026-11-15: it used to aim at the targeted enemy until the mouse moved,
 ## so a Slash pressed with a target selected swung at the target, not the cursor).
 func aim_point() -> Vector2:
-	return mouse_point(_aiming.ability)
+	return point_for(_aiming.ability)
+
+
+## Where bility would go now: the cursor, or with a controller the right stick /
+## auto-lock (pad_point).
+func point_for(ability: AbilityDef) -> Vector2:
+	if InputDevice.using_pad() and session.local_hero() != null:
+		return pad_point(ability)
+	return mouse_point(ability)
 
 
 ## For tests (no real mouse headless): where the cursor is in the world, or null.
@@ -561,8 +621,7 @@ func _aim_input(event: InputEvent) -> bool:
 	if key == &"" and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		fire_aimed()
 		return true
-	if event.is_action_pressed(&"target_clear") or (event is InputEventMouseButton and event.pressed \
-			and event.button_index == MOUSE_BUTTON_RIGHT):
+	if event.is_action_pressed(&"target_clear") or event.is_action_pressed(&"cancel_aim"):
 		cancel_aiming()
 		return true
 	return false
@@ -577,3 +636,146 @@ func fire_aimed() -> void:
 	var picked := Targeting.pick(session.local_hero(), ability, session.get_actor(client.target_id))
 	cancel_aiming()
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target, "aim": point})
+
+
+# --- Controller aiming -----------------------------------------------------------
+# The right stick aims; let go, it is the setting (ClientState.pad_aim): Auto-lock
+# aims at the nearest enemy ahead, Twin-stick where you walk. Abilities marked
+# Manual Aim always use the right stick (and where it was last pushed).
+
+## Auto-lock looks this far (tiles) for an enemy ahead, and this wide (degrees
+## either side of where you walk or face)…
+const LOCK_RANGE := 9.0
+const LOCK_HALF_ANGLE := 75.0
+## …and this close all around.
+const LOCK_CLOSE := 3.0
+## The right stick's last direction (grid angle), for Manual Aim and Twin-stick.
+var _pad_aim_angle := NAN
+
+
+## The angle to face with a controller: the right stick; else (Auto-lock) the
+## locked enemy; else where the left stick walks; else `last`.
+func pad_facing(hero: Hero, last: float) -> float:
+	var rs := InputDevice.right_stick()
+	if rs != Vector2.ZERO:
+		_pad_aim_angle = Mover.stick_to_grid(rs).angle()
+		return _pad_aim_angle
+	if client.pad_aim == ClientState.PadAim.AUTO_LOCK:
+		var foe := locked_enemy(hero, last)
+		if foe != null:
+			var off: Vector2 = foe.move.position_at(session.render_time()) - hero.move.position_at(session.render_time())
+			if off.length() > 0.05:
+				return off.angle()
+	if _stick != Vector2.ZERO:
+		return Mover.stick_to_grid(_stick).angle()
+	return last if absf(last) <= PI else hero.aim_angle
+
+
+## The enemy Auto-lock aims at: the target picked with Tab / LT if it's in reach;
+## else the nearest foe within LOCK_RANGE in the direction you walk (or face);
+## else the nearest within LOCK_CLOSE. Null if none.
+func locked_enemy(hero: Hero, facing: float) -> Actor:
+	var t: float = session.render_time()
+	var at := hero.move.position_at(t)
+	var picked := session.get_actor(client.target_id) as Actor
+	if _is_foe(hero, picked) and picked.move.position_at(t).distance_to(at) <= LOCK_RANGE * 1.5:
+		return picked
+	var ahead := Mover.stick_to_grid(_stick).angle() if _stick != Vector2.ZERO else facing
+	var best: Actor = null
+	var best_d := INF
+	for a in session.actors():
+		if not _is_foe(hero, a):
+			continue
+		var off: Vector2 = a.move.position_at(t) - at
+		var d := off.length()
+		var in_front := d <= LOCK_RANGE and absf(rad_to_deg(angle_difference(ahead, off.angle()))) <= LOCK_HALF_ANGLE
+		if (in_front or d <= LOCK_CLOSE) and d < best_d:
+			best = a
+			best_d = d
+	return best
+
+
+func _is_foe(hero: Hero, a: Actor) -> bool:
+	return a != null and a.alive and hero.is_hostile_to(a) and not a.evading and not _peaceful(a)
+
+
+## Where `ability` goes with a controller (a point on the ground, or a tile for grid
+## abilities, as mouse_point). Toward the right stick (Manual Aim and Twin-stick,
+## or whenever it's pushed), else the locked enemy (Auto-lock), else straight
+## ahead. Ground areas land as far as the stick is pushed, up to their reach.
+func pad_point(ability: AbilityDef) -> Vector2:
+	var hero: Hero = session.local_hero()
+	var t: float = session.render_time()
+	var at := hero.move.position_at(t)
+	var reach := _reach(ability)
+	var rs := InputDevice.right_stick()
+	var facing := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
+	var point: Vector2
+	if rs == Vector2.ZERO and not ability.manual_aim and client.pad_aim == ClientState.PadAim.AUTO_LOCK \
+			and locked_enemy(hero, facing) != null:
+		point = locked_enemy(hero, facing).move.position_at(t)
+	else:
+		var angle := facing
+		if rs != Vector2.ZERO:
+			angle = Mover.stick_to_grid(rs).angle()
+		elif ability.manual_aim and is_finite(_pad_aim_angle):
+			angle = _pad_aim_angle
+		var dist := reach
+		if _lands_on_ground(ability):
+			dist = reach * (clampf(rs.length(), 0.25, 1.0) if rs != Vector2.ZERO else 0.6)
+		point = at + Vector2.from_angle(angle) * maxf(dist, 1.0)
+	if ability.uses_hitbox():
+		return point
+	return Vector2(MoveState.tile_of(point))
+
+
+## How far `ability` reaches (tiles).
+static func _reach(ability: AbilityDef) -> float:
+	if ability.uses_hitbox() and ability.hitbox.reach > 0.0:
+		return ability.hitbox.reach
+	return float(maxi(ability.max_range, 1))
+
+
+## Ground areas and lobs land where you aim (so the stick sets how far); lines,
+## cones and projectiles only need a direction.
+static func _lands_on_ground(ability: AbilityDef) -> bool:
+	if ability.uses_hitbox():
+		return ability.hitbox.shape in [HitboxDef.Shape.CIRCLE, HitboxDef.Shape.LOB, HitboxDef.Shape.TILES,
+				HitboxDef.Shape.LEAP, HitboxDef.Shape.BLINK]
+	return ability.targeting == AbilityDef.TargetingMode.GROUND
+
+
+## Who a targeted ability goes to: the chosen target if it suits the ability; else,
+## for an enemy ability, the foe nearest where you aim (the cursor, or the
+## controller's lock / stick) within its reach plus a little; for an ally ability, a
+## friend near where you aim (else yourself, as Targeting.pick does).
+func _target_for(hero: Hero, ability: AbilityDef) -> Actor:
+	var chosen := session.get_actor(client.target_id) as Actor
+	var enemy_ability := ability.target == AbilityDef.TargetType.ENEMY
+	var ally_ability := ability.target in [AbilityDef.TargetType.ALLY, AbilityDef.TargetType.DEAD_ALLY]
+	if chosen != null and ((enemy_ability and _is_foe(hero, chosen)) or (ally_ability and hero.is_ally_of(chosen))):
+		return chosen
+	if not (enemy_ability or ally_ability) or (view == null and mouse_override == null and not InputDevice.using_pad()):
+		return chosen
+	var t: float = session.render_time()
+	var at := hero.move.position_at(t)
+	var aim := pad_point(ability) if InputDevice.using_pad() else Iso.from_screen(world_mouse(),
+			session.grid().height_at(hero.tile()) if session.grid().in_bounds(hero.tile()) else 0)
+	var reach := _reach(ability) + 1.0
+	var best: Actor = null
+	var best_d := INF
+	for a in session.actors():
+		var fits: bool = _is_foe(hero, a) if enemy_ability else (a is Hero and hero.is_ally_of(a) \
+				and a.alive == (ability.target == AbilityDef.TargetType.ALLY) and a.id != hero.id)
+		if not fits:
+			continue
+		var p: Vector2 = a.move.position_at(t)
+		if p.distance_to(at) > reach:
+			continue
+		var d := p.distance_to(aim)
+		if not enemy_ability and d > 1.5:
+			continue # a heal goes to a friend only when you point at them
+		if d < best_d:
+			best = a
+			best_d = d
+	return best if best != null else chosen

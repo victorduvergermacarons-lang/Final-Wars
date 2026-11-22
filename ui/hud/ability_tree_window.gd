@@ -272,7 +272,7 @@ class _Node:
 		tip += "\nMastery from this ability: %d / %d (+%s when learned)" % [floori(given.x), int(given.y),
 				str(ability.sheet.get("mastery_on_learn", 0))]
 		if hero.find_ability(ability.id) != null:
-			tip += "\nDrag onto the action bar."
+			tip += "\nDrag onto the ability wheel."
 		tooltip_text = tip
 
 	## What dragging this node carries: only usable abilities go on the bar.

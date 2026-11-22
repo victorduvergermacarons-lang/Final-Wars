@@ -98,7 +98,7 @@ func send_intent(intent: Dictionary) -> void:
 	intent = intent.duplicate()
 	intent.seq = seq
 	if intent.get("type") == "move":
-		mirror.predict_move(seq, intent.get("dir", Vector2i.ZERO), float(intent.get("face", 0.0)))
+		mirror.predict_move(seq, intent.get("dir", Vector2i.ZERO), float(intent.get("face", 0.0)), intent.get("stick"))
 	elif intent.get("type") == "step":
 		mirror.predict_step(seq, intent.to, render_time())
 	elif intent.get("type") == "face":

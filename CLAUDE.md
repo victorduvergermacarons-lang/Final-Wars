@@ -35,7 +35,7 @@ Punch instant; see that section and `docs/playtest-checklist-ability-animations.
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
 new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
 `feature/critters-boss-fixes`, 2026-11-19): see that section. **Loot, boss rolls, binding, trading,
-duels**, the Wilds and boss targets removed (branch `feature/loot-trade-duel`, 2026-11-19): see those sections. Tile steps, step
+duels**, the Wilds and boss targets removed (branch `feature/loot-trade-duel`, 2026-11-19): see those sections. **Controller support and Hades-style controls** (branch `feature/controller`, 2026-11-22): a 4-slot ability wheel, the same layout on keyboard and controller; see **Controller and Hades-style controls**. Tile steps, step
 cooldowns and "adjacent" in the older sections below describe the grid version. For the numbers
 the game actually uses today, see **Gameplay as built** below (Milestone 3 section first:
 the M1/M2 hero abilities and weapons are retired); the brief sections keep the original
@@ -1650,6 +1650,79 @@ Speed stat, haste and slows still count).
   a level-2 caster vs the Shaman, plus the drake from before) until the planned
   combat pacing pass, which slows the enemies down.
 
+## Controller and Hades-style controls (branch `feature/controller`, 2026-11-22)
+
+User brief after the 2026-11-21 playtest (doc "Final War : compte rendu du playtest"): move
+from WoW-style play (many abilities on the number keys) to Hades-style play, first by adding
+controller support and a new control layout on both devices. Checklist:
+`docs/playtest-checklist-controller.md`.
+- **Controller detection** (`InputDevice`, `input/input_device.gd`): any pad Godot knows. The
+  last device touched wins (a button, a stick or trigger past half, or a key, a click or a
+  mouse move over 6 px), so hints, aiming and movement follow what's in your hands. Plugging
+  in or out says so in the log; unplugging the pad in use goes back to the keyboard. Button
+  names by pad family (Xbox, PlayStation, Nintendo, from the pad's name); buttons by position.
+- **Layout** (`InputActions`, `input/input_actions.gd`, the one place it lives; the Escape
+  menu's Controls tab is built from it):
+
+  | Control | Keyboard + mouse | Controller (Xbox) |
+  |---------|------------------|-------------------|
+  | Move | WASD | Left stick, any angle; speed follows the push |
+  | Aim | Mouse | Right stick, or Auto-lock (setting) |
+  | Slot 1 weapon / 2 ranged / 3 dash or defense / 4 the rest | Left click / Right click / Q / Shift | X / Y / A / B |
+  | Timing bar (tap / hold) | Space | RT |
+  | Element power | R | RB (not in the game yet: says so) |
+  | Talk, use, pick up; release when dead | E | LB |
+  | Next target | Tab | LT, D-pad right |
+  | Clear target, cancel aim | Esc | D-pad left |
+  | Health / mana potion (first in the bag) | 1 / 2 | D-pad up / down |
+  | Menu book (inventory) | B (C, L, T, P as before) | View |
+  | Cancel cast, close menus, Escape menu | Esc | Menu |
+
+  Gone: the 10-slot bar's number keys, Shift+1–6 pages, keybind mode (the Escape menu's
+  Keybinds button and tab), left click to target (targeted abilities pick for you, below),
+  right-click to talk (E / LB) and right-click as a timing-bar press. Right-click on another
+  player still opens Trade / Duel, out of combat only. R no longer releases (E / LB does when
+  dead). Pressing an ability's own button again during its bar still plays it.
+- **Ability wheel** (`AbilityWheel`, `ui/hud/ability_wheel.gd`, bottom right, replacing the
+  action bar): four slots laid out like the face buttons, each with its ability, cooldown
+  sweep and button for the device in use; under it the timing and element buttons.
+  `ActionBarModel` is now four slots (no pages, no keybinds). Drag abilities from the
+  spellbook or trees onto it as before.
+- **Slot roles** (user request): **X** the equipped weapon's art (any Sword / Bow / Hammer
+  ability, Quick Shot too), **Y** ranged attacks, **A** a dash for Fire and Air (Flame Dash;
+  Air Step, Air has no dash yet) and Earth's resistance buff (Stone Skin), **B** the rest.
+  From the sheet's **Wheel Slot** column (X / Y / A / B, checked on import; weapon arts go to
+  X by themselves; `AbilityDef.wheel_slot`, `Hud.wheel_slot_of`;
+  `tools/once/add_wheel_slot_column.ps1`, a note on the Timing Rules tab): Y = Fire Dart, Fire
+  Whip, Water Whip, Frost Shard, Water Pulse, Leeching Tide, Rock Throw, Gust, Air Blast; A =
+  Flame Dash, Air Step, Stone Skin. Only the first placement (`auto_place`): a new ability goes
+  to its slot if free, or takes it from an ability that doesn't belong there and that the
+  player didn't drag there (that one moves to a free slot, or waits off the wheel); else B,
+  then X, Y, A. So a hero without a weapon uses X for a melee spell until a weapon arrives.
+  Saves from before (the 10-slot bar, the first wheel) start over (`LAYOUT` 2). Water has no
+  A ability yet.
+- **Stick movement:** a `move` intent may carry `stick` (screen space, length 0..1) instead of
+  the keys' `dir`; `Mover.stick_to_grid` / `wish_of`, the same on the host and in prediction.
+- **Controller aim** (`PlayerInput.pad_facing` / `pad_point` / `locked_enemy`): the right stick
+  when pushed; else per the Gameplay test tab's **Controller aim** (`ClientState.pad_aim`,
+  saved per player): **Auto-lock** = the Tab/LT target if within 13.5 tiles, else the nearest
+  foe within 9 tiles and 75° of where you walk or face, else within 3 tiles all round;
+  **Twin-stick** = where you walk. Ground areas and lobs land as far as the stick is pushed
+  (25–100% of reach; 60% with the stick let go); lines, cones and projectiles go full reach.
+- **Manual Aim** (`AbilityDef.manual_aim`, sheet column **Manual Aim**, Yes/No, checked on
+  import; a note on the Timing Rules tab; `tools/once/add_manual_aim_column.ps1`): on a
+  controller the ability ignores Auto-lock and aims with the right stick (or where it last
+  pointed); melee cones marked so are held and aimed instead of swinging at once. First draft
+  (AI, to confirm): Fireball, Burning Ground, Ice Spikes, Rock Throw, Raise Pillar, Earth Wall,
+  Aimed Shot.
+- **Targeted abilities pick for you** (`PlayerInput._target_for`): with no fitting target, an
+  enemy ability goes to the foe nearest the aim (cursor, lock or stick) within its reach + 1;
+  an ally ability to a friend within 1.5 tiles of the aim, else yourself.
+- The timing bar's "above the action bar" place is now "at the bottom of the screen".
+- Not yet: element powers, menus with the controller (the book, shop, dialogue), rebinding,
+  a universal dash (user: none), per-element layouts (Water's ice stance swapping the four).
+- Tests: `test_action_bar.gd` (roles too), controller cases in `test_player_input.gd` and `test_aiming.gd`,
+  the Controls tab in `test_game_menu.gd`.
 ## Performance (branch `optimised-build-1`, 2026-10-21)
 
 Measure with `tools/perf/` (headless, no window; a headless frame costs at least
@@ -2508,6 +2581,8 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-22 | Wheel slots by role: the weapon on X, ranged attacks on Y, a dash (Fire, Air) or Earth's resistance buff on A, the rest on B | User request. Mine: a Wheel Slot column in the sheet (weapon arts need none); the Y and A lists; Air Step counts as Air's dash; a newcomer takes its slot back from an auto-placed ability that doesn't belong there, never from one the player dragged; no-role abilities go B, X, Y, A; older saved layouts start over. |
+| 2026-11-22 | Controller support and a Hades-style layout on both devices: four face-button slots on a wheel (bottom right), Space / RT for timing bars, Auto-lock or Twin-stick aiming, a Manual Aim column | User choices: abilities on the face buttons (X attack, Y special, A cast, B for the fourth since there is no universal dash), 4 slots to start, the keyboard switches too, aim mode an option with some abilities always aimed by hand, RT for timing bars, a 4-slot wheel on the right with abilities and cooldowns instead of the action bar. Mine: LB interact, RB element power (placeholder), LT / Tab next target, D-pad potions and target, View the book, Menu = Esc; left click / right click / Q / Shift for the slots; the stick's push sets the speed; old saves keep 4 slots; keybind mode removed (fixed layout for now); targeted abilities pick the foe nearest the aim; right-click Trade / Duel only out of combat; the Manual Aim draft list; the lock's ranges and angle. See **Controller and Hades-style controls**. |
 | 2026-11-21 | First sound effects, zone music and water near the hero (branch `audio/new-sounds`) | User brief. Theirs: the files (trimmed, levelled; music at -18 LUFS so zones never jump in volume); Healing Touch, Water Whip and Air Palm on `_hit` (their `_cast` plays when the timing bar starts), Gust on `_cast` (no bar); the Mixkit wolf bite shared with the iron wolf (free for games, no credit); the stag's first bellow cut from a 6 s take; "Millbrook / Greenfields" for town and explore in those two zones, "The Crossing", the draft kept for the title screen and zones with no track; the water emitters (approved): radius 10, at most 3, every 0.5 s, 1 s fades, client side, Ambience bus, numbers in AudioConfig. Mine: water = terrains whose tiles the catalog puts in "water" (fords and rocks in water are stone); clusters touch diagonally; a spot that moves under 3 tiles glides (walking along a river would otherwise fade every half second), further it crossfades; level from the grid distance with falloff 1.5 and 0 dB at the water; emitters kept outside the world view so they fade out on a zone change; every enemy pulled into a fight by damage sends `aggro` (not only the stag), once per fight. |
 | 2026-11-21 | Pressing an ability's key again during its timing bar plays the bar again, alongside right-click and Space | User request after testing the ability animations: the second press had been removed that morning (Space added instead). Both stay: right-click, Space or the key; letting go of the key ends a hold, as before. |
 | 2026-11-21 | Ability animations and effects; Rock Throw two presses; Stone Skin's look and shatter; Fire Punch instant; Water Whip from 0.45 s | User brief (all eight facings, user choice; "defaults fine": the phase model, walking shows the ability's pose, stone look on Stone Skin, my frame rates). My choices: strike frames read off the art (table in **Ability animations and effects**); hits on strike frames without delaying taps, by playing the frames before the strike during the bar and the rest from the strike when it goes off (heroes had no strike timing before: only creatures' `timed_abilities`); Rock Throw keeps a timing bar, adapted (3 s, tap 0.6–2.6, crit 0.9–1.1, no press throws at miss power through a client press at the end, Cast Move Speed 0); the throw and the whip go off after a release delay taken from the art (0.15 s, 0.29 s), paying mana and cooldown then and not re-checking range; the flying rock is the still moved and spun in code (FX-10-2 barely tumbles); effects drawn in the back-to-front pass on the tile under them; stone tint baked once per sheet; the mound cut from stone_shatter by height and colours (thin scraps remain). |

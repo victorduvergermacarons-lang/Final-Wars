@@ -113,8 +113,8 @@ var last_host_pos := Vector2.ZERO
 
 
 ## The player's input as sent (seq): held screen direction and mouse angle.
-func predict_move(seq: int, dir: Vector2i, face: float) -> void:
-	_wish = Mover.screen_to_grid(dir)
+func predict_move(seq: int, dir: Vector2i, face: float, stick: Variant = null) -> void:
+	_wish = Mover.stick_to_grid(stick) if stick is Vector2 else Mover.screen_to_grid(dir)
 	_face = face
 	_wish_seq = seq
 

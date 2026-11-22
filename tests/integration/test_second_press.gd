@@ -33,7 +33,6 @@ func before_each() -> void:
 	hero = session.local_hero()
 	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	client = ClientState.new()
-	InputActions.apply_action_bar_keys(client.action_bar)
 	view = WorldView.new()
 	add_child(view)
 	view.setup(session, client, ContentDB.zones[&"crossing"])
@@ -204,9 +203,9 @@ func test_a_second_press_fires_an_aimed_ability_without_a_bar() -> void:
 func test_a_held_key_is_not_a_second_press() -> void:
 	# Key repeat sends echo events; they must not play the bar.
 	var ev := InputEventKey.new()
-	ev.physical_keycode = client.action_bar.keys[0]
+	ev.physical_keycode = KEY_Q # slot 3's key
 	ev.pressed = true
-	client.action_bar.slots[0] = &"S01"
+	client.action_bar.slots[2] = &"S01"
 	input._unhandled_input(ev)
 	await wait_physics_frames(4)
 	assert_eq(hero.casting.get("kind", ""), "timing", "the press started the bar")

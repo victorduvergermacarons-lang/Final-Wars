@@ -274,6 +274,7 @@
 				"size": 0.25,
 				"pierce": false
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -372,6 +373,7 @@
 				"width": 0.6,
 				"pierce": false
 			},
+			"wheel_slot": "A",
 			"prerequisites": {
 				"abilities": [
 					"F02"
@@ -434,6 +436,7 @@
 				"width": 0.9,
 				"pierce": true
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [
 					"F01"
@@ -496,6 +499,7 @@
 				"radius": 1.5,
 				"pierce": false
 			},
+			"manual_aim": true,
 			"prerequisites": {
 				"abilities": [
 					"F03"
@@ -558,6 +562,7 @@
 				"radius": 1.0,
 				"pierce": false
 			},
+			"manual_aim": true,
 			"prerequisites": {
 				"abilities": [
 					"F03"
@@ -1307,6 +1312,8 @@
 				"pierce": false
 			},
 			"cast_move_speed_pct": 0.0,
+			"manual_aim": true,
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1355,6 +1362,7 @@
 				"shape": "None",
 				"pierce": false
 			},
+			"wheel_slot": "A",
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1402,6 +1410,7 @@
 				"radius": 0.0,
 				"pierce": false
 			},
+			"manual_aim": true,
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -1498,6 +1507,7 @@
 				"radius": 0.0,
 				"pierce": false
 			},
+			"manual_aim": true,
 			"prerequisites": {
 				"abilities": [
 					"E03"
@@ -2381,6 +2391,7 @@
 				"range": 5.0,
 				"pierce": false
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2486,6 +2497,7 @@
 				"size": 0.25,
 				"pierce": false
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -2602,6 +2614,7 @@
 				"width": 1.2,
 				"pierce": true
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [
 					"W02"
@@ -2658,6 +2671,7 @@
 				"range": 5.0,
 				"pierce": false
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [
 					"W02"
@@ -2764,6 +2778,7 @@
 				"radius": 1.0,
 				"pierce": false
 			},
+			"manual_aim": true,
 			"prerequisites": {
 				"abilities": [
 					"W04"
@@ -3606,6 +3621,7 @@
 				"range": 5.0,
 				"pierce": false
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3651,6 +3667,7 @@
 				"shape": "None",
 				"pierce": false
 			},
+			"wheel_slot": "A",
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []
@@ -3766,6 +3783,7 @@
 				"range": 5.0,
 				"pierce": false
 			},
+			"wheel_slot": "Y",
 			"prerequisites": {
 				"abilities": [
 					"A01"
@@ -5749,6 +5767,7 @@
 				"size": 0.3,
 				"pierce": false
 			},
+			"manual_aim": true,
 			"prerequisites": {
 				"abilities": [],
 				"mastery": []

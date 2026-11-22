@@ -132,7 +132,7 @@ func test_non_consumables_cant_be_used() -> void:
 
 func test_action_bar_holds_potions() -> void:
 	var bar := ActionBarModel.new()
-	bar.assign(4, ActionBarModel.item_entry(&"minor_health_potion"))
-	assert_true(ActionBarModel.is_item_slot(bar.slots[4]))
-	assert_eq(ActionBarModel.item_id_of(bar.slots[4]), &"minor_health_potion")
+	bar.assign(3, ActionBarModel.item_entry(&"minor_health_potion"))
+	assert_true(ActionBarModel.is_item_slot(bar.slots[3]))
+	assert_eq(ActionBarModel.item_id_of(bar.slots[3]), &"minor_health_potion")
 	assert_false(ActionBarModel.is_item_slot(&"strike"))
