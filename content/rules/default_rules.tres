@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="CombatRules" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="CombatRules" format=3]
 
 [ext_resource type="Script" path="res://data/defs/combat_rules.gd" id="1_rules"]
 [ext_resource type="Resource" path="res://content/rules/movement.tres" id="2_move"]
 [ext_resource type="Resource" path="res://content/rules/party_play.tres" id="3_pp"]
+[ext_resource type="Resource" path="res://content/buffs/wind_stun.tres" id="4_stun"]
 
 [resource]
 script = ExtResource("1_rules")
 movement = ExtResource("2_move")
 party_play = ExtResource("3_pp")
+point_stun = ExtResource("4_stun")
 walk_tile_seconds = 0.4
 combat_step_base_seconds = 1.5
 combat_step_min_seconds = 0.5

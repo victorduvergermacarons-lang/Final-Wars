@@ -58,6 +58,17 @@ const GAME_SPEED_MAX := 2.0
 ## (tests/pre_run.gd) unless they turn it on.
 @export var action_combat: bool = false
 @export var action_gcd_seconds: float = 0.25
+## Element points (Air's wind charges; AbilityDef.builds_points / spends_points).
+@export var element_points_max: int = 3
+## Damage per point spent (+30% each).
+@export var point_damage_bonus: float = 0.3
+## Put on whatever a full spend knocks back.
+@export var point_stun: BuffDef
+## A slid pillar (AbilityDef.slides_pillar_tiles): seconds per tile, and the damage
+## (physical, before defense) and knockback (tiles) for whoever it runs into.
+@export var pillar_slide_tile_seconds: float = 0.06
+@export var pillar_slide_damage: float = 20.0
+@export var pillar_slide_knockback: int = 2
 
 
 ## The global cooldown an actor's abilities start.

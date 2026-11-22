@@ -12,6 +12,12 @@ var action_bar := ActionBarModel.new()
 ## Abilities marked Manual Aim always use the right stick.
 enum PadAim { AUTO_LOCK, TWIN_STICK }
 var pad_aim: PadAim = PadAim.AUTO_LOCK
+## The element kit's mode (an index in ElementKits.modes: Water 0, Ice 1), switched
+## with RT / Space.
+var kit_mode := 0
+## Choosing an ally for a heal or buff (two presses): {"slot", "ability"}; the ally
+## is target_id. Empty otherwise.
+var ally_select := {}
 ## The local right-clicks on the current timing bar, before the host answers:
 ## {"start": the bar's start time, "next": the next input to play, "presses":
 ## [{"index": the input, "at": seconds into the bar, "holding": a hold started,

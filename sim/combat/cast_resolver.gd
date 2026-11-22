@@ -81,14 +81,26 @@ static func cast(ctx: CombatContext, caster: Actor, ability: AbilityDef, target:
 	# Damage bonuses (e.g. Kindle) are fixed when the ability goes off and carried
 	# by its projectile or delayed hit; charges are used up after.
 	out.bonus = bonus if bonus >= 0.0 else caster.buffs.damage_dealt_multiplier(ability.tree, ctx.now)
+	# Element points (Air's wind charges): spent for more damage and knockback.
+	var points := 0
+	if ability.spends_points and caster is Hero and pay_mode != Pay.FREE:
+		points = (caster as Hero).element_points
+		(caster as Hero).element_points = 0
+		out.bonus *= 1.0 + ctx.rules.point_damage_bonus * points
+	ctx.spent_points = points
 	ctx.damage_bonus = out.bonus
 	var had := caster.buffs.ids()
 	had[&""] = true # never empty: spare what this cast applies
 	_resolve(ctx, caster, ability, target, aim, out)
 	ctx.damage_bonus = 1.0
+	ctx.spent_points = 0
+	if ability.builds_points and caster is Hero:
+		(caster as Hero).element_points = mini((caster as Hero).element_points + 1, ctx.rules.element_points_max)
+	out.points = points
 	if pay_mode != Pay.FREE:
 		caster.buffs.consume_on_cast(ability.tree, ctx.now, had)
 	if out.projectile != null:
+		out.projectile.spent_points = points
 		out.projectile.damage_bonus = out.bonus
 		out.projectile.force_crit = ctx.force_crit # a timing bar's critical success
 	if out.pending != null:

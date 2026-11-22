@@ -20,3 +20,5 @@ max_range = 5
 mana_cost = 8.0
 effects = Array[ExtResource("1_6kh8h")]([SubResource("Resource_dlpl1")])
 targeting = 3
+charge_max_extra = 2
+charge_seconds_per_level = 0.6

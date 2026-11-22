@@ -11,6 +11,11 @@ var actors := {} # id -> Actor
 ## Damage multiplier of the ability being resolved right now (e.g. Kindle), set by
 ## whoever resolves a cast, projectile or delayed hit; 1 otherwise.
 var damage_bonus: float = 1.0
+## Element points spent on the hit being resolved (Air's wind charges: more
+## knockback, a stun when full; CastResolver.cast), carried by its projectile.
+var spent_points := 0
+## Extra levels from holding a charged ability's button (AbilityDef.charge_levels).
+var charge_levels := 0
 ## Every hit of the ability being resolved right now is a critical strike (a
 ## timing bar's yellow zone). Set like damage_bonus.
 var force_crit: bool = false

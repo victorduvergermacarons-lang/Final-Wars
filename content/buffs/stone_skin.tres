@@ -12,6 +12,7 @@ script = ExtResource("2_buff")
 id = &"stone_skin"
 display_name = "Stone Skin"
 duration_seconds = 10.0
+max_stacks = 3
 look = &"stone"
 end_anim = "stone_shatter"
 modifiers = Array[ExtResource("1_mod")]([SubResource("mod_0")])

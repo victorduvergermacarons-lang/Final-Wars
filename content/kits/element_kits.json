@@ -1,0 +1,49 @@
+{
+	"about": "What each button does per element (2026-11-22, the Hades-style kits). Buttons: X (weapon), Y, A, B, and RT (switch). Per button: tap (pressed and let go), hold (held hold_seconds: it goes off by itself), combo (presses in a row, reset after combo_reset_seconds), charge (held, let go: longer = stronger), in_front (aimed at the tile in front of you). Heals and buffs on allies take two presses: the first picks an ally (left stick or arrows), the second casts. Edit freely; the game reads it at start.",
+	"hold_seconds": {"weapon": 3.0, "element": 1.0},
+	"combo_reset_seconds": 1.0,
+	"weapons": {
+		"Sword": {"tap": "S01", "hold": "S04"},
+		"Bow": {"tap": "B01", "hold": "B02"},
+		"Hammer": {"tap": "H01", "hold": "H02"}
+	},
+	"elements": {
+		"fire": {
+			"modes": ["Fire"],
+			"Fire": {
+				"Y": {"tap": "F03", "hold": "F06"},
+				"A": {"tap": "F05"},
+				"B": {"combo": ["F01", "F01", "F02"]}
+			}
+		},
+		"water": {
+			"modes": ["Water", "Ice"],
+			"Water": {
+				"Y": {"tap": "W02"},
+				"A": {"tap": "W06"},
+				"B": {"tap": "W01"}
+			},
+			"Ice": {
+				"Y": {"tap": "W04"},
+				"A": {"tap": "W24"},
+				"B": {"tap": "W25"}
+			}
+		},
+		"earth": {
+			"modes": ["Earth"],
+			"Earth": {
+				"Y": {"tap": "E21", "hold": "E01"},
+				"A": {"tap": "E02", "hold": "E04"},
+				"B": {"charge": "E03", "in_front": true}
+			}
+		},
+		"air": {
+			"modes": ["Air"],
+			"Air": {
+				"Y": {"tap": "A05"},
+				"A": {"tap": "A03"},
+				"B": {"tap": "A01"}
+			}
+		}
+	}
+}

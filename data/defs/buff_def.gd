@@ -12,6 +12,10 @@ extends Resource
 ## The hero animation played once when it ends (e.g. "stone_shatter"; "" = none).
 @export var end_anim: String = ""
 @export var modifiers: Array[StatModifier] = []
+## Stacks (2026-11-22, Stone Skin): each application adds one, up to max_stacks, and
+## refreshes the duration; the modifiers count stacks / max_stacks of themselves
+## (1/3, 2/3, 3/3). 0 or 1: no stacking.
+@export var max_stacks: int = 0
 ## Movement: multiplies the step cooldown (2.0 = half speed). 1.0 = no change.
 @export var step_cooldown_multiplier: float = 1.0
 ## Can't step at all while active (still can turn and use abilities).

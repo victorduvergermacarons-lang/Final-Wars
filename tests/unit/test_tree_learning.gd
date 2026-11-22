@@ -29,7 +29,7 @@ func _give(item: ItemDef) -> int:
 
 
 func test_items_exist_for_every_ability() -> void:
-	assert_eq(items.size(), 145)
+	assert_eq(items.size(), 148)
 	var ember: ItemDef = items[&"ember_fist_scroll"]
 	assert_true(ember.is_scroll)
 	assert_eq(ember.slot, EquipSlot.Type.NONE, "scrolls aren't worn")

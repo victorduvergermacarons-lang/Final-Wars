@@ -135,7 +135,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-241 keys, 13 with a file, 228 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+246 keys, 13 with a file, 233 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -251,10 +251,13 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | Key | Plays when | File |
 |-----|-----------|------|
 | `water_flow_state_cast` | Flow State is used | **missing** |
+| `water_frost_ring_cast` | Frost Ring is used | **missing** |
+| `water_frost_ring_hit` | Frost Ring lands on someone | **missing** |
 | `water_frost_shard_cast` | Frost Shard is used | **missing** |
 | `water_frost_shard_hit` | Frost Shard lands on someone | **missing** |
 | `water_healing_touch_cast` | Healing Touch is used | **missing** |
 | `water_healing_touch_hit` | Healing Touch lands on someone | yes |
+| `water_ice_slide_cast` | Ice Slide is used | **missing** |
 | `water_ice_spikes_cast` | Ice Spikes is used | **missing** |
 | `water_ice_spikes_hit` | Ice Spikes lands on someone | **missing** |
 | `water_leeching_tide_cast` | Leeching Tide is used | **missing** |
@@ -274,6 +277,8 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `earth_rock_throw_cast` | Rock Throw is used | **missing** |
 | `earth_rock_throw_hit` | Rock Throw lands on someone | **missing** |
 | `earth_seismic_stomp_cast` | Seismic Stomp is used | **missing** |
+| `earth_stone_fist_cast` | Stone Fist is used | **missing** |
+| `earth_stone_fist_hit` | Stone Fist lands on someone | **missing** |
 | `earth_stone_skin_cast` | Stone Skin is used | **missing** |
 | `earth_wall_cast` | Earth Wall is used | **missing** |
 | `earth_wall_hit` | Earth Wall lands on someone | **missing** |

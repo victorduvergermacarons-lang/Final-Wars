@@ -35,4 +35,4 @@ script = ExtResource("3_lxxex")
 id = &"F09"
 mana_cost = 12.0
 effects = Array[ExtResource("1_py5el")]([SubResource("Resource_843ii"), SubResource("Resource_jv4al"), SubResource("Resource_eb72t"), SubResource("Resource_u1euc")])
-targeting = 1
+targeting = 2

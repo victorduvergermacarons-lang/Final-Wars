@@ -45,7 +45,10 @@ func _init(p_hud: Hud) -> void:
 
 
 func _process(_delta: float) -> void:
-	if _shown_revision != InputDevice.revision:
-		_shown_revision = InputDevice.revision
-		_note.text = "Timing %s · Element %s" % [InputActions.hint(&"timing_press"),
-				InputActions.hint(&"element_power")]
+	var mode: String = hud.input.mode_name() if hud.input != null else ""
+	var hero: Hero = hud.session.local_hero()
+	var switch := hero != null and ElementKits.modes(hero.element).size() > 1
+	var text := "%s: %s mode (switch)" % [InputActions.hint(&"timing_press"), mode] if switch \
+			else "Element %s" % InputActions.hint(&"element_power")
+	if text != _note.text:
+		_note.text = text

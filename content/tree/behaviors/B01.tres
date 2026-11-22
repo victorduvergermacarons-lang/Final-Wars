@@ -16,4 +16,4 @@ id = &"B01"
 max_range = 7
 ranged = true
 effects = Array[ExtResource("1_msc73")]([SubResource("Resource_5t2rf")])
-targeting = 1
+targeting = 2

@@ -710,6 +710,7 @@ func _draw_actor(a: Actor) -> void:
 		if a.alive:
 			_draw_bar(top + Vector2(-14, -10), 28, a.hp / maxf(a.current_stats(now).hp, 1.0), Color(0.2, 0.85, 0.3))
 			_draw_cast_bar(a, feet, now)
+			_draw_points(a as Hero, top + Vector2(0, -34))
 		return
 	if a is Hero:
 		var color: Color = HERO_COLORS[(a.id - 1) % HERO_COLORS.size()]
@@ -721,6 +722,8 @@ func _draw_actor(a: Actor) -> void:
 			var outline := Color(1, 0.25, 0.2) if a.in_combat(now) else Color(0.05, 0.05, 0.1)
 			draw_arc(body, 11, 0, TAU, 24, outline, 2.0)
 		_draw_label(body + Vector2(0, -22), "%s  Lv%d" % [a.display_name, (a as Hero).level], Color.WHITE)
+		if a.alive:
+			_draw_points(a as Hero, body + Vector2(0, -40))
 	elif a is Npc:
 		_draw_npc(a as Npc, feet, body)
 		return
@@ -1058,6 +1061,23 @@ func _draw_facing(feet: Vector2, facing: Vector2, color: Color) -> void:
 	var d := Iso.to_screen(Vector2(facing), 0.0).normalized()
 	var side := Vector2(-d.y, d.x)
 	draw_colored_polygon(PackedVector2Array([feet + d * 22, feet + d * 12 + side * 6, feet + d * 12 - side * 6]), color)
+
+
+## Air's wind charges (Hero.element_points): a row of dots over the name, filled for
+## each charge (2026-11-22). Air heroes always show them, others once they have one.
+func _draw_points(h: Hero, center: Vector2) -> void:
+	var most: int = session.rules().element_points_max
+	if most <= 0 or (h.element != &"air" and h.element_points <= 0):
+		return
+	var filled := h.element_points
+	_overlay.append(func():
+		for i in most:
+			var p := center + Vector2((i - (most - 1) / 2.0) * 10.0, 0)
+			draw_circle(p, 4.0, Color(0.05, 0.08, 0.12, 0.8))
+			if i < filled:
+				draw_circle(p, 3.0, Color(0.75, 0.95, 1.0))
+			else:
+				draw_arc(p, 3.0, 0, TAU, 12, Color(0.75, 0.95, 1.0, 0.7), 1.0))
 
 
 func _draw_bar(pos: Vector2, width: float, fraction: float, color: Color) -> void:

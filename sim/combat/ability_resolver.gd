@@ -150,7 +150,7 @@ static func apply_area_effects(ctx: CombatContext, caster: Actor, ability: Abili
 				var area: Array = tiles
 				if effect.wall_line:
 					area = _wall_tiles(ctx, caster, ability, effect)
-				var levels := int(effect.base_amount) + _extra(caster, ability, effect, ctx.now)
+				var levels := int(effect.base_amount) + _extra(caster, ability, effect, ctx.now) + ctx.charge_levels
 				if effect.lift_damage > 0.0 and levels > 0:
 					var lift := effect.lift_damage
 					if ability.is_tree_ability():
@@ -274,6 +274,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var pull := effect.kind == AbilityEffect.Kind.PULL
 			if not pull:
 				_try_ground(ctx, caster, ability, target, events)
+				_point_stun(ctx, caster, ability, target, events)
 			if target.is_large():
 				return # a large body (Sunscale Drake) isn't shoved around
 			if target is Enemy and (target as Enemy).def.training_dummy:
@@ -286,7 +287,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 				dir = ctx.cast_dir
 			if effect.push_aside and ctx.cast_dir != Vector2i.ZERO:
 				dir = ctx.push_side if ctx.push_side != Vector2i.ZERO else _aside(ctx, target, ctx.cast_dir)
-			var tiles := Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now), target.weight)
+			var tiles := Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now) + ctx.spent_points,
+					target.weight)
 			if effect.push_aside and ctx.push_tiles > 0:
 				tiles = ctx.push_tiles # just out of the charge's lane
 			if pull:
@@ -531,6 +533,17 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 ## Free movement: a knockback or pull slides the unit along the line from the
 ## caster (any angle; or along the cast for waves), with collisions; being
 ## stopped by a wall, ledge or unit hurts (and the unit hit, if an enemy).
+## A full spend of element points (Air's wind charges) stuns what it knocks back.
+static func _point_stun(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor,
+		events: Array[Dictionary]) -> void:
+	var stun: BuffDef = ctx.rules.point_stun
+	if stun == null or ctx.spent_points < ctx.rules.element_points_max or not target.alive:
+		return
+	target.buffs.apply(stun, ctx.now, 0.0, caster.id)
+	target.casting = {}
+	events.append({"type": "buff", "source": caster.id, "target": target.id, "ability": ability.id, "buff": stun.id})
+
+
 static func _shove(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect, target: Actor,
 		pull: bool, events: Array[Dictionary]) -> void:
 	var away := target.move.pos - caster.move.pos
@@ -539,7 +552,8 @@ static func _shove(ctx: CombatContext, caster: Actor, ability: AbilityDef, effec
 		dir = ctx.cast_vec
 	if effect.push_aside:
 		dir = ctx.cast_vec.orthogonal() * (1.0 if ctx.cast_vec.orthogonal().dot(away) >= 0.0 else -1.0)
-	var dist := float(Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now), target.weight))
+	var dist := float(Weight.adjust(int(effect.base_amount) + _extra(caster, ability, effect, ctx.now) + ctx.spent_points,
+			target.weight))
 	if effect.push_aside and ctx.push_tiles > 0:
 		dist = float(ctx.push_tiles)
 	if pull:

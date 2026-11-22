@@ -1,21 +1,22 @@
 [gd_resource type="Resource" script_class="AbilityDef" format=3]
 
-[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_8go36"]
-[ext_resource type="Resource" path="res://content/buffs/air_step.tres" id="2_ufsq5"]
-[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="3_p8005"]
-[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="4_hluxq"]
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="2_def"]
 
-[sub_resource type="Resource" id="Resource_xt5r8"]
-script = ExtResource("1_8go36")
-kind = 4
-buff = ExtResource("2_ufsq5")
+[sub_resource type="Resource" id="eff_0"]
+script = ExtResource("1_eff")
+kind = 13
+applies = 1
+base_amount = 5.0
 
 [resource]
-script = ExtResource("4_hluxq")
+script = ExtResource("2_def")
 id = &"A03"
-target = 0
-max_range = 0
-mana_cost = 8.0
+max_range = 5
+mana_cost = 6.0
 on_gcd = false
-effects = Array[ExtResource("1_8go36")]([SubResource("Resource_xt5r8")])
-targeting = 4
+requires_line_of_sight = false
+effects = Array[ExtResource("1_eff")]([SubResource("eff_0")])
+targeting = 3
+aim = 1
+builds_points = true

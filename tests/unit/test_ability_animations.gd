@@ -98,8 +98,8 @@ func test_fire_punch_hits_as_the_key_is_pressed() -> void:
 	assert_true(hero.casting.is_empty(), "no cast, no wind-up")
 	assert_lt(wolf.hp, hp, "the damage lands the same tick")
 	assert_eq(_of(events, "cast", &"F01").size(), 1)
-	assert_almost_eq(hero.cooldowns.ability_remaining(&"F01", world.now), 2.0 - ContentDB.rules.tick_seconds, 0.06,
-			"its 2 s cooldown")
+	assert_almost_eq(hero.cooldowns.ability_remaining(&"F01", world.now), 0.4 - ContentDB.rules.tick_seconds, 0.06,
+			"its 0.4 s cooldown (the Fire combo, 2026-11-22)")
 	assert_gt(hero.cooldowns.gcd_remaining(world.now), 0.0, "and the global cooldown")
 
 

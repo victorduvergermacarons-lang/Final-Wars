@@ -22,4 +22,5 @@ id = &"A01"
 fx_cast = &"air_palm_spiral"
 mana_cost = 6.0
 effects = Array[ExtResource("1_ghhsq")]([SubResource("Resource_yvjmt"), SubResource("Resource_lcruq")])
-targeting = 1
+targeting = 2
+spends_points = true

@@ -1723,6 +1723,64 @@ controller support and a new control layout on both devices. Checklist:
   a universal dash (user: none), per-element layouts (Water's ice stance swapping the four).
 - Tests: `test_action_bar.gd` (roles too), controller cases in `test_player_input.gd` and `test_aiming.gd`,
   the Controls tab in `test_game_menu.gd`.
+## Element kits: Hades-style moves (branch `feature/controller`, 2026-11-22)
+
+User brief after the controller work. Each element has its own button layout; attacks need no
+target; weapons and some element buttons do one thing on a tap and another on a hold.
+Checklist: `docs/playtest-checklist-controller.md` (section 7).
+- **Temporary instant combat** (`CombatRules.action_combat`, on in `default_rules.tres`): heroes'
+  abilities go off at once (no timing bar, cast time, wind-up or channel) with a 0.25 s global
+  cooldown (`action_gcd_seconds`, `CombatRules.gcd_for`). Tests run with it off
+  (`tests/pre_run.gd`, GUT's pre-run hook) unless they turn it on. Enemies unchanged.
+- **Kits** (`content/kits/element_kits.json`, read by `ElementKits`, `input/element_kits.gd`;
+  `PlayerInput` "Element kits"): per element and mode, per button a `tap`, a `hold` (goes off by
+  itself once held: **3 s for weapons, 1 s for elements**), a `combo` (presses in a row, reset
+  after 1 s) or a `charge` (let go: the longer, the stronger), `in_front` (aimed at the tile ahead).
+  X is the weapon in hand; a button the kit doesn't cover uses the wheel's own slot (heroes with
+  no element keep the plain wheel). The wheel shows the kit (tap ability, the hold's name, a ring
+  filling while held, the mode); kit buttons don't take dropped abilities.
+
+  | | X (weapon) | Y | A | B | RT / Space |
+  |---|---|---|---|---|---|
+  | Sword / Bow / Hammer | Slash · hold Lunge / Quick Shot · hold Aimed Shot / Smash · hold Ground Slam | | | | |
+  | Fire | weapon | Fire Dart · hold Fire Whip | Flame Dash | Punch, Punch, Kick | — |
+  | Water | weapon | Water Whip | Water Pulse | Healing Touch (two presses) | to Ice |
+  | Ice | weapon | Frost Shard | Ice Slide | Frost Ring | to Water |
+  | Earth | weapon | Stone Fist · hold Rock Throw | Stone Skin (tap up to 3×) · hold Seismic Stomp (taunt) | Raise Pillar, held to grow | — |
+  | Air | weapon | Air Blast | Air Step (long dash) | Air Palm | — |
+- **Heals and buffs on allies** (Healing Touch): the first press starts choosing (on yourself;
+  `ClientState.ally_select`, the choice is `target_id`), the hero stands still, a new push of the
+  left stick or the arrows moves to the ally nearest that way, the second press casts; Esc /
+  D-pad left cancels.
+- **Attacks without targets** (sheet: Targeting and Hitbox columns, `tools/once/action_kits_sheet.ps1`):
+  Fire Punch (cone 1.4, 90°), Fire Kick (cone 1.5, 110°), Blazing Combo, Air Palm (cones); Water
+  Whip, Leeching Tide (projectiles 5.5 tiles), Gust (5.5, fast), Air Blast (5.5), Quick Shot (7.5).
+  Cooldowns for the combo: Fire Punch 0.4 s, Fire Kick 1.2 s.
+- **New abilities** (sheet rows, behavior files): **Stone Fist** (E21, Earth T1, Stone Fist
+  Scroll: a 1.4-tile cone, physical, 0.6 s), **Ice Slide** (W24, Water T1: dash 4 tiles, 4 s),
+  **Frost Ring** (W25, Water T1: 0.8 Magic Atk in a 2-tile circle around you + slow 2 s, 6 s).
+  148 abilities now.
+- **Stone Skin stacks** (`BuffDef.max_stacks` 3; `ActiveBuffs` counts stacks, modifiers ×
+  stacks / max): each press adds +20/3 Physical Defense (cooldown 0.3 s), 10 s refreshed.
+- **Raise Pillar** (E03): on the tile in front; held, +1 level per 0.6 s up to +2
+  (`AbilityDef.charge_max_extra`, `charge_seconds_per_level`; the cast intent's `charge`,
+  `CombatContext.charge_levels`).
+- **Pillar slide** (`AbilityDef.slides_pillar_tiles`: Stone Fist 5; `WorldSim` "Sliding pillars"):
+  punching your own raised tile slides it 5 tiles along the punch (8-way, a tile per 0.06 s); it
+  stops at the edge, a wall, a rise of more than 1 level, other raised ground or a unit; an enemy
+  it runs into takes 20 physical per pillar level and is knocked back 2 tiles (`CombatRules`
+  pillar_slide_*).
+- **Air's wind charges** (`Hero.element_points`, in snapshots; `AbilityDef.builds_points` /
+  `spends_points`): Air Step (now a 5-tile dash, 2.5 s cooldown) adds one, up to 3; Air Palm and
+  Air Blast spend them all: +30% damage and +1 knockback tile each, and with 3 a 1 s stun
+  (`wind_stun`, `CombatRules.point_stun`), carried by Air Blast's projectile. Dots over Air heroes
+  (`WorldView._draw_points`).
+- **Test characters** (`TestCharacters`): Fire / Water / Earth / Air Tester, level 10, every kit
+  ability and the three weapon arts mastered, a sword worn, bow and hammer in the bag; added to the
+  character list by debug builds when missing.
+- **Controller:** the touchpad (PlayStation) opens the inventory too; Menu / Options the menu.
+- Tests: `tests/unit/test_action_kits_sim.gd`, `tests/integration/test_element_kits.gd`; older tests
+  follow the new shapes and counts.
 ## Performance (branch `optimised-build-1`, 2026-10-21)
 
 Measure with `tools/perf/` (headless, no window; a headless frame costs at least
@@ -2581,6 +2639,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-22 | Element kits (Hades style): per-element buttons with taps, holds, combos and modes; attacks without targets; heals on allies in two presses; temporary instant hero combat; Stone Fist, Ice Slide, Frost Ring; stacking Stone Skin, charged Raise Pillar, a punch slides the pillar 5 tiles; Air Step a dash filling wind charges spent by Air Palm and Air Blast; four test characters | User brief and choices: Air Y Air Blast / B Air Palm, +30% damage and +1 knockback per charge with a stun at 3; holds 3 s for weapons and 1 s for elements; the punch slides the pillar 5 tiles; the hero stands still while choosing an ally. Mine: the kits in a JSON file; 'thrust chart' read as Frost Shard; the new abilities' numbers; Fire combo reset 1 s, Fire Punch 0.4 s and Fire Kick 1.2 s cooldowns; Stone Skin 0.3 s cooldown; pillar +1 level per 0.6 s up to +2; the slide's damage and knockback; Air Step 5 tiles every 2.5 s; a 0.25 s global cooldown while combat is instant; tests keep the classic rules; heroes without an element keep the plain wheel. |
 | 2026-11-22 | Wheel slots by role: the weapon on X, ranged attacks on Y, a dash (Fire, Air) or Earth's resistance buff on A, the rest on B | User request. Mine: a Wheel Slot column in the sheet (weapon arts need none); the Y and A lists; Air Step counts as Air's dash; a newcomer takes its slot back from an auto-placed ability that doesn't belong there, never from one the player dragged; no-role abilities go B, X, Y, A; older saved layouts start over. |
 | 2026-11-22 | Controller support and a Hades-style layout on both devices: four face-button slots on a wheel (bottom right), Space / RT for timing bars, Auto-lock or Twin-stick aiming, a Manual Aim column | User choices: abilities on the face buttons (X attack, Y special, A cast, B for the fourth since there is no universal dash), 4 slots to start, the keyboard switches too, aim mode an option with some abilities always aimed by hand, RT for timing bars, a 4-slot wheel on the right with abilities and cooldowns instead of the action bar. Mine: LB interact, RB element power (placeholder), LT / Tab next target, D-pad potions and target, View the book, Menu = Esc; left click / right click / Q / Shift for the slots; the stick's push sets the speed; old saves keep 4 slots; keybind mode removed (fixed layout for now); targeted abilities pick the foe nearest the aim; right-click Trade / Duel only out of combat; the Manual Aim draft list; the lock's ranges and angle. See **Controller and Hades-style controls**. |
 | 2026-11-21 | First sound effects, zone music and water near the hero (branch `audio/new-sounds`) | User brief. Theirs: the files (trimmed, levelled; music at -18 LUFS so zones never jump in volume); Healing Touch, Water Whip and Air Palm on `_hit` (their `_cast` plays when the timing bar starts), Gust on `_cast` (no bar); the Mixkit wolf bite shared with the iron wolf (free for games, no credit); the stag's first bellow cut from a 6 s take; "Millbrook / Greenfields" for town and explore in those two zones, "The Crossing", the draft kept for the title screen and zones with no track; the water emitters (approved): radius 10, at most 3, every 0.5 s, 1 s fades, client side, Ambience bus, numbers in AudioConfig. Mine: water = terrains whose tiles the catalog puts in "water" (fords and rocks in water are stone); clusters touch diagonally; a spot that moves under 3 tiles glides (walking along a river would otherwise fade every half second), further it crossfades; level from the grid distance with falloff 1.5 and 0 dB at the water; emitters kept outside the world view so they fade out on a zone change; every enemy pulled into a fight by damage sends `aggro` (not only the stag), once per fight. |

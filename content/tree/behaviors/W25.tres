@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="2_def"]
+[ext_resource type="Resource" path="res://content/buffs/frost_ring_chill.tres" id="3_chill"]
+
+[sub_resource type="Resource" id="eff_0"]
+script = ExtResource("1_eff")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+
+[sub_resource type="Resource" id="eff_1"]
+script = ExtResource("1_eff")
+kind = 4
+buff = ExtResource("3_chill")
+
+[resource]
+script = ExtResource("2_def")
+id = &"W25"
+max_range = 0
+mana_cost = 10.0
+effects = Array[ExtResource("1_eff")]([SubResource("eff_0"), SubResource("eff_1")])
+targeting = 4
+area_radius = 2

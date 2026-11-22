@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="2_def"]
+
+[sub_resource type="Resource" id="eff_0"]
+script = ExtResource("1_eff")
+kind = 13
+applies = 1
+base_amount = 4.0
+
+[resource]
+script = ExtResource("2_def")
+id = &"W24"
+max_range = 4
+mana_cost = 6.0
+requires_line_of_sight = false
+effects = Array[ExtResource("1_eff")]([SubResource("eff_0")])
+targeting = 3
+aim = 1

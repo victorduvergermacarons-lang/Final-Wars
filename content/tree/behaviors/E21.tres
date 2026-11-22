@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="2_def"]
+
+[sub_resource type="Resource" id="eff_0"]
+script = ExtResource("1_eff")
+base_amount = -1.0
+sheet_scaling = true
+
+[resource]
+script = ExtResource("2_def")
+id = &"E21"
+mana_cost = 0.0
+effects = Array[ExtResource("1_eff")]([SubResource("eff_0")])
+targeting = 2
+slides_pillar_tiles = 5

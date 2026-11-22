@@ -55,6 +55,12 @@ static func sanitize(raw: Variant) -> Dictionary:
 				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
 					return {}
 				out.aim = aim
+			# How long its button was held (charged abilities: a taller pillar).
+			var charge = raw.get("charge")
+			if charge != null:
+				if (typeof(charge) != TYPE_FLOAT and typeof(charge) != TYPE_INT) or not is_finite(float(charge)):
+					return {}
+				out.charge = clampf(float(charge), 0.0, 30.0)
 		"release", "cancel_bar", "cancel_cast":
 			pass
 		"talk":

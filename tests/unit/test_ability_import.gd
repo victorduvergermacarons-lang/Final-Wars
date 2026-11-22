@@ -51,8 +51,8 @@ func test_column_letters() -> void:
 func test_real_sheet_imports_cleanly() -> void:
 	var result := AbilityTreeImporter.convert(XlsxReader.read(SHEET))
 	assert_eq(result.errors, PackedStringArray())
-	assert_eq(result.data.abilities.size(), 145)
-	assert_eq(result.data.items.size(), 145)
+	assert_eq(result.data.abilities.size(), 148)
+	assert_eq(result.data.items.size(), 148)
 	assert_eq(result.data.trees.size(), 7)
 
 
@@ -225,7 +225,7 @@ func test_slugs() -> void:
 
 func test_game_loads_the_trees() -> void:
 	var tree := AbilityTreeData.load_file()
-	assert_eq(tree.abilities.size(), 145)
+	assert_eq(tree.abilities.size(), 148)
 	assert_eq(tree.tier_mastery, {1: 0, 2: 150, 3: 350, 4: 600, 5: 900})
 	assert_eq(tree.id_of("Flame Dash"), &"F05")
 	assert_eq(tree.ability(&"F05").taught_by, "Scroll of Burning Feet")

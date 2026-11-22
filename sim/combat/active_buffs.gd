@@ -15,7 +15,10 @@ var _active := {}
 ## healing), "damage_type", "shield".
 func apply(buff: BuffDef, now: float, tick_amount: float = 0.0, source: int = -1, opts: Dictionary = {}) -> void:
 	var duration: float = opts.get("duration", buff.duration_seconds)
-	_active[buff.id] = {"def": buff, "expires": now + duration, "tick_amount": tick_amount,
+	var stacks := 1
+	if buff.max_stacks > 1 and has(buff.id, now):
+		stacks = mini(int(_active[buff.id].get("stacks", 1)) + 1, buff.max_stacks)
+	_active[buff.id] = {"stacks": stacks, "def": buff, "expires": now + duration, "tick_amount": tick_amount,
 			"tick_damage": opts.get("tick_damage", false), "damage_type": opts.get("damage_type", 0),
 			"next_tick": now + buff.tick_seconds, "source": source, "shield": float(opts.get("shield", 0.0)),
 			"charges": buff.charges}
@@ -92,14 +95,24 @@ func expire(now: float) -> Array[StringName]:
 func modify(stats: StatBlock, now: float) -> StatBlock:
 	var out := stats.copy()
 	var mods: Array[StatModifier] = []
+	var shares: Array[float] = []
 	for id in _active:
 		if has(id, now):
-			mods.append_array(_active[id].def.modifiers)
-	for m in mods:
-		out.set_stat(m.stat, out.get_stat(m.stat) + m.flat)
-	for m in mods:
-		out.set_stat(m.stat, out.get_stat(m.stat) * m.multiplier)
+			var def: BuffDef = _active[id].def
+			var share := 1.0 if def.max_stacks <= 1 else float(_active[id].get("stacks", 1)) / def.max_stacks
+			for m in def.modifiers:
+				mods.append(m)
+				shares.append(share)
+	for i in mods.size():
+		out.set_stat(mods[i].stat, out.get_stat(mods[i].stat) + mods[i].flat * shares[i])
+	for i in mods.size():
+		out.set_stat(mods[i].stat, out.get_stat(mods[i].stat) * lerpf(1.0, mods[i].multiplier, shares[i]))
 	return out
+
+
+## How many stacks of `id` are on (0 if none).
+func stacks(id: StringName, now: float) -> int:
+	return int(_active[id].get("stacks", 1)) if has(id, now) else 0
 
 
 ## Plain data for replication: {id: expires}.

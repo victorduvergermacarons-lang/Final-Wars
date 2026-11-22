@@ -72,6 +72,10 @@ func _physics_process(_delta: float) -> void:
 	var typing := get_viewport().gui_get_focus_owner() is LineEdit if is_inside_tree() else false
 	_held = Vector2i.ZERO if typing else held_direction()
 	_stick = Vector2.ZERO if typing or _held != Vector2i.ZERO else InputDevice.left_stick()
+	if not client.ally_select.is_empty():
+		_steer_ally_select(_held, _stick)
+		_held = Vector2i.ZERO # the hero stands still while choosing
+		_stick = Vector2.ZERO
 	# Without a view (tests), keep the last angle sent.
 	var angle := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
 	if InputDevice.using_pad():
@@ -140,11 +144,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"timing_press") and press_timing_bar():
 		get_viewport().set_input_as_handled()
 		return
+	if event.is_action_pressed(&"timing_press") and switch_mode():
+		get_viewport().set_input_as_handled()
+		return
 	if not _aiming.is_empty() and _aim_input(event):
 		get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed(&"target_next"):
 		_target_next_enemy()
+	elif (event.is_action_pressed(&"target_clear") or event.is_action_pressed(&"cancel_aim")) \
+			and not client.ally_select.is_empty():
+		end_ally_select()
 	elif event.is_action_pressed(&"target_clear") or event.is_action_pressed(&"cancel_aim"):
 		client.target_id = -1
 	elif event.is_action_pressed(&"interact"):
@@ -164,7 +174,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	else:
 		for i in ActionBarModel.SLOT_COUNT:
 			if event.is_action_pressed(InputActions.slot_action(i), false, true):
-				use_slot(i, InputActions.slot_action(i))
+				press_button(i)
 				get_viewport().set_input_as_handled()
 				return
 
@@ -284,6 +294,10 @@ func _input(event: InputEvent) -> void:
 	# is (even over the HUD).
 	if session != null and event.is_action_released(&"timing_press"):
 		release_timing_bar()
+	if session != null:
+		for i in ActionBarModel.SLOT_COUNT:
+			if event.is_action_released(InputActions.slot_action(i)):
+				release_button(i)
 	# So does letting go of the hotkey that played the bar (a second press).
 	if session != null and _bar_key != &"" and event.is_action_released(_bar_key):
 		_bar_key = &""
@@ -537,7 +551,7 @@ func cancel_aiming() -> void:
 
 
 func is_aiming() -> bool:
-	return not _aiming.is_empty()
+	return not _aiming.is_empty() or not client.ally_select.is_empty()
 
 
 ## Only the cursor preview of a running timing bar (Esc then cancels the cast, not an aim).
@@ -546,6 +560,7 @@ func is_aiming_bar() -> bool:
 
 
 func _process(_delta: float) -> void:
+	_update_holds()
 	_go_off_at_bar_end()
 	if _aiming.get("during_bar", false):
 		_follow_bar_aiming()
@@ -779,3 +794,219 @@ func _target_for(hero: Hero, ability: AbilityDef) -> Actor:
 			best = a
 			best_d = d
 	return best if best != null else chosen
+
+# --- Element kits (2026-11-22, Hades style) ----------------------------------------
+# What X / Y / A / B do comes from the hero's element kit (ElementKits): a tap, a
+# hold (goes off by itself once held long enough: 3 s for weapons, 1 s for
+# elements), a combo (presses in a row), or a charge (let go: the longer, the
+# stronger). Heals and buffs on allies take two presses: the first picks an ally,
+# the second casts. RT / Space switches modes (Water / Ice). A button the kit
+# doesn't cover uses the wheel's own slot.
+
+## Held buttons: slot -> {"entry", "start" (render time), "fired"}.
+var _pressed := {}
+## The combo in progress: {"slot", "step", "at"}.
+var _combo := {}
+## The ally choice's last steering direction (to move on each new push only).
+var _ally_steer := Vector2.ZERO
+
+
+## The kit's entry for button `slot` for the local hero ({} if none).
+func kit_entry(slot: int) -> Dictionary:
+	return ElementKits.entry(session.local_hero(), slot, client.kit_mode) if session != null else {}
+
+
+## A button pressed (slot 0 X, 1 Y, 2 A, 3 B).
+func press_button(slot: int) -> void:
+	var hero: Hero = session.local_hero()
+	var e := kit_entry(slot)
+	if hero == null or e.is_empty():
+		use_slot(slot, InputActions.slot_action(slot))
+		return
+	# The second press of a heal or buff casts it on the chosen ally.
+	if not client.ally_select.is_empty():
+		if int(client.ally_select.slot) == slot:
+			_cast_on_ally()
+		else:
+			end_ally_select()
+		return
+	if e.has("combo"):
+		var combo: Array = e.combo
+		var step := 0
+		if int(_combo.get("slot", -1)) == slot and session.render_time() - float(_combo.at) <= ElementKits.combo_reset_seconds():
+			step = (int(_combo.step) + 1) % combo.size()
+		_combo = {"slot": slot, "step": step, "at": session.render_time()}
+		kit_fire(combo[step])
+		return
+	if e.has("hold") or e.has("charge"):
+		_pressed[slot] = {"entry": e, "start": session.render_time(), "fired": false}
+		return
+	if e.has("tap"):
+		kit_fire(e.tap, e)
+
+
+## A button let go: a tap if it wasn't held long enough, or the charge's release.
+func release_button(slot: int) -> void:
+	var p: Dictionary = _pressed.get(slot, {})
+	_pressed.erase(slot)
+	if p.is_empty() or p.fired:
+		return
+	var held: float = session.render_time() - float(p.start)
+	if p.entry.has("charge"):
+		kit_fire(p.entry.charge, p.entry, held)
+	elif p.entry.has("tap"):
+		kit_fire(p.entry.tap, p.entry)
+
+
+## Holds that reached their time go off by themselves.
+func _update_holds() -> void:
+	if session == null:
+		return
+	for slot in _pressed.keys():
+		var p: Dictionary = _pressed[slot]
+		if p.fired or not p.entry.has("hold"):
+			continue
+		if session.render_time() - float(p.start) >= ElementKits.hold_seconds(p.entry.weapon):
+			p.fired = true
+			kit_fire(p.entry.hold, p.entry)
+
+
+## How far button `slot`'s hold has come (0..1), or -1 if it isn't being held
+## toward something (the wheel draws it).
+func hold_progress(slot: int) -> float:
+	var p: Dictionary = _pressed.get(slot, {})
+	if p.is_empty() or p.fired:
+		return -1.0
+	var held: float = session.render_time() - float(p.start)
+	if p.entry.has("hold"):
+		return clampf(held / ElementKits.hold_seconds(p.entry.weapon), 0.0, 1.0)
+	if p.entry.has("charge"):
+		var a: AbilityDef = p.entry.charge
+		var full := a.charge_seconds_per_level * maxf(a.charge_max_extra, 1)
+		return clampf(held / full, 0.0, 1.0) if full > 0.0 else 1.0
+	return -1.0
+
+
+## Uses a kit ability: aimed where the hero aims (the cursor, or the controller's
+## stick or lock), at the tile in front for in_front ones; heals and buffs on
+## allies start the ally choice instead. `charge`: seconds the button was held.
+func kit_fire(ability: AbilityDef, e: Dictionary = {}, charge := 0.0) -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive:
+		return
+	if hero.find_ability(ability.id) == null:
+		client.error("You haven't learned %s" % ability.display_name)
+		return
+	if ability.target in [AbilityDef.TargetType.ALLY, AbilityDef.TargetType.DEAD_ALLY] \
+			and ability.targeting == AbilityDef.TargetingMode.TARGETED:
+		_start_ally_select(ability, e)
+		return
+	var intent := {"type": "cast", "ability": ability.id, "target": -1}
+	if ability.targeting == AbilityDef.TargetingMode.SELF or (ability.hitbox != null \
+			and ability.hitbox.shape in [HitboxDef.Shape.NONE, HitboxDef.Shape.SELF_CIRCLE]):
+		intent.target = hero.id
+	elif e.get("in_front", false):
+		var facing := _sent_angle if absf(_sent_angle) <= PI else hero.aim_angle
+		if InputDevice.using_pad() and InputDevice.right_stick() != Vector2.ZERO:
+			facing = Mover.stick_to_grid(InputDevice.right_stick()).angle()
+		elif not InputDevice.using_pad() and view != null:
+			facing = mouse_angle(hero, world_mouse())
+		intent.aim = Vector2(MoveState.tile_of(hero.move.position_at(session.render_time()) + Vector2.from_angle(facing)))
+	else:
+		intent.aim = point_for(ability)
+		var picked := _target_for(hero, ability)
+		if picked != null and ability.targeting == AbilityDef.TargetingMode.TARGETED:
+			intent.target = picked.id
+	if charge > 0.0:
+		intent.charge = charge
+	session.send_intent(intent)
+
+
+## RT / Space: the next mode of the element (Water -> Ice -> Water). True if the
+## element has modes to switch.
+func switch_mode() -> bool:
+	var hero: Hero = session.local_hero()
+	var names := ElementKits.modes(hero.element) if hero != null else []
+	if names.size() < 2:
+		return false
+	client.kit_mode = (client.kit_mode + 1) % names.size()
+	client.say("%s mode" % names[client.kit_mode])
+	_pressed.clear()
+	_combo = {}
+	return true
+
+
+## The current mode's name ("Ice"), or "".
+func mode_name() -> String:
+	var hero: Hero = session.local_hero() if session != null else null
+	var names := ElementKits.modes(hero.element) if hero != null else []
+	return names[clampi(client.kit_mode, 0, names.size() - 1)] if not names.is_empty() else ""
+
+
+# --- Choosing an ally (heals and buffs) --------------------------------------------
+
+func _start_ally_select(ability: AbilityDef, e: Dictionary) -> void:
+	var hero: Hero = session.local_hero()
+	var slot := -1
+	for i in ActionBarModel.SLOT_COUNT:
+		var k := kit_entry(i)
+		if k.get("tap") == ability or k.get("hold") == ability:
+			slot = i
+	client.ally_select = {"slot": slot, "ability": ability}
+	client.target_id = hero.id # starts on yourself
+	_ally_steer = Vector2.ONE * 9.0 # a stick already pushed doesn't move it at once
+	client.say("%s: choose an ally, then press again" % ability.display_name)
+
+
+func end_ally_select() -> void:
+	client.ally_select = {}
+
+
+func _cast_on_ally() -> void:
+	var ability: AbilityDef = client.ally_select.ability
+	var hero: Hero = session.local_hero()
+	var target := session.get_actor(client.target_id) as Actor
+	if target == null or not hero.is_ally_of(target):
+		target = hero
+	end_ally_select()
+	session.send_intent({"type": "cast", "ability": ability.id, "target": target.id})
+
+
+## Allies the choice moves between: you and your party in the zone.
+func ally_candidates() -> Array:
+	var hero: Hero = session.local_hero()
+	var out: Array = []
+	for a in session.actors():
+		if a is Hero and (a == hero or hero.is_ally_of(a)):
+			out.append(a)
+	return out
+
+
+## A new push of the left stick or the arrows moves the choice to the ally nearest
+## that way on screen.
+func _steer_ally_select(dir: Vector2i, stick: Vector2) -> void:
+	var push := Vector2(dir) if dir != Vector2i.ZERO else (stick if stick.length() > 0.6 else Vector2.ZERO)
+	if push == Vector2.ZERO:
+		_ally_steer = Vector2.ZERO
+		return
+	if _ally_steer != Vector2.ZERO:
+		return # still the same push
+	_ally_steer = push
+	var current := session.get_actor(client.target_id) as Actor
+	if current == null:
+		current = session.local_hero()
+	var want := Mover.stick_to_grid(push.normalized())
+	var best: Actor = null
+	var best_score := INF
+	for a in ally_candidates():
+		if a == current:
+			continue
+		var off: Vector2 = a.move.pos - current.move.pos
+		if off.length() < 0.01 or off.normalized().dot(want) < 0.2:
+			continue
+		var score := off.length() * (2.0 - off.normalized().dot(want))
+		if score < best_score:
+			best = a
+			best_score = score
+	if best != null:
+		client.target_id = best.id

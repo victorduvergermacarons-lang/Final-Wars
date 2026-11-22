@@ -16,6 +16,9 @@ var _store := CharacterStore.new()
 
 func _ready() -> void:
 	$Title.queue_free()
+	# Debug builds: the four element test characters (TestCharacters), if missing.
+	if OS.is_debug_build():
+		TestCharacters.ensure(_store, ContentDB)
 	_show_menu("")
 	_auto_start(OS.get_cmdline_args() + OS.get_cmdline_user_args())
 

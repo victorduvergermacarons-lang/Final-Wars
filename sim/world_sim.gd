@@ -1187,6 +1187,8 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 		_credit_mastery(caster, ability, out.events)
 	if ability.release_delay_seconds <= 0.0 or not (caster is Hero) or not _has_timing_bar(caster, ability):
 		_emit_fx(caster, ability, ability.fx_cast, target, aim) # released ones played theirs at the release
+	if ability.slides_pillar_tiles > 0:
+		_try_slide_pillar(caster, ability, aim)
 	return out.result
 
 
@@ -1242,6 +1244,7 @@ func _update_pending_hits() -> void:
 		else:
 			CastResolver.hit_tiles(ctx, caster, h.ability, h.tiles, h.grace, events)
 		ctx.damage_bonus = 1.0
+		ctx.spent_points = 0
 		ctx.force_crit = false
 		_emit_resolved(events)
 		_credit_mastery(caster, h.ability, events)
@@ -1329,14 +1332,112 @@ func _raise_terrain(r: Dictionary) -> void:
 		grid.set_tile(t, new_h, walkable)
 	if delta.is_empty():
 		return
-	_terrain.append({"delta": delta, "blocked": blocked, "until": r.until})
+	_terrain.append({"delta": delta, "blocked": blocked, "until": r.until, "source": r.source, "ability": r.ability})
 	emit({"type": "terrain", "source": r.source, "ability": r.ability, "tiles": delta.keys(), "levels": r.levels,
 			"until": r.until})
 
 
+# --- Sliding pillars (2026-11-22, Earth's Stone Fist) ----------------------------
+# Punching your own raised tile (Raise Pillar) slides it along the punch's 8-way
+# direction, a tile every CombatRules.pillar_slide_tile_seconds, for the ability's
+# slides_pillar_tiles. It stops at the map's edge, a wall, a rise of more than one
+# level, or a unit: an enemy it runs into takes pillar_slide_damage per pillar
+# level and is knocked back pillar_slide_knockback tiles.
+
+## [{"change": the _terrain entry, "tile", "dir": Vector2i, "left", "next", "source", "ability"}]
+var _slides: Array = []
+
+
+func _try_slide_pillar(caster: Actor, ability: AbilityDef, aim: Variant) -> void:
+	var toward: Vector2 = caster.move.pos + caster.facing_vector()
+	if aim is Vector2 or aim is Vector2i:
+		toward = Vector2(aim)
+	var v: Vector2 = toward - caster.move.pos
+	if v.length() < 0.01:
+		v = caster.facing_vector()
+	var dir := TileGeometry.snap8(v)
+	if dir == Vector2i.ZERO:
+		return
+	for reach in [0.8, 1.4]:
+		var t := MoveState.tile_of(caster.move.pos + v.normalized() * reach)
+		for change in _terrain:
+			if change.get("source", -1) == caster.id and change.delta.has(t) and int(change.delta[t]) > 0 \
+					and not _slides.any(func(s): return s.change == change):
+				_slides.append({"change": change, "tile": t, "dir": dir, "left": ability.slides_pillar_tiles,
+						"next": now + rules.pillar_slide_tile_seconds, "source": caster.id, "ability": ability})
+				emit({"type": "pillar_slide", "source": caster.id, "tile": t, "dir": dir})
+				return
+
+
+func _update_slides() -> void:
+	var going: Array = []
+	for s in _slides:
+		var change: Dictionary = s.change
+		if not _terrain.has(change) or not change.delta.has(s.tile):
+			continue # it came down meanwhile
+		while now + 0.0001 >= s.next and s.left > 0:
+			s.next += rules.pillar_slide_tile_seconds
+			if not _slide_step(s):
+				s.left = 0
+				break
+			s.left -= 1
+		if s.left > 0:
+			going.append(s)
+	_slides = going
+
+
+## Moves a sliding pillar one tile. False if it stopped.
+func _slide_step(s: Dictionary) -> bool:
+	var change: Dictionary = s.change
+	var from: Vector2i = s.tile
+	var to: Vector2i = from + s.dir
+	var levels := int(change.delta[from])
+	var ground := grid.height_at(from) - levels
+	if not grid.has_tile(to) or not _terrain_base_walkable.get(to, grid.is_walkable(to)) \
+			or grid.height_at(to) > ground + 1 or _terrain.any(func(c): return c.delta.has(to)):
+		return false
+	var hit := _unit_on(to)
+	if hit != null:
+		var caster := get_actor(s.source)
+		if caster != null and caster.is_hostile_to(hit) and not hit.evading:
+			var events: Array[Dictionary] = []
+			AbilityResolver._impact(ctx, caster, s.ability, hit, rules.pillar_slide_damage * levels, events)
+			var r := Hitbox.slide(ctx, hit, Vector2(s.dir).normalized(), float(rules.pillar_slide_knockback), 0.15)
+			events.append({"type": "pushed", "source": caster.id, "target": hit.id, "ability": s.ability.id,
+					"from": MoveState.tile_of(r.from), "to": MoveState.tile_of(r.end), "end": r.end,
+					"stopped_by": r.stopped_by})
+			_emit_resolved(events)
+		return false
+	# Down where it was, up where it goes.
+	var still_blocked: bool = change.blocked.has(from)
+	change.delta.erase(from)
+	change.blocked.erase(from)
+	grid.set_tile(from, ground, _terrain_base_walkable.get(from, true))
+	if not _terrain.any(func(c): return c.delta.has(from)):
+		_terrain_base_walkable.erase(from)
+	_terrain_base_walkable[to] = grid.is_walkable(to)
+	grid.set_tile(to, grid.height_at(to) + levels, grid.is_walkable(to) and not still_blocked)
+	change.delta[to] = levels
+	if still_blocked:
+		change.blocked[to] = true
+	s.tile = to
+	emit({"type": "terrain_end", "tiles": [from]})
+	emit({"type": "terrain", "source": s.source, "ability": &"E03", "tiles": [to], "levels": levels, "until": change.until})
+	return true
+
+
+## A living unit whose body covers tile `t`, or null.
+func _unit_on(t: Vector2i) -> Actor:
+	for id in _sorted(ctx.actors):
+		var a: Actor = ctx.actors[id]
+		if a.alive and a.covers(t):
+			return a
+	return null
+
 ## Each change expires on its own: its height is taken off again, so stacked
 ## pillars come down one by one and the ground ends where it started.
 func _update_terrain_and_zones() -> void:
+	_update_slides()
 	var ended: Array = []
 	for i in range(_terrain.size() - 1, -1, -1):
 		if now + 0.0001 >= _terrain[i].until:
@@ -1368,6 +1469,7 @@ func _update_terrain_and_zones() -> void:
 						continue # fliers pass over burning ground
 					AbilityResolver.apply_effects(ctx, owner, z.zone_ability, a, events)
 			ctx.damage_bonus = 1.0
+			ctx.spent_points = 0
 			_emit_resolved(events)
 			_credit_mastery(owner, z.ability, events)
 		if owner != null and now + 0.0001 < z.until:
@@ -1456,6 +1558,7 @@ func _fly_continuous(p: Projectile, caster: Actor) -> bool:
 		var u: Actor = h[1]
 		p.hit_ids[u.id] = true
 		ctx.damage_bonus = p.damage_bonus
+		ctx.spent_points = p.spent_points
 		ctx.force_crit = p.force_crit
 		ctx.continuous = true
 		ctx.cast_vec = p.dirv
@@ -1463,6 +1566,7 @@ func _fly_continuous(p: Projectile, caster: Actor) -> bool:
 		AbilityResolver.apply_effects(ctx, caster, p.ability, u, events)
 		ctx.continuous = false
 		ctx.damage_bonus = 1.0
+		ctx.spent_points = 0
 		ctx.force_crit = false
 		if not p.pierce:
 			emit({"type": "projectile_end", "id": p.id, "tile": u.tile(), "target": u.id})
@@ -1489,9 +1593,11 @@ func _fly_skillshot(p: Projectile, caster: Actor) -> bool:
 				continue
 			p.hit_ids[a.id] = true
 			ctx.damage_bonus = p.damage_bonus
+			ctx.spent_points = p.spent_points
 			ctx.force_crit = p.force_crit
 			AbilityResolver.apply_effects(ctx, caster, p.ability, a, events)
 			ctx.damage_bonus = 1.0
+			ctx.spent_points = 0
 			ctx.force_crit = false
 			if not p.pierce:
 				stopped_at = i
@@ -1572,7 +1678,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 		"face":
 			reason = _intent_face(hero, intent.get("dir", Vector2i.ZERO))
 		"cast":
-			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1), intent.get("aim"))
+			reason = _intent_cast(hero, intent.get("ability", &""), intent.get("target", -1), intent.get("aim"),
+					float(intent.get("charge", 0.0)))
 		"release":
 			reason = _intent_release(hero)
 		"timing_press":
@@ -1740,13 +1847,16 @@ func _intent_face(hero: Hero, dir: Vector2i) -> String:
 	return ""
 
 
-func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Variant = null) -> String:
+func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Variant = null, charge: float = 0.0) -> String:
 	var ability := hero.find_ability(ability_id)
 	if ability == null:
 		return "unknown_ability"
 	var walking: Variant = hero.walk_target
 	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
+	# A charged ability (Raise Pillar) gains a level per charge_seconds_per_level held.
+	ctx.charge_levels = ability.charge_levels(charge)
 	var result := cast(hero, ability, get_actor(target_id), aim)
+	ctx.charge_levels = 0
 	if result != AbilityResolver.Result.OK:
 		hero.walk_target = walking
 	if result != AbilityResolver.Result.OK:

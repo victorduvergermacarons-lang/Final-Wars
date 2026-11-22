@@ -21,6 +21,8 @@ var records := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests"
 ## Bad-luck bonus added to boss rolls (LootRolls): +10 per Need roll lost, +15 per
 ## chosen Pass, 0 after winning one. Saved with the character.
 var loot_bonus := 0
+## Element points (Air's wind charges), 0..CombatRules.element_points_max; not saved.
+var element_points := 0
 ## Items and gold this hero has put into a trade window (held by the host until the
 ## trade ends): [[item id, count, bind], ...]. Kept so a save made mid-trade keeps
 ## them (CharacterData.capture puts them back in the saved bag).

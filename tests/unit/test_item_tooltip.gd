@@ -56,7 +56,7 @@ func test_shows_what_the_taught_ability_does_in_numbers() -> void:
 	var real_hero: Hero = F.hero_with([])
 	var t := ItemTooltip.text(punch, real_hero, ContentDB.rules, false)
 	assert_string_contains(t, "Teaches [b]Fire Punch[/b]")
-	assert_string_contains(t, "Targeted · adjacent", "how it is aimed")
+	assert_string_contains(t, "Skillshot · adjacent", "how it is aimed (a cone in front, 2026-11-22)")
 	assert_string_contains(t, "mana")
 	assert_string_contains(t, "s cooldown")
 	assert_string_contains(t, "magical damage", "the damage, in numbers for this hero")

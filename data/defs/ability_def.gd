@@ -132,6 +132,25 @@ var sheet_hitbox: HitboxDef
 ## 1 Y ranged, 2 A dash / defense, 3 B the rest); -1 = by itself (weapon arts on X,
 ## the rest on B). From the sheet's Wheel Slot column.
 @export var wheel_slot: int = -1
+## Element points (2026-11-22, Air's wind charges, shown as dots over the hero): a
+## hero using it gains one (up to CombatRules.element_points_max)…
+@export var builds_points: bool = false
+## …or spends them all: +point_damage_bonus damage and +1 knockback tile each, and
+## a stun (point_stun) when full.
+@export var spends_points: bool = false
+## Held to charge (Raise Pillar): +1 terrain level per charge_seconds_per_level held,
+## up to charge_max_extra extra levels.
+@export var charge_max_extra: int = 0
+@export var charge_seconds_per_level: float = 0.5
+## Hitting your own raised terrain (a pillar) slides it this many tiles (Stone Fist).
+@export var slides_pillar_tiles: int = 0
+
+
+## Extra levels for holding its button seconds (0 if it isn't charged).
+func charge_levels(seconds: float) -> int:
+	if charge_max_extra <= 0 or charge_seconds_per_level <= 0.0:
+		return 0
+	return clampi(int(floor(seconds / charge_seconds_per_level)), 0, charge_max_extra)
 const WHEEL_SLOTS := ["X", "Y", "A", "B"]
 ## Charges: uses stored up to max (base + 1 per mastery_per_charge tree Mastery);
 ## each recharges in cooldown_seconds, one at a time. 0 = no charges.

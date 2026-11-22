@@ -61,3 +61,21 @@ B = Circle, LB/RB = L1/R1, LT/RT = L2/R2, View = Share, Menu = Options.
 
 ## 6. Online
 - [ ] A friend on a controller walks and fights; you see them move smoothly at any angle.
+
+## 7. Element kits (each Tester character)
+- [ ] The character list has Fire, Water, Earth and Air Tester (level 10).
+- [ ] Attacks go where you aim without targeting anyone.
+- [ ] X: tap Slash; hold 3 s (a ring fills on the button) for Lunge. Equip the bow: Quick
+      Shot / Aimed Shot; the hammer: Smash / Ground Slam.
+- [ ] **Fire:** Y Fire Dart, hold 1 s Fire Whip; A Flame Dash; B three times quickly:
+      punch, punch, kick (wait over a second and it starts again).
+- [ ] **Water:** Y Water Whip, A Water Pulse, B Healing Touch: the first press picks you
+      (or move with the stick / arrows to a friend), the hero stands still, the second
+      press heals. RT / Space: Ice mode (the wheel says so): Y Frost Shard, A Ice Slide,
+      B Frost Ring around you. RT again: back to Water.
+- [ ] **Earth:** A tapped three times: Stone Skin grows each time; hold A: taunt around you.
+      Y Stone Fist; hold Y: Rock Throw. Hold B: a pillar rises in front, taller the longer
+      (up to 3). Punch the pillar with Y: it slides 5 tiles and hits an enemy in the way.
+- [ ] **Air:** three empty dots over the hero. A: a long dash, a dot fills. Y Air Blast or
+      B Air Palm: the dots empty; with all three the enemy is pushed further and stunned.
+- [ ] Attacks go off at once (no timing bar), quick to chain.

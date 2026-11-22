@@ -11,11 +11,11 @@ extends PanelContainer
 const CONTROL_ROWS := [
 	["Move", "WASD (two keys walk along the grid)", "Left stick (any angle)"],
 	["Aim", "The mouse", "Right stick, or auto-lock (Gameplay test tab)"],
-	["Slot 1: your weapon", &"action_slot_1"],
-	["Slot 2: ranged attack", &"action_slot_2"],
-	["Slot 3: dash (Earth: defense)", &"action_slot_3"],
-	["Slot 4: the rest", &"action_slot_4"],
-	["Timing bar (tap / hold)", &"timing_press"],
+	["Weapon (tap; hold 3 s for its second move)", &"action_slot_1"],
+	["Element move (Y)", &"action_slot_2"],
+	["Element move (A)", &"action_slot_3"],
+	["Element move (B)", &"action_slot_4"],
+	["Switch mode (Water / Ice)", &"timing_press"],
 	["Element power", &"element_power"],
 	["Talk, use, pick up; release when dead", &"interact"],
 	["Next target", &"target_next"],
@@ -26,11 +26,14 @@ const CONTROL_ROWS := [
 	["Cancel cast, close menus, this menu", &"target_clear"],
 ]
 
-const CONTROLS_NOTES := """[b]How it works[/b]
-Aimed abilities: hold the ability's button, aim, let go to cast. Melee swings go off at once where you aim.
-Timing bar: press the timing button on a green zone for full power, on a yellow zone for a sure critical strike;
-on a blue zone press and hold until it ends. Walking while casting slows you down.
-Another ability's button switches to that one; the cancel button stops the cast.
+const CONTROLS_NOTES := """[b]Your element's moves[/b] (the wheel, bottom right, shows them)
+Fire: Y Fire Dart (hold 1 s: Fire Whip) · A Flame Dash · B Punch, Punch, Kick
+Water: Y Water Whip · A Water Pulse · B Healing Touch · switch to Ice: Y Frost Shard · A Ice Slide · B Frost Ring
+Earth: Y Stone Fist (hold: Rock Throw; punch your pillar to slide it) · A Stone Skin, tap up to 3 times (hold: taunt) · B hold to raise a pillar in front, taller the longer
+Air: Y Air Blast · A Air Step, a long dash that fills a wind dot · B Air Palm; Palm and Blast spend the dots for more damage and push (3: a stun)
+Heals on allies: press, choose an ally with the left stick or arrows, press again.
+Weapons on X: sword Slash (hold: Lunge), bow Quick Shot (hold: Aimed Shot), hammer Smash (hold: Ground Slam).
+Attacks go where you aim: no target needed.
 Mouse wheel: zoom.
 
 [b]Menus[/b] (the menu book)

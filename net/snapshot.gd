@@ -22,6 +22,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		for slot in equipment:
 			eq[int(slot)] = equipment[slot].id
 		d.eq = eq
+		d.points = hero.element_points
 		d.anim = {"died": hero.anim.died, "down": hero.anim.down, "up": hero.anim.up,
 				"hit": hero.anim.hit, "act": String(hero.anim.act), "act_at": hero.anim.act_at,
 				"buff_end": hero.anim.buff_end, "buff_end_anim": hero.anim.buff_end_anim}

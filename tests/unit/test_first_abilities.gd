@@ -6,7 +6,7 @@ const ContentDBScript := preload("res://autoload/content_db.gd")
 const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09",
 		"W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09",
 		"A01", "A02", "A03", "A05", "E01", "E02", "E03", "E04", "E05",
-		"S01", "S04", "B01", "B02", "H01", "H02"]
+		"S01", "S04", "B01", "B02", "H01", "H02", "E21", "W24", "W25"]
 
 var db
 var world: WorldSim
@@ -65,7 +65,7 @@ func test_the_first_abilities_are_implemented_and_the_rest_are_not() -> void:
 	for id in FIRST:
 		assert_true(_a(id).implemented, id)
 	var others: Array = db.tree.ids().filter(func(id): return not String(id) in FIRST)
-	assert_eq(others.size(), 145 - FIRST.size())
+	assert_eq(others.size(), 148 - FIRST.size())
 	for id in others:
 		assert_false(db.abilities[StringName(id)].implemented, String(id))
 
@@ -283,41 +283,47 @@ func test_tidal_blessing_adds_both_defenses() -> void:
 
 
 func test_air_palm_and_air_blast_knock_back() -> void:
-	world.cast(hero, _a("A01"), foe)
+	world.cast(hero, _a("A01"), null, foe.move.pos)
+	world.advance(0.3)
 	assert_eq(foe.tile(), Vector2i(7, 5))
 	world.grid.set_tile(Vector2i(9, 5), 0, false)
-	world.advance(1.1)
+	world.advance(4.1)
 	var before := _lost(foe)
-	world.cast(hero, _a("A05"), foe)
-	assert_eq(foe.tile(), Vector2i(8, 5), "stopped by the wall")
+	world.cast(hero, _a("A05"), null, foe.move.pos) # a projectile now (2026-11-22)
+	var pushed: Array = world.advance(0.8).filter(func(e): return e.type == "pushed")
+	assert_eq(pushed.size(), 1)
+	assert_eq(pushed[0].to, Vector2i(8, 5), "stopped by the wall")
 	assert_gt(_lost(foe) - before, 25.0, "damage plus impact")
 
 
 func test_gust_interrupts_a_cast() -> void:
-	foe.casting = {"kind": "cast", "ability": _a("F01"), "end": world.now + 5.0}
-	world.cast(hero, _a("A02"), foe)
+	foe.casting = {"kind": "cast", "ability": _a("F01"), "end": world.now + 5.0, "start": world.now, "target": -1,
+			"aim": null, "next_tick": world.now + 5.0, "bonus": 1.0}
+	world.cast(hero, _a("A02"), null, foe.move.pos)
+	world.advance(0.3)
 	assert_true(foe.casting.is_empty())
 
 
-func test_air_step_is_a_burst_of_speed() -> void:
-	var before := Mover.speed_of(hero, world.rules, world.now)
-	world.cast(hero, _a("A03"), hero)
-	assert_true(hero.buffs.has(&"air_step", world.now))
-	assert_almost_eq(Mover.speed_of(hero, world.rules, world.now) / before, 1.4, 0.01, "+40% speed")
-	world.advance(4.1)
-	assert_almost_eq(Mover.speed_of(hero, world.rules, world.now), before, 0.001, "for 4 s")
+func test_air_step_is_a_long_dash_that_fills_a_wind_charge() -> void:
+	# 2026-11-22: a dash, not a burst of speed.
+	foe.move.place(Vector2i(5, 9))
+	var from := hero.move.pos
+	world.cast(hero, _a("A03"), null, from + Vector2(0, -5))
+	world.advance(0.6)
+	assert_gt(from.distance_to(hero.move.pos), 3.5)
+	assert_eq(hero.element_points, 1)
 
 
 ## Free movement, phase 4: every implemented ability's shape (docs/FREE_MOVEMENT_PLAN.md §6).
 func test_each_ability_has_the_planned_hitbox() -> void:
 	var H := HitboxDef.Shape
-	var want := {"F01": H.TARGETED, "F02": H.TARGETED, "F03": H.PROJECTILE, "F04": H.NONE, "F05": H.DASH,
-		"F06": H.RECT, "F07": H.CIRCLE, "F08": H.TILES, "F09": H.TARGETED, "W01": H.TARGETED,
-		"W02": H.TARGETED, "W03": H.TARGETED, "W04": H.PROJECTILE, "W05": H.TARGETED, "W06": H.RECT,
-		"W07": H.TARGETED, "W08": H.TARGETED, "W09": H.TILES, "A01": H.TARGETED, "A02": H.TARGETED,
-		"A03": H.NONE, "A05": H.TARGETED, "E01": H.LOB, "E02": H.NONE, "E03": H.TILES, "E04": H.SELF_CIRCLE,
-		"E05": H.TILES, "S01": H.CONE, "S04": H.DASH, "B01": H.TARGETED, "B02": H.PROJECTILE,
-		"H01": H.CONE, "H02": H.SELF_CIRCLE}
+	var want := {"F01": H.CONE, "F02": H.CONE, "F03": H.PROJECTILE, "F04": H.NONE, "F05": H.DASH,
+		"F06": H.RECT, "F07": H.CIRCLE, "F08": H.TILES, "F09": H.CONE, "W01": H.TARGETED,
+		"W02": H.PROJECTILE, "W03": H.TARGETED, "W04": H.PROJECTILE, "W05": H.TARGETED, "W06": H.RECT,
+		"W07": H.PROJECTILE, "W08": H.TARGETED, "W09": H.TILES, "A01": H.CONE, "A02": H.PROJECTILE,
+		"A03": H.DASH, "A05": H.PROJECTILE, "E01": H.LOB, "E02": H.NONE, "E03": H.TILES, "E04": H.SELF_CIRCLE,
+		"E05": H.TILES, "S01": H.CONE, "S04": H.DASH, "B01": H.PROJECTILE, "B02": H.PROJECTILE,
+		"H01": H.CONE, "H02": H.SELF_CIRCLE, "E21": H.CONE, "W24": H.DASH, "W25": H.SELF_CIRCLE}
 	assert_eq(want.size(), FIRST.size())
 	for id in FIRST:
 		var hb: HitboxDef = _a(id).hitbox
@@ -363,7 +369,8 @@ func test_lunge_steps_in_and_strikes() -> void:
 
 func test_quick_shot_hits_at_range() -> void:
 	foe.move.place(Vector2i(10, 5))
-	world.cast(hero, _a("B01"), foe)
+	world.cast(hero, _a("B01"), null, foe.move.pos)
+	world.advance(0.6)
 	assert_gt(_lost(foe), 0.0)
 
 

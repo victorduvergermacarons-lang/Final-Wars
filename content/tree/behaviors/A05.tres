@@ -24,4 +24,5 @@ max_range = 5
 mana_cost = 12.0
 ranged = true
 effects = Array[ExtResource("1_h8qdt")]([SubResource("Resource_mu3ks"), SubResource("Resource_l5y0l")])
-targeting = 1
+targeting = 2
+spends_points = true

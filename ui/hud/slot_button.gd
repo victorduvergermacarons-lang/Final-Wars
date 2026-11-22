@@ -45,11 +45,28 @@ func _process(_delta: float) -> void:
 
 ## For item slots, the consumable (else null).
 func _item() -> ItemDef:
+	if not _kit().is_empty():
+		return null
 	var id := hud.client.action_bar.slots[index]
 	return ContentDB.items.get(ActionBarModel.item_id_of(id)) if ActionBarModel.is_item_slot(id) else null
 
 
+## The element kit's entry for this button ({} if the kit doesn't cover it).
+func _kit() -> Dictionary:
+	return hud.input.kit_entry(index) if hud.input != null else {}
+
+
+## The kit ability a press would use now: the tap, the combo's next step, the charge.
+func _kit_ability(e: Dictionary) -> AbilityDef:
+	if e.has("combo"):
+		return e.combo[0]
+	return e.get("tap", e.get("charge", e.get("hold")))
+
+
 func _ability() -> AbilityDef:
+	var kit := _kit()
+	if not kit.is_empty():
+		return _kit_ability(kit)
 	var id := hud.client.action_bar.slots[index]
 	if id == &"":
 		return null
@@ -95,6 +112,21 @@ func _draw() -> void:
 	var key := InputActions.hint(InputActions.slot_action(index))
 	var w := _font.get_string_size(key, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
 	_text(key, Vector2(size.x - w - 4, 13), 11, Color(0.85, 0.85, 0.9))
+	# The kit's second use of the button: hold (or a combo's or charge's note).
+	var kit := _kit()
+	var second := ""
+	if kit.has("hold"):
+		second = "hold: " + kit.hold.display_name
+	elif kit.has("combo"):
+		second = " > ".join(kit.combo.map(func(a): return a.display_name.get_slice(" ", 1).left(5)))
+	elif kit.has("charge"):
+		second = "hold to grow"
+	if second != "":
+		_text(second.left(16), Vector2(3, 25), 9, Color(0.75, 0.85, 1.0))
+	# A held button fills a ring toward its hold (or its charge).
+	var p: float = hud.input.hold_progress(index) if hud.input != null else -1.0
+	if p >= 0.0:
+		draw_arc(rect.get_center(), size.x * 0.46, -PI / 2.0, -PI / 2.0 + TAU * p, 32, Color(1, 0.85, 0.3), 3.0)
 
 
 func _draw_sweep(rect: Rect2, fraction: float) -> void:
@@ -173,6 +205,8 @@ func _get_drag_data(_at: Vector2) -> Variant:
 func _can_drop_data(_at: Vector2, data: Variant) -> bool:
 	if typeof(data) != TYPE_DICTIONARY:
 		return false
+	if not _kit().is_empty():
+		return false # the element kit decides this button
 	if data.has("item_from"):
 		return _dragged_consumable(data) != null
 	return data.has("slot") or data.has("ability")

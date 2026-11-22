@@ -28,4 +28,4 @@ id = &"F02"
 fx_cast = &"fire_arc"
 mana_cost = 8.0
 effects = Array[ExtResource("1_3pd53")]([SubResource("Resource_xkybl"), SubResource("Resource_ofsci")])
-targeting = 1
+targeting = 2

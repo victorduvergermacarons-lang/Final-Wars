@@ -24,4 +24,4 @@ mana_cost = 8.0
 on_gcd = false
 ranged = true
 effects = Array[ExtResource("1_o54fr")]([SubResource("Resource_urmga"), SubResource("Resource_n6x4b")])
-targeting = 1
+targeting = 2

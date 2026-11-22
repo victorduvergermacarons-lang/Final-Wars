@@ -45,7 +45,7 @@
 				"Terraform",
 				"Specialty Bending"
 			],
-			"abilities": 20
+			"abilities": 21
 		},
 		{
 			"name": "Water",
@@ -58,7 +58,7 @@
 				"Blessings",
 				"Ice"
 			],
-			"abilities": 23
+			"abilities": 25
 		},
 		{
 			"name": "Air",
@@ -118,8 +118,8 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Ember Fist Scroll",
-			"effect": "Quick flaming jab on an adjacent enemy.",
-			"targeting": "Targeted",
+			"effect": "Quick flaming jab in front of you (a short cone).",
+			"targeting": "Skillshot",
 			"targeting_details": "Adjacent enemy. Locks on; can't miss.",
 			"mastery_required_text": "Fire Mastery 0",
 			"prerequisites_text": "—",
@@ -129,7 +129,7 @@
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "ember_fist_scroll",
-			"cooldown": 2.0,
+			"cooldown": 0.4,
 			"mastery_on_learn": 5.0,
 			"mastery_per_use": 0.2,
 			"mastery_cap": 50.0,
@@ -150,8 +150,9 @@
 				"notes": "Instant since 2026-11-21: no bar; damage lands as the key is pressed (was 1 s, Tap 0.7–1.0; Crit 0.9–1.0)."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 1.0,
+				"shape": "Cone",
+				"range": 1.4,
+				"angle": 90.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -167,8 +168,8 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Cinder Kick Scroll",
-			"effect": "Flaming kick on an adjacent enemy; applies a short burn.",
-			"targeting": "Targeted",
+			"effect": "Flaming kick in front of you (a wide short cone); applies a short burn.",
+			"targeting": "Skillshot",
 			"targeting_details": "Adjacent enemy. Locks on; the burn always applies.",
 			"mastery_required_text": "Fire Mastery 0",
 			"prerequisites_text": "—",
@@ -178,7 +179,7 @@
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "cinder_kick_scroll",
-			"cooldown": 4.0,
+			"cooldown": 1.2,
 			"mastery_on_learn": 5.0,
 			"mastery_per_use": 0.2,
 			"mastery_cap": 50.0,
@@ -209,8 +210,9 @@
 				"notes": "Fire: a late snap like Fire Punch, a little longer (bigger hit plus a burn)."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 1.0,
+				"shape": "Cone",
+				"range": 1.5,
+				"angle": 110.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -578,8 +580,8 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Blazing Fist Scroll",
-			"effect": "Three-hit combo; the last hit knocks the target back 1 tile.",
-			"targeting": "Targeted",
+			"effect": "Three-hit combo in front of you; the last hit knocks enemies back 1 tile.",
+			"targeting": "Skillshot",
 			"targeting_details": "Adjacent enemy. The final hit pushes it directly away from you (snapped to 8 directions).",
 			"mastery_required_text": "Fire Mastery 150",
 			"prerequisites_text": "Fire Punch; Fire Kick",
@@ -620,8 +622,9 @@
 				"notes": "Fire: late snap. Planned: three taps, one per hit, once bars take several inputs."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 1.0,
+				"shape": "Cone",
+				"range": 1.4,
+				"angle": 90.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -1327,7 +1330,7 @@
 			"role": "Self buff",
 			"item_type": "Scroll",
 			"taught_by": "Granite Skin Scroll",
-			"effect": "Gain +20 Physical Defense for 10s.",
+			"effect": "Stacks up to 3 times: each use adds a third of +20 Physical Defense, for 10s.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
 			"mastery_required_text": "Earth Mastery 0",
@@ -1338,7 +1341,7 @@
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "granite_skin_scroll",
-			"cooldown": 20.0,
+			"cooldown": 0.3,
 			"mastery_on_learn": 5.0,
 			"mastery_per_use": 0.4,
 			"mastery_cap": 50.0,
@@ -1376,7 +1379,7 @@
 			"role": "Terrain",
 			"item_type": "Scroll",
 			"taught_by": "Pillar Scroll",
-			"effect": "Raise a tile 1 height level for 15s (2 levels at 500 Earth Mastery).",
+			"effect": "Raise a pillar on the tile in front of you for 15s: 1 level, up to 3 the longer you hold. A Stone Fist slides it 5 tiles.",
 			"targeting": "Ground",
 			"targeting_details": "Pick a tile within 5. Any unit on it is lifted with the tile.",
 			"mastery_required_text": "Earth Mastery 0",
@@ -1406,7 +1409,7 @@
 			},
 			"hitbox": {
 				"shape": "Tiles",
-				"range": 5.0,
+				"range": 1.0,
 				"radius": 0.0,
 				"pierce": false
 			},
@@ -2350,8 +2353,8 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "River Lash Scroll",
-			"effect": "Lash an enemy within 5 tiles.",
-			"targeting": "Targeted",
+			"effect": "A lash of water flying up to 5 tiles; hits the first enemy.",
+			"targeting": "Skillshot",
 			"targeting_details": "Enemy within 5. Locks on.",
 			"mastery_required_text": "Water Mastery 0",
 			"prerequisites_text": "—",
@@ -2387,8 +2390,10 @@
 				"notes": "Designer's bar: the hold starts at 0.45 s (was 0.75 s, 2026-11-21) and ends 0.25 s before the bar."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 5.0,
+				"shape": "Projectile",
+				"range": 5.5,
+				"speed": 16.0,
+				"size": 0.3,
 				"pierce": false
 			},
 			"wheel_slot": "Y",
@@ -2630,8 +2635,8 @@
 			"role": "Damage / Self heal",
 			"item_type": "Scroll",
 			"taught_by": "Leech Tide Scroll",
-			"effect": "Damage an enemy within 5 tiles and heal yourself for 50% of the damage dealt.",
-			"targeting": "Targeted",
+			"effect": "A draining wave flying up to 5 tiles: damages the first enemy and heals you for 50% of the damage dealt.",
+			"targeting": "Skillshot",
 			"targeting_details": "Enemy within 5. The heal applies to you automatically.",
 			"mastery_required_text": "Water Mastery 150",
 			"prerequisites_text": "Water Whip",
@@ -2667,8 +2672,10 @@
 				"notes": "Water: a hold; the drain heals you half the (scaled) damage."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 5.0,
+				"shape": "Projectile",
+				"range": 5.5,
+				"speed": 14.0,
+				"size": 0.3,
 				"pierce": false
 			},
 			"wheel_slot": "Y",
@@ -3521,8 +3528,8 @@
 			"role": "CC / Damage",
 			"item_type": "Scroll",
 			"taught_by": "Open Palm Scroll",
-			"effect": "Light damage and knock an adjacent enemy back 1 tile.",
-			"targeting": "Targeted",
+			"effect": "Light damage and knock enemies in front of you back 1 tile. Spends wind charges for more.",
+			"targeting": "Skillshot",
 			"targeting_details": "Adjacent enemy. Pushes it directly away from you (snapped to 8 directions).",
 			"mastery_required_text": "Air Mastery 0",
 			"prerequisites_text": "—",
@@ -3563,8 +3570,9 @@
 				"notes": "Air: quick, early beat."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 1.0,
+				"shape": "Cone",
+				"range": 1.4,
+				"angle": 90.0,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -3580,8 +3588,8 @@
 			"role": "Interrupt / Damage",
 			"item_type": "Scroll",
 			"taught_by": "Breeze Scroll",
-			"effect": "Range 5; light damage and interrupts an enemy's cast.",
-			"targeting": "Targeted",
+			"effect": "A gust flying up to 5 tiles: light damage and interrupts the first enemy's cast.",
+			"targeting": "Skillshot",
 			"targeting_details": "Enemy within 5. Instant and can't miss, so interrupts are reliable.",
 			"mastery_required_text": "Air Mastery 0",
 			"prerequisites_text": "—",
@@ -3617,8 +3625,10 @@
 				"notes": "No bar: an interrupt must be instant to catch a wind-up."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 5.0,
+				"shape": "Projectile",
+				"range": 5.5,
+				"speed": 18.0,
+				"size": 0.3,
 				"pierce": false
 			},
 			"wheel_slot": "Y",
@@ -3635,8 +3645,8 @@
 			"role": "Mobility",
 			"item_type": "Scroll",
 			"taught_by": "Featherstep Scroll",
-			"effect": "Your next 5 steps have no cooldown.",
-			"targeting": "Self",
+			"effect": "Long dash up to 5 tiles. Each dash fills a wind charge (up to 3), spent by Air Palm and Air Blast.",
+			"targeting": "Ground",
 			"targeting_details": "No target.",
 			"mastery_required_text": "Air Mastery 0",
 			"prerequisites_text": "—",
@@ -3646,7 +3656,7 @@
 			"tier": 1,
 			"mastery_required": 0,
 			"item_id": "featherstep_scroll",
-			"cooldown": 10.0,
+			"cooldown": 2.5,
 			"mastery_on_learn": 5.0,
 			"mastery_per_use": 0.4,
 			"mastery_cap": 50.0,
@@ -3664,7 +3674,9 @@
 				"notes": "No bar: movement buff off the GCD."
 			},
 			"hitbox": {
-				"shape": "None",
+				"shape": "Dash",
+				"range": 5.0,
+				"width": 0.6,
 				"pierce": false
 			},
 			"wheel_slot": "A",
@@ -3737,8 +3749,8 @@
 			"role": "CC / Damage",
 			"item_type": "Scroll",
 			"taught_by": "Gale Scroll",
-			"effect": "Knock an enemy back 3 tiles; bonus damage if it hits a wall or ledge.",
-			"targeting": "Targeted",
+			"effect": "A blast flying up to 5 tiles that knocks the first enemy back 3 tiles; bonus damage if it hits a wall or ledge. Spends wind charges for more.",
+			"targeting": "Skillshot",
 			"targeting_details": "Enemy within 5. Knockback follows the line from you to it, snapped to 8 directions.",
 			"mastery_required_text": "Air Mastery 150",
 			"prerequisites_text": "Air Palm",
@@ -3779,8 +3791,10 @@
 				"notes": "Air: early beat in a slightly longer bar."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 5.0,
+				"shape": "Projectile",
+				"range": 5.5,
+				"speed": 16.0,
+				"size": 0.35,
 				"pierce": false
 			},
 			"wheel_slot": "Y",
@@ -5660,8 +5674,8 @@
 			"role": "Damage",
 			"item_type": "Bow",
 			"taught_by": "Hunter's Shortbow",
-			"effect": "Fast shot, range 7.",
-			"targeting": "Targeted",
+			"effect": "A quick arrow flying up to 7 tiles.",
+			"targeting": "Skillshot",
 			"targeting_details": "Enemy within 7. Fast arrow that can't miss; blocked by walls.",
 			"mastery_required_text": "Bow Mastery 0",
 			"prerequisites_text": "—",
@@ -5697,8 +5711,10 @@
 				"notes": "Designer's bar: hold 1.5 s at the end, ending 0.25 s before the bar. The arrow flies where the cursor points when you let go."
 			},
 			"hitbox": {
-				"shape": "Targeted",
-				"range": 7.0,
+				"shape": "Projectile",
+				"range": 7.5,
+				"speed": 18.0,
+				"size": 0.2,
 				"pierce": false
 			},
 			"prerequisites": {
@@ -7741,6 +7757,146 @@
 				],
 				"mastery": []
 			}
+		},
+		{
+			"id": "E21",
+			"name": "Stone Fist",
+			"tree": "Earth",
+			"branch": "Stone Guard",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Stone Fist Scroll",
+			"effect": "Short-range punch in front of you. Punching your own pillar slides it 5 tiles, hitting what it meets.",
+			"targeting": "Skillshot",
+			"targeting_details": "Cone in front, 1.4 tiles",
+			"mastery_required_text": "Earth Mastery 0",
+			"prerequisites_text": "",
+			"scales_with_text": "Phys Atk",
+			"mastery_contribution": "+5 Earth Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "stone_fist_scroll",
+			"cooldown": 0.6,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"stat": "phys_atk"
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Cone",
+				"range": 1.4,
+				"angle": 90.0,
+				"pierce": false
+			},
+			"cast_move_speed_pct": 0.0,
+			"manual_aim": true,
+			"wheel_slot": "Y",
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W24",
+			"name": "Ice Slide",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Mobility",
+			"item_type": "Scroll",
+			"taught_by": "Ice Slide Scroll",
+			"effect": "Ice mode: slide on ice up to 4 tiles where you aim.",
+			"targeting": "Ground",
+			"targeting_details": "Dash up to 4 tiles",
+			"mastery_required_text": "Water Mastery 0",
+			"prerequisites_text": "",
+			"scales_with_text": "",
+			"mastery_contribution": "+5 Water Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "ice_slide_scroll",
+			"cooldown": 4.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Dash",
+				"range": 4.0,
+				"width": 0.6,
+				"pierce": false
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
+		},
+		{
+			"id": "W25",
+			"name": "Frost Ring",
+			"tree": "Water",
+			"branch": "Healing",
+			"role": "Damage",
+			"item_type": "Scroll",
+			"taught_by": "Frost Ring Scroll",
+			"effect": "Ice mode: frost bursts around you, damaging and slowing enemies within 2 tiles for 2s.",
+			"targeting": "Self",
+			"targeting_details": "Circle of 2 tiles around you",
+			"mastery_required_text": "Water Mastery 0",
+			"prerequisites_text": "",
+			"scales_with_text": "0.8 Magic Atk",
+			"mastery_contribution": "+5 Water Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
+			"notes": "",
+			"tier": 1,
+			"mastery_required": 0,
+			"item_id": "frost_ring_scroll",
+			"cooldown": 6.0,
+			"mastery_on_learn": 5.0,
+			"mastery_per_use": 0.2,
+			"mastery_cap": 50.0,
+			"scales_with": [
+				{
+					"stat": "mag_atk",
+					"coef": 0.8
+				}
+			],
+			"timing": {
+				"status": "none",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
+				"holds": [],
+				"notes": ""
+			},
+			"hitbox": {
+				"shape": "Self Circle",
+				"radius": 2.0,
+				"pierce": false
+			},
+			"prerequisites": {
+				"abilities": [],
+				"mastery": []
+			}
 		}
 	],
 	"items": [
@@ -8903,6 +9059,30 @@
 			"tree": "Hammer",
 			"tier": 5,
 			"ability": "H20"
+		},
+		{
+			"id": "stone_fist_scroll",
+			"name": "Stone Fist Scroll",
+			"type": "Scroll",
+			"tree": "Earth",
+			"tier": 1,
+			"ability": "E21"
+		},
+		{
+			"id": "ice_slide_scroll",
+			"name": "Ice Slide Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 1,
+			"ability": "W24"
+		},
+		{
+			"id": "frost_ring_scroll",
+			"name": "Frost Ring Scroll",
+			"type": "Scroll",
+			"tree": "Water",
+			"tier": 1,
+			"ability": "W25"
 		}
 	],
 	"rules": [
