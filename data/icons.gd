@@ -91,6 +91,14 @@ static func screen_scale_for(icon_size: Vector2, room: Vector2, screen_scale: fl
 	return maxi(k, 1)
 
 
+## The window's stretch: UI units -> screen pixels for controls at scale 1.
+static func window_scale() -> float:
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null or tree.root == null:
+		return 1.0
+	return tree.root.get_final_transform().get_scale().x
+
+
 ## The control's UI-units -> screen-pixels factor (the window's stretch).
 static func screen_scale_of(item: CanvasItem) -> float:
 	if item == null or not item.is_inside_tree():
@@ -112,19 +120,67 @@ static func fit_rect(tex: Texture2D, room: Rect2, screen_scale: float, max_scale
 
 ## Draws `tex` centred in `room` on `ci` at a whole screen scale; `modulate` tints it.
 static func draw_fitted(ci: CanvasItem, tex: Texture2D, room: Rect2, modulate := Color.WHITE,
-		max_scale: int = 8) -> Rect2:
+		max_scale: int = 8, grey := false) -> Rect2:
 	if tex == null:
 		return Rect2()
 	var r := fit_rect(tex, room, screen_scale_of(ci), max_scale)
-	ci.draw_texture_rect(tex, r, false, modulate)
+	ci.draw_texture_rect(greyed(tex) if grey else tex, r, false, modulate)
 	return r
+
+
+static var _grey := {} # texture -> its greyscale copy
+
+
+## A greyscale copy of `tex` (made once): locked abilities in the tree.
+static func greyed(tex: Texture2D) -> Texture2D:
+	if _grey.has(tex):
+		return _grey[tex]
+	var img := tex.get_image()
+	if img == null:
+		return tex
+	img = img.duplicate()
+	if img.is_compressed():
+		img.decompress()
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			var v := c.r * 0.3 + c.g * 0.59 + c.b * 0.11
+			img.set_pixel(x, y, Color(v, v, v, c.a))
+	var out := ImageTexture.create_from_image(img)
+	_grey[tex] = out
+	return out
 
 
 ## A BBCode image for rich text at 1x in screen pixels (k screen pixels per art
 ## pixel, k = whole part of the window's stretch, at least 1), sized in UI units.
-static func bbcode(tex: Texture2D, screen_scale: float = 1.0) -> String:
+static func bbcode(tex: Texture2D, screen_scale: float = -1.0) -> String:
 	if tex == null:
 		return ""
+	if screen_scale <= 0.0:
+		screen_scale = window_scale()
 	var k := maxi(floori(screen_scale + 0.0001), 1)
 	var size := Vector2(tex.get_size()) * k / maxf(screen_scale, 0.01)
-	return "[img width=%d height=%d]%s[/img]" % [roundi(size.x), roundi(size.y), tex.resource_path]
+	return "[img width=%s height=%s]%s[/img]" % [str(size.x), str(size.y), tex.resource_path]
+
+
+## A tooltip control: the icon (at 1x in screen pixels) beside `text`, in the
+## default tooltip style. Without an icon, a plain label of the text.
+static func tooltip(owner: CanvasItem, tex: Texture2D, text: String) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	if tex != null:
+		var r := TextureRect.new()
+		var k := maxi(floori(screen_scale_of(owner) + 0.0001), 1)
+		r.texture = tex
+		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		r.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		r.custom_minimum_size = Vector2(tex.get_size()) * k / maxf(screen_scale_of(owner), 0.01)
+		r.stretch_mode = TextureRect.STRETCH_SCALE
+		r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		r.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		row.add_child(r)
+	var l := Label.new()
+	l.text = text
+	row.add_child(l)
+	return row

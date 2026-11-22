@@ -14,6 +14,7 @@ func _init(p_hud: Hud, p_item: ItemDef, label: String) -> void:
 	alignment = HORIZONTAL_ALIGNMENT_LEFT
 	focus_mode = Control.FOCUS_NONE
 	add_theme_color_override("font_color", Rarity.color(item.rarity))
+	IconView.add_to_button(self, Icons.of_item(item))
 
 
 func _make_custom_tooltip(_for_text: String) -> Object:

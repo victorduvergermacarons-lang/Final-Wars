@@ -260,6 +260,11 @@ class _Node:
 		style.border_color = color
 		style.set_border_width_all(3 if state in [State.MASTERED, State.LEARNING] else 1)
 		style.set_corner_radius_all(4)
+		_icon = Icons.of_ability(ability)
+		if _icon != null:
+			# The icon in a square on the left, the text beside it.
+			style.content_margin_left = ICON_ROOM + 8.0
+			alignment = HORIZONTAL_ALIGNMENT_LEFT
 		add_theme_stylebox_override("normal", style)
 		add_theme_stylebox_override("hover", style)
 		add_theme_stylebox_override("pressed", style)
@@ -274,6 +279,27 @@ class _Node:
 		if hero.find_ability(ability.id) != null:
 			tip += "\nDrag onto the action bar."
 		tooltip_text = tip
+
+	## The icon's square (UI units): 44 holds the 33 px icon at 2x at 1080p (66
+	## screen pixels) and at 1x at 720p.
+	const ICON_ROOM := 44.0
+	var _icon: Texture2D
+
+	func _draw() -> void:
+		if _icon == null:
+			return
+		var side := minf(ICON_ROOM, size.y - 6.0)
+		var room := Rect2(5.0, (size.y - side) * 0.5, side, side)
+		# Greyed out while it can't be learned (locked, or not in the game yet).
+		var tint := Color(1, 1, 1)
+		if state == State.LOCKED:
+			tint = Color(0.55, 0.55, 0.58, 0.85)
+		elif state == State.NOT_IN_GAME:
+			tint = Color(0.4, 0.4, 0.42, 0.6)
+		Icons.draw_fitted(self, _icon, room, tint, 8, state in [State.LOCKED, State.NOT_IN_GAME])
+
+	func _make_custom_tooltip(for_text: String) -> Object:
+		return Icons.tooltip(self, _icon, for_text)
 
 	## What dragging this node carries: only usable abilities go on the bar.
 	func drag_payload() -> Variant:

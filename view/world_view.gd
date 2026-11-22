@@ -1321,8 +1321,17 @@ func _draw_drops(grid: GridModel) -> void:
 			var w := pp.beam_width * (3.0 - k)
 			draw_line(base, top, Color(c, (0.12 + 0.18 * k) * (0.75 + 0.25 * pulse)), w)
 		draw_circle(base, 3.0, Color(c, 0.9))
+		# Its icon at the beam's top, at the world's art scale (the hero's pixel size),
+		# on whole pixels; its name above.
+		var icon := Icons.of_item(item)
+		var label_at := top + Vector2(0, -6)
+		if icon != null:
+			var icon_size := Vector2(icon.get_size()) * PixelCamera.ART_SCALE
+			var at := (top - Vector2(icon_size.x * 0.5, icon_size.y * 0.75)).round()
+			draw_texture_rect(icon, Rect2(at, icon_size), false)
+			label_at = Vector2(top.x, at.y + icon_size.y * 0.15)
 		var label := item.display_name + (" x%d" % d.count if d.count > 1 else "")
-		_draw_label(top + Vector2(0, -6), label, tag, 12)
+		_draw_label(label_at, label, tag, 12)
 
 
 ## The way out of a cleared dungeon: a pulsing golden ring of light on its tile
