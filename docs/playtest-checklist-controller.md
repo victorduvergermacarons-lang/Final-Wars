@@ -65,7 +65,8 @@ B = Circle, LB/RB = L1/R1, LT/RT = L2/R2, View = Share, Menu = Options.
 ## 7. Element kits (each Tester character)
 - [ ] The character list has Fire, Water, Earth and Air Tester (level 10).
 - [ ] Attacks go where you aim without targeting anyone.
-- [ ] X: tap Slash; hold 3 s (a ring fills on the button) for Lunge. Equip the bow: Quick
+- [ ] Dashes (Flame Dash, Air Step, Ice Slide, Lunge) go the way you walk, not where you aim.
+- [ ] X: tap Slash; hold 2 s (a ring fills on the button) for Lunge. Equip the bow: Quick
       Shot / Aimed Shot; the hammer: Smash / Ground Slam.
 - [ ] **Fire:** Y Fire Dart, hold 1 s Fire Whip; A Flame Dash; B three times quickly:
       punch, punch, kick (wait over a second and it starts again).

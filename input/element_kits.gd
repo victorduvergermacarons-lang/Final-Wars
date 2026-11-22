@@ -62,7 +62,7 @@ static func entry(hero: Hero, slot: int, mode: int) -> Dictionary:
 ## Seconds a button must be held for its "hold" ability.
 static func hold_seconds(weapon: bool) -> float:
 	var h: Dictionary = data().get("hold_seconds", {})
-	return float(h.get("weapon" if weapon else "element", 3.0 if weapon else 1.0))
+	return float(h.get("weapon" if weapon else "element", 2.0 if weapon else 1.0))
 
 
 static func combo_reset_seconds() -> float:

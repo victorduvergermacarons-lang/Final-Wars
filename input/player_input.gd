@@ -578,9 +578,40 @@ func aim_point() -> Vector2:
 ## Where bility would go now: the cursor, or with a controller the right stick /
 ## auto-lock (pad_point).
 func point_for(ability: AbilityDef) -> Vector2:
-	if InputDevice.using_pad() and session.local_hero() != null:
+	var hero: Hero = session.local_hero()
+	if hero != null and is_dash(ability):
+		return dash_point(hero, ability)
+	if InputDevice.using_pad() and hero != null:
 		return pad_point(ability)
 	return mouse_point(ability)
+
+
+## Dashes (Flame Dash, Air Step, Ice Slide, Lunge…) go the way you walk, not where
+## you aim or at a target (2026-11-22, user request).
+static func is_dash(ability: AbilityDef) -> bool:
+	if ability.hitbox != null and ability.hitbox.shape == HitboxDef.Shape.DASH:
+		return true
+	return ability.effects.any(func(e): return e != null and e.kind in [AbilityEffect.Kind.DASH, AbilityEffect.Kind.DASH_TO])
+
+
+## Where a dash aims: its full reach along the direction you walk (the keys or the
+## left stick; else the way you're moving; standing still, the way you face).
+func dash_point(hero: Hero, ability: AbilityDef) -> Vector2:
+	var dir := move_direction(hero)
+	var at := hero.move.position_at(session.render_time())
+	var point := at + dir * maxf(_reach(ability), 1.0)
+	return point if ability.uses_hitbox() else Vector2(MoveState.tile_of(point))
+
+
+## The direction the hero walks (grid space, unit length).
+func move_direction(hero: Hero) -> Vector2:
+	if _held != Vector2i.ZERO:
+		return Mover.screen_to_grid(_held).normalized()
+	if _stick != Vector2.ZERO:
+		return Mover.stick_to_grid(_stick).normalized()
+	if hero.move.vel.length() > 0.2:
+		return hero.move.vel.normalized()
+	return hero.facing_vector().normalized()
 
 
 ## For tests (no real mouse headless): where the cursor is in the world, or null.
@@ -797,7 +828,7 @@ func _target_for(hero: Hero, ability: AbilityDef) -> Actor:
 
 # --- Element kits (2026-11-22, Hades style) ----------------------------------------
 # What X / Y / A / B do comes from the hero's element kit (ElementKits): a tap, a
-# hold (goes off by itself once held long enough: 3 s for weapons, 1 s for
+# hold (goes off by itself once held long enough: 2 s for weapons, 1 s for
 # elements), a combo (presses in a row), or a charge (let go: the longer, the
 # stronger). Heals and buffs on allies take two presses: the first picks an ally,
 # the second casts. RT / Space switches modes (Water / Ice). A button the kit

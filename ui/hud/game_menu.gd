@@ -11,7 +11,7 @@ extends PanelContainer
 const CONTROL_ROWS := [
 	["Move", "WASD (two keys walk along the grid)", "Left stick (any angle)"],
 	["Aim", "The mouse", "Right stick, or auto-lock (Gameplay test tab)"],
-	["Weapon (tap; hold 3 s for its second move)", &"action_slot_1"],
+	["Weapon (tap; hold 2 s for its second move)", &"action_slot_1"],
 	["Element move (Y)", &"action_slot_2"],
 	["Element move (A)", &"action_slot_3"],
 	["Element move (B)", &"action_slot_4"],
@@ -33,7 +33,7 @@ Earth: Y Stone Fist (hold: Rock Throw; punch your pillar to slide it) · A Stone
 Air: Y Air Blast · A Air Step, a long dash that fills a wind dot · B Air Palm; Palm and Blast spend the dots for more damage and push (3: a stun)
 Heals on allies: press, choose an ally with the left stick or arrows, press again.
 Weapons on X: sword Slash (hold: Lunge), bow Quick Shot (hold: Aimed Shot), hammer Smash (hold: Ground Slam).
-Attacks go where you aim: no target needed.
+Attacks go where you aim: no target needed. Dashes go the way you walk.
 Mouse wheel: zoom.
 
 [b]Menus[/b] (the menu book)

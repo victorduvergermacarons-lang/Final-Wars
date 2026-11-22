@@ -194,10 +194,11 @@ func test_a_second_press_fires_an_aimed_ability_without_a_bar() -> void:
 	var start := hero.move.pos
 	_press(&"S04", &"") # a click on the bar: aiming
 	assert_true(input.is_aiming())
+	input._held = Vector2i(1, -1) # walking grid north: a dash goes the way you walk
 	_press(&"S04", &"action_slot_3") # then its key
 	assert_false(input.is_aiming(), "fired")
 	await wait_physics_frames(15)
-	assert_almost_eq(rad_to_deg((hero.move.pos - start).angle()), -90.0, 10.0, "toward the cursor")
+	assert_almost_eq(rad_to_deg((hero.move.pos - start).angle()), -90.0, 10.0, "the way you walk")
 
 
 func test_a_held_key_is_not_a_second_press() -> void:

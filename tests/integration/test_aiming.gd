@@ -223,19 +223,20 @@ func test_slash_on_a_timing_bar_swings_where_the_cursor_is_at_the_last_press() -
 	assert_lt(wolf.hp, hp, "it swung where the cursor was at the press, and hit the wolf")
 
 
-func test_lunge_dashes_toward_the_cursor_with_a_target_elsewhere() -> void:
+func test_lunge_dashes_the_way_you_walk_not_at_the_cursor_or_the_target() -> void:
 	hero.bag.add(ContentDB.items[&"travelers_longsword"])
 	hero.equip_from_bag(hero.bag.index_of(ContentDB.items[&"travelers_longsword"]))
 	assert_not_null(hero.find_ability(&"S04"), "Lunge from the longsword in hand")
 	client.target_id = wolf.id # to the east
-	_point_at(_a(5, 4)) # north (grid −y)
+	_point_at(_a(8, 8)) # the cursor south-east
 	var start := hero.move.pos
 	input.use_slot_ability_for_test(ContentDB.abilities[&"S04"], &"action_slot_1")
+	input._held = Vector2i(1, -1) # walking grid north (W+D)
 	input.fire_aimed()
 	await wait_physics_frames(15)
 	var moved := hero.move.pos - start
 	assert_gt(moved.length(), 0.5, "it dashed")
-	assert_almost_eq(rad_to_deg(moved.angle()), -90.0, 10.0, "toward the cursor (north), not the wolf (east)")
+	assert_almost_eq(rad_to_deg(moved.angle()), -90.0, 10.0, "the way you walk (north), not the cursor or the wolf (east)")
 
 
 func test_off_the_map_the_aim_still_points_toward_the_cursor() -> void:

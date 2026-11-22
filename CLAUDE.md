@@ -1734,7 +1734,7 @@ Checklist: `docs/playtest-checklist-controller.md` (section 7).
   (`tests/pre_run.gd`, GUT's pre-run hook) unless they turn it on. Enemies unchanged.
 - **Kits** (`content/kits/element_kits.json`, read by `ElementKits`, `input/element_kits.gd`;
   `PlayerInput` "Element kits"): per element and mode, per button a `tap`, a `hold` (goes off by
-  itself once held: **3 s for weapons, 1 s for elements**), a `combo` (presses in a row, reset
+  itself once held: **2 s for weapons** (3 s until a user request the same day), **1 s for elements**), a `combo` (presses in a row, reset
   after 1 s) or a `charge` (let go: the longer, the stronger), `in_front` (aimed at the tile ahead).
   X is the weapon in hand; a button the kit doesn't cover uses the wheel's own slot (heroes with
   no element keep the plain wheel). The wheel shows the kit (tap ability, the hold's name, a ring
@@ -1748,6 +1748,10 @@ Checklist: `docs/playtest-checklist-controller.md` (section 7).
   | Ice | weapon | Frost Shard | Ice Slide | Frost Ring | to Water |
   | Earth | weapon | Stone Fist · hold Rock Throw | Stone Skin (tap up to 3×) · hold Seismic Stomp (taunt) | Raise Pillar, held to grow | — |
   | Air | weapon | Air Blast | Air Step (long dash) | Air Palm | — |
+- **Dashes go the way you walk** (user request; `PlayerInput.is_dash` / `dash_point`): any ability with a
+  Dash hitbox or a dash effect (Flame Dash, Air Step, Ice Slide, Lunge) aims its full reach along the
+  held keys or left stick (else the way the hero is moving, else its facing), never at the cursor,
+  the stick's aim or a target.
 - **Heals and buffs on allies** (Healing Touch): the first press starts choosing (on yourself;
   `ClientState.ally_select`, the choice is `target_id`), the hero stands still, a new push of the
   left stick or the arrows moves to the ally nearest that way, the second press casts; Esc /
@@ -2639,6 +2643,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-22 | Dashes go the way you walk; weapon holds 2 s | User request (weapon holds were 3 s). Mine: a dash with no movement goes the way the hero faces; Lunge counts as a dash. |
 | 2026-11-22 | Element kits (Hades style): per-element buttons with taps, holds, combos and modes; attacks without targets; heals on allies in two presses; temporary instant hero combat; Stone Fist, Ice Slide, Frost Ring; stacking Stone Skin, charged Raise Pillar, a punch slides the pillar 5 tiles; Air Step a dash filling wind charges spent by Air Palm and Air Blast; four test characters | User brief and choices: Air Y Air Blast / B Air Palm, +30% damage and +1 knockback per charge with a stun at 3; holds 3 s for weapons and 1 s for elements; the punch slides the pillar 5 tiles; the hero stands still while choosing an ally. Mine: the kits in a JSON file; 'thrust chart' read as Frost Shard; the new abilities' numbers; Fire combo reset 1 s, Fire Punch 0.4 s and Fire Kick 1.2 s cooldowns; Stone Skin 0.3 s cooldown; pillar +1 level per 0.6 s up to +2; the slide's damage and knockback; Air Step 5 tiles every 2.5 s; a 0.25 s global cooldown while combat is instant; tests keep the classic rules; heroes without an element keep the plain wheel. |
 | 2026-11-22 | Wheel slots by role: the weapon on X, ranged attacks on Y, a dash (Fire, Air) or Earth's resistance buff on A, the rest on B | User request. Mine: a Wheel Slot column in the sheet (weapon arts need none); the Y and A lists; Air Step counts as Air's dash; a newcomer takes its slot back from an auto-placed ability that doesn't belong there, never from one the player dragged; no-role abilities go B, X, Y, A; older saved layouts start over. |
 | 2026-11-22 | Controller support and a Hades-style layout on both devices: four face-button slots on a wheel (bottom right), Space / RT for timing bars, Auto-lock or Twin-stick aiming, a Manual Aim column | User choices: abilities on the face buttons (X attack, Y special, A cast, B for the fourth since there is no universal dash), 4 slots to start, the keyboard switches too, aim mode an option with some abilities always aimed by hand, RT for timing bars, a 4-slot wheel on the right with abilities and cooldowns instead of the action bar. Mine: LB interact, RB element power (placeholder), LT / Tab next target, D-pad potions and target, View the book, Menu = Esc; left click / right click / Q / Shift for the slots; the stick's push sets the speed; old saves keep 4 slots; keybind mode removed (fixed layout for now); targeted abilities pick the foe nearest the aim; right-click Trade / Duel only out of combat; the Manual Aim draft list; the lock's ranges and angle. See **Controller and Hades-style controls**. |

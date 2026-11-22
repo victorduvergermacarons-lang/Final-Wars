@@ -1,6 +1,6 @@
 {
 	"about": "What each button does per element (2026-11-22, the Hades-style kits). Buttons: X (weapon), Y, A, B, and RT (switch). Per button: tap (pressed and let go), hold (held hold_seconds: it goes off by itself), combo (presses in a row, reset after combo_reset_seconds), charge (held, let go: longer = stronger), in_front (aimed at the tile in front of you). Heals and buffs on allies take two presses: the first picks an ally (left stick or arrows), the second casts. Edit freely; the game reads it at start.",
-	"hold_seconds": {"weapon": 3.0, "element": 1.0},
+	"hold_seconds": {"weapon": 2.0, "element": 1.0},
 	"combo_reset_seconds": 1.0,
 	"weapons": {
 		"Sword": {"tap": "S01", "hold": "S04"},

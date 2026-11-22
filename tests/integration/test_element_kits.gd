@@ -92,15 +92,15 @@ func test_the_weapon_is_on_x_tap_and_hold() -> void:
 	await _tap(X)
 	assert_true(_cooling(&"S01"), "a tap: Slash")
 	await wait_seconds(0.3)
-	await _hold(X, 3.1)
-	assert_true(_cooling(&"S04"), "held 3 s: Lunge")
+	await _hold(X, 2.1)
+	assert_true(_cooling(&"S04"), "held 2 s: Lunge")
 
 
-func test_a_weapon_hold_needs_three_seconds() -> void:
+func test_a_weapon_hold_needs_two_seconds() -> void:
 	input.press_button(X)
-	input._pressed[X].start -= 1.5
+	input._pressed[X].start -= 1.0
 	input._update_holds()
-	assert_false(_cooling(&"S04"), "1.5 s isn't enough")
+	assert_false(_cooling(&"S04"), "1 s isn't enough")
 	assert_almost_eq(input.hold_progress(X), 0.5, 0.05, "the ring is half full")
 
 
@@ -155,3 +155,14 @@ func test_the_test_characters_have_their_whole_kit() -> void:
 		assert_eq(d.element, String(e))
 		for id in ElementKits.all_ability_ids(e):
 			assert_true(d.mastered.has(String(id)), "%s knows %s" % [e, id])
+
+
+func test_a_dash_goes_the_way_you_walk_not_where_you_aim() -> void:
+	# The cursor is to the grid right (before_each); walking grid down (S+A).
+	input._held = Vector2i(-1, 1)
+	var p := input.point_for(ContentDB.abilities[&"F05"])
+	var dir := (p - hero.move.pos).normalized()
+	assert_almost_eq(dir.angle(), Mover.screen_to_grid(Vector2i(-1, 1)).angle(), 0.05, "Flame Dash along the walk")
+	input._held = Vector2i.ZERO
+	var fireball := input.point_for(ContentDB.abilities[&"F03"])
+	assert_gt(fireball.x - hero.move.pos.x, 1.0, "an attack still goes where you aim")
