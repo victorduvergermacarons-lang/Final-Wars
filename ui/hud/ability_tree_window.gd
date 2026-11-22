@@ -10,7 +10,9 @@ extends BookSpread
 ## abilities can be dragged onto the action bar.
 
 ## Space between nodes; tier columns on the left page (the rest go right).
-const GAP := Vector2(22, 16)
+## Between nodes (the columns' room for prerequisite lines). 14 wide since icons
+## (2026-11-22; was 22), so names beside an icon keep a word to a line.
+const GAP := Vector2(14, 16)
 const LEFT_TIERS := 3
 const TIER_HEADER_H := 40.0
 
@@ -262,9 +264,12 @@ class _Node:
 		style.set_corner_radius_all(4)
 		_icon = Icons.of_ability(ability)
 		if _icon != null:
-			# The icon in a square on the left, the text beside it.
+			# The icon in a square on the left, the text beside it, a size smaller.
 			style.content_margin_left = ICON_ROOM + 8.0
+			style.content_margin_right = 3.0
 			alignment = HORIZONTAL_ALIGNMENT_LEFT
+			add_theme_font_size_override("font_size", 12)
+			add_theme_constant_override("line_spacing", -3)
 		add_theme_stylebox_override("normal", style)
 		add_theme_stylebox_override("hover", style)
 		add_theme_stylebox_override("pressed", style)

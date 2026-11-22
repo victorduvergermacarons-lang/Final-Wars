@@ -166,16 +166,16 @@ static func bbcode(tex: Texture2D, screen_scale: float = -1.0) -> String:
 
 ## A tooltip control: the icon (at 1x in screen pixels) beside `text`, in the
 ## default tooltip style. Without an icon, a plain label of the text.
-static func tooltip(owner: CanvasItem, tex: Texture2D, text: String) -> Control:
+static func tooltip(owner: Node, tex: Texture2D, text: String) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	if tex != null:
 		var r := TextureRect.new()
-		var k := maxi(floori(screen_scale_of(owner) + 0.0001), 1)
+		var s := screen_scale_of(owner) if owner is CanvasItem else window_scale()
+		var k := maxi(floori(s + 0.0001), 1)
 		r.texture = tex
 		r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		r.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
-		r.custom_minimum_size = Vector2(tex.get_size()) * k / maxf(screen_scale_of(owner), 0.01)
+		r.custom_minimum_size = Vector2(tex.get_size()) * k / maxf(s, 0.01)
 		r.stretch_mode = TextureRect.STRETCH_SCALE
 		r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		r.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
