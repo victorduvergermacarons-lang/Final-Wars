@@ -7551,6 +7551,121 @@
       "preview": [
         "art/PL-01/PL-01-1+bending-storm-call-both-arms-circle-over_2026-11-22_preview.gif"
       ]
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending@east": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01841525959306293
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending@north-east": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.0185292343960868
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending@north": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018733615464634368
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending@north-west": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.018693581124146777
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending@west": {
+      "date": "2026-11-22",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02827602243423462
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -8315,6 +8430,18 @@
         "PL-01-1+bending-control-both-hands-clawed-and-tw",
         "PL-01-1+bending-taunt-stomps-forward-with-the-ch",
         "PL-01-1+bending-storm-call-both-arms-circle-over"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-22",
+      "made": [
+        "PL-01-1+fire-stance-2-settles-into-a-firebending@east",
+        "PL-01-1+fire-stance-2-settles-into-a-firebending@north-east",
+        "PL-01-1+fire-stance-2-settles-into-a-firebending@north",
+        "PL-01-1+fire-stance-2-settles-into-a-firebending@north-west",
+        "PL-01-1+fire-stance-2-settles-into-a-firebending@west"
       ],
       "failed": [],
       "stopped": ""

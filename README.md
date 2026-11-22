@@ -879,6 +879,36 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>Made from approved/PL-01-1.png: bending storm call: both arms circle overhead faster and faster, then thrust straight up</sub>
 
+### PL-01-1+fire-stance-2-settles-into-a-firebending@east · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending@east](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@east_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
+### PL-01-1+fire-stance-2-settles-into-a-firebending@north-east · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending@north-east](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-east_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
+### PL-01-1+fire-stance-2-settles-into-a-firebending@north · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending@north](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
+### PL-01-1+fire-stance-2-settles-into-a-firebending@north-west · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending@north-west](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@north-west_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
+### PL-01-1+fire-stance-2-settles-into-a-firebending@west · Hero base body (2026-11-22)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending@west](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
 ### PL-01-3 · Hero base body (2026-11-21) ✓ approved
 
 ![PL-01-3](art/PL-01/PL-01-3_2026-11-21_1.png) ![PL-01-3](art/PL-01/PL-01-3_2026-11-21_2.png)
