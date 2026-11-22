@@ -1,5 +1,5 @@
 {
- "about": "The art bot's queue: the live art tracker's prompts (read 2026-11-05), in tracker order (act, then row). Differences from the tracker (user requests): \"clean 1px dark outline\" removed from the world and effect prompts; prompts with a \"base\" are edits of that approved picture (approved/<KEY>.png on the art-drafts branch) instead of \"the same ...\" and wait until it exists; \"animations\" (from the tracker's Detail column) and 8 directions are made from the approved picture after every still is done. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02/WO-10 (no prompt). A key is <ID>-<n>, follow-ups <ID>-<n>+8dir and <ID>-<n>+<action>; keys in the drafts branch's progress.json are not made again.",
+ "about": "The art bot's queue: the live art tracker's prompts (read 2026-11-05), in tracker order (act, then row). Differences from the tracker (user requests): \"clean 1px dark outline\" removed from the world and effect prompts; prompts with a \"base\" are edits of that approved picture (approved/<KEY>.png on the art-drafts branch) instead of \"the same ...\" and wait until it exists; \"animations\" (from the tracker's Detail column) and 8 directions are made from the approved picture after every still is done. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02/WO-10 (no prompt). A key is <ID>-<n>, follow-ups <ID>-<n>+8dir and <ID>-<n>+<action>; keys in the drafts branch's progress.json are not made again. 2026-11-21: stance rework art added: 35 hero animations (stance entries and shared bending casts, all 8 directions) and FX-11 to FX-15 (ability effects and stance auras); see the Final Wars project doc claude/stance-animation-plan.md.",
  "kinds": {
   "plain": {
    "size": [
@@ -39,7 +39,42 @@
       "airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance",
       "airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring",
       "firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back",
-      "firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground"
+      "firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground",
+      "fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up",
+      "fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash",
+      "fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward",
+      "fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread",
+      "earth stance 2: plants the feet and slams both forearms together in front of the chest, ending with fists raised in a heavy guard",
+      "earth stance 3: steps into a very wide low barefoot stance and presses one palm toward the ground, head tilted as if listening to it",
+      "earth stance 4: lifts both arms high overhead with straining effort as if holding a huge boulder above the head, and holds it there",
+      "earth stance 5: spreads both arms wide and turns slowly in place as if raising a ring of boulders around the body, ending feet wide",
+      "water stance 1: one hand draws up from the hip and circles once overhead as if pulling a rope of water around the body, ending relaxed",
+      "water stance 2: both hands trace a large circle around the waist as if spinning a hoop of water around the body, knees softly bent",
+      "water stance 3: both hands gather in front of the chest as if cradling a floating sphere of water, rocking gently forward",
+      "water stance 4: both arms swing up and outward, then hang heavy and curved at the sides as if wrapped in long arms of water",
+      "water stance 5: raises both arms high and lets them sway like tentacles, ending in a wide swaying stance (octopus form)",
+      "air stance 1: light hop onto the balls of the feet, one open palm circles in front of the chest as if stirring a small swirl of wind",
+      "air stance 2: turns once on the spot with both hands sweeping around the waist as if spinning a ring of air, ending light-footed",
+      "air stance 3: hops up and lands balanced on one foot as if standing on a small ball of air, arms out for balance",
+      "air stance 4: both arms whirl in fast circles at the sides as if wrapped in small cyclones, ending with palms forward",
+      "air stance 5: raises both arms straight up and spins slowly as if a column of wind rises around the body, clothes lifting",
+      "bending push: thrusts both open palms straight forward from the chest in a short sharp push, then recovers",
+      "bending channel: holds both palms forward with the body braced and shaking slightly as if pushing out a strong stream, then releases",
+      "bending overhead slam: raises both arms high overhead, then brings both down hard toward the ground in front, knees bending with the impact",
+      "bending ground press: crouches and presses both palms flat down toward the ground, then rises",
+      "bending breath: inhales deeply with the chest rising, then leans forward and exhales hard with both hands framing the mouth",
+      "lightning bending: two fingers trace a quick circle at the side, then the arm thrusts forward with two fingers pointed",
+      "combustion focus: brings both hands up beside the forehead, leans forward and snaps the head forward as if firing a blast from the brow",
+      "bending spin attack: spins a full turn with one leg kicked out at waist height, then lands back in stance",
+      "bending leap strike: jumps forward and up, then crashes down with a downward kick, landing in a deep crouch",
+      "bending dash: crouches and bursts forward in a fast, low dash, ending in a short skid",
+      "bending flight: airborne loop, the body leaning forward in the air, legs together, arms swept back, gently bobbing",
+      "air scooter ride: loop of crouching and balancing on a small spinning ball of air under the feet, arms out",
+      "bending blessing: a gentle two-handed gesture, palms lifting from low to high toward someone in front, calm and graceful",
+      "bending revive: kneels on one knee and slowly lifts both palms from the ground upward as if raising someone",
+      "bending control: both hands clawed and twisting slowly as if pulling invisible strings, body tense and leaning forward",
+      "bending taunt: stomps forward with the chest out and both arms flung wide in a shout",
+      "bending storm call: both arms circle overhead faster and faster, then thrust straight up"
      ],
      "every_direction": [
       "earthbending root: drops into a very wide, low horse stance, stomps one foot down, then lifts both palms up from the hips as if raising a heavy rock, ending with fists at chest height",
@@ -51,7 +86,42 @@
       "airbending palm: light step forward, thrusts one open palm straight out at chest height, back arm swings back for balance",
       "airbending gust: winds both arms to one side, then sweeps both hands across the body in a wide horizontal arc, clothes flaring",
       "firebending punch: very fast straight jab from a fighting stance, no wind-up, full extension then snapping back",
-      "firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground"
+      "firebending kick: fast roundhouse kick at waist height, the leg whips around, full extension, then the foot returns to the ground",
+      "fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up",
+      "fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash",
+      "fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward",
+      "fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread",
+      "earth stance 2: plants the feet and slams both forearms together in front of the chest, ending with fists raised in a heavy guard",
+      "earth stance 3: steps into a very wide low barefoot stance and presses one palm toward the ground, head tilted as if listening to it",
+      "earth stance 4: lifts both arms high overhead with straining effort as if holding a huge boulder above the head, and holds it there",
+      "earth stance 5: spreads both arms wide and turns slowly in place as if raising a ring of boulders around the body, ending feet wide",
+      "water stance 1: one hand draws up from the hip and circles once overhead as if pulling a rope of water around the body, ending relaxed",
+      "water stance 2: both hands trace a large circle around the waist as if spinning a hoop of water around the body, knees softly bent",
+      "water stance 3: both hands gather in front of the chest as if cradling a floating sphere of water, rocking gently forward",
+      "water stance 4: both arms swing up and outward, then hang heavy and curved at the sides as if wrapped in long arms of water",
+      "water stance 5: raises both arms high and lets them sway like tentacles, ending in a wide swaying stance (octopus form)",
+      "air stance 1: light hop onto the balls of the feet, one open palm circles in front of the chest as if stirring a small swirl of wind",
+      "air stance 2: turns once on the spot with both hands sweeping around the waist as if spinning a ring of air, ending light-footed",
+      "air stance 3: hops up and lands balanced on one foot as if standing on a small ball of air, arms out for balance",
+      "air stance 4: both arms whirl in fast circles at the sides as if wrapped in small cyclones, ending with palms forward",
+      "air stance 5: raises both arms straight up and spins slowly as if a column of wind rises around the body, clothes lifting",
+      "bending push: thrusts both open palms straight forward from the chest in a short sharp push, then recovers",
+      "bending channel: holds both palms forward with the body braced and shaking slightly as if pushing out a strong stream, then releases",
+      "bending overhead slam: raises both arms high overhead, then brings both down hard toward the ground in front, knees bending with the impact",
+      "bending ground press: crouches and presses both palms flat down toward the ground, then rises",
+      "bending breath: inhales deeply with the chest rising, then leans forward and exhales hard with both hands framing the mouth",
+      "lightning bending: two fingers trace a quick circle at the side, then the arm thrusts forward with two fingers pointed",
+      "combustion focus: brings both hands up beside the forehead, leans forward and snaps the head forward as if firing a blast from the brow",
+      "bending spin attack: spins a full turn with one leg kicked out at waist height, then lands back in stance",
+      "bending leap strike: jumps forward and up, then crashes down with a downward kick, landing in a deep crouch",
+      "bending dash: crouches and bursts forward in a fast, low dash, ending in a short skid",
+      "bending flight: airborne loop, the body leaning forward in the air, legs together, arms swept back, gently bobbing",
+      "air scooter ride: loop of crouching and balancing on a small spinning ball of air under the feet, arms out",
+      "bending blessing: a gentle two-handed gesture, palms lifting from low to high toward someone in front, calm and graceful",
+      "bending revive: kneels on one knee and slowly lifts both palms from the ground upward as if raising someone",
+      "bending control: both hands clawed and twisting slowly as if pulling invisible strings, body tense and leaning forward",
+      "bending taunt: stomps forward with the chest out and both arms flung wide in a shout",
+      "bending storm call: both arms circle overhead faster and faster, then thrust straight up"
      ]
     },
     {
@@ -1488,6 +1558,1109 @@
      "rotate": false,
      "animations": [
       "the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-11",
+   "asset": "Fire ability effects for the stance rework",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "a short burst of orange and yellow fire about 16 px long with a white-hot core, blasting to the right from a point near the left edge. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire burst blasts to the right and breaks into embers"
+     ]
+    },
+    {
+     "subject": "a small bolt of flame about 10 px long with a short flickering tail, pointing to the right, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame bolt flickers as it flies to the right",
+      "the flame bolt pops into a small burst of sparks"
+     ]
+    },
+    {
+     "subject": "a small crackle of blue-white electric sparks about 14 px across, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the sparks crackle and flicker, then fade"
+     ]
+    },
+    {
+     "subject": "warm golden flames rising softly from the ground in a ring the width of a standing person, the middle left empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the golden flames rise up around the ring and fade into embers"
+     ]
+    },
+    {
+     "subject": "a straight band of orange flame running from the left edge to the right edge, about 10 px thick. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the band of flame flickers and roars in a seamless loop"
+     ]
+    },
+    {
+     "subject": "one flat isometric ground tile, a 32x16 diamond, covered in low flickering flames. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the low flames flicker across the tile in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a glowing red-orange heat haze with rising embers around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the heat haze shimmers and embers rise in a loop",
+      "the heat bursts outward in a ring of flame and fades"
+     ]
+    },
+    {
+     "subject": "a few small flame puffs on the ground, about 12 px across. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame puffs flare up and die down"
+     ]
+    },
+    {
+     "subject": "a long thin lash of fire curving from the left edge to the right edge in a gentle S, bright tip. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire lash snaps out to the right, cracks straight, then breaks into embers"
+     ]
+    },
+    {
+     "subject": "two short jets of flame pointing straight down, side by side, about 12 px long, as if shooting from a person's feet. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame jets roar and flicker in a seamless loop"
+     ]
+    },
+    {
+     "subject": "blue-white lightning curling in a circle around an empty middle, about 40 px across. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the lightning circles faster and faster, then shoots out to the right"
+     ]
+    },
+    {
+     "subject": "a ring of fire bursting outward from the ground with two flame shapes like phoenix wings rising at the sides. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire ring explodes outward and the flame wings rise, then fade"
+     ]
+    },
+    {
+     "subject": "a round fireball about 12 px wide with a short flame tail, pointing to the right, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the fireball flickers as it flies to the right",
+      "the fireball explodes into a round burst of flame and smoke"
+     ]
+    },
+    {
+     "subject": "a blazing golden sun halo floating where a standing person's head and shoulders would be, rays pointing outward. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the sun halo pulses and its rays turn slowly in a loop"
+     ]
+    },
+    {
+     "subject": "a jagged bolt of blue-white lightning crossing the canvas from the left edge to the right edge. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the lightning bolt strikes across in a bright flash and flickers out"
+     ]
+    },
+    {
+     "subject": "a flat ring of fire on the ground, an isometric ellipse about 56 px wide, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the ring of fire spins around and flares, then fades"
+     ]
+    },
+    {
+     "subject": "one flat isometric ground tile, a 32x16 diamond, with tall swirling flames, a raging firestorm. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the firestorm swirls and roars in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a cone of orange fire spreading from a point at the left edge toward the right, widening as it goes. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the cone of fire breath blasts outward to the right, then thins into embers"
+     ]
+    },
+    {
+     "subject": "a large explosion of fire and white shockwave, round, filling most of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the explosion bursts from a bright point, a shockwave ring spreads, then smoke fades"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-12",
+   "asset": "Earth ability effects for the stance rework",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "a flat ring of dust and small pebbles on the ground around an empty middle, an isometric ellipse about 48 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the ground shock spreads outward from the middle in a ring of dust and fades"
+     ]
+    },
+    {
+     "subject": "a puff of dust and pebbles bursting outward around the base of an isometric ground block, 32 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the dust bursts outward and settles"
+     ]
+    },
+    {
+     "subject": "three small sharp grey metal shards side by side, each about 6 px long, pointing to the right. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the metal shards spin slightly as they fly to the right",
+      "the shards hit with a small burst of white sparks"
+     ]
+    },
+    {
+     "subject": "a ring of small brown-grey stones floating around an empty middle the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the stones circle slowly around the middle in a loop",
+      "the stones break apart and fall as dust"
+     ]
+    },
+    {
+     "subject": "one flat isometric ground tile, a 32x16 diamond, its edges crumbling inward as it sinks. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the tile cracks and sinks down with crumbling edges and dust"
+     ]
+    },
+    {
+     "subject": "grey metallic glints and small bending creak lines around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the metal glints ripple and twist inward, then fade"
+     ]
+    },
+    {
+     "subject": "a translucent amber glow of stone light around an empty middle the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the amber glow pulses softly in a loop"
+     ]
+    },
+    {
+     "subject": "faint rings of ground ripples spreading out from the middle, a wide isometric ellipse. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the ripples pulse outward from the middle and fade"
+     ]
+    },
+    {
+     "subject": "a steel hook at the tip of a thin metal cable; the cable runs from the left edge to the hook near the right edge. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the cable shoots out to the right and the hook bites in"
+     ]
+    },
+    {
+     "subject": "a single large rough brown-grey boulder about 20 px wide, centred, alone, no ground or shadow. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the boulder drops straight down",
+      "the boulder slams into the ground and breaks into fragments and dust"
+     ]
+    },
+    {
+     "subject": "one flat isometric ground tile, a 32x16 diamond, of glowing molten lava with a darker cooled crust at the edges. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the lava bubbles and glows in a seamless loop"
+     ]
+    },
+    {
+     "subject": "one flat isometric ground tile, a 32x16 diamond, cracked open with dust rising from the cracks. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the cracks shake and widen while dust rises, in a loop"
+     ]
+    },
+    {
+     "subject": "one isometric ground tile area filled with swirling semi-transparent tan sand and dust. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the sand swirls around in a seamless loop"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-13",
+   "asset": "Water ability effects for the stance rework",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "a small glowing teal ball of water about 10 px wide with white highlights, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "droplets rise and spiral together into the glowing water ball"
+     ]
+    },
+    {
+     "subject": "ribbons of glowing teal water spiralling upward around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the water ribbons spiral up, then burst into rising green-blue sparkles that fade"
+     ]
+    },
+    {
+     "subject": "a round, see-through bubble of clear blue water just big enough to hold a standing person, white highlights. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the water bubble wobbles gently in a loop",
+      "the bubble bursts and splashes outward"
+     ]
+    },
+    {
+     "subject": "a small sharp shard of pale blue ice about 10 px long, pointing to the right. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the ice shard spins slightly as it flies to the right",
+      "the ice shard shatters into small glittering pieces"
+     ]
+    },
+    {
+     "subject": "soft drifting teal mist around a space the size of a standing person, with tiny sparkles. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the mist drifts and swirls gently in a loop"
+     ]
+    },
+    {
+     "subject": "a thin tendril of dark-blue water stretching from the right edge to the left edge with droplets flowing along it to the left. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the water tendril pulls droplets from the right to the left, then fades"
+     ]
+    },
+    {
+     "subject": "a ring of small glowing blue-white water droplets around the middle of a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the droplets circle slowly in a loop, glowing"
+     ]
+    },
+    {
+     "subject": "a block of clear pale-blue ice the size of a standing person, frosted edges, hollow inside. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 48x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      48,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the ice forms upward from the ground into a block",
+      "the ice block cracks and shatters"
+     ]
+    },
+    {
+     "subject": "a column of light-blue water and soft light rising from the ground, about as tall as a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the column of water and light rises up from the ground, glows, then fades"
+     ]
+    },
+    {
+     "subject": "a curved wall of blue water about 16 px tall moving to the right, foam on top. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the water wave rolls forward to the right and splashes down"
+     ]
+    },
+    {
+     "subject": "quick swirling streams of water around the lower legs of a standing person, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the water streams swirl quickly in a loop"
+     ]
+    },
+    {
+     "subject": "one block of rough pale-blue ice the width of one ground tile and about 24 px tall, frosted edges. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the ice block rises up out of the ground",
+      "the ice block cracks and shatters"
+     ]
+    },
+    {
+     "subject": "a bright glowing ribbon of white-blue spirit water winding around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spirit water ribbon winds upward and glows brighter, then fades into sparkles"
+     ]
+    },
+    {
+     "subject": "a thin straight band of high-pressure blue water from the left edge to the right edge, about 6 px thick, spray at the edges. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the water jet surges in a seamless loop"
+     ]
+    },
+    {
+     "subject": "one flat isometric ground tile, a 32x16 diamond, covered in thick white steam rising. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the steam billows and drifts in a seamless loop"
+     ]
+    },
+    {
+     "subject": "faint dark-red glowing threads wrapping around a space the size of a standing person, no blood. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the dark-red threads tighten and pulse in a loop"
+     ]
+    },
+    {
+     "subject": "one flat isometric ground tile, a 32x16 diamond, with glowing teal raindrops falling onto it. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "glowing raindrops fall and splash softly in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a big curling wave of blue water with white foam, moving to the right, about 40 px tall. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the big wave rolls forward to the right, crests and crashes down"
+     ]
+    },
+    {
+     "subject": "a ring of rising water with golden sparkles around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the water ring rises up and golden sparkles burst, then fade"
+     ]
+    },
+    {
+     "subject": "a cluster of sharp pale-blue ice spikes on one isometric ground tile. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the ice spikes erupt up out of the ground, hold, then crumble"
+     ]
+    },
+    {
+     "subject": "eight arms of clear blue water rising around an empty middle where a standing person would be, like an octopus, curling at the tips. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 96x96 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      96,
+      96
+     ],
+     "rotate": false,
+     "animations": [
+      "the eight water arms sway slowly in a loop",
+      "the water arms lash outward in all directions, then return"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-14",
+   "asset": "Air ability effects for the stance rework",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "a thin crescent of white wind about 14 px long, curved like a blade, pointing to the right, semi-transparent. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind blade flies to the right and thins out"
+     ]
+    },
+    {
+     "subject": "a small puff of white air on the ground, about 10 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the air puff bursts out and fades"
+     ]
+    },
+    {
+     "subject": "a band of swirling semi-transparent wind around the lower legs of a standing person, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind band coils tight around the legs in a loop"
+     ]
+    },
+    {
+     "subject": "thin wisps of pale air drawn out from a point at the right toward the left. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the air wisps are pulled to the left and vanish"
+     ]
+    },
+    {
+     "subject": "a small spinning ball of semi-transparent white air about 16 px wide, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the air ball spins in a seamless loop"
+     ]
+    },
+    {
+     "subject": "one isometric ground tile area of dark grey-blue swirling wind with streaks of rain. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the storm wind swirls with rain in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a strong straight blast of white wind, wider than a palm, pointing to the right, semi-transparent. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind blast shoots to the right and dissolves"
+     ]
+    },
+    {
+     "subject": "a translucent bubble of swirling air just big enough to hold a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the air bubble swirls in a loop",
+      "the air bubble flashes bright as it reflects a shot"
+     ]
+    },
+    {
+     "subject": "a burst of white wind swirls, as if someone vanished in a gust. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind swirl bursts outward and fades"
+     ]
+    },
+    {
+     "subject": "a flat inward-spiralling swirl of wind on the ground, an isometric ellipse about 56 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the spiral swirls inward toward the middle in a loop"
+     ]
+    },
+    {
+     "subject": "a tall narrow column of upward-rushing white wind, about 16 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind column rushes upward, then fades"
+     ]
+    },
+    {
+     "subject": "a tight ring of swirling pale air at head height of a standing person, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the air ring tightens and spins in a loop"
+     ]
+    },
+    {
+     "subject": "streams of pale wind trailing under a flying person, short and curling. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind streams trail and curl in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a small grey-white tornado about 16 px wide and 40 px tall, with bits of debris. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the tornado spins in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a ring of swirling white wind around an empty middle, an isometric ellipse about 48 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind ring spins and expands outward, then fades"
+     ]
+    },
+    {
+     "subject": "a flat ring of compressed air pressing down on the ground around an empty middle, faint pressure lines. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the pressure ring slams down and holds, then releases"
+     ]
+    },
+    {
+     "subject": "a few faint white feathers and wisps of air floating around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the feathers and wisps float upward gently in a loop"
+     ]
+    },
+    {
+     "subject": "one isometric ground tile area of fierce dark swirling storm wind with debris. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the storm wind whips around in a seamless loop"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-15",
+   "asset": "Stance auras (loops around the hero while a stance is held)",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "small embers and flickers drifting up around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the embers drift upward in a seamless loop"
+     ]
+    },
+    {
+     "subject": "two thin ribbons of flame circling around the arms' height of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame ribbons circle in a seamless loop"
+     ]
+    },
+    {
+     "subject": "small jets of flame flickering at the feet of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the heel flames flicker in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a small glowing sun above the head of a standing person with sparks crackling below it, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the sun glows and sparks crackle in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a fire dragon made of flame coiling around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 96x96 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      96,
+      96
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire dragon coils around in a seamless loop"
+     ]
+    },
+    {
+     "subject": "small stone plates orbiting close around the waist of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the stone plates orbit in a seamless loop"
+     ]
+    },
+    {
+     "subject": "faint ripples spreading in the ground around the feet of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the ground ripples spread in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a large rough brown-grey boulder about 20 px wide hovering above where a person's head would be, pebbles falling. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the boulder bobs gently in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a ring of rough boulders orbiting around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 96x96 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      96,
+      96
+     ],
+     "rotate": false,
+     "animations": [
+      "the boulders orbit in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a single rope of clear blue water circling around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the water rope circles in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a rotating hoop of clear blue water around the waist of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the water hoop rotates in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a single floating sphere of clear blue water about 14 px wide, white highlights, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the water sphere wobbles and turns in a seamless loop"
+     ]
+    },
+    {
+     "subject": "two long arms of clear blue water hanging from the shoulders of a standing person, curved at the tips, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the water arms sway in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a small swirl of pale wind circling in front of a standing person's chest, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind swirl circles in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a spinning ring of pale air around the waist of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the air ring spins in a seamless loop"
+     ]
+    },
+    {
+     "subject": "two small cyclones of pale wind wrapped around the arms of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      64
+     ],
+     "rotate": false,
+     "animations": [
+      "the arm cyclones spin in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a column of pale wind rising around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x96 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      96
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind column rises in a seamless loop"
      ]
     }
    ]
