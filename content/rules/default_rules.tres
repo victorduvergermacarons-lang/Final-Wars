@@ -13,6 +13,7 @@ combat_step_base_seconds = 1.5
 combat_step_min_seconds = 0.5
 speed_half_point = 100.0
 gcd_seconds = 1.0
+action_combat = true
 los_height_tolerance = 1.0
 base_hit_percent = 95.0
 hit_percent_per_point = 1.0

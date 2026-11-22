@@ -52,6 +52,17 @@ const GAME_SPEED_MAX := 2.0
 ## Off: heroes cast every ability straight away, without its bar (tests of
 ## ability effects use it).
 @export var timing_bars_enabled: bool = true
+## Temporary (2026-11-22, user request, the Hades-style test): heroes' abilities go off
+## at once, with no timing bar, cast time, wind-up or channel, and a short global
+## cooldown (action_gcd_seconds). On in default_rules.tres; tests run with it off
+## (tests/pre_run.gd) unless they turn it on.
+@export var action_combat: bool = false
+@export var action_gcd_seconds: float = 0.25
+
+
+## The global cooldown an actor's abilities start.
+func gcd_for(actor: Actor) -> float:
+	return action_gcd_seconds if action_combat and actor is Hero else gcd_seconds
 ## Power of an ability whose timing bar was missed (pressed outside the green and
 ## yellow zones, or not at all). Green and yellow zones give full power; yellow also
 ## makes every hit a critical strike. See TimingBarDef.

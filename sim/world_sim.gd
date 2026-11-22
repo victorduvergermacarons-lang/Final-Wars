@@ -846,14 +846,14 @@ func cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant = null
 func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
 	var timed := ability.cast_seconds > 0.0 or ability.windup_seconds > 0.0 or ability.channel_seconds > 0.0 \
 			or _has_timing_bar(caster, ability)
-	if timed:
+	if timed and not (rules.action_combat and caster is Hero):
 		return _start_timed_cast(caster, ability, target, aim)
 	return _finish_cast(caster, ability, target, aim, CastResolver.Pay.INSTANT)
 
 
 ## Only heroes play timing bars (enemies cast those abilities straight away).
 func _has_timing_bar(caster: Actor, ability: AbilityDef) -> bool:
-	return caster is Hero and ability.timing_bar != null and rules.timing_bars_enabled
+	return caster is Hero and ability.timing_bar != null and rules.timing_bars_enabled and not rules.action_combat
 
 
 ## Starts a cast time, wind-up, channel or timing bar (see AbilityDef). Cast times
@@ -876,7 +876,7 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 	var gcd_before := caster.cooldowns.gcd_timer()
 	if kind == "cast" or kind == "timing":
 		if ability.on_gcd:
-			caster.cooldowns.trigger_gcd(now, rules.gcd_seconds * caster.buffs.cooldown_multiplier(now))
+			caster.cooldowns.trigger_gcd(now, rules.gcd_for(caster) * caster.buffs.cooldown_multiplier(now))
 	else:
 		AbilityResolver.pay(ctx, caster, ability)
 	caster.casting = {"ability": ability, "target": target.id if target != null else -1, "aim": point,

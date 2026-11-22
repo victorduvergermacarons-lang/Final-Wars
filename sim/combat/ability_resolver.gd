@@ -57,7 +57,7 @@ static func _check_cost(ctx: CombatContext, caster: Actor, ability: AbilityDef, 
 ## Spends mana and starts the cooldown (haste shortens it), and the GCD if asked.
 static func pay(ctx: CombatContext, caster: Actor, ability: AbilityDef, with_gcd: bool = true) -> void:
 	caster.mana -= ability.mana_cost
-	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds if with_gcd else 0.0,
+	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_for(caster) if with_gcd else 0.0,
 			caster.buffs.cooldown_multiplier(ctx.now), max_charges(caster, ability, ctx.now))
 
 

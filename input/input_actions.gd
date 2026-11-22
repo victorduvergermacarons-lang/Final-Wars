@@ -47,7 +47,7 @@ const OTHER := {
 	&"potion_mana": [[KEY_2], [JOY_BUTTON_DPAD_DOWN]],
 	&"toggle_spellbook": [[KEY_P], []],
 	&"toggle_character": [[KEY_C], []],
-	&"toggle_inventory": [[KEY_B], [JOY_BUTTON_BACK]],
+	&"toggle_inventory": [[KEY_B], [JOY_BUTTON_BACK, JOY_BUTTON_TOUCHPAD]],
 	&"toggle_quest_log": [[KEY_L], []],
 	&"toggle_trees": [[KEY_T], []],
 	&"toggle_console": [[KEY_QUOTELEFT], []],
