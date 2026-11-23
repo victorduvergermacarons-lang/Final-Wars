@@ -1,5 +1,5 @@
 {
- "about": "The art bot's queue: the live art tracker's prompts (read 2026-11-05), in tracker order (act, then row). Differences from the tracker (user requests): \"clean 1px dark outline\" removed from the world and effect prompts; prompts with a \"base\" are edits of that approved picture (approved/<KEY>.png on the art-drafts branch) instead of \"the same ...\" and wait until it exists; \"animations\" (from the tracker's Detail column) and 8 directions are made from the approved picture after every still is done. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02/WO-10 (no prompt). A key is <ID>-<n>, follow-ups <ID>-<n>+8dir and <ID>-<n>+<action>; keys in the drafts branch's progress.json are not made again. 2026-11-21: stance rework art added: 35 hero animations (stance entries and shared bending casts, all 8 directions) and FX-11 to FX-15 (ability effects and stance auras); see the Final Wars project doc claude/stance-animation-plan.md.",
+ "about": "The art bot's queue: the live art tracker's prompts (read 2026-11-05), in tracker order (act, then row). Differences from the tracker (user requests): \"clean 1px dark outline\" removed from the world and effect prompts; prompts with a \"base\" are edits of that approved picture (approved/<KEY>.png on the art-drafts branch) instead of \"the same ...\" and wait until it exists; \"animations\" (from the tracker's Detail column) and 8 directions are made from the approved picture after every still is done. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02/WO-10 (no prompt). A key is <ID>-<n>, follow-ups <ID>-<n>+8dir and <ID>-<n>+<action>; keys in the drafts branch's progress.json are not made again. 2026-11-21: stance rework art added: 35 hero animations (stance entries and shared bending casts, all 8 directions) and FX-11 to FX-15 (ability effects and stance auras); see the Final Wars project doc claude/stance-animation-plan.md. 2026-11-22: FX-16, kits for effects the game draws in code (strips, tips, impacts, tile fronts, blocked splashes) replacing the whole-picture drafts of 14 line and front effects; see claude/code-drawn-effects-prompt.md.",
  "kinds": {
   "plain": {
    "size": [
@@ -2661,6 +2661,429 @@
      "rotate": false,
      "animations": [
       "the wind column rises in a seamless loop"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "FX-16",
+   "asset": "Kits for code-drawn effects (lines and fronts)",
+   "act": "Prototype",
+   "prompts": [
+    {
+     "subject": "a horizontal strip of clear blue water with white highlights running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "the curling tip of a whip of clear blue water with a spray of droplets, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same water. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the water tip cracks like a whip and sprays droplets"
+     ]
+    },
+    {
+     "subject": "a splash of clear blue water hitting a target, droplets flying outward. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the water splashes outward and falls"
+     ]
+    },
+    {
+     "subject": "a horizontal strip of orange and yellow flame with a bright core running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "the cracking tip of a whip of flame, bright white-hot point, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same flame. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame tip cracks like a whip and throws embers"
+     ]
+    },
+    {
+     "subject": "a burst of orange embers hitting a target. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the embers burst outward and fade"
+     ]
+    },
+    {
+     "subject": "a horizontal strip of a roaring stream of orange fire, ragged at the top and bottom edges running from the left edge to the right edge of the canvas, about 10 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "the rounded, roaring front of a stream of fire, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same fire. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire front roars and flickers in a seamless loop"
+     ]
+    },
+    {
+     "subject": "fire splashing and spreading against a surface, flames curling back. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire splashes against the surface in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a horizontal strip of a high-pressure jet of blue water with white streaks along it running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "the foaming front of a high-pressure water jet, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same water. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the jet front foams and sprays in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a hard spray of blue water and foam fanning out from a point of impact. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the spray fans out from the impact in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a horizontal strip of a thin dark-blue water tendril with small glowing droplets inside it running from the left edge to the right edge of the canvas, about 5 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "dark-blue water and small droplets being drawn out of a point into a thin stream that leaves to the left. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the droplets are pulled out and drawn to the left"
+     ]
+    },
+    {
+     "subject": "a small swirl of dark-blue water and glowing droplets arriving at a point from the right and soaking in. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the droplets arrive, swirl and soak in"
+     ]
+    },
+    {
+     "subject": "a horizontal strip of a twisted grey steel cable running from the left edge to the right edge of the canvas, about 3 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "a steel grappling hook, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same steel cable. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the hook swings open and bites"
+     ]
+    },
+    {
+     "subject": "small white and orange sparks from steel biting into stone. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the sparks burst and fade"
+     ]
+    },
+    {
+     "subject": "a horizontal strip of crackling blue-white electricity, jagged and bright running from the left edge to the right edge of the canvas, about 8 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "a small bright knot of blue-white sparks at fingertips, the start of a lightning bolt. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the sparks crackle and gather"
+     ]
+    },
+    {
+     "subject": "a bright blue-white lightning strike flash with crackling branches spreading from a point. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the lightning flash bursts and flickers out"
+     ]
+    },
+    {
+     "subject": "a tall leading wall of orange fire standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire wall surges up and flickers in a seamless loop"
+     ]
+    },
+    {
+     "subject": "low dying flames and smoke standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the low flames die down into smoke and fade"
+     ]
+    },
+    {
+     "subject": "a wave of fire bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the fire crashes against the wall and curls back"
+     ]
+    },
+    {
+     "subject": "a tall curling crest of blue water with white foam standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the wave crest rises and churns in a seamless loop"
+     ]
+    },
+    {
+     "subject": "shallow foaming water draining away standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the shallow water drains away and fades"
+     ]
+    },
+    {
+     "subject": "a big wave of blue water bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      48
+     ],
+     "rotate": false,
+     "animations": [
+      "the wave crashes against the wall and sprays upward"
+     ]
+    },
+    {
+     "subject": "a small rolling wave of blue water with a foam line standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the small wave rolls and churns in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a small wave of blue water bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the small wave splashes against the wall"
+     ]
+    },
+    {
+     "subject": "a band of pale white wind streaks with a few leaves, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind streaks rush and swirl in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a few leaves and wisps of dust settling, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the leaves and dust settle and fade"
+     ]
+    },
+    {
+     "subject": "a puff of pale wind bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind puffs against the wall and curls away"
+     ]
+    },
+    {
+     "subject": "a strong dense blast of white wind, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind blast surges in a seamless loop"
+     ]
+    },
+    {
+     "subject": "a strong blast of white wind bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the wind blast slams against the wall and bursts outward"
+     ]
+    },
+    {
+     "subject": "a horizontal strip of a faint fading streak of pale wind running from the left edge to the right edge of the canvas, about 4 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": []
+    },
+    {
+     "subject": "a thin white slash mark where a blade of wind hits, with a small puff. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the slash flashes and the puff fades"
      ]
     }
    ]
