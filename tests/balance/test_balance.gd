@@ -52,15 +52,6 @@ func test_two_wolves_are_dangerous_solo_but_fine_for_a_pair() -> void:
 	assert_lt(pair.hp_lost_pct, 75, str(pair))
 
 
-func test_dodging_wind_ups_pays_off() -> void:
-	var still := _avg([S.STARTER], &"wolf", 1)
-	var dodging := _avg([S.STARTER_DODGE], &"wolf", 1)
-	if _target(dodging.hp_lost_pct * 2 < still.hp_lost_pct,
-			"dodging halves the HP lost: %s vs %s" % [dodging, still]):
-		return
-	assert_lt(dodging.hp_lost_pct * 2, still.hp_lost_pct, "%s vs %s" % [dodging, still])
-
-
 func test_single_weapon_builds_beat_a_wolf() -> void:
 	for spec in [S.SWORD_ONLY, S.ARCHER, S.HAMMER]:
 		var r := _avg([spec], &"wolf", 1)
@@ -88,19 +79,11 @@ func test_level_2_caster_beats_a_shaman() -> void:
 	assert_gt(r.win_rate, 0.79, str(r))
 
 
-func test_brute_punishes_standing_still_but_heals_and_dodging_win() -> void:
+## The dodging targets (a dodging starter loses half the HP; heals + dodges beat the
+## Brute) and the level-4 Lunge vs Skirmisher target were removed 2026-11-23 (user
+## decision, stance rework); the report still measures them.
+func test_brute_punishes_standing_still() -> void:
 	assert_lt(_avg([S.L3_SWORD], &"bandit_brute", 1, 3).win_rate, 0.5, "trading blows loses")
-	var r := _avg([S.L3_SWORD_DODGE], &"bandit_brute", 1, 3)
-	if _target(r.win_rate == 1.0, "heals + dodges vs Brute (target: always wins): %s" % str(r)):
-		return
-	assert_eq(r.win_rate, 1.0, str(r))
-
-
-func test_level_4_sword_beats_a_skirmisher() -> void:
-	var r := _avg([S.L4_LUNGE], &"fen_skirmisher", 1, 4)
-	if _target(r.win_rate == 1.0, "level-4 sword vs Skirmisher (target: always wins): %s" % str(r)):
-		return
-	assert_eq(r.win_rate, 1.0, str(r))
 
 
 func test_salamander_hound_is_a_fair_level_2_fight() -> void:

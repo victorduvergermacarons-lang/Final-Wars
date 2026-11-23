@@ -24,22 +24,22 @@ quest_id = &"goblin_fetishes"
 
 [sub_resource type="Resource" id="Resource_dlgvc"]
 script = ExtResource("1_6lv84")
-item_id = &"scroll_of_the_fireball"
+item_id = &"scorch_scroll"
 chance = 0.04
 
 [sub_resource type="Resource" id="Resource_iani2"]
 script = ExtResource("1_6lv84")
-item_id = &"glacier_scroll"
+item_id = &"frost_shard_scroll"
 chance = 0.04
 
 [sub_resource type="Resource" id="Resource_m8x00"]
 script = ExtResource("1_6lv84")
-item_id = &"mist_scroll"
+item_id = &"menders_scroll"
 chance = 0.04
 
 [sub_resource type="Resource" id="Resource_54dwd"]
 script = ExtResource("1_6lv84")
-item_id = &"lash_of_embers_scroll"
+item_id = &"spark_scroll"
 chance = 0.04
 
 [resource]

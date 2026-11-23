@@ -5,17 +5,17 @@
 
 [sub_resource type="Resource" id="Resource_agt4h"]
 script = ExtResource("1_sfw5s")
-item_id = &"bulwark_scroll"
+item_id = &"pillar_scroll"
 chance = 0.05
 
 [sub_resource type="Resource" id="Resource_sfw5s"]
 script = ExtResource("1_sfw5s")
-item_id = &"scorched_earth_scroll"
+item_id = &"cinder_kick_scroll"
 chance = 0.04
 
 [sub_resource type="Resource" id="Resource_ogk6x"]
 script = ExtResource("1_sfw5s")
-item_id = &"tidal_scroll"
+item_id = &"frost_shard_scroll"
 chance = 0.04
 
 [resource]

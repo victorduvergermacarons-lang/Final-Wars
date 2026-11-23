@@ -252,16 +252,16 @@
 			"effect": "Flaming kick on an adjacent enemy; applies a short burn.",
 			"targeting": "Targeted",
 			"targeting_details": "Adjacent enemy. Locks on; the burn always applies.",
-			"mastery_required_text": "Fire Mastery 25",
+			"mastery_required_text": "Fire Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Fire Mastery, Magic Atk",
 			"mastery_contribution": "+5 Fire Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
-			"mastery_required": 25,
+			"mastery_required": 0,
 			"stance": 1,
 			"branch_key": 1,
-			"unlock_step": 1,
+			"unlock_step": 0,
 			"item_id": "cinder_kick_scroll",
 			"cooldown": 4.0,
 			"mastery_on_learn": 5.0,
@@ -302,7 +302,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 1",
-				"Unlock Step": "1"
+				"Unlock Step": "0"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -320,16 +320,16 @@
 			"effect": "Your next 3 fire abilities deal bonus damage, and you regain 10% of your Mana over 10s.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
-			"mastery_required_text": "Fire Mastery 50",
+			"mastery_required_text": "Fire Mastery 25",
 			"prerequisites_text": "—",
 			"scales_with_text": "Fire Mastery, Magic Atk",
 			"mastery_contribution": "+5 Fire Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
-			"mastery_required": 50,
+			"mastery_required": 25,
 			"stance": 1,
 			"branch_key": 3,
-			"unlock_step": 2,
+			"unlock_step": 1,
 			"item_id": "sun_warriors_breath_scroll",
 			"cooldown": 20.0,
 			"mastery_on_learn": 5.0,
@@ -359,7 +359,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 3",
-				"Unlock Step": "2"
+				"Unlock Step": "1"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -377,16 +377,16 @@
 			"effect": "Set an enemy within 5 alight for 6s: it burns for very small damage each second and takes 15% more damage from all sources.",
 			"targeting": "Targeted",
 			"targeting_details": "Enemy within 5. Instant; can't miss. Shown as orange flames on the target.",
-			"mastery_required_text": "Fire Mastery 75",
+			"mastery_required_text": "Fire Mastery 50",
 			"prerequisites_text": "—",
 			"scales_with_text": "Fire Mastery, Magic Atk",
 			"mastery_contribution": "+5 Fire Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
 			"notes": "NEW in the stance rework. Renamed from Spark (user review, 2026-11-23).",
 			"tier": 1,
-			"mastery_required": 75,
+			"mastery_required": 50,
 			"stance": 1,
 			"branch_key": 4,
-			"unlock_step": 3,
+			"unlock_step": 2,
 			"item_id": "scorch_scroll",
 			"cooldown": 4.0,
 			"mastery_on_learn": 5.0,
@@ -416,7 +416,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 4",
-				"Unlock Step": "3"
+				"Unlock Step": "2"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -1639,16 +1639,16 @@
 			"effect": "Gain +20 Physical Defense for 10s.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
-			"mastery_required_text": "Earth Mastery 25",
+			"mastery_required_text": "Earth Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Def",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
 			"notes": "Physical Defense raises all your threat while it lasts; lets Metalbending taunt.",
 			"tier": 1,
-			"mastery_required": 25,
+			"mastery_required": 0,
 			"stance": 1,
 			"branch_key": 1,
-			"unlock_step": 1,
+			"unlock_step": 0,
 			"item_id": "granite_skin_scroll",
 			"cooldown": 20.0,
 			"mastery_on_learn": 5.0,
@@ -1678,7 +1678,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 1",
-				"Unlock Step": "1"
+				"Unlock Step": "0"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -1696,16 +1696,16 @@
 			"effect": "Raise a tile 1 height level for 15s (2 levels at 500 Earth Mastery).",
 			"targeting": "Ground",
 			"targeting_details": "Pick a tile within 5. Any unit on it is lifted with the tile.",
-			"mastery_required_text": "Earth Mastery 50",
+			"mastery_required_text": "Earth Mastery 25",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
-			"mastery_required": 50,
+			"mastery_required": 25,
 			"stance": 1,
 			"branch_key": 3,
-			"unlock_step": 2,
+			"unlock_step": 1,
 			"item_id": "pillar_scroll",
 			"cooldown": 6.0,
 			"mastery_on_learn": 5.0,
@@ -1734,7 +1734,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 3",
-				"Unlock Step": "2"
+				"Unlock Step": "1"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -1752,16 +1752,16 @@
 			"effect": "Fling metal shards at an enemy within 6; they pierce one extra enemy behind it.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim at any angle. Fast shards; hit the first unit in their path and the next one behind it.",
-			"mastery_required_text": "Earth Mastery 75",
+			"mastery_required_text": "Earth Mastery 50",
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Atk",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
 			"notes": "NEW in the stance rework.",
 			"tier": 1,
-			"mastery_required": 75,
+			"mastery_required": 50,
 			"stance": 1,
 			"branch_key": 4,
-			"unlock_step": 3,
+			"unlock_step": 2,
 			"item_id": "shrapnel_scroll",
 			"cooldown": 4.0,
 			"mastery_on_learn": 5.0,
@@ -1793,7 +1793,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 4",
-				"Unlock Step": "3"
+				"Unlock Step": "2"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -4389,16 +4389,16 @@
 			"effect": "A fast slicing gust, range 6; hits the first enemy in its path.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim at any angle. Fast blade; hits the first unit in its path.",
-			"mastery_required_text": "Air Mastery 0",
+			"mastery_required_text": "Air Mastery 50",
 			"prerequisites_text": "—",
 			"scales_with_text": "Air Mastery, Phys Atk",
 			"mastery_contribution": "+5 Air Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
 			"notes": "NEW in the stance rework.",
 			"tier": 1,
-			"mastery_required": 0,
+			"mastery_required": 50,
 			"stance": 1,
 			"branch_key": 4,
-			"unlock_step": 0,
+			"unlock_step": 2,
 			"item_id": "wind_blade_scroll",
 			"cooldown": 3.0,
 			"mastery_on_learn": 5.0,
@@ -4430,7 +4430,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 4",
-				"Unlock Step": "0"
+				"Unlock Step": "2"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -4448,16 +4448,16 @@
 			"effect": "Range 5; light damage and interrupts an enemy's cast.",
 			"targeting": "Targeted",
 			"targeting_details": "Enemy within 5. Instant and can't miss, so interrupts are reliable.",
-			"mastery_required_text": "Air Mastery 25",
+			"mastery_required_text": "Air Mastery 0",
 			"prerequisites_text": "—",
 			"scales_with_text": "Air Mastery, 0.6 Phys Atk, 0.4 Magic Def",
 			"mastery_contribution": "+5 Air Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
 			"notes": "",
 			"tier": 1,
-			"mastery_required": 25,
+			"mastery_required": 0,
 			"stance": 1,
 			"branch_key": 2,
-			"unlock_step": 1,
+			"unlock_step": 0,
 			"item_id": "breeze_scroll",
 			"cooldown": 10.0,
 			"mastery_on_learn": 5.0,
@@ -4493,7 +4493,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 2",
-				"Unlock Step": "1"
+				"Unlock Step": "0"
 			},
 			"prerequisites": {
 				"abilities": [],
@@ -4511,16 +4511,16 @@
 			"effect": "Your next 5 steps have no cooldown, and for 10s you cross gaps and drop from any height freely.",
 			"targeting": "Self",
 			"targeting_details": "No target.",
-			"mastery_required_text": "Air Mastery 50",
+			"mastery_required_text": "Air Mastery 25",
 			"prerequisites_text": "—",
 			"scales_with_text": "Air Mastery",
 			"mastery_contribution": "+5 Air Mastery when learned, +0.4 per use vs. enemies near your level, up to 50",
 			"notes": "Glide merged in.",
 			"tier": 1,
-			"mastery_required": 50,
+			"mastery_required": 25,
 			"stance": 1,
 			"branch_key": 3,
-			"unlock_step": 2,
+			"unlock_step": 1,
 			"item_id": "featherstep_scroll",
 			"cooldown": 10.0,
 			"mastery_on_learn": 5.0,
@@ -4547,7 +4547,7 @@
 			"extra": {
 				"Stance": "1",
 				"Key (stance → branch)": "1 → 3",
-				"Unlock Step": "2"
+				"Unlock Step": "1"
 			},
 			"prerequisites": {
 				"abilities": [],

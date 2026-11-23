@@ -30,12 +30,12 @@ chance = 0.02
 
 [sub_resource type="Resource" id="Resource_2bfmr"]
 script = ExtResource("1_02cov")
-item_id = &"wave_scroll"
+item_id = &"river_lash_scroll"
 chance = 0.02
 
 [sub_resource type="Resource" id="Resource_8n375"]
 script = ExtResource("1_02cov")
-item_id = &"blazing_fist_scroll"
+item_id = &"ember_fist_scroll"
 chance = 0.02
 
 [resource]

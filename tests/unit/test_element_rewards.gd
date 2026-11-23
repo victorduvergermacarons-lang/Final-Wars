@@ -56,14 +56,16 @@ func test_the_choices_by_quest() -> void:
 		var c5 := _ids(_q("act1_05").choices_for(el))
 		assert_eq(c5.slice(1), WEAPONS, "1-05: the charm or a first weapon")
 		assert_true(_q("act1_06").choices_for(el).is_empty(), "1-06: no choice")
-		assert_eq(_q("act1_06").items_for(el).size(), 1, "1-06: the next scroll")
+		# Act I gives tier 1 only (stance rework): Water and Air have no third built
+		# tier-1 scroll yet (Water Shield, Air Blade), so their 1-06 gives none.
+		assert_eq(_q("act1_06").items_for(el).size(), 0 if el in [&"water", &"air"] else 1, "1-06: the next scroll")
 
 
 func test_the_next_scrolls_teach_the_elements_abilities() -> void:
-	var expect := {&"earth": [&"E03", &"E04"], &"water": [&"W05", &"W08"],
-			&"fire": [&"F03", &"F04"], &"air": [&"A03", &"A05"]}
+	# Tier 1 only during Act I (stance rework, 2026-11-23).
+	var expect := {&"earth": [&"E03", &"E04"], &"water": [&"W04"], &"fire": [&"F03", &"F04"], &"air": [&"A03"]}
 	for el in expect:
-		var scrolls := [_q("act1_04").choices_for(el)[1], _q("act1_06").items_for(el)[0]]
+		var scrolls := [_q("act1_04").choices_for(el)[1]] + _q("act1_06").items_for(el)
 		assert_eq(scrolls.map(func(s): return s.teaches[0].id), expect[el], "%s's next scrolls" % el)
 
 

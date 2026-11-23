@@ -11,12 +11,12 @@ chance = 0.6
 
 [sub_resource type="Resource" id="Resource_e1"]
 script = ExtResource("1_entry")
-item_id = &"lash_of_embers_scroll"
+item_id = &"spark_scroll"
 chance = 0.02
 
 [sub_resource type="Resource" id="Resource_e2"]
 script = ExtResource("1_entry")
-item_id = &"mist_scroll"
+item_id = &"menders_scroll"
 chance = 0.02
 
 [resource]

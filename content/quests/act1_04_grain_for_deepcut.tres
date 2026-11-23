@@ -29,7 +29,7 @@ reward_gold = 40
 reward_items = Array[ExtResource("3_item")]([ExtResource("item_minor_health_potion"), ExtResource("item_minor_health_potion")])
 element_choice_ids = {
 "earth": [&"granite_ring", &"pillar_scroll"],
-"water": [&"tidestone_ring", &"mist_scroll"],
+"water": [&"tidestone_ring", &"frost_shard_scroll"],
 "fire": [&"cinder_ring", &"spark_scroll"],
 "air": [&"gale_ring", &"featherstep_scroll"]
 }
