@@ -99,6 +99,8 @@ def load_queue(path: Path) -> list[dict]:
                 "width": size[0],
                 "height": size[1],
                 "no_background": prompt.get("no_background", kind.get("no_background", True)),
+                # optional: what the picture must not contain (PixFlux negative_description)
+                "negative": prompt.get("negative", ""),
                 "rotate": prompt.get("rotate", bool(prompt.get("animations"))),
                 "animations": prompt.get("animations", []),
                 # animations to make in all 8 directions, from this picture's 8-direction views
@@ -301,12 +303,17 @@ def generate(entry: dict, secret: str, approved: dict[str, Path]) -> tuple[list[
         body = {"description": entry["description"], "image_size": {"width": w, "height": h}}
         if entry["no_background"]:
             body["no_background"] = True
+        if entry.get("negative"):
+            body["negative_description"] = entry["negative"]
         try:
             result = post(GENERATE_ENDPOINT, body, secret)
         except ApiError as err:
-            if err.status != 422 or "no_background" not in body:
+            if err.status != 422 or not ({"no_background", "negative_description"} & body.keys()):
                 raise
-            body.pop("no_background")  # older endpoints may not take it
+            # an endpoint that doesn't take an optional field: try once more without them
+            print(f"   ({err.status}: retrying without no_background / negative_description)")
+            body.pop("no_background", None)
+            body.pop("negative_description", None)
             result = post(GENERATE_ENDPOINT, body, secret)
     else:
         if entry.get("base_file"):
