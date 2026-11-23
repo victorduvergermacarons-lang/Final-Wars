@@ -6,6 +6,12 @@ extends Actor
 ## Which HeroDef this hero was made from (for saves).
 var def_id: StringName = &"adventurer"
 var level: int = 1
+## The bending stance held (stance rework, 2026-11-23): its tree ("Fire", "Earth",
+## "Water", "Air"; "" = none) and number (1-5), and when it was entered (host clock,
+## for the stance-entry animation). Kept by the host, sent in every snapshot.
+var stance_tree: String = ""
+var stance: int = 0
+var stance_at: float = -1.0e9
 ## The element picked when the character was made (&"earth", &"water", &"fire",
 ## &"air"; ContentDB.elements), or empty for characters made before the element
 ## screen. Saved, and sent to every player in the snapshot.

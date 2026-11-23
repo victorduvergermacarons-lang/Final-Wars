@@ -83,6 +83,12 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## "center", "contrast"): the sheets are baked once through the shader with them
 ## and drawn instead while the buff lasts (Stone Skin's grey stone).
 @export var looks: Dictionary = {}
+## Heroes: what plays on entering a bending stance (stance rework), by "<Tree>:<n>":
+## an animation name, or [first, then] (then holds `stance_hold_seconds`). Missing:
+## `stance_anim_default` ("cast"). The approved stance-entry animations drop in here.
+@export var stance_anims: Dictionary = {}
+@export var stance_anim_default: String = "cast"
+@export var stance_hold_seconds: float = 0.6
 
 @export_group("Recolour")
 ## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
@@ -139,6 +145,14 @@ func strike_seconds(ability_id: StringName) -> float:
 
 
 ## Seconds the whole animation takes (one cycle for loops).
+## The stance-entry animation for `tree`'s stance `n`: [anim] or [first, then],
+## only names this art has.
+func stance_anim(tree: String, n: int) -> Array:
+	var e = stance_anims.get("%s:%d" % [tree, n], stance_anim_default)
+	var names: Array = e if e is Array else [e]
+	return names.filter(func(a): return sheets.has(str(a)))
+
+
 func duration(anim: String) -> float:
 	return frame_count(anim) / anim_fps(anim)
 

@@ -109,4 +109,8 @@ ability_anims = {
 looks = {
 "stone": {"dark_color": Color(0.16, 0.16, 0.17, 1), "mid_color": Color(0.46, 0.45, 0.44, 1), "light_color": Color(0.78, 0.77, 0.74, 1), "strength": 0.9, "keep_saturation_above": 1.0, "center": 0.42, "contrast": 1.6}
 }
+stance_anims = {
+"Earth:1": ["earth_root", "earth_hold"],
+"Fire:1": "fire_punch"
+}
 recovery_frames = {}

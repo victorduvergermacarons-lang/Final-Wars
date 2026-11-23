@@ -397,6 +397,7 @@ func step() -> Array[Dictionary]:
 	_update_way_out()
 	_remove_gone_npcs()
 	_update_quests()
+	_check_stances()
 	_track_hero_anims()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
@@ -716,6 +717,11 @@ func intent_ack(hero_id: int) -> int:
 func emit(event: Dictionary) -> void:
 	_events.append(event)
 	_record(event)
+	# Shoved or pulled: the hero drops its stance (crowd control, stance rework).
+	if event.get("type", "") in ["pushed", "pulled"]:
+		var moved = _heroes.get(int(event.get("target", -1)))
+		if moved != null and moved.stance > 0:
+			set_stance(moved, "", 0, "moved")
 
 
 ## Keeps each hero's records (Hero.records) from the events of their deeds, and
@@ -1610,6 +1616,9 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_timing_release(hero, intent.get("at", 0.0), intent.get("aim"))
 		"cancel_cast":
 			reason = _intent_cancel_cast(hero)
+		"stance":
+			reason = _intent_stance(hero, intent.get("tree", ""), intent.get("stance", 0), intent.get("target", -1),
+					intent.get("aim"))
 		"cancel_bar":
 			reason = _intent_cancel_bar(hero)
 		"talk":
@@ -1773,6 +1782,11 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Varia
 	var ability := hero.find_ability(ability_id)
 	if ability == null:
 		return "unknown_ability"
+	# A bending ability is cast from its stance: casting one (an old action bar slot,
+	# a test) puts the hero in that stance first, without its entry cast.
+	if ability.stance > 0 and ability.tree != "" and (hero.stance_tree != ability.tree or hero.stance != ability.stance) \
+			and can_hold_stance(hero, ability.tree) == "":
+		set_stance(hero, ability.tree, ability.stance, "cast")
 	var walking: Variant = hero.walk_target
 	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
 	var result := cast(hero, ability, get_actor(target_id), aim)
@@ -1781,6 +1795,109 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Varia
 	if result != AbilityResolver.Result.OK:
 		return AbilityResolver.Result.keys()[result].to_lower()
 	return ""
+
+
+# --- Stances (stance rework, 2026-11-23) ------------------------------------------
+## A hero holds one bending stance at a time: a stance key enters it, the branch keys
+## cast its four abilities, the hero stays in it after casting. Shift (a "stance"
+## intent with 0), death and crowd control (stun, silence, sleep, root, a fall, a
+## knockback or pull) drop it. Entering never starts the global cooldown; a stance's
+## entry cast (Fire Punch, Seismic Stomp, Octopus Form) goes off as it is entered when
+## the hero has it and it is off cooldown.
+
+const BENDING_TREES := ["Fire", "Earth", "Water", "Air"]
+
+
+## "" if `hero` can take up a stance of `tree` now, else why not.
+func can_hold_stance(hero: Hero, tree: String) -> String:
+	if not BENDING_TREES.has(tree):
+		return "no_such_stance"
+	if not hero.alive:
+		return "dead"
+	if _stance_breaker(hero) != "":
+		return "cant_now"
+	for a in hero.available_abilities():
+		if a.tree == tree:
+			return ""
+	return "unknown_element"
+
+
+## Why the hero can't hold a stance right now (crowd control), or "".
+func _stance_breaker(hero: Hero) -> String:
+	if hero.buffs.is_stunned(now):
+		return "stunned"
+	if hero.buffs.is_silenced(now):
+		return "silenced"
+	if hero.buffs.is_rooted(now):
+		return "rooted"
+	if hero.move.falling():
+		return "fell"
+	return ""
+
+
+## Sets (or with stance 0, clears) the hero's stance; emits "stance" for every
+## player (the view starts its look and entry animation from `stance_at`).
+func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
+	if n <= 0 or tree == "":
+		if hero.stance == 0:
+			return
+		hero.stance_tree = ""
+		hero.stance = 0
+	else:
+		hero.stance_tree = tree
+		hero.stance = n
+	hero.stance_at = now
+	emit({"type": "stance", "source": hero.id, "tree": hero.stance_tree, "stance": hero.stance, "why": why})
+
+
+func _intent_stance(hero: Hero, tree: String, n: int, target_id: int, aim: Variant) -> String:
+	if n <= 0:
+		set_stance(hero, "", 0, "left")
+		return ""
+	var why := can_hold_stance(hero, tree)
+	if why != "":
+		return why
+	var same := hero.stance_tree == tree and hero.stance == n
+	set_stance(hero, tree, n, "entered")
+	if same:
+		return ""
+	var entry := _entry_cast(hero, tree, n)
+	if entry != null and hero.cooldowns.ability_remaining(entry.cooldown_key(), now) <= 0.0:
+		var target := get_actor(target_id)
+		var r := cast(hero, entry, target, aim)
+		if r != AbilityResolver.Result.OK:
+			emit({"type": "entry_cast_failed", "source": hero.id, "ability": entry.id,
+					"reason": AbilityResolver.Result.keys()[r].to_lower()})
+	return ""
+
+
+## The entry cast of `tree`'s stance `n` the hero can use, or null.
+func _entry_cast(hero: Hero, tree: String, n: int) -> AbilityDef:
+	for a in hero.available_abilities():
+		if a.entry_cast and a.tree == tree and a.stance == n:
+			return a
+	return null
+
+
+## The ability on branch key `b` of `tree`'s stance `n` (learned or not), or null.
+static func stance_ability(abilities: Dictionary, tree: String, n: int, b: int) -> AbilityDef:
+	for a in abilities.values():
+		if a.tree == tree and a.stance == n and a.branch_key == b and not a.entry_cast:
+			return a
+	return null
+
+
+## Each tick: crowd control or death drops a held stance.
+func _check_stances() -> void:
+	for h in _heroes.values():
+		if h.stance <= 0:
+			continue
+		if not h.alive:
+			set_stance(h, "", 0, "died")
+		else:
+			var why := _stance_breaker(h)
+			if why != "":
+				set_stance(h, "", 0, why)
 
 
 const TALK_RANGE := 2

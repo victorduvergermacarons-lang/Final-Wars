@@ -255,6 +255,10 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
 	h.element = StringName(d.get("element", ""))
+	var st: Array = d.get("stance", ["", 0, Hero.NEVER])
+	h.stance_tree = str(st[0])
+	h.stance = int(st[1])
+	h.stance_at = float(st[2])
 	var anim: Dictionary = d.get("anim", {})
 	for k in ["died", "down", "up", "hit", "act_at", "buff_end"]:
 		h.anim[k] = float(anim.get(k, Hero.NEVER))

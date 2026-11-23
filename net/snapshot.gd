@@ -17,6 +17,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		d.kind = KIND_HERO
 		d.level = hero.level
 		d.element = String(hero.element)
+		d.stance = [hero.stance_tree, hero.stance, hero.stance_at]
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:
