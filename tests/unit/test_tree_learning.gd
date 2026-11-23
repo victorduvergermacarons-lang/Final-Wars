@@ -29,7 +29,7 @@ func _give(item: ItemDef) -> int:
 
 
 func test_items_exist_for_every_ability() -> void:
-	assert_eq(items.size(), 145)
+	assert_eq(items.size(), 150)
 	var ember: ItemDef = items[&"ember_fist_scroll"]
 	assert_true(ember.is_scroll)
 	assert_eq(ember.slot, EquipSlot.Type.NONE, "scrolls aren't worn")
@@ -39,17 +39,17 @@ func test_items_exist_for_every_ability() -> void:
 	assert_eq(items[&"yew_longbow"].slot, EquipSlot.Type.TWO_HAND)
 	assert_eq(items[&"iron_mallet"].slot, EquipSlot.Type.TWO_HAND)
 	assert_gt(rusty.stats.phys_atk, 0.0)
-	assert_eq(items[&"scroll_of_burning_feet"].rarity, Rarity.Id.UNCOMMON, "tier 2 = Uncommon")
-	assert_eq(abilities[&"F05"].ap_to_master, 30, "tier 2 AP")
+	assert_eq(items[&"blazing_fist_scroll"].rarity, Rarity.Id.UNCOMMON, "tier 2 = Uncommon")
+	assert_eq(abilities[&"F09"].ap_to_master, 30, "tier 2 AP")
 
 
 func test_unlock_needs_tier_mastery_and_prerequisites() -> void:
-	var dash: AbilityDef = abilities[&"F05"] # T2, needs Fire Kick
+	var dash: AbilityDef = abilities[&"F05"] # T3 (stance rework), 225, needs Blazing Combo
 	assert_eq(TreeRules.can_learn(hero, abilities[&"F01"]), "", "tier 1 is open")
 	assert_eq(TreeRules.can_learn(hero, dash), "mastery_too_low")
-	Mastery.add_permanent(hero, "Fire", 150)
+	Mastery.add_permanent(hero, "Fire", 225)
 	assert_eq(TreeRules.can_learn(hero, dash), "prerequisite")
-	hero.mastered[&"F02"] = abilities[&"F02"]
+	hero.mastered[&"F09"] = abilities[&"F09"]
 	assert_eq(TreeRules.can_learn(hero, dash), "")
 
 
@@ -58,21 +58,21 @@ func test_gear_mastery_does_not_unlock() -> void:
 	charm.slot = EquipSlot.Type.ACCESSORY
 	charm.stats = StatBlock.make({Stat.Id.FIRE_MASTERY: 500})
 	hero.wear(charm)
-	hero.mastered[&"F02"] = abilities[&"F02"]
+	hero.mastered[&"F09"] = abilities[&"F09"]
 	assert_eq(TreeRules.can_learn(hero, abilities[&"F05"]), "mastery_too_low")
 
 
 func test_cross_tree_and_any_element_requirements() -> void:
-	var bolt: AbilityDef = abilities[&"F17"] # Fire Stream; Air Mastery 350
+	var bolt: AbilityDef = abilities[&"F19"] # Lightning Redirection: Overheat; Air Mastery 225
 	Mastery.add_permanent(hero, "Fire", 600)
-	hero.mastered[&"F12"] = abilities[&"F12"]
-	assert_eq(TreeRules.can_learn(hero, bolt), "mastery_too_low", "needs Air 350 too")
-	Mastery.add_permanent(hero, "Air", 350)
+	hero.mastered[&"F23"] = abilities[&"F23"]
+	assert_eq(TreeRules.can_learn(hero, bolt), "mastery_too_low", "needs Air 225 too (hybrids: 225)")
+	Mastery.add_permanent(hero, "Air", 225)
 	assert_eq(TreeRules.can_learn(hero, bolt), "")
-	var edge: AbilityDef = abilities[&"S18"] # Flurry; any element Mastery 350
+	var edge: AbilityDef = abilities[&"S18"] # Flurry; any element Mastery 225
 	Mastery.add_permanent(hero, "Sword", 600)
 	hero.mastered[&"S10"] = abilities[&"S10"]
-	assert_eq(TreeRules.can_learn(hero, edge), "", "Air 350 counts as any element")
+	assert_eq(TreeRules.can_learn(hero, edge), "", "Air 225 counts as any element")
 
 
 func test_scroll_goes_into_the_learning_slot_and_back() -> void:
@@ -192,21 +192,22 @@ func test_weapon_learns_automatically_when_the_slot_is_empty() -> void:
 	assert_null(hero.active_learning_item(), "nothing left to learn from the sword")
 
 
-## Water unlocks one ability per Mastery step (2026-11-15), whatever its tier.
-const WATER_STEPS := {&"W02": 0, &"W01": 0, &"W12": 20, &"W05": 40, &"W08": 65, &"W04": 90, &"W14": 120,
-		&"W07": 150, &"W10": 185, &"W03": 220, &"W06": 260, &"W09": 300, &"W11": 345, &"W17": 390,
-		&"W13": 440, &"W16": 490, &"W15": 545, &"W18": 600, &"W22": 655, &"W19": 715, &"W20": 775,
-		&"W21": 835, &"W23": 900}
+## Every tree unlocks one ability per step inside a tier (stance rework, 2026-11-23:
+## the tier's base + Unlock Step × its points). Water's, from the sheet.
+const WATER_STEPS := {&"W01": 0, &"W02": 0, &"W12": 25, &"W04": 50, &"W05": 100, &"W07": 130, &"W08": 160,
+		&"W13": 190, &"W14": 225, &"W06": 260, &"W03": 295, &"W24": 330, &"W10": 375, &"W11": 415, &"W18": 455,
+		&"W19": 495, &"W17": 550, &"W15": 600, &"W16": 650, &"W09": 700, &"W20": 750, &"W23": 800, &"W21": 200,
+		&"W22": 225}
+
 
 
 func test_water_abilities_unlock_at_their_own_step() -> void:
 	for id in WATER_STEPS:
 		assert_eq(int(abilities[id].sheet.mastery_required), WATER_STEPS[id], "%s's step" % id)
-	assert_eq(TreeRules.can_learn(hero, abilities[&"W03"]), "mastery_too_low", "Flow State is tier 1 but needs 220")
-	assert_eq(TreeRules.can_learn(hero, abilities[&"W12"]), "mastery_too_low", "Water Shield needs 20")
-	Mastery.add_permanent(hero, "Water", 20)
-	assert_eq(TreeRules.can_learn(hero, abilities[&"W12"]), "", "tier 3, but open at 20, with no prerequisite now")
-	assert_eq(TreeRules.can_learn(hero, abilities[&"W05"]), "mastery_too_low", "Soothing Mist needs 40")
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W12"]), "mastery_too_low", "Water Shield needs 25 (tier 1, step 1)")
+	Mastery.add_permanent(hero, "Water", 25)
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W12"]), "", "open at 25")
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W04"]), "mastery_too_low", "Frost Shard needs 50 (step 2)")
 
 
 func test_no_ability_needs_one_that_unlocks_later() -> void:
@@ -220,7 +221,7 @@ func test_no_ability_needs_one_that_unlocks_later() -> void:
 
 func test_steam_veil_still_needs_fire_mastery() -> void:
 	Mastery.add_permanent(hero, "Water", 600)
-	TreeRules.master(hero, abilities[&"W13"])
-	assert_eq(TreeRules.can_learn(hero, abilities[&"W18"]), "mastery_too_low", "Fire Mastery 350 too")
-	Mastery.add_permanent(hero, "Fire", 350)
+	TreeRules.master(hero, abilities[&"W03"])
+	assert_eq(TreeRules.can_learn(hero, abilities[&"W18"]), "mastery_too_low", "Fire Mastery 225 too")
+	Mastery.add_permanent(hero, "Fire", 225)
 	assert_eq(TreeRules.can_learn(hero, abilities[&"W18"]), "")

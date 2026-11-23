@@ -339,9 +339,9 @@ func test_aimed_bars_fire_where_the_last_input_points() -> void:
 
 func test_ground_bars_start_beyond_range_and_land_at_its_edge() -> void:
 	var far := Vector2(hero.tile()) + Vector2(20, 0)
-	assert_eq(sim.cast(hero, db.abilities[&"F07"], null, far), AbilityResolver.Result.OK, "Fireball starts anyway")
+	assert_eq(sim.cast(hero, db.abilities[&"F08"], null, far), AbilityResolver.Result.OK, "Burning Ground starts anyway")
 	var aim: Vector2 = hero.casting.aim
-	assert_lte(hero.range_to(Vector2i(aim.round())), db.abilities[&"F07"].max_range, "pulled back into range")
+	assert_lte(hero.range_to(Vector2i(aim.round())), db.abilities[&"F08"].max_range, "pulled back into range")
 	assert_gt(aim.x, float(hero.tile().x), "toward where the cursor was")
 
 

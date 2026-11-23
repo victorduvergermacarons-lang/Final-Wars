@@ -13,7 +13,13 @@ const KNOWN_GAPS := [
 	&"riverweave_gloves", &"riverweave_hood", &"riverweave_sandals", &"tidestone_ring", &"pearl_pendant",
 	&"emberstitch_gloves", &"emberstitch_cap", &"emberstitch_boots", &"cinder_ring", &"ashglass_pendant",
 	&"breezecloth_wraps", &"breezecloth_hood", &"breezecloth_shoes", &"gale_ring", &"feather_charm",
+	# The scrolls of the 9 abilities the stance rework added (2026-11-23).
+	&"scorch_scroll", &"kindling_heart_scroll", &"shrapnel_scroll", &"iron_cable_scroll",
+	&"boulder_crush_scroll", &"bedrock_codex", &"wind_blade_scroll", &"gentle_wind_codex", &"glacier_wall_scroll",
 ]
+## Abilities the stance rework added (2026-11-23), not in the icon set yet: the
+## placeholder. The icons of the four it merged away (F13, E10, E12, A08) stay unused.
+const NEW_ABILITY_GAPS := [&"F22", &"F23", &"E21", &"E22", &"E23", &"E24", &"A22", &"A23", &"W24"]
 const ELEMENTS := ["Fire", "Earth", "Water", "Air"]
 
 
@@ -23,9 +29,13 @@ func _bending() -> Array:
 
 func test_every_bending_ability_has_its_icon() -> void:
 	var abilities := _bending()
-	assert_eq(abilities.size(), 85, "F01-F21, E01-E20, W01-W23, A01-A21")
+	assert_eq(abilities.size(), 90, "F01-F23, E01-E24, W01-W24, A01-A23 minus F13, E10, E12, A08")
 	for a: AbilityDef in abilities:
 		var path := "%s%s.png" % [Icons.ABILITY_DIR, a.id]
+		if NEW_ABILITY_GAPS.has(a.id):
+			assert_null(a.icon, "%s is listed as a gap but has art now: take it off the list" % a.id)
+			assert_eq(Icons.of_ability(a), Icons.placeholder())
+			continue
 		assert_true(ResourceLoader.exists(path), "%s has %s" % [a.id, path])
 		assert_not_null(a.icon, "%s carries its icon (the sheet's Icon column)" % a.id)
 		if a.icon != null:
@@ -59,11 +69,12 @@ func test_retired_items_and_every_scroll_have_their_own_icon() -> void:
 	for id in [&"sword", &"staff", &"hunting_bow", &"greataxe", &"shield", &"holy_charm"]:
 		assert_not_null(ContentDB.items[id].icon, "retired %s" % id)
 	var scrolls := ContentDB.items.values().filter(func(i): return i.is_scroll)
-	assert_eq(scrolls.size(), 85)
+	assert_eq(scrolls.size(), 90)
 	var paths := {}
 	for it in scrolls:
-		paths[it.icon.resource_path] = true
-	assert_eq(paths.size(), 85, "each scroll its own icon, not one shared scroll")
+		if it.icon != null:
+			paths[it.icon.resource_path] = true
+	assert_eq(paths.size(), 81, "each scroll its own icon (but the 9 new ones), not one shared scroll")
 
 
 func test_missing_icons_fall_back_to_the_placeholder() -> void:
@@ -78,7 +89,7 @@ func test_missing_icons_fall_back_to_the_placeholder() -> void:
 	assert_eq(Icons.of_ability(a), Icons.placeholder(), "a bending ability without art: the placeholder")
 	assert_null(Icons.load_icon("assets/icons/items/not_there.png"), "a missing file is null, never a crash")
 	var gaps := Icons.missing(ContentDB.items, ContentDB.abilities)
-	assert_eq(gaps.size(), KNOWN_GAPS.size(), "startup warns once per missing id: %s" % ", ".join(gaps))
+	assert_eq(gaps.size(), KNOWN_GAPS.size() + NEW_ABILITY_GAPS.size(), "startup warns once per missing id: %s" % ", ".join(gaps))
 
 
 func test_icons_import_as_pixel_art() -> void:

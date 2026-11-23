@@ -51,6 +51,7 @@ func test_solo_game_runs_with_hud() -> void:
 	hero.wear(ContentDB.items[&"rusty_shortsword"])
 	await wait_physics_frames(6)
 	hero.bag.add(ContentDB.items[&"travelers_longsword"])
+	Mastery.add_permanent(hero, "Sword", 50) # Lunge unlocks a step in (stance rework)
 	hud._toggle(hud.inventory_window)
 	hud._toggle(hud._character)
 	hud._toggle(hud._spellbook)

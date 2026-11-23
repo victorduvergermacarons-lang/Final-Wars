@@ -189,6 +189,7 @@ func test_another_abilitys_key_switches_without_casting_either() -> void:
 func test_a_second_press_fires_an_aimed_ability_without_a_bar() -> void:
 	# Lunge has no bar: clicked on the action bar it aims; its key then fires it.
 	hero.bag.add(ContentDB.items[&"travelers_longsword"])
+	Mastery.add_permanent(hero, "Sword", 50) # Lunge unlocks a step in (stance rework)
 	hero.equip_from_bag(hero.bag.index_of(ContentDB.items[&"travelers_longsword"]))
 	wolf.move.place(_t(9, 4))
 	_point_at(_a(5, 5)) # north

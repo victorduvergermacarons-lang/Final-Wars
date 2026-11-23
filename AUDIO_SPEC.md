@@ -135,7 +135,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-241 keys, 13 with a file, 228 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+242 keys, 13 with a file, 229 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -242,6 +242,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `fire_kick_hit` | Fire Kick lands on someone | **missing** |
 | `fire_punch_cast` | Fire Punch is used | **missing** |
 | `fire_punch_hit` | Fire Punch lands on someone | **missing** |
+| `fire_scorch_cast` | Scorch is used | **missing** |
 | `fire_sun_warrior_s_breath_cast` | Sun Warrior's Breath is used | **missing** |
 | `fire_whip_cast` | Fire Whip is used | **missing** |
 | `fire_whip_hit` | Fire Whip lands on someone | **missing** |

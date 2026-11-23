@@ -138,7 +138,7 @@ func _step_local(hero: Hero, wish: Vector2, face: float, t: float) -> void:
 	for a in _actors.values():
 		if a != hero and a.alive:
 			Mover.separate_pair(hero, a, false, true)
-	Mover.resolve_terrain(hero, grid)
+	Mover.resolve_terrain(hero, grid, false, hero.buffs.is_gliding(t))
 	if hero.in_combat(t):
 		if not hero.holds_cast_facing(t):
 			hero.face_angle(face)

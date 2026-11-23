@@ -510,7 +510,7 @@ func _walk_wish(hero: Hero, dt: float) -> Vector2:
 	if d.length() <= reach or now > hero.walk_deadline:
 		if d.length() <= reach and Mover.speed_of(hero, rules, now) > 0.0:
 			m.pos = hero.walk_target
-			Mover.resolve_terrain(hero, grid)
+			Mover.resolve_terrain(hero, grid, false, hero.buffs.is_gliding(now))
 		m.vel = Vector2.ZERO
 		hero.walk_target = null
 		return Vector2.ZERO
@@ -579,7 +579,7 @@ func _separate_units() -> void:
 			Mover.separate_pair(h, other, h.move.gliding or (h is Enemy and not h.casting.is_empty()), fixed)
 	for h in list:
 		if not h.move.gliding:
-			Mover.resolve_terrain(h, grid, h is Enemy and (h as Enemy).airborne(now))
+			Mover.resolve_terrain(h, grid, h is Enemy and (h as Enemy).airborne(now), h.buffs.is_gliding(now))
 
 
 # --- Dungeons: party wipes ---------------------------------------------------------

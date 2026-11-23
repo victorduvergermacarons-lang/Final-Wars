@@ -35,7 +35,8 @@ func _errors(rows: Array) -> String:
 func test_reads_the_real_sheet() -> void:
 	var book := XlsxReader.read(SHEET)
 	assert_eq(book.error, "")
-	assert_eq(book.order, ["Abilities", "Tiers", "Trees", "Rules & Legend", "Timing Rules"])
+	assert_eq(book.order, ["Abilities", "Tiers", "Trees", "Rules & Legend", "Timing Rules", "Stance Rework",
+			"Stance Changes"])
 	var header: Array = book.sheets.Abilities[0]
 	assert_eq(header[0], "ID")
 	assert_eq(header[5], "Ability")
@@ -51,8 +52,8 @@ func test_column_letters() -> void:
 func test_real_sheet_imports_cleanly() -> void:
 	var result := AbilityTreeImporter.convert(XlsxReader.read(SHEET))
 	assert_eq(result.errors, PackedStringArray())
-	assert_eq(result.data.abilities.size(), 145)
-	assert_eq(result.data.items.size(), 145)
+	assert_eq(result.data.abilities.size(), 150, "145, +9 new, -4 merged (stance rework)")
+	assert_eq(result.data.items.size(), 150)
 	assert_eq(result.data.trees.size(), 7)
 
 
@@ -225,8 +226,8 @@ func test_slugs() -> void:
 
 func test_game_loads_the_trees() -> void:
 	var tree := AbilityTreeData.load_file()
-	assert_eq(tree.abilities.size(), 145)
-	assert_eq(tree.tier_mastery, {1: 0, 2: 150, 3: 350, 4: 600, 5: 900})
+	assert_eq(tree.abilities.size(), 150)
+	assert_eq(tree.tier_mastery, {1: 0, 2: 100, 3: 225, 4: 375, 5: 550}, "stance rework")
 	assert_eq(tree.id_of("Flame Dash"), &"F05")
 	assert_eq(tree.ability(&"F05").taught_by, "Scroll of Burning Feet")
 	assert_eq(tree.ids("Hammer").size(), 20)
@@ -270,3 +271,111 @@ func test_every_ability_in_the_sheet_has_a_hitbox() -> void:
 	assert_eq(ContentDB.abilities[&"S01"].sheet_hitbox.shape, HitboxDef.Shape.CONE)
 	assert_eq(ContentDB.abilities[&"F08"].sheet_hitbox.shape, HitboxDef.Shape.TILES, "burning ground stays on the grid")
 	assert_true(ContentDB.abilities[&"F08"].sheet_hitbox.on_grid())
+
+
+# --- Stance rework (2026-11-23) -----------------------------------------------
+
+## A workbook with the stance columns: `rows` are [id, name, tier, mastery text, key,
+## step, prereq, cooldown] (Fire scrolls).
+func _stance_book(rows: Array, step_points := true) -> Dictionary:
+	var header := HEADER + ["Stance", AbilityTreeImporter.KEY_COLUMN, AbilityTreeImporter.STEP_COLUMN]
+	var table := [header]
+	for r in rows:
+		var row := _row(r[0], r[1], str(r[2]), r[6] if r.size() > 6 else "—")
+		row[4] = r[3]
+		if r.size() > 7:
+			row[14] = str(r[7])
+		var key: String = r[4]
+		var stance := key.left(1) if key != "" and key.left(1).is_valid_int() else ""
+		table.append(row + [stance, key, str(r[5])])
+	var book := _book([])
+	book.sheets.Abilities = table
+	book.sheets.Tiers = [["Tier", "Mastery Required", "Meaning", "Points per unlock step"] if step_points
+			else ["Tier", "Mastery Required"], ["1", "0", "", "25"], ["2", "100", "", "30"], ["3", "225", "", "35"],
+			["4", "375", "", "40"], ["5", "550", "", "50"]]
+	return book
+
+
+func _stance_errors(rows: Array, step_points := true) -> String:
+	return "\n".join(AbilityTreeImporter.convert(_stance_book(rows, step_points)).errors)
+
+
+func test_unlock_steps_must_match_their_tier() -> void:
+	var ok := AbilityTreeImporter.convert(_stance_book([
+		["F01", "Punch", 1, "Fire Mastery 0", "1 → 1", 0],
+		["F02", "Kick", 1, "Fire Mastery 50", "1 → 2", 2],
+		["F09", "Combo", 2, "Fire Mastery 130", "2 → 1", 1, "Kick"],
+	]))
+	assert_false(" ".join(ok.errors).contains("isn't tier"), "0 + 2 × 25 and 100 + 1 × 30 match: %s" % [ok.errors])
+	assert_string_contains(_stance_errors([["F02", "Kick", 1, "Fire Mastery 40", "1 → 2", 2]]),
+			"Mastery Required 40 isn't tier 1's base 0 + step 2 × 25 = 50")
+	assert_string_contains(_stance_errors([["F02", "Kick", 1, "Fire Mastery 50", "1 → 2", 2]], false),
+			"no Points per unlock step for tier 1")
+
+
+func test_keys_stances_and_branches() -> void:
+	var data: Dictionary = AbilityTreeImporter.convert(_stance_book([
+		["F01", "Punch", 1, "Fire Mastery 0", "1 (casts on entering stance 1)", 0],
+		["F02", "Kick", 1, "Fire Mastery 25", "1 → 3", 1],
+	])).data
+	assert_true(data.is_empty(), "an incomplete tree doesn't import")
+	var errs := _stance_errors([
+		["F01", "Punch", 1, "Fire Mastery 0", "1 (casts on entering stance 1)", 0],
+		["F02", "Kick", 1, "Fire Mastery 25", "1 → 3", 1],
+		["F03", "Dart", 1, "Fire Mastery 25", "1 → 3", 1],
+		["F04", "Breath", 2, "Fire Mastery 100", "1 → 4", 0],
+		["F05", "Dash", 1, "Fire Mastery 0", "1 → 5", 0],
+		["F06", "Whip", 1, "Fire Mastery 0", "sideways", 0],
+		["F07", "Ball", 1, "Fire Mastery 0", "", 0],
+	])
+	assert_string_contains(errs, "F02 and F03 both sit in Fire stance 1 → 3")
+	assert_string_contains(errs, "F04 (row 5): stance 1 but tier 2")
+	assert_string_contains(errs, "branch 5 isn't 1-4")
+	assert_string_contains(errs, "Key \"sideways\" isn't")
+	assert_string_contains(errs, "F07 (row 8): a bending ability needs a Key")
+	assert_string_contains(errs, "Fire stance 2 → 1 has no ability")
+	assert_false(errs.contains("Fire stance 1 → 3 has no ability"))
+
+
+func test_passives_and_upgrades() -> void:
+	var errs := _stance_errors([
+		["F10", "Rain", 5, "Fire Mastery 550", "5 → 1", 0],
+		["F20", "Blue", 2, "Fire Mastery 200 / 400 / 600", "Passive", "", "—", 0],
+		["F21", "Hot", 2, "Fire Mastery 400 / 300", "Passive", "", "—", 5],
+		["F22", "Rebirth", 5, "Fire Mastery 800", "Passive upgrade", "", "Rain", 0],
+		["F23", "Lost", 5, "Fire Mastery 800", "Passive upgrade", "", "—", 0],
+	])
+	assert_false(errs.contains("F20"), "a passive's levels: " + errs)
+	assert_string_contains(errs, "F21 (row 4): Mastery Required levels \"400 / 300\" must go up")
+	assert_string_contains(errs, "F21 (Hot): a passive has no cooldown")
+	assert_string_contains(errs, "F23 (Lost): a passive upgrade needs the ability it upgrades")
+	assert_false(errs.contains("F22"))
+
+
+func test_the_real_sheet_has_stances_passives_and_upgrades() -> void:
+	var tree := AbilityTreeData.load_file()
+	var a := tree.ability(&"W01")
+	assert_eq([int(a.stance), int(a.branch_key)], [1, 1], "Healing Touch: 1 → 1")
+	assert_eq([int(tree.ability(&"W19").stance), int(tree.ability(&"W19").branch_key)], [4, 4], "Bloodbending: 4 → 4")
+	assert_true(tree.ability(&"F01").get("entry_cast", false), "Fire Punch enters Fire 1")
+	assert_true(tree.ability(&"E04").get("entry_cast", false), "Seismic Stomp enters Earth 1")
+	assert_eq(int(tree.ability(&"W20").stance), 5, "Octopus Form enters Water 5")
+	assert_true(tree.ability(&"F20").get("passive", false), "Blue Fire is passive")
+	assert_eq(tree.ability(&"F20").mastery_levels.map(func(v): return int(v)), [200, 400, 600])
+	assert_eq(tree.ability(&"W23").upgrades, "W17", "Tidal Resurgence upgrades Healing Rain")
+	assert_eq(tree.ability(&"A21").upgrades, "A15", "Eye of the Storm upgrades Hurricane")
+	assert_eq(int(tree.ability(&"F06").mastery_required), 260, "225 + 1 × 35")
+	assert_eq(int(tree.ability(&"S04").mastery_required), 50, "weapons too: 0 + 2 × 25")
+	for id in [&"F13", &"E10", &"E12", &"A08"]:
+		assert_false(tree.abilities.has(id), "%s was merged away" % id)
+
+
+func test_removed_ids_and_hybrids() -> void:
+	var errs := _stance_errors([
+		["F13", "Heat Wave", 1, "Fire Mastery 0", "1 → 1", 0],
+		["F02", "Kick", 1, "Fire Mastery 0", "1 → 2", 0, "Air Mastery 350"],
+	])
+	assert_string_contains(errs, "F13 (row 2): removed in the stance rework, Heat Wave (merged into Breath of Fire)")
+	var warnings: PackedStringArray = AbilityTreeImporter.convert(_stance_book([
+		["F02", "Kick", 1, "Fire Mastery 0", "1 → 2", 0, "Air Mastery 350"]])).warnings
+	assert_string_contains(" ".join(warnings), "needs Air Mastery 350; hybrid requirements are 225")
