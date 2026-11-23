@@ -136,7 +136,7 @@ func test_sample_quests() -> void:
 				assert_true(GridModel.from_zone(db.zones[o.zone]).is_walkable(o.tile))
 	assert_eq(kinds.size(), QuestObjective.Kind.size(), "every objective kind is used")
 	var beast: QuestDef = db.quests[&"beast_of_greenfields"]
-	assert_eq(beast.reward_choices.size(), 3, "item choice")
+	assert_eq(beast.reward_choices.size(), 4, "item choice: a tier-1 scroll of each element")
 	assert_eq(beast.sets_world_flag, &"grizzlehide_slain")
 	var fetish: ItemDef = db.items[&"goblin_fetish"]
 	assert_true(fetish.quest_item)
