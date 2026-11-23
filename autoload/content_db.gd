@@ -70,6 +70,14 @@ func reload() -> void:
 	items.merge(built.items)
 	_link_tree_items()
 	_time_releases()
+	# One warning per item or bending ability without an icon file (it shows the
+	# placeholder; see Icons), the way missing sound files warn and play nothing.
+	# Once per run (tests reload the content many times).
+	if not _icons_checked:
+		_icons_checked = true
+		for id in Icons.missing(items, abilities):
+			push_warning("No icon for %s: add it with tools/pull_icons.py (until then it shows %s)"
+					% [id, "its name" if Icons.KEEP_NAME.has(StringName(id.get_slice(" ", 1))) else "the placeholder"])
 	if OS.is_debug_build():
 		for w in CastResolver.dodge_warnings(abilities.values(), rules):
 			print("DODGE WARNING: " + w)
@@ -77,6 +85,9 @@ func reload() -> void:
 
 ## Abilities whose hit follows their art (AbilityDef.release_delay_from): the rock
 ## leaves on the hero's strike frame, the whip lands on the lash's snap.
+static var _icons_checked := false
+
+
 func _time_releases() -> void:
 	for a in abilities.values():
 		a.release_delay_seconds = 0.0

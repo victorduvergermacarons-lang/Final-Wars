@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_stats"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_item"]
+[ext_resource type="Texture2D" uid="uid://bqeofgnvdbt4d" path="res://assets/icons/items/boar_tusk.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_growth"]
 script = ExtResource("1_stats")
@@ -13,6 +14,7 @@ script = ExtResource("1_stats")
 script = ExtResource("2_item")
 id = &"boar_tusk"
 display_name = "Boar Tusk"
+icon = ExtResource("icon_tex")
 description = "A curved yellow tusk. Traders pay a little for these."
 price = 6
 max_stack = 20

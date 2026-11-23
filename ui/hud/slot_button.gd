@@ -77,11 +77,20 @@ func _draw() -> void:
 	var hovered := hud.bind_mode and hud.hovered_slot == index
 	draw_rect(rect, Color(1, 0.85, 0.2) if hovered else Color(0.5, 0.5, 0.55), false, 2.0 if hovered else 1.0)
 	if ability != null:
-		var name := ability.display_name if ability.display_name != "" else String(ability.id)
+		# Its icon (a potion's item icon) at a whole screen scale, centred; the
+		# ability's name only where there is no icon (Sword, Bow, Hammer arts).
+		var icon := Icons.of_item(item) if item != null else Icons.of_ability(ability)
+		if icon != null:
+			Icons.draw_fitted(self, icon, rect.grow(-2.0),
+					Color(1, 1, 1) if usable in [Targeting.Usability.READY, Targeting.Usability.COOLDOWN]
+					else TINTS[usable].lightened(0.55))
+		else:
+			var name := ability.display_name if ability.display_name != "" else String(ability.id)
+			if item != null:
+				name = item.display_name.trim_prefix("Minor ")
+			_text(name.left(8), Vector2(4, size.y - 8), 11, Color.WHITE)
 		if item != null:
-			name = item.display_name.trim_prefix("Minor ")
-			_text(str(held), Vector2(size.x - 14, size.y - 20), 12, Color(1, 1, 0.7))
-		_text(name.left(8), Vector2(4, size.y - 8), 11, Color.WHITE)
+			_text(str(held), Vector2(size.x - 14, size.y - 6), 12, Color(1, 1, 0.7))
 		if hero != null:
 			var cd := hero.cooldowns.ability_remaining(ability.cooldown_key(), now)
 			var frac := hero.cooldowns.ability_fraction(ability.cooldown_key(), now)
@@ -108,6 +117,13 @@ func _draw_sweep(rect: Rect2, fraction: float) -> void:
 func _text(t: String, pos: Vector2, font_size: int, color: Color) -> void:
 	draw_string_outline(_font, pos, t, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, 3, Color.BLACK)
 	draw_string(_font, pos, t, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
+
+
+func _make_custom_tooltip(for_text: String) -> Object:
+	var ability := _ability()
+	var item := _item()
+	var icon := Icons.of_item(item) if item != null else Icons.of_ability(ability)
+	return Icons.tooltip(self, icon, for_text)
 
 
 static func _tooltip(a: AbilityDef) -> String:

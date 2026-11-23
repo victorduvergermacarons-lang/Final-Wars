@@ -82,7 +82,8 @@ static func label(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now
 	l.custom_minimum_size = Vector2(TOOLTIP_WIDTH, 0)
 	for font in ["normal_font_size", "bold_font_size", "italics_font_size", "bold_italics_font_size"]:
 		l.add_theme_font_size_override(font, TOOLTIP_FONT_SIZE)
-	l.text = text(item, hero, rules, worn, now, bind)
+	var icon := Icons.of_item(item)
+	l.text = (Icons.bbcode(icon) + "  " if icon != null else "") + text(item, hero, rules, worn, now, bind)
 	return l
 
 

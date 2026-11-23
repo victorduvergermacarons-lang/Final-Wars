@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_wow6r"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_fgmf0"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_li0q5"]
+[ext_resource type="Texture2D" uid="uid://chnhfk0lvkn25" path="res://assets/icons/items/wolf_fang.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_rhpc5"]
 script = ExtResource("1_wow6r")
@@ -14,6 +15,7 @@ script = ExtResource("1_wow6r")
 script = ExtResource("2_fgmf0")
 id = &"wolf_fang"
 display_name = "Wolf Fang"
+icon = ExtResource("icon_tex")
 description = "Sharp. Traders like them."
 price = 4
 max_stack = 20

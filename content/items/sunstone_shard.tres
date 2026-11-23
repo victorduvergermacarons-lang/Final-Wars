@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_stats"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_item"]
+[ext_resource type="Texture2D" uid="uid://5ym2gtes2j1y" path="res://assets/icons/items/sunstone_shard.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_growth"]
 script = ExtResource("1_stats")
@@ -13,6 +14,7 @@ script = ExtResource("1_stats")
 script = ExtResource("2_item")
 id = &"sunstone_shard"
 display_name = "Sunstone Shard"
+icon = ExtResource("icon_tex")
 description = "A sliver of warm amber stone from a Husk's chest. It hums, faintly, when you hold it close."
 price = 20
 max_stack = 20

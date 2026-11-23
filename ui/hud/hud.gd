@@ -724,19 +724,20 @@ func _on_events(events: Array) -> void:
 					parts.append("%d gold" % e.gold)
 				for pair in e.items:
 					var item: ItemDef = ContentDB.items.get(StringName(str(pair[0])))
-					parts.append((item.display_name if item else str(pair[0])) + (" ×%d" % pair[1] if pair[1] > 1 else ""))
+					parts.append(_icon_of(item) + (item.display_name if item else str(pair[0])) + (" ×%d" % pair[1] if pair[1] > 1 else ""))
 				if not parts.is_empty():
 					client.say("You loot " + ", ".join(parts) + ".")
 			"looted":
 				# The party feed: "<Player> looted <Item> [Rarity]".
 				var it: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				if it != null:
-					client.say("%s looted %s%s [%s]" % [e.name, it.display_name,
+					client.say("%s looted %s%s%s [%s]" % [e.name, _icon_of(it), it.display_name,
 							" x%d" % e.count if int(e.count) > 1 else "", Rarity.NAMES[it.rarity]])
 			"drop":
 				var dropped: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				if dropped != null and dropped.rarity >= Rarity.Id.RARE:
-					client.say("A %s item dropped for you: %s." % [Rarity.NAMES[dropped.rarity], dropped.display_name])
+					client.say("A %s item dropped for you: %s%s." % [Rarity.NAMES[dropped.rarity], _icon_of(dropped),
+							dropped.display_name])
 			"boss_loot":
 				boss_loot.show_summary(e)
 			"request_declined":
@@ -837,6 +838,12 @@ func ask(hero_id: int, kind: String) -> void:
 	var other: Actor = session.get_actor(hero_id)
 	if other != null:
 		client.say("You ask %s to %s." % [other.display_name, "trade" if kind == "trade" else "duel"])
+
+
+## An item's icon for a feed line in the Escape menu's Log (rich text), with a space.
+static func _icon_of(item: ItemDef) -> String:
+	var icon := Icons.of_item(item)
+	return Icons.bbcode(icon) + " " if icon != null else ""
 
 
 ## The party feed lines of a settled boss roll: "Mara: Need 87 (+25) = 112" for

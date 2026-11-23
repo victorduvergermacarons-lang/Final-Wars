@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_tnql4"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_oot60"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_bvt85"]
+[ext_resource type="Texture2D" uid="uid://c01ruk758aymg" path="res://assets/icons/items/rangers_gloves.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_djcew"]
 script = ExtResource("1_tnql4")
@@ -19,6 +20,7 @@ evasion = 5.0
 script = ExtResource("2_oot60")
 id = &"rangers_gloves"
 display_name = "Ranger's Gloves"
+icon = ExtResource("icon_tex")
 slot = 4
 rarity = 2
 price = 120

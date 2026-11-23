@@ -31,6 +31,9 @@ enum TargetType {
 
 @export var id: StringName = &""
 @export var display_name: String = ""
+## Its icon (assets/icons/abilities/<ID>.png, 33x33; see Icons): tree abilities
+## from the sheet's Icon column (TreeContent).
+@export var icon: Texture2D
 @export_multiline var description: String = ""
 @export var shape: Shape = Shape.TARGETED
 @export var target: TargetType = TargetType.ENEMY

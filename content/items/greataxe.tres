@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_najfa"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_mxw3q"]
 [ext_resource type="Resource" path="res://content/abilities/cleave.tres" id="4_xk54p"]
+[ext_resource type="Texture2D" uid="uid://dls7hhlqi5hix" path="res://assets/icons/items/greataxe.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_tg75j"]
 script = ExtResource("1_s2yne")
@@ -19,6 +20,7 @@ crit_rate = 3.0
 script = ExtResource("2_najfa")
 id = &"greataxe"
 display_name = "Greataxe"
+icon = ExtResource("icon_tex")
 slot = 8
 rarity = 1
 price = 80
