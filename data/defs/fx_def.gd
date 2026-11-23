@@ -29,12 +29,29 @@ enum Anchor { CASTER, POINT }
 ## AbilityDef.release_delay_from is "fx" lands its hit this long after the release.
 ## -1: none.
 @export var hit_frame: int = -1
+## A still played once: how long it shows (0 = frames / fps).
+@export var hold_seconds: float = 0.0
+## Fades out over the last 40% of its time (stills).
+@export var fade_out: bool = false
+
+@export_group("Projectiles (pre-rotated)")
+## The screen direction the art points, in degrees (0 = right, 90 = down the
+## screen). Turned by (flight angle - this) when `rotate` is on.
+@export var drawn_angle: float = 0.0
+## The art turned to `rot_steps` angles around the pivot without blurring
+## (RotSprite: tools/once/make_effect_sheets.py), one cell per step from
+## `drawn_angle`, the pivot at each cell's centre. Without it the art is turned
+## with nearest sampling.
+@export var rot_sheet: Texture2D
+@export var rot_steps: int = 0
 
 @export_group("Held around a hero (stance looks)")
 ## How a still moves, in code: SPIN turns it (flat ones turn on the ground), BOB
 ## lifts it up and down, ORBIT circles it around the hero at `orbit_tiles`, FLICKER
 ## mirrors it now and then (flames), SWAY rocks it a little either way.
-enum Motion { NONE, SPIN, BOB, ORBIT, FLICKER, SWAY }
+## PULSE breathes its opacity (70-100%), DROP falls from `motion_amount` levels
+## above onto its place over the first 40% of its time (a dropped boulder).
+enum Motion { NONE, SPIN, BOB, ORBIT, FLICKER, SWAY, PULSE, DROP }
 @export var motion: Motion = Motion.NONE
 ## Cycles per second (turns for SPIN and ORBIT).
 @export var motion_hz: float = 0.5
@@ -51,6 +68,8 @@ enum Motion { NONE, SPIN, BOB, ORBIT, FLICKER, SWAY }
 
 
 func duration() -> float:
+	if frames <= 1 and hold_seconds > 0.0:
+		return hold_seconds
 	return frames / maxf(fps, 0.001)
 
 
@@ -61,7 +80,17 @@ func frame_at(since: float) -> int:
 	var f := floori(since * fps + 0.0001)
 	if loop:
 		return f % maxi(frames, 1)
+	if frames <= 1 and hold_seconds > 0.0:
+		return 0 if since < hold_seconds else -1
 	return f if f < frames else -1
+
+
+## Its opacity `since` seconds after it started (fading out at the end).
+func alpha_at(since: float) -> float:
+	if not fade_out or loop:
+		return alpha
+	var d := duration()
+	return alpha * clampf((d - since) / maxf(d * 0.4, 0.001), 0.0, 1.0)
 
 
 func hit_seconds() -> float:

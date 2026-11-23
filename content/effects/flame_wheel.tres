@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+[ext_resource type="Texture2D" path="res://assets/effects/flame_wheel.png" id="2_sheet"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"flame_wheel"
+sheet = ExtResource("2_sheet")
+frame_size = Vector2i(64, 64)
+frames = 1
+fps = 1.0
+loop = true
+pivot = Vector2(32, 30)
+anchor = 0
+forward_tiles = 0.0
+height_levels = 0.4
+rotate = false
+alpha = 1.0
+hold_seconds = 0.0
+fade_out = false
+drawn_angle = 0.0
+motion = 4
+motion_hz = 4.0
+motion_amount = 0.1
+split = true
+behind = false

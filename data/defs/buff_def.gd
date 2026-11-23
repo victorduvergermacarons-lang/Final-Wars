@@ -9,6 +9,15 @@ extends Resource
 ## A look the hero wears while it lasts (CreatureArtDef.looks, e.g. &"stone": the
 ## sprite tinted grey-stone by a shader; "" = none).
 @export var look: StringName = &""
+## An effect (FxDef id) held around the unit while it lasts (Water Shield's bubble);
+## set from its ability's `fx_held` at load when empty.
+@export var fx: StringName = &""
+## A look drawn in code around the unit while it lasts ("flames": Scorch's small
+## orange flames, until its own art is approved).
+@export var code_fx: String = ""
+## Its icon on unit frames (with `icon_text` beside it, e.g. "+15%").
+@export var icon: Texture2D
+@export var icon_text: String = ""
 ## The hero animation played once when it ends (e.g. "stone_shatter"; "" = none).
 @export var end_anim: String = ""
 @export var modifiers: Array[StatModifier] = []

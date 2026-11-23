@@ -160,6 +160,14 @@ var sheet_hitbox: HitboxDef
 ## Sprite of what it throws while it flies (a lob: the rock), and while it waits
 ## beside the caster during its bar ("" = drawn as before).
 @export var fx_carried: StringName = &""
+## Sprite of what it fires while it flies (a projectile), turned to its flight.
+@export var fx_projectile: StringName = &""
+## Held at the caster's hands while it casts (a cast bar, wind-up or timing bar).
+@export var fx_hands: StringName = &""
+## On each tile it affects: its ground zones while they last, its landing tiles once.
+@export var fx_tiles: StringName = &""
+## Around whoever has one of its buffs, while the buff lasts (BuffDef.fx).
+@export var fx_held: StringName = &""
 ## A timing bar with no press goes off at the bar's end with the cursor's aim (the
 ## client presses for the player): Rock Throw throws itself.
 @export var bar_goes_off_at_end: bool = false

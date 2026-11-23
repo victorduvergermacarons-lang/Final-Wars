@@ -1254,6 +1254,9 @@ func _update_pending_hits() -> void:
 		if h.ability.fx_land != &"" and h.has("circle"):
 			emit({"type": "fx", "fx": h.ability.fx_land, "source": caster.id, "ability": h.ability.id,
 					"from": h.circle[0], "to": h.circle[0], "at": now})
+		if h.ability.fx_tiles != &"" and h.has("tiles") and not h.tiles.is_empty():
+			emit({"type": "fx", "fx": h.ability.fx_tiles, "source": caster.id, "ability": h.ability.id,
+					"tiles": h.tiles.duplicate(), "at": now})
 	_pending_hits = waiting
 
 
@@ -1682,7 +1685,7 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			if debug_content == null:
 				reason = "debug_disabled"
 			else:
-				var r := DebugCommands.run(self, hero, intent.get("line", ""), debug_content)
+				var r := DebugCommands.run(self, hero, intent.get("line", ""), debug_content, intent.get("aim"))
 				for e in r.events:
 					emit(e)
 				emit({"type": "debug", "target": hero.id, "ok": r.ok, "text": r.text})

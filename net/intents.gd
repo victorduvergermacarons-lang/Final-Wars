@@ -139,6 +139,9 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(line) != TYPE_STRING or line.length() > 200:
 				return {}
 			out.line = line
+			var aim = raw.get("aim")
+			if aim is Vector2 and aim.is_finite():
+				out.aim = aim
 		"game_speed":
 			var value = raw.get("value")
 			if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:

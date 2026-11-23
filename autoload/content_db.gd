@@ -69,6 +69,7 @@ func reload() -> void:
 	abilities.merge(built.abilities)
 	items.merge(built.items)
 	_link_tree_items()
+	_link_ability_effects()
 	_time_releases()
 	# One warning per item or bending ability without an icon file (it shows the
 	# placeholder; see Icons), the way missing sound files warn and play nothing.
@@ -100,6 +101,38 @@ func _time_releases() -> void:
 				var fx: FxDef = effects.get(a.fx_cast)
 				if fx != null:
 					a.release_delay_seconds = fx.hit_seconds()
+
+
+const ABILITY_EFFECTS_PATH := "res://content/effects/ability_effects.json"
+const FX_ROLES := {"cast": "fx_cast", "land": "fx_land", "projectile": "fx_projectile", "hands": "fx_hands",
+	"tiles": "fx_tiles", "held": "fx_held"}
+
+
+## Each ability's effects from content/effects/ability_effects.json (a role its
+## behaviour file sets wins); a held effect goes on the buffs it applies.
+func _link_ability_effects() -> void:
+	var table = JSON.parse_string(FileAccess.get_file_as_string(ABILITY_EFFECTS_PATH)) \
+			if FileAccess.file_exists(ABILITY_EFFECTS_PATH) else {}
+	if not table is Dictionary:
+		push_warning("Can't read %s" % ABILITY_EFFECTS_PATH)
+		return
+	for id in table:
+		var a: AbilityDef = abilities.get(StringName(id))
+		if a == null or not table[id] is Dictionary:
+			continue
+		for role in table[id]:
+			var fx := StringName(table[id][role])
+			if not FX_ROLES.has(role) or not effects.has(fx):
+				push_warning("ability_effects.json: %s %s -> %s is unknown" % [id, role, fx])
+				continue
+			if a.get(FX_ROLES[role]) == &"":
+				a.set(FX_ROLES[role], fx)
+	for a in abilities.values():
+		if a.fx_held == &"":
+			continue
+		for e in a.effects:
+			if e.buff != null and e.buff.fx == &"":
+				e.buff.fx = a.fx_held
 
 
 ## Again after the map editor reloaded some files (safe to repeat).

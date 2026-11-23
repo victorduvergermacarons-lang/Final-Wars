@@ -6,6 +6,9 @@ extends Node
 ## Phase 2: the action bar with stance slots and the stance panel, then every stance's
 ## look around the hero (st2_look_<tree>_<n>, cropped; a faint ring where the art
 ## isn't approved yet).
+## Phase 3: every ability's effects through the `fx` debug command (st3_fx_<id>,
+## cropped), projectiles turned to 8 directions (st3_rot_<id>), Scorch's flames and
+## debuff icon (st3_scorch).
 
 var out_dir := OS.get_environment("SHOTS_DIR").path_join("") if OS.get_environment("SHOTS_DIR") != "" else ProjectSettings.globalize_path("user://shots/")
 var game: Game
@@ -60,6 +63,7 @@ func _run() -> void:
 	hud._toggle(hud.trees_window)
 	await phase1_trench(session, hero)
 	await phase2_looks(session, hero)
+	await phase3_effects(session, hero)
 	get_tree().quit()
 
 
@@ -109,3 +113,56 @@ func phase2_looks(session: LocalSession, hero: Hero) -> void:
 			img.save_png(out_dir + "st2_look_%s_%d.png" % [tree.to_lower(), n])
 			print("shot st2_look_%s_%d" % [tree.to_lower(), n])
 	sim.set_stance(hero, "", 0)
+
+
+const FX_IDS := ["F01", "F09", "F03", "F05", "F11", "F15", "F07", "F21", "F10", "F16", "F18", "E21", "E23", "W01",
+	"W12", "W04", "W13", "W14", "W24", "W10", "W18", "W16", "W09", "W20", "A22", "A03", "A07", "A09", "A11", "A14",
+	"A06", "A16", "A12", "A10", "A13", "A15", "F22"]
+
+
+func _crop(name: String, w := 360, h := 300) -> void:
+	await _frames(3)
+	var img := get_viewport().get_texture().get_image()
+	var c := img.get_size() / 2
+	img.get_region(Rect2i(c - Vector2i(w / 2, h * 2 / 3), Vector2i(w, h))).save_png(out_dir + name + ".png")
+	print("shot ", name)
+
+
+## Runs a console line as the player would, the cursor at `aim`, then lets `wait`
+## seconds of host time pass.
+func _console(session: LocalSession, hero: Hero, line: String, aim: Vector2, wait: float) -> void:
+	session.world.submit(hero.id, {"type": "debug", "line": line, "aim": aim})
+	var t0: float = session.now()
+	while session.now() - t0 < wait:
+		await get_tree().process_frame
+
+
+func phase3_effects(session: LocalSession, hero: Hero) -> void:
+	var view := await _view()
+	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+	var aim := hero.move.pos + Vector2(2.0, 1.0)
+	for id in FX_IDS:
+		var a: AbilityDef = ContentDB.abilities[StringName(id)]
+		var wait := 0.12
+		if a.fx_hands != &"":
+			wait = 1.12
+		elif a.fx_projectile != &"":
+			wait = 0.06
+		elif a.fx_land != &"" and a.fx_cast == &"":
+			wait = 0.3
+		await _console(session, hero, "fx " + id, aim, wait)
+		await _crop("st3_fx_%s" % id)
+		await _console(session, hero, "heal", aim, 3.6) # let it finish
+	for id in ["F03", "F07", "W04", "E21", "A22"]:
+		for k in 8:
+			var d := Vector2.RIGHT.rotated(k * TAU / 8.0) * 4.0
+			await _console(session, hero, "fx " + id, hero.move.pos + d, 0.07)
+			await _crop("st3_rot_%s_%d" % [id, k], 440, 360)
+			await _console(session, hero, "heal", aim, 0.5)
+	# Scorch for real: the debuff on a wolf beside the hero, with the target frame.
+	var sim := session.zone_sim()
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	wolf.buffs.apply(ContentDB.buffs[&"scorched"], sim.now, 0.0, hero.id)
+	game.get_node("Hud").client.target_id = wolf.id
+	await _frames(10)
+	await _shot("st3_scorch")

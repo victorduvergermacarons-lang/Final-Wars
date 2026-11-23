@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="BuffDef" format=3]
+[gd_resource type="Resource" script_class="BuffDef" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://data/defs/buff_def.gd" id="1_buff"]
+[ext_resource type="Texture2D" path="res://assets/icons/buffs/scorched.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_buff")
@@ -10,3 +11,6 @@ duration_seconds = 6.0
 tick_seconds = 1.0
 is_debuff = true
 damage_taken_multiplier = 1.15
+code_fx = "flames"
+icon = ExtResource("2_icon")
+icon_text = "+15% damage taken"

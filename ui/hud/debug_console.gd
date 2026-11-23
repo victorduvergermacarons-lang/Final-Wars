@@ -68,7 +68,8 @@ func _submit(text: String) -> void:
 	_history.append(line)
 	_history_at = _history.size()
 	print_line("> " + line.replace("[", "[lb]"))
-	hud.session.send_intent({"type": "debug", "line": line.left(200)})
+	# The cursor goes with every line (`fx` plays toward it).
+	hud.session.send_intent({"type": "debug", "line": line.left(200), "aim": hud.input.mouse_point(null)})
 
 
 func _on_input_key(event: InputEvent) -> void:

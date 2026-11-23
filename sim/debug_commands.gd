@@ -13,7 +13,9 @@ const HELP := """Commands:
   spawn <enemy> [level] [n]    spawn n enemies (default 1) at a level (default theirs) next to you
   heal                         full HP and Mana, cooldowns reset
   goto <zone>                  go to a zone's start (town, crossing, deepcut_road, deepcut, windsteppe, greenfields, wilds, tidereach_shore, silent_shaft)
-  gold <n>                     set your gold"""
+  gold <n>                     set your gold
+  fx <ability>                 play an ability's effects from you toward the cursor (no damage, no cooldown)
+  fx <Tree>:<n>                hold a stance (its look) without its checks; Shift leaves it"""
 
 ## Stats that scale with an enemy's level when spawned above or below its own.
 const LEVEL_STATS := [Stat.Id.HP, Stat.Id.PHYS_ATK, Stat.Id.MAG_ATK, Stat.Id.PHYS_DEF, Stat.Id.MAG_DEF]
@@ -23,7 +25,7 @@ const MAX_SPAWN := 10
 
 
 ## Runs one command line. Returns {"ok": bool, "text": String, "events": Array}.
-static func run(world: WorldSim, hero: Hero, line: String, content) -> Dictionary:
+static func run(world: WorldSim, hero: Hero, line: String, content, aim = null) -> Dictionary:
 	var words := _split(line)
 	if words.is_empty():
 		return _fail("Type help for the commands.")
@@ -49,12 +51,91 @@ static func run(world: WorldSim, hero: Hero, line: String, content) -> Dictionar
 			return _ok("Healed; cooldowns reset.")
 		"goto":
 			return _goto(world, hero, args, content)
+		"fx":
+			return _fx(world, hero, args, content, aim)
 		"gold":
 			if args.size() != 1 or not args[0].is_valid_int():
 				return _fail("Usage: gold <n>")
 			hero.gold = clampi(int(args[0]), 0, CharacterData.MAX_GOLD)
 			return _ok("Gold: %d" % hero.gold)
 	return _fail("Unknown command '%s'. Type help." % cmd)
+
+
+## How far ahead `fx` plays when the cursor is further (tiles), and how long held
+## and looping effects show.
+const FX_REACH := 6.0
+const FX_HOLD := 3.0
+
+
+## Plays an ability's effects as the game would, from the hero toward the cursor:
+## what it holds while casting, what it fires (flying at its speed), where it
+## lands, its tiles (3x3 around the point) and what it leaves on a unit (on you),
+## with no damage and no cooldown. "<Tree>:<n>" holds a stance instead.
+static func _fx(world: WorldSim, hero: Hero, args: Array, content, aim) -> Dictionary:
+	if args.is_empty():
+		return _fail("Usage: fx <ability> or fx <Tree>:<n>")
+	var text := " ".join(args)
+	if text.contains(":"):
+		var tree := _tree_name(text.get_slice(":", 0))
+		var n := int(text.get_slice(":", 1))
+		if not WorldSim.BENDING_TREES.has(tree) or n < 1 or n > 5:
+			return _fail("Usage: fx <Fire|Earth|Water|Air>:<1-5>")
+		world.set_stance(hero, tree, n)
+		return _ok("Holding %s stance %d (Shift leaves it)." % [tree, n])
+	var ability := find_ability(text, content)
+	if ability == null:
+		return _fail("No ability '%s'." % text)
+	var from := hero.move.pos
+	var to: Vector2 = from + hero.facing_vector() * 3.0
+	if aim is Vector2:
+		to = aim if from.distance_to(aim) <= FX_REACH else from + (aim - from).normalized() * FX_REACH
+	var now := world.now
+	var events: Array = []
+	var played: PackedStringArray = []
+	var base := {"type": "fx", "source": hero.id, "ability": ability.id, "from": from, "to": to}
+	var at := now
+	if ability.fx_hands != &"":
+		events.append(_with(base, {"fx": ability.fx_hands, "on": hero.id, "for": 1.0, "at": at}))
+		played.append("in the hands")
+		at += 1.0
+	if ability.fx_cast != &"":
+		events.append(_with(base, {"fx": ability.fx_cast, "at": at}))
+		played.append("cast")
+	if ability.fx_projectile != &"":
+		var hb: HitboxDef = ability.hitbox if ability.hitbox != null else ability.sheet_hitbox
+		var speed := hb.speed if hb != null and hb.speed > 0.0 else 10.0
+		var fly := from.distance_to(to) / speed
+		events.append(_with(base, {"fx": ability.fx_projectile, "fly": fly, "for": fly, "at": at}))
+		played.append("flight")
+		at += fly
+	if ability.fx_land != &"":
+		events.append(_with(base, {"fx": ability.fx_land, "from": to, "at": at}))
+		played.append("landing")
+	if ability.fx_tiles != &"":
+		var tiles := []
+		var c := Vector2i(to.round())
+		for dx in range(-1, 2):
+			for dy in range(-1, 2):
+				if world.grid.in_bounds(c + Vector2i(dx, dy)):
+					tiles.append(c + Vector2i(dx, dy))
+		events.append(_with(base, {"fx": ability.fx_tiles, "tiles": tiles, "for": FX_HOLD, "at": at}))
+		played.append("tiles")
+	if ability.fx_held != &"":
+		events.append(_with(base, {"fx": ability.fx_held, "on": hero.id, "for": FX_HOLD, "at": at}))
+		played.append("held on you")
+	for e in ability.effects:
+		if e.buff != null and e.buff.code_fx != "":
+			events.append(_with(base, {"code": e.buff.code_fx, "on": hero.id, "for": FX_HOLD, "at": at}))
+			played.append("%s (code)" % e.buff.code_fx)
+	if played.is_empty():
+		return _ok("%s has no effect art yet." % ability.display_name)
+	return _ok("%s: %s." % [ability.display_name, ", ".join(played)], events)
+
+
+static func _with(a: Dictionary, b: Dictionary) -> Dictionary:
+	var out := a.duplicate()
+	out.merge(b, true)
+	return out
 
 
 static func _goto(world: WorldSim, hero: Hero, args: Array, content) -> Dictionary:
@@ -168,12 +249,15 @@ static func at_level(def: EnemyDef, level: int) -> EnemyDef:
 
 
 static func find_ability(text: String, content) -> AbilityDef:
-	var key := text.strip_edges()
+	var key := text.strip_edges().to_lower()
+	# By id or name; tree abilities first (the retired M1 "fireball" shares F07's name).
+	var found: AbilityDef = null
 	for id in content.abilities:
 		var a: AbilityDef = content.abilities[id]
-		if String(id).to_lower() == key.to_lower() or a.display_name.to_lower() == key.to_lower():
-			return a
-	return null
+		if String(id).to_lower() == key or a.display_name.to_lower() == key:
+			if found == null or (a.is_tree_ability() and not found.is_tree_ability()):
+				found = a
+	return found
 
 
 static func find_enemy(text: String, content) -> EnemyDef:

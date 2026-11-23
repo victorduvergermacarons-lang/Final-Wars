@@ -399,7 +399,8 @@ func _draw() -> void:
 	# Effects take their place in the back-to-front drawing on the tile under them.
 	var fx_by_tile := {}
 	for item in _fx.items(t_now, session.actors(), session.telegraphs(), ContentDB.abilities, ContentDB.effects,
-			func(x): return _hero_art(x)):
+			func(x): return _hero_art(x), {"projectiles": session.projectiles(), "zones": session.ground_zones(),
+			"buffs": ContentDB.buffs}):
 		var ft := MoveState.tile_of(item.pos)
 		if not grid.in_bounds(ft):
 			continue
@@ -485,7 +486,7 @@ func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
 	if item.has("actor"):
 		var off: Vector2 = item.get("offset", Vector2.ZERO)
 		return actor_screen_pos(item.actor) + Iso.to_screen(off, float(item.lift)) - Iso.to_screen(Vector2.ZERO, 0.0)
-	var tile := MoveState.tile_of(item.pos)
+	var tile: Vector2i = item.get("z_tile", MoveState.tile_of(item.pos)) # a projectile: its launch height
 	return Iso.to_screen(item.pos, float(grid.height_at(tile)) + float(item.lift))
 
 
@@ -516,6 +517,27 @@ func _ground_rows(item: Dictionary) -> int:
 	return maxi(1, ceili(ry / (Iso.TILE_H * 0.5)))
 
 
+## Looks drawn in code (BuffDef.code_fx). "flames": three small orange flames
+## licking up around the unit's body, each flickering on its own beat (Scorch).
+func _draw_code_fx(grid: GridModel, item: Dictionary) -> void:
+	if item.code != "flames":
+		return
+	var feet := _fx_anchor(grid, item).round()
+	var t := float(item.t)
+	var s := PixelCamera.ART_SCALE
+	for i in 3:
+		var beat := t * 7.0 + i * 2.1
+		var x := (i - 1) * 7.0 * s
+		var h := (5.0 + 2.0 * sin(beat)) * s
+		var base := feet + Vector2(x, -(6.0 + 8.0 * float(i % 3)) * s)
+		var sway := sin(beat * 1.7) * s
+		for layer in 2:
+			var k := 1.0 - layer * 0.45
+			var c := Color(1.0, 0.45, 0.08, 0.85) if layer == 0 else Color(1.0, 0.85, 0.3, 0.95)
+			draw_colored_polygon(PackedVector2Array([base + Vector2(-2.5 * k * s, 0), base + Vector2(sway, -h * k),
+					base + Vector2(2.5 * k * s, 0), base + Vector2(0, 1.5 * k * s)]), c)
+
+
 ## A stance's faint ring (art not approved yet): its half-size on screen.
 const RING_RADIUS := Vector2(30, 15)
 
@@ -540,12 +562,18 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 			pts.append(centre + Vector2(cos(ang) * RING_RADIUS.x, sin(ang) * RING_RADIUS.y))
 		draw_polyline(pts, Color(c, float(item.alpha)), 2.0)
 		return
+	if item.has("code"):
+		_draw_code_fx(grid, item)
+		return
 	var fx: FxDef = item.fx
 	if fx.sheet == null:
 		return
 	var s := PixelCamera.ART_SCALE
 	var angle: float = item.angle if item.rotate else 0.0
 	var flip: bool = item.rotate and not item.get("spin", false) and cos(angle) < 0.0
+	if item.rotate and not item.get("spin", false) and fx.drawn_angle != 0.0:
+		angle -= deg_to_rad(fx.drawn_angle) # art not drawn pointing right (no pre-rotated cells)
+		flip = false
 	var mirror: bool = item.get("mirror", false)
 	# Turned, mirrored, then (lying on the ground) squashed to half height, like a tile.
 	var squash := 0.5 if item.get("flat", false) else 1.0
@@ -553,7 +581,18 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 			* Transform2D(Vector2(-1.0 if mirror else 1.0, 0), Vector2(0, -1.0 if flip else 1.0), Vector2.ZERO)
 	xf.origin = _fx_anchor(grid, item).round()
 	var size := Vector2(fx.frame_size)
-	var color := Color(1, 1, 1, fx.alpha)
+	var color := Color(1, 1, 1, float(item.get("alpha", fx.alpha)))
+	if fx.rot_sheet != null and fx.rot_steps > 0 and item.rotate and not item.get("spin", false):
+		# Pre-rotated (RotSprite): the nearest of its turns, drawn upright, its pivot at
+		# the cell's centre.
+		var turn := wrapf(float(item.angle) - deg_to_rad(fx.drawn_angle), 0.0, TAU)
+		var step := int(round(turn / TAU * fx.rot_steps)) % fx.rot_steps
+		var cell := float(fx.rot_sheet.get_height())
+		draw_set_transform(_fx_anchor(grid, item).round(), 0.0, Vector2(s, s))
+		draw_texture_rect_region(fx.rot_sheet, Rect2(-Vector2(cell, cell) * 0.5, Vector2(cell, cell)),
+				Rect2(step * cell, 0, cell, cell), color)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		return
 	var half := int(item.get("half", 0))
 	if half == 0:
 		draw_set_transform_matrix(xf)
@@ -1095,6 +1134,9 @@ func _draw_ground_poly(grid: GridModel, poly: PackedVector2Array, color: Color) 
 func _draw_projectiles(grid: GridModel) -> void:
 	var t: float = session.render_time()
 	for p in session.projectiles():
+		var ability: AbilityDef = ContentDB.abilities.get(StringName(p.get("ability", "")))
+		if ability != null and ability.fx_projectile != &"" and ContentDB.effects.has(ability.fx_projectile):
+			continue # drawn with its sprite in the back-to-front pass (FxPainter)
 		if p.has("from"):
 			# Free movement: from its start point along its direction.
 			var at: Vector2 = p.from + p.dirv * clampf((t - p.start) * p.speed, 0.0, p.length)
