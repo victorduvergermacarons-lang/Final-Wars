@@ -115,6 +115,86 @@ PIECES = {
 }
 ROT_STEPS = 32
 
+# Phase 4 pieces: ribbon ends, fronts, impacts (approved stills). Strips are below.
+PIECES.update({
+    "water_impact": P(key="FX-16-3", anchor=1, pivot=(16, 28), h=0.0, hold=0.4, fade=True),
+    "fire_whip_tip": P(key="FX-16-5", pivot=(28, 6), h=0.0, rotate=True, drawn=-45.0, loop=True),
+    "fire_whip_impact": P(key="FX-16-6", anchor=1, pivot=(15, 28), h=0.0, hold=0.4, fade=True, motion=4, hz=8.0),
+    "fire_stream_head": P(key="FX-16-7", pivot=(8, 16), h=0.0, rotate=True, drawn=180.0, loop=True),
+    "fire_stream_burst": P(key="FX-16-8", pivot=(10, 26), h=0.0, rotate=True, drawn=-45.0, loop=True),
+    "fire_stream_impact": P(key="FX-16-9", anchor=1, pivot=(16, 29), h=0.0, motion=4, hz=8.0, loop=True),
+    "water_jet_head": P(key="FX-16-11", pivot=(4, 16), h=0.0, rotate=True, drawn=180.0, loop=True),
+    "water_jet_impact": P(key="FX-16-12", anchor=1, pivot=(16, 30), h=0.0, motion=2, hz=3.0, loop=True),
+    "leech_target": P(key="FX-16-14", anchor=1, pivot=(16, 28), h=0.0, loop=True),
+    "leech_self": P(key="FX-16-15", pivot=(16, 16), h=2.0, motion=6, hz=3.0, loop=True),
+    "cable_sparks": P(key="FX-16-18", anchor=1, pivot=(16, 16), h=1.0, motion=4, hz=12.0, loop=True),
+    "lightning_fingers": P(key="FX-16-20", pivot=(15, 16), h=0.0, motion=4, hz=12.0, loop=True),
+    "lightning_strike": P(key="FX-16-21", anchor=1, pivot=(18, 27), h=0.0, hold=0.4, fade=True),
+    "breath_front": P(key="FX-16-23", anchor=1, pivot=(16, 30), h=0.0, motion=4, hz=10.0, loop=True),
+    "breath_blocked": P(key="FX-16-24", anchor=1, pivot=(15, 46), h=0.0, hold=0.5, fade=True),
+    "tidal_front": P(key="FX-16-28", anchor=1, pivot=(16, 28), h=0.0, loop=True),
+    "pulse_front": P(key="FX-16-25", anchor=1, pivot=(16, 45), h=0.0, loop=True),
+    "pulse_blocked": P(key="FX-16-29", anchor=1, pivot=(16, 29), h=0.0, hold=0.5, fade=True),
+    "gust_front": P(key="FX-16-30", anchor=1, pivot=(16, 28), h=0.0, alpha=0.6, loop=True),
+})
+
+# Strips laid along ribbon paths: game name -> (source, crop box, turn the crop a
+# quarter turn so the strip runs left to right). The repeated span is picked by
+# `seamless_span` (the columns whose ends match best) and reported.
+STRIPS = {
+    # The water lash's left bar, from the approved lash (FX-09-1, frame 7 of 9).
+    "water_whip_strip": ("assets/effects/water_lash.png@6", (17, 20, 26, 38), True),
+    "fire_whip_strip": ("approved/FX-16-4.png", (0, 3, 64, 23), False),
+    "metal_cable_strip": ("approved/FX-16-16.png", (0, 10, 64, 22), False),
+    "lightning_strip": ("approved/FX-16-19.png", (0, 5, 64, 29), False),
+    "air_blade_trail": ("approved/FX-16-35.png", (7, 11, 57, 21), False),
+}
+# The lash's hooked end, the whip's tip.
+TIPS = {"water_whip_tip": ("assets/effects/water_lash.png@6", (27, 12, 47, 27), False)}
+
+
+def seamless_span(img, min_frac=0.6):
+    """Columns [a, b) whose repeat joins best: column b would follow b - 1, so
+    column a should look like column b. Prefers longer spans on ties."""
+    w, h = img.size
+    px = img.load()
+
+    def diff(c1, c2):
+        t = 0
+        for y in range(h):
+            p, q = px[c1, y], px[c2, y]
+            t += sum(abs(p[i] - q[i]) for i in range(4))
+        return t
+    filled = [c for c in range(w) if any(px[c, y][3] > 40 for y in range(h))]
+    first, last = filled[0], filled[-1] # empty end columns would leave gaps between copies
+    best = None
+    lo = max(4, int((last - first + 1) * min_frac))
+    for a in range(first, last + 1 - lo):
+        for b in range(a + lo, last + 1):
+            score = diff(a, b) - (b - a) * 2
+            if best is None or score < best[0]:
+                best = (score, a, b)
+    return best[1], best[2]
+
+
+def strips():
+    for name, (src, box, turn) in {**STRIPS, **TIPS}.items():
+        if "@" in src:
+            path, frame = src.split("@")
+            sheet = Image.open(path).convert("RGBA")
+            fw = sheet.height
+            img = sheet.crop((int(frame) * fw, 0, int(frame) * fw + fw, fw))
+        else:
+            img = Image.open(fetch(src)).convert("RGBA")
+        img = img.crop(box)
+        if turn:
+            img = img.transpose(Image.Transpose.ROTATE_90)
+        if name in STRIPS:
+            a, b = seamless_span(img)
+            img = img.crop((a, 0, b, img.height))
+            print(f"{name}: strip {img.size[0]}x{img.size[1]}, columns {a}-{b} of the cut (most seamless span)")
+        img.save(f"{OUT}/{name}.png")
+
 
 def newest_frames(key):
     """The newest frame set the art bot made for `key` ([] if none)."""
@@ -254,6 +334,7 @@ def main():
         img.save(f"{OUT}/{name}.png")
         print(f"wrote {OUT}/{name}.png ({img.size[0]}x{img.size[1]}, drawn {img.getbbox()})")
     pieces()
+    strips()
 
 
 if __name__ == "__main__":

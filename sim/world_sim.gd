@@ -1164,8 +1164,54 @@ func _emit_fx(caster: Actor, ability: AbilityDef, fx: StringName, target: Actor,
 		to = target.move.pos
 	elif aim is Vector2 or aim is Vector2i:
 		to = Vector2(aim)
-	emit({"type": "fx", "fx": fx, "source": caster.id, "ability": ability.id, "from": caster.move.pos, "to": to,
-			"at": now})
+	var e := {"type": "fx", "fx": fx, "source": caster.id, "ability": ability.id, "from": caster.move.pos, "to": to,
+			"at": now}
+	e.merge(shape_fx_data(caster, ability, fx, target, aim), true)
+	emit(e)
+
+
+## What players need to rebuild a code-drawn effect's shape the same way (stance
+## rework phase 4): a ribbon's end (where its hitbox stops: the target, the first
+## unit in its way, a wall, or its range), its full reach and a seed; a front's rays;
+## a ring's radius.
+func shape_fx_data(caster: Actor, ability: AbilityDef, fx_id: StringName, target: Actor, aim: Variant) -> Dictionary:
+	var fx: FxDef = ContentDB.effects.get(fx_id)
+	if fx == null:
+		return {}
+	var hb: HitboxDef = ability.hitbox if ability.hitbox != null else ability.sheet_hitbox
+	var reach := hb.reach if hb != null else float(ability.max_range)
+	var from := caster.move.pos
+	var point: Vector2 = from + caster.facing_vector()
+	if target != null and target != caster:
+		point = target.move.pos
+	elif aim is Vector2 or aim is Vector2i:
+		point = Vector2(aim)
+	var dir := (point - from).normalized() if point.distance_to(from) > 0.001 else caster.facing_vector()
+	var tol := rules.los_height_tolerance
+	if fx.ribbon:
+		var end := point
+		if fx.path == FxDef.Path.LINE and (target == null or target == caster):
+			var clear := Hitbox.clear_distance(grid, from, dir, reach, tol)
+			end = from + dir * clear
+			if hb == null or not hb.pierce:
+				var nearest := clear
+				for a: Actor in ctx.actors.values():
+					if a == caster or not a.alive or not a.is_hostile_to(caster):
+						continue
+					var along := (a.move.pos - from).dot(dir)
+					if along > 0.0 and along < nearest and absf((a.move.pos - from).cross(dir)) <= a.move.radius + 0.3:
+						nearest = along
+				end = from + dir * nearest
+		# The seed comes from the cast, not the combat dice (which it would shift).
+		return {"to": end, "reach": reach, "seed": absi(hash([ability.id, caster.id, roundi(now * 1000.0)])) % 100000}
+	if fx.front:
+		var angle := hb.angle if hb != null and hb.shape == HitboxDef.Shape.CONE else 0.0
+		var width := hb.width if hb != null and hb.width > 0.0 else 1.0
+		var length := minf(from.distance_to(point), reach) if target != null and target != caster else reach
+		return {"rays": FrontRays.rays(grid, from, dir, length, angle, width, tol, fx.ray_spacing)}
+	if fx.tile_mode == FxDef.TileMode.RING or fx.tile_mode == FxDef.TileMode.SENSE:
+		return {"radius": hb.radius if hb != null and hb.radius > 0.0 else 3.0, "to": from}
+	return {}
 
 
 func cancel_cast(actor: Actor, reason: String) -> void:

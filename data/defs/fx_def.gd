@@ -68,6 +68,8 @@ enum Motion { NONE, SPIN, BOB, ORBIT, FLICKER, SWAY, PULSE, DROP }
 
 
 func duration() -> float:
+	if ribbon and path == Path.WHIP and extend_frames > 0:
+		return (snap_frame + retract_frames) / maxf(fps, 0.001)
 	if frames <= 1 and hold_seconds > 0.0:
 		return hold_seconds
 	return frames / maxf(fps, 0.001)
@@ -95,3 +97,92 @@ func alpha_at(since: float) -> float:
 
 func hit_seconds() -> float:
 	return hit_frame / maxf(fps, 0.001) if hit_frame >= 0 else 0.0
+
+
+@export_group("Ribbon (a strip laid along a path)")
+## Drawn as a strip of `sheet` repeated along a path from the caster's hand to its end
+## (stance rework phase 4): the path is rebuilt by every player from the host's
+## start, end, time and seed.
+@export var ribbon: bool = false
+## LINE: straight (streams, jets, cables, lightning). WHIP: a curve that reaches out,
+## snaps and pulls back. FIGURE8: an infinity sign around the caster (Lightning
+## Redirection). COIL: loops around the caster (the fire dragon).
+enum Path { LINE, WHIP, FIGURE8, COIL }
+@export var path: Path = Path.LINE
+## The part of `sheet` repeated along the path (art px; empty: the whole first frame).
+## Cut to its most seamless span by tools/once/make_effect_sheets.py.
+@export var strip_rect: Rect2 = Rect2()
+## Pieces at its ends: the tip (a whip's), the head (a stream's front), the impact
+## where it stops, and the burst at the hand.
+@export var tip_fx: StringName = &""
+@export var head_fx: StringName = &""
+@export var impact_fx: StringName = &""
+@export var hand_fx: StringName = &""
+## Whole-pixel thickening (2 = pixel-doubled across, never smoothed).
+@export var thickness: int = 1
+## How fast the strip flows toward its end (art px per second; negative: toward
+## the caster, Leeching Tide).
+@export var scroll_speed: float = 0.0
+## WHIP: how far the curve bends sideways at point-blank range (a fraction of its
+## length); nearly straight at full range.
+@export var curl: float = 0.0
+## WHIP (at `fps`): frames reaching out, the frame it snaps on (the hit lands then:
+## `hit_frame` is set to it at load), frames pulling back.
+@export var extend_frames: int = 0
+@export var snap_frame: int = 0
+@export var retract_frames: int = 0
+## Lightning: the path is re-jagged every `jag_seconds`, points pushed up to
+## `jag_amount` tiles sideways (from the host's seed).
+@export var jag_seconds: float = 0.0
+@export var jag_amount: float = 0.0
+## Colour the strip is multiplied by (Leeching Tide: darker blue).
+@export var tint: Color = Color.WHITE
+
+@export_group("Front (a leading edge across a hitbox)")
+## Drawn as pieces at the tips of rays fanned across a cone or laid across a line,
+## each ray stopping where the hitbox's terrain rule stops it (the host sends where).
+@export var front: bool = false
+@export var ray_spacing: float = 0.25
+## Tiles per second.
+@export var front_speed: float = 8.0
+## Left behind the front, fading (its own piece; empty: none).
+@export var trail_fx: StringName = &""
+@export var trail_fade_seconds: float = 0.4
+## Where terrain stops a ray.
+@export var blocked_fx: StringName = &""
+## Whole-pixel scale of the pieces (Air Blast: Gust's front, larger).
+@export var piece_scale: int = 1
+## Tiles the front passes over turn wet (Tidal Wave, Water Pulse).
+@export var wets: bool = false
+
+@export_group("Tiles and the screen (drawn in code)")
+## WET: a glossy water film. BURNING: flames auto-tiled by neighbours. SAND: a sand
+## tint (Sinkhole). RING: a shock ring lifting and shading the real tiles (Seismic
+## Stomp). CRACKS: cracks shaded on the tiles, shaking. SANDSTORM: swirling sand over
+## the area. SENSE: the Seismic Sense screen shader. RAIN: falling drops over the area.
+enum TileMode { NONE, WET, BURNING, SAND, RING, CRACKS, SANDSTORM, SENSE, RAIN }
+@export var tile_mode: TileMode = TileMode.NONE
+@export var tile_tint: Color = Color(0, 0, 0, 0)
+## How long it lasts when the event doesn't say (seconds).
+@export var tile_seconds: float = 3.0
+
+
+## The strip's rectangle in `sheet`.
+func strip() -> Rect2:
+	if strip_rect.size != Vector2.ZERO:
+		return strip_rect
+	return Rect2(Vector2.ZERO, Vector2(frame_size))
+
+
+## A whip's or stream's length over time: 0 to 1 while reaching out, 1 at the snap,
+## back to 0 while pulling back; streams are always 1.
+func reach_at(since: float) -> float:
+	if path != Path.WHIP or extend_frames <= 0:
+		return 1.0
+	var f := since * fps
+	if f < extend_frames:
+		return clampf(f / extend_frames, 0.0, 1.0)
+	var back := f - snap_frame
+	if back <= 0.0:
+		return 1.0
+	return clampf(1.0 - back / maxf(retract_frames, 1.0), 0.0, 1.0)

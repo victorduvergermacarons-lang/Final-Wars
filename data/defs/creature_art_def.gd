@@ -94,6 +94,12 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## `looks`, e.g. "look:stone_50": the body half stone from the feet up). Missing: a
 ## faint ring in the element's colour (the art isn't approved yet).
 @export var stance_looks: Dictionary = {}
+## Heroes: where the hand is on an animation's strike frame, per facing (art px
+## from the feet, x right, y up), measured on the sheets (stance rework phase 4):
+## the furthest opaque pixel toward the facing in the body band. South and north
+## can't be told from the body there, so they are midway between their diagonals.
+## Ribbons start here; animations not listed use "water_whip".
+@export var hand_points: Dictionary = {}
 
 @export_group("Recolour")
 ## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
@@ -156,6 +162,12 @@ func stance_anim(tree: String, n: int) -> Array:
 	var e = stance_anims.get("%s:%d" % [tree, n], stance_anim_default)
 	var names: Array = e if e is Array else [e]
 	return names.filter(func(a): return sheets.has(str(a)))
+
+
+## The hand point for `anim` facing `dir` (see `hand_points`; Vector2.ZERO: none).
+func hand_point(anim: String, dir: String) -> Vector2:
+	var set: Dictionary = hand_points.get(anim, hand_points.get("water_whip", {}))
+	return set.get(dir, Vector2.ZERO)
 
 
 ## What `tree`'s stance `n` shows (see `stance_looks`): an effect id, "look:<name>",

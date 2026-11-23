@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"breath_of_fire"
+frames = 1
+rotate = false
+front = true
+head_fx = &"breath_front"
+trail_fx = &"breath_front"
+blocked_fx = &"breath_blocked"
+front_speed = 9.0
+trail_fade_seconds = 0.35
+hold_seconds = 1.0
+fps = 12.0

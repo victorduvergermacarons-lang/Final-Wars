@@ -107,6 +107,7 @@ func setup(p_session, p_client: ClientState, zone: ZoneDef) -> void:
 	_landmarks = zone.landmarks
 	camera = PixelCamera.new()
 	add_child(camera)
+	_build_sense_overlay()
 	session.events_received.connect(_on_events)
 	_grid = grid
 	if use_terrain_cache and _art != null: # placeholder maps are tiny; drawn in full
@@ -151,7 +152,58 @@ func _process(delta: float) -> void:
 	var t: float = session.render_time()
 	_float_texts = _float_texts.filter(func(f): return t - f.t < FLOAT_TEXT_SECONDS)
 	_update_terrain_cache()
+	_update_sense(t)
 	queue_redraw()
+
+
+# --- Seismic Sense (a screen shader) -------------------------------------------
+
+var _sense_layer: CanvasLayer
+var _sense_rect: ColorRect
+const SENSE_RINGS := 3
+const SENSE_FADE := 0.6
+
+
+func _build_sense_overlay() -> void:
+	_sense_layer = CanvasLayer.new()
+	_sense_layer.layer = 1 # over the world, under the HUD (added after the view)
+	add_child(_sense_layer)
+	_sense_rect = ColorRect.new()
+	_sense_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_sense_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://view/shaders/seismic_sense.gdshader")
+	_sense_rect.material = mat
+	_sense_rect.visible = false
+	_sense_layer.add_child(_sense_rect)
+
+
+## While Seismic Sense runs (FxPainter.sense): the screen greys over 0.6 s, rings of
+## light leave the hero every second at its speed, and colour returns at the end.
+func _update_sense(t: float) -> void:
+	var sn: Dictionary = _fx.sense
+	if sn.is_empty() or t > float(sn.at) + float(sn["for"]) or t < float(sn.at):
+		_sense_rect.visible = false
+		return
+	var since := t - float(sn.at)
+	var length := float(sn["for"])
+	var grey := clampf(minf(since, length - since) / SENSE_FADE, 0.0, 1.0)
+	var hero: Actor = session.get_actor(int(sn.on))
+	# In window pixels (the shader's FRAGCOORD): the canvas, then the window's stretch.
+	var to_window := get_viewport().get_final_transform() * get_viewport().get_canvas_transform()
+	var center := to_window * (actor_screen_pos(hero) if hero != null else Vector2.ZERO)
+	var px_per_tile := Iso.TILE_W * to_window.get_scale().x * 0.7
+	var radii := Vector3.ZERO
+	for i in SENSE_RINGS:
+		var age := fmod(since, float(SENSE_RINGS)) - i
+		if age < 0.0:
+			age += SENSE_RINGS
+		radii[i] = age * float(sn.speed) * px_per_tile
+	var mat: ShaderMaterial = _sense_rect.material
+	mat.set_shader_parameter("grey", grey)
+	mat.set_shader_parameter("center", center)
+	mat.set_shader_parameter("radii", radii)
+	_sense_rect.visible = true
 
 
 # --- Terrain cache ------------------------------------------------------------
@@ -485,13 +537,15 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
 	if item.has("actor"):
 		var off: Vector2 = item.get("offset", Vector2.ZERO)
-		return actor_screen_pos(item.actor) + Iso.to_screen(off, float(item.lift)) - Iso.to_screen(Vector2.ZERO, 0.0)
+		return actor_screen_pos(item.actor) + Iso.to_screen(off, float(item.get("lift", 0.0))) - Iso.to_screen(Vector2.ZERO, 0.0)
 	var tile: Vector2i = item.get("z_tile", MoveState.tile_of(item.pos)) # a projectile: its launch height
-	return Iso.to_screen(item.pos, float(grid.height_at(tile)) + float(item.lift))
+	return Iso.to_screen(item.pos, float(grid.height_at(tile)) + float(item.get("lift", 0.0)))
 
 
 func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
 	var r := RING_RADIUS.x if item.has("ring") else 0.0
+	if item.has("quad") or item.has("tilefx"):
+		r = 160.0 # a strip piece or a shaded tile (and a sandstorm over its area)
 	if item.has("fx"):
 		var fx: FxDef = item.fx
 		r = maxf(fx.frame_size.x, fx.frame_size.y) * PixelCamera.ART_SCALE
@@ -538,6 +592,128 @@ func _draw_code_fx(grid: GridModel, item: Dictionary) -> void:
 					base + Vector2(2.5 * k * s, 0), base + Vector2(0, 1.5 * k * s)]), c)
 
 
+## A strip piece of a ribbon: a quad from a to b, bent to its neighbours (each end
+## at right angles to the path there), the strip's art mapped along it.
+func _draw_ribbon_quad(grid: GridModel, item: Dictionary) -> void:
+	var fx: FxDef = item.quad
+	if fx.sheet == null:
+		return
+	var base := float(grid.height_at(item.z_tile))
+	var a := RibbonPath.screen(item.a, base)
+	var b := RibbonPath.screen(item.b, base)
+	var pa := RibbonPath.screen(item.pa, base)
+	var nb := RibbonPath.screen(item.nb, base)
+	var na := (b - pa).orthogonal().normalized()
+	var nbv := (nb - a).orthogonal().normalized()
+	if na == Vector2.ZERO or nbv == Vector2.ZERO:
+		return
+	var r := fx.strip()
+	var half := r.size.y * PixelCamera.ART_SCALE * fx.thickness * 0.5
+	var tex := Vector2(fx.sheet.get_size())
+	var x0 := (r.position.x + float(item.u0) * r.size.x) / tex.x
+	var x1 := (r.position.x + float(item.u1) * r.size.x) / tex.x
+	var y0 := r.position.y / tex.y
+	var y1 := r.end.y / tex.y
+	var c := Color(fx.tint, fx.tint.a * float(item.get("alpha", 1.0)) * fx.alpha)
+	draw_polygon(PackedVector2Array([a - na * half, b - nbv * half, b + nbv * half, a + na * half]),
+			PackedColorArray([c, c, c, c]),
+			PackedVector2Array([Vector2(x0, y0), Vector2(x1, y0), Vector2(x1, y1), Vector2(x0, y1)]), fx.sheet)
+
+
+## A still drawn with its four corners at their own opacities: a burning tile's
+## flames faded toward each open side ("fade": grid -x, +x, -y, +y). Screen left
+## faces grid -x and +y, right faces +x and -y.
+func _draw_faded(fx: FxDef, item: Dictionary, xf: Transform2D, color: Color) -> void:
+	var f: PackedFloat32Array = item.fade
+	var size := Vector2(fx.frame_size)
+	var r := Rect2(-fx.pivot, size)
+	var left := (f[0] + f[3]) * 0.5 # the screen's left faces grid -x and +y
+	var right := (f[1] + f[2]) * 0.5 # its right faces +x and -y
+	var tl := left
+	var bl := left
+	var tr := right
+	var br := right
+	var pts := PackedVector2Array([xf * r.position, xf * Vector2(r.end.x, r.position.y), xf * r.end,
+			xf * Vector2(r.position.x, r.end.y)])
+	var tex := Vector2(fx.sheet.get_size())
+	var u0 := float(item.frame) * size.x / tex.x
+	var u1 := u0 + size.x / tex.x
+	draw_polygon(pts, PackedColorArray([Color(color, color.a * tl), Color(color, color.a * tr), Color(color, color.a * br),
+			Color(color, color.a * bl)]), PackedVector2Array([Vector2(u0, 0), Vector2(u1, 0), Vector2(u1, 1),
+			Vector2(u0, 1)]), fx.sheet)
+
+
+## A tile shaded in code: its own art lifted and brightened as a shock ring passes
+## (RING), a glossy water film (WET), sand (SAND), cracks shaking (CRACKS), a
+## sandstorm or rain over an area.
+func _draw_tile_fx(grid: GridModel, item: Dictionary) -> void:
+	var fx: FxDef = item.tilefx
+	var tile: Vector2i = item.tile
+	if not grid.in_bounds(tile) or not grid.has_tile(tile):
+		return
+	var a := float(item.get("alpha", 1.0))
+	var c := Iso.to_screen(Vector2(tile), grid.height_at(tile))
+	var hw := Iso.TILE_W * 0.5
+	var hh := Iso.TILE_H * 0.5
+	var diamond := PackedVector2Array([c + Vector2(0, -hh), c + Vector2(hw, 0), c + Vector2(0, hh), c + Vector2(-hw, 0)])
+	match fx.tile_mode:
+		FxDef.TileMode.RING:
+			var lift := float(item.get("lift_px", 0.0)) * PixelCamera.ART_SCALE
+			draw_set_transform(Vector2(0, -roundf(lift)))
+			_draw_tile(self, grid, tile)
+			draw_set_transform(Vector2.ZERO)
+			var up := PackedVector2Array()
+			for q in diamond:
+				up.append(q + Vector2(0, -roundf(lift)))
+			draw_colored_polygon(up, Color(1, 1, 0.9, 0.22 * a))
+		FxDef.TileMode.WET:
+			draw_colored_polygon(diamond, Color(fx.tile_tint, fx.tile_tint.a * a))
+			# A glint along the top edges.
+			draw_polyline(PackedVector2Array([diamond[3] + Vector2(6, 0), diamond[0] + Vector2(0, 4), diamond[1] - Vector2(6, 0)]),
+					Color(0.8, 0.9, 1.0, 0.35 * a), 1.0)
+		FxDef.TileMode.SAND:
+			draw_colored_polygon(diamond, Color(fx.tile_tint, fx.tile_tint.a * a))
+		FxDef.TileMode.CRACKS:
+			var rng := RandomNumberGenerator.new()
+			rng.seed = hash(tile)
+			var shake := Vector2(sin(float(item.since) * 47.0), cos(float(item.since) * 39.0)) * PixelCamera.ART_SCALE
+			for k in 3:
+				var p := c + Vector2(rng.randf_range(-hw * 0.5, hw * 0.5), rng.randf_range(-hh * 0.5, hh * 0.5)) + shake
+				var pts := PackedVector2Array([p])
+				for j in 4:
+					p += Vector2(rng.randf_range(-8, 8), rng.randf_range(-4, 4))
+					pts.append(p)
+				draw_polyline(pts, Color(fx.tile_tint, fx.tile_tint.a * a), PixelCamera.ART_SCALE * 1.5)
+		FxDef.TileMode.SANDSTORM:
+			var center := Iso.to_screen(item.pos, grid.height_at(tile))
+			var size := sqrt(float(item.area.size())) * hw
+			draw_colored_polygon(_ellipse_points(center, size, size * 0.5), Color(fx.tile_tint, fx.tile_tint.a * a))
+			var t := float(item.since)
+			for k in 140:
+				var r := fposmod(k * 0.618, 1.0) * size
+				var ang := t * (2.0 - r / size) * 2.0 + k * 1.7
+				var h := fposmod(k * 0.37 + t * 0.5, 1.0) * 40.0
+				var p := center + Vector2(cos(ang) * r, sin(ang) * r * 0.5 - h)
+				draw_rect(Rect2(p.round(), Vector2(2, 2) * PixelCamera.ART_SCALE), Color(0.9, 0.74, 0.46, 0.9 * a))
+		FxDef.TileMode.RAIN:
+			var t := float(item.since)
+			for tile_v in item.area:
+				var tc := Iso.to_screen(Vector2(tile_v), grid.height_at(tile_v))
+				for k in 4:
+					var fall := fposmod(t * 1.6 + k * 0.25 + (tile_v.x * 0.17 + tile_v.y * 0.29), 1.0)
+					var p := (tc + Vector2((k - 1.5) * 12.0, -80.0 + fall * 80.0)).round()
+					draw_line(p, p + Vector2(-2, 10), Color(fx.tile_tint, fx.tile_tint.a * a * (1.0 - fall * 0.5)),
+							PixelCamera.ART_SCALE)
+
+
+static func _ellipse_points(c: Vector2, rx: float, ry: float) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in 24:
+		var ang := TAU * i / 24.0
+		pts.append(c + Vector2(cos(ang) * rx, sin(ang) * ry))
+	return pts
+
+
 ## A stance's faint ring (art not approved yet): its half-size on screen.
 const RING_RADIUS := Vector2(30, 15)
 
@@ -565,6 +741,20 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 	if item.has("code"):
 		_draw_code_fx(grid, item)
 		return
+	if item.has("quad"):
+		_draw_ribbon_quad(grid, item)
+		return
+	if item.has("tilefx"):
+		_draw_tile_fx(grid, item)
+		return
+	if item.has("particle"):
+		var i: int = item.particle
+		var pp := _fx.particles
+		var k := 1.0 - pp.age[i] / maxf(pp.life[i], 0.001)
+		var c: Color = pp.color[i]
+		draw_rect(Rect2(_fx_anchor(grid, item).round(), Vector2(2, 2) * PixelCamera.ART_SCALE * 0.5),
+				Color(c, c.a * k))
+		return
 	var fx: FxDef = item.fx
 	if fx.sheet == null:
 		return
@@ -576,6 +766,7 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 		flip = false
 	var mirror: bool = item.get("mirror", false)
 	# Turned, mirrored, then (lying on the ground) squashed to half height, like a tile.
+	s *= int(item.get("scale", 1)) # whole-pixel enlargement (Air Blast's front)
 	var squash := 0.5 if item.get("flat", false) else 1.0
 	var xf := Transform2D(Vector2(s, 0), Vector2(0, s * squash), Vector2.ZERO) * Transform2D(angle, Vector2.ZERO) \
 			* Transform2D(Vector2(-1.0 if mirror else 1.0, 0), Vector2(0, -1.0 if flip else 1.0), Vector2.ZERO)
@@ -594,6 +785,9 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		return
 	var half := int(item.get("half", 0))
+	if item.has("fade"):
+		_draw_faded(fx, item, xf, color)
+		return
 	if half == 0:
 		draw_set_transform_matrix(xf)
 		draw_texture_rect_region(fx.sheet, Rect2(-fx.pivot, size), Rect2(Vector2(item.frame * size.x, 0), size), color)
@@ -1264,6 +1458,7 @@ func _queue_float_texts() -> void:
 
 func _on_events(events: Array) -> void:
 	_fx.on_events(events, ContentDB.effects)
+	_fx.on_casts(events, ContentDB.abilities)
 	var t: float = session.render_time()
 	for e in events:
 		match e.type:

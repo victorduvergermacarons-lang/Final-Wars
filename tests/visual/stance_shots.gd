@@ -9,6 +9,9 @@ extends Node
 ## Phase 3: every ability's effects through the `fx` debug command (st3_fx_<id>,
 ## cropped), projectiles turned to 8 directions (st3_rot_<id>), Scorch's flames and
 ## debuff icon (st3_scorch).
+## Phase 4: code-drawn effects through `fx` (st4_<name>): ribbons, fronts (open
+## ground and against a pillar), tile effects, an L-shaped burning area, Seismic
+## Sense, the fire dragon coiled and uncoiling. SHOTS_ONLY=p4 takes only these.
 
 var out_dir := OS.get_environment("SHOTS_DIR").path_join("") if OS.get_environment("SHOTS_DIR") != "" else ProjectSettings.globalize_path("user://shots/")
 var game: Game
@@ -61,10 +64,14 @@ func _run() -> void:
 		hud.trees_window.show_tree(tree)
 		await _shot("st1_tree_%s" % tree.to_lower())
 	hud._toggle(hud.trees_window)
-	if OS.get_environment("SHOTS_ONLY") != "rot":
+	var only := OS.get_environment("SHOTS_ONLY")
+	if only == "":
 		await phase1_trench(session, hero)
 		await phase2_looks(session, hero)
-	await phase3_effects(session, hero)
+	if only in ["", "rot"]:
+		await phase3_effects(session, hero)
+	if only in ["", "p4"]:
+		await phase4_code_effects(session, hero)
 	get_tree().quit()
 
 
@@ -170,3 +177,73 @@ func phase3_effects(session: LocalSession, hero: Hero) -> void:
 	game.get_node("Hud").client.target_id = wolf.id
 	await _frames(10)
 	await _shot("st3_scorch")
+
+
+## [shot name, console line, aim offset from the hero (tiles), host seconds to wait].
+const P4_SHOTS := [
+	["water_whip_3", "fx W02", Vector2(2, 2), 0.29], ["fire_whip", "fx F06", Vector2(3, 0), 0.25],
+	["fire_stream", "fx F12", Vector2(4, 1), 0.4], ["water_jet", "fx W11", Vector2(4, 1), 0.4],
+	["leeching_tide", "fx W07", Vector2(3, 2), 0.3], ["metal_cable", "fx E22", Vector2(4, 0), 0.2],
+	["lightning_bolt", "fx F17", Vector2(4, 2), 0.15], ["lightning_redirect", "fx F19", Vector2(2, 0), 0.6],
+	["breath_of_fire", "fx F14", Vector2(3, 3), 0.25], ["water_pulse", "fx W06", Vector2(3, 3), 0.3],
+	["gust", "fx A02", Vector2(3, 0), 0.15], ["air_blast", "fx A05", Vector2(3, 0), 0.15],
+	["air_blade", "fx A22", Vector2(5, 0), 0.1], ["stomp_ring", "fx E04", Vector2(1, 0), 0.3],
+	["sinkhole", "fx E06", Vector2(3, 0), 0.5], ["earthquake", "fx E11", Vector2(3, 0), 0.5],
+	["sandstorm", "fx E16", Vector2(3, 0), 1.0], ["healing_rain", "fx W17", Vector2(3, 0), 0.6],
+]
+
+
+func phase4_code_effects(session: LocalSession, hero: Hero) -> void:
+	var view := await _view()
+	var sim := session.zone_sim()
+	session.world.move_hero(hero.id, &"crossing", Vector2i(12, 12))
+	view = await _view()
+	sim = session.zone_sim()
+	hero.move.place(Vector2i(12, 12))
+	hero.move.ground_h = sim.grid.height_at(Vector2i(12, 12))
+	sim.set_stance(hero, "", 0)
+	await _frames(10)
+	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+	ContentDB.rules.game_speed = 0.2
+	for shot in P4_SHOTS:
+		await _console(session, hero, shot[1], hero.move.pos + shot[2], shot[3])
+		await _crop("st4_" + shot[0], 480, 380)
+		await _console(session, hero, "heal", hero.move.pos, 2.5)
+	# Whips at 1, 3 and 5 tiles.
+	for d in [1, 3, 5]:
+		await _console(session, hero, "fx W02", hero.move.pos + Vector2(d, 0), 0.29)
+		await _crop("st4_water_whip_at_%d" % d, 480, 380)
+		await _console(session, hero, "heal", hero.move.pos, 1.0)
+	# A pillar (height 4) in front: Breath of Fire and Tidal Wave leave a gap behind it.
+	var pillar := hero.tile() + Vector2i(2, 2)
+	var old_h := sim.grid.height_at(pillar)
+	sim.grid.set_tile(pillar, old_h + 4, false)
+	view.refresh_tiles([pillar])
+	for shot in [["breath_pillar", "fx F14", 0.3], ["tidal_pillar", "fx W15", 0.3], ["fire_stream_wall", "fx F12", 0.4]]:
+		await _console(session, hero, shot[1], hero.move.pos + Vector2(3, 3), shot[2])
+		await _crop("st4_" + shot[0], 480, 380)
+		await _console(session, hero, "heal", hero.move.pos, 2.5)
+	sim.grid.set_tile(pillar, old_h, true)
+	view.refresh_tiles([pillar])
+	# An L-shaped burning area (Burning Ground's zone).
+	var tiles := []
+	for k in 4:
+		tiles.append(hero.tile() + Vector2i(2 + k, 1))
+	for k in range(1, 3):
+		tiles.append(hero.tile() + Vector2i(2, 1 + k))
+	sim.add_ground_zone(hero.id, tiles, ContentDB.abilities[&"F08"], ContentDB.abilities[&"F08"], 1.0, sim.now + 30.0)
+	await _console(session, hero, "heal", hero.move.pos, 0.3)
+	await _crop("st4_burning_L", 480, 380)
+	# Seismic Sense: the whole screen.
+	await _console(session, hero, "fx E13", hero.move.pos, 1.2)
+	await _shot("st4_seismic_sense")
+	await _console(session, hero, "heal", hero.move.pos, 6.5)
+	# The fire dragon coiled, then uncoiling toward an aim (a stance-5 Fire cast).
+	await _console(session, hero, "fx Fire:5", hero.move.pos, 0.5)
+	await _crop("st4_dragon_coiled", 480, 380)
+	view._fx.on_casts([{"type": "cast", "source": hero.id, "ability": &"F16", "at": session.render_time(),
+			"point": hero.move.pos + Vector2(3, 1)}], ContentDB.abilities)
+	await _console(session, hero, "heal", hero.move.pos, 0.2)
+	await _crop("st4_dragon_uncoiling", 480, 380)
+	sim.set_stance(hero, "", 0)
+	ContentDB.rules.game_speed = 1.0

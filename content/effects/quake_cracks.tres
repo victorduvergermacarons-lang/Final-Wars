@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"quake_cracks"
+frames = 1
+rotate = false
+tile_mode = 5
+tile_tint = Color(0.08, 0.06, 0.05, 0.75)
+tile_seconds = 4.0
+fps = 12.0

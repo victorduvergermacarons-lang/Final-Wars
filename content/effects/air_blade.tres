@@ -28,3 +28,4 @@ motion_hz = 0.5
 motion_amount = 0.1
 split = false
 behind = false
+trail_fx = &"air_blade_trail_ribbon"

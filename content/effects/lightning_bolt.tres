@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+[ext_resource type="Texture2D" path="res://assets/effects/lightning_strip.png" id="2_sheet"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"lightning_bolt"
+sheet = ExtResource("2_sheet")
+frame_size = Vector2i(50, 24)
+frames = 1
+rotate = false
+ribbon = true
+path = 0
+jag_seconds = 0.05
+jag_amount = 0.25
+hand_fx = &"lightning_fingers"
+impact_fx = &"lightning_strike"
+hold_seconds = 0.45
+fade_out = true
+fps = 12.0

@@ -99,7 +99,9 @@ static func _fx(world: WorldSim, hero: Hero, args: Array, content, aim) -> Dicti
 		played.append("in the hands")
 		at += 1.0
 	if ability.fx_cast != &"":
-		events.append(_with(base, {"fx": ability.fx_cast, "at": at}))
+		var cast := _with(base, {"fx": ability.fx_cast, "at": at})
+		cast.merge(world.shape_fx_data(hero, ability, ability.fx_cast, null, to), true) # ribbons, fronts, rings
+		events.append(cast)
 		played.append("cast")
 	if ability.fx_projectile != &"":
 		var hb: HitboxDef = ability.hitbox if ability.hitbox != null else ability.sheet_hitbox
