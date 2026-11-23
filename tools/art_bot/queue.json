@@ -1,5 +1,5 @@
 {
- "about": "The art bot's queue: the live art tracker's prompts (read 2026-11-05), in tracker order (act, then row). Differences from the tracker (user requests): \"clean 1px dark outline\" removed from the world and effect prompts; prompts with a \"base\" are edits of that approved picture (approved/<KEY>.png on the art-drafts branch) instead of \"the same ...\" and wait until it exists; \"animations\" (from the tracker's Detail column) and 8 directions are made from the approved picture after every still is done. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02/WO-10 (no prompt). A key is <ID>-<n>, follow-ups <ID>-<n>+8dir and <ID>-<n>+<action>; keys in the drafts branch's progress.json are not made again. 2026-11-21: stance rework art added: 35 hero animations (stance entries and shared bending casts, all 8 directions) and FX-11 to FX-15 (ability effects and stance auras); see the Final Wars project doc claude/stance-animation-plan.md. 2026-11-22: FX-16, kits for effects the game draws in code (strips, tips, impacts, tile fronts, blocked splashes) replacing the whole-picture drafts of 14 line and front effects; see claude/code-drawn-effects-prompt.md. 2026-11-23: 60 effect prompts rewritten (user request: no tiles) to draw only the effect, with a negative description; their old drafts were removed from progress.json so the bot makes them again.",
+ "about": "The art bot's queue: the live art tracker's prompts (read 2026-11-05), in tracker order (act, then row). Differences from the tracker (user requests): \"clean 1px dark outline\" removed from the world and effect prompts; prompts with a \"base\" are edits of that approved picture (approved/<KEY>.png on the art-drafts branch) instead of \"the same ...\" and wait until it exists; \"animations\" (from the tracker's Detail column) and 8 directions are made from the approved picture after every still is done. Skipped: EN-01 (acquired), BO-05 (found), IC-01/IC-02/WO-10 (no prompt). A key is <ID>-<n>, follow-ups <ID>-<n>+8dir and <ID>-<n>+<action>; keys in the drafts branch's progress.json are not made again. 2026-11-21: stance rework art added: 35 hero animations (stance entries and shared bending casts, all 8 directions) and FX-11 to FX-15 (ability effects and stance auras); see the Final Wars project doc claude/stance-animation-plan.md. 2026-11-22: FX-16, kits for effects the game draws in code (strips, tips, impacts, tile fronts, blocked splashes) replacing the whole-picture drafts of 14 line and front effects; see claude/code-drawn-effects-prompt.md. 2026-11-23: 60 effect prompts rewritten (user request: no tiles) to draw only the effect, with a negative description; their old drafts were removed from progress.json so the bot makes them again. 2026-11-23 (2): the user's review notes applied: 31 prompts rewritten, FX-12-5 is a sand tile, FX-16-37 to 42 added (wet ground, fire edge and corner, fire dragon head, body, tail).",
  "kinds": {
   "plain": {
    "size": [
@@ -1594,7 +1594,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "a small crackle of blue-white electric sparks about 14 px across, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "small orange flames flickering in a loose ring about 18 px wide and 30 px tall around an empty middle, as if the person standing there is on fire; the middle stays empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -1602,8 +1602,9 @@
      ],
      "rotate": false,
      "animations": [
-      "the sparks crackle and flicker, then fade"
-     ]
+      "the orange flames flicker and lick upward in a seamless loop"
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a ring of warm golden flames about 28 px wide, lying flat as if seen on the ground from above at an angle, the middle of the ring empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -1683,7 +1684,7 @@
      ]
     },
     {
-     "subject": "two short jets of flame pointing straight down, side by side, about 12 px long, as if shooting from a person's feet. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "two short jets of flame shooting straight DOWN toward the bottom edge of the canvas, side by side about 8 px apart, each about 12 px long, the hot white base at the top and the flame tips at the bottom, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -1692,7 +1693,8 @@
      "rotate": false,
      "animations": [
       "the flame jets roar and flicker in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "blue-white lightning curling in a circle around an empty middle, about 40 px across. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -1838,7 +1840,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "three small sharp grey metal shards side by side, each about 6 px long, pointing to the right. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "three small sharp grey metal shards lying horizontally side by side, each about 8 px long, all pointing to the right, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -1848,7 +1850,8 @@
      "animations": [
       "the metal shards spin slightly as they fly to the right",
       "the shards hit with a small burst of white sparks"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a ring of small brown-grey stones floating around an empty middle the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -1864,7 +1867,7 @@
      ]
     },
     {
-     "subject": "chunks of dirt, pebbles and dust tumbling down and inward into a dark round opening about 20 px wide; only the falling debris and the dark opening. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "one flat isometric ground tile, a 32x16 diamond, of loose pale sand with a slight funnel-shaped dip in its middle. A standing person in this game is 32 px tall. Isometric game tile, 32x32 canvas, pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -1872,9 +1875,8 @@
      ],
      "rotate": false,
      "animations": [
-      "the tile cracks and sinks down with crumbling edges and dust"
-     ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+      "the sand slowly trickles down into the dip in a seamless loop"
+     ]
     },
     {
      "subject": "grey metallic glints and small curved creak lines in a loose ring about 24 px wide and 30 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -1986,7 +1988,7 @@
    "act": "Prototype",
    "prompts": [
     {
-     "subject": "a small glowing teal ball of water about 10 px wide with white highlights, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a small glowing ball of clear blue water about 10 px wide with white highlights, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -1995,7 +1997,8 @@
      "rotate": false,
      "animations": [
       "droplets rise and spiral together into the glowing water ball"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "ribbons of glowing teal water spiralling upward around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2010,7 +2013,7 @@
      ]
     },
     {
-     "subject": "a round, see-through bubble of clear blue water just big enough to hold a standing person, white highlights. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a round, clearly see-through bubble of water about 23 px wide: only its thin shiny blue rim, a few white highlights and a very faint blue tint, the inside clearly transparent and empty, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2020,7 +2023,8 @@
      "animations": [
       "the water bubble wobbles gently in a loop",
       "the bubble bursts and splashes outward"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a small sharp shard of pale blue ice about 10 px long, pointing to the right. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2061,7 +2065,7 @@
      ]
     },
     {
-     "subject": "a ring of small glowing blue-white water droplets around the middle of a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a ring of small glowing blue-white droplets, an ellipse about 20 px wide and 8 px tall, floating, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2070,10 +2074,11 @@
      "rotate": false,
      "animations": [
       "the droplets circle slowly in a loop, glowing"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
-     "subject": "a block of clear pale-blue ice the size of a standing person, frosted edges, hollow inside. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 48x48 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "an irregular, organic lump of clear pale-blue ice about 22 px wide and 34 px tall with rounded uneven sides and frost on its edges, mostly see-through (about half transparent), hollow and empty inside, not a block. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 48x48 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       48,
@@ -2083,10 +2088,11 @@
      "animations": [
       "the ice forms upward from the ground into a block",
       "the ice block cracks and shatters"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
-     "subject": "a column of light-blue water and soft light rising from the ground, about as tall as a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a column of light-blue water and soft white light rising upward, about 16 px wide and 40 px tall, see-through, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2095,7 +2101,8 @@
      "rotate": false,
      "animations": [
       "the column of water and light rises up from the ground, glows, then fades"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a curved wall of blue water about 16 px tall moving to the right, foam on top. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2136,7 +2143,7 @@
      ]
     },
     {
-     "subject": "a bright glowing ribbon of white-blue spirit water winding around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a bright glowing ribbon of white-blue spirit water spiralling upward in a loose helix about 20 px wide and 36 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2145,7 +2152,8 @@
      "rotate": false,
      "animations": [
       "the spirit water ribbon winds upward and glows brighter, then fades into sparkles"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a thin straight band of high-pressure blue water from the left edge to the right edge, about 6 px thick, spray at the edges. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2211,7 +2219,7 @@
      ]
     },
     {
-     "subject": "a ring of rising water with golden sparkles around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a ring of rising blue water with golden sparkles, an ellipse about 26 px wide and 10 px tall, the middle empty, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2220,7 +2228,8 @@
      "rotate": false,
      "animations": [
       "the water ring rises up and golden sparkles burst, then fade"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a cluster of five sharp pale-blue ice spikes about 28 px wide, pointing up as if bursting out of the ground; only the spikes. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x48 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2236,7 +2245,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "eight arms of clear blue water rising around an empty middle where a standing person would be, like an octopus, curling at the tips. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 96x96 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "eight arms of clear blue water rising and curling upward from an ellipse lying flat on the ground around an empty middle, seen from a three-quarter top-down angle like the rest of the game; the ellipse about 60 px wide and 30 px tall, the arms up to 40 px tall, curling at the tips. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 96x96 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       96,
@@ -2246,7 +2255,8 @@
      "animations": [
       "the eight water arms sway slowly in a loop",
       "the water arms lash outward in all directions, then return"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     }
    ]
   },
@@ -2307,7 +2317,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "a small spinning ball of semi-transparent white air about 16 px wide, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a small spinning ball of semi-transparent white air about 16 px wide with swirl lines inside, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -2316,7 +2326,8 @@
      "rotate": false,
      "animations": [
       "the air ball spins in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "dark grey-blue swirling wind with slanted streaks of rain in a cloud about 30 px wide and 26 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2421,7 +2432,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "a small grey-white tornado about 16 px wide and 40 px tall, with bits of debris. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a small grey-white tornado funnel about 16 px wide and 40 px tall, narrow at the bottom and wide at the top, with bits of debris, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -2430,7 +2441,8 @@
      "rotate": false,
      "animations": [
       "the tornado spins in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a ring of swirling white wind around an empty middle, an isometric ellipse about 48 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2445,7 +2457,7 @@
      ]
     },
     {
-     "subject": "a flat ring of compressed air pressing down on the ground around an empty middle, faint pressure lines. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a flat ring of compressed pale air pressing down, an ellipse about 44 px wide and 22 px tall seen from above at an angle, faint pressure lines, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2454,10 +2466,11 @@
      "rotate": false,
      "animations": [
       "the pressure ring slams down and holds, then releases"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
-     "subject": "a few faint white feathers and wisps of air floating around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a few small white feathers and wisps of air drifting upward, about 20 px across, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2466,7 +2479,8 @@
      "rotate": false,
      "animations": [
       "the feathers and wisps float upward gently in a loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "fierce dark swirling storm wind with bits of debris in a cloud about 30 px wide and 28 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2502,7 +2516,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "two thin ribbons of flame circling around the arms' height of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "two thin ribbons of flame curving in loose arcs about 24 px wide around an empty middle, floating; the middle stays empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2511,7 +2525,8 @@
      "rotate": false,
      "animations": [
       "the flame ribbons circle in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "two small jets of flame pointing down, side by side about 10 px apart, each about 6 px long, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2552,7 +2567,7 @@
      ]
     },
     {
-     "subject": "small stone plates orbiting close around the waist of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "small flat grey stone plates in a loose ring, an ellipse about 30 px wide and 12 px tall, floating, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2561,10 +2576,11 @@
      "rotate": false,
      "animations": [
       "the stone plates orbit in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
-     "subject": "faint concentric ripple rings lying flat, an ellipse about 40 px wide and 20 px tall seen from above at an angle, the centre empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "faint pale concentric ripple rings, an ellipse about 40 px wide and 20 px tall seen from above at an angle, the centre empty, drawn only as thin light lines. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2574,7 +2590,7 @@
      "animations": [
       "the ground ripples spread in a seamless loop"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a single large rough brown-grey boulder about 20 px wide floating in mid-air, with a few small pebbles falling from it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2590,7 +2606,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "a ring of rough boulders orbiting around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 96x96 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "eight rough grey-brown boulders in a ring, an ellipse about 70 px wide and 34 px tall seen from above at an angle, floating, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 96x96 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       96,
@@ -2599,10 +2615,11 @@
      "rotate": false,
      "animations": [
       "the boulders orbit in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
-     "subject": "a single rope of clear blue water circling around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a single thin rope of clear blue water curving in a loose ring, an ellipse about 30 px wide and 12 px tall, floating, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x64 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2611,7 +2628,8 @@
      "rotate": false,
      "animations": [
       "the water rope circles in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a rotating hoop of clear blue water around the waist of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2690,7 +2708,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "a column of pale wind rising around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x96 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a column of pale swirling wind about 30 px wide and 80 px tall, see-through, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x96 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       64,
@@ -2699,7 +2717,8 @@
      "rotate": false,
      "animations": [
       "the wind column rises in a seamless loop"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     }
    ]
   },
@@ -2731,7 +2750,7 @@
      ]
     },
     {
-     "subject": "a splash of clear blue water bursting outward from a point, droplets flying in all directions, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a small splash of clear blue water about 10 px wide, a few droplets flying outward, floating in the middle of the canvas. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -2741,7 +2760,7 @@
      "animations": [
       "the water splashes outward and falls"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a horizontal strip of orange and yellow flame with a bright core running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2801,7 +2820,7 @@
      ]
     },
     {
-     "subject": "a splash of fire spreading out from a point, flames curling back toward the left, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a small splash of fire about 8 px wide, flames curling back toward the left, floating in the middle of the canvas. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -2811,7 +2830,7 @@
      "animations": [
       "the fire splashes against the surface in a seamless loop"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a horizontal strip of a high-pressure jet of blue water with white streaks along it running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2824,7 +2843,7 @@
      "animations": []
     },
     {
-     "subject": "the foaming, spraying front of a high-pressure water jet, pointing to the right, its left end in the middle of the left edge, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "the front end of a horizontal high-pressure water stream about 10 px thick flowing to the right: the stream enters straight from the middle of the left edge and ends in a rounded, foaming, spraying front at the right; floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -2834,10 +2853,10 @@
      "animations": [
       "the jet front foams and sprays in a seamless loop"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
-     "subject": "a hard fan of blue water spray and foam bursting outward from a point at the left, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "curved arcs of clear blue water spray and round droplets splashing outward from a point at the left, like water hitting something hard, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -2847,7 +2866,7 @@
      "animations": [
       "the spray fans out from the impact in a seamless loop"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a horizontal strip of a thin dark-blue water tendril with small glowing droplets inside it running from the left edge to the right edge of the canvas, about 5 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -2896,7 +2915,7 @@
      "animations": []
     },
     {
-     "subject": "a steel grappling hook, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same steel cable. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a small grey steel grappling hook with three curved prongs, lying horizontally, its prongs pointing to the right and its ring at the left, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -2905,7 +2924,8 @@
      "rotate": false,
      "animations": [
       "the hook swings open and bites"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a small burst of white and orange sparks flying out from a point, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -3034,7 +3054,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "a small rolling wave of blue water with a white foam line, about 26 px wide and 18 px tall, rising from a flat bottom edge. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a big curling crest of a tidal wave, blue water with white foam on its lip, about 28 px wide and 40 px tall, curling toward the right, rising from a flat bottom edge, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -3042,12 +3062,12 @@
      ],
      "rotate": false,
      "animations": [
-      "the small wave rolls and churns in a seamless loop"
+      "the wave crest rises, curls and churns in a seamless loop"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
-     "subject": "a small wave of blue water splashing up and back along the right edge of the canvas, as if it hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a small burst of blue water splashing up and back to the left from the right edge of the canvas, as if a small wave hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -3057,7 +3077,7 @@
      "animations": [
       "the small wave splashes against the wall"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a band of pale white wind streaks with a few leaves, semi-transparent, about 28 px wide and 14 px tall, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -3073,7 +3093,7 @@
      "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
     },
     {
-     "subject": "a few leaves and wisps of tan dust drifting down, semi-transparent, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a few small leaves and wisps of tan dust drifting down, semi-transparent, about 20 px across, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -3083,7 +3103,7 @@
      "animations": [
       "the leaves and dust settle and fade"
      ],
-     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure"
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     },
     {
      "subject": "a puff of pale white wind flattening and curling back along the right edge of the canvas, as if it hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
@@ -3135,7 +3155,7 @@
      "animations": []
     },
     {
-     "subject": "a thin white slash mark where a blade of wind hits, with a small puff. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "subject": "a thin white slash mark with a small puff of pale air, about 14 px wide, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
      "kind": "plain",
      "size": [
       32,
@@ -3144,7 +3164,84 @@
      "rotate": false,
      "animations": [
       "the slash flashes and the puff fades"
-     ]
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
+    },
+    {
+     "subject": "a thin film of shallow water lying flat, a 32x16 diamond seen from above at an angle, glossy with small ripples, mostly see-through so the ground under it shows, nothing else. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the water film shimmers in a seamless loop"
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
+    },
+    {
+     "subject": "low flickering flames along one straight edge only, the flames fading out toward the other side, covering half of an area the size of a 32x16 diamond, rising from a flat bottom, nothing under them. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the edge flames flicker in a seamless loop"
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
+    },
+    {
+     "subject": "low flickering flames in one corner only, fading out toward the other corners, covering a quarter of an area the size of a 32x16 diamond, nothing under them. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the corner flames flicker in a seamless loop"
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
+    },
+    {
+     "subject": "the head of a fierce fire dragon made of flame, side view facing right, open jaws, its neck ending at the left edge where it joins a body of the same flame, about 20 px long. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame dragon head snaps its jaws and its flames flicker"
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
+    },
+    {
+     "subject": "a horizontal strip of a fire dragon's body made of flame, scales of fire along it, running from the left edge to the right edge, about 10 px thick, flat side view. Seamless: the left and right ends match exactly, so copies can be laid end to end. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 64x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      64,
+      32
+     ],
+     "rotate": false,
+     "animations": [],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
+    },
+    {
+     "subject": "the tail of a fire dragon made of flame, side view, tapering to a flickering point at the left, its thick end at the right edge where it joins the body, about 20 px long. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quarter top-down angle, glowing, bright readable colors, 32x32 canvas. pixel art, no dark outline, limited palette, soft light from top-left, transparent background, high-fantasy RPG style.",
+     "kind": "plain",
+     "size": [
+      32,
+      32
+     ],
+     "rotate": false,
+     "animations": [
+      "the flame tail flicks and flickers"
+     ],
+     "negative": "ground tile, isometric tile, floor, platform, base, pedestal, plinth, slab, dirt, grass, wall, pillar, column, scenery, landscape, cave, room, background, person, character, human, figure, dark outline"
     }
    ]
   }
