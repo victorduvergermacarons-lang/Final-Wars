@@ -181,12 +181,6 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>the curling tip of a whip of clear blue water with a spray of droplets, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same water. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/</sub>
 
-### FX-16-3 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-3](art/FX-16/FX-16-3_2026-11-23.png)
-
-<sub>a splash of clear blue water hitting a target, droplets flying outward. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no d</sub>
-
 ### FX-16-4 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
 ![FX-16-4](art/FX-16/FX-16-4_2026-11-23.png)
@@ -198,12 +192,6 @@ keepers into the game's `assets/` folder by hand.
 ![FX-16-5](art/FX-16/FX-16-5_2026-11-23.png)
 
 <sub>the cracking tip of a whip of flame, bright white-hot point, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same flame. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effe</sub>
-
-### FX-16-6 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-6](art/FX-16/FX-16-6_2026-11-23.png)
-
-<sub>a burst of orange embers hitting a target. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette,</sub>
 
 ### FX-16-7 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
@@ -217,47 +205,17 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>the rounded, roaring front of a stream of fire, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same fire. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, iso</sub>
 
-### FX-16-9 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-9](art/FX-16/FX-16-9_2026-11-23.png)
-
-<sub>fire splashing and spreading against a surface, flames curling back. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark</sub>
-
 ### FX-16-10 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
 ![FX-16-10](art/FX-16/FX-16-10_2026-11-23.png)
 
 <sub>a horizontal strip of a high-pressure jet of blue water with white streaks along it running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to e</sub>
 
-### FX-16-11 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-11](art/FX-16/FX-16-11_2026-11-23.png)
-
-<sub>the foaming front of a high-pressure water jet, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same water. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, is</sub>
-
-### FX-16-12 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-12](art/FX-16/FX-16-12_2026-11-23.png)
-
-<sub>a hard spray of blue water and foam fanning out from a point of impact. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no d</sub>
-
 ### FX-16-13 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
 ![FX-16-13](art/FX-16/FX-16-13_2026-11-23.png)
 
 <sub>a horizontal strip of a thin dark-blue water tendril with small glowing droplets inside it running from the left edge to the right edge of the canvas, about 5 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid e</sub>
-
-### FX-16-14 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-14](art/FX-16/FX-16-14_2026-11-23.png)
-
-<sub>dark-blue water and small droplets being drawn out of a point into a thin stream that leaves to the left. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. p</sub>
-
-### FX-16-15 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-15](art/FX-16/FX-16-15_2026-11-23.png)
-
-<sub>a small swirl of dark-blue water and glowing droplets arriving at a point from the right and soaking in. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pi</sub>
 
 ### FX-16-16 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
@@ -271,107 +229,17 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a steel grappling hook, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same steel cable. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glow</sub>
 
-### FX-16-18 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-18](art/FX-16/FX-16-18_2026-11-23.png)
-
-<sub>small white and orange sparks from steel biting into stone. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline,</sub>
-
 ### FX-16-19 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
 ![FX-16-19](art/FX-16/FX-16-19_2026-11-23.png)
 
 <sub>a horizontal strip of crackling blue-white electricity, jagged and bright running from the left edge to the right edge of the canvas, about 8 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make</sub>
 
-### FX-16-20 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-20](art/FX-16/FX-16-20_2026-11-23.png)
-
-<sub>a small bright knot of blue-white sparks at fingertips, the start of a lightning bolt. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric</sub>
-
-### FX-16-21 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-21](art/FX-16/FX-16-21_2026-11-23.png)
-
-<sub>a bright blue-white lightning strike flash with crackling branches spreading from a point. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isome</sub>
-
-### FX-16-22 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-22](art/FX-16/FX-16-22_2026-11-23.png)
-
-<sub>a tall leading wall of orange fire standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/</sub>
-
-### FX-16-23 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-23](art/FX-16/FX-16-23_2026-11-23.png)
-
-<sub>low dying flames and smoke standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack e</sub>
-
 ### FX-16-24 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
 ![FX-16-24](art/FX-16/FX-16-24_2026-11-23.png)
 
 <sub>a wave of fire bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, b</sub>
-
-### FX-16-25 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-25](art/FX-16/FX-16-25_2026-11-23.png)
-
-<sub>a tall curling crest of blue water with white foam standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diam</sub>
-
-### FX-16-26 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-26](art/FX-16/FX-16-26_2026-11-23.png)
-
-<sub>shallow foaming water draining away standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell</sub>
-
-### FX-16-27 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-27](art/FX-16/FX-16-27_2026-11-23.png)
-
-<sub>a big wave of blue water bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, </sub>
-
-### FX-16-28 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-28](art/FX-16/FX-16-28_2026-11-23.png)
-
-<sub>a small rolling wave of blue water with a foam line standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 dia</sub>
-
-### FX-16-29 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-29](art/FX-16/FX-16-29_2026-11-23.png)
-
-<sub>a small wave of blue water bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view</sub>
-
-### FX-16-30 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-30](art/FX-16/FX-16-30_2026-11-23.png)
-
-<sub>a band of pale white wind streaks with a few leaves, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground t</sub>
-
-### FX-16-31 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-31](art/FX-16/FX-16-31_2026-11-23.png)
-
-<sub>a few leaves and wisps of dust settling, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x</sub>
-
-### FX-16-32 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-32](art/FX-16/FX-16-32_2026-11-23.png)
-
-<sub>a puff of pale wind bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowi</sub>
-
-### FX-16-33 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-33](art/FX-16/FX-16-33_2026-11-23.png)
-
-<sub>a strong dense blast of white wind, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 di</sub>
-
-### FX-16-34 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
-
-![FX-16-34](art/FX-16/FX-16-34_2026-11-23.png)
-
-<sub>a strong blast of white wind bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric vi</sub>
 
 ### FX-16-35 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
@@ -385,17 +253,371 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a thin white slash mark where a blade of wind hits, with a small puff. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no da</sub>
 
+### FX-11-2 · Fire ability effects for the stance rework (2026-11-23)
+
+![FX-11-2](art/FX-11/FX-11-2_2026-11-23.png)
+
+<sub>a small bolt of flame about 10 px long with a short flickering tail, flying to the right, floating in mid-air in the middle of the canvas. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person i</sub>
+
+### FX-11-4 · Fire ability effects for the stance rework (2026-11-23)
+
+![FX-11-4](art/FX-11/FX-11-4_2026-11-23.png)
+
+<sub>a ring of warm golden flames about 28 px wide, lying flat as if seen on the ground from above at an angle, the middle of the ring empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in </sub>
+
+### FX-11-6 · Fire ability effects for the stance rework (2026-11-23)
+
+![FX-11-6](art/FX-11/FX-11-6_2026-11-23.png)
+
+<sub>a patch of low flickering flames about 30 px wide and 15 px deep, as if burning on the ground seen from above at an angle, nothing under the flames. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standin</sub>
+
+### FX-11-7 · Fire ability effects for the stance rework (2026-11-23)
+
+![FX-11-7](art/FX-11/FX-11-7_2026-11-23.png)
+
+<sub>a glowing red-orange heat shimmer and rising embers forming a loose column about 18 px wide and 34 px tall, the middle see-through. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this </sub>
+
+### FX-11-8 · Fire ability effects for the stance rework (2026-11-23)
+
+![FX-11-8](art/FX-11/FX-11-8_2026-11-23.png)
+
+<sub>three small flame puffs about 6 px each in a short row, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-qu</sub>
+
+### FX-11-17 · Fire ability effects for the stance rework (2026-11-23)
+
+![FX-11-17](art/FX-11/FX-11-17_2026-11-23.png)
+
+<sub>a tall swirling firestorm of flames about 30 px wide and 40 px tall, rising from a flat bottom edge, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px</sub>
+
+### FX-11-19 · Fire ability effects for the stance rework (2026-11-23)
+
+![FX-11-19](art/FX-11/FX-11-19_2026-11-23.png)
+
+<sub>a large round explosion of fire with a white shockwave ring, floating in mid-air, filling most of the canvas. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Ga</sub>
+
+### FX-12-2 · Earth ability effects for the stance rework (2026-11-23)
+
+![FX-12-2](art/FX-12/FX-12-2_2026-11-23.png)
+
+<sub>a burst of dust and small pebbles spraying outward and upward in a low wide fan about 30 px wide, as if kicked up from the ground. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this g</sub>
+
+### FX-12-5 · Earth ability effects for the stance rework (2026-11-23)
+
+![FX-12-5](art/FX-12/FX-12-5_2026-11-23.png)
+
+<sub>chunks of dirt, pebbles and dust tumbling down and inward into a dark round opening about 20 px wide; only the falling debris and the dark opening. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing</sub>
+
+### FX-12-6 · Earth ability effects for the stance rework (2026-11-23)
+
+![FX-12-6](art/FX-12/FX-12-6_2026-11-23.png)
+
+<sub>grey metallic glints and small curved creak lines in a loose ring about 24 px wide and 30 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px t</sub>
+
+### FX-12-7 · Earth ability effects for the stance rework (2026-11-23)
+
+![FX-12-7](art/FX-12/FX-12-7_2026-11-23.png)
+
+<sub>a translucent amber glow shaped like a tall oval about 22 px wide and 36 px tall, brighter at the edges, the middle see-through. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this gam</sub>
+
+### FX-12-11 · Earth ability effects for the stance rework (2026-11-23)
+
+![FX-12-11](art/FX-12/FX-12-11_2026-11-23.png)
+
+<sub>a patch of glowing molten lava about 30 px wide and 15 px deep with darker cooled crust at its edges, a flat diamond shape seen from above at an angle, nothing around it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery</sub>
+
+### FX-12-12 · Earth ability effects for the stance rework (2026-11-23)
+
+![FX-12-12](art/FX-12/FX-12-12_2026-11-23.png)
+
+<sub>jagged dark cracks with dust puffing up from them, spread over an area about 30 px wide and 15 px deep seen from above at an angle; only the cracks and the dust. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no pers</sub>
+
+### FX-12-13 · Earth ability effects for the stance rework (2026-11-23)
+
+![FX-12-13](art/FX-12/FX-12-13_2026-11-23.png)
+
+<sub>a swirling cloud of semi-transparent tan sand and dust about 30 px wide and 24 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite</sub>
+
+### FX-13-5 · Water ability effects for the stance rework (2026-11-23)
+
+![FX-13-5](art/FX-13/FX-13-5_2026-11-23.png)
+
+<sub>soft drifting teal mist with tiny sparkles in a loose column about 24 px wide and 36 px tall, the middle see-through. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px </sub>
+
+### FX-13-11 · Water ability effects for the stance rework (2026-11-23)
+
+![FX-13-11](art/FX-13/FX-13-11_2026-11-23.png)
+
+<sub>two quick swirling streams of clear blue water curling in a small flat ring about 16 px wide and 10 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game </sub>
+
+### FX-13-15 · Water ability effects for the stance rework (2026-11-23)
+
+![FX-13-15](art/FX-13/FX-13-15_2026-11-23.png)
+
+<sub>thick white steam billowing upward in a cloud about 30 px wide and 26 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen fr</sub>
+
+### FX-13-16 · Water ability effects for the stance rework (2026-11-23)
+
+![FX-13-16](art/FX-13/FX-13-16_2026-11-23.png)
+
+<sub>faint dark-red glowing threads in a loose cage shape about 20 px wide and 34 px tall, the middle empty, no blood. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall</sub>
+
+### FX-13-17 · Water ability effects for the stance rework (2026-11-23)
+
+![FX-13-17](art/FX-13/FX-13-17_2026-11-23.png)
+
+<sub>glowing teal raindrops falling in slanted streaks over an area about 30 px wide and 40 px tall, with small splashes at the bottom; only the drops and splashes. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person</sub>
+
+### FX-13-20 · Water ability effects for the stance rework (2026-11-23)
+
+![FX-13-20](art/FX-13/FX-13-20_2026-11-23.png)
+
+<sub>a cluster of five sharp pale-blue ice spikes about 28 px wide, pointing up as if bursting out of the ground; only the spikes. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game i</sub>
+
+### FX-14-2 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-2](art/FX-14/FX-14-2_2026-11-23.png)
+
+<sub>a small puff of white air about 10 px wide curling outward, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a thre</sub>
+
+### FX-14-3 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-3](art/FX-14/FX-14-3_2026-11-23.png)
+
+<sub>a thin band of swirling semi-transparent wind coiled in a small flat ring about 16 px wide and 8 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is </sub>
+
+### FX-14-4 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-4](art/FX-14/FX-14-4_2026-11-23.png)
+
+<sub>three thin wisps of pale air curving from right to left, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-q</sub>
+
+### FX-14-6 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-6](art/FX-14/FX-14-6_2026-11-23.png)
+
+<sub>dark grey-blue swirling wind with slanted streaks of rain in a cloud about 30 px wide and 26 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell</sub>
+
+### FX-14-8 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-8](art/FX-14/FX-14-8_2026-11-23.png)
+
+<sub>a round translucent bubble of swirling air about 26 px wide, floating, see-through in the middle. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell eff</sub>
+
+### FX-14-10 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-10](art/FX-14/FX-14-10_2026-11-23.png)
+
+<sub>an inward-spiralling swirl of pale wind lying flat, an ellipse about 56 px wide and 28 px tall seen from above at an angle, the centre empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing perso</sub>
+
+### FX-14-12 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-12](art/FX-14/FX-14-12_2026-11-23.png)
+
+<sub>a small tight ring of swirling pale air about 14 px wide and 6 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect spri</sub>
+
+### FX-14-13 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-13](art/FX-14/FX-14-13_2026-11-23.png)
+
+<sub>short curling streams of pale wind trailing off to the left, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a thr</sub>
+
+### FX-14-18 · Air ability effects for the stance rework (2026-11-23)
+
+![FX-14-18](art/FX-14/FX-14-18_2026-11-23.png)
+
+<sub>fierce dark swirling storm wind with bits of debris in a cloud about 30 px wide and 28 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effec</sub>
+
+### FX-15-1 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-1](art/FX-15/FX-15-1_2026-11-23.png)
+
+<sub>small embers and flickering sparks drifting upward in a loose ring about 24 px wide and 40 px tall; the middle is empty and transparent. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in </sub>
+
+### FX-15-3 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-3](art/FX-15/FX-15-3_2026-11-23.png)
+
+<sub>two small jets of flame pointing down, side by side about 10 px apart, each about 6 px long, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spel</sub>
+
+### FX-15-4 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-4](art/FX-15/FX-15-4_2026-11-23.png)
+
+<sub>a small glowing sun about 12 px wide with tiny crackling sparks below it, floating near the top of the canvas; the rest of the canvas empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person</sub>
+
+### FX-15-7 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-7](art/FX-15/FX-15-7_2026-11-23.png)
+
+<sub>faint concentric ripple rings lying flat, an ellipse about 40 px wide and 20 px tall seen from above at an angle, the centre empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this </sub>
+
+### FX-15-8 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-8](art/FX-15/FX-15-8_2026-11-23.png)
+
+<sub>a single large rough brown-grey boulder about 20 px wide floating in mid-air, with a few small pebbles falling from it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 p</sub>
+
+### FX-15-13 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-13](art/FX-15/FX-15-13_2026-11-23.png)
+
+<sub>two long curved arms of clear blue water about 30 px long, hanging in a U shape around an empty space about 16 px wide, curling at the tips. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person</sub>
+
+### FX-15-14 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-14](art/FX-15/FX-15-14_2026-11-23.png)
+
+<sub>a small swirl of pale wind about 14 px wide circling, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-quar</sub>
+
+### FX-15-15 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-15](art/FX-15/FX-15-15_2026-11-23.png)
+
+<sub>a flat spinning ring of pale air, an ellipse about 30 px wide and 10 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effec</sub>
+
+### FX-15-16 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+
+![FX-15-16](art/FX-15/FX-15-16_2026-11-23.png)
+
+<sub>two small cyclones of pale wind, each about 8 px wide and 16 px tall, side by side about 18 px apart, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. </sub>
+
+### FX-16-3 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-3](art/FX-16/FX-16-3_2026-11-23.png)
+
+<sub>a splash of clear blue water bursting outward from a point, droplets flying in all directions, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px ta</sub>
+
+### FX-16-6 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-6](art/FX-16/FX-16-6_2026-11-23.png)
+
+<sub>a burst of orange embers and sparks flying outward from a point, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, </sub>
+
+### FX-16-9 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-9](art/FX-16/FX-16-9_2026-11-23.png)
+
+<sub>a splash of fire spreading out from a point, flames curling back toward the left, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spel</sub>
+
+### FX-16-11 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-11](art/FX-16/FX-16-11_2026-11-23.png)
+
+<sub>the foaming, spraying front of a high-pressure water jet, pointing to the right, its left end in the middle of the left edge, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing </sub>
+
+### FX-16-12 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-12](art/FX-16/FX-16-12_2026-11-23.png)
+
+<sub>a hard fan of blue water spray and foam bursting outward from a point at the left, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spe</sub>
+
+### FX-16-14 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-14](art/FX-16/FX-16-14_2026-11-23.png)
+
+<sub>dark-blue water droplets being pulled out of a point at the right and streaming to the left in a thin curling trail, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in</sub>
+
+### FX-16-15 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-15](art/FX-16/FX-16-15_2026-11-23.png)
+
+<sub>a small swirl of dark-blue water and glowing droplets spiralling into a point at the centre, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall</sub>
+
+### FX-16-18 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-18](art/FX-16/FX-16-18_2026-11-23.png)
+
+<sub>a small burst of white and orange sparks flying out from a point, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite,</sub>
+
+### FX-16-20 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-20](art/FX-16/FX-16-20_2026-11-23.png)
+
+<sub>a small bright knot of blue-white crackling sparks about 10 px wide, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect spri</sub>
+
+### FX-16-21 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-21](art/FX-16/FX-16-21_2026-11-23.png)
+
+<sub>a bright blue-white lightning flash with crackling branches spreading out from a point, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Gam</sub>
+
+### FX-16-22 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-22](art/FX-16/FX-16-22_2026-11-23.png)
+
+<sub>a tall leading wall of orange fire about 26 px wide and 36 px tall, flames rising from a flat bottom edge, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is</sub>
+
+### FX-16-23 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-23](art/FX-16/FX-16-23_2026-11-23.png)
+
+<sub>low dying flames and wisps of smoke about 24 px wide and 16 px tall, rising from a flat bottom edge, nothing under them. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 </sub>
+
+### FX-16-25 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-25](art/FX-16/FX-16-25_2026-11-23.png)
+
+<sub>a tall curling crest of blue water with white foam, about 26 px wide and 36 px tall, rising from a flat bottom edge, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in th</sub>
+
+### FX-16-26 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-26](art/FX-16/FX-16-26_2026-11-23.png)
+
+<sub>a thin sheet of shallow foaming water about 28 px wide, a flat diamond shape seen from above at an angle, foam at its edges, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing pers</sub>
+
+### FX-16-27 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-27](art/FX-16/FX-16-27_2026-11-23.png)
+
+<sub>a big wave of blue water crashing to the right and splashing straight up and back along the right edge of the canvas, as if it hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A </sub>
+
+### FX-16-28 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-28](art/FX-16/FX-16-28_2026-11-23.png)
+
+<sub>a small rolling wave of blue water with a white foam line, about 26 px wide and 18 px tall, rising from a flat bottom edge. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is </sub>
+
+### FX-16-29 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-29](art/FX-16/FX-16-29_2026-11-23.png)
+
+<sub>a small wave of blue water splashing up and back along the right edge of the canvas, as if it hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 3</sub>
+
+### FX-16-30 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-30](art/FX-16/FX-16-30_2026-11-23.png)
+
+<sub>a band of pale white wind streaks with a few leaves, semi-transparent, about 28 px wide and 14 px tall, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall</sub>
+
+### FX-16-31 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-31](art/FX-16/FX-16-31_2026-11-23.png)
+
+<sub>a few leaves and wisps of tan dust drifting down, semi-transparent, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen fro</sub>
+
+### FX-16-32 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-32](art/FX-16/FX-16-32_2026-11-23.png)
+
+<sub>a puff of pale white wind flattening and curling back along the right edge of the canvas, as if it hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game</sub>
+
+### FX-16-33 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-33](art/FX-16/FX-16-33_2026-11-23.png)
+
+<sub>a strong dense blast of white wind, semi-transparent, about 28 px wide and 18 px tall, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effe</sub>
+
+### FX-16-34 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-34](art/FX-16/FX-16-34_2026-11-23.png)
+
+<sub>a strong blast of white wind bursting up and back along the right edge of the canvas, as if it hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is </sub>
+
 ### FX-11-1 · Fire ability effects for the stance rework (2026-11-22)
 
 ![FX-11-1](art/FX-11/FX-11-1_2026-11-22.png)
 
 <sub>a short burst of orange and yellow fire about 16 px long with a white-hot core, blasting to the right from a point near the left edge. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright rea</sub>
-
-### FX-11-2 · Fire ability effects for the stance rework (2026-11-22)
-
-![FX-11-2](art/FX-11/FX-11-2_2026-11-22.png)
-
-<sub>a small bolt of flame about 10 px long with a short flickering tail, pointing to the right, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, </sub>
 
 ### FX-11-3 · Fire ability effects for the stance rework (2026-11-22)
 
@@ -403,35 +625,11 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a small crackle of blue-white electric sparks about 14 px across, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, i</sub>
 
-### FX-11-4 · Fire ability effects for the stance rework (2026-11-22)
-
-![FX-11-4](art/FX-11/FX-11-4_2026-11-22.png)
-
-<sub>warm golden flames rising softly from the ground in a ring the width of a standing person, the middle left empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 c</sub>
-
 ### FX-11-5 · Fire ability effects for the stance rework (2026-11-22)
 
 ![FX-11-5](art/FX-11/FX-11-5_2026-11-22.png)
 
 <sub>a straight band of orange flame running from the left edge to the right edge, about 10 px thick. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x32 canvas. pixel art,</sub>
-
-### FX-11-6 · Fire ability effects for the stance rework (2026-11-22)
-
-![FX-11-6](art/FX-11/FX-11-6_2026-11-22.png)
-
-<sub>one flat isometric ground tile, a 32x16 diamond, covered in low flickering flames. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1</sub>
-
-### FX-11-7 · Fire ability effects for the stance rework (2026-11-22)
-
-![FX-11-7](art/FX-11/FX-11-7_2026-11-22.png)
-
-<sub>a glowing red-orange heat haze with rising embers around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, </sub>
-
-### FX-11-8 · Fire ability effects for the stance rework (2026-11-22)
-
-![FX-11-8](art/FX-11/FX-11-8_2026-11-22.png)
-
-<sub>a few small flame puffs on the ground, about 12 px across. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, </sub>
 
 ### FX-11-9 · Fire ability effects for the stance rework (2026-11-22)
 
@@ -481,35 +679,17 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a flat ring of fire on the ground, an isometric ellipse about 56 px wide, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isom</sub>
 
-### FX-11-17 · Fire ability effects for the stance rework (2026-11-22)
-
-![FX-11-17](art/FX-11/FX-11-17_2026-11-22.png)
-
-<sub>one flat isometric ground tile, a 32x16 diamond, with tall swirling flames, a raging firestorm. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, </sub>
-
 ### FX-11-18 · Fire ability effects for the stance rework (2026-11-22)
 
 ![FX-11-18](art/FX-11/FX-11-18_2026-11-22.png)
 
 <sub>a cone of orange fire spreading from a point at the left edge toward the right, widening as it goes. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel </sub>
 
-### FX-11-19 · Fire ability effects for the stance rework (2026-11-22)
-
-![FX-11-19](art/FX-11/FX-11-19_2026-11-22.png)
-
-<sub>a large explosion of fire and white shockwave, round, filling most of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 </sub>
-
 ### FX-12-1 · Earth ability effects for the stance rework (2026-11-22)
 
 ![FX-12-1](art/FX-12/FX-12-1_2026-11-22.png)
 
 <sub>a flat ring of dust and small pebbles on the ground around an empty middle, an isometric ellipse about 48 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 </sub>
-
-### FX-12-2 · Earth ability effects for the stance rework (2026-11-22)
-
-![FX-12-2](art/FX-12/FX-12-2_2026-11-22.png)
-
-<sub>a puff of dust and pebbles bursting outward around the base of an isometric ground block, 32 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel</sub>
 
 ### FX-12-3 · Earth ability effects for the stance rework (2026-11-22)
 
@@ -522,24 +702,6 @@ keepers into the game's `assets/` folder by hand.
 ![FX-12-4](art/FX-12/FX-12-4_2026-11-22.png)
 
 <sub>a ring of small brown-grey stones floating around an empty middle the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art,</sub>
-
-### FX-12-5 · Earth ability effects for the stance rework (2026-11-22)
-
-![FX-12-5](art/FX-12/FX-12-5_2026-11-22.png)
-
-<sub>one flat isometric ground tile, a 32x16 diamond, its edges crumbling inward as it sinks. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometr</sub>
-
-### FX-12-6 · Earth ability effects for the stance rework (2026-11-22)
-
-![FX-12-6](art/FX-12/FX-12-6_2026-11-22.png)
-
-<sub>grey metallic glints and small bending creak lines around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art,</sub>
-
-### FX-12-7 · Earth ability effects for the stance rework (2026-11-22)
-
-![FX-12-7](art/FX-12/FX-12-7_2026-11-22.png)
-
-<sub>a translucent amber glow of stone light around an empty middle the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, is</sub>
 
 ### FX-12-8 · Earth ability effects for the stance rework (2026-11-22)
 
@@ -558,24 +720,6 @@ keepers into the game's `assets/` folder by hand.
 ![FX-12-10](art/FX-12/FX-12-10_2026-11-22.png)
 
 <sub>a single large rough brown-grey boulder about 20 px wide, centred, alone, no ground or shadow. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, i</sub>
-
-### FX-12-11 · Earth ability effects for the stance rework (2026-11-22)
-
-![FX-12-11](art/FX-12/FX-12-11_2026-11-22.png)
-
-<sub>one flat isometric ground tile, a 32x16 diamond, of glowing molten lava with a darker cooled crust at the edges. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 ca</sub>
-
-### FX-12-12 · Earth ability effects for the stance rework (2026-11-22)
-
-![FX-12-12](art/FX-12/FX-12-12_2026-11-22.png)
-
-<sub>one flat isometric ground tile, a 32x16 diamond, cracked open with dust rising from the cracks. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, </sub>
-
-### FX-12-13 · Earth ability effects for the stance rework (2026-11-22)
-
-![FX-12-13](art/FX-12/FX-12-13_2026-11-22.png)
-
-<sub>one isometric ground tile area filled with swirling semi-transparent tan sand and dust. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometri</sub>
 
 ### FX-13-1 · Water ability effects for the stance rework (2026-11-22)
 
@@ -600,12 +744,6 @@ keepers into the game's `assets/` folder by hand.
 ![FX-13-4](art/FX-13/FX-13-4_2026-11-22.png)
 
 <sub>a small sharp shard of pale blue ice about 10 px long, pointing to the right. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view</sub>
-
-### FX-13-5 · Water ability effects for the stance rework (2026-11-22)
-
-![FX-13-5](art/FX-13/FX-13-5_2026-11-22.png)
-
-<sub>soft drifting teal mist around a space the size of a standing person, with tiny sparkles. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isomet</sub>
 
 ### FX-13-6 · Water ability effects for the stance rework (2026-11-22)
 
@@ -637,12 +775,6 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a curved wall of blue water about 16 px tall moving to the right, foam on top. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 vie</sub>
 
-### FX-13-11 · Water ability effects for the stance rework (2026-11-22)
-
-![FX-13-11](art/FX-13/FX-13-11_2026-11-22.png)
-
-<sub>quick swirling streams of water around the lower legs of a standing person, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, is</sub>
-
 ### FX-13-12 · Water ability effects for the stance rework (2026-11-22)
 
 ![FX-13-12](art/FX-13/FX-13-12_2026-11-22.png)
@@ -661,24 +793,6 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a thin straight band of high-pressure blue water from the left edge to the right edge, about 6 px thick, spray at the edges. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colo</sub>
 
-### FX-13-15 · Water ability effects for the stance rework (2026-11-22)
-
-![FX-13-15](art/FX-13/FX-13-15_2026-11-22.png)
-
-<sub>one flat isometric ground tile, a 32x16 diamond, covered in thick white steam rising. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric </sub>
-
-### FX-13-16 · Water ability effects for the stance rework (2026-11-22)
-
-![FX-13-16](art/FX-13/FX-13-16_2026-11-22.png)
-
-<sub>faint dark-red glowing threads wrapping around a space the size of a standing person, no blood. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, </sub>
-
-### FX-13-17 · Water ability effects for the stance rework (2026-11-22)
-
-![FX-13-17](art/FX-13/FX-13-17_2026-11-22.png)
-
-<sub>one flat isometric ground tile, a 32x16 diamond, with glowing teal raindrops falling onto it. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, is</sub>
-
 ### FX-13-18 · Water ability effects for the stance rework (2026-11-22)
 
 ![FX-13-18](art/FX-13/FX-13-18_2026-11-22.png)
@@ -690,12 +804,6 @@ keepers into the game's `assets/` folder by hand.
 ![FX-13-19](art/FX-13/FX-13-19_2026-11-22.png)
 
 <sub>a ring of rising water with golden sparkles around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isomet</sub>
-
-### FX-13-20 · Water ability effects for the stance rework (2026-11-22)
-
-![FX-13-20](art/FX-13/FX-13-20_2026-11-22.png)
-
-<sub>a cluster of sharp pale-blue ice spikes on one isometric ground tile. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x48 canvas. pixel art, isometric 2:1 view, no dar</sub>
 
 ### FX-13-21 · Water ability effects for the stance rework (2026-11-22)
 
@@ -709,35 +817,11 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a thin crescent of white wind about 14 px long, curved like a blade, pointing to the right, semi-transparent. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canva</sub>
 
-### FX-14-2 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-2](art/FX-14/FX-14-2_2026-11-22.png)
-
-<sub>a small puff of white air on the ground, about 10 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, </sub>
-
-### FX-14-3 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-3](art/FX-14/FX-14-3_2026-11-22.png)
-
-<sub>a band of swirling semi-transparent wind around the lower legs of a standing person, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixe</sub>
-
-### FX-14-4 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-4](art/FX-14/FX-14-4_2026-11-22.png)
-
-<sub>thin wisps of pale air drawn out from a point at the right toward the left. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, </sub>
-
 ### FX-14-5 · Air ability effects for the stance rework (2026-11-22)
 
 ![FX-14-5](art/FX-14/FX-14-5_2026-11-22.png)
 
 <sub>a small spinning ball of semi-transparent white air about 16 px wide, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel ar</sub>
-
-### FX-14-6 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-6](art/FX-14/FX-14-6_2026-11-22.png)
-
-<sub>one isometric ground tile area of dark grey-blue swirling wind with streaks of rain. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2</sub>
 
 ### FX-14-7 · Air ability effects for the stance rework (2026-11-22)
 
@@ -745,41 +829,17 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a strong straight blast of white wind, wider than a palm, pointing to the right, semi-transparent. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel ar</sub>
 
-### FX-14-8 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-8](art/FX-14/FX-14-8_2026-11-22.png)
-
-<sub>a translucent bubble of swirling air just big enough to hold a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 vi</sub>
-
 ### FX-14-9 · Air ability effects for the stance rework (2026-11-22)
 
 ![FX-14-9](art/FX-14/FX-14-9_2026-11-22.png)
 
 <sub>a burst of white wind swirls, as if someone vanished in a gust. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2:1 view, no dark outl</sub>
 
-### FX-14-10 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-10](art/FX-14/FX-14-10_2026-11-22.png)
-
-<sub>a flat inward-spiralling swirl of wind on the ground, an isometric ellipse about 56 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, iso</sub>
-
 ### FX-14-11 · Air ability effects for the stance rework (2026-11-22)
 
 ![FX-14-11](art/FX-14/FX-14-11_2026-11-22.png)
 
 <sub>a tall narrow column of upward-rushing white wind, about 16 px wide. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x64 canvas. pixel art, isometric 2:1 view, no dark</sub>
-
-### FX-14-12 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-12](art/FX-14/FX-14-12_2026-11-22.png)
-
-<sub>a tight ring of swirling pale air at head height of a standing person, the middle empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometr</sub>
-
-### FX-14-13 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-13](art/FX-14/FX-14-13_2026-11-22.png)
-
-<sub>streams of pale wind trailing under a flying person, short and curling. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no d</sub>
 
 ### FX-14-14 · Air ability effects for the stance rework (2026-11-22)
 
@@ -805,35 +865,11 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a few faint white feathers and wisps of air floating around a space the size of a standing person. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel ar</sub>
 
-### FX-14-18 · Air ability effects for the stance rework (2026-11-22)
-
-![FX-14-18](art/FX-14/FX-14-18_2026-11-22.png)
-
-<sub>one isometric ground tile area of fierce dark swirling storm wind with debris. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 vie</sub>
-
-### FX-15-1 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-1](art/FX-15/FX-15-1_2026-11-22.png)
-
-<sub>small embers and flickers drifting up around a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack eff</sub>
-
 ### FX-15-2 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
 
 ![FX-15-2](art/FX-15/FX-15-2_2026-11-22.png)
 
 <sub>two thin ribbons of flame circling around the arms' height of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game</sub>
-
-### FX-15-3 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-3](art/FX-15/FX-15-3_2026-11-22.png)
-
-<sub>small jets of flame flickering at the feet of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack ef</sub>
-
-### FX-15-4 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-4](art/FX-15/FX-15-4_2026-11-22.png)
-
-<sub>a small glowing sun above the head of a standing person with sparks crackling below it, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamon</sub>
 
 ### FX-15-5 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
 
@@ -846,18 +882,6 @@ keepers into the game's `assets/` folder by hand.
 ![FX-15-6](art/FX-15/FX-15-6_2026-11-22.png)
 
 <sub>small stone plates orbiting close around the waist of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/a</sub>
-
-### FX-15-7 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-7](art/FX-15/FX-15-7_2026-11-22.png)
-
-<sub>faint ripples spreading in the ground around the feet of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spel</sub>
-
-### FX-15-8 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-8](art/FX-15/FX-15-8_2026-11-22.png)
-
-<sub>a large rough brown-grey boulder about 20 px wide hovering above where a person's head would be, pebbles falling. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 c</sub>
 
 ### FX-15-9 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
 
@@ -882,30 +906,6 @@ keepers into the game's `assets/` folder by hand.
 ![FX-15-12](art/FX-15/FX-15-12_2026-11-22.png)
 
 <sub>a single floating sphere of clear blue water about 14 px wide, white highlights, in the middle of the canvas. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canva</sub>
-
-### FX-15-13 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-13](art/FX-15/FX-15-13_2026-11-22.png)
-
-<sub>two long arms of clear blue water hanging from the shoulders of a standing person, curved at the tips, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is</sub>
-
-### FX-15-14 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-14](art/FX-15/FX-15-14_2026-11-22.png)
-
-<sub>a small swirl of pale wind circling in front of a standing person's chest, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell</sub>
-
-### FX-15-15 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-15](art/FX-15/FX-15-15_2026-11-22.png)
-
-<sub>a spinning ring of pale air around the waist of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack </sub>
-
-### FX-15-16 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
-
-![FX-15-16](art/FX-15/FX-15-16_2026-11-22.png)
-
-<sub>two small cyclones of pale wind wrapped around the arms of a standing person, drawn around an empty middle where a standing person would be, so it can sit around the hero; the middle stays empty. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game sp</sub>
 
 ### FX-15-17 · Stance auras (loops around the hero while a stance is held) (2026-11-22)
 
