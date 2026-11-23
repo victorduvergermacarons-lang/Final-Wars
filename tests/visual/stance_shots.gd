@@ -61,8 +61,9 @@ func _run() -> void:
 		hud.trees_window.show_tree(tree)
 		await _shot("st1_tree_%s" % tree.to_lower())
 	hud._toggle(hud.trees_window)
-	await phase1_trench(session, hero)
-	await phase2_looks(session, hero)
+	if OS.get_environment("SHOTS_ONLY") != "rot":
+		await phase1_trench(session, hero)
+		await phase2_looks(session, hero)
 	await phase3_effects(session, hero)
 	get_tree().quit()
 
@@ -141,7 +142,7 @@ func phase3_effects(session: LocalSession, hero: Hero) -> void:
 	var view := await _view()
 	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
 	var aim := hero.move.pos + Vector2(2.0, 1.0)
-	for id in FX_IDS:
+	for id in ([] if OS.get_environment("SHOTS_ONLY") == "rot" else FX_IDS):
 		var a: AbilityDef = ContentDB.abilities[StringName(id)]
 		var wait := 0.12
 		if a.fx_hands != &"":
@@ -153,12 +154,15 @@ func phase3_effects(session: LocalSession, hero: Hero) -> void:
 		await _console(session, hero, "fx " + id, aim, wait)
 		await _crop("st3_fx_%s" % id)
 		await _console(session, hero, "heal", aim, 3.6) # let it finish
+	# Projectiles turned to 8 directions, the clock slowed so they stay in the crop.
+	ContentDB.rules.game_speed = 0.1
 	for id in ["F03", "F07", "W04", "E21", "A22"]:
 		for k in 8:
 			var d := Vector2.RIGHT.rotated(k * TAU / 8.0) * 4.0
 			await _console(session, hero, "fx " + id, hero.move.pos + d, 0.07)
 			await _crop("st3_rot_%s_%d" % [id, k], 440, 360)
-			await _console(session, hero, "heal", aim, 0.5)
+			await _console(session, hero, "heal", aim, 0.6)
+	ContentDB.rules.game_speed = 1.0
 	# Scorch for real: the debuff on a wolf beside the hero, with the target frame.
 	var sim := session.zone_sim()
 	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))

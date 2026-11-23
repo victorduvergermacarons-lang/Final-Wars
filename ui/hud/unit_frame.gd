@@ -67,9 +67,9 @@ func _draw() -> void:
 		var def: BuffDef = ContentDB.buffs.get(StringName(b[0]))
 		if def != null and def.icon != null:
 			# Buffs with an icon: the icon at the frame's right edge, its text under it.
-			var isz := Vector2(def.icon.get_size()) * maxf(1.0, floorf(Icons.screen_scale_of(self)))
+			var isz := Vector2(24, 24) # the largest whole screen-pixel size that fits
 			icon_x -= isz.x
-			Icons.draw_fitted(self, def.icon, Rect2(Vector2(icon_x, 2), isz))
+			Icons.draw_fitted(self, def.icon, Rect2(Vector2(icon_x, 1), isz))
 			icon_x -= 4.0
 			continue
 		effects.append(def.display_name if def != null and def.display_name != "" else String(b[0]))
