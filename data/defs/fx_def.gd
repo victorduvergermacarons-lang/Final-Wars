@@ -30,6 +30,25 @@ enum Anchor { CASTER, POINT }
 ## -1: none.
 @export var hit_frame: int = -1
 
+@export_group("Held around a hero (stance looks)")
+## How a still moves, in code: SPIN turns it (flat ones turn on the ground), BOB
+## lifts it up and down, ORBIT circles it around the hero at `orbit_tiles`, FLICKER
+## mirrors it now and then (flames), SWAY rocks it a little either way.
+enum Motion { NONE, SPIN, BOB, ORBIT, FLICKER, SWAY }
+@export var motion: Motion = Motion.NONE
+## Cycles per second (turns for SPIN and ORBIT).
+@export var motion_hz: float = 0.5
+## BOB: levels; SWAY: radians.
+@export var motion_amount: float = 0.1
+@export var orbit_tiles: float = 0.5
+## Drawn lying on the ground (half as tall on screen, like a tile).
+@export var flat: bool = false
+## The part above the pivot is drawn behind the hero, the rest in front (a ring
+## around them).
+@export var split: bool = false
+## Drawn wholly behind the hero.
+@export var behind: bool = false
+
 
 func duration() -> float:
 	return frames / maxf(fps, 0.001)

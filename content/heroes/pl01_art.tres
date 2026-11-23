@@ -107,10 +107,29 @@ ability_anims = {
 &"W02": {"anim": "water_whip", "strike": 7}
 }
 looks = {
-"stone": {"dark_color": Color(0.16, 0.16, 0.17, 1), "mid_color": Color(0.46, 0.45, 0.44, 1), "light_color": Color(0.78, 0.77, 0.74, 1), "strength": 0.9, "keep_saturation_above": 1.0, "center": 0.42, "contrast": 1.6}
+"stone": {"dark_color": Color(0.16, 0.16, 0.17, 1), "mid_color": Color(0.46, 0.45, 0.44, 1), "light_color": Color(0.78, 0.77, 0.74, 1), "strength": 0.9, "keep_saturation_above": 1.0, "center": 0.42, "contrast": 1.6},
+"stone_25": {"dark_color": Color(0.16, 0.16, 0.17, 1), "mid_color": Color(0.46, 0.45, 0.44, 1), "light_color": Color(0.78, 0.77, 0.74, 1), "strength": 0.9, "keep_saturation_above": 1.0, "center": 0.42, "contrast": 1.6, "coverage": 0.25, "frame_height": 48.0, "feet_y": 38.0, "body_height": 34.0},
+"stone_50": {"dark_color": Color(0.16, 0.16, 0.17, 1), "mid_color": Color(0.46, 0.45, 0.44, 1), "light_color": Color(0.78, 0.77, 0.74, 1), "strength": 0.9, "keep_saturation_above": 1.0, "center": 0.42, "contrast": 1.6, "coverage": 0.5, "frame_height": 48.0, "feet_y": 38.0, "body_height": 34.0},
+"stone_75": {"dark_color": Color(0.16, 0.16, 0.17, 1), "mid_color": Color(0.46, 0.45, 0.44, 1), "light_color": Color(0.78, 0.77, 0.74, 1), "strength": 0.9, "keep_saturation_above": 1.0, "center": 0.42, "contrast": 1.6, "coverage": 0.75, "frame_height": 48.0, "feet_y": 38.0, "body_height": 34.0}
 }
 stance_anims = {
 "Earth:1": ["earth_root", "earth_hold"],
 "Fire:1": "fire_punch"
+}
+stance_looks = {
+"Air:3": "stance_air_ball",
+"Air:5": "stance_air_column",
+"Earth:1": "look:stone_25",
+"Earth:2": "look:stone_50",
+"Earth:3": "look:stone_75",
+"Earth:4": "look:stone",
+"Fire:1": "stance_fire_ring",
+"Fire:2": "stance_fire_ribbon",
+"Fire:3": "stance_fire_heels",
+"Fire:4": "stance_fire_sun",
+"Fire:5": "stance_fire_ribbon",
+"Water:2": "stance_water_hoop",
+"Water:3": "stance_water_sphere",
+"Water:5": "stance_octopus"
 }
 recovery_frames = {}

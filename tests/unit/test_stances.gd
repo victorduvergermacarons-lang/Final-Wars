@@ -125,3 +125,64 @@ func test_stance_abilities_by_key() -> void:
 	assert_eq(WorldSim.stance_ability(ContentDB.abilities, "Water", 1, 3).id, &"W12", "1 then 3: Water Shield")
 	assert_eq(WorldSim.stance_ability(ContentDB.abilities, "Water", 4, 4).id, &"W19", "4 then 4: Bloodbending")
 	assert_eq(WorldSim.stance_ability(ContentDB.abilities, "Fire", 1, 1).id, &"F02", "Fire 1 → 1: Fire Kick")
+
+
+# --- Stance looks (what a held stance shows around the hero) ---
+
+func _art() -> CreatureArtDef:
+	return ContentDB.heroes[&"adventurer"].art
+
+
+func test_every_stance_has_a_look_or_a_ring() -> void:
+	var art := _art()
+	var unapproved := []
+	for tree in ["Fire", "Earth", "Water", "Air"]:
+		for n in range(1, 6):
+			var key := art.stance_look(tree, n)
+			if key == "":
+				unapproved.append("%s:%d" % [tree, n])
+			elif key.begins_with("look:"):
+				assert_true(art.looks.has(StringName(key.trim_prefix("look:"))), key)
+			else:
+				var fx: FxDef = ContentDB.effects.get(StringName(key))
+				assert_not_null(fx, key)
+				if fx != null:
+					assert_not_null(fx.sheet, key)
+	# The ones still waiting for approved art (a faint ring meanwhile).
+	assert_eq(unapproved, ["Earth:5", "Water:1", "Water:4", "Air:1", "Air:2", "Air:4"])
+
+
+func test_earth_stances_turn_more_of_the_body_to_stone() -> void:
+	var art := _art()
+	var last := 0.0
+	for n in range(1, 5):
+		var look := StringName(art.stance_look("Earth", n).trim_prefix("look:"))
+		var cov := float(art.looks[look].get("coverage", 1.0))
+		assert_gt(cov, last, "stance %d covers more than %d" % [n, n - 1])
+		last = cov
+	assert_eq(last, 1.0, "stance 4: all stone")
+
+
+func test_held_stance_gives_its_items_and_a_ring_when_unapproved() -> void:
+	var painter := FxPainter.new()
+	var art_for := func(_a): return _art()
+	sim.set_stance(hero, "Fire", 1)
+	var items := painter.stance_items(1.0, [hero], ContentDB.effects, art_for)
+	assert_eq(items.size(), 2, "the fire ring, split around the hero")
+	assert_true(items[0].behind and not items[1].behind)
+	assert_true(items[1].get("ground", false), "its front half lies on the ground")
+	sim.set_stance(hero, "Air", 1)
+	items = painter.stance_items(1.0, [hero], ContentDB.effects, art_for)
+	assert_true(items.size() == 2 and items[0].has("ring"), "a faint ring until the art is approved")
+	sim.set_stance(hero, "Earth", 2)
+	assert_eq(painter.stance_items(1.0, [hero], ContentDB.effects, art_for).size(), 0, "stone is a body look")
+	sim.set_stance(hero, "", 0)
+	assert_eq(painter.stance_items(1.0, [hero], ContentDB.effects, art_for).size(), 0, "no stance, nothing")
+
+
+func test_motion_comes_from_the_host_time_of_the_stance() -> void:
+	var fx: FxDef = ContentDB.effects[&"stance_water_sphere"]
+	var a: Dictionary = FxPainter.held_items(fx, 0.0, hero)[0]
+	var b: Dictionary = FxPainter.held_items(fx, 0.5 / fx.motion_hz, hero)[0]
+	assert_almost_eq((a.offset + b.offset).length(), 0.0, 0.001, "half a turn: the other side")
+	assert_ne(a.behind, b.behind, "it passes behind the hero")

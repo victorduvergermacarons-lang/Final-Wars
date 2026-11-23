@@ -19,6 +19,13 @@ uniform float center = 0.4;
 uniform float contrast = 1.8;
 // Pixels less opaque than this keep their colour.
 uniform float min_alpha = 0.8;
+// How much of the body is recoloured, from the feet up (Earth stances and the Stone
+// Guard buffs: 0.25, 0.5, 0.75, 1). Below 1 it needs the frame's height and, in art
+// pixels from the frame's top, the feet and how tall the body stands.
+uniform float coverage = 1.0;
+uniform float frame_height = 0.0;
+uniform float feet_y = 0.0;
+uniform float body_height = 0.0;
 
 float saturation(vec3 c) {
 	float hi = max(c.r, max(c.g, c.b));
@@ -28,7 +35,9 @@ float saturation(vec3 c) {
 
 void fragment() {
 	vec4 c = texture(TEXTURE, UV);
-	if (c.a < min_alpha) {
+	float y = mod(UV.y / TEXTURE_PIXEL_SIZE.y, max(frame_height, 1.0));
+	bool covered = coverage >= 1.0 || frame_height <= 0.0 || y >= feet_y + 1.0 - coverage * body_height;
+	if (c.a < min_alpha || !covered) {
 		COLOR = c;
 	} else {
 		float w = strength * (1.0 - smoothstep(keep_saturation_above, keep_saturation_above + 0.15, saturation(c.rgb)));

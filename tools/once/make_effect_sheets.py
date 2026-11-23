@@ -28,6 +28,20 @@ EFFECTS = {
 # Stills: game name -> art-drafts file (the clean rock; approved/FX-07-1.png, the old
 # oversized rock, is not used).
 STILLS = {"rock": "approved/FX-10-1.png"}
+# Stance looks (2026-11-23): approved stills only, moved in code (FxDef "Held around
+# a hero"). Unapproved ones (FX-15-9, -10, -13, -14, -15, -16, the dragon) draw a
+# faint ring instead until they are approved.
+STILLS.update({
+    "stance_fire_ring": "approved/FX-15-2.png",
+    "stance_fire_ribbon": "approved/FX-15-1.png",
+    "stance_fire_heels": "approved/FX-15-3.png",
+    "stance_fire_sun": "approved/FX-15-4.png",
+    "stance_water_hoop": "approved/FX-15-11.png",
+    "stance_water_sphere": "approved/FX-15-12.png",
+    "stance_air_column": "approved/FX-15-17.png",
+    "stance_octopus": "approved/FX-13-21.png",
+    "stance_air_ball": "approved/FX-14-5.png",
+})
 
 
 def fetch(src):

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+[ext_resource type="Texture2D" path="res://assets/effects/stance_air_column.png" id="2_sheet"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"stance_air_column"
+sheet = ExtResource("2_sheet")
+frame_size = Vector2i(64, 96)
+frames = 1
+fps = 1.0
+loop = true
+pivot = Vector2(32, 92)
+height_levels = 0.0
+rotate = false
+alpha = 0.55
+motion = 4
+motion_hz = 2.0
+motion_amount = 0.1
+orbit_tiles = 0.5
+flat = false
+split = false
+behind = false

@@ -89,6 +89,11 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 @export var stance_anims: Dictionary = {}
 @export var stance_anim_default: String = "cast"
 @export var stance_hold_seconds: float = 0.6
+## Heroes: what shows while a bending stance is held, by "<Tree>:<n>": an effect id
+## (FxDef: a still with code motion, drawn around the hero) or "look:<name>" (one of
+## `looks`, e.g. "look:stone_50": the body half stone from the feet up). Missing: a
+## faint ring in the element's colour (the art isn't approved yet).
+@export var stance_looks: Dictionary = {}
 
 @export_group("Recolour")
 ## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
@@ -151,6 +156,12 @@ func stance_anim(tree: String, n: int) -> Array:
 	var e = stance_anims.get("%s:%d" % [tree, n], stance_anim_default)
 	var names: Array = e if e is Array else [e]
 	return names.filter(func(a): return sheets.has(str(a)))
+
+
+## What `tree`'s stance `n` shows (see `stance_looks`): an effect id, "look:<name>",
+## or "" (the faint ring).
+func stance_look(tree: String, n: int) -> String:
+	return str(stance_looks.get("%s:%d" % [tree, n], ""))
 
 
 func duration(anim: String) -> float:

@@ -403,6 +403,10 @@ func _draw() -> void:
 		var ft := MoveState.tile_of(item.pos)
 		if not grid.in_bounds(ft):
 			continue
+		if item.get("ground", false):
+			# The front half of a ground ring reaches about 1.5 rows forward: drawn after
+			# those rows' tiles (so they don't hide it), from the tile two rows on.
+			ft = _ground_tile(ft, _ground_rows(item))
 		if not fx_by_tile.has(ft):
 			fx_by_tile[ft] = []
 		fx_by_tile[ft].append(item)
@@ -414,10 +418,10 @@ func _draw() -> void:
 			# with the actors on it, in any order that keeps the constraints above.
 			for p in _row_order(_tiles_by_depth.get(d, []), after):
 				_draw_tile_with_marks(grid, p, quest_areas, marks)
+				_draw_fx_items(grid, fx_by_tile.get(p, []), true)
 				for a in actors_by_tile.get(p, []):
 					_draw_actor(a)
-				for item in fx_by_tile.get(p, []):
-					_draw_fx(grid, item)
+				_draw_fx_items(grid, fx_by_tile.get(p, []), false)
 	else:
 		_draw_over_cache(grid, actors_by_tile, after, quest_areas, marks, fx_by_tile)
 	_draw_outlines(grid)
@@ -468,39 +472,109 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 				_draw_quest_area(grid, p, quest_areas[p])
 			for color in marks.get(p, []):
 				_draw_tile_mark(grid, p, color)
+			_draw_fx_items(grid, fx_by_tile.get(p, []), true)
 			for a in actors_by_tile.get(p, []):
 				_draw_actor(a)
-			for item in fx_by_tile.get(p, []):
-				_draw_fx(grid, item)
+			_draw_fx_items(grid, fx_by_tile.get(p, []), false)
 
 
 ## Where an effect item (FxPainter.items) sits on screen: its anchor, `lift` levels
 ## above the ground under it.
+## Items around an actor ("actor") sit at its drawn feet, `offset` tiles away.
 func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
+	if item.has("actor"):
+		var off: Vector2 = item.get("offset", Vector2.ZERO)
+		return actor_screen_pos(item.actor) + Iso.to_screen(off, float(item.lift)) - Iso.to_screen(Vector2.ZERO, 0.0)
 	var tile := MoveState.tile_of(item.pos)
 	return Iso.to_screen(item.pos, float(grid.height_at(tile)) + float(item.lift))
 
 
 func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
-	var fx: FxDef = item.fx
-	var r := maxf(fx.frame_size.x, fx.frame_size.y) * PixelCamera.ART_SCALE
+	var r := RING_RADIUS.x if item.has("ring") else 0.0
+	if item.has("fx"):
+		var fx: FxDef = item.fx
+		r = maxf(fx.frame_size.x, fx.frame_size.y) * PixelCamera.ART_SCALE
 	return Rect2(_fx_anchor(grid, item) - Vector2(r, r), Vector2(r, r) * 2.0)
+
+
+## Where the front half of a ground ring is drawn: the last tile of the row `rows`
+## rows in front of `t` (the furthest row with tiles, short of that).
+func _ground_tile(t: Vector2i, rows: int) -> Vector2i:
+	for d in range(Iso.depth(t) + rows, Iso.depth(t), -1):
+		var row: Array = _tiles_by_depth.get(d, [])
+		if not row.is_empty():
+			return row[row.size() - 1]
+	return t
+
+
+## How many rows in front of its anchor a ground ring's front half reaches.
+func _ground_rows(item: Dictionary) -> int:
+	var ry := RING_RADIUS.y
+	if item.has("fx"):
+		var fx: FxDef = item.fx
+		ry = (fx.frame_size.y - fx.pivot.y) * PixelCamera.ART_SCALE * 0.5
+	return maxi(1, ceili(ry / (Iso.TILE_H * 0.5)))
+
+
+## A stance's faint ring (art not approved yet): its half-size on screen.
+const RING_RADIUS := Vector2(30, 15)
+
+
+## The items of one tile that go behind its actors (`behind`), or in front.
+func _draw_fx_items(grid: GridModel, items: Array, behind: bool) -> void:
+	for item in items:
+		if bool(item.get("behind", false)) == behind:
+			_draw_fx(grid, item)
 
 
 ## Draws one effect frame: its pivot on the anchor, at the art scale, turned toward
 ## where it was sent (kept upright when it points left), at its opacity.
 func _draw_fx(grid: GridModel, item: Dictionary) -> void:
+	if item.has("ring"):
+		var c: Color = item.ring
+		var centre := _fx_anchor(grid, item).round()
+		var pts := PackedVector2Array()
+		var from := PI if int(item.get("half", 1)) < 0 else 0.0 # back arc: the top half
+		for i in 17:
+			var ang := from + PI * i / 16.0
+			pts.append(centre + Vector2(cos(ang) * RING_RADIUS.x, sin(ang) * RING_RADIUS.y))
+		draw_polyline(pts, Color(c, float(item.alpha)), 2.0)
+		return
 	var fx: FxDef = item.fx
 	if fx.sheet == null:
 		return
 	var s := PixelCamera.ART_SCALE
 	var angle: float = item.angle if item.rotate else 0.0
 	var flip: bool = item.rotate and not item.get("spin", false) and cos(angle) < 0.0
-	draw_set_transform(_fx_anchor(grid, item).round(), angle, Vector2(s, -s if flip else s))
+	var mirror: bool = item.get("mirror", false)
+	# Turned, mirrored, then (lying on the ground) squashed to half height, like a tile.
+	var squash := 0.5 if item.get("flat", false) else 1.0
+	var xf := Transform2D(Vector2(s, 0), Vector2(0, s * squash), Vector2.ZERO) * Transform2D(angle, Vector2.ZERO) \
+			* Transform2D(Vector2(-1.0 if mirror else 1.0, 0), Vector2(0, -1.0 if flip else 1.0), Vector2.ZERO)
+	xf.origin = _fx_anchor(grid, item).round()
 	var size := Vector2(fx.frame_size)
-	draw_texture_rect_region(fx.sheet, Rect2(-fx.pivot, size), Rect2(Vector2(item.frame * size.x, 0), size),
-			Color(1, 1, 1, fx.alpha))
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	var color := Color(1, 1, 1, fx.alpha)
+	var half := int(item.get("half", 0))
+	if half == 0:
+		draw_set_transform_matrix(xf)
+		draw_texture_rect_region(fx.sheet, Rect2(-fx.pivot, size), Rect2(Vector2(item.frame * size.x, 0), size), color)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		return
+	# A split still: only the half of its screen box above (behind the actor) or below
+	# (in front of it) the anchor, its texture mapped back through the transform.
+	var box := xf * Rect2(-fx.pivot, size)
+	var y0 := box.position.y if half < 0 else xf.origin.y
+	var y1 := xf.origin.y if half < 0 else box.end.y
+	if y1 <= y0:
+		return
+	var pts := PackedVector2Array([Vector2(box.position.x, y0), Vector2(box.end.x, y0), Vector2(box.end.x, y1),
+			Vector2(box.position.x, y1)])
+	var inv := xf.affine_inverse()
+	var tex := Vector2(fx.sheet.get_size())
+	var uvs := PackedVector2Array()
+	for q in pts:
+		uvs.append((inv * q + fx.pivot + Vector2(item.frame * size.x, 0)) / tex)
+	draw_polygon(pts, PackedColorArray([color, color, color, color]), uvs, fx.sheet)
 
 
 static func _must_follow(after: Dictionary, tile: Vector2i, first: Vector2i) -> void:
@@ -810,6 +884,25 @@ func _hero_art(a: Actor) -> CreatureArtDef:
 	return def.art if def != null else null
 
 
+## Stone looks from least to most of the body (Earth stances 1-4, Stone Guard buffs).
+const STONE_LOOKS: Array[StringName] = [&"stone_25", &"stone_50", &"stone_75", &"stone"]
+
+
+## The look a creature's body wears: its buff's (Stone Skin), or its held stance's
+## ("look:<name>", Earth's stone); with both, the one that covers more stone.
+func _body_look(e: Actor, art: CreatureArtDef) -> StringName:
+	if not e.alive:
+		return &""
+	var look: StringName = e.buffs.look(session.now())
+	if e is Hero and e.stance > 0:
+		var key := art.stance_look(e.stance_tree, e.stance)
+		if key.begins_with("look:"):
+			var held := StringName(key.trim_prefix("look:"))
+			if look == &"" or STONE_LOOKS.find(held) > STONE_LOOKS.find(look):
+				look = held
+	return look
+
+
 ## Draws an animated creature standing on `feet`; false if it has nothing to show.
 func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef = null) -> bool:
 	if art == null:
@@ -823,7 +916,7 @@ func _draw_creature(e: Actor, feet: Vector2, alpha: float, art: CreatureArtDef =
 		_frames_cache[art] = [art.build_sprite_frames(sheets), art.build_sprite_frames(art.flash_sheets) if not art.flash_sheets.is_empty() else null]
 	var frames: SpriteFrames = _frames_cache[art][0]
 	# A buff's look (Stone Skin: grey stone), except while its own end animation plays.
-	var look: StringName = e.buffs.look(session.now()) if e.alive else &""
+	var look: StringName = _body_look(e, art)
 	if look != &"" and art.looks.has(look) and pick.anim != str((e as Hero).anim.get("buff_end_anim", "") if e is Hero else ""):
 		var key := [art, look]
 		if not _frames_cache.has(key):

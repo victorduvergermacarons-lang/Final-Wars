@@ -3,6 +3,9 @@ extends Node
 ##   SHOTS_DIR=/tmp/shots xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . res://tests/visual/stance_shots.tscn
 ## Phase 1: the four element trees with the new tiers and steps (Mastery 240 in each, a
 ## few mastered), Earth Wall with its trench on raised ground.
+## Phase 2: the action bar with stance slots and the stance panel, then every stance's
+## look around the hero (st2_look_<tree>_<n>, cropped; a faint ring where the art
+## isn't approved yet).
 
 var out_dir := OS.get_environment("SHOTS_DIR").path_join("") if OS.get_environment("SHOTS_DIR") != "" else ProjectSettings.globalize_path("user://shots/")
 var game: Game
@@ -56,6 +59,7 @@ func _run() -> void:
 		await _shot("st1_tree_%s" % tree.to_lower())
 	hud._toggle(hud.trees_window)
 	await phase1_trench(session, hero)
+	await phase2_looks(session, hero)
 	get_tree().quit()
 
 
@@ -78,3 +82,30 @@ func phase1_trench(session: LocalSession, hero: Hero) -> void:
 	await _frames(20)
 	view.camera.follow(view.actor_screen_pos(hero) + Vector2(0, 40), 0.0, true)
 	await _shot("st1_earth_wall_trench")
+
+
+func phase2_looks(session: LocalSession, hero: Hero) -> void:
+	session.world.move_hero(hero.id, &"crossing", Vector2i(12, 12))
+	var view := await _view()
+	var sim := session.zone_sim()
+	hero.move.place(Vector2i(12, 12))
+	hero.move.ground_h = sim.grid.height_at(Vector2i(12, 12))
+	sim.set_stance(hero, "Water", 2)
+	await _frames(20)
+	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+	await _shot("st2_bar_and_panel")
+	for tree in ["Fire", "Earth", "Water", "Air"]:
+		for n in range(1, 6):
+			sim.set_stance(hero, tree, n)
+			# Let the motion run a moment (host time).
+			for i in 12:
+				session.world.step()
+			await _frames(4)
+			view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+			await _frames(4)
+			var img := get_viewport().get_texture().get_image()
+			var c := img.get_size() / 2 # the camera follows the hero
+			img = img.get_region(Rect2i(c - Vector2i(160, 200), Vector2i(320, 280)))
+			img.save_png(out_dir + "st2_look_%s_%d.png" % [tree.to_lower(), n])
+			print("shot st2_look_%s_%d" % [tree.to_lower(), n])
+	sim.set_stance(hero, "", 0)
