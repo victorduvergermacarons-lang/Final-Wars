@@ -152,3 +152,79 @@ static func item_id_of(entry: StringName) -> StringName:
 
 static func item_entry(item_id: StringName) -> StringName:
 	return StringName(ITEM_PREFIX + String(item_id))
+
+
+# --- Stances (stance rework, 2026-11-23) ---------------------------------------
+## A slot can hold a bending stance: "stance:<Tree>:<n>". Pressed out of a stance it
+## enters it; in a stance, keys 1-4 cast its branches instead (PlayerInput.use_slot)
+## and 5-0 keep their slots, so a stance there switches straight to it.
+const STANCE_PREFIX := "stance:"
+
+
+static func stance_entry(tree: String, n: int) -> StringName:
+	return StringName("%s%s:%d" % [STANCE_PREFIX, tree, n])
+
+
+static func is_stance_slot(entry: StringName) -> bool:
+	return String(entry).begins_with(STANCE_PREFIX)
+
+
+## [tree, n] of a stance slot.
+static func stance_of(entry: StringName) -> Array:
+	var parts := String(entry).trim_prefix(STANCE_PREFIX).split(":")
+	return [parts[0], int(parts[1])] if parts.size() == 2 else ["", 0]
+
+
+## Puts the stances of the bending trees the hero knows on the bar, once per tree:
+## the hero's own element (`primary`) on page 1's slots 1-5 (whatever was there moves
+## to the first empty slots), the others into the first empty slots. The first time,
+## bending abilities on the bar come off (they are cast from their stances now).
+## Returns true if anything changed.
+func place_stances(trees: Array, primary: String, is_bending: Callable) -> bool:
+	var changed_any := false
+	if not _auto_placed.has(&"stances") and not trees.is_empty():
+		for pg in pages:
+			for i in SLOT_COUNT:
+				if pg[i] != &"" and not is_item_slot(pg[i]) and not is_stance_slot(pg[i]) and is_bending.call(pg[i]):
+					pg[i] = &""
+		_auto_placed[&"stances"] = true
+		changed_any = true
+	var order: Array = trees.duplicate()
+	if order.has(primary):
+		order.erase(primary)
+		order.push_front(primary)
+	for tree in order:
+		var key := StringName("stance:" + tree)
+		if _auto_placed.has(key):
+			continue
+		_auto_placed[key] = true
+		changed_any = true
+		var already := false
+		for pg in pages:
+			for e in pg:
+				if is_stance_slot(e) and stance_of(e)[0] == tree:
+					already = true
+		if already:
+			continue
+		if tree == primary or (primary == "" and tree == order[0]):
+			var displaced: Array = []
+			for n in range(1, 6):
+				if pages[0][n - 1] != &"":
+					displaced.append(pages[0][n - 1])
+				pages[0][n - 1] = stance_entry(tree, n)
+			for e in displaced:
+				_put_in_first_empty(e)
+		else:
+			for n in range(1, 6):
+				_put_in_first_empty(stance_entry(tree, n))
+	if changed_any:
+		changed.emit()
+	return changed_any
+
+
+func _put_in_first_empty(entry: StringName) -> void:
+	for pg in pages:
+		var i: int = pg.find(&"")
+		if i >= 0:
+			pg[i] = entry
+			return

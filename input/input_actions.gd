@@ -41,7 +41,9 @@ static func is_reserved_key(key: int) -> bool:
 	return false
 
 
-## Action name for switching to action bar page p (0-based): Shift + number.
+## Action name for switching to action bar page p (0-based): Ctrl + number (Shift
+## alone leaves a bending stance since the stance rework).
+## Keys 1-4 cast the branches of the stance held (PlayerInput.use_slot).
 static func page_action(p: int) -> StringName:
 	return StringName("action_page_%d" % (p + 1))
 
@@ -80,7 +82,7 @@ static func ensure_registered() -> void:
 			InputMap.add_action(action)
 			var ev := InputEventKey.new()
 			ev.physical_keycode = ActionBarModel.DEFAULT_KEYS[p]
-			ev.shift_pressed = true
+			ev.ctrl_pressed = true
 			InputMap.action_add_event(action, ev)
 	if not InputMap.has_action(&"select_target"):
 		InputMap.add_action(&"select_target")

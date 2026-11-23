@@ -90,15 +90,16 @@ func test_out_of_combat_the_hero_faces_where_it_walks() -> void:
 	assert_almost_eq(hero.facing_angle, Mover.screen_to_grid(Vector2i(0, 1)).angle(), 0.1)
 
 
-func test_shift_number_switches_the_action_bar_page() -> void:
+func test_ctrl_number_switches_the_action_bar_page() -> void:
+	# Ctrl since the stance rework (Shift alone leaves a stance).
 	var client: ClientState = input.client
 	var ev := InputEventKey.new()
 	ev.physical_keycode = KEY_3
-	ev.shift_pressed = true
+	ev.ctrl_pressed = true
 	ev.pressed = true
 	Input.parse_input_event(ev)
 	await wait_process_frames(2)
-	assert_eq(client.action_bar.page, 2, "Shift+3 shows bar 3")
+	assert_eq(client.action_bar.page, 2, "Ctrl+3 shows bar 3")
 	var plain := InputEventKey.new()
 	plain.physical_keycode = KEY_3
 	plain.pressed = true

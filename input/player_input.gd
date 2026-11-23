@@ -133,6 +133,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			session.send_intent({"type": "talk", "npc": picked.id})
 		elif picked is Hero and picked.id != session.local_hero_id:
 			player_menu_requested.emit(picked.id, get_viewport().get_mouse_position())
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SHIFT:
+		# Shift leaves the bending stance.
+		var hero: Hero = session.local_hero()
+		if hero != null and hero.stance > 0:
+			session.send_intent({"type": "stance", "tree": "", "stance": 0})
 	else:
 		for p in ActionBarModel.PAGE_COUNT:
 			if event.is_action_pressed(InputActions.page_action(p), false, true):
@@ -140,7 +145,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				return
 		for i in ActionBarModel.SLOT_COUNT:
-			if event.is_action_pressed(InputActions.slot_action(i), false, true):
+			if InputMap.has_action(InputActions.slot_action(i)) \
+					and event.is_action_pressed(InputActions.slot_action(i), false, true):
 				use_slot(i, InputActions.slot_action(i))
 				get_viewport().set_input_as_handled()
 				return
@@ -241,12 +247,25 @@ func _input(event: InputEvent) -> void:
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was
 ## pressed (aimed abilities fire when it's released); "" for a click on the bar.
+## The number of branch keys a stance has (keys 1-4 while one is held).
+const BRANCH_KEYS := 4
+
+
 func use_slot(i: int, key: StringName = &"") -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return
+	# In a stance, the first four keys cast its branches (the slots there are set
+	# aside until the stance is left); the others keep their slots.
+	if hero.stance > 0 and i < BRANCH_KEYS:
+		use_branch(hero, i + 1, key)
+		return
 	var id := client.action_bar.slots[i]
 	if id == &"":
 		return
-	var hero: Hero = session.local_hero()
-	if hero == null:
+	if ActionBarModel.is_stance_slot(id):
+		var st := ActionBarModel.stance_of(id)
+		enter_stance(st[0], st[1])
 		return
 	if ActionBarModel.is_item_slot(id):
 		use_item(ActionBarModel.item_id_of(id))
@@ -256,6 +275,43 @@ func use_slot(i: int, key: StringName = &"") -> void:
 		client.error("You can't use that right now")
 		return
 	use_ability(ability, key)
+
+
+## Enters (or switches to) a bending stance; its entry cast, if any, goes at the
+## current target and the cursor.
+func enter_stance(tree: String, n: int) -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return
+	if hero.stance_tree == tree and hero.stance == n:
+		return
+	session.send_intent({"type": "stance", "tree": tree, "stance": n, "target": client.target_id,
+			"aim": mouse_point(null)})
+
+
+## Branch key `b` (1-4) in the stance held: casts that branch's ability, or says
+## what it is and why it can't be used. Pressed again during the ability's own
+## timing bar, it plays the bar (the second press).
+func use_branch(hero: Hero, b: int, key: StringName = &"") -> void:
+	var def := WorldSim.stance_ability(ContentDB.abilities, hero.stance_tree, hero.stance, b)
+	if def == null:
+		client.error("%s %d → %d: no ability" % [hero.stance_tree, hero.stance, b])
+		return
+	var ability := hero.find_ability(def.id)
+	if ability == null:
+		client.error("%s %d → %d: %s, %s" % [hero.stance_tree, hero.stance, b, def.display_name,
+				_why_not(hero, def)])
+		return
+	use_ability(ability, key)
+
+
+static func _why_not(hero: Hero, def: AbilityDef) -> String:
+	if not def.implemented:
+		return "not in the game yet"
+	var need := int(def.sheet.get("mastery_required", 0))
+	if Mastery.permanent(hero, def.tree) + 0.0001 < need:
+		return "needs %s Mastery %d" % [def.tree, need]
+	return "not learned yet"
 
 
 ## Uses one of the named consumable from the bag.
@@ -528,7 +584,7 @@ func mouse_point(ability: AbilityDef) -> Vector2:
 	var height: int = session.grid().height_at(tile) if tile != null \
 			else session.grid().height_at(hero.tile()) if session.grid().in_bounds(hero.tile()) else 0
 	var point := Iso.from_screen(mouse, height)
-	if ability.uses_hitbox():
+	if ability == null or ability.uses_hitbox():
 		return point
 	return Vector2(tile) if tile != null else Vector2(MoveState.tile_of(point))
 

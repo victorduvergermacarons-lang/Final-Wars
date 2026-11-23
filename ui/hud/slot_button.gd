@@ -35,7 +35,16 @@ func _process(_delta: float) -> void:
 	queue_redraw()
 	var ability := _ability()
 	var item := _item()
-	if item != null:
+	var entry := hud.client.action_bar.slots[index]
+	if ActionBarModel.is_stance_slot(entry):
+		var st := ActionBarModel.stance_of(entry)
+		var names: PackedStringArray = []
+		for b in range(1, 5):
+			var a := WorldSim.stance_ability(ContentDB.abilities, st[0], st[1], b)
+			names.append("%d: %s" % [b, a.display_name if a != null else "—"])
+		tooltip_text = "%s stance %d\n%s\nIn the stance, keys 1-4 cast these. Shift leaves it." % [st[0], st[1],
+				"\n".join(names)]
+	elif item != null:
 		tooltip_text = "%s\n%s" % [item.display_name, item.description]
 	else:
 		tooltip_text = _tooltip(ability) if ability != null else "Empty slot. Drag an ability from the Spellbook (P) or a potion from your bag."
@@ -49,7 +58,7 @@ func _item() -> ItemDef:
 
 func _ability() -> AbilityDef:
 	var id := hud.client.action_bar.slots[index]
-	if id == &"":
+	if id == &"" or ActionBarModel.is_stance_slot(id):
 		return null
 	if ActionBarModel.is_item_slot(id):
 		var item := _item()
@@ -59,8 +68,32 @@ func _ability() -> AbilityDef:
 	return known if known != null else ContentDB.abilities.get(id)
 
 
+## Element colours for stance slots and the stance panel.
+const STANCE_COLORS := {"Fire": Color(0.85, 0.35, 0.15), "Water": Color(0.25, 0.5, 0.95),
+	"Earth": Color(0.6, 0.45, 0.25), "Air": Color(0.7, 0.82, 0.88)}
+
+
+## A stance slot: the element's colour, its initial and the stance number; brighter
+## while that stance is held.
+func _draw_stance(rect: Rect2, entry: StringName, hero: Hero) -> void:
+	var st := ActionBarModel.stance_of(entry)
+	var c: Color = STANCE_COLORS.get(st[0], Color.GRAY)
+	var held: bool = hero != null and hero.stance_tree == st[0] and hero.stance == st[1]
+	draw_rect(rect, c.darkened(0.25 if held else 0.65))
+	draw_rect(rect, c.lightened(0.4) if held else c, false, 3.0 if held else 1.0)
+	_text(String(st[0]).left(1), Vector2(6, 22), 18, c.lightened(0.5))
+	_text(str(st[1]), Vector2(size.x * 0.5 - 4, size.y - 9), 22, Color.WHITE)
+	_text(hud.client.action_bar.key_label(index), Vector2(size.x - 14, 13), 11, Color(0.85, 0.85, 0.9))
+
+
 func _draw() -> void:
 	var rect := Rect2(Vector2.ZERO, size)
+	var entry := hud.client.action_bar.slots[index]
+	var stance_hero: Hero = hud.session.local_hero()
+	if ActionBarModel.is_stance_slot(entry):
+		_draw_stance(rect, entry, stance_hero)
+		_dim_for_stance(rect, stance_hero)
+		return
 	var ability := _ability()
 	var hero: Hero = hud.session.local_hero()
 	var now: float = hud.session.now()
@@ -101,6 +134,14 @@ func _draw() -> void:
 			if cd > hero.cooldowns.gcd_remaining(now) and cd > 0.0:
 				_text("%d" % ceili(cd) if cd >= 1.0 else "%.1f" % cd, Vector2(size.x * 0.5 - 8, size.y * 0.5 + 6), 16, Color(1, 1, 0.6))
 	_text(hud.client.action_bar.key_label(index), Vector2(size.x - 14, 13), 11, Color(0.85, 0.85, 0.9))
+	_dim_for_stance(rect, hero)
+
+
+## While a stance is held, keys 1-4 cast its branches (see the stance panel), so
+## these slots are dimmed.
+func _dim_for_stance(rect: Rect2, hero: Hero) -> void:
+	if hero != null and hero.stance > 0 and index < PlayerInput.BRANCH_KEYS:
+		draw_rect(rect, Color(0, 0, 0, 0.55))
 
 
 func _draw_sweep(rect: Rect2, fraction: float) -> void:

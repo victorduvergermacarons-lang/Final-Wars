@@ -10,7 +10,10 @@ const CONTROLS := """[b]Moving and fighting[/b]
 WASD or the arrow keys: move (two keys walk along the grid) · the mouse: face that way
 E: talk to the person next to you · right-click someone to talk
 Click someone, or Tab, to target · Esc: clear the target
-1–9, 0: use the action bar · Shift+1–6 (or < >): switch action bar page
+1–9, 0: use the action bar · Ctrl+1–6 (or < >): switch action bar page
+Bending stances: a stance slot (your element's stances 1–5 start on keys 1–5) enters that
+stance; in a stance, keys 1–4 cast its four abilities (the panel above the bar), 5–0 keep
+their slots (another stance there switches to it), and Shift leaves the stance
 Aimed abilities go where the mouse points
 Hold an aimed ability's key to aim, release to cast (or press it again) · Esc or right-click: cancel
 Timing bar: right-click, Space or the ability's key again on a green zone for full power, on a yellow zone for

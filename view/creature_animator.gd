@@ -69,7 +69,7 @@ func _pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 
 ## Just after entering a stance (host time Hero.stance_at): its entry animation
 ## (CreatureArtDef.stance_anim), the second one held stance_hold_seconds. {} after.
-func _stance_entry(hero: Hero, art: CreatureArtDef, dir: int, t: float) -> Dictionary:
+func _stance_entry(hero: Hero, art: CreatureArtDef, dir: String, t: float) -> Dictionary:
 	if hero == null or hero.stance <= 0:
 		return {}
 	var since := t - hero.stance_at

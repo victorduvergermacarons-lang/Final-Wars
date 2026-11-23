@@ -29,23 +29,32 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(30)
 	assert_ne(hero.tile(), start, "hero moved")
 
-	# Heroes start without a weapon: Fire Punch (the scroll in the learning slot)
-	# was auto-placed first on the bar.
-	assert_eq(game.client.action_bar.slots[0], &"F01")
+	# Heroes start without a weapon. Bending is cast from stances (stance rework):
+	# Fire's five stances (Fire Punch, in the learning slot) went on keys 1-5.
+	assert_eq(game.client.action_bar.slots[0], ActionBarModel.stance_entry("Fire", 1))
+	assert_eq(game.client.action_bar.slots[4], ActionBarModel.stance_entry("Fire", 5))
+	assert_false(game.client.action_bar.slots.has(&"F01"), "no bending ability on the bar itself")
 	assert_false(game.client.action_bar.slots.has(&"S01"), "no sword, no Slash")
 
-	# Put Mender's Scroll in the learning slot: Healing Touch joins the bar.
+	# Put Mender's Scroll in the learning slot: Water's stances join the bar.
 	session.send_intent({"type": "learn", "bag_index": hero.bag.index_of(ContentDB.items[&"menders_scroll"])})
 	await wait_physics_frames(6)
 	assert_eq(hero.learning_item.id, &"menders_scroll")
-	var heal_slot := game.client.action_bar.slots.find(&"W01")
-	assert_gt(heal_slot, -1, "Healing Touch on the bar")
+	var water_slot := game.client.action_bar.slots.find(ActionBarModel.stance_entry("Water", 1))
+	assert_gt(water_slot, -1, "Water stance 1 on the bar")
 
-	# Healing Touch casts on self with no target; the GCD starts.
+	# Its key enters Water stance 1; then key 1 casts Healing Touch (1 → 1) on self.
 	hero.hp -= 30
-	input.use_slot(heal_slot)
+	input.use_slot(water_slot)
 	await wait_physics_frames(6)
-	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "heal went through the action bar")
+	assert_eq([hero.stance_tree, hero.stance], ["Water", 1])
+	assert_eq(hero.cooldowns.gcd_remaining(session.now()), 0.0, "entering doesn't start the global cooldown")
+	input.use_slot(0)
+	await wait_physics_frames(6)
+	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "the heal went through branch key 1")
+	assert_eq(hero.stance, 1, "still in the stance")
+	session.send_intent({"type": "stance", "tree": "", "stance": 0})
+	await wait_physics_frames(4)
 
 	# Equip a new sword from the inventory window (out of combat): Lunge appears on the bar.
 	hero.wear(ContentDB.items[&"rusty_shortsword"])
@@ -68,8 +77,9 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_process_frames(2)
 	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"travelers_longsword")
 	assert_eq(hero.bag.count_of(ContentDB.items[&"rusty_shortsword"]), 1, "the old sword went to the bag")
-	assert_true(game.client.action_bar.slots.has(&"S04"))
-	assert_true(game.client.action_bar.slots.has(&"S01"), "Slash's slot stays (dimmed)")
+	# Page 1 is full of stances (Fire and Water): the sword arts go on page 2.
+	assert_true(game.client.action_bar.has_anywhere(&"S04"))
+	assert_true(game.client.action_bar.has_anywhere(&"S01"), "Slash's slot stays (dimmed)")
 	var tooltip = main_hand._make_custom_tooltip("")
 	assert_not_null(tooltip, "tooltip builds")
 	tooltip.free()

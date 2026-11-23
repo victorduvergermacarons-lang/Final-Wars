@@ -62,6 +62,8 @@ var settings_path := SettingsStore.DEFAULT_PATH
 
 var bind_mode := false
 var hovered_slot := -1
+## The stance held, above the action bar (stance rework).
+var stance_panel: StancePanel
 ## The bag item under the mouse, and the item being dragged (ItemSlotView): the
 ## equipment slots it would go in light up.
 var hovered_item: ItemDef
@@ -183,6 +185,8 @@ func _build() -> void:
 	_bind_banner.add_theme_constant_override("outline_size", 4)
 	_bind_banner.visible = false
 	bottom.add_child(_bind_banner)
+	stance_panel = StancePanel.new(self)
+	bottom.add_child(stance_panel)
 	var bar := HBoxContainer.new()
 	bar.add_theme_constant_override("separation", 4)
 	for i in ActionBarModel.SLOT_COUNT:
@@ -199,13 +203,13 @@ func _build() -> void:
 	timing_bar.mode = saved_mode if saved_mode in TimingBarView.Mode.values() else TimingBarView.Mode.LENGTH
 	_root.add_child(timing_bar)
 
-	# Bottom-right: which action bar page is shown (Shift+1–6, or the arrows).
+	# Bottom-right: which action bar page is shown (Ctrl+1–6, or the arrows).
 	var pager := PanelContainer.new()
 	pager.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	pager.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	pager.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	pager.position = Vector2(-10, -10)
-	pager.tooltip_text = "Action bar page. Shift+1 to Shift+%d switch pages." % ActionBarModel.PAGE_COUNT
+	pager.tooltip_text = "Action bar page. Ctrl+1 to Ctrl+%d switch pages." % ActionBarModel.PAGE_COUNT
 	_root.add_child(pager)
 	var pager_box := VBoxContainer.new()
 	pager_box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -227,7 +231,7 @@ func _build() -> void:
 	pager_row.add_child(_page_label)
 	pager_row.add_child(_small_button(">", func(): client.action_bar.set_page(client.action_bar.page + 1)))
 	var pager_hint := Label.new()
-	pager_hint.text = "Shift+1–%d" % ActionBarModel.PAGE_COUNT
+	pager_hint.text = "Ctrl+1–%d" % ActionBarModel.PAGE_COUNT
 	pager_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	pager_hint.add_theme_font_size_override("font_size", 11)
 	pager_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
@@ -392,6 +396,10 @@ func _build() -> void:
 	_root.add_child(act_end)
 
 
+static func _is_bending(a: AbilityDef) -> bool:
+	return a != null and WorldSim.BENDING_TREES.has(a.tree)
+
+
 func _process(_delta: float) -> void:
 	if not _act_end_pending.is_empty() and not dialogue.visible:
 		close_menus()
@@ -402,9 +410,19 @@ func _process(_delta: float) -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null:
 		return
+	# Bending is cast from stances (stance rework): the bar gets the stances of each
+	# known element, and only other abilities (weapon arts) are placed one by one.
 	var ids: Array[StringName] = []
+	var trees: Array = []
 	for a in hero.available_abilities():
-		ids.append(a.id)
+		if _is_bending(a):
+			if not trees.has(a.tree):
+				trees.append(a.tree)
+		else:
+			ids.append(a.id)
+	trees.sort()
+	client.action_bar.place_stances(trees, String(hero.element).capitalize(),
+			func(id): return _is_bending(ContentDB.abilities.get(id)))
 	client.action_bar.auto_place(ids)
 	_death.visible = not hero.alive
 	_sync_party(hero)
