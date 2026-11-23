@@ -89,6 +89,8 @@ static func _fx(world: WorldSim, hero: Hero, args: Array, content, aim) -> Dicti
 	var to: Vector2 = from + hero.facing_vector() * 3.0
 	if aim is Vector2:
 		to = aim if from.distance_to(aim) <= FX_REACH else from + (aim - from).normalized() * FX_REACH
+	if to.distance_to(from) > 0.01:
+		hero.face_angle((to - from).angle()) # as a cast would: the hand points the right way
 	var now := world.now
 	var events: Array = []
 	var played: PackedStringArray = []

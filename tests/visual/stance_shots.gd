@@ -12,6 +12,9 @@ extends Node
 ## Phase 4: code-drawn effects through `fx` (st4_<name>): ribbons, fronts (open
 ## ground and against a pillar), tile effects, an L-shaped burning area, Seismic
 ## Sense, the fire dragon coiled and uncoiling. SHOTS_ONLY=p4 takes only these.
+## Phase 5 (SHOTS_ONLY=p5): both whips at 1, 3 and 5 tiles in the four grid facings
+## and a diagonal (st5_<whip>_<facing>_<d>), Seismic Stomp on grass and on stone,
+## Fireball and Fire Dart flying at 0, 22.5 and 45 degrees on screen.
 
 var out_dir := OS.get_environment("SHOTS_DIR").path_join("") if OS.get_environment("SHOTS_DIR") != "" else ProjectSettings.globalize_path("user://shots/")
 var game: Game
@@ -72,6 +75,8 @@ func _run() -> void:
 		await phase3_effects(session, hero)
 	if only in ["", "p4"]:
 		await phase4_code_effects(session, hero)
+	if only in ["", "p5"]:
+		await phase5_extra(session, hero)
 	get_tree().quit()
 
 
@@ -246,4 +251,57 @@ func phase4_code_effects(session: LocalSession, hero: Hero) -> void:
 	await _console(session, hero, "heal", hero.move.pos, 0.2)
 	await _crop("st4_dragon_uncoiling", 480, 380)
 	sim.set_stance(hero, "", 0)
+	ContentDB.rules.game_speed = 1.0
+
+
+func phase5_extra(session: LocalSession, hero: Hero) -> void:
+	session.world.move_hero(hero.id, &"crossing", Vector2i(12, 12))
+	var view := await _view()
+	var sim := session.zone_sim()
+	hero.move.place(Vector2i(12, 12))
+	hero.move.ground_h = sim.grid.height_at(Vector2i(12, 12))
+	sim.set_stance(hero, "", 0)
+	await _frames(10)
+	view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+	ContentDB.rules.game_speed = 0.2
+	var facings := {"x+": Vector2(1, 0), "y+": Vector2(0, 1), "x-": Vector2(-1, 0), "y-": Vector2(0, -1),
+			"diag": Vector2(1, 1).normalized()}
+	for whip in [["water", "W02"], ["fire", "F06"]]:
+		for f in facings:
+			for d in [1, 3, 5]:
+				var snap := 0.29 if whip[0] == "water" else 0.25
+				await _console(session, hero, "fx " + whip[1], hero.move.pos + facings[f] * d, snap)
+				await _crop("st5_%s_whip_%s_%d" % [whip[0], f, d], 480, 380)
+				await _console(session, hero, "heal", hero.move.pos, 0.6)
+	# Seismic Stomp on grass (here) and on stone (the nearest cobblestone).
+	await _console(session, hero, "fx E04", hero.move.pos, 0.3)
+	await _crop("st5_stomp_grass", 480, 380)
+	await _console(session, hero, "heal", hero.move.pos, 1.0)
+	var zone: ZoneDef = ContentDB.zones[&"crossing"]
+	var stone := Vector2i(-1, -1)
+	for r in range(1, 20):
+		for dx in range(-r, r + 1):
+			for dy in range(-r, r + 1):
+				var t := hero.tile() + Vector2i(dx, dy)
+				if stone == Vector2i(-1, -1) and sim.grid.in_bounds(t) and sim.grid.is_walkable(t) \
+						and String(zone.terrain_at(t)).contains("cobble"):
+					stone = t
+	if stone != Vector2i(-1, -1):
+		hero.move.place(stone)
+		hero.move.ground_h = sim.grid.height_at(stone)
+		await _frames(6)
+		view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+		await _console(session, hero, "fx E04", hero.move.pos, 0.3)
+		await _crop("st5_stomp_stone", 480, 380)
+		await _console(session, hero, "heal", hero.move.pos, 1.0)
+	# Fireball and Fire Dart at 0, 22.5 and 45 degrees on screen.
+	ContentDB.rules.game_speed = 0.05
+	for id in ["F07", "F03"]:
+		for deg in [0.0, 22.5, 45.0]:
+			var sdir := Vector2.from_angle(deg_to_rad(deg))
+			# Screen to tile directions: x - y = sx / 32, x + y = sy / 16.
+			var tdir := Vector2((sdir.x / 32.0 + sdir.y / 16.0) * 0.5, (sdir.y / 16.0 - sdir.x / 32.0) * 0.5).normalized()
+			await _console(session, hero, "fx " + id, hero.move.pos + tdir * 4.0, 0.08)
+			await _crop("st5_%s_%d" % [id, int(deg * 10)], 480, 380)
+			await _console(session, hero, "heal", hero.move.pos, 0.4)
 	ContentDB.rules.game_speed = 1.0

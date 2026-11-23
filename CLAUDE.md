@@ -31,7 +31,10 @@ attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **F
 `docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Ability animations and effects** (branch
 `feature/ability-animations`, 2026-11-21): Rock Throw's two presses, Stone Skin's stone look, Fire
 Punch instant; see that section and `docs/playtest-checklist-ability-animations.md`. **Icons** (branch `feature/icons`, 2026-11-22):
-every bending ability and nearly every item; see **Icons**. **Map editor**
+every bending ability and nearly every item; see **Icons**. **Stances and effects** (branch `feature/stance-rework`,
+2026-11-23, all 5 phases): stance controls and looks, effects from the approved art, code-drawn
+effects; see **Stances**, **Ability effects from the approved art**, **Code-drawn effects** and
+`docs/playtest-checklist-stances-and-effects.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
 new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
@@ -1464,6 +1467,155 @@ two CSV maps, contact sheets and every sliced icon). Helper: `Icons` (`data/icon
   bar, trees, inventory with every rarity, tooltips, spellbook, ground loot, boss
   summary, roll and trade windows, at both sizes).
 
+## Stances (branch `feature/stance-rework`, 2026-11-23)
+
+User brief, five phases. Abilities are learned and cast through **stances**: each
+bending element (Fire, Earth, Water, Air) has 5 stances with 4 branch abilities each.
+Checklist: `docs/playtest-checklist-stances-and-effects.md`.
+- **The sheet** (`design/Ability_Tree.xlsx`, importer `tools/ability_tree_importer.gd`):
+  columns **Key (stance → branch)** (e.g. `2 → 3`; a stance-entry cast or a passive is
+  marked there), **Unlock Step** and the Tiers tab's **Step Points**; `AbilityDef.stance`,
+  `branch_key`, `entry_cast`, `passive`, `upgrades` (its first prerequisite ability),
+  `mastery_levels` ("X Mastery 200 / 400 / 600"). Removed ids F13, E10, E12, A08 (merged;
+  their scrolls become the merge target's, `CharacterData.RENAMED_ITEMS`). The importer
+  checks the 5 × 4 grid per element, entry casts, passives (no cooldown, no timing bar;
+  a hitbox is a warning) and the step rule.
+- **Tier rule (new):** Mastery Required = tier base 0 / 100 / 225 / 375 / 550 + Unlock
+  Step × the tier's step points 25 / 30 / 35 / 40 / 50. Fire, Earth and Air copy Water's
+  steps (2026-11-23). New characters start with 25 permanent Mastery in their element
+  (`StartingElementDef.starting_mastery`).
+- **Act I gives tier 1 only;** beating the Silent Shaft (the Foreman) gives the first
+  tier-2 scrolls (`tools/once/act1_tier1_rewards.py`).
+- **Controls** (`PlayerInput`, `ActionBarModel`):
+  - Out of a stance, 1–0 are the action bar. Stances are bar entries
+    (`stance:<Tree>:<n>`); your element's 1–5 start in slots 1–5, other elements' in
+    free slots; any stance can go in any slot. Bending abilities left the bar once.
+  - A stance key enters that stance (entering never starts the GCD); in a stance keys
+    1–4 cast its branches (`WorldSim.stance_ability`) and you stay in it; 5–0 keep their
+    slots (another stance key switches). **Shift** leaves. Bar pages are **Ctrl+1–6**.
+  - Entry casts when entered and off cooldown: Fire 1 Fire Punch, Earth 1 Seismic Stomp,
+    Water 5 Octopus Form.
+  - Crowd control drops the stance: stun, silence, root, sleep, knockback, pull, a fall;
+    so does death. Casting a bending ability from the bar takes its stance.
+- **Network:** a `stance` intent (tree, n, target, aim); the host validates and keeps
+  `Hero.stance_tree / stance / stance_at`, sent in snapshots (`stance`).
+- **Stance panel** (`ui/hud/stance_panel.gd`) above the action bar: element, stance number,
+  the 4 branches with icons and cooldowns. Stance slots draw the element's colour.
+- **Entry animations:** one table, `CreatureArtDef.stance_anims` (`pl01_art.tres`): Fire 1
+  fire_punch, Earth 1 earth_root then earth_hold, otherwise cast (`stance_anim_default`).
+- **Stance looks** (`CreatureArtDef.stance_looks`, drawn while held, from the host time
+  the stance was taken):
+
+  | | 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | Fire | ring of fire FX-15-2 (turns, flat) | flame ribbon FX-15-1 (spins) | heel flames FX-15-3 (flicker) | small sun FX-15-4 (bobs) | the fire dragon (code ribbon, see below) |
+  | Earth | stone ¼ | ½ | ¾ | all stone | faint ring (FX-15-9 not approved) |
+  | Water | faint ring (FX-15-10) | hoop FX-15-11 (bobs) | sphere FX-15-12 (orbits) | faint ring (FX-15-13) | octopus arms FX-13-21 (behind, sways) |
+  | Air | faint ring (FX-15-14) | faint ring (FX-15-15) | air ball FX-14-5 (orbits) | faint ring (FX-15-16) | wind column FX-15-17 (see-through, flickers) |
+
+  Earth's stone covers the body from the feet up: `coverage` in
+  `view/shaders/creature_recolor.gdshader` (looks `stone_25`, `stone_50`, `stone_75`,
+  `stone`); the Stone Guard buffs use the same levels (Stone Skin ¼ today; Boulder
+  Shield ½, Mountain's Stand ¾, Earth Armor full once built). A buff and a stance: the
+  one with more stone shows. Rings around the hero are split: the back half behind the
+  hero, the front half after the ground it lies on.
+- **Scorch (F22)**, the example new stance-1 ability: enemy within 5, burns 6 s (small
+  damage each second) and +15% damage taken (`scorched`); flames drawn in code
+  (`BuffDef.code_fx` "flames") and a debuff icon on unit frames (`BuffDef.icon`,
+  `icon_text`; `assets/icons/buffs/scorched.png`).
+- Tests: `tests/unit/test_stances.gd`, `test_ability_import.gd`, `test_first_abilities.gd`.
+  Screenshots: `tests/visual/stance_shots.tscn` (phases 1–5; `SHOTS_ONLY=rot|p4|p5`).
+
+## Ability effects from the approved art (stance rework phase 3, 2026-11-23)
+
+- **Source:** only `approved/<KEY>.png` on `art-drafts`; animation frames
+  (`art/<ID>/<KEY>+<action>_<date>_<n>.png`) are used automatically once the art bot makes
+  them. `tools/once/make_effect_sheets.py` copies them to `assets/effects/` and writes
+  missing `content/effects/<name>.tres`. No piece has frames yet: every still moves in code
+  (`FxDef.motion`: spin, bob, orbit, flicker, sway, pulse, drop; `fade_out`, `hold_seconds`).
+- **Which ability shows what, by role:** `content/effects/ability_effects.json` (cast,
+  hands, projectile, land, tiles, held; a role set in a behaviour file wins), linked at
+  load by ContentDB (`AbilityDef.fx_cast / fx_hands / fx_projectile / fx_land / fx_tiles /
+  fx_held`; a held effect goes on the ability's buffs as `BuffDef.fx`).
+
+  | Element | Effects (approved key → ability) |
+  |---|---|
+  | Fire | FX-11-1 Fire Punch / Blazing Combo burst · FX-11-2 Fire Dart · FX-11-8 Flame Dash trail · FX-11-10 Jet Propulsion · FX-11-12 Phoenix Kick ring · FX-11-13 Fireball · FX-11-14 Solar Zenith halo · FX-11-16 Flame Wheel · FX-11-17 Inferno / Burning Ground flames · FX-11-19 Combustion Blast |
+  | Earth | FX-12-3 Metal Shards · FX-12-10 Boulder Crush (drops) |
+  | Water | FX-13-1 Healing Touch ball, FX-13-2 splash · FX-13-3 Water Shield · FX-13-4 Frost Shard · FX-13-8 Ice Prison · FX-13-9 Revive / Tidal Resurgence · FX-13-12 Ice Wall · FX-13-13 Spirit Water · FX-13-15 Steam Veil · FX-13-19 Rising Tide · FX-13-20 Ice Spikes · FX-13-21 Octopus Form |
+  | Air | FX-14-1 Air Blade · FX-14-2 Air Step puff · FX-14-4 Stolen Breath · FX-14-5 Air Scooter · FX-14-8 Air Sphere · FX-14-9 Wind Walk · FX-14-10 Vortex / Eye of the Storm · FX-14-11 Updraft · FX-14-12 Suffocate · FX-14-14 Tornado · FX-14-15 Cyclone Spin · FX-14-18 Hurricane |
+
+- **Projectiles** turn to their flight without blurring: 32 pre-rotated cells made with
+  RotSprite (`<name>_rot.png`; `FxDef.drawn_angle`, `rot_sheet`, `rot_steps`). Drawn
+  directions: Fireball and Fire Dart south (90°), Frost Shard north (−90°), Metal Shards
+  right (0°), Air Blade 30°. The Tornado is drawn upright. Everything else is never turned.
+- **`fx <ability id or name>`** (debug console): plays an ability's effects from your hero
+  toward the cursor, no damage or cooldown; `fx <Tree>:<n>` holds a stance.
+- Most of these abilities aren't built yet: their effects show only through `fx`.
+
+## Code-drawn effects (stance rework phase 4, 2026-11-23)
+
+Effects that change shape with distance, angle or terrain, or need no art, built each
+frame from small pieces on FxDef / FxPainter / WorldView's back-to-front pass.
+- **Draw order:** no Line2D or particle nodes. A ribbon is cut into quads, one strip copy
+  at a time (`RibbonPath.quads`); every piece (quad, front piece, particle, shaded tile) is
+  filed under the tile it is over and drawn with that tile's actors, so walls and pillars
+  in front cover them. Ground pieces (wet, sand, cracks, the shock ring) go before the
+  tile's actors; the front halves of rings lying on the ground go after the rows they lie
+  over. Seismic Sense is a screen shader on a canvas layer over the world, under the HUD.
+- **FxDef fields** (`data/defs/fx_def.gd`):
+  - Ribbon: `ribbon`, `path` (LINE / WHIP / FIGURE8 / COIL), `strip_rect`, `tip_fx`,
+    `head_fx`, `impact_fx`, `hand_fx`, `thickness` (whole pixels), `scroll_speed`, `curl`,
+    `extend_frames` / `snap_frame` / `retract_frames`, `jag_seconds` / `jag_amount`, `tint`.
+  - Front: `front`, `ray_spacing` (0.25), `front_speed`, `trail_fx`, `trail_fade_seconds`,
+    `blocked_fx`, `piece_scale`, `wets`.
+  - Tiles: `tile_mode` (WET, BURNING, SAND, RING, CRACKS, SANDSTORM, SENSE, RAIN),
+    `tile_tint`, `tile_seconds`.
+  - Effect data: `tools/once/make_code_effects.py` (writes missing files).
+- **Hand points** (`CreatureArtDef.hand_points`, `hand_point`): measured on the strike
+  frame of water_whip, air_palm, fire_punch, water_heal, air_gust and fire_kick, for six
+  facings (the furthest opaque pixel toward the facing in the body band); south and north
+  hide the hand, so they are midway between their diagonals; other animations use
+  water_whip's.
+- **Ribbons** (`view/ribbon_path.gd`): whips (Water Whip, Fire Whip) curve to the side the
+  seed picks, deep close up and nearly straight at full range, reaching out, snapping
+  (Water Whip's hit lands on the snap: `hit_frame` 7 at 24 fps) and pulling back; streams
+  and jets (Fire Stream, Water Jet) straight, doubled, flowing, with a head and an impact;
+  Leeching Tide flows back to you; Metal Cable taut with sparks (its hook FX-16-17 isn't
+  approved); Lightning Bolt re-jagged every 0.05 s; Lightning Redirection a figure 8 from
+  the centre, up first. Strips (`tools/once/make_effect_sheets.py` STRIPS): each cut to
+  its most seamless span (the columns whose ends match best, empty end columns excluded):
+  water whip 10 px (cut from the lash's left bar, FX-09-1), fire 49 px (FX-16-4), cable
+  52 px (FX-16-16), lightning 50 px (FX-16-19), Air Blade trail 29 px (FX-16-35).
+- **Fronts:** Breath of Fire (FX-16-23, blocked FX-16-24), Tidal Wave (FX-16-28), Water
+  Pulse (FX-16-25, blocked FX-16-29), Gust (FX-16-30) and Air Blast (Gust's at double
+  size). The host fans rays across the cone, or lays them across the line's width, a
+  quarter tile apart (`FrontRays`); each stops where `Hitbox.clear_distance` stops a shot,
+  so a pillar in the cone leaves a gap. Pieces at the tips, a fading trail, the blocked
+  piece where a ray stops; near-duplicates (within a sixth of a tile) dropped. Waves wet
+  the tiles behind them. Gust and Air Blast lost their FX-08-5 spirals (Air Palm keeps its).
+- **Tiles and the screen:** wet ground (a glossy tint; FX-16-37 not approved), burning
+  ground (Burning Ground, Inferno: FX-11-17 flames on each tile, each side's edge at the
+  average of its two neighbours, full where they burn, 25% where open; FX-16-38/39 not
+  approved), Sinkhole sand (a tint; FX-12-5 not approved), Seismic Stomp / Rumbling Taunt
+  (a ring lifting and brightening the real tiles), Earthquake / Tectonic Shift (cracks,
+  shaking), Sandstorm (swirling sand), Healing Rain (drops + wet ground; FX-13-17 not
+  approved), Seismic Sense (greyscale and rings of light from the hero). Height changes
+  (pillars, walls) have no extra effect. Bloodbending draws nothing.
+- **Particles:** embers, drops and sparks off ribbons and fronts from a fixed pool of 384
+  (`view/fx_particles.gd`), cosmetic and each player's own.
+- **The fire dragon** (Fire stance 5): a flame ribbon (FX-16-4 stands in for FX-16-40/41/42,
+  not approved) coiled around the hero; a stance-5 Fire cast uncoils it toward the aim
+  over 0.4 s, it fades, and returns coiled.
+- **Network:** the host adds to each effect event what a shape needs
+  (`WorldSim.shape_fx_data`): a ribbon's end (clipped at the first unit or blocker), the
+  ability's reach and a seed (from the cast, not the combat dice); a front's rays with
+  where each stopped; a ring's radius. Clients decide nothing that changes a shape.
+- Used in play today: Water Whip, Fire Whip, Water Pulse, Leeching Tide, Gust, Air Blast,
+  Burning Ground, Seismic Stomp (and Stone Skin's stone level). The others through `fx`.
+- Tests: `tests/unit/test_code_effects.gd` (whip curve, stream stops, front rays and the
+  pillar gap, burning edges, clients rebuilding the same shapes), `test_ability_effects.gd`.
+
 ## Menu book (branch `ui-book-menus`, 2026-10-21; work in progress)
 
 - **Art:** `art/menu_book.aseprite` (the user's "livre menu", still being drawn; marks
@@ -2569,6 +2721,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-23 | Stance rework, phases 2–5: stance controls and looks, effects from the approved art, code-drawn effects, tests and docs | User brief and choices: other elements' stances can go in any of slots 1–0; Shift leaves; pages on Ctrl+1–6; "start it" for phases 3, 4 and 5 after the phase 4 fields and draw order were shown. My choices: Stone Skin turns a quarter of the body to stone (the Stone Guard levels); rings around the hero split behind / in front; Octopus Form drawn upright behind the hero (flat on the ground it was cut by the tiles beside it); unapproved looks are a faint ring in the element's colour; code motion per still (listed in **Ability effects from the approved art**); 32 RotSprite turns per projectile, made offline; one JSON table of effects by role; Scorch's icon drawn by hand (16 × 16); `fx` also holds stances; strips cut to their most seamless span automatically; burning edges at the average of their two neighbours' sides; Gust and Air Blast lose their spirals; ribbon seeds from the cast, not the combat dice; the dragon's polished transformation proposed (the ability's effect from its head), not built. See **Stances**, **Ability effects from the approved art**, **Code-drawn effects**. |
 | 2026-11-23 | Stance rework, phase 1 follow-up: Act I gives tier 1 only; Fire, Earth and Air copy Water's unlock steps; dodging and Lunge balance targets removed | User decisions. Every Act I loot table's scrolls are built tier-1 ones of the same element (`tools/once/act1_tier1_rewards.py`: Fire Whip → Fire Dart, Flame Dash → Sun Warrior's Breath, Fireball → Scorch, Burning Ground → Fire Kick, Blazing Combo → Fire Punch, Soothing Mist → Healing Touch, Leeching Tide and Water Pulse → Water Whip, Tidal Blessing and Ice Spikes → Frost Shard, Air Blast → Gust, Earth Wall → Raise Pillar; chances kept); the Foreman (beating the Silent Shaft) drops the built tier-2 scrolls, 20% each (Blazing Combo, Burning Ground, Soothing Mist, Leeching Tide, Tidal Blessing); shops sell Scorch Scroll instead of Scroll of the Current; quest 1-04 gives Water Frost Shard, 1-06 gives Water and Air no scroll (no third built tier-1 one yet), the finales (1-07, The Beast of Greenfields) offer Scorch, Frost Shard, Raise Pillar or Air Step. Unlock steps: each Fire, Earth and Air ability unlocks like the Water ability in its stance slot (`tools/once/stance_copy_water_steps.py`; only stance 1 changed: Fire Kick, Stone Skin, Gust 0; Sun Warrior's Breath, Raise Pillar, Air Step 25; Scorch, Metal Shards 50; Air Blade 50). Removed from `tests/balance/test_balance.gd`: dodging halves the HP lost, heals + dodges beat the Brute, level-4 Lunge beats a Skirmisher (the report still measures them). The 25 starting Mastery stays (the starting kit no longer needs it; it opens the step-1 abilities). |
 | 2026-11-23 | Stance rework, phase 1: importer and abilities (branch `feature/stance-rework`, from `design/stance-rework` + the icons branch) | User brief and choices ("all the recommendations look good"): new characters start with 25 permanent Mastery in their element (`StartingElementDef.starting_mastery`; Fire Kick, Stone Skin and Gust unlock at 25 now); the four merged abilities' scrolls become their merge target's scroll (`CharacterData.RENAMED_ITEMS`; no AP kept, none were in the game); Ocean Spirit uses the Abilities row (225 / 375 / 550); Overheat's prerequisite "Spark" is Scorch (sheet fix). My choices: provisional Projectile Speed / Size for the four new projectiles (Fireball 12 / 0.4, Metal Shards 16 / 0.25, Metal Cable 18 / 0.2, Air Blade 18 / 0.3; `tools/once/stance_sheet_fixes.py`), to confirm; a passive with a hitbox (Ocean Spirit, Tidal Resurgence, Eye of the Storm) is a warning, not an error; Fireball also explodes where its flight ends or terrain stops it (impact radius 1); Fire Whip's pull uses the usual weight rule; Earth Wall's trench lowers the row just in front of the wall for its 12 s; Air Step's glide (10 s, a second buff) crosses holes in the map at the height it left from and turns drops into glides (no fall); Scorch: 0.3 × the tier default over 6 s (ticks each second), 6 mana, +15% damage taken from all sources (`scorched`). Shop, loot and quest fixes wait for the user (phase 1 report). |
 | 2026-11-22 | Icons for every bending ability and item, from the art-drafts icons/ folder | User brief and choices ("go with your recommendations"): the 20 element set pieces with no art are known gaps showing the placeholder (with a warning), like the five Legs items (which keep their name); whole-number scales count screen pixels (1× at 720p, 2× at 1080p where a slot fits it); 1× rich-text icons accepted in the loot feed and lists (taller lines). My choices: an Icon column on the sheet; `ItemDef.icon` / `AbilityDef.icon`; per-file import settings (Godot has no folder presets) written by `tools/pull_icons.py` and checked by a test; the action bar shows the icon instead of the name (weapon arts keep their name); tree nodes closer together (14) with 12 px text beside the icon; locked or not-in-game abilities in greyscale; ground loot icons at half the world art's pixel size (full size covered the hero); a warning once per run. **Need art:** `acolytes_leggings`, `emberstitch_trousers`, `riverweave_breeches`, `quarrymans_trousers`, `breezecloth_leggings` (no leg art in the sheets), and the 20 element set pieces (`quarrymans_gloves`, `_hood`, `_boots`, `granite_ring`, `bedrock_charm`; `riverweave_gloves`, `_hood`, `_sandals`, `tidestone_ring`, `pearl_pendant`; `emberstitch_gloves`, `_cap`, `_boots`, `cinder_ring`, `ashglass_pendant`; `breezecloth_wraps`, `_hood`, `_shoes`, `gale_ring`, `feather_charm`). |

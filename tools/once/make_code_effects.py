@@ -33,6 +33,8 @@ DEFS = {
     "fire_dragon": R(sheet="fire_whip_strip", ribbon="true", path=3, scroll_speed=40.0,
                      head_fx='&"fire_stream_head"', loop="true"),
     "air_blade_trail_ribbon": R(sheet="air_blade_trail", ribbon="true", path=0, alpha=0.6, loop="true"),
+    # The water lash's hooked end, cut from the approved lash (FX-09-1).
+    "water_whip_tip": R(sheet="water_whip_tip", pivot="Vector2(1, 8)", rotate_tip="true", loop="true"),
     # Fronts (the piece is head_fx).
     "breath_of_fire": R(front="true", head_fx='&"breath_front"', trail_fx='&"breath_front"', blocked_fx='&"breath_blocked"',
                         front_speed=9.0, trail_fade_seconds=0.35, hold_seconds=1.0),
@@ -70,7 +72,8 @@ def main():
             from PIL import Image
             w, h = Image.open(f"assets/effects/{sheet}.png").size
             lines.append(f"frame_size = Vector2i({w}, {h})")
-        lines += ["frames = 1", "rotate = false"]
+        rotate = d.pop("rotate_tip", "false")
+        lines += ["frames = 1", f"rotate = {rotate}"]
         d.setdefault("fps", 12.0)
         for k, v in d.items():
             lines.append(f"{k} = {v}")
