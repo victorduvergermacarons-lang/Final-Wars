@@ -3,6 +3,12 @@ patched as XML so the sheet's formulas keep their cached results (user-approved)
 
 - F23 Overheat: its prerequisite "Spark" is Scorch's draft name; no ability is called
   that. It becomes "Scorch" (F22).
+- Projectiles the rework added without Projectile Speed / Size (provisional numbers,
+  in line with the existing ones, for the user to confirm): Fireball F07 12 tiles/s,
+  0.4 (slower and bigger than Fire Dart's 16 / 0.25); Metal Shards E21 16 / 0.25;
+  Metal Cable E22 18 / 0.2; Air Blade A22 18 / 0.3 ("fast slicing gust").
+
+Run once on the reworked sheet (it sets cells; running it again changes nothing).
 
 Then re-import: godot --headless --path . -s res://tools/import_ability_tree.gd
 
@@ -19,6 +25,10 @@ ABILITIES = "xl/worksheets/sheet1.xml"
 
 CHANGES = {
     "F23": {"Prerequisites": "Scorch"},
+    "F07": {"Projectile Speed": "12", "Projectile Size": "0.4"},
+    "E21": {"Projectile Speed": "16", "Projectile Size": "0.25"},
+    "E22": {"Projectile Speed": "18", "Projectile Size": "0.2"},
+    "A22": {"Projectile Speed": "18", "Projectile Size": "0.3"},
 }
 
 

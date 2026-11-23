@@ -28,6 +28,8 @@ var cast_tiles: Array = []
 ## Free movement: the cast resolves in continuous space (a hitbox), aimed at
 ## `cast_point` along `cast_vec` (unit vector); knockbacks and dashes slide.
 var continuous := false
+## The first unit a cast hits (nearest the caster), for AbilityEffect.first_only.
+var first_victim: Actor = null
 var cast_point := Vector2.ZERO
 var cast_vec := Vector2.RIGHT
 ## Things only the world can do, queued during resolution and handled by WorldSim

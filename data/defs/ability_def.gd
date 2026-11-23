@@ -72,6 +72,24 @@ enum LineShape { LINE, CONE, ARC }
 @export var line_shape: LineShape = LineShape.LINE
 ## SKILLSHOT: keeps going through units instead of stopping at the first one.
 @export var pierce: bool = false
+## A projectile that explodes where it stops (the first unit it hits, a blocker or
+## the end of its flight): every affected unit within this many tiles of that point
+## takes its effects, area effects on the tiles there (Fireball; 0 = no explosion).
+@export var impact_radius: float = 0.0
+
+# --- Stances (2026-11-23; from the sheet's Key column, set by TreeContent) ---
+## The stance (1-5, = the tier) it is cast from; 0: not a stance ability (weapon arts,
+## passives, enemy abilities).
+var stance: int = 0
+## Its branch key in that stance (1-4); 0 for an entry cast.
+var branch_key: int = 0
+## Cast on entering its stance (Fire Punch, Seismic Stomp, Octopus Form).
+var entry_cast: bool = false
+## Always on once learned: never cast. A passive upgrade changes `upgrades`.
+var passive: bool = false
+var upgrades: StringName = &""
+## A passive's Mastery steps (its strength goes up at each).
+var mastery_levels: Array = []
 ## SKILLSHOT: lobbed instead of flying (e.g. Rock Throw): lands on the aimed tile
 ## after this many seconds, over obstacles; hits whoever is on it then.
 @export var arc_seconds: float = 0.0

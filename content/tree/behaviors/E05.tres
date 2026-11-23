@@ -15,10 +15,20 @@ lift_damage = 10.0
 lift_damage_per_mastery = 0.02
 mastery_per_extra = 300.0
 
+[sub_resource type="Resource" id="Resource_trench"]
+script = ExtResource("1_oef71")
+kind = 16
+applies = 2
+base_amount = -1.0
+duration_seconds = 12.0
+wall_line = true
+wall_front = true
+mastery_per_extra = 300.0
+
 [resource]
 script = ExtResource("3_ywrst")
 id = &"E05"
 max_range = 6
 mana_cost = 15.0
-effects = Array[ExtResource("1_oef71")]([SubResource("Resource_splyo")])
+effects = Array[ExtResource("1_oef71")]([SubResource("Resource_splyo"), SubResource("Resource_trench")])
 targeting = 3

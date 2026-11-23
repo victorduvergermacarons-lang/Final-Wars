@@ -35,6 +35,23 @@ const HITBOX_NEEDS := {"None": [], "Targeted": ["Hitbox Range"], "Cone": ["Hitbo
 	"Blink": ["Hitbox Range"], "Tiles": ["Hitbox Range"]}
 const HITBOX_KEYS := {"Hitbox Range": "range", "Hitbox Angle": "angle", "Hitbox Width": "width",
 	"Hitbox Radius": "radius", "Projectile Speed": "speed", "Projectile Size": "size"}
+## Stance rework columns (2026-11-23; see the sheet's "Stance Rework" tab), at the end
+## of the Abilities tab. Key: "S → B" (stance S, branch B), "N (casts on entering
+## stance N)" (an entry cast), "Passive", "Passive upgrade", or empty (weapons).
+const STANCE_COLUMN := "Stance"
+const KEY_COLUMN := "Key (stance → branch)"
+const STEP_COLUMN := "Unlock Step"
+## Tiers tab: points each unlock step inside a tier adds to its Mastery Required.
+const STEP_POINTS_COLUMN := "Points per unlock step"
+## Bending trees: 5 stances x 4 branches, one ability each.
+const STANCES := 5
+const BRANCHES := 4
+## A bending ability needing Mastery in a second element needs this much (was 350).
+const HYBRID_MASTERY := 225
+## Merged into other abilities in the stance rework: refused if they come back.
+const REMOVED_IDS := {"F13": "Heat Wave (merged into Breath of Fire)",
+	"E10": "Fortress Stance (merged into Earth Armor)", "E12": "Trench (merged into Earth Wall)",
+	"A08": "Glide (merged into Air Step)"}
 ## Optional numeric columns the designer may add later (decision M3-1).
 const OPTIONAL_NUMBERS := {"Base": "base", "Mana Cost": "mana_cost", "Range": "range",
 	"Duration": "duration", "Cast Move Speed (%)": "cast_move_speed_pct"}
@@ -62,6 +79,7 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 		return {"data": {}, "errors": errors, "warnings": warnings}
 
 	var tiers := _read_tiers(sheets[TIERS], errors)
+	var step_points := _read_step_points(sheets[TIERS])
 	var trees := _read_trees(sheets[TREES], errors)
 	var tree_names := {}
 	for t in trees:
@@ -117,6 +135,9 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 		if by_id.has(id):
 			errors.append("Duplicate ID %s (rows %d and %d)" % [id, by_id[id].row, r + 1])
 			continue
+		if REMOVED_IDS.has(id):
+			errors.append("%s: removed in the stance rework, %s; delete its row" % [where, REMOVED_IDS[id]])
+			continue
 		if a.name == "":
 			errors.append("%s: no ability name" % where)
 		elif by_name.has(a.name):
@@ -135,6 +156,7 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 			# (Until 2026-11-15 the Tiers tab always decided; the Water tree now
 			# unlocks one ability per step.)
 			a.mastery_required = _mastery_required(a, tiers.get(a.tier, 0), where, errors)
+			_stance_fields(a, cell, col, tiers, step_points, where, errors)
 		if a.taught_by == "":
 			errors.append("%s: no item in Taught By" % where)
 		elif by_item.has(a.taught_by):
@@ -184,6 +206,7 @@ static func convert(book: Dictionary, source: String = "design/Ability_Tree.xlsx
 	for a in abilities:
 		a.prerequisites = _prerequisites(a, by_name, tree_names, errors)
 	_check_cycles(abilities, by_id, errors)
+	_check_stances(abilities, by_id, tree_names, errors, warnings)
 	_check_unlock_order(abilities, by_id, warnings)
 	for t in trees:
 		var n := abilities.filter(func(a): return a.tree == t.name).size()
@@ -231,6 +254,22 @@ static func slug(name: String) -> String:
 		elif not out.ends_with("_") and out != "":
 			out += "_"
 	return out.trim_suffix("_")
+
+
+## Tiers tab, "Points per unlock step" by tier (empty if the column isn't there).
+static func _read_step_points(table: Array) -> Dictionary:
+	var out := {}
+	if table.is_empty():
+		return out
+	var header: Array = table[0].map(func(h): return String(h).strip_edges())
+	var c := header.find(STEP_POINTS_COLUMN)
+	if c < 0:
+		return out
+	for r in range(1, table.size()):
+		var row: Array = table[r]
+		if row.size() > c and String(row[0]).strip_edges().is_valid_int() and String(row[c]).strip_edges().is_valid_float():
+			out[String(row[0]).to_int()] = int(String(row[c]).to_float())
+	return out
 
 
 static func _read_tiers(table: Array, errors: PackedStringArray) -> Dictionary:
@@ -324,18 +363,132 @@ static func _prerequisites(a: Dictionary, by_name: Dictionary, trees: Dictionary
 
 
 ## The Mastery an ability needs, from its Mastery Required text ("Water Mastery 220");
-## `tier_default` when the cell is empty.
+## `tier_default` when the cell is empty. A passive's text lists the Mastery at
+## which it gets stronger ("Water Mastery 200 / 400 / 600"): it unlocks at the first,
+## and all of them go in `mastery_levels`.
 static func _mastery_required(a: Dictionary, tier_default: int, where: String, errors: PackedStringArray) -> int:
 	var text: String = a.mastery_required_text
 	if text == "":
 		return tier_default
-	var m := RegEx.create_from_string("^(.+?) Mastery (\\d+)$").search(text)
+	var m := RegEx.create_from_string("^(.+?) Mastery (\\d+(?:\\s*/\\s*\\d+)*)$").search(text)
 	if m == null:
 		errors.append("%s: Mastery Required \"%s\" isn't \"%s Mastery <number>\"" % [where, text, a.tree])
 		return tier_default
 	if m.get_string(1) != a.tree:
 		errors.append("%s: Mastery Required names %s Mastery, but the ability is in the %s tree" % [where, m.get_string(1), a.tree])
-	return m.get_string(2).to_int()
+	var levels: Array = Array(m.get_string(2).split("/", false)).map(func(v): return String(v).strip_edges().to_int())
+	if levels.size() > 1:
+		a.mastery_levels = levels
+		for i in range(1, levels.size()):
+			if levels[i] <= levels[i - 1]:
+				errors.append("%s: Mastery Required levels \"%s\" must go up" % [where, m.get_string(2)])
+	return levels[0]
+
+
+## The stance columns: Stance, Key and Unlock Step (stance rework, 2026-11-23).
+## - Key "S → B": stance S (= the tier), branch B (1-4). "N (casts on entering stance
+##   N)": the entry cast of stance N. "Passive" / "Passive upgrade": always on once
+##   learned (an upgrade changes the ability it requires first; see _check_stances).
+## - Unlock Step: Mastery Required must be the tier's base (Tiers tab) plus the step
+##   times the tier's Points per unlock step. Passives list their own levels instead.
+static func _stance_fields(a: Dictionary, cell: Callable, col: Dictionary, tiers: Dictionary,
+		step_points: Dictionary, where: String, errors: PackedStringArray) -> void:
+	if not col.has(KEY_COLUMN):
+		return
+	var key: String = cell.call(KEY_COLUMN)
+	var bending := ELEMENTS.has(a.tree)
+	var arrow := RegEx.create_from_string("^(\\d+)\\s*(?:→|->)\\s*(\\d+)$").search(key)
+	var entry := RegEx.create_from_string("^(\\d+) \\(casts on entering stance (\\d+)\\)$").search(key)
+	if key == "":
+		if bending:
+			errors.append("%s: a bending ability needs a Key (\"stance → branch\", an entry cast or Passive)" % where)
+	elif key == "Passive" or key == "Passive upgrade":
+		a.passive = true
+		if key == "Passive upgrade":
+			a.upgrade = true
+	elif arrow != null:
+		a.stance = arrow.get_string(1).to_int()
+		a.branch_key = arrow.get_string(2).to_int()
+		if a.branch_key < 1 or a.branch_key > BRANCHES:
+			errors.append("%s: Key \"%s\": branch %d isn't 1-%d" % [where, key, a.branch_key, BRANCHES])
+	elif entry != null and entry.get_string(1) == entry.get_string(2):
+		a.stance = entry.get_string(1).to_int()
+		a.entry_cast = true
+	else:
+		errors.append("%s: Key \"%s\" isn't \"S → B\", \"N (casts on entering stance N)\", Passive or Passive upgrade" % [where, key])
+	if a.has("stance"):
+		if a.stance < 1 or a.stance > STANCES:
+			errors.append("%s: stance %d isn't 1-%d" % [where, a.stance, STANCES])
+		elif a.stance != a.tier:
+			errors.append("%s: stance %d but tier %d (the stance number is the tier)" % [where, a.stance, a.tier])
+		var stance_text: String = cell.call(STANCE_COLUMN) if col.has(STANCE_COLUMN) else ""
+		if stance_text != "" and _int(stance_text) != a.stance:
+			errors.append("%s: Stance column says %s but the Key says %d" % [where, stance_text, a.stance])
+	var step_text: String = cell.call(STEP_COLUMN) if col.has(STEP_COLUMN) else ""
+	if step_text == "" or a.has("mastery_levels"):
+		return
+	a.unlock_step = _int(step_text)
+	if not step_points.has(a.tier):
+		errors.append("%s: the Tiers tab has no Points per unlock step for tier %d" % [where, a.tier])
+		return
+	var expected: int = int(tiers.get(a.tier, 0)) + a.unlock_step * int(step_points[a.tier])
+	if a.mastery_required != expected:
+		errors.append("%s: Mastery Required %d isn't tier %d's base %d + step %d × %d = %d" % [where,
+				a.mastery_required, a.tier, tiers.get(a.tier, 0), a.unlock_step, step_points[a.tier], expected])
+
+
+## Checks across rows once prerequisites are known (stance rework):
+## - each bending tree fills its 5 stances × 4 branches exactly once, and has at most
+##   one entry cast per stance;
+## - passives: cooldown 0, no timing bar (a hitbox other than None is a warning: what
+##   it reaches is the passive's own business);
+## - a passive upgrade upgrades its first ability prerequisite (`upgrades`);
+## - Mastery prerequisites in another element are HYBRID_MASTERY (a warning otherwise).
+static func _check_stances(abilities: Array, by_id: Dictionary, trees: Dictionary, errors: PackedStringArray,
+		warnings: PackedStringArray) -> void:
+	var grid := {} # "tree:stance:branch" -> id
+	var entries := {} # "tree:stance" -> id
+	var any_keys := false
+	for a in abilities:
+		if a.has("stance") or a.get("passive", false):
+			any_keys = true
+		if a.has("branch_key"):
+			var k := "%s:%d:%d" % [a.tree, a.stance, a.branch_key]
+			if grid.has(k):
+				errors.append("%s and %s both sit in %s stance %d → %d" % [grid[k], a.id, a.tree, a.stance, a.branch_key])
+			grid[k] = a.id
+		if a.get("entry_cast", false):
+			var k := "%s:%d" % [a.tree, a.stance]
+			if entries.has(k):
+				errors.append("%s and %s are both the entry cast of %s stance %d" % [entries[k], a.id, a.tree, a.stance])
+			entries[k] = a.id
+		if a.get("passive", false):
+			if float(a.get("cooldown", 0.0)) != 0.0:
+				errors.append("%s (%s): a passive has no cooldown (Cooldown %s)" % [a.id, a.name, a.cooldown])
+			if a.get("timing", {}).get("seconds", 0.0) > 0.0:
+				errors.append("%s (%s): a passive has no timing bar" % [a.id, a.name])
+			if a.has("hitbox") and a.hitbox.get("shape", "None") != "None":
+				warnings.append("%s (%s): a passive with a hitbox (%s)" % [a.id, a.name, a.hitbox.shape])
+		if a.get("upgrade", false):
+			var pres: Array = a.get("prerequisites", {}).get("abilities", [])
+			if pres.is_empty():
+				errors.append("%s (%s): a passive upgrade needs the ability it upgrades as its first prerequisite" % [a.id, a.name])
+			else:
+				a.upgrades = pres[0]
+		if ELEMENTS.has(a.tree):
+			for need in a.get("prerequisites", {}).get("mastery", []):
+				if need.tree != a.tree and ELEMENTS.has(need.tree) and int(need.amount) != HYBRID_MASTERY:
+					warnings.append("%s (%s) needs %s Mastery %d; hybrid requirements are %d" % [a.id, a.name,
+							need.tree, need.amount, HYBRID_MASTERY])
+	if not any_keys:
+		return # a sheet from before the stance rework
+	for t in ELEMENTS:
+		if not trees.has(t):
+			continue
+		for st in range(1, STANCES + 1):
+			for b in range(1, BRANCHES + 1):
+				if not grid.has("%s:%d:%d" % [t, st, b]):
+					errors.append("%s stance %d → %d has no ability" % [t, st, b])
 
 
 ## A prerequisite that unlocks at more Mastery than the ability (same tree) makes the

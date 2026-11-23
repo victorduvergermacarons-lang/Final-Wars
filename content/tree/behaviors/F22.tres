@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Resource" path="res://content/buffs/scorched.tres" id="2_buff"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_def"]
+
+[sub_resource type="Resource" id="Resource_scorch"]
+script = ExtResource("1_eff")
+kind = 8
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+can_crit = false
+buff = ExtResource("2_buff")
+power = 0.3
+
+[resource]
+script = ExtResource("3_def")
+id = &"F22"
+max_range = 5
+mana_cost = 6.0
+ranged = true
+effects = Array[ExtResource("1_eff")]([SubResource("Resource_scorch")])
+targeting = 1

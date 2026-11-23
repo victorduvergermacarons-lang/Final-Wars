@@ -77,6 +77,12 @@ enum DamageType {
 ## caster's facing through the aimed tile instead of using the cast's area.
 @export var blocks_movement: bool = false
 @export var wall_line: bool = false
+## With wall_line: the row just in front of the wall (one tile further from the
+## caster) instead of the wall itself: Earth Wall's trench (stance rework).
+@export var wall_front: bool = false
+## Only the first unit the cast hits gets this effect (the nearest to the caster on a
+## piercing line): Fire Whip's pull.
+@export var first_only: bool = false
 ## TERRAIN: units on the tiles ride up with them; enemies of the caster take this
 ## much physical damage, + `lift_damage_per_mastery` per point of the tree's Mastery
 ## (then the usual Mastery power bonus and defense). Earth Wall.

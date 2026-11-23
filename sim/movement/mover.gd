@@ -52,10 +52,12 @@ static func step(actor: Actor, wish: Vector2, dt: float, grid: GridModel, rules:
 	var out := {"landed": 0, "fell": false}
 	if m.gliding or grid == null:
 		return out
+	# Gliding (Air Step): over gaps at the height it left from, drops without falling.
+	var glide := actor.buffs.is_gliding(now)
 	if m.falling():
 		m.vz += md.gravity * dt
 		m.z -= m.vz * dt
-		_slide(actor, m.vel * dt, grid, md, flying)
+		_slide(actor, m.vel * dt, grid, md, flying, glide)
 		if m.z <= 0.0:
 			out.landed = m.fall_from - m.ground_h
 			m.z = 0.0
@@ -71,7 +73,7 @@ static func step(actor: Actor, wish: Vector2, dt: float, grid: GridModel, rules:
 	else:
 		var full := maxf(speed, actor.base_move_speed(rules))
 		m.vel = m.vel.move_toward(Vector2.ZERO, full / maxf(md.decel_time, 0.001) * friction * dt)
-	var started := _slide(actor, m.vel * dt, grid, md, flying)
+	var started := _slide(actor, m.vel * dt, grid, md, flying, glide)
 	if started:
 		out.fell = true
 	if not m.falling():
@@ -83,30 +85,33 @@ static func step(actor: Actor, wish: Vector2, dt: float, grid: GridModel, rules:
 
 ## Moves by `delta` in sub-steps, pushing out of solid tiles after each and
 ## tracking the ground. True if a fall started.
-static func _slide(actor: Actor, delta: Vector2, grid: GridModel, md: MovementDef, flying: bool) -> bool:
+static func _slide(actor: Actor, delta: Vector2, grid: GridModel, md: MovementDef, flying: bool,
+		glide := false) -> bool:
 	var m := actor.move
 	var n := maxi(ceili(delta.length() / maxf(md.substep, 0.01)), 1)
 	var fell := false
 	for i in n:
 		var before := m.pos
 		m.pos += delta / n
-		resolve_terrain(actor, grid, flying)
+		resolve_terrain(actor, grid, flying, glide)
 		m.odometer += before.distance_to(m.pos)
 		m.screen_odometer += MoveState.screen_length(m.pos - before)
-		if _update_ground(actor, grid, md, flying):
+		if _update_ground(actor, grid, md, flying, glide):
 			fell = true
 	return fell
 
 
 ## When the centre enters a new tile: the ground under it changes; a big enough
 ## drop starts a fall. True if a fall started.
-static func _update_ground(actor: Actor, grid: GridModel, md: MovementDef, flying: bool) -> bool:
+static func _update_ground(actor: Actor, grid: GridModel, md: MovementDef, flying: bool, glide := false) -> bool:
 	var m := actor.move
+	if glide and not grid.has_tile(m.to_tile):
+		return false # over a gap: it keeps the height it left from
 	var h := grid.height_at(m.to_tile)
 	if h == m.ground_h:
 		return false
 	var drop := m.ground_h - h
-	if not flying and drop >= md.fall_min_levels and not m.falling():
+	if not flying and not glide and drop >= md.fall_min_levels and not m.falling():
 		m.fall_from = m.ground_h
 		m.z = float(drop)
 		m.vz = 0.0
@@ -121,9 +126,10 @@ static func _update_ground(actor: Actor, grid: GridModel, md: MovementDef, flyin
 
 
 ## Whether the tile `t` stops a unit standing at height `from_h` with `jump`.
-static func blocks(grid: GridModel, t: Vector2i, from_h: int, jump: int, flying: bool, fly_rise := 1) -> bool:
-	if not grid.has_tile(t): # off the map, or a hole in its shape
-		return true
+static func blocks(grid: GridModel, t: Vector2i, from_h: int, jump: int, flying: bool, fly_rise := 1,
+		glide := false) -> bool:
+	if not grid.has_tile(t): # off the map, or a hole in its shape (a glider crosses holes)
+		return not (glide and grid.in_bounds(t))
 	if flying:
 		return grid.blocks_sight(t) or (not grid.is_walkable(t) and grid.height_at(t) - from_h > fly_rise)
 	if not grid.is_walkable(t):
@@ -133,7 +139,7 @@ static func blocks(grid: GridModel, t: Vector2i, from_h: int, jump: int, flying:
 
 ## Pushes the actor's circle out of every solid tile around it, removing the
 ## velocity into the wall (so it slides along it).
-static func resolve_terrain(actor: Actor, grid: GridModel, flying := false) -> void:
+static func resolve_terrain(actor: Actor, grid: GridModel, flying := false, glide := false) -> void:
 	var m := actor.move
 	var r := m.radius
 	var jump := StatCalc.jump_levels(actor.stats)
@@ -144,7 +150,7 @@ static func resolve_terrain(actor: Actor, grid: GridModel, flying := false) -> v
 		for dy in range(-reach, reach + 1):
 			for dx in range(-reach, reach + 1):
 				var t := c + Vector2i(dx, dy)
-				if (dx == 0 and dy == 0) or not blocks(grid, t, from_h, jump, flying):
+				if (dx == 0 and dy == 0) or not blocks(grid, t, from_h, jump, flying, 1, glide):
 					continue
 				var lo := Vector2(t) - Vector2(0.5, 0.5)
 				var hi := Vector2(t) + Vector2(0.5, 0.5)

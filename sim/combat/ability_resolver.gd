@@ -181,14 +181,15 @@ static func _extra(caster: Actor, ability: AbilityDef, effect: AbilityEffect, no
 	return mini(extra, effect.max_extra) if effect.max_extra > 0 else extra
 
 
-## A wall across the caster's facing, centred on the aimed tile. Units standing in
-## it ride up with it.
+## A wall across the caster's facing, centred on the aimed tile (with wall_front,
+## the row in front of it: the trench). Units standing in it ride up with it.
 static func _wall_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect) -> Array:
 	var length := 3 + _extra(caster, ability, effect, ctx.now)
 	var across := Vector2i(caster.facing.y, caster.facing.x)
+	var centre := ctx.cast_aim + (caster.facing if effect.wall_front else Vector2i.ZERO)
 	var out := []
 	for k in range(-(length - 1) / 2, length / 2 + 1):
-		var t := ctx.cast_aim + across * k
+		var t := centre + across * k
 		if ctx.grid.has_tile(t):
 			out.append(t)
 	return out
@@ -211,6 +212,8 @@ static func _is_valid_target(caster: Actor, ability: AbilityDef, target: Actor) 
 
 static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor,
 		effect: AbilityEffect, events: Array[Dictionary]) -> void:
+	if effect.first_only and ctx.first_victim != null and target != ctx.first_victim:
+		return
 	var rules := ctx.rules
 	var caster_stats := caster.current_stats(ctx.now)
 	match effect.kind:

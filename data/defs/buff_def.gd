@@ -26,6 +26,9 @@ extends Resource
 @export_group("Crowd control")
 ## No stepping and no abilities.
 @export var stuns: bool = false
+## Gliding (Air Step, stance rework): the unit crosses gaps (holes in the map) at
+## the height it left from, and drops from any height without falling.
+@export var glides: bool = false
 ## No spells (element abilities, heals, magical attacks); weapon arts still work.
 @export var silences: bool = false
 ## Like a stun, but any damage wakes the unit up.

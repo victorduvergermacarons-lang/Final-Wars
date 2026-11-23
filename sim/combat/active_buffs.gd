@@ -150,6 +150,10 @@ func zone_seconds_bonus(now: float) -> float:
 	return s
 
 
+func is_gliding(now: float) -> bool:
+	return _active_defs(now).any(func(d): return d.glides)
+
+
 func is_rooted(now: float) -> bool:
 	return _active_defs(now).any(func(d): return d.roots)
 

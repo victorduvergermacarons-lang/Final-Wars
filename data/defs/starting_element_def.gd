@@ -20,6 +20,10 @@ extends Resource
 @export var mastered_scroll_id: StringName = &""
 ## The scroll placed in the learning slot.
 @export var learning_scroll_id: StringName = &""
+## Permanent Mastery in its tree a new character starts with (stance rework,
+## 2026-11-23): the learning scroll's ability unlocks a step in (25), so it must be
+## learnable from the start.
+@export var starting_mastery: float = 25.0
 ## Worn from the start (Chest and Legs).
 @export var clothes_ids: Array[StringName] = []
 ## Its two most important stats (Stat.Id), shown on the element screen; quest

@@ -1455,6 +1455,12 @@ func _fly_continuous(p: Projectile, caster: Actor) -> bool:
 	for h in hits:
 		var u: Actor = h[1]
 		p.hit_ids[u.id] = true
+		if p.ability.impact_radius > 0.0 and not p.pierce:
+			_explode(p, caster, u.move.pos, events)
+			emit({"type": "projectile_end", "id": p.id, "tile": u.tile(), "target": u.id})
+			_emit_resolved(events)
+			_credit_mastery(caster, p.ability, events)
+			return false
 		ctx.damage_bonus = p.damage_bonus
 		ctx.force_crit = p.force_crit
 		ctx.continuous = true
@@ -1473,9 +1479,32 @@ func _fly_continuous(p: Projectile, caster: Actor) -> bool:
 		_emit_resolved(events)
 		_credit_mastery(caster, p.ability, events)
 	if p.is_spent(now):
+		if p.ability.impact_radius > 0.0:
+			# Stopped by terrain or out of range: it explodes where it stops.
+			var spent: Array[Dictionary] = []
+			_explode(p, caster, b, spent)
+			_emit_resolved(spent)
+			_credit_mastery(caster, p.ability, spent)
 		emit({"type": "projectile_end", "id": p.id, "tile": MoveState.tile_of(b), "target": -1})
 		return false
 	return true
+
+
+## A projectile with an impact radius (Fireball) explodes at `at`: every unit within
+## the radius takes its effects (with the cast's damage bonus and timing crit), then
+## its area effects on the tiles there.
+func _explode(p: Projectile, caster: Actor, at: Vector2, events: Array[Dictionary]) -> void:
+	ctx.damage_bonus = p.damage_bonus
+	ctx.force_crit = p.force_crit
+	ctx.continuous = true
+	ctx.cast_vec = p.dirv
+	ctx.cast_point = at
+	HitboxResolver.hit_circle(ctx, caster, p.ability, at, p.ability.impact_radius, events)
+	events.append({"type": "explosion", "source": caster.id, "ability": p.ability.id, "at": at,
+			"radius": p.ability.impact_radius})
+	ctx.continuous = false
+	ctx.damage_bonus = 1.0
+	ctx.force_crit = false
 
 
 ## Moves a Milestone 3 projectile; returns whether it is still flying.

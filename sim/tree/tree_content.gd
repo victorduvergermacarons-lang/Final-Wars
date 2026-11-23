@@ -32,6 +32,12 @@ static func build(data: AbilityTreeData, tuning: TreeTuning, behavior_dir: Strin
 		if row.has("mana_cost"):
 			ability.mana_cost = float(row.mana_cost)
 		ability.sheet = row
+		ability.stance = int(row.get("stance", 0))
+		ability.branch_key = int(row.get("branch_key", 0))
+		ability.entry_cast = bool(row.get("entry_cast", false))
+		ability.passive = bool(row.get("passive", false))
+		ability.upgrades = StringName(row.get("upgrades", ""))
+		ability.mastery_levels = row.get("mastery_levels", [])
 		ability.icon = Icons.load_icon(row.get("icon", ""))
 		_apply_timing(ability, row.get("timing", {}))
 		# Walking while casting it: the sheet's percentage, else the rules' default.

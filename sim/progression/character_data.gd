@@ -8,7 +8,13 @@ const VERSION := 1
 const MAX_LEVEL_SANITY := 999
 const MAX_GOLD := 999_999_999
 ## Items whose id changed (renamed in the spreadsheet): old id -> new id.
-const RENAMED_ITEMS := {"kindling_scroll": "sun_warriors_breath_scroll"}
+## Old item ids -> the item that replaced them, applied when a character loads.
+## 2026-11-23 (stance rework): the scrolls of the four merged abilities become the
+## scroll of the ability each merged into (their AP is dropped: none of them was
+## ever in the game).
+const RENAMED_ITEMS := {"kindling_scroll": "sun_warriors_breath_scroll",
+	"shimmering_heat_scroll": "dragons_breath_scroll", "fortress_scroll": "stone_armor_codex",
+	"trench_scroll": "bulwark_scroll", "glider_scroll": "featherstep_scroll"}
 
 
 static func capture(hero: Hero) -> Dictionary:
@@ -198,6 +204,8 @@ static func apply_element(hero: Hero, element: StartingElementDef, content) -> v
 		if held != null and held.is_scroll:
 			hero.bag.remove_at(i, hero.bag.count_at(i))
 	hero.element = element.id
+	if element.tree != "" and element.starting_mastery > 0.0:
+		Mastery.add_permanent(hero, element.tree, element.starting_mastery)
 	var ability: AbilityDef = content.abilities.get(element.mastered_ability_id)
 	hero.bag.add(content.items[element.mastered_scroll_id])
 	if ability != null:

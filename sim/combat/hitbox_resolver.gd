@@ -181,10 +181,15 @@ static func hit_shape(ctx: CombatContext, caster: Actor, ability: AbilityDef, or
 				else Hitbox.in_rect(origin, dir, reach, hb.width, c, a.move.radius)
 		if inside and (a == caster or Hitbox.has_los(ctx.grid, origin, c, ctx.rules.los_height_tolerance)):
 			victims.append(a)
+	var nearest: Actor = null
+	for v in victims:
+		if nearest == null or v.move.pos.distance_to(origin) < nearest.move.pos.distance_to(origin):
+			nearest = v
 	if hb.shape == HitboxDef.Shape.RECT and not hb.pierce and victims.size() > 1:
-		victims.sort_custom(func(x, y): return x.move.pos.distance_to(origin) < y.move.pos.distance_to(origin))
-		victims = [victims[0]]
+		victims = [nearest]
+	ctx.first_victim = nearest
 	_apply_all(ctx, caster, ability, victims, events, MoveState.tile_of(point))
+	ctx.first_victim = null
 	AbilityResolver.apply_area_effects(ctx, caster, ability,
 			Hitbox.tiles_in(ctx.grid, shape_outline(ctx, caster, ability, point)), events)
 

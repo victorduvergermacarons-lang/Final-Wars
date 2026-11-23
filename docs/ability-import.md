@@ -35,10 +35,36 @@ of date" until someone runs step 2. That's on purpose.
   columns read (see below).
 - No duplicate IDs, ability names or teaching items; every ability has a Taught By item.
 - Tiers are whole numbers 1–5.
+- **Icon** (last column): a .png under `assets/icons/` (an error otherwise); a missing file
+  is a warning (the game shows the placeholder). See CLAUDE.md, Icons.
 - Mastery Required decides when each ability unlocks: "<its own tree> Mastery N" (another
   tree's name, or anything else, is an error). An empty cell takes the tier's threshold
-  from the Tiers tab. Most rows hold a formula that gives the tier's threshold; the Water
-  rows hold their own steps (one ability per step, 2026-11-15), so edit those cells by hand.
+  from the Tiers tab.
+- **Unlock steps** (stance rework, 2026-11-23): each row's Mastery Required is a formula,
+  the tier's base (Tiers tab, column B: 0 / 100 / 225 / 375 / 550) plus its **Unlock
+  Step** (last-but-one column of the Abilities tab) times the tier's **Points per unlock
+  step** (Tiers tab, column D: 25 / 30 / 35 / 40 / 50). The import checks that each row's
+  number matches that sum, for every tree, weapons included; a mismatch is an error. To
+  retune, edit the Tiers tab (or a row's Unlock Step), recalculate in Excel or LibreOffice,
+  save, import.
+- **Stances** (the Stance and Key columns): every Fire, Earth, Water and Air ability has a
+  Key, one of
+  - `S → B`: cast from stance S with branch key B (1–4). S must equal the tier, and each
+    tree must fill all 5 × 4 stance slots exactly once.
+  - `N (casts on entering stance N)`: the stance's entry cast (Fire Punch, Seismic Stomp,
+    Octopus Form); at most one per stance.
+  - `Passive`: always on once learned. Its Mastery Required lists the levels at which it
+    gets stronger ("Water Mastery 200 / 400 / 600"; they must go up); it unlocks at the
+    first. Cooldown 0 and no timing bar (errors); a hitbox other than None is a warning.
+  - `Passive upgrade`: changes another ability, the first ability in its Prerequisites
+    (Tidal Resurgence upgrades Healing Rain, Eye of the Storm upgrades Hurricane).
+  Weapon rows have no Key.
+- **Hybrids:** a bending ability that needs Mastery in another element should need 225
+  (a warning otherwise).
+- **Removed abilities** (merged in the stance rework) are refused if a row comes back:
+  F13 Heat Wave (into Breath of Fire), E10 Fortress Stance (into Earth Armor), E12 Trench
+  (into Earth Wall), A08 Glide (into Air Step). Characters holding their scrolls get the
+  scroll of the ability each merged into (`CharacterData.RENAMED_ITEMS`).
 - A warning when an ability's prerequisite (in the same tree) unlocks at more Mastery
   than the ability itself.
 - Every prerequisite is an ability name spelled exactly as in the Ability column (it
