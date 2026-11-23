@@ -7666,6 +7666,366 @@
       "preview": [
         "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@west_2026-11-22_preview.gif"
       ]
+    },
+    "FX-16-1": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-1_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-2": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-2_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-3": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-3_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-4": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-4_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-5": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-5_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-6": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-6_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-7": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-7_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-8": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-8_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-9": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-9_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-10": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-10_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-11": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-11_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-12": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-12_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-13": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-13_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-14": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-14_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-15": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-15_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-16": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-16_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-17": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-17_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-18": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-18_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-19": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-19_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-20": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-20_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-21": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-21_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-22": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-22_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-23": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-23_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-24": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-24_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-25": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-25_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-26": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-26_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-27": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-27_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-28": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-28_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-29": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-29_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-30": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-30_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-31": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-31_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-32": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-32_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-33": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-33_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-34": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-34_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-35": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-35_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
+    },
+    "FX-16-36": {
+      "date": "2026-11-23",
+      "files": [
+        "art/FX-16/FX-16-36_2026-11-23.png"
+      ],
+      "usage": {
+        "type": "generations",
+        "generations": 1.0
+      }
     }
   },
   "failures": {},
@@ -8442,6 +8802,49 @@
         "PL-01-1+fire-stance-2-settles-into-a-firebending@north",
         "PL-01-1+fire-stance-2-settles-into-a-firebending@north-west",
         "PL-01-1+fire-stance-2-settles-into-a-firebending@west"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-23",
+      "made": [
+        "FX-16-1",
+        "FX-16-2",
+        "FX-16-3",
+        "FX-16-4",
+        "FX-16-5",
+        "FX-16-6",
+        "FX-16-7",
+        "FX-16-8",
+        "FX-16-9",
+        "FX-16-10",
+        "FX-16-11",
+        "FX-16-12",
+        "FX-16-13",
+        "FX-16-14",
+        "FX-16-15",
+        "FX-16-16",
+        "FX-16-17",
+        "FX-16-18",
+        "FX-16-19",
+        "FX-16-20",
+        "FX-16-21",
+        "FX-16-22",
+        "FX-16-23",
+        "FX-16-24",
+        "FX-16-25",
+        "FX-16-26",
+        "FX-16-27",
+        "FX-16-28",
+        "FX-16-29",
+        "FX-16-30",
+        "FX-16-31",
+        "FX-16-32",
+        "FX-16-33",
+        "FX-16-34",
+        "FX-16-35",
+        "FX-16-36"
       ],
       "failed": [],
       "stopped": ""

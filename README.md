@@ -1,7 +1,7 @@
 # Art drafts
 
 Made by the art bot (`tools/art_bot/` on the main branch) from the art tracker's prompts.
-191 of 191 stills done. Newest first. These are drafts: copy the
+227 of 227 stills done. Newest first. These are drafts: copy the
 keepers into the game's `assets/` folder by hand.
 
 **To build on a draft** (new weapon or outfit, 8 directions, animations), copy it to
@@ -138,8 +138,252 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-15-15.png` unlocks the air ring spins in a seamless loop
 - `approved/FX-15-16.png` unlocks the arm cyclones spin in a seamless loop
 - `approved/FX-15-17.png` unlocks the wind column rises in a seamless loop
+- `approved/FX-16-2.png` unlocks the water tip cracks like a whip and sprays droplets
+- `approved/FX-16-3.png` unlocks the water splashes outward and falls
+- `approved/FX-16-5.png` unlocks the flame tip cracks like a whip and throws embers
+- `approved/FX-16-6.png` unlocks the embers burst outward and fade
+- `approved/FX-16-8.png` unlocks the fire front roars and flickers in a seamless loop
+- `approved/FX-16-9.png` unlocks the fire splashes against the surface in a seamless loop
+- `approved/FX-16-11.png` unlocks the jet front foams and sprays in a seamless loop
+- `approved/FX-16-12.png` unlocks the spray fans out from the impact in a seamless loop
+- `approved/FX-16-14.png` unlocks the droplets are pulled out and drawn to the left
+- `approved/FX-16-15.png` unlocks the droplets arrive, swirl and soak in
+- `approved/FX-16-17.png` unlocks the hook swings open and bites
+- `approved/FX-16-18.png` unlocks the sparks burst and fade
+- `approved/FX-16-20.png` unlocks the sparks crackle and gather
+- `approved/FX-16-21.png` unlocks the lightning flash bursts and flickers out
+- `approved/FX-16-22.png` unlocks the fire wall surges up and flickers in a seamless loop
+- `approved/FX-16-23.png` unlocks the low flames die down into smoke and fade
+- `approved/FX-16-24.png` unlocks the fire crashes against the wall and curls back
+- `approved/FX-16-25.png` unlocks the wave crest rises and churns in a seamless loop
+- `approved/FX-16-26.png` unlocks the shallow water drains away and fades
+- `approved/FX-16-27.png` unlocks the wave crashes against the wall and sprays upward
+- `approved/FX-16-28.png` unlocks the small wave rolls and churns in a seamless loop
+- `approved/FX-16-29.png` unlocks the small wave splashes against the wall
+- `approved/FX-16-30.png` unlocks the wind streaks rush and swirl in a seamless loop
+- `approved/FX-16-31.png` unlocks the leaves and dust settle and fade
+- `approved/FX-16-32.png` unlocks the wind puffs against the wall and curls away
+- `approved/FX-16-33.png` unlocks the wind blast surges in a seamless loop
+- `approved/FX-16-34.png` unlocks the wind blast slams against the wall and bursts outward
+- `approved/FX-16-36.png` unlocks the slash flashes and the puff fades
 
 ## Drafts
+
+### FX-16-1 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-1](art/FX-16/FX-16-1_2026-11-23.png)
+
+<sub>a horizontal strip of clear blue water with white highlights running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of a</sub>
+
+### FX-16-2 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-2](art/FX-16/FX-16-2_2026-11-23.png)
+
+<sub>the curling tip of a whip of clear blue water with a spray of droplets, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same water. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/</sub>
+
+### FX-16-3 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-3](art/FX-16/FX-16-3_2026-11-23.png)
+
+<sub>a splash of clear blue water hitting a target, droplets flying outward. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no d</sub>
+
+### FX-16-4 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-4](art/FX-16/FX-16-4_2026-11-23.png)
+
+<sub>a horizontal strip of orange and yellow flame with a bright core running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip </sub>
+
+### FX-16-5 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-5](art/FX-16/FX-16-5_2026-11-23.png)
+
+<sub>the cracking tip of a whip of flame, bright white-hot point, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same flame. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effe</sub>
+
+### FX-16-6 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-6](art/FX-16/FX-16-6_2026-11-23.png)
+
+<sub>a burst of orange embers hitting a target. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline, limited palette,</sub>
+
+### FX-16-7 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-7](art/FX-16/FX-16-7_2026-11-23.png)
+
+<sub>a horizontal strip of a roaring stream of orange fire, ragged at the top and bottom edges running from the left edge to the right edge of the canvas, about 10 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid e</sub>
+
+### FX-16-8 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-8](art/FX-16/FX-16-8_2026-11-23.png)
+
+<sub>the rounded, roaring front of a stream of fire, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same fire. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, iso</sub>
+
+### FX-16-9 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-9](art/FX-16/FX-16-9_2026-11-23.png)
+
+<sub>fire splashing and spreading against a surface, flames curling back. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark</sub>
+
+### FX-16-10 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-10](art/FX-16/FX-16-10_2026-11-23.png)
+
+<sub>a horizontal strip of a high-pressure jet of blue water with white streaks along it running from the left edge to the right edge of the canvas, about 6 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to e</sub>
+
+### FX-16-11 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-11](art/FX-16/FX-16-11_2026-11-23.png)
+
+<sub>the foaming front of a high-pressure water jet, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same water. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, is</sub>
+
+### FX-16-12 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-12](art/FX-16/FX-16-12_2026-11-23.png)
+
+<sub>a hard spray of blue water and foam fanning out from a point of impact. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no d</sub>
+
+### FX-16-13 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-13](art/FX-16/FX-16-13_2026-11-23.png)
+
+<sub>a horizontal strip of a thin dark-blue water tendril with small glowing droplets inside it running from the left edge to the right edge of the canvas, about 5 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid e</sub>
+
+### FX-16-14 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-14](art/FX-16/FX-16-14_2026-11-23.png)
+
+<sub>dark-blue water and small droplets being drawn out of a point into a thin stream that leaves to the left. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. p</sub>
+
+### FX-16-15 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-15](art/FX-16/FX-16-15_2026-11-23.png)
+
+<sub>a small swirl of dark-blue water and glowing droplets arriving at a point from the right and soaking in. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pi</sub>
+
+### FX-16-16 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-16](art/FX-16/FX-16-16_2026-11-23.png)
+
+<sub>a horizontal strip of a twisted grey steel cable running from the left edge to the right edge of the canvas, about 3 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any length. A</sub>
+
+### FX-16-17 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-17](art/FX-16/FX-16-17_2026-11-23.png)
+
+<sub>a steel grappling hook, drawn so it points to the right, its left end in the middle of the left edge, where it joins a strip of the same steel cable. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glow</sub>
+
+### FX-16-18 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-18](art/FX-16/FX-16-18_2026-11-23.png)
+
+<sub>small white and orange sparks from steel biting into stone. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no dark outline,</sub>
+
+### FX-16-19 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-19](art/FX-16/FX-16-19_2026-11-23.png)
+
+<sub>a horizontal strip of crackling blue-white electricity, jagged and bright running from the left edge to the right edge of the canvas, about 8 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make</sub>
+
+### FX-16-20 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-20](art/FX-16/FX-16-20_2026-11-23.png)
+
+<sub>a small bright knot of blue-white sparks at fingertips, the start of a lightning bolt. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric</sub>
+
+### FX-16-21 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-21](art/FX-16/FX-16-21_2026-11-23.png)
+
+<sub>a bright blue-white lightning strike flash with crackling branches spreading from a point. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isome</sub>
+
+### FX-16-22 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-22](art/FX-16/FX-16-22_2026-11-23.png)
+
+<sub>a tall leading wall of orange fire standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/</sub>
+
+### FX-16-23 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-23](art/FX-16/FX-16-23_2026-11-23.png)
+
+<sub>low dying flames and smoke standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack e</sub>
+
+### FX-16-24 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-24](art/FX-16/FX-16-24_2026-11-23.png)
+
+<sub>a wave of fire bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, b</sub>
+
+### FX-16-25 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-25](art/FX-16/FX-16-25_2026-11-23.png)
+
+<sub>a tall curling crest of blue water with white foam standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diam</sub>
+
+### FX-16-26 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-26](art/FX-16/FX-16-26_2026-11-23.png)
+
+<sub>shallow foaming water draining away standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell</sub>
+
+### FX-16-27 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-27](art/FX-16/FX-16-27_2026-11-23.png)
+
+<sub>a big wave of blue water bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, </sub>
+
+### FX-16-28 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-28](art/FX-16/FX-16-28_2026-11-23.png)
+
+<sub>a small rolling wave of blue water with a foam line standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 dia</sub>
+
+### FX-16-29 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-29](art/FX-16/FX-16-29_2026-11-23.png)
+
+<sub>a small wave of blue water bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view</sub>
+
+### FX-16-30 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-30](art/FX-16/FX-16-30_2026-11-23.png)
+
+<sub>a band of pale white wind streaks with a few leaves, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground t</sub>
+
+### FX-16-31 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-31](art/FX-16/FX-16-31_2026-11-23.png)
+
+<sub>a few leaves and wisps of dust settling, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x</sub>
+
+### FX-16-32 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-32](art/FX-16/FX-16-32_2026-11-23.png)
+
+<sub>a puff of pale wind bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowi</sub>
+
+### FX-16-33 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-33](art/FX-16/FX-16-33_2026-11-23.png)
+
+<sub>a strong dense blast of white wind, semi-transparent standing on one flat isometric ground tile, a 32x16 diamond at the bottom of the canvas. Symmetrical, so it reads the same whichever way the effect travels. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 di</sub>
+
+### FX-16-34 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-34](art/FX-16/FX-16-34_2026-11-23.png)
+
+<sub>a strong blast of white wind bursting against a flat vertical wall face on the right side of the canvas, as if it hit a stone pillar and could go no further. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric vi</sub>
+
+### FX-16-35 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-35](art/FX-16/FX-16-35_2026-11-23.png)
+
+<sub>a horizontal strip of a faint fading streak of pale wind running from the left edge to the right edge of the canvas, about 4 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any l</sub>
+
+### FX-16-36 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+
+![FX-16-36](art/FX-16/FX-16-36_2026-11-23.png)
+
+<sub>a thin white slash mark where a blade of wind hits, with a small puff. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 32x32 canvas. pixel art, isometric 2:1 view, no da</sub>
 
 ### FX-11-1 · Fire ability effects for the stance rework (2026-11-22)
 
