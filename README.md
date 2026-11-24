@@ -143,6 +143,36 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
 
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-west · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-west](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-west_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
+
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c@west · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c@west](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@west_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
+
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south-west · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south-west](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south-west_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
+
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
+
+### PL-01-1+fire-stance-4-presses-the-palms-together@east · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together@east](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@east_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
 ### FX-16-1 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
 ![FX-16-1](art/FX-16/FX-16-1_2026-11-23.png)
