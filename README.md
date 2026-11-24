@@ -50,24 +50,17 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-08-6.png` unlocks the spiralling wind sweeps outward to the right, widening and swirling, then fades away
 - `approved/FX-10-3.png` unlocks the flame arc sweeps around fast in a half circle, then fades into embers
 - `approved/FX-10-5.png` unlocks the rock flies forward to the right across the canvas in a low arc, tumbling end over end; it travels alone, no pebbles or dust follow it
-- `approved/FX-11-2.png` unlocks the flame bolt flickers as it flies to the right, the flame bolt pops into a small burst of sparks
 - `approved/FX-11-3.png` unlocks the orange flames flicker and lick upward in a seamless loop
 - `approved/FX-11-4.png` unlocks the golden flames rise up around the ring and fade into embers
 - `approved/FX-11-5.png` unlocks the band of flame flickers and roars in a seamless loop
 - `approved/FX-11-6.png` unlocks the low flames flicker across the tile in a seamless loop
 - `approved/FX-11-7.png` unlocks the heat haze shimmers and embers rise in a loop, the heat bursts outward in a ring of flame and fades
-- `approved/FX-11-8.png` unlocks the flame puffs flare up and die down
 - `approved/FX-11-9.png` unlocks the fire lash snaps out to the right, cracks straight, then breaks into embers
-- `approved/FX-11-10.png` unlocks the flame jets roar and flicker in a seamless loop
 - `approved/FX-11-11.png` unlocks the lightning circles faster and faster, then shoots out to the right
-- `approved/FX-11-12.png` unlocks the fire ring explodes outward and the flame wings rise, then fade
 - `approved/FX-11-15.png` unlocks the lightning bolt strikes across in a bright flash and flickers out
-- `approved/FX-11-17.png` unlocks the firestorm swirls and roars in a seamless loop
 - `approved/FX-11-18.png` unlocks the cone of fire breath blasts outward to the right, then thins into embers
-- `approved/FX-11-19.png` unlocks the explosion bursts from a bright point, a shockwave ring spreads, then smoke fades
 - `approved/FX-12-1.png` unlocks the ground shock spreads outward from the middle in a ring of dust and fades
 - `approved/FX-12-2.png` unlocks the dust bursts outward and settles
-- `approved/FX-12-3.png` unlocks the metal shards spin slightly as they fly to the right, the shards hit with a small burst of white sparks
 - `approved/FX-12-4.png` unlocks the stones circle slowly around the middle in a loop, the stones break apart and fall as dust
 - `approved/FX-12-5.png` unlocks the sand slowly trickles down into the dip in a seamless loop
 - `approved/FX-12-6.png` unlocks the metal glints ripple and twist inward, then fade
@@ -77,42 +70,21 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-12-11.png` unlocks the lava bubbles and glows in a seamless loop
 - `approved/FX-12-12.png` unlocks the cracks shake and widen while dust rises, in a loop
 - `approved/FX-12-13.png` unlocks the sand swirls around in a seamless loop
-- `approved/FX-13-1.png` unlocks droplets rise and spiral together into the glowing water ball
-- `approved/FX-13-3.png` unlocks the water bubble wobbles gently in a loop, the bubble bursts and splashes outward
 - `approved/FX-13-5.png` unlocks the mist drifts and swirls gently in a loop
 - `approved/FX-13-6.png` unlocks the water tendril pulls droplets from the right to the left, then fades
 - `approved/FX-13-7.png` unlocks the droplets circle slowly in a loop, glowing
-- `approved/FX-13-8.png` unlocks the ice forms upward from the ground into a block, the ice block cracks and shatters
-- `approved/FX-13-9.png` unlocks the column of water and light rises up from the ground, glows, then fades
 - `approved/FX-13-10.png` unlocks the water wave rolls forward to the right and splashes down
 - `approved/FX-13-11.png` unlocks the water streams swirl quickly in a loop
-- `approved/FX-13-13.png` unlocks the spirit water ribbon winds upward and glows brighter, then fades into sparkles
 - `approved/FX-13-14.png` unlocks the water jet surges in a seamless loop
-- `approved/FX-13-15.png` unlocks the steam billows and drifts in a seamless loop
 - `approved/FX-13-16.png` unlocks the dark-red threads tighten and pulse in a loop
 - `approved/FX-13-17.png` unlocks glowing raindrops fall and splash softly in a seamless loop
 - `approved/FX-13-18.png` unlocks the big wave rolls forward to the right, crests and crashes down
-- `approved/FX-13-19.png` unlocks the water ring rises up and golden sparkles burst, then fade
-- `approved/FX-13-20.png` unlocks the ice spikes erupt up out of the ground, hold, then crumble
-- `approved/FX-13-21.png` unlocks the eight water arms sway slowly in a loop, the water arms lash outward in all directions, then return
-- `approved/FX-14-2.png` unlocks the air puff bursts out and fades
 - `approved/FX-14-3.png` unlocks the wind band coils tight around the legs in a loop
-- `approved/FX-14-4.png` unlocks the air wisps are pulled to the left and vanish
-- `approved/FX-14-5.png` unlocks the air ball spins in a seamless loop
 - `approved/FX-14-6.png` unlocks the storm wind swirls with rain in a seamless loop
 - `approved/FX-14-7.png` unlocks the wind blast shoots to the right and dissolves
-- `approved/FX-14-8.png` unlocks the air bubble swirls in a loop, the air bubble flashes bright as it reflects a shot
-- `approved/FX-14-10.png` unlocks the spiral swirls inward toward the middle in a loop
-- `approved/FX-14-12.png` unlocks the air ring tightens and spins in a loop
 - `approved/FX-14-13.png` unlocks the wind streams trail and curl in a seamless loop
-- `approved/FX-14-14.png` unlocks the tornado spins in a seamless loop
 - `approved/FX-14-16.png` unlocks the pressure ring slams down and holds, then releases
 - `approved/FX-14-17.png` unlocks the feathers and wisps float upward gently in a loop
-- `approved/FX-14-18.png` unlocks the storm wind whips around in a seamless loop
-- `approved/FX-15-1.png` unlocks the embers drift upward in a seamless loop
-- `approved/FX-15-2.png` unlocks the flame ribbons circle in a seamless loop
-- `approved/FX-15-3.png` unlocks the heel flames flicker in a seamless loop
-- `approved/FX-15-4.png` unlocks the sun glows and sparks crackle in a seamless loop
 - `approved/FX-15-5.png` unlocks the fire dragon coils around in a seamless loop
 - `approved/FX-15-6.png` unlocks the stone plates orbit in a seamless loop
 - `approved/FX-15-7.png` unlocks the ground ripples spread in a seamless loop
@@ -123,27 +95,11 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-15-14.png` unlocks the wind swirl circles in a seamless loop
 - `approved/FX-15-15.png` unlocks the air ring spins in a seamless loop
 - `approved/FX-15-16.png` unlocks the arm cyclones spin in a seamless loop
-- `approved/FX-15-17.png` unlocks the wind column rises in a seamless loop
 - `approved/FX-16-2.png` unlocks the water tip cracks like a whip and sprays droplets
-- `approved/FX-16-3.png` unlocks the water splashes outward and falls
-- `approved/FX-16-6.png` unlocks the embers burst outward and fade
-- `approved/FX-16-9.png` unlocks the fire splashes against the surface in a seamless loop
-- `approved/FX-16-11.png` unlocks the jet front foams and sprays in a seamless loop
-- `approved/FX-16-12.png` unlocks the spray fans out from the impact in a seamless loop
-- `approved/FX-16-14.png` unlocks the droplets are pulled out and drawn to the left
-- `approved/FX-16-15.png` unlocks the droplets arrive, swirl and soak in
 - `approved/FX-16-17.png` unlocks the hook swings open and bites
-- `approved/FX-16-18.png` unlocks the sparks burst and fade
-- `approved/FX-16-20.png` unlocks the sparks crackle and gather
-- `approved/FX-16-21.png` unlocks the lightning flash bursts and flickers out
 - `approved/FX-16-22.png` unlocks the fire wall surges up and flickers in a seamless loop
-- `approved/FX-16-23.png` unlocks the low flames die down into smoke and fade
-- `approved/FX-16-25.png` unlocks the wave crest rises and churns in a seamless loop
 - `approved/FX-16-26.png` unlocks the shallow water drains away and fades
 - `approved/FX-16-27.png` unlocks the wave crashes against the wall and sprays upward
-- `approved/FX-16-28.png` unlocks the wave crest rises, curls and churns in a seamless loop
-- `approved/FX-16-29.png` unlocks the small wave splashes against the wall
-- `approved/FX-16-30.png` unlocks the wind streaks rush and swirl in a seamless loop
 - `approved/FX-16-31.png` unlocks the leaves and dust settle and fade
 - `approved/FX-16-32.png` unlocks the wind puffs against the wall and curls away
 - `approved/FX-16-33.png` unlocks the wind blast surges in a seamless loop
@@ -156,6 +112,36 @@ keepers into the game's `assets/` folder by hand.
 - `approved/FX-16-42.png` unlocks the flame tail flicks and flickers
 
 ## Drafts
+
+### PL-01-1+fire-stance-2-settles-into-a-firebending@south-west · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending@south-west](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
+### PL-01-1+fire-stance-2-settles-into-a-firebending@south · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-2-settles-into-a-firebending@south](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 2: settles into a firebending stance and swings both forearms in slow circles as if trailing ribbons of flame, ending guarded with fists up</sub>
+
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
+
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
+
+### PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north · Hero base body (2026-11-24)
+
+![PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north](art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 3: drops into a low springy crouch on the balls of the feet, heels lifted, arms swept back, ready to dash</sub>
 
 ### FX-16-1 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
 
@@ -229,7 +215,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a horizontal strip of a faint fading streak of pale wind running from the left edge to the right edge of the canvas, about 4 px thick, centred top to bottom, flat side view with no perspective. Seamless: the left and right ends match exactly, so copies can be laid end to end to make a strip of any l</sub>
 
-### FX-11-2 · Fire ability effects for the stance rework (2026-11-23)
+### FX-11-2 · Fire ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-11-2](art/FX-11/FX-11-2_2026-11-23.png)
 
@@ -253,19 +239,19 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a glowing red-orange heat shimmer and rising embers forming a loose column about 18 px wide and 34 px tall, the middle see-through. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this </sub>
 
-### FX-11-8 · Fire ability effects for the stance rework (2026-11-23)
+### FX-11-8 · Fire ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-11-8](art/FX-11/FX-11-8_2026-11-23.png)
 
 <sub>three small flame puffs about 6 px each in a short row, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a three-qu</sub>
 
-### FX-11-17 · Fire ability effects for the stance rework (2026-11-23)
+### FX-11-17 · Fire ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-11-17](art/FX-11/FX-11-17_2026-11-23.png)
 
 <sub>a tall swirling firestorm of flames about 30 px wide and 40 px tall, rising from a flat bottom edge, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px</sub>
 
-### FX-11-19 · Fire ability effects for the stance rework (2026-11-23)
+### FX-11-19 · Fire ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-11-19](art/FX-11/FX-11-19_2026-11-23.png)
 
@@ -319,7 +305,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>two quick swirling streams of clear blue water curling in a small flat ring about 16 px wide and 10 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game </sub>
 
-### FX-13-15 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-15 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-15](art/FX-13/FX-13-15_2026-11-23.png)
 
@@ -337,13 +323,13 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>glowing teal raindrops falling in slanted streaks over an area about 30 px wide and 40 px tall, with small splashes at the bottom; only the drops and splashes. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person</sub>
 
-### FX-13-20 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-20 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-20](art/FX-13/FX-13-20_2026-11-23.png)
 
 <sub>a cluster of five sharp pale-blue ice spikes about 28 px wide, pointing up as if bursting out of the ground; only the spikes. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game i</sub>
 
-### FX-14-2 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-2 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-2](art/FX-14/FX-14-2_2026-11-23.png)
 
@@ -355,7 +341,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a thin band of swirling semi-transparent wind coiled in a small flat ring about 16 px wide and 8 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is </sub>
 
-### FX-14-4 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-4 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-4](art/FX-14/FX-14-4_2026-11-23.png)
 
@@ -367,19 +353,19 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>dark grey-blue swirling wind with slanted streaks of rain in a cloud about 30 px wide and 26 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell</sub>
 
-### FX-14-8 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-8 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-8](art/FX-14/FX-14-8_2026-11-23.png)
 
 <sub>a round translucent bubble of swirling air about 26 px wide, floating, see-through in the middle. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell eff</sub>
 
-### FX-14-10 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-10 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-10](art/FX-14/FX-14-10_2026-11-23.png)
 
 <sub>an inward-spiralling swirl of pale wind lying flat, an ellipse about 56 px wide and 28 px tall seen from above at an angle, the centre empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing perso</sub>
 
-### FX-14-12 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-12 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-12](art/FX-14/FX-14-12_2026-11-23.png)
 
@@ -391,25 +377,25 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>short curling streams of pale wind trailing off to the left, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, seen from a thr</sub>
 
-### FX-14-18 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-18 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-18](art/FX-14/FX-14-18_2026-11-23.png)
 
 <sub>fierce dark swirling storm wind with bits of debris in a cloud about 30 px wide and 28 px tall. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effec</sub>
 
-### FX-15-1 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+### FX-15-1 · Stance auras (loops around the hero while a stance is held) (2026-11-23) ✓ approved
 
 ![FX-15-1](art/FX-15/FX-15-1_2026-11-23.png)
 
 <sub>small embers and flickering sparks drifting upward in a loose ring about 24 px wide and 40 px tall; the middle is empty and transparent. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in </sub>
 
-### FX-15-3 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+### FX-15-3 · Stance auras (loops around the hero while a stance is held) (2026-11-23) ✓ approved
 
 ![FX-15-3](art/FX-15/FX-15-3_2026-11-23.png)
 
 <sub>two small jets of flame pointing down, side by side about 10 px apart, each about 6 px long, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spel</sub>
 
-### FX-15-4 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+### FX-15-4 · Stance auras (loops around the hero while a stance is held) (2026-11-23) ✓ approved
 
 ![FX-15-4](art/FX-15/FX-15-4_2026-11-23.png)
 
@@ -445,37 +431,37 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>two small cyclones of pale wind, each about 8 px wide and 16 px tall, side by side about 18 px apart, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. </sub>
 
-### FX-16-6 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-6 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-6](art/FX-16/FX-16-6_2026-11-23.png)
 
 <sub>a burst of orange embers and sparks flying outward from a point, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite, </sub>
 
-### FX-16-14 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-14 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-14](art/FX-16/FX-16-14_2026-11-23.png)
 
 <sub>dark-blue water droplets being pulled out of a point at the right and streaming to the left in a thin curling trail, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in</sub>
 
-### FX-16-15 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-15 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-15](art/FX-16/FX-16-15_2026-11-23.png)
 
 <sub>a small swirl of dark-blue water and glowing droplets spiralling into a point at the centre, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall</sub>
 
-### FX-16-18 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-18 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-18](art/FX-16/FX-16-18_2026-11-23.png)
 
 <sub>a small burst of white and orange sparks flying out from a point, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect sprite,</sub>
 
-### FX-16-20 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-20 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-20](art/FX-16/FX-16-20_2026-11-23.png)
 
 <sub>a small bright knot of blue-white crackling sparks about 10 px wide, floating in mid-air. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect spri</sub>
 
-### FX-16-21 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-21 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-21](art/FX-16/FX-16-21_2026-11-23.png)
 
@@ -487,13 +473,13 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a tall leading wall of orange fire about 26 px wide and 36 px tall, flames rising from a flat bottom edge, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is</sub>
 
-### FX-16-23 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-23 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-23](art/FX-16/FX-16-23_2026-11-23.png)
 
 <sub>low dying flames and wisps of smoke about 24 px wide and 16 px tall, rising from a flat bottom edge, nothing under them. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 </sub>
 
-### FX-16-25 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-25 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-25](art/FX-16/FX-16-25_2026-11-23.png)
 
@@ -511,7 +497,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a big wave of blue water crashing to the right and splashing straight up and back along the right edge of the canvas, as if it hit an invisible wall there. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A </sub>
 
-### FX-16-30 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-30 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-30](art/FX-16/FX-16-30_2026-11-23.png)
 
@@ -541,13 +527,13 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>small orange flames flickering in a loose ring about 18 px wide and 30 px tall around an empty middle, as if the person standing there is on fire; the middle stays empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery</sub>
 
-### FX-11-10 · Fire ability effects for the stance rework (2026-11-23)
+### FX-11-10 · Fire ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-11-10](art/FX-11/FX-11-10_2026-11-23.png)
 
 <sub>two short jets of flame shooting straight DOWN toward the bottom edge of the canvas, side by side about 8 px apart, each about 12 px long, the hot white base at the top and the flame tips at the bottom, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor,</sub>
 
-### FX-12-3 · Earth ability effects for the stance rework (2026-11-23)
+### FX-12-3 · Earth ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-12-3](art/FX-12/FX-12-3_2026-11-23.png)
 
@@ -559,13 +545,13 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>one flat isometric ground tile, a 32x16 diamond, of loose pale sand with a slight funnel-shaped dip in its middle. A standing person in this game is 32 px tall. Isometric game tile, 32x32 canvas, pixel art, isometric 2:1 view, no dark outline, limited palette, soft light from top-left, transparent b</sub>
 
-### FX-13-1 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-1 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-1](art/FX-13/FX-13-1_2026-11-23.png)
 
 <sub>a small glowing ball of clear blue water about 10 px wide with white highlights, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect spr</sub>
 
-### FX-13-3 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-3 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-3](art/FX-13/FX-13-3_2026-11-23.png)
 
@@ -577,43 +563,43 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a ring of small glowing blue-white droplets, an ellipse about 20 px wide and 8 px tall, floating, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px ta</sub>
 
-### FX-13-8 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-8 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-8](art/FX-13/FX-13-8_2026-11-23.png)
 
 <sub>an irregular, organic lump of clear pale-blue ice about 22 px wide and 34 px tall with rounded uneven sides and frost on its edges, mostly see-through (about half transparent), hollow and empty inside, not a block. Only the effect itself on a fully transparent background: no ground, no tile, no floo</sub>
 
-### FX-13-9 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-9 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-9](art/FX-13/FX-13-9_2026-11-23.png)
 
 <sub>a column of light-blue water and soft white light rising upward, about 16 px wide and 40 px tall, see-through, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 </sub>
 
-### FX-13-13 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-13 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-13](art/FX-13/FX-13-13_2026-11-23.png)
 
 <sub>a bright glowing ribbon of white-blue spirit water spiralling upward in a loose helix about 20 px wide and 36 px tall, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in </sub>
 
-### FX-13-19 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-19 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-19](art/FX-13/FX-13-19_2026-11-23.png)
 
 <sub>a ring of rising blue water with golden sparkles, an ellipse about 26 px wide and 10 px tall, the middle empty, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32</sub>
 
-### FX-13-21 · Water ability effects for the stance rework (2026-11-23)
+### FX-13-21 · Water ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-13-21](art/FX-13/FX-13-21_2026-11-23.png)
 
 <sub>eight arms of clear blue water rising and curling upward from an ellipse lying flat on the ground around an empty middle, seen from a three-quarter top-down angle like the rest of the game; the ellipse about 60 px wide and 30 px tall, the arms up to 40 px tall, curling at the tips. Only the effect i</sub>
 
-### FX-14-5 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-5 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-5](art/FX-14/FX-14-5_2026-11-23.png)
 
 <sub>a small spinning ball of semi-transparent white air about 16 px wide with swirl lines inside, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spe</sub>
 
-### FX-14-14 · Air ability effects for the stance rework (2026-11-23)
+### FX-14-14 · Air ability effects for the stance rework (2026-11-23) ✓ approved
 
 ![FX-14-14](art/FX-14/FX-14-14_2026-11-23.png)
 
@@ -631,7 +617,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a few small white feathers and wisps of air drifting upward, about 20 px across, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect spr</sub>
 
-### FX-15-2 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+### FX-15-2 · Stance auras (loops around the hero while a stance is held) (2026-11-23) ✓ approved
 
 ![FX-15-2](art/FX-15/FX-15-2_2026-11-23.png)
 
@@ -661,31 +647,31 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a single thin rope of clear blue water curving in a loose ring, an ellipse about 30 px wide and 12 px tall, floating, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in t</sub>
 
-### FX-15-17 · Stance auras (loops around the hero while a stance is held) (2026-11-23)
+### FX-15-17 · Stance auras (loops around the hero while a stance is held) (2026-11-23) ✓ approved
 
 ![FX-15-17](art/FX-15/FX-15-17_2026-11-23.png)
 
 <sub>a column of pale swirling wind about 30 px wide and 80 px tall, see-through, the middle empty. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tall. Game spell effect</sub>
 
-### FX-16-3 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-3 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-3](art/FX-16/FX-16-3_2026-11-23.png)
 
 <sub>a small splash of clear blue water about 10 px wide, a few droplets flying outward, floating in the middle of the canvas. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32</sub>
 
-### FX-16-9 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-9 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-9](art/FX-16/FX-16-9_2026-11-23.png)
 
 <sub>a small splash of fire about 8 px wide, flames curling back toward the left, floating in the middle of the canvas. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standing person in this game is 32 px tal</sub>
 
-### FX-16-11 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-11 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-11](art/FX-16/FX-16-11_2026-11-23.png)
 
 <sub>the front end of a horizontal high-pressure water stream about 10 px thick flowing to the right: the stream enters straight from the middle of the left edge and ends in a rounded, foaming, spraying front at the right; floating. Only the effect itself on a fully transparent background: no ground, no </sub>
 
-### FX-16-12 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-12 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-12](art/FX-16/FX-16-12_2026-11-23.png)
 
@@ -697,13 +683,13 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>a small grey steel grappling hook with three curved prongs, lying horizontally, its prongs pointing to the right and its ring at the left, floating. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wall, no scenery, no person. A standin</sub>
 
-### FX-16-28 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-28 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-28](art/FX-16/FX-16-28_2026-11-23.png)
 
 <sub>a big curling crest of a tidal wave, blue water with white foam on its lip, about 28 px wide and 40 px tall, curling toward the right, rising from a flat bottom edge, nothing under it. Only the effect itself on a fully transparent background: no ground, no tile, no floor, no platform, no base, no wa</sub>
 
-### FX-16-29 · Kits for code-drawn effects (lines and fronts) (2026-11-23)
+### FX-16-29 · Kits for code-drawn effects (lines and fronts) (2026-11-23) ✓ approved
 
 ![FX-16-29](art/FX-16/FX-16-29_2026-11-23.png)
 
@@ -781,7 +767,7 @@ keepers into the game's `assets/` folder by hand.
 
 <sub>blue-white lightning curling in a circle around an empty middle, about 40 px across. A standing person in this game is 32 px tall and 16 px wide; one ground tile is a 32x16 diamond. Game spell/attack effect sprite, isometric view, glowing, bright readable colors, 64x64 canvas. pixel art, isometric 2</sub>
 
-### FX-11-12 · Fire ability effects for the stance rework (2026-11-22)
+### FX-11-12 · Fire ability effects for the stance rework (2026-11-22) ✓ approved
 
 ![FX-11-12](art/FX-11/FX-11-12_2026-11-22.png)
 

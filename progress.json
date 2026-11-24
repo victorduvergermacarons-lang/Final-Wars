@@ -8086,6 +8086,121 @@
         "type": "generations",
         "generations": 1.0
       }
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending@south-west": {
+      "date": "2026-11-24",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01854637657933765
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-2-settles-into-a-firebending@south": {
+      "date": "2026-11-24",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_1.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_2.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_3.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_4.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_5.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_6.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_7.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_8.png",
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.020024892191092172
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south_2026-11-24_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east": {
+      "date": "2026-11-24",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_1.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_2.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_3.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_4.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_5.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_6.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_7.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_8.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019449565364254844
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east_2026-11-24_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east": {
+      "date": "2026-11-24",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_1.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_2.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_3.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_4.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_5.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_6.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_7.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_8.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019663594424724578
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east_2026-11-24_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north": {
+      "date": "2026-11-24",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_1.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_2.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_3.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_4.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_5.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_6.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_7.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_8.png",
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.023503069864379035
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north_2026-11-24_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -9016,6 +9131,18 @@
         "FX-16-40",
         "FX-16-41",
         "FX-16-42"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-24",
+      "made": [
+        "PL-01-1+fire-stance-2-settles-into-a-firebending@south-west",
+        "PL-01-1+fire-stance-2-settles-into-a-firebending@south",
+        "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@east",
+        "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north-east",
+        "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@north"
       ],
       "failed": [],
       "stopped": ""
