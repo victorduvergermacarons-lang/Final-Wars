@@ -113,6 +113,36 @@ keepers into the game's `assets/` folder by hand.
 
 ## Drafts
 
+### PL-01-1+fire-stance-4-presses-the-palms-together@north-east · Hero base body (2026-11-25)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together@north-east](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
+### PL-01-1+fire-stance-4-presses-the-palms-together@north · Hero base body (2026-11-25)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together@north](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
+### PL-01-1+fire-stance-4-presses-the-palms-together@north-west · Hero base body (2026-11-25)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together@north-west](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
+### PL-01-1+fire-stance-4-presses-the-palms-together@west · Hero base body (2026-11-25)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together@west](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
+### PL-01-1+fire-stance-4-presses-the-palms-together@south-west · Hero base body (2026-11-25)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together@south-west](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
 ### PL-01-1+fire-stance-2-settles-into-a-firebending@south-west · Hero base body (2026-11-24)
 
 ![PL-01-1+fire-stance-2-settles-into-a-firebending@south-west](art/PL-01/PL-01-1+fire-stance-2-settles-into-a-firebending@south-west_2026-11-24_preview.gif)

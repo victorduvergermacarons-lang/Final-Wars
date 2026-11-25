@@ -8316,6 +8316,121 @@
       "preview": [
         "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@east_2026-11-24_preview.gif"
       ]
+    },
+    "PL-01-1+fire-stance-4-presses-the-palms-together@north-east": {
+      "date": "2026-11-25",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_1.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_2.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_3.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_4.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_5.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_6.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_7.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_8.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.019192446430524188
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-4-presses-the-palms-together@north": {
+      "date": "2026-11-25",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_1.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_2.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_3.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_4.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_5.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_6.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_7.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_8.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01869632767306434
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north_2026-11-25_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-4-presses-the-palms-together@north-west": {
+      "date": "2026-11-25",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_1.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_2.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_3.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_4.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_5.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_6.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_7.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_8.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01846575705872642
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-west_2026-11-25_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-4-presses-the-palms-together@west": {
+      "date": "2026-11-25",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_1.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_2.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_3.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_4.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_5.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_6.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_7.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_8.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.028530674225754206
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@west_2026-11-25_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-4-presses-the-palms-together@south-west": {
+      "date": "2026-11-25",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_1.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_2.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_3.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_4.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_5.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_6.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_7.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_8.png",
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.01919318015707864
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south-west_2026-11-25_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -9270,6 +9385,18 @@
         "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south-west",
         "PL-01-1+fire-stance-3-drops-into-a-low-springy-c@south",
         "PL-01-1+fire-stance-4-presses-the-palms-together@east"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-25",
+      "made": [
+        "PL-01-1+fire-stance-4-presses-the-palms-together@north-east",
+        "PL-01-1+fire-stance-4-presses-the-palms-together@north",
+        "PL-01-1+fire-stance-4-presses-the-palms-together@north-west",
+        "PL-01-1+fire-stance-4-presses-the-palms-together@west",
+        "PL-01-1+fire-stance-4-presses-the-palms-together@south-west"
       ],
       "failed": [],
       "stopped": ""
