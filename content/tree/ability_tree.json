@@ -1515,7 +1515,7 @@
 			"prerequisites_text": "—",
 			"scales_with_text": "Earth Mastery, Phys Atk",
 			"mastery_contribution": "+5 Earth Mastery when learned, +0.2 per use vs. enemies near your level, up to 50",
-			"notes": "",
+			"notes": "Threat x3: the Stone Guard's ranged opener.",
 			"tier": 1,
 			"mastery_required": 0,
 			"stance": 1,
@@ -1835,12 +1835,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a self shield."
 			},
 			"hitbox": {
 				"shape": "None",
@@ -1894,12 +1894,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a taunt."
 			},
 			"hitbox": {
 				"shape": "Self Circle",
@@ -2012,12 +2012,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a debuff."
 			},
 			"hitbox": {
 				"shape": "Targeted",
@@ -2308,12 +2308,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a self buff."
 			},
 			"hitbox": {
 				"shape": "None",

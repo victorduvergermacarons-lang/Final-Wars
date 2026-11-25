@@ -376,7 +376,7 @@ func test_same_seed_and_intents_give_same_result() -> void:
 			world.submit(a.id, {"type": "cast", "ability": &"strike", "target": enemy.id})
 			world.submit(b.id, {"type": "cast", "ability": &"heal", "target": a.id})
 			world.step()
-		results.append([a.hp, b.mana, enemy.hp, enemy.tile(), enemy.threat.top()])
+		results.append([a.hp, b.mana, enemy.hp, enemy.tile(), enemy.threat.target()])
 	assert_eq(results[0], results[1])
 
 

@@ -7,6 +7,8 @@ const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09", "
 		"W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09",
 		"A01", "A02", "A03", "A05", "E01", "E02", "E03", "E04", "E05",
 		"S01", "S04", "B01", "B02", "H01", "H02"]
+## Built later for tanking (2026-11-17, tests/unit/test_earth_tanking.gd).
+const EARTH_TANKING := ["E07", "E08", "E14", "E15"] # E02 Stone Skin is in FIRST
 
 var db
 var world: WorldSim
@@ -62,10 +64,11 @@ func _lost(actor: Actor) -> float:
 
 
 func test_the_first_abilities_are_implemented_and_the_rest_are_not() -> void:
-	for id in FIRST:
+	var built: Array = FIRST + EARTH_TANKING
+	for id in built:
 		assert_true(_a(id).implemented, id)
-	var others: Array = db.tree.ids().filter(func(id): return not String(id) in FIRST)
-	assert_eq(others.size(), 150 - FIRST.size())
+	var others: Array = db.tree.ids().filter(func(id): return not String(id) in built)
+	assert_eq(others.size(), 150 - built.size())
 	for id in others:
 		assert_false(db.abilities[StringName(id)].implemented, String(id))
 
@@ -296,7 +299,7 @@ func test_seismic_stomp_taunts_adjacent_enemies() -> void:
 	tank.move.place(Vector2i(7, 6))
 	foe.threat.add(hero.id, 100.0)
 	assert_eq(world.cast(tank, _a("E04"), null), AbilityResolver.Result.OK)
-	assert_eq(foe.threat.top(), tank.id)
+	assert_eq(foe.threat.target(), tank.id)
 
 
 func test_earth_wall_can_be_climbed_with_enough_jump() -> void:

@@ -53,6 +53,11 @@ enum DamageType {
 @export var buff: BuffDef
 ## Multiplies the threat this effect generates (damage/heal amount × multiplier).
 @export var threat_multiplier: float = 1.0
+## TAUNT: seconds the enemy is forced to attack the taunter (overtaking is skipped).
+@export var taunt_seconds: float = 3.0
+## TAUNT: only taunts while the caster has one of these buffs (empty: always).
+## Metalbending taunts only under Stone Skin or Earth Armor.
+@export var taunt_requires_buffs: Array[StringName] = []
 ## Multiplies the whole amount (tier default + scaling): light hits < 1, heavy > 1.
 @export var power: float = 1.0
 ## DAMAGE: heals the caster this fraction of the damage dealt (Leeching Tide).

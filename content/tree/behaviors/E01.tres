@@ -8,6 +8,7 @@
 script = ExtResource("1_mo0b4")
 base_amount = -1.0
 sheet_scaling = true
+threat_multiplier = 3.0
 
 [resource]
 script = ExtResource("3_axfpq")

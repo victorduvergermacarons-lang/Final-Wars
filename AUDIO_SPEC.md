@@ -135,7 +135,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-242 keys, 13 with a file, 229 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+248 keys, 13 with a file, 235 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -271,10 +271,16 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 | Key | Plays when | File |
 |-----|-----------|------|
+| `earth_armor_cast` | Earth Armor is used | **missing** |
+| `earth_boulder_shield_cast` | Boulder Shield is used | **missing** |
+| `earth_boulder_shield_hit` | Boulder Shield lands on someone | **missing** |
+| `earth_metalbending_cast` | Metalbending is used | **missing** |
 | `earth_raise_pillar_cast` | Raise Pillar is used | **missing** |
 | `earth_rock_throw_cast` | Rock Throw is used | **missing** |
 | `earth_rock_throw_hit` | Rock Throw lands on someone | **missing** |
+| `earth_rumbling_taunt_cast` | Rumbling Taunt is used | **missing** |
 | `earth_seismic_stomp_cast` | Seismic Stomp is used | **missing** |
+| `earth_seismic_stomp_hit` | Seismic Stomp lands on someone | **missing** |
 | `earth_stone_skin_cast` | Stone Skin is used | **missing** |
 | `earth_wall_cast` | Earth Wall is used | **missing** |
 | `earth_wall_hit` | Earth Wall lands on someone | **missing** |

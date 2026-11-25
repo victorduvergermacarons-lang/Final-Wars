@@ -167,7 +167,7 @@ func test_taunt_takes_top_threat() -> void:
 	enemy.threat.add(healer.id, 200)
 	var taunt := _ability(&"taunt", AbilityDef.TargetType.ENEMY, [_effect(AbilityEffect.Kind.TAUNT, 0)], 3)
 	AbilityResolver.cast(ctx, hero, taunt, enemy)
-	assert_eq(enemy.threat.top(), hero.id)
+	assert_eq(enemy.threat.target(), hero.id)
 
 
 func test_resurrect_restores_a_fraction_of_hp_and_mana() -> void:
@@ -211,3 +211,32 @@ func test_ranged_high_ground_bonus() -> void:
 	ctx.grid.set_tile(hero.tile(), 2, true)
 	AbilityResolver.cast(ctx, hero, bolt, enemy)
 	assert_eq(enemy.hp, 12.0, "40 × 1.2 = 48")
+
+
+func test_taunt_forces_the_target_for_its_seconds() -> void:
+	enemy.threat.add(healer.id, 200)
+	var effect := _effect(AbilityEffect.Kind.TAUNT, 0)
+	effect.taunt_seconds = 3.0
+	var taunt := _ability(&"taunt", AbilityDef.TargetType.ENEMY, [effect], 3)
+	AbilityResolver.cast(ctx, hero, taunt, enemy)
+	assert_almost_eq(enemy.threat.get_threat(hero.id), 220.0, 0.001, "top threat + 10%")
+	enemy.threat.add(healer.id, 1000)
+	assert_eq(enemy.threat.update(ctx.now + 2.9, 110.0, 130.0, func(_id): return true), hero.id,
+			"forced while the taunt lasts")
+	assert_eq(enemy.threat.update(ctx.now + 3.0, 110.0, 130.0, func(_id): return true), healer.id)
+
+
+func test_a_buff_gated_taunt_needs_its_buff() -> void:
+	enemy.threat.add(healer.id, 200)
+	var effect := _effect(AbilityEffect.Kind.TAUNT, 0)
+	effect.taunt_requires_buffs = [&"stone_skin"]
+	var taunt := _ability(&"grab", AbilityDef.TargetType.ENEMY, [effect], 3)
+	AbilityResolver.cast(ctx, hero, taunt, enemy)
+	assert_eq(enemy.threat.target(), healer.id, "no Stone Skin: no taunt")
+	var buff := BuffDef.new()
+	buff.id = &"stone_skin"
+	buff.duration_seconds = 10.0
+	hero.buffs.apply(buff, ctx.now)
+	hero.cooldowns = Cooldowns.new()
+	AbilityResolver.cast(ctx, hero, taunt, enemy)
+	assert_eq(enemy.threat.target(), hero.id)
