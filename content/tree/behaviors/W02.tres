@@ -13,7 +13,7 @@ sheet_scaling = true
 [resource]
 script = ExtResource("3_w155g")
 id = &"W02"
-fx_cast = &"water_whip_ribbon"
+fx_cast = &"water_whip"
 release_delay_from = "fx"
 max_range = 5
 mana_cost = 6.0

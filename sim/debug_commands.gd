@@ -105,6 +105,8 @@ static func _fx(world: WorldSim, hero: Hero, args: Array, content, aim) -> Dicti
 		cast.merge(world.shape_fx_data(hero, ability, ability.fx_cast, null, to), true) # ribbons, fronts, rings
 		events.append(cast)
 		played.append("cast")
+		hero.anim.act = ability.id # the hero plays its animation with it, as on a release
+		hero.anim.act_at = at
 	if ability.fx_projectile != &"":
 		var hb: HitboxDef = ability.hitbox if ability.hitbox != null else ability.sheet_hitbox
 		var speed := hb.speed if hb != null and hb.speed > 0.0 else 10.0

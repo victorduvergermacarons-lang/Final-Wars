@@ -68,6 +68,8 @@ enum Motion { NONE, SPIN, BOB, ORBIT, FLICKER, SWAY, PULSE, DROP }
 
 
 func duration() -> float:
+	if ribbon and path == Path.VERLET and feel != null:
+		return hit_seconds() + maxf(feel.recovery_seconds, feel.impact_seconds) + feel.droplet_life
 	if ribbon and path == Path.WHIP and extend_frames > 0:
 		return (snap_frame + retract_frames) / maxf(fps, 0.001)
 	if frames <= 1 and hold_seconds > 0.0:
@@ -106,9 +108,13 @@ func hit_seconds() -> float:
 @export var ribbon: bool = false
 ## LINE: straight (streams, jets, cables, lightning). WHIP: a curve that reaches out,
 ## snaps and pulls back. FIGURE8: an infinity sign around the caster (Lightning
-## Redirection). COIL: loops around the caster (the fire dragon).
-enum Path { LINE, WHIP, FIGURE8, COIL }
+## Redirection). COIL: loops around the caster (the fire dragon). VERLET: a chain of
+## points with Verlet physics pinned to the caster's hand, drawn in pixels from
+## `feel` (the Water Whip since 2026-11-25; see VerletWhip).
+enum Path { LINE, WHIP, FIGURE8, COIL, VERLET }
 @export var path: Path = Path.LINE
+## VERLET: every value that sets its feel (WhipFeelDef).
+@export var feel: WhipFeelDef
 ## The part of `sheet` repeated along the path (art px; empty: the whole first frame).
 ## Cut to its most seamless span by tools/once/make_effect_sheets.py.
 @export var strip_rect: Rect2 = Rect2()

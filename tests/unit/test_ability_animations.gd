@@ -131,10 +131,10 @@ func test_water_whip_window_and_the_hit_on_the_snap() -> void:
 	world.submit(hero.id, {"type": "timing_release", "at": 2.75})
 	var events := world.step()
 	assert_eq(_of(events, "timing_result", &"W02")[0].grade, "perfect")
-	assert_eq(_of(events, "fx", &"W02").map(func(e): return e.fx), [&"water_whip_ribbon"],
-			"the lash (a ribbon since phase 4), at the release")
+	assert_eq(_of(events, "fx", &"W02").map(func(e): return e.fx), [&"water_whip"],
+			"the lash (a Verlet whip since 2026-11-25), at the release")
 	assert_eq(wolf.hp, hp, "not yet: the lash is still curling")
-	var fx: FxDef = ContentDB.effects[&"water_whip_ribbon"]
+	var fx: FxDef = ContentDB.effects[&"water_whip"]
 	assert_almost_eq(ContentDB.abilities[&"W02"].release_delay_seconds, fx.hit_frame / fx.fps, 0.001)
 	world.advance(ContentDB.abilities[&"W02"].release_delay_seconds + 0.05)
 	assert_lt(wolf.hp, hp, "the hit lands on the lash's snap")

@@ -59,9 +59,16 @@ effects: the pictures, whips, streams, waves, burning ground and the rest.
       the top of the screen. Hovering the frame says "+15% damage taken".
 
 ## Whips, streams and lightning (they start at your hand)
-- [ ] Water Whip (in play): the lash curls out of your hand toward the target, deeper when
-      the target is close, almost straight at full range, in any direction. The damage
-      lands when it snaps, a moment after you let go. Then it pulls back.
+- [ ] Water Whip (in play, drawn in code since 2026-11-25): a flowing whip of water leaves
+      your right hand, sways and glides, then stiffens for an instant and cracks on the
+      target (droplets splash). The damage lands on that crack, a moment after you let go.
+      Then it pulls back into the hand and is gone. Facing up (N, NE, NW) it goes behind you.
+- [ ] Walk while it's out: the whip trails after your hand.
+- [ ] Escape menu → Gameplay test → "Show whip chain points and hand anchors": white dots
+      along the whip, a magenta cross on your hand. Does the cross sit on the hand in every
+      direction? (The hand points are guesses until the marked Aseprite file.)
+- [ ] `tests/visual/whip_lab.tscn` (F6 in the editor): keys 1–8 cast in each direction, −/=
+      slow down and speed up, R reloads `content/effects/water_whip_feel.tres` after you tune it.
 - [ ] Fire Whip: the same with fire, and it pulls the first enemy toward you.
 - [ ] Leeching Tide: a dark blue stream flowing from the target back to you.
 - [ ] `fx F12` (Fire Stream) and `fx W11` (Water Jet): a straight, thick stream that flows

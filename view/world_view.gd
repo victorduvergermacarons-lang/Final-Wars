@@ -465,7 +465,8 @@ func _draw() -> void:
 	var fx_by_tile := {}
 	for item in _fx.items(t_now, session.actors(), session.telegraphs(), ContentDB.abilities, ContentDB.effects,
 			func(x): return _hero_art(x), {"projectiles": session.projectiles(), "zones": session.ground_zones(),
-			"buffs": ContentDB.buffs}):
+			"buffs": ContentDB.buffs, "pose": func(a): return _pose(a), "feet": func(a): return actor_screen_pos(a),
+			"ground": func(p: Vector2): return float(grid.height_at(MoveState.tile_of(p)))}):
 		var ft := MoveState.tile_of(item.pos)
 		if not grid.in_bounds(ft):
 			continue
@@ -497,6 +498,8 @@ func _draw() -> void:
 	_draw_talk_prompt()
 	for f in _overlay:
 		f.call()
+	if debug_whip:
+		_draw_whip_debug()
 	_queue_float_texts()
 	_draw_labels()
 
@@ -552,6 +555,8 @@ func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
 
 
 func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
+	if item.has("verlet"):
+		return _verlet_rect(item)
 	var r := RING_RADIUS.x if item.has("ring") else 0.0
 	if item.has("quad") or item.has("tilefx"):
 		r = 160.0 # a strip piece or a shaded tile (and a sandstorm over its area)
@@ -580,6 +585,105 @@ func _draw_code_fx(grid: GridModel, item: Dictionary) -> void:
 			var c := Color(1.0, 0.45, 0.08, 0.85) if layer == 0 else Color(1.0, 0.85, 0.3, 0.95)
 			draw_colored_polygon(PackedVector2Array([base + Vector2(-2.5 * k * s, 0), base + Vector2(sway, -h * k),
 					base + Vector2(2.5 * k * s, 0), base + Vector2(0, 1.5 * k * s)]), c)
+
+
+## Escape menu → Gameplay test: draws every Verlet whip's chain points and each
+## hero's right-hand anchor over its sprite (client-side, never sent).
+static var debug_whip := false
+
+
+## The animator's pick for an actor this frame (heroes: anim, dir, frame, flip).
+func _pose(a: Actor) -> Dictionary:
+	var art := _hero_art(a)
+	if art == null:
+		return {}
+	return _animator.pick_hero(a, art, session.render_time())
+
+
+## A Verlet whip's pixels for one segment ("seg"), or its droplets, tip and impact
+## splash ("extras"), each a whole art pixel. Hand-drawn art from its feel's files
+## goes on top where it exists (tip, impact, droplet), else simple pixels.
+func _draw_verlet(item: Dictionary) -> void:
+	var whip: VerletWhip = item.verlet
+	var s := PixelCamera.ART_SCALE
+	var px := Vector2(s, s)
+	if not item.has("extras"):
+		var part: Array = whip.raster.get(item.seg, [])
+		if part.is_empty():
+			return
+		var pts: PackedVector2Array = part[0]
+		var cols: PackedColorArray = part[1]
+		for i in pts.size():
+			draw_rect(Rect2(pts[i] * s, px), cols[i])
+		return
+	var feel := whip.feel
+	if whip.body_visible():
+		var tip_tex := WhipFeelDef.art(feel.tip_art)
+		if tip_tex != null:
+			var size := tip_tex.get_size()
+			draw_texture_rect(tip_tex, Rect2((whip.tip().floor() - (size * 0.5).floor()) * s, size * s), false)
+	if whip.impact_at >= 0.0 and whip.time - whip.impact_at < feel.impact_seconds:
+		var k := (whip.time - whip.impact_at) / maxf(feel.impact_seconds, 0.001)
+		var imp := WhipFeelDef.art(feel.impact_art)
+		if imp != null:
+			var size := imp.get_size()
+			draw_texture_rect(imp, Rect2((whip.target.floor() - (size * 0.5).floor()) * s, size * s), false)
+		else:
+			# Placeholder splash: a broken ring of droplet pixels opening out.
+			var r := 2.0 + 6.0 * k
+			for i in 10:
+				if (i + int(k * 6.0)) % 3 == 0:
+					continue
+				var p := (whip.target + Vector2.from_angle(TAU * i / 10.0) * Vector2(r, r * 0.5)).floor()
+				draw_rect(Rect2(p * s, px), feel.droplet_color)
+	var drop_tex := WhipFeelDef.art(feel.droplet_art)
+	for d in whip.droplets():
+		if drop_tex != null:
+			draw_texture_rect(drop_tex, Rect2((d - (drop_tex.get_size() * 0.5).floor()) * s, drop_tex.get_size() * s), false)
+		else:
+			draw_rect(Rect2(d * s, px), feel.droplet_color)
+
+
+func _verlet_rect(item: Dictionary) -> Rect2:
+	var whip: VerletWhip = item.verlet
+	var s := PixelCamera.ART_SCALE
+	if item.has("extras"):
+		var r := Rect2(whip.target * s, Vector2.ZERO).grow(24.0 * s)
+		for d in whip.droplets():
+			r = r.expand(d * s)
+		return r.expand(whip.tip() * s).grow(16.0 * s)
+	var part: Array = whip.raster.get(item.seg, [])
+	if part.is_empty():
+		return Rect2()
+	var pts: PackedVector2Array = part[0]
+	var r := Rect2(pts[0] * s, Vector2.ZERO)
+	for p in pts:
+		r = r.expand(p * s)
+	return r.grow(s * 2.0)
+
+
+## Chain points (white; the pinned one magenta) and the target (cyan) of every whip,
+## and each hero's right-hand anchor on the frame it shows (a magenta cross).
+func _draw_whip_debug() -> void:
+	var s := PixelCamera.ART_SCALE
+	for whip: VerletWhip in _fx.whips:
+		for i in whip.pos.size():
+			var c := Color.MAGENTA if i == 0 else Color.WHITE
+			draw_rect(Rect2(whip.pos[i] * s - Vector2(1.5, 1.5), Vector2(3, 3)), c)
+			if i > 0:
+				draw_line(whip.pos[i - 1] * s, whip.pos[i] * s, Color(1, 1, 1, 0.35), 1.0)
+		draw_rect(Rect2(whip.target * s - Vector2(2, 2), Vector2(4, 4)), Color.CYAN, false, 1.0)
+	for a in session.actors():
+		var art := _hero_art(a)
+		if art == null:
+			continue
+		var pose := _pose(a)
+		var p = art.anchor("right_hand", str(pose.get("anim", "")), str(pose.get("dir", "")), int(pose.get("frame", 0)))
+		if p == null:
+			continue
+		var at := actor_screen_pos(a).round() + Vector2(p.x * (-1.0 if pose.get("flip", false) else 1.0), -p.y) * s
+		draw_line(at - Vector2(4, 0), at + Vector2(4, 0), Color.MAGENTA, 1.0)
+		draw_line(at - Vector2(0, 4), at + Vector2(0, 4), Color.MAGENTA, 1.0)
 
 
 ## A strip piece of a ribbon: a quad from a to b, bent to its neighbours (each end
@@ -730,6 +834,9 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 		return
 	if item.has("code"):
 		_draw_code_fx(grid, item)
+		return
+	if item.has("verlet"):
+		_draw_verlet(item)
 		return
 	if item.has("quad"):
 		_draw_ribbon_quad(grid, item)

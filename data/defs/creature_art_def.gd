@@ -100,6 +100,11 @@ const DIRECTIONS := ["sw", "se", "nw", "ne"]
 ## can't be told from the body there, so they are midway between their diagonals.
 ## Ribbons start here; animations not listed use "water_whip".
 @export var hand_points: Dictionary = {}
+## Heroes: body anchors per animation, facing and frame (right_hand, left_hand, feet,
+## head, body_centre), written by tools/hand_anchors.py from hand-marked pixels (or
+## its best guess): {"anchors": {name: {anim: {dir: [[x, y] per frame]}, "default":
+## [x, y]}}}, art px from the feet, x right, y up. The game reads only this file.
+@export_file("*.json") var anchors_path: String = ""
 
 @export_group("Recolour")
 ## Recolours the sheets with view/shaders/creature_recolor.gdshader (e.g. the
@@ -143,7 +148,8 @@ func ability_anim(ability_id: StringName) -> Dictionary:
 	if e is Dictionary:
 		return {"anim": str(e.get("anim", "")), "weapon": str(e.get("weapon", "")), "strike": int(e.get("strike", 0)),
 				"windup": str(e.get("windup", "")), "loop": str(e.get("loop", "")),
-				"from_start": bool(e.get("from_start", false))}
+				"from_start": bool(e.get("from_start", false)), "launch": e.get("launch", {}),
+				"hand_behind": e.get("hand_behind", [])}
 	return {}
 
 
@@ -168,6 +174,50 @@ func stance_anim(tree: String, n: int) -> Array:
 func hand_point(anim: String, dir: String) -> Vector2:
 	var set: Dictionary = hand_points.get(anim, hand_points.get("water_whip", {}))
 	return set.get(dir, Vector2.ZERO)
+
+
+var _anchors_doc = null
+
+
+## Where body anchor `name` is on `anim`'s `frame` facing `dir` (art px from the
+## feet, x right, y up; see `anchors_path`), or null when nothing is known. Frames
+## past the list use its last; a missing facing or animation the anchor's "default".
+## The right hand falls back to `hand_points` (the strike frame's).
+func anchor(name: String, anim: String, dir: String, frame: int) -> Variant:
+	if _anchors_doc == null:
+		_anchors_doc = {}
+		if anchors_path != "" and FileAccess.file_exists(anchors_path):
+			var parsed = JSON.parse_string(FileAccess.get_file_as_string(anchors_path))
+			if parsed is Dictionary:
+				_anchors_doc = parsed.get("anchors", {})
+	var set: Dictionary = _anchors_doc.get(name, {})
+	var rows: Dictionary = set.get(anim, {})
+	var list: Array = rows.get(dir, [])
+	if not list.is_empty():
+		var p = list[clampi(frame, 0, list.size() - 1)]
+		if p is Array and p.size() == 2:
+			return Vector2(float(p[0]), float(p[1]))
+	if set.has("default"):
+		return Vector2(float(set.default[0]), float(set.default[1]))
+	if name == "right_hand" and hand_points.has(anim):
+		return hand_point(anim, dir)
+	return null
+
+
+## A hero ability's launch frame facing `dir` (0-based): its effect shows from this
+## frame on (`ability_anims` "launch": a frame, or {dir: frame, "default": frame});
+## -1 when not set.
+func launch_frame(ability_id: StringName, dir: String) -> int:
+	var l = ability_anim(ability_id).get("launch", {})
+	if l is Dictionary:
+		return int(l.get(dir, l.get("default", -1)))
+	return int(l)
+
+
+## Whether a hero ability's hand is behind the body facing `dir` (`ability_anims`
+## "hand_behind"): what comes out of it is drawn behind the hero.
+func hand_behind(ability_id: StringName, dir: String) -> bool:
+	return dir in ability_anim(ability_id).get("hand_behind", [])
 
 
 ## What `tree`'s stance `n` shows (see `stance_looks`): an effect id, "look:<name>",

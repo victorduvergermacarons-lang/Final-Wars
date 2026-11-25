@@ -1561,6 +1561,55 @@ Checklist: `docs/playtest-checklist-stances-and-effects.md`.
 - Tests: `tests/unit/test_stances.gd`, `test_ability_import.gd`, `test_first_abilities.gd`.
   Screenshots: `tests/visual/stance_shots.tscn` (phases 1–5; `SHOTS_ONLY=rot|p4|p5`).
 
+## Water Whip, a Verlet whip (branch `feature/stance-rework`, 2026-11-25)
+
+User brief: replace the stitched-strip Water Whip with a code-drawn whip on a Verlet rope,
+inside the existing effects system (FxDef → FxPainter → WorldView's back-to-front pass).
+- **Data:** `content/effects/water_whip.tres` (`FxDef`, `path` VERLET, hit frame 7 at
+  24 fps as before, so the hit still lands 0.29 s after the release) with every feel value
+  in **one file**, `content/effects/water_whip_feel.tres` (`WhipFeelDef`,
+  `data/defs/whip_feel_def.gd`): chain (18 points, reach ×1.04, 120 physics steps/s),
+  physics (gravity 6 art px/s², drag 0.16, link stiffness 0.35, 3 passes, follow 0.08),
+  strike (0.08 s stiff at 0.95 with 10 passes and follow 0.35, crack 260 px/s), reach and
+  recovery (starts at 20% length, 0.35 s back to 10% then gone), wave (1.4 cycles/s, 5 px
+  at the tip, 1.25 waves along it), width (4 px at the hand to 1 at the tip, taper 1.4,
+  swell ±22% at 3/s), droplets (over 120 px/s at the tip, 40/s, pool 32, float 0.18 s,
+  fall 220 px/s², life 0.6 s, 10 on impact), the four colours (outline #031143, body
+  #0A97F5, highlight #52D2F9, droplets #4CCBF9) and three optional art files.
+  `content/tree/behaviors/W02.tres` `fx_cast` = `water_whip`; damage, range, mana, timing
+  bar unchanged. The old `water_whip_ribbon` stays in the data, unused by the game.
+- **Physics** (`view/verlet_whip.gd`, `VerletWhip`): screen art-pixel space (gravity is
+  screen-down; walking drags it); point 0 pinned to the hand every frame; fixed steps, so
+  any frame rate moves it the same; the seed from the host picks the wave's side and phase.
+  Each step a point is pulled a little toward the shape the bender wills (a line to the
+  target with the wave on it, scaled by the current length), so it glides and sways yet
+  reaches the target on the snap; around the snap it stiffens, the tip is kicked forward
+  (the crack) and droplets splash at the target.
+- **Drawing:** whole art pixels only (no smoothing): body discs along the chain tapering
+  and swelling, a highlight on the top edge where the body is 2+ px thick, a 1 px outline
+  round it. Each pixel belongs to its nearest segment, filed under the tile that part of
+  the whip is over (walls in front cover the far part). Facing a way in the ability's
+  `hand_behind` (N, NE, NW) the whip goes behind the hero. Hand-drawn art drawn on top
+  where the file exists, else a placeholder: `assets/effects/water_whip/tip.png`,
+  `impact.png` (else a ring of droplet pixels), `droplet.png` (else one pixel). Effect art
+  never includes ground, bases or people.
+- **Shown** from the ability's launch frame (`ability_anims` W02 `"launch": {"default": 7}`,
+  frame 8, per facing possible) until its recovery ends; the hero's animation ends 0.1 s
+  after the release, so the hand follows whatever frame shows (idle's, run's).
+- **Body anchors** (`CreatureArtDef.anchors_path` → `content/heroes/pl01_anchors.json`,
+  `anchor(name, anim, dir, frame)`): right_hand per animation, facing and frame (water_whip,
+  idle, run, cast, hit: best guesses for now), left_hand (none yet), feet, head, body_centre
+  (defaults). `tools/hand_anchors.py`: `guess <anim>` (furthest pixel toward the facing),
+  `aseprite <file>` (one #FF00FF pixel per frame on the "Hand <FACING>" layers of
+  `art/heroes/PL-01/water_whip_hand_points.aseprite`) and `png <sheet> <anim>`; marked
+  points always win over guesses. The game never loads marker images.
+- **Debug:** Escape menu → Gameplay test → "Show whip chain points and hand anchors"
+  (`WorldView.debug_whip`, only on your screen). `tests/visual/whip_lab.tscn`: cast in the 8
+  screen directions (1–8), distance Q/E, speed −/= (0 resets), D debug, W walk while
+  casting, R reload the feel file; `WHIP_SHOTS=<dir>` takes screenshots of every direction.
+  The `fx` debug command now plays the hero's animation with the effect.
+- Tests: `tests/unit/test_verlet_whip.gd`.
+
 ## Ability effects from the approved art (stance rework phase 3, 2026-11-23)
 
 - **Source:** only `approved/<KEY>.png` on `art-drafts`; animation frames

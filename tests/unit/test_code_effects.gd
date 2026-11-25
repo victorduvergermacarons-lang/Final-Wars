@@ -173,7 +173,9 @@ func test_clients_rebuild_the_same_shapes() -> void:
 
 func test_effects_drawn_in_code_have_what_they_need() -> void:
 	for fx: FxDef in ContentDB.effects.values():
-		if fx.ribbon:
+		if fx.ribbon and fx.path == FxDef.Path.VERLET:
+			assert_not_null(fx.feel, "%s: its feel" % fx.id)
+		elif fx.ribbon:
 			assert_not_null(fx.sheet, "%s: its strip" % fx.id)
 		if fx.front:
 			assert_true(ContentDB.effects.has(fx.head_fx), "%s: its front piece" % fx.id)

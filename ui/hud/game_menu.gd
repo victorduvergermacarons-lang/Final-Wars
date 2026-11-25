@@ -176,6 +176,12 @@ func _speed_tab() -> Control:
 	_dungeon_testing.toggled.connect(func(on: bool):
 		hud.session.send_intent({"type": "dungeon_testing", "on": on}))
 	page.add_child(_dungeon_testing)
+	var whip_debug := CheckBox.new()
+	whip_debug.focus_mode = Control.FOCUS_NONE
+	whip_debug.text = "Show whip chain points and hand anchors (only on your screen)"
+	whip_debug.set_pressed_no_signal(WorldView.debug_whip)
+	whip_debug.toggled.connect(func(on: bool): WorldView.debug_whip = on)
+	page.add_child(whip_debug)
 	show_speed(hud.session.rules().game_speed)
 	# Dragging sends only on release, so the host isn't flooded while dragging.
 	_speed_slider.value_changed.connect(func(v: float): _speed_box.set_value_no_signal(v))
