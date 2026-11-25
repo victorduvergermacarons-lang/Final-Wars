@@ -18,7 +18,7 @@ func _init(p_hud: Hud) -> void:
 	_font = ThemeDB.fallback_font
 	custom_minimum_size = Vector2(TITLE_W + 4 * (SLOT.x + GAP), SLOT.y + 4)
 	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mouse_filter = Control.MOUSE_FILTER_PASS # hover: the branches and which aren't built
 
 
 func _process(_delta: float) -> void:
@@ -26,6 +26,16 @@ func _process(_delta: float) -> void:
 	visible = hero != null and hero.stance > 0
 	if visible:
 		queue_redraw()
+		var lines: PackedStringArray = []
+		var list := branches(hero)
+		for i in list.size():
+			var def: AbilityDef = list[i]
+			if def == null:
+				continue
+			var state := "not in the game yet" if not def.implemented \
+					else ("" if hero.find_ability(def.id) != null else "not learned")
+			lines.append("%d: %s%s" % [i + 1, def.display_name, (" (%s)" % state) if state != "" else ""])
+		tooltip_text = "\n".join(lines)
 
 
 ## The four branch abilities of the stance held (null where the sheet has none).
@@ -60,7 +70,12 @@ func _draw() -> void:
 						known == null)
 			else:
 				_text(def.display_name.left(5), r.position + Vector2(3, 26), 11, Color.WHITE)
-			if known != null:
+			if not def.implemented:
+				# Not in the game yet: crossed out, so a key that does nothing explains itself.
+				draw_rect(r, Color(0, 0, 0, 0.55))
+				draw_line(r.position + Vector2(4, 4), r.end - Vector2(4, 4), Color(0.85, 0.3, 0.3, 0.9), 2.0)
+				_text("not built", r.position + Vector2(2, r.size.y - 4), 9, Color(1, 0.75, 0.75))
+			elif known != null:
 				var frac := maxf(hero.cooldowns.ability_fraction(known.cooldown_key(), now),
 						hero.cooldowns.gcd_fraction(now) if known.on_gcd else 0.0)
 				if frac > 0.0:

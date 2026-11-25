@@ -14,8 +14,8 @@ extends RefCounted
 ##   was taken, or a faint ring in the element's colour while its art isn't approved.
 ## WorldView draws each item in its back-to-front pass, on the tile under it.
 ## Items around an actor carry "actor" (drawn at its feet, "offset" tiles away);
-## "behind" ones go before the actors of their tile, the rest after; "ground" ones (the
-## front half of something lying on the ground) after the two rows in front of it.
+## "behind" ones go before the actors of their tile, the rest after. Bare ground in
+## front at or below their tile's height doesn't cover them (WorldView._covers).
 
 ## How high a thrown rock's arc rises above the straight line, in levels.
 const ARC_PEAK_LEVELS := 1.6
@@ -280,8 +280,7 @@ func stance_items(t: float, actors: Array, effects: Dictionary, art_for: Callabl
 		if fx == null:
 			for half in [-1, 1]:
 				out.append({"ring": RING_COLORS.get(a.stance_tree, Color.WHITE), "alpha": RING_ALPHA, "pos": a.move.pos,
-						"actor": a, "offset": Vector2.ZERO, "lift": 0.0, "half": half, "behind": half < 0,
-						"ground": half > 0})
+						"actor": a, "offset": Vector2.ZERO, "lift": 0.0, "half": half, "behind": half < 0})
 			continue
 		out.append_array(held_items(fx, since, a))
 	return out
@@ -307,7 +306,6 @@ static func held_items(fx: FxDef, since: float, a: Actor) -> Array:
 	var front := item.duplicate()
 	front.behind = false
 	front.half = 1
-	front.ground = fx.flat # lying on the ground: drawn once the tiles it lies on are
 	return [back, front]
 
 

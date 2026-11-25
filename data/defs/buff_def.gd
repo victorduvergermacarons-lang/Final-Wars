@@ -15,6 +15,11 @@ extends Resource
 ## A look drawn in code around the unit while it lasts ("flames": Scorch's small
 ## orange flames, until its own art is approved).
 @export var code_fx: String = ""
+## A shield buff: used by the one who put it on, on every enemy within
+## `break_radius` tiles of the shielded unit when the shield is used up (Water
+## Shield splashes). Not when it runs out of time.
+@export var break_ability: AbilityDef
+@export var break_radius: float = 1.5
 ## Its icon on unit frames (with `icon_text` beside it, e.g. "+15%").
 @export var icon: Texture2D
 @export var icon_text: String = ""

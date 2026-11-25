@@ -135,7 +135,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-248 keys, 13 with a file, 235 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+250 keys, 13 with a file, 237 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -262,6 +262,8 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `water_leeching_tide_hit` | Leeching Tide lands on someone | **missing** |
 | `water_pulse_cast` | Water Pulse is used | **missing** |
 | `water_pulse_hit` | Water Pulse lands on someone | **missing** |
+| `water_shield_cast` | Water Shield is used | **missing** |
+| `water_shield_hit` | Water Shield lands on someone | **missing** |
 | `water_soothing_mist_cast` | Soothing Mist is used | **missing** |
 | `water_tidal_blessing_cast` | Tidal Blessing is used | **missing** |
 | `water_whip_cast` | Water Whip is used | **missing** |

@@ -230,6 +230,11 @@ func consume_on_cast(tree: String, now: float, before: Dictionary = {}) -> void:
 
 
 ## Soaks damage with shields (oldest first). Returns what gets through.
+## Shields broken by `absorb` whose buff does something when it breaks (Water
+## Shield's splash): [{"def", "source"}]; AbilityResolver takes them.
+var broken: Array = []
+
+
 func absorb(amount: float) -> float:
 	var left := amount
 	for id in _active.keys():
@@ -242,6 +247,8 @@ func absorb(amount: float) -> float:
 			left -= used
 			if b.shield <= 0.0:
 				_active.erase(id)
+				if b.def.break_ability != null:
+					broken.append({"def": b.def, "source": int(b.get("source", -1))})
 	return left
 
 

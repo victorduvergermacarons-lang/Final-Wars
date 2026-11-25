@@ -170,7 +170,7 @@ func test_held_stance_gives_its_items_and_a_ring_when_unapproved() -> void:
 	var items := painter.stance_items(1.0, [hero], ContentDB.effects, art_for)
 	assert_eq(items.size(), 2, "the fire ring, split around the hero")
 	assert_true(items[0].behind and not items[1].behind)
-	assert_true(items[1].get("ground", false), "its front half lies on the ground")
+	assert_false(items[1].behind, "its front half goes in front of the hero")
 	sim.set_stance(hero, "Air", 1)
 	items = painter.stance_items(1.0, [hero], ContentDB.effects, art_for)
 	assert_true(items.size() == 2 and items[0].has("ring"), "a faint ring until the art is approved")

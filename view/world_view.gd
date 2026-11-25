@@ -290,7 +290,7 @@ func _tile_bounds(grid: GridModel, p: Vector2i) -> Rect2:
 func _clusters(items: Array) -> Array:
 	var out: Array = []
 	for item in items:
-		var c := {"rect": _snap_rect(item.rect), "depth": int(item.depth), "cover": {}}
+		var c := {"rect": _snap_rect(item.rect), "depth": int(item.depth), "h": int(item.get("h", 0)), "cover": {}}
 		var merged := true
 		while merged:
 			merged = false
@@ -298,6 +298,7 @@ func _clusters(items: Array) -> Array:
 				if out[i].rect.intersects(c.rect):
 					c.rect = c.rect.merge(out[i].rect)
 					c.depth = mini(c.depth, out[i].depth)
+					c.h = mini(c.h, out[i].h)
 					out.remove_at(i)
 					merged = true
 		out.append(c)
@@ -328,9 +329,21 @@ func _collect_cover(grid: GridModel, cluster: Dictionary, members: Dictionary) -
 			if (s + u) & 1:
 				continue
 			var p := Vector2i((s + u) / 2, (s - u) / 2)
-			if grid.in_bounds(p) and _tile_bounds(grid, p).intersects(rect):
+			if grid.in_bounds(p) and _tile_bounds(grid, p).intersects(rect) and _covers(grid, p, int(cluster.h)):
 				cluster.cover[p] = true
 				_add_member(members, p)
+
+
+## Whether tile `p` can hide something standing at ground height `h`: it rises above
+## it, or holds a prop, an object or a graveyard marker. Bare ground at or below
+## `h` never hides what stands on it or at its level (a hero's feet, a ring around
+## them, an effect lying on the ground), so it isn't drawn over them again.
+func _covers(grid: GridModel, p: Vector2i, h: int) -> bool:
+	if grid.height_at(p) > h:
+		return true
+	if _zone == null:
+		return true
+	return _zone.prop_at(p) != "" or _zone.decor_at(p) != null or _graveyards.has(p)
 
 
 static func _add_member(members: Dictionary, p: Vector2i) -> void:
@@ -456,10 +469,6 @@ func _draw() -> void:
 		var ft := MoveState.tile_of(item.pos)
 		if not grid.in_bounds(ft):
 			continue
-		if item.get("ground", false):
-			# The front half of a ground ring reaches about 1.5 rows forward: drawn after
-			# those rows' tiles (so they don't hide it), from the tile two rows on.
-			ft = _ground_tile(ft, _ground_rows(item))
 		if not fx_by_tile.has(ft):
 			fx_by_tile[ft] = []
 		fx_by_tile[ft].append(item)
@@ -501,14 +510,14 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 	for p in actors_by_tile:
 		_add_member(members, p)
 		for a in actors_by_tile[p]:
-			items.append({"rect": _actor_rect(a), "depth": Iso.depth(p)})
+			items.append({"rect": _actor_rect(a), "depth": Iso.depth(p), "h": grid.height_at(p)})
 	for p in marks.keys() + quest_areas.keys():
 		_add_member(members, p)
-		items.append({"rect": _mark_rect(grid, p), "depth": Iso.depth(p)})
+		items.append({"rect": _mark_rect(grid, p), "depth": Iso.depth(p), "h": grid.height_at(p)})
 	for p in fx_by_tile:
 		_add_member(members, p)
 		for item in fx_by_tile[p]:
-			items.append({"rect": _fx_rect(grid, item), "depth": Iso.depth(p)})
+			items.append({"rect": _fx_rect(grid, item), "depth": Iso.depth(p), "h": grid.height_at(p)})
 	var clusters := _clusters(items)
 	for c in clusters:
 		_collect_cover(grid, c, members)
@@ -550,25 +559,6 @@ func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
 		var fx: FxDef = item.fx
 		r = maxf(fx.frame_size.x, fx.frame_size.y) * PixelCamera.ART_SCALE
 	return Rect2(_fx_anchor(grid, item) - Vector2(r, r), Vector2(r, r) * 2.0)
-
-
-## Where the front half of a ground ring is drawn: the last tile of the row `rows`
-## rows in front of `t` (the furthest row with tiles, short of that).
-func _ground_tile(t: Vector2i, rows: int) -> Vector2i:
-	for d in range(Iso.depth(t) + rows, Iso.depth(t), -1):
-		var row: Array = _tiles_by_depth.get(d, [])
-		if not row.is_empty():
-			return row[row.size() - 1]
-	return t
-
-
-## How many rows in front of its anchor a ground ring's front half reaches.
-func _ground_rows(item: Dictionary) -> int:
-	var ry := RING_RADIUS.y
-	if item.has("fx"):
-		var fx: FxDef = item.fx
-		ry = (fx.frame_size.y - fx.pivot.y) * PixelCamera.ART_SCALE * 0.5
-	return maxi(1, ceili(ry / (Iso.TILE_H * 0.5)))
 
 
 ## Looks drawn in code (BuffDef.code_fx). "flames": three small orange flames

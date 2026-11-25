@@ -505,6 +505,7 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 		amount *= (source as Enemy).damage_scale # stronger against a bigger party
 	var taken := maxf(roundf(amount * target.buffs.damage_taken_multiplier(ctx.now)), ctx.rules.min_damage)
 	var through := target.buffs.absorb(taken)
+	_break_shields(ctx, target, events)
 	var dmg := minf(through, target.hp)
 	if target is Enemy and (target as Enemy).min_hp > 0.0:
 		dmg = clampf(dmg, 0.0, maxf(target.hp - (target as Enemy).min_hp, 0.0)) # held up by its heart
@@ -529,6 +530,27 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 		target.die()
 		target.casting = {}
 		events.append({"type": "death", "source": source.id if source != null else -1, "target": target.id})
+
+
+## Shields used up by the last hit that do something when they break (Water Shield):
+## their break ability, from whoever put the shield on, on every enemy of the shielded
+## unit within the buff's break radius.
+static func _break_shields(ctx: CombatContext, target: Actor, events: Array[Dictionary]) -> void:
+	if target.buffs.broken.is_empty():
+		return
+	var broken: Array = target.buffs.broken
+	target.buffs.broken = []
+	for b in broken:
+		var def: BuffDef = b.def
+		var owner: Actor = ctx.get_actor(int(b.source))
+		if owner == null:
+			owner = target
+		events.append({"type": "shield_break", "target": target.id, "buff": def.id})
+		for a in ctx.actors.values():
+			if a == target or not a.alive or not a.is_hostile_to(target):
+				continue
+			if a.move.pos.distance_to(target.move.pos) - a.move.radius <= def.break_radius:
+				apply_effects(ctx, owner, def.break_ability, a, events)
 
 
 ## Free movement: a knockback or pull slides the unit along the line from the

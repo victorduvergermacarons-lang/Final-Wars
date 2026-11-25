@@ -70,7 +70,9 @@ func _run() -> void:
 	var only := OS.get_environment("SHOTS_ONLY")
 	if only == "":
 		await phase1_trench(session, hero)
+	if only in ["", "p2"]:
 		await phase2_looks(session, hero)
+		await phase2_behind_house(session, hero)
 	if only in ["", "rot"]:
 		await phase3_effects(session, hero)
 	if only in ["", "p4"]:
@@ -305,3 +307,37 @@ func phase5_extra(session: LocalSession, hero: Hero) -> void:
 			await _crop("st5_%s_%d" % [id, int(deg * 10)], 480, 380)
 			await _console(session, hero, "heal", hero.move.pos, 0.4)
 	ContentDB.rules.game_speed = 1.0
+
+
+## A hero just behind a house and just in front of one, holding the water hoop and the
+## fire ring: the house in front covers the looks; open ground in front doesn't cut them.
+func phase2_behind_house(session: LocalSession, hero: Hero) -> void:
+	session.world.move_hero(hero.id, &"town", Vector2i(10, 10))
+	var view := await _view()
+	var sim := session.zone_sim()
+	var spots := {}
+	for y in range(2, sim.grid.depth - 3):
+		for x in range(2, sim.grid.width - 3):
+			var t := Vector2i(x, y)
+			if not sim.grid.is_walkable(t) or sim.grid.height_at(t) != 0:
+				continue
+			if not spots.has("behind") and sim.grid.height_at(t + Vector2i(1, 1)) >= 2 \
+					and sim.grid.height_at(t + Vector2i(1, 0)) >= 2:
+				spots.behind = t
+			if not spots.has("open") and t.x > 6:
+				var flat := true
+				for dx in range(-2, 3):
+					for dy in range(-2, 3):
+						if sim.grid.height_at(t + Vector2i(dx, dy)) != 0 or not sim.grid.is_walkable(t + Vector2i(dx, dy)):
+							flat = false
+				if flat:
+					spots.open = t
+	for where in spots:
+		hero.move.place(spots[where])
+		hero.move.ground_h = 0
+		for look in [["Water", 2], ["Fire", 1]]:
+			sim.set_stance(hero, look[0], look[1])
+			await _frames(8)
+			view.camera.follow(view.actor_screen_pos(hero), 0.0, true)
+			await _crop("st2_%s_%s_%d" % [where, String(look[0]).to_lower(), look[1]], 360, 300)
+	sim.set_stance(hero, "", 0)

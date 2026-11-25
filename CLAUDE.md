@@ -183,6 +183,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | W07 | Leeching Tide | Leech Tide Scroll | Targeted, 3 | 1.0, heals you 50% | 12 | 10 |
 | W08 | Tidal Blessing | Tidal Scroll | Targeted ally, 3 | +20 PhysDef/MagDef 45 s | 12 | 25 |
 | W09 | Ice Spikes | Glacier Scroll | Ground 4, 3×3, 0.4 s telegraph | 1.0 + slow ×1.5 3 s | 15 | 10 |
+| W12 | Water Shield | (sheet) | Targeted ally, 5; yourself with no ally targeted (2026-11-25) | shield 20 s (tier default + sheet stats); used up: splashes enemies within 1.5 tiles for 10 + 0.6×MagAtk (`BuffDef.break_ability`) | 10 | 20 |
 | A01 | Air Palm | Open Palm Scroll | Targeted, adjacent; air_palm + a wind spiral (2026-11-21) | 0.6 + knockback 1 | 6 | 4 |
 | A02 | Gust | Breeze Scroll | Targeted, 3; air_gust + a wind spiral (2026-11-21) | 0.5 + interrupt, off GCD | 8 | 10 |
 | A03 | Air Step | Featherstep Scroll | Self | +40% speed for 4 s (free movement), off GCD | 8 | 10 |
@@ -1534,6 +1535,7 @@ Checklist: `docs/playtest-checklist-stances-and-effects.md`.
   `Hero.stance_tree / stance / stance_at`, sent in snapshots (`stance`).
 - **Stance panel** (`ui/hud/stance_panel.gd`) above the action bar: element, stance number,
   the 4 branches with icons and cooldowns. Stance slots draw the element's colour.
+  Branches not in the game yet are crossed out ("not built"); hovering lists the four.
 - **Entry animations:** one table, `CreatureArtDef.stance_anims` (`pl01_art.tres`): Fire 1
   fire_punch, Earth 1 earth_root then earth_hold, otherwise cast (`stance_anim_default`).
 - **Stance looks** (`CreatureArtDef.stance_looks`, drawn while held, from the host time
@@ -1594,8 +1596,12 @@ frame from small pieces on FxDef / FxPainter / WorldView's back-to-front pass.
   at a time (`RibbonPath.quads`); every piece (quad, front piece, particle, shaded tile) is
   filed under the tile it is over and drawn with that tile's actors, so walls and pillars
   in front cover them. Ground pieces (wet, sand, cracks, the shock ring) go before the
-  tile's actors; the front halves of rings lying on the ground go after the rows they lie
-  over. Seismic Sense is a screen shader on a canvas layer over the world, under the HUD.
+  tile's actors, back halves of rings too, front halves after. Since 2026-11-25 (user
+  report: looks cut off by the ground) bare ground at or below a tile's height never
+  covers what stands there (`WorldView._covers`: only higher tiles, props, objects and
+  graveyard markers are drawn again over actors and effects), so feet, rings and
+  effects on open ground show whole and walls and houses in front still hide them.
+  Seismic Sense is a screen shader on a canvas layer over the world, under the HUD.
 - **FxDef fields** (`data/defs/fx_def.gd`):
   - Ribbon: `ribbon`, `path` (LINE / WHIP / FIGURE8 / COIL), `strip_rect`, `tip_fx`,
     `head_fx`, `impact_fx`, `hand_fx`, `thickness` (whole pixels), `scroll_speed`, `curl`,
@@ -1605,6 +1611,10 @@ frame from small pieces on FxDef / FxPainter / WorldView's back-to-front pass.
   - Tiles: `tile_mode` (WET, BURNING, SAND, RING, CRACKS, SANDSTORM, SENSE, RAIN),
     `tile_tint`, `tile_seconds`.
   - Effect data: `tools/once/make_code_effects.py` (writes missing files).
+- **Hand points by hand** (2026-11-25, user request): `tools/once/make_hand_point_aseprite.py`
+  writes `art/heroes/PL-01/<anim>_hand_points.aseprite` (the game's 48×48 cells, feet on
+  (24, 38), a tag per facing, an empty "Hand <FACING> (#FF00FF)" layer per facing, the
+  palette magenta) for the user to mark the hand; water_whip first.
 - **Hand points** (`CreatureArtDef.hand_points`, `hand_point`): measured on the strike
   frame of water_whip, air_palm, fire_punch, water_heal, air_gust and fire_kick, for six
   facings (the furthest opaque pixel toward the facing in the body band); south and north
@@ -2754,6 +2764,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-25 | Playtest fixes: Water Shield built; bare ground no longer covers effects; unbuilt branches marked; a hand-point Aseprite file | User report and requests. My choices: Water Shield's shield size from the tier default and the sheet's Scales With (like Boulder Shield), its splash 10 + 0.6 Magic Attack to enemies within 1.5 tiles when the shield is used up (not when it times out), 10 mana; covering rule: only tiles higher than the ground an actor or effect stands on, or holding a prop, object or graveyard marker, are drawn again over it (the ground bucketing of ring halves removed); unbuilt stance branches crossed out with "not built" and a hover list; the Aseprite file has one empty layer per facing, a tag per facing, the palette set to #FF00FF. |
 | 2026-11-25 | Threat and tanking merged into the stance rework (`feature/threat-tanking` into `feature/stance-rework`; the art bot and Eloi's branch left out) | User request. My choices where the two designs differ: the stance sheet wins (it is the newer design): cooldowns from the sheet; Metalbending is the sheet's debuff (−20 Physical Defense, speed halved, 8 s) without the pull or the Stone Skin taunt; Seismic Stomp keeps the threat branch's light damage (it keeps threat after the taunt; the sheet's text only says taunt); Earth Armor's recast (Fortress) isn't built; Rock Throw keeps threat ×3. See **Threat and tanking**. |
 | 2026-11-23 | Stance rework, phases 2–5: stance controls and looks, effects from the approved art, code-drawn effects, tests and docs | User brief and choices: other elements' stances can go in any of slots 1–0; Shift leaves; pages on Ctrl+1–6; "start it" for phases 3, 4 and 5 after the phase 4 fields and draw order were shown. My choices: Stone Skin turns a quarter of the body to stone (the Stone Guard levels); rings around the hero split behind / in front; Octopus Form drawn upright behind the hero (flat on the ground it was cut by the tiles beside it); unapproved looks are a faint ring in the element's colour; code motion per still (listed in **Ability effects from the approved art**); 32 RotSprite turns per projectile, made offline; one JSON table of effects by role; Scorch's icon drawn by hand (16 × 16); `fx` also holds stances; strips cut to their most seamless span automatically; burning edges at the average of their two neighbours' sides; Gust and Air Blast lose their spirals; ribbon seeds from the cast, not the combat dice; the dragon's polished transformation proposed (the ability's effect from its head), not built. See **Stances**, **Ability effects from the approved art**, **Code-drawn effects**. |
 | 2026-11-23 | Stance rework, phase 1 follow-up: Act I gives tier 1 only; Fire, Earth and Air copy Water's unlock steps; dodging and Lunge balance targets removed | User decisions. Every Act I loot table's scrolls are built tier-1 ones of the same element (`tools/once/act1_tier1_rewards.py`: Fire Whip → Fire Dart, Flame Dash → Sun Warrior's Breath, Fireball → Scorch, Burning Ground → Fire Kick, Blazing Combo → Fire Punch, Soothing Mist → Healing Touch, Leeching Tide and Water Pulse → Water Whip, Tidal Blessing and Ice Spikes → Frost Shard, Air Blast → Gust, Earth Wall → Raise Pillar; chances kept); the Foreman (beating the Silent Shaft) drops the built tier-2 scrolls, 20% each (Blazing Combo, Burning Ground, Soothing Mist, Leeching Tide, Tidal Blessing); shops sell Scorch Scroll instead of Scroll of the Current; quest 1-04 gives Water Frost Shard, 1-06 gives Water and Air no scroll (no third built tier-1 one yet), the finales (1-07, The Beast of Greenfields) offer Scorch, Frost Shard, Raise Pillar or Air Step. Unlock steps: each Fire, Earth and Air ability unlocks like the Water ability in its stance slot (`tools/once/stance_copy_water_steps.py`; only stance 1 changed: Fire Kick, Stone Skin, Gust 0; Sun Warrior's Breath, Raise Pillar, Air Step 25; Scorch, Metal Shards 50; Air Blade 50). Removed from `tests/balance/test_balance.gd`: dodging halves the HP lost, heals + dodges beat the Brute, level-4 Lunge beats a Skirmisher (the report still measures them). The 25 starting Mastery stays (the starting kit no longer needs it; it opens the step-1 abilities). |

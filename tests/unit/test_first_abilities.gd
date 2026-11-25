@@ -8,7 +8,7 @@ const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09", "
 		"A01", "A02", "A03", "A05", "E01", "E02", "E03", "E04", "E05",
 		"S01", "S04", "B01", "B02", "H01", "H02"]
 ## Built later for tanking (2026-11-17, tests/unit/test_earth_tanking.gd).
-const EARTH_TANKING := ["E07", "E08", "E14", "E15"] # E02 Stone Skin is in FIRST
+const EARTH_TANKING := ["E07", "E08", "E14", "E15", "W12"] # E02 Stone Skin is in FIRST; W12 built 2026-11-25
 
 var db
 var world: WorldSim

@@ -2982,12 +2982,12 @@
 				}
 			],
 			"timing": {
-				"status": "none",
+				"status": "generated",
 				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": ""
+				"notes": "No bar: a shield."
 			},
 			"hitbox": {
 				"shape": "Targeted",

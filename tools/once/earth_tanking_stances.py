@@ -18,6 +18,8 @@ CHANGES = {
     "E08": {"U": GENERATED, "V": "none", "X": "No bar: a taunt."},
     "E14": {"U": GENERATED, "V": "none", "X": "No bar: a self buff."},
     "E15": {"U": GENERATED, "V": "none", "X": "No bar: a debuff."},
+    # Water Shield built 2026-11-25 (user request: self-cast when no ally is selected).
+    "W12": {"U": GENERATED, "V": "none", "X": "No bar: a shield."},
 }
 
 zin = zipfile.ZipFile(PATH)
