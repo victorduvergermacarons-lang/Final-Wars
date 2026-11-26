@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="WaterRopeSettings" format=3]
+
+[ext_resource type="Script" path="res://data/defs/water_rope_settings.gd" id="1_rope"]
+
+[resource]
+script = ExtResource("1_rope")

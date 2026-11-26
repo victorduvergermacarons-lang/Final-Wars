@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Final Wars - Water stance 1 and Water Whip reference</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:560px;margin:24px auto;padding:0 16px;color:#2C2C2A;background:#fff}
+.row{display:flex;align-items:center;gap:12px;margin-top:8px}
+.row label{font-size:14px;color:#5F5E5A;min-width:130px}
+.row input{flex:1}
+.row span{font-size:14px;font-weight:500;min-width:64px}
+button{font-size:14px;padding:6px 12px;border:1px solid #B4B2A9;border-radius:8px;background:#fff;cursor:pointer}
+#res{font-size:13px;color:#5F5E5A;margin:8px 0 0}
+</style>
+</head>
+<body>
+<h1 style="font-size:18px;font-weight:500">Water stance 1 and Water Whip: behaviour reference</h1>
+<p style="font-size:14px;color:#5F5E5A">Source of truth for the Godot port. All distances are demo pixels (hero is about 36 px tall); all times are 60 fps frames.</p>
+<div style="background:#F1EFE8;border-radius:12px;padding:8px;">
+<canvas id="cv" width="160" height="100" style="width:100%;image-rendering:pixelated;display:block;touch-action:none;cursor:crosshair;"></canvas>
+</div>
+<div class="row"><label for="rl">Max return speed</label><input type="range" id="rl" min="0.8" max="6" step="0.1" value="4"><span id="rlo">4.0 px/f</span></div>
+<div class="row"><label for="hs">Half-trip speed</label><input type="range" id="hs" min="20" max="80" step="5" value="40"><span id="hso">40%</span></div>
+<div class="row"><label for="rd">Return delay</label><input type="range" id="rd" min="0" max="1" step="0.05" value="0"><span id="rdo">0.00 s</span></div>
+<div class="row"><label for="ob">Orbit brake time</label><input type="range" id="ob" min="0.2" max="3" step="0.1" value="1.6"><span id="obo">1.6 s</span></div>
+<p id="res">Click the ground, or use Near and Far to hit the dummies.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+<button id="near">Near</button><button id="far">Far</button><button id="pts">Points</button><button id="slow">Slow</button>
+</div>
+<script>
+const cv=document.getElementById('cv'),c=cv.getContext('2d');const W=160,H=100,FPS=60;
+const OUT='#0C447C',BODY='#378ADD',HI='#9DC5EE',DROP='#85B7EB',PT='#D4537E',SKIN='#888780',DARK='#5F5E5A',TIPC='#EF9F27',SHAD='#B4B2A9',GRID='#D3D1C7',DUM='#993C1D',DUML='#D85A30';
+const K=0.4,OX=40,OY=76,ZW=16,ORB=24,NMAX=24,SEG=4.4,BODY_GROW=0.2;
+const SUN={x:-Math.SQRT1_2,y:-Math.SQRT1_2},FACE_T=0.75,HI_MIN_R=1.6,HI2_MIN_R=2.1,SHADE2_MIN_R=1.6,RIPPLE_AMP=0.7,RIPPLE_LEN=12,RIPPLE_SPEED=0.12;
+const ANG=SEG/ORB*0.95,SP=ANG*ORB,WAVE_AMP=2,WAVE_LEN=0.3,WAVE_SPEED=0.05,IDLE_PUSH=0.3;
+const VREF=4.5,TF_MIN=12,PULL_MAX=55,W_SPIN=0.16,GRAV=0.11,TARGET_Z=10;
+const ORBIT_LAP=3.0,W_IDLE=2*Math.PI/(ORBIT_LAP*FPS),HIT=30,ENTRY_KEEP=1;
+const POUR_POINTS=12,POUR_BLEND=0.6,POUR_SPLASH=3;
+let MAX_SPEED=4,RET_SPEED=3,CHASE_MAX=8,RETURN_AT=0,WRAP_EASE=0.03,retScale=1,HALF_TRIP=0.4;
+const RET_CRUISE_RATIO=0.75,FALL_TIME_MAX=8,DIST_REF=140,SPEED_FLOOR=0.15;
+const RISE_K=0.016,RISE_RAMP=35,RECONNECT=6,LINK_REACH=1.5,LINK_FADE=20;
+const RISE_DRIFT=0.008,RISE_STOP=40,CHASE_K=0.08,CHASED_DRAG_MULT=2,RET_DRAG=0.9;
+const CHASE_GAIN=0.12,FORCE_AT=0.5,HOLD_AT=0.7,HOLD_SPEED=0.35,HOLD_EASE=0.1,ENTRY_GUARD=0.98;
+const RET_START=0.3,RET_ACCEL=1/3,RET_DECEL=0.15,FOLLOW_K=0.25,JOIN_K=0.12;
+const CTRL_START=0.4,CTRL_END=0.4,ARC_LIFT=10,PATH_SAMPLES=200;
+const WRAP_LEAD=0.05,WRAP_TIGHT=60,WRAP_SETTLE=30,IDLE_BLEND=40;
+const CAP_STEP=0.2,STRAY_GAP=12,MIN_KEEP=8,SOAK_TIME=110,REFILL_EVERY=26;
+const XMIN=-36,XMAX=117,YMIN=-150,YMAX=58;
+const dummies=[{x:42,y:14,flash:0},{x:96,y:-96,flash:0}];
+let fr=0,st='idle',tt=0,showPts=false,slow=false,aim={x:96,y:-96,z:TARGET_Z},drops=[],lost=[];
+let phase=0,w=W_IDLE,phase0=0,Tf=0,Ts=0,Bk=0,simT=0,castAt=0,prev=null,path=null,rpath=null,rs=0,hold=1,base=null,ib=1,tailIn=false,settle=0,hitAt=0,breakAt=0,joinedAt=-1,retAt=0;
+let pourS=0,vHit=0,poured=[];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ramp=(t,len)=>{if(len<=0)return t>=0?1:0;const q=clamp(t/len,0,1);return q*q*(3-2*q);};
+const proj=p=>({x:OX+p.x,y:OY+p.y*K-p.z});
+const d3=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z);
+function speedCurveExp(){const t=clamp((HALF_TRIP-SPEED_FLOOR)/(1-SPEED_FLOOR),0.01,0.99);return Math.log(t)/Math.log(0.5);}
+function distScale(L){const df=clamp(L/DIST_REF,0,1);return SPEED_FLOOR+(1-SPEED_FLOOR)*Math.pow(df,speedCurveExp());}
+function orbitT(id){const a=phase-id*ANG;return{x:Math.cos(a)*ORB,y:Math.sin(a)*ORB,z:ZW+Math.sin(id*WAVE_LEN-fr*WAVE_SPEED)*WAVE_AMP};}
+function entryPoint(){const gl=Math.hypot(aim.x,aim.y)||1,fx=aim.x/gl,fy=aim.y/gl;return{E:{x:-fy*ORB,y:fx*ORB,z:ZW},f:{x:fx,y:fy}};}
+let R=[];for(let i=0;i<NMAX;i++){const g=orbitT(i);R.push({x:g.x,y:g.y,z:g.z,px:g.x,py:g.y,pz:g.z,id:i,gnd:false});}
+let conn=new Array(NMAX-1).fill(true),str=new Array(NMAX-1).fill(1);
+const M=()=>R.length;
+function spring(p,g,k){p.x+=(g.x-p.x)*k;p.y+=(g.y-p.y)*k;p.z+=(g.z-p.z)*k;}
+function armA(){const sh={x:OX+4,y:OY-24};let t=null;
+ if(st==='fly'||st==='return')t=proj(R[0]);else if(st==='pour'||st==='fall'||st==='rise')t=proj(aim);
+ if(t)return Math.atan2(t.y-sh.y,t.x-sh.x);if(st==='spin')return -0.6;return 0.9;}
+function cr(p0,p1,p2,p3,t){const t2=t*t,t3=t2*t,f=k=>0.5*(2*p1[k]+(-p0[k]+p2[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t2+(-p0[k]+3*p1[k]-3*p2[k]+p3[k])*t3);return{x:f('x'),y:f('y'),z:f('z')};}
+function polyPath(pts){const cum=[0];for(let i=1;i<pts.length;i++)cum.push(cum[i-1]+d3(pts[i-1],pts[i]));return{pts,cum,L:cum[cum.length-1]};}
+function buildPath(Kp){const pts=[];for(let s=1;s<Kp.length-2;s++){for(let k=(s===1?0:1);k<=60;k++)pts.push(cr(Kp[s-1],Kp[s],Kp[s+1],Kp[s+2],k/60));}return polyPath(pts);}
+function along(P,s){const t=clamp(s,0,1)*P.L,cm=P.cum;let lo=0,hi=cm.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(cm[m]<t)lo=m;else hi=m;}
+ const seg=cm[hi]-cm[lo]||1,k=(t-cm[lo])/seg,a=P.pts[lo],b=P.pts[hi];return{x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k,z:a.z+(b.z-a.z)*k};}
+function cast(T){if(st!=='idle'&&st!=='wrap')return;const recast=st==='wrap';
+ if(recast){conn=new Array(M()-1).fill(true);str=new Array(M()-1).fill(1);}
+ aim={x:clamp(T.x,XMIN,XMAX),y:clamp(T.y,YMIN,YMAX),z:TARGET_Z};
+ const gd=Math.hypot(aim.x,aim.y);if(gd<18){if(gd===0)aim.x=18;else{aim.x*=18/gd;aim.y*=18/gd;}}
+ const d=d3(R[0],aim);Bk=clamp((VREF*HIT-d)/2,0,PULL_MAX);
+ Ts=Math.round(clamp((VREF*HIT-(d+2*Bk))/VREF,0,HIT-TF_MIN));Tf=HIT-Ts;
+ castAt=simT;st=Ts>0?'spin':'fly';tt=0;if(st==='fly')release();
+ document.getElementById('res').textContent=(recast?'Recast during wrap. ':'')+'Pull-back '+Math.round(Bk)+', spin '+(Ts/FPS).toFixed(2)+' s, flight '+(Tf/FPS).toFixed(2)+' s';}
+function release(){const tp=R[0];const P0={x:tp.x,y:tp.y,z:tp.z};const v={x:tp.x-tp.px,y:tp.y-tp.py,z:tp.z-tp.pz},vl=Math.hypot(v.x,v.y,v.z)||1;
+ const gl=Math.hypot(aim.x,aim.y)||1,ux=aim.x/gl,uy=aim.y/gl;
+ const Kp=[{x:P0.x-v.x/vl*8,y:P0.y-v.y/vl*8,z:P0.z-v.z/vl*8},P0];
+ if(Bk>4){let Q={x:clamp(-ux*Bk*0.5,XMIN,XMAX),y:clamp(-uy*Bk*0.5,YMIN,YMAX),z:ZW+6+Bk*0.6};Q.z=Math.min(Q.z,OY+Q.y*K-5);Kp.push(Q);}
+ Kp.push({...aim});const L=Kp[Kp.length-1],B=Kp[Kp.length-2],bl=d3(B,L)||1;Kp.push({x:L.x+(L.x-B.x)/bl*8,y:L.y+(L.y-B.y)/bl*8,z:L.z+(L.z-B.z)/bl*8});
+ path=buildPath(Kp);prev={x:tp.x,y:tp.y,z:tp.z};}
+function prof(u){u=clamp(u,0,1);return(0.45*u+0.5167*u*u*u)/0.9667;}
+function retSpeed(f){const vc=RET_SPEED*retScale,vEnd=vc*ENTRY_KEEP,v0=Math.max(0.15,vc*RET_START);
+ if(f<RET_ACCEL)return v0+(vc-v0)*ramp(f,RET_ACCEL);
+ if(f<1-RET_DECEL)return vc;
+ return vc+(vEnd-vc)*ramp(f-(1-RET_DECEL),RET_DECEL);}
+function startReturn(){const lead=R[0],{E,f}=entryPoint();const left={x:f.y*ORB,y:-f.x*ORB};
+ const P0={x:lead.x,y:lead.y},D=Math.max(8,Math.hypot(E.x-P0.x,E.y-P0.y));
+ let sx=left.x-P0.x,sy=left.y-P0.y,sl=Math.hypot(sx,sy)||1;sx/=sl;sy/=sl;
+ const a=Math.min(D*CTRL_START,sl*0.9),b=D*CTRL_END;
+ const P1={x:P0.x+sx*a,y:P0.y+sy*a},P2={x:E.x+f.x*b,y:E.y+f.y*b};
+ const z0=lead.z,pts=[];
+ for(let k=0;k<=PATH_SAMPLES;k++){const u=k/PATH_SAMPLES,m=1-u;
+  const x=m*m*m*P0.x+3*m*m*u*P1.x+3*m*u*u*P2.x+u*u*u*E.x;
+  const y=m*m*m*P0.y+3*m*m*u*P1.y+3*m*u*u*P2.y+u*u*u*E.y;
+  let z=z0+(ZW-z0)*ramp(u,1)+ARC_LIFT*Math.sin(Math.PI*u);z=clamp(z,1,OY+y*K-4);
+  pts.push({x:clamp(x,XMIN,XMAX),y:clamp(y,YMIN,YMAX),z});}
+ pts[PATH_SAMPLES]={x:E.x,y:E.y,z:ZW};
+ rpath=polyPath(pts);rs=0;hold=1;joinedAt=-1;retAt=simT;prev={x:lead.x,y:lead.y,z:lead.z};
+ retScale=distScale(rpath.L);}
+function groundRatioAtEnd(){const P=rpath.pts,n=P.length;let a=P[n-1],b=P[n-6]||P[0];const d=d3(a,b)||1;return Math.hypot(a.x-b.x,a.y-b.y)/d;}
+function enterOrbit(stepLen,leftover){const lead=R[0],gr=groundRatioAtEnd(),vg=stepLen*gr;
+ const a0=Math.atan2(rpath.pts[rpath.pts.length-1].y,rpath.pts[rpath.pts.length-1].x);
+ phase0=a0;phase=a0+leftover*gr/ORB;w=Math.max(0.002,vg/ORB);
+ const sx=Math.cos(phase)*ORB,sy=Math.sin(phase)*ORB,tx=-Math.sin(phase)*vg,ty=Math.cos(phase)*vg;
+ lead.x=sx;lead.y=sy;lead.z=ZW;lead.px=sx-tx;lead.py=sy-ty;lead.pz=ZW;
+ st='wrap';tt=0;tailIn=false;settle=0;
+ document.getElementById('res').textContent='Return '+Math.round(rpath.L)+' px at '+Math.round(retScale*100)+'% of max speed, took '+((simT-retAt)/FPS).toFixed(2)+' s, entered orbit at '+(vg*FPS).toFixed(0)+' px/s.';}
+function followPath(sv,att){for(let j=1;j<M();j++){if(!att[j])continue;const sj=sv-j*SP;const p=R[j];
+ if(sj<=0)continue;if(sj<rpath.L)spring(p,along(rpath,sj/rpath.L),FOLLOW_K);else spring(p,orbitT(p.id),JOIN_K);}}
+const reforming=()=>st==='rise'||st==='return'||st==='wrap';
+function tightness(){if(st==='idle'||st==='spin')return IDLE_PUSH;if(st==='wrap')return IDLE_PUSH*ramp(tt,WRAP_TIGHT);return 0;}
+function constrain(fixN){const tg=tightness(),cap=reforming()?CAP_STEP*MAX_SPEED/1.6:1e9,n=M();
+ for(let it=0;it<8;it++){for(let i=0;i<n-1;i++){if(!conn[i])continue;const a=R[i],b=R[i+1],af=i<fixN,bf=i+1<fixN;if(af&&bf)continue;
+  const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,d=Math.hypot(dx,dy,dz)||1;if(d<=SEG&&tg===0)continue;
+  let corr=d-SEG;if(d<SEG)corr*=tg;corr*=str[i];
+  if(af){corr=clamp(corr,-cap,cap);b.x-=dx/d*corr;b.y-=dy/d*corr;b.z-=dz/d*corr;}
+  else{const h=clamp(corr*0.5,-cap,cap);a.x+=dx/d*h;a.y+=dy/d*h;a.z+=dz/d*h;b.x-=dx/d*h;b.y-=dy/d*h;b.z-=dz/d*h;}}}}
+function splash(p,n,v){for(let k=0;k<n;k++)drops.push({x:p.x,y:p.y,z:p.z,vx:v.x*0.35+(Math.random()-0.5)*1.6,vy:v.y*0.35+(Math.random()-0.5)*1.6,vz:v.z*0.35+Math.random()*1.5,l:30+Math.random()*24});}
+function regroup(){const pool=[...R];let start=pool.reduce((a,b)=>Math.hypot(a.x,a.y)>Math.hypot(b.x,b.y)?a:b);
+ const chain=[start];pool.splice(pool.indexOf(start),1);
+ while(pool.length){const t=chain[chain.length-1];let best=null,bd=1e9;for(const p of pool){const d=Math.hypot(p.x-t.x,p.y-t.y);if(d<bd){bd=d;best=p;}}
+  if(bd>STRAY_GAP&&chain.length>=MIN_KEEP)break;chain.push(best);pool.splice(pool.indexOf(best),1);}
+ pool.forEach(p=>lost.push({x:p.x,y:p.y,l:SOAK_TIME}));
+ R=chain;R.forEach((p,i)=>p.id=i);conn=new Array(M()-1).fill(false);str=new Array(M()-1).fill(0);
+ let sx=0,sy=0;R.forEach(p=>{sx+=p.x;sy+=p.y;});base={x:sx/M(),y:sy/M()};}
+function riseT(i){const n=M(),bl=Math.hypot(base.x,base.y)||1,ux=-base.x/bl,uy=-base.y/bl,s=(i-(n-1)/2)*SEG*0.7;
+ return{x:base.x+ux*s,y:base.y+uy*s,z:3+Math.sin(i/Math.max(1,n-1)*Math.PI)*10+Math.sin(i*WAVE_LEN-fr*WAVE_SPEED)*1.5};}
+function attached(){const a=[true];for(let i=1;i<M();i++)a.push(a[i-1]&&conn[i-1]&&str[i-1]>0.35);return a;}
+function linkUp(force){for(let i=0;i<M()-1;i++){if(conn[i])continue;const d=d3(R[i],R[i+1]);
+ if((R[i].near&&R[i+1].near&&d<SEG*LINK_REACH)||d<SEG*LINK_REACH*0.8||force)conn[i]=true;}}
+function chaseLoose(att){for(let i=1;i<M();i++){if(att[i])continue;spring(R[i],R[i-1],CHASE_K);R[i].near=false;}}
+function hitDummy(){dummies.forEach(dm=>{if(Math.hypot(dm.x-aim.x,dm.y-aim.y)<8)dm.flash=14;});}
+function pathDirEnd(){const a=path.pts[path.pts.length-2],b=path.pts[path.pts.length-1],l=d3(a,b)||1;return{x:(b.x-a.x)/l,y:(b.y-a.y)/l,z:(b.z-a.z)/l};}
+function pourOff(j){const dir=pathDirEnd(),p=R[j];poured[j]=true;p.x=aim.x;p.y=aim.y;p.z=aim.z;
+ p.px=p.x-dir.x*vHit*0.6;p.py=p.y-dir.y*vHit*0.6;p.pz=p.z-dir.z*vHit*0.6;if(j<M()-1)conn[j]=false;
+ splash(p,POUR_SPLASH,{x:dir.x*vHit,y:dir.y*vHit,z:dir.z*vHit});}
+function step(){tt++;simT++;fr++;
+ const tw=st==='spin'?W_SPIN:W_IDLE;w+=(tw-w)*(st==='spin'?0.25:st==='wrap'?WRAP_EASE:0.03);phase+=w;
+ const damp=st==='fly'||st==='fall'||st==='pour'?0.93:reforming()?RET_DRAG:0.86;
+ const homing=st==='return'||st==='wrap',att0=homing?attached():null,chased=new Set();
+ if(homing)for(let i=1;i<M();i++)if(!att0[i]&&att0[i-1])chased.add(i-1);
+ const dampChased=1-(1-damp)*CHASED_DRAG_MULT;
+ R.forEach((p,i)=>{const dm=chased.has(i)?dampChased:damp;let vx=(p.x-p.px)*dm,vy=(p.y-p.py)*dm,vz=(p.z-p.pz)*dm;
+  if(reforming()){let lim=MAX_SPEED;if(homing&&i>0&&!att0[i]){const gap=d3(p,R[i-1]);lim=Math.min(CHASE_MAX,MAX_SPEED+CHASE_GAIN*Math.max(0,gap-SEG));}
+   const v=Math.hypot(vx,vy,vz);if(v>lim){vx*=lim/v;vy*=lim/v;vz*=lim/v;}}
+  const gz=st==='fall'||(st==='pour'&&poured[i])?GRAV:0;
+  p.px=p.x;p.py=p.y;p.pz=p.z;p.x+=vx;p.y+=vy;p.z+=vz-gz;});
+ for(let i=0;i<M()-1;i++)str[i]=conn[i]?Math.min(1,str[i]+1/LINK_FADE):0;
+ if(base&&(st==='rise'||st==='return')){const bl=Math.hypot(base.x,base.y)||1,nb=bl+(RISE_STOP-bl)*RISE_DRIFT;base.x*=nb/bl;base.y*=nb/bl;}
+ if(st==='idle'||st==='spin'){ib=Math.min(1,ib+1/IDLE_BLEND);const k=st==='spin'?0.22:0.08*ib;for(const p of R)spring(p,orbitT(p.id),k);constrain(0);
+  if(st==='idle'&&M()<NMAX&&tt%REFILL_EVERY===0){const t=R[M()-1];R.push({x:t.x,y:t.y,z:t.z,px:t.x,py:t.y,pz:t.z,id:M(),gnd:false});conn.push(true);str.push(0);}
+  if(st==='spin'&&tt>=Ts){st='fly';tt=0;release();}}
+ else if(st==='fly'){const tp=R[0],q=along(path,prof(tt/Tf));tp.px=prev.x;tp.py=prev.y;tp.pz=prev.z;tp.x=q.x;tp.y=q.y;tp.z=q.z;prev={...q};constrain(1);
+  if(tt>=Tf){vHit=Math.max(2,d3(tp,{x:tp.px,y:tp.py,z:tp.pz}));st='pour';tt=0;hitAt=simT;hitDummy();
+   poured=new Array(M()).fill(false);pourS=path.L;pourOff(0);
+   document.getElementById('res').textContent='Hit landed at '+((simT-castAt)/FPS).toFixed(2)+' s (pull-back '+Math.round(Bk)+')';}}
+ else if(st==='pour'){pourS+=vHit;const last=Math.min(POUR_POINTS,M())-1;
+  for(let j=1;j<=last;j++){if(poured[j])continue;const sj=pourS-j*SP;const p=R[j];
+   if(sj>=path.L){pourOff(j);if(j===last){conn.fill(false);str.fill(0);st='fall';tt=0;breakAt=simT;}continue;}
+   if(sj<=0)continue;
+   const q=along(path,sj/path.L),ox=p.x,oy=p.y,oz=p.z;p.x+=(q.x-p.x)*POUR_BLEND;p.y+=(q.y-p.y)*POUR_BLEND;p.z+=(q.z-p.z)*POUR_BLEND;p.px=ox;p.py=oy;p.pz=oz;}
+  if(st==='pour')constrain(last+1);}
+ else if(st==='fall'){if(tt>=Math.min(FALL_TIME_MAX,RETURN_AT)){regroup();st='rise';tt=0;}}
+ else if(st==='rise'){const k=RISE_K*ramp(tt,RISE_RAMP);
+  R.forEach((p,i)=>{const g=riseT(i);spring(p,g,k);p.near=d3(p,g)<RECONNECT;});
+  linkUp(false);constrain(0);
+  if(simT-breakAt>=RETURN_AT){st='return';tt=0;startReturn();}}
+ else if(st==='return'){const lead=R[0],f=rs/rpath.L,att=attached(),whole=att.every(x=>x);
+  if(whole&&joinedAt<0)joinedAt=f;
+  hold+=(((f>=HOLD_AT&&!whole)?HOLD_SPEED:1)-hold)*HOLD_EASE;
+  const stepLen=retSpeed(f)*hold;
+  if(whole&&rs+stepLen>=rpath.L){const leftover=rs+stepLen-rpath.L;rs=rpath.L;
+   followPath(rs,att);enterOrbit(stepLen,leftover);constrain(1);}
+  else{rs=Math.min(whole?rpath.L:rpath.L*ENTRY_GUARD,rs+stepLen);
+   const q=along(rpath,rs/rpath.L);lead.px=prev.x;lead.py=prev.y;lead.pz=prev.z;lead.x=q.x;lead.y=q.y;lead.z=q.z;prev={...q};
+   followPath(rs,att);chaseLoose(att);linkUp(f>=FORCE_AT);constrain(1);}}
+ else if(st==='wrap'){const sv=rpath.L+(phase-phase0)*ORB,att=attached();
+  spring(R[0],orbitT(0),WRAP_LEAD);followPath(sv,att);chaseLoose(att);linkUp(true);constrain(1);
+  if(!tailIn&&sv-(M()-1)*SP>=rpath.L)tailIn=true;
+  if(tailIn&&++settle>WRAP_SETTLE){st='idle';tt=0;ib=0.15;}}
+ for(const p of R){if(p.z<0){if((st==='fall'||st==='pour')&&p.pz-p.z>1&&!p.gnd){splash({x:p.x,y:p.y,z:0},2,{x:p.x-p.px,y:p.y-p.py,z:0});p.gnd=true;}
+  p.z=0;p.pz=p.z-(p.pz-p.z)*0.2;p.px=p.x-(p.x-p.px)*0.5;p.py=p.y-(p.y-p.py)*0.5;}else if(p.z>1)p.gnd=false;
+  p.x=clamp(p.x,XMIN,XMAX);p.y=clamp(p.y,YMIN,YMAX);const top=OY+p.y*K-3;if(p.z>top)p.z=top;}
+ drops.forEach(d=>{d.x+=d.vx;d.y+=d.vy;d.z+=d.vz;d.vx*=0.9;d.vy*=0.9;d.vz=d.vz*0.92-0.12;d.l--;if(d.z<0){d.z=0;d.vz*=-0.2;d.vx*=0.4;d.vy*=0.4;}});drops=drops.filter(d=>d.l>0);
+ lost.forEach(l=>l.l--);lost=lost.filter(l=>l.l>0);dummies.forEach(d=>{if(d.flash>0)d.flash--;});
+ if((st==='idle'||st==='return')&&fr%20==0){const p=R[Math.floor(Math.random()*M())];drops.push({x:p.x,y:p.y,z:p.z,vx:0,vy:0,vz:0.3,l:14});}}
+function px(x,y,col,w=1,h=1){c.fillStyle=col;c.fillRect(Math.round(x),Math.round(y),w,h);}
+function disc(x,y,r,col){c.fillStyle=col;x=Math.round(x);y=Math.round(y);const Rr=Math.ceil(r);
+ for(let yy=-Rr;yy<=Rr;yy++)for(let xx=-Rr;xx<=Rr;xx++)if(xx*xx+yy*yy<=r*r+0.3)c.fillRect(x+xx,y+yy,1,1);}
+function rad(f){return 0.5+1.3*Math.sin(Math.PI*(0.12+f*0.82))+Math.sin(f*4-fr*0.06)*0.15;}
+function litBlob(x,y,r,nx,ny,face){disc(x-nx,y-ny,r,OUT);disc(x,y,r,BODY);
+ if(face>FACE_T&&r>SHADE2_MIN_R)px(x-nx*(r-0.45),y-ny*(r-0.45),OUT);
+ if(r>HI_MIN_R-0.4){px(x+nx*(r-1),y+ny*(r-1),HI);if(face>FACE_T&&r>HI2_MIN_R)px(x+nx*(r-2),y+ny*(r-2),HI);}}
+function hero(){const a=armA(),sh={x:OX+4,y:OY-24},h={x:sh.x+Math.cos(a)*9,y:sh.y+Math.sin(a)*9};
+ px(OX-4,OY-26,DARK,8,16);px(OX-3,OY-10,DARK,2,10);px(OX+1,OY-10,DARK,2,10);disc(OX,OY-31,4.6,SKIN);
+ for(let k=0;k<=9;k++)px(sh.x+(h.x-sh.x)*k/9,sh.y+(h.y-sh.y)*k/9,SKIN,2,2);px(OX-6,OY-24,SKIN,2,7);}
+function dummy(dm){const s=proj({x:dm.x,y:dm.y,z:0});const col=dm.flash>0&&dm.flash%4<2?TIPC:DUML;
+ px(s.x-1,s.y-6,DUM,2,6);px(s.x-4,s.y-18,DUM,8,12);px(s.x-3,s.y-17,col,6,10);disc(s.x,s.y-22,3.4,DUM);disc(s.x,s.y-22,2.4,col);}
+function shadowOf(x,y,w){const s=proj({x,y,z:0});px(s.x-Math.floor(w/2),s.y,SHAD,w,1);}
+function draw(){c.clearRect(0,0,W,H);
+ for(let gy=-140;gy<=50;gy+=20)for(let gx=-30;gx<=110;gx+=20){const s=proj({x:gx,y:gy,z:0});px(s.x,s.y,GRID);}
+ lost.forEach(l=>{const q=l.l/SOAK_TIME,s=proj({x:l.x,y:l.y,z:0}),w=Math.max(1,Math.round(5*q));if(q>0.25){px(s.x-w/2,s.y,OUT,w,1);px(s.x-w/2,s.y-1,BODY,w,1);}else px(s.x,s.y,OUT);});
+ const n=M();
+ for(let i=0;i<n-1;i++){const a=R[i],b=R[i+1];if(!conn[i]||str[i]<0.35)continue;if(a.z<1.5&&b.z<1.5)continue;
+  const sa=proj({x:a.x,y:a.y,z:0}),sb=proj({x:b.x,y:b.y,z:0});const k0=Math.max(1,Math.ceil(Math.hypot(sb.x-sa.x,sb.y-sa.y)));
+  for(let s=0;s<=k0;s++)px(sa.x+(sb.x-sa.x)*s/k0,sa.y+(sb.y-sa.y)*s/k0,SHAD,2,1);}
+ R.forEach((p,i)=>{const on=(i>0&&conn[i-1]&&str[i-1]>=0.35)||(i<n-1&&conn[i]&&str[i]>=0.35);if(!on&&p.z>1.5)shadowOf(p.x,p.y,3);});
+ drops.forEach(d=>{if(d.z>1)shadowOf(d.x,d.y,1);});
+ const sprites=[{d:0,f:hero},...dummies.map(dm=>({d:dm.y,f:()=>dummy(dm)}))].sort((a,b)=>a.d-b.d);
+ const bin=d=>{let b=0;for(const s of sprites)if(s.d<d)b++;return b;};
+ const stamps=sprites.map(()=>[]);stamps.push([]);const blobs=sprites.map(()=>[]);blobs.push([]);
+ const kw=2*Math.PI/RIPPLE_LEN;let arc=0;
+ for(let i=0;i<n-1;i++){const a=R[i],b=R[i+1],sa=proj(a),sb=proj(b),L=Math.hypot(sb.x-sa.x,sb.y-sa.y);
+  if(!conn[i]||str[i]<0.35){arc+=L;continue;}
+  const tx=L>0?(sb.x-sa.x)/L:1,ty=L>0?(sb.y-sa.y)/L:0,qx=-ty,qy=tx;const k0=Math.max(1,Math.ceil(L));
+  for(let s=0;s<k0;s++){const k=s/k0,f=(i+k)/Math.max(1,n-1),ph=(arc+k*L)*kw-fr*RIPPLE_SPEED,amp=RIPPLE_AMP*(0.4+0.6*Math.sin(Math.PI*f));
+   const x=sa.x+(sb.x-sa.x)*k+qx*amp*Math.sin(ph),y=sa.y+(sb.y-sa.y)*k+qy*amp*Math.sin(ph);
+   let rx=tx+qx*amp*kw*Math.cos(ph),ry=ty+qy*amp*kw*Math.cos(ph);const rl=Math.hypot(rx,ry)||1;rx/=rl;ry/=rl;
+   let nx=-ry,ny=rx;if(nx*SUN.x+ny*SUN.y<0){nx=-nx;ny=-ny;}const face=nx*SUN.x+ny*SUN.y;
+   stamps[bin(a.y+(b.y-a.y)*k)].push([x,y,f,nx,ny,face]);}
+  arc+=L;}
+ R.forEach((p,i)=>{const on=(i>0&&conn[i-1]&&str[i-1]>=0.35)||(i<n-1&&conn[i]&&str[i]>=0.35);if(!on)blobs[bin(p.y)].push({p,f:i/Math.max(1,n-1),kind:'loose'});});
+ if(st==='fly'||st==='return')blobs[bin(R[0].y)].push({p:R[0],kind:'tip'});
+ const Em=entryPoint().E,es=proj(Em),eBin=bin(Em.y);
+ for(let b=0;b<=sprites.length;b++){const S=stamps[b];
+  if(b===eBin){px(es.x-1,es.y,TIPC,3,1);px(es.x,es.y-1,TIPC,1,3);}
+  S.forEach(q=>disc(q[0]-q[3],q[1]-q[4],rad(q[2])+BODY_GROW,OUT));
+  S.forEach(q=>disc(q[0],q[1],rad(q[2])+BODY_GROW,BODY));
+  S.forEach(q=>{const r=rad(q[2])+BODY_GROW;if(q[5]>FACE_T&&r>SHADE2_MIN_R)px(q[0]-q[3]*(r-0.45),q[1]-q[4]*(r-0.45),OUT);});
+  S.forEach(q=>{const r=rad(q[2])+BODY_GROW;if(r>HI_MIN_R){px(q[0]+q[3]*(r-1),q[1]+q[4]*(r-1),HI);if(q[5]>FACE_T&&r>HI2_MIN_R)px(q[0]+q[3]*(r-2),q[1]+q[4]*(r-2),HI);}});
+  blobs[b].forEach(o=>{const s=proj(o.p);if(o.kind==='tip'){litBlob(s.x,s.y,1.5,SUN.x,SUN.y,1);return;}
+   const r=Math.max(0.8,rad(o.f)*0.75+BODY_GROW*0.6);if(o.p.z<1.5){px(s.x-1,s.y,OUT,4,1);px(s.x-1,s.y-1,BODY,4,1);}else litBlob(s.x,s.y,r,SUN.x,SUN.y,1);});
+  if(b<sprites.length)sprites[b].f();}
+ drops.forEach(d=>{const s=proj(d);px(s.x+1,s.y+1,OUT);px(s.x,s.y,DROP);});
+ {const s=proj(aim);px(s.x-1,s.y,PT,3,1);px(s.x,s.y-1,PT,1,3);}
+ if(showPts){R.forEach((p,i)=>{const s=proj(p);px(s.x-1,s.y-1,i===0?TIPC:PT,3,3);});
+  if(st==='return'&&rpath){for(let k=0;k<rpath.pts.length;k+=5){const s=proj(rpath.pts[k]);px(s.x,s.y,TIPC);}}}}
+let last=performance.now(),acc=0;
+function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;acc+=dt*(slow?1/3:1);
+ while(acc>=1/FPS){step();acc-=1/FPS;}draw();requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+cv.addEventListener('pointerdown',e=>{const r=cv.getBoundingClientRect(),sx=(e.clientX-r.left)/r.width*W,sy=(e.clientY-r.top)/r.height*H;
+ let T={x:sx-OX,y:(sy-OY+TARGET_Z)/K};for(const dm of dummies){const s=proj({x:dm.x,y:dm.y,z:TARGET_Z});if(Math.hypot(s.x-sx,s.y-sy)<9)T={x:dm.x,y:dm.y};}cast(T);});
+document.getElementById('near').onclick=()=>cast({x:dummies[0].x,y:dummies[0].y});
+document.getElementById('far').onclick=()=>cast({x:dummies[1].x,y:dummies[1].y});
+const rl=document.getElementById('rl'),rlo=document.getElementById('rlo');
+rl.oninput=()=>{MAX_SPEED=parseFloat(rl.value);RET_SPEED=MAX_SPEED*RET_CRUISE_RATIO;CHASE_MAX=Math.max(5,MAX_SPEED*2);rlo.textContent=MAX_SPEED.toFixed(1)+' px/f';};
+const hs=document.getElementById('hs'),hso=document.getElementById('hso');
+hs.oninput=()=>{HALF_TRIP=parseFloat(hs.value)/100;hso.textContent=Math.round(HALF_TRIP*100)+'%';};
+const rd=document.getElementById('rd'),rdo=document.getElementById('rdo');
+rd.oninput=()=>{const s=parseFloat(rd.value);RETURN_AT=Math.round(s*FPS);rdo.textContent=s.toFixed(2)+' s';};
+const ob=document.getElementById('ob'),obo=document.getElementById('obo');
+ob.oninput=()=>{const t=parseFloat(ob.value);WRAP_EASE=1-Math.pow(0.05,1/(t*FPS));obo.textContent=t.toFixed(1)+' s';};
+const bp=document.getElementById('pts'),bs=document.getElementById('slow');
+bp.onclick=()=>{showPts=!showPts;bp.style.background=showPts?'#D3D1C7':'#fff';};
+bs.onclick=()=>{slow=!slow;bs.style.background=slow?'#D3D1C7':'#fff';};
+</script>
+</body>
+</html>
