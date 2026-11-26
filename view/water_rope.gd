@@ -255,7 +255,7 @@ func move_hero(delta: Vector2) -> void:
 ## Throws the front of the rope at `target` (ground, reference px, hero-relative).
 ## The hit lands HIT frames later. A cast while the water is still out snaps the rope
 ## back onto its orbit first (the game's cooldown is shorter than a full return).
-func cast(target: Vector2) -> void:
+func cast(target: Vector2, z_offset := 0.0) -> void:
 	var recast := st == "wrap"
 	if not can_cast() or M() < 2:
 		fill_now(maxi(M(), s.MIN_KEEP))
@@ -263,7 +263,7 @@ func cast(target: Vector2) -> void:
 		for i in conn.size():
 			conn[i] = true
 			strength[i] = 1.0
-	aim = Vector3(target.x, target.y, s.TARGET_Z)
+	aim = Vector3(target.x, target.y, s.TARGET_Z + z_offset)
 	var gd := Vector2(aim.x, aim.y).length()
 	if gd < 18.0:
 		if gd == 0.0:

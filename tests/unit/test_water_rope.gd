@@ -150,3 +150,46 @@ func test_return_speed_scales_with_length() -> void:
 	assert_almost_eq(r.dist_scale(settings.DIST_REF * 0.5), settings.HALF_TRIP, 0.001, "half length at 40%")
 	assert_almost_eq(WaterRope.prof(1.0), 1.0, 0.001)
 	assert_almost_eq((WaterRope.prof(1.0) - WaterRope.prof(0.999)) / 0.001, 2.07, 0.02, "peak ≈ 2.07 × average")
+
+
+func _hero_with_rope() -> Hero:
+	var h := Hero.new()
+	h.id = 7
+	h.move.place(Vector2i(10, 10))
+	h.rope = true
+	return h
+
+
+func test_each_hero_gets_its_rope_and_the_whip_event_throws_it() -> void:
+	var ropes := WaterRopes.new(settings)
+	var h := _hero_with_rope()
+	var on := func(_x): return true
+	ropes.advance(0.5, 0.0, [h], null, null, on)
+	var r := ropes.rope_of(h.id)
+	assert_not_null(r, "a rope while the host says it has one")
+	assert_gt(r.M(), 0, "forming from the hips")
+	ropes.on_events([{"type": "fx", "fx": &"water_whip", "source": h.id, "to": Vector2(13, 10), "at": 1.0}],
+			ContentDB.effects)
+	ropes.advance(0.1, 0.9, [h], null, null, on)
+	assert_eq(r.st, "idle", "not before its host time")
+	ropes.advance(0.1, 1.0, [h], null, null, on)
+	assert_true(r.st == "fly" or r.st == "spin", "thrown at its host time")
+	var items := ropes.items(func(_h): return Vector2.ZERO)
+	assert_true(items.any(func(i): return i.has("stamps")), "slices to draw")
+	h.rope = false
+	for i in 30:
+		ropes.advance(0.2, 1.0 + i * 0.2, [h], null, null, on)
+	assert_null(ropes.rope_of(h.id), "drained away once the stance is left")
+
+
+func test_off_screen_heroes_are_skipped() -> void:
+	var ropes := WaterRopes.new(settings)
+	var h := _hero_with_rope()
+	ropes.advance(0.5, 0.0, [h], null, null, func(_x): return false)
+	var r := ropes.rope_of(h.id)
+	var before := r.fr
+	ropes.advance(1.0, 1.0, [h], null, null, func(_x): return false)
+	assert_eq(r.fr, before, "no steps off screen")
+	assert_true(ropes.items(func(_h): return Vector2.ZERO).is_empty())
+	ropes.advance(0.1, 1.1, [h], null, null, func(_x): return true)
+	assert_eq(r.M(), settings.NMAX, "back on its orbit when it comes back")

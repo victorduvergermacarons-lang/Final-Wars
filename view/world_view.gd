@@ -59,6 +59,9 @@ const ENRAGE_TINT := Color(1.35, 0.85, 0.7)
 var _animator := CreatureAnimator.new()
 ## Effect animations (FxDef): played from "fx" events, held rocks, thrown rocks.
 var _fx := FxPainter.new()
+## Every hero's Water stance 1 rope on this screen (the Water Whip), stepped at 60 Hz.
+var ropes := WaterRopes.new()
+var _rope_t := -1.0
 static var _frames_cache := {} # CreatureArtDef -> SpriteFrames
 ## Actor id -> render time its hit flash ends.
 var _flash_until := {}
@@ -154,6 +157,21 @@ func _process(delta: float) -> void:
 	_update_terrain_cache()
 	_update_sense(t)
 	queue_redraw()
+
+
+## The water ropes: a fixed 60 steps per second of game time (the render clock runs
+## at the game speed), in _physics_process as the reference was tuned.
+func _physics_process(_delta: float) -> void:
+	if _stale():
+		return
+	var t: float = session.render_time()
+	var dt := clampf(t - _rope_t, 0.0, 0.25) if _rope_t >= 0.0 else 0.0
+	_rope_t = t
+	var heroes: Array = session.actors().filter(func(a): return a is Hero)
+	var seen := get_viewport().get_canvas_transform().affine_inverse() * get_viewport_rect()
+	seen = seen.grow(320.0)
+	ropes.advance(dt, t, heroes, session.grid(), session.zone(), func(h): return seen.has_point(actor_screen_pos(h)),
+			session.rules().water_near_tiles)
 
 
 # --- Seismic Sense (a screen shader) -------------------------------------------
@@ -472,6 +490,13 @@ func _draw() -> void:
 		if not fx_by_tile.has(ft):
 			fx_by_tile[ft] = []
 		fx_by_tile[ft].append(item)
+	for item in ropes.items(func(h): return actor_screen_pos(h)):
+		var ft := MoveState.tile_of(item.pos)
+		if not grid.in_bounds(ft):
+			continue
+		if not fx_by_tile.has(ft):
+			fx_by_tile[ft] = []
+		fx_by_tile[ft].append(item)
 	_overlay.clear()
 	_labels.clear()
 	if not _cached():
@@ -497,6 +522,8 @@ func _draw() -> void:
 	_draw_talk_prompt()
 	for f in _overlay:
 		f.call()
+	if debug_rope_points or debug_rope_path:
+		ropes.draw_debug(self, func(h): return actor_screen_pos(h), debug_rope_points, debug_rope_path)
 	_queue_float_texts()
 	_draw_labels()
 
@@ -552,6 +579,8 @@ func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
 
 
 func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
+	if item.has("rope"):
+		return ropes.rect_of(item)
 	var r := RING_RADIUS.x if item.has("ring") else 0.0
 	if item.has("quad") or item.has("tilefx"):
 		r = 160.0 # a strip piece or a shaded tile (and a sandstorm over its area)
@@ -736,6 +765,9 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 		return
 	if item.has("code"):
 		_draw_code_fx(grid, item)
+		return
+	if item.has("rope"):
+		ropes.draw(self, item)
 		return
 	if item.has("quad"):
 		_draw_ribbon_quad(grid, item)
@@ -1454,6 +1486,7 @@ func _queue_float_texts() -> void:
 
 func _on_events(events: Array) -> void:
 	_fx.on_events(events, ContentDB.effects)
+	ropes.on_events(events, ContentDB.effects)
 	_fx.on_casts(events, ContentDB.abilities)
 	var t: float = session.render_time()
 	for e in events:
