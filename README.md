@@ -113,6 +113,36 @@ keepers into the game's `assets/` folder by hand.
 
 ## Drafts
 
+### PL-01-1+fire-stance-4-presses-the-palms-together@south · Hero base body (2026-11-26)
+
+![PL-01-1+fire-stance-4-presses-the-palms-together@south](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south_2026-11-26_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 4: presses the palms together at the chest, raises them overhead as if lifting a small sun, then points two fingers forward</sub>
+
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@east · Hero base body (2026-11-26)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@east](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@east_2026-11-26_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-east · Hero base body (2026-11-26)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-east](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-east_2026-11-26_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north · Hero base body (2026-11-26)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north_2026-11-26_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-west · Hero base body (2026-11-26)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-west](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-west_2026-11-26_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
 ### PL-01-1+fire-stance-4-presses-the-palms-together@north-east · Hero base body (2026-11-25)
 
 ![PL-01-1+fire-stance-4-presses-the-palms-together@north-east](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@north-east_2026-11-25_preview.gif)
