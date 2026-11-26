@@ -51,6 +51,10 @@ func before_each() -> void:
 	hd.base_stats = StatBlock.make({Stat.Id.HP: 500, Stat.Id.MANA: 500, Stat.Id.MAG_ATK: 10, Stat.Id.PHYS_ATK: 10,
 			Stat.Id.JUMP: 2})
 	hero = world.add_hero(hd)
+	# Water to bend (the Water Pouch and the Water stance 1 rope, 2026-11-26).
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.rope = true
 	world.step()
 	foe.face(Vector2i(-1, 0))
 

@@ -175,7 +175,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | F08 | Burning Ground | Scorched Earth Scroll | Ground 4, 3×3 zone 6 s | 0.35 per s | 15 | 14 |
 | F09 | Blazing Combo | Blazing Fist Scroll | Targeted, adjacent | 3 × 0.5, knockback 1 | 12 | 10 |
 | W01 | Healing Touch | Mender's Scroll | Targeted ally, 2; water_heal (2026-11-21) | heal 1.0 | 8 | 3 |
-| W02 | Water Whip | River Lash Scroll | Targeted, 3, **3 s timing bar** (hold 0.45–2.75 s since 2026-11-21; was 0.75); the lash's hit lands on its snap, 0.29 s after the release | 1.0 | 6 | 2 |
+| W02 | Water Whip | River Lash Scroll | Targeted, 3, **3 s timing bar** (hold 0.45–2.75 s since 2026-11-21; was 0.75); the Water stance 1 rope is thrown at the release and the hit lands 0.5 s later (since 2026-11-26); 4 water points | 1.0 | 6 | 2 |
 | W03 | Flow State | Scroll of the Current | Targeted ally, 3 | Haste 30 s | 10 | 20 |
 | W04 | Frost Shard | Frost Shard Scroll | Skillshot, 4, 12 t/s | 0.9 + slow ×1.5 2 s | 8 | 4 |
 | W05 | Soothing Mist | Mist Scroll | Targeted ally, 4 | heal 1.5 over 12 s | 12 | 8 |
@@ -1561,54 +1561,58 @@ Checklist: `docs/playtest-checklist-stances-and-effects.md`.
 - Tests: `tests/unit/test_stances.gd`, `test_ability_import.gd`, `test_first_abilities.gd`.
   Screenshots: `tests/visual/stance_shots.tscn` (phases 1–5; `SHOTS_ONLY=rot|p4|p5`).
 
-## Water Whip, a Verlet whip (branch `feature/stance-rework`, 2026-11-25)
+## Water stance 1 rope, Water Whip and the Water Pouch (branch `feature/stance-rework`, 2026-11-26)
 
-User brief: replace the stitched-strip Water Whip with a code-drawn whip on a Verlet rope,
-inside the existing effects system (FxDef → FxPainter → WorldView's back-to-front pass).
-- **Data:** `content/effects/water_whip.tres` (`FxDef`, `path` VERLET, hit frame 7 at
-  24 fps as before, so the hit still lands 0.29 s after the release) with every feel value
-  in **one file**, `content/effects/water_whip_feel.tres` (`WhipFeelDef`,
-  `data/defs/whip_feel_def.gd`): chain (18 points, reach ×1.04, 120 physics steps/s),
-  physics (gravity 6 art px/s², drag 0.16, link stiffness 0.35, 3 passes, follow 0.08),
-  strike (0.08 s stiff at 0.95 with 10 passes and follow 0.35, crack 260 px/s), reach and
-  recovery (starts at 20% length, 0.35 s back to 10% then gone), wave (1.4 cycles/s, 5 px
-  at the tip, 1.25 waves along it), width (4 px at the hand to 1 at the tip, taper 1.4,
-  swell ±22% at 3/s), droplets (over 120 px/s at the tip, 40/s, pool 32, float 0.18 s,
-  fall 220 px/s², life 0.6 s, 10 on impact), the four colours (outline #031143, body
-  #0A97F5, highlight #52D2F9, droplets #4CCBF9) and three optional art files.
-  `content/tree/behaviors/W02.tres` `fx_cast` = `water_whip`; damage, range, mana, timing
-  bar unchanged. The old `water_whip_ribbon` stays in the data, unused by the game.
-- **Physics** (`view/verlet_whip.gd`, `VerletWhip`): screen art-pixel space (gravity is
-  screen-down; walking drags it); point 0 pinned to the hand every frame; fixed steps, so
-  any frame rate moves it the same; the seed from the host picks the wave's side and phase.
-  Each step a point is pulled a little toward the shape the bender wills (a line to the
-  target with the wave on it, scaled by the current length), so it glides and sways yet
-  reaches the target on the snap; around the snap it stiffens, the tip is kicked forward
-  (the crack) and droplets splash at the target.
-- **Drawing:** whole art pixels only (no smoothing): body discs along the chain tapering
-  and swelling, a highlight on the top edge where the body is 2+ px thick, a 1 px outline
-  round it. Each pixel belongs to its nearest segment, filed under the tile that part of
-  the whip is over (walls in front cover the far part). Facing a way in the ability's
-  `hand_behind` (N, NE, NW) the whip goes behind the hero. Hand-drawn art drawn on top
-  where the file exists, else a placeholder: `assets/effects/water_whip/tip.png`,
-  `impact.png` (else a ring of droplet pixels), `droplet.png` (else one pixel). Effect art
-  never includes ground, bases or people.
-- **Shown** from the ability's launch frame (`ability_anims` W02 `"launch": {"default": 7}`,
-  frame 8, per facing possible) until its recovery ends; the hero's animation ends 0.1 s
-  after the release, so the hand follows whatever frame shows (idle's, run's).
-- **Body anchors** (`CreatureArtDef.anchors_path` → `content/heroes/pl01_anchors.json`,
-  `anchor(name, anim, dir, frame)`): right_hand per animation, facing and frame (water_whip,
-  idle, run, cast, hit: best guesses for now), left_hand (none yet), feet, head, body_centre
-  (defaults). `tools/hand_anchors.py`: `guess <anim>` (furthest pixel toward the facing),
-  `aseprite <file>` (one #FF00FF pixel per frame on the "Hand <FACING>" layers of
-  `art/heroes/PL-01/water_whip_hand_points.aseprite`) and `png <sheet> <anim>`; marked
-  points always win over guesses. The game never loads marker images.
-- **Debug:** Escape menu → Gameplay test → "Show whip chain points and hand anchors"
-  (`WorldView.debug_whip`, only on your screen). `tests/visual/whip_lab.tscn`: cast in the 8
-  screen directions (1–8), distance Q/E, speed −/= (0 resets), D debug, W walk while
-  casting, R reload the feel file; `WHIP_SHOTS=<dir>` takes screenshots of every direction.
-  The `fx` debug command now plays the hero's animation with the effect.
-- Tests: `tests/unit/test_verlet_whip.gd`.
+User brief: physics-driven water, ported from `docs/reference/water_whip_reference.html` (the
+source of truth). Waterbending: the water never attaches to the hand; it lives in the
+bender's space. Replaces the Verlet whip of 2026-11-25 (removed).
+- **The rope** (`view/water_rope.gd`, `WaterRope`): 24 Verlet points in 2.5D (ground x, y and
+  height z; screen = (x, y × 0.5 − z) × WATER_SCALE, our 2:1 view instead of the reference's
+  0.4), the reference's states in order: idle (Water stance 1: a loop every 3 s at waist
+  height, radius 24, a ripple rolling along it) → spin (near throws) → fly (a timed Catmull-Rom
+  throw, pull-back over the shoulder when near, accelerating, impact 30 frames = 0.5 s after the
+  cast, near or far) → pour (whole until point 12 arrives, each point splashing off) → fall →
+  regroup (the farthest point becomes the front; strays over 12 px soak in, keeping at least 8)
+  → rise → return (one Bézier, out to the hero's left, into the entry point on the right along
+  the orbit's tangent, speed by length, rebuilt on the way and whole before the mark) → wrap
+  (the orbit brakes to its 3 s loop) → idle. Plus `drain`: leaving the stance, the water flows
+  back to where it came from. A cast while the water is still out snaps it onto its orbit and
+  throws at once (the cooldown is shorter than a return).
+- **Every constant** under the reference's name: `content/effects/water_rope_settings.tres`
+  (`WaterRopeSettings`), plus `WATER_SCALE` (1.0: the reference hero is ~36 px, ours ~34 art px),
+  `K` (0.5), `HIP_Z` (12), `FORM_EVERY` (3) and `REBUILD_EVERY` (4).
+- **Water comes from** the hips (the pouch) or, within 3 tiles of a water tile, from the
+  water itself: the orbit forms point by point from there; lost points are rebuilt from there
+  on the way home, chasing the tail at the rope's own speed.
+- **Per hero** (`view/water_ropes.gd`, `WaterRopes`, owned by WorldView): a rope while the host
+  says the hero has one (`Hero.rope`, in snapshots); Water Whip's effect event
+  (`water_whip`, `FxDef.Path.ROPE`) throws it at its host time. 60 steps per second of game
+  time in `_physics_process` (the game speed slows it too); heroes off screen aren't
+  simulated and come back on their orbit. Cosmetic: each player simulates their own.
+- **Drawing:** whole art pixels, four colours (outline #0C447C, body #378ADD, highlight
+  #9DC5EE, droplets #85B7EB) and grey shadows: rippled slices lit by a sun at the top left
+  (dark rim on the shaded side, highlight rows, the second rows inside the body), lit balls
+  for the tip and loose points, splash pixels, puddles fading. Each piece is filed under the
+  tile it is over; on the hero's tile the water behind the hero goes before it.
+- **The Water Pouch** (`content/items/water_pouch.tres`, a bag item, no icon yet): 200 water
+  points (`Hero.water`, saved; private in snapshots). Forming the orbit away from water takes
+  24 (`CombatRules.water_rope_points`), given back when the stance is left; Water Whip takes 4
+  (`AbilityDef.water_cost`, paid when it goes off). Within 3 tiles of water
+  (`water_near_tiles`) water is free. No water: no orbit ("No water for the orbit") and Water
+  Whip is refused (`NO_WATER`, "No water"). **E** at water (within 1.6 tiles,
+  `water_fill_reach`; "[E] Fill Water Pouch") fills it to 200 (`fill_water` intent). New Water
+  heroes start with a full one (`StartingElementDef.bag_ids`); older Water heroes get one on
+  load; Odo and Tamsin sell it (20 g). Water tiles: `WaterTiles` (`sim/world/water_tiles.gd`,
+  also used by the water sound).
+- **Water Whip:** damage, mana 6, range 5, cooldown 2 s and the timing bar unchanged; the hit
+  lands **0.5 s** after the release (was 0.29 s).
+- **Debug:** Escape menu → Gameplay test: "Show water rope points" and "Show the water rope's
+  return path". `tests/visual/water_lab.tscn`: a Water hero in stance 1, a near and a far
+  dummy, click to throw (the `fx` command), the reference's four sliders, Points / Return
+  path / Slow (×1/3), and its readouts; `WATER_SHOTS=<dir>` takes screenshots.
+- Tests: `tests/unit/test_water_rope.gd`, `tests/unit/test_water_pouch.gd`.
+- **Body anchors** (from 2026-11-25, kept): `content/heroes/pl01_anchors.json` and
+  `tools/hand_anchors.py` (guesses, or magenta pixels from the marked Aseprite file).
 
 ## Ability effects from the approved art (stance rework phase 3, 2026-11-23)
 

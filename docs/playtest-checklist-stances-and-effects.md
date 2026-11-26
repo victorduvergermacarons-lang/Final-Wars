@@ -59,16 +59,24 @@ effects: the pictures, whips, streams, waves, burning ground and the rest.
       the top of the screen. Hovering the frame says "+15% damage taken".
 
 ## Whips, streams and lightning (they start at your hand)
-- [ ] Water Whip (in play, drawn in code since 2026-11-25): a flowing whip of water leaves
-      your right hand, sways and glides, then stiffens for an instant and cracks on the
-      target (droplets splash). The damage lands on that crack, a moment after you let go.
-      Then it pulls back into the hand and is gone. Facing up (N, NE, NW) it goes behind you.
-- [ ] Walk while it's out: the whip trails after your hand.
-- [ ] Escape menu → Gameplay test → "Show whip chain points and hand anchors": white dots
-      along the whip, a magenta cross on your hand. Does the cross sit on the hand in every
-      direction? (The hand points are guesses until the marked Aseprite file.)
-- [ ] `tests/visual/whip_lab.tscn` (F6 in the editor): keys 1–8 cast in each direction, −/=
-      slow down and speed up, R reloads `content/effects/water_whip_feel.tres` after you tune it.
+- [ ] Water stance 1 (a Water hero): a thin rope of water forms from your hips and circles
+      you at the waist, one loop every 3 seconds, rippling. Next to a river it forms from the
+      river instead.
+- [ ] Water Whip: the front of the rope peels off the orbit in an arc and lashes the target,
+      faster and faster; close targets get a pull-back over your shoulder first. The hit lands
+      half a second after you let go, near or far.
+- [ ] It pours into the target, then breaks into droplets that fall; the farthest drop leads
+      the water home along one curve (out to your left, in on your right), the rope rebuilding
+      on the way, and it slides back into the orbit and slows down.
+- [ ] The water behind you goes behind your hero; in front, in front.
+- [ ] **Water Pouch** (in your bag; hover it): starts full (200). Entering Water stance 1 away
+      from water takes 24 (leaving gives them back); each Water Whip takes 4. Near water
+      (3 tiles) nothing is spent. Empty and no water near: no orbit ("No water for the
+      orbit") and Water Whip says "No water".
+- [ ] Stand by a river or pond: "[E] Fill Water Pouch" shows; E fills it to 200.
+- [ ] Odo and Tamsin sell the Water Pouch.
+- [ ] `tests/visual/water_lab.tscn` (F6 in the editor): click to throw, Near / Far, Points,
+      Return path, Slow, the four sliders and the readouts under them.
 - [ ] Fire Whip: the same with fire, and it pulls the first enemy toward you.
 - [ ] Leeching Tide: a dark blue stream flowing from the target back to you.
 - [ ] `fx F12` (Fire Stream) and `fx W11` (Water Jet): a straight, thick stream that flows

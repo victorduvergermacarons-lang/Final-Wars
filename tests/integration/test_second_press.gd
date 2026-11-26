@@ -32,6 +32,10 @@ func before_each() -> void:
 			CharacterData.new_character("Presser", ContentDB.heroes[&"adventurer"]))
 	hero = session.local_hero()
 	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
+	# Water to bend (the Water Pouch and the Water stance 1 rope, 2026-11-26).
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.rope = true
 	client = ClientState.new()
 	InputActions.apply_action_bar_keys(client.action_bar)
 	view = WorldView.new()

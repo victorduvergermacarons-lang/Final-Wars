@@ -24,6 +24,10 @@ func before_each() -> void:
 	world = World.new(db.zones.values(), db.rules, 5, &"town", db.quests)
 	hero = world.add_saved_hero(CharacterData.new_character("Blade", db.heroes[&"adventurer"]), db)
 	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
+	# Water to bend (the Water Pouch and the Water stance 1 rope, 2026-11-26).
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.rope = true
 	sim = world.zone_of(hero.id)
 	# A wolf right next to the hero, on the first free walkable neighbour.
 	for d in GridModel.DIRECTIONS:
