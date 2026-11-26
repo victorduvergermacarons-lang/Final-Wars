@@ -40,6 +40,9 @@ enum TargetType {
 @export var min_range: int = 0
 @export var max_range: int = 1
 @export var mana_cost: float = 0.0
+## Water points a cast takes from the Water Pouch (none near water) and the Water
+## stance 1 rope it needs (Water Whip 4; 2026-11-26).
+@export var water_cost: int = 0
 @export var cooldown_seconds: float = 0.0
 ## Whether using it triggers (and is blocked by) the global cooldown.
 @export var on_gcd: bool = true

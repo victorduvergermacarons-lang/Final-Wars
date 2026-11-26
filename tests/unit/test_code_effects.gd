@@ -71,7 +71,7 @@ func test_whip_reaches_out_snaps_and_pulls_back() -> void:
 	assert_almost_eq(fx.reach_at(0.0), 0.0, 0.001)
 	assert_almost_eq(fx.reach_at(float(fx.snap_frame) / fx.fps), 1.0, 0.001)
 	assert_lt(fx.reach_at(float(fx.snap_frame + fx.retract_frames / 2) / fx.fps), 1.0)
-	assert_eq(ContentDB.abilities[&"W02"].release_delay_seconds, float(fx.hit_frame) / fx.fps, "the hit on the snap")
+	assert_eq(ContentDB.abilities[&"W02"].release_delay_seconds, 0.5, "the rope's hit, 0.5 s after the release (2026-11-26)")
 
 
 func test_lightning_rejags_from_the_seed() -> void:
@@ -173,8 +173,8 @@ func test_clients_rebuild_the_same_shapes() -> void:
 
 func test_effects_drawn_in_code_have_what_they_need() -> void:
 	for fx: FxDef in ContentDB.effects.values():
-		if fx.ribbon and fx.path == FxDef.Path.VERLET:
-			assert_not_null(fx.feel, "%s: its feel" % fx.id)
+		if fx.ribbon and fx.path == FxDef.Path.ROPE:
+			pass # the hero's own rope is drawn (WaterRopes), no strip
 		elif fx.ribbon:
 			assert_not_null(fx.sheet, "%s: its strip" % fx.id)
 		if fx.front:

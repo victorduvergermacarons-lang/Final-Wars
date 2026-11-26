@@ -26,6 +26,8 @@ extends Resource
 @export var starting_mastery: float = 25.0
 ## Worn from the start (Chest and Legs).
 @export var clothes_ids: Array[StringName] = []
+## Other things in the bag at the start (Water: the Water Pouch, full).
+@export var bag_ids: Array[StringName] = []
 ## Its two most important stats (Stat.Id), shown on the element screen; quest
 ## rewards for this element lean on them.
 @export var key_stats: Array[int] = []

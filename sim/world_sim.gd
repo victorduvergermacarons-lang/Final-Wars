@@ -399,6 +399,7 @@ func step() -> Array[Dictionary]:
 	_update_quests()
 	_check_stances()
 	_track_hero_anims()
+	_track_water()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
 	_record_history()
@@ -1674,6 +1675,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_talk(hero, intent.get("npc", -1))
 		"examine":
 			reason = _intent_examine(hero, intent.get("tile", Vector2i(-99, -99)))
+		"fill_water":
+			reason = _intent_fill_water(hero)
 		"accept_shared_quest":
 			reason = _intent_accept_shared_quest(hero, StringName(intent.get("quest", &"")))
 		"finish_act":
@@ -1887,6 +1890,8 @@ func _stance_breaker(hero: Hero) -> String:
 ## Sets (or with stance 0, clears) the hero's stance; emits "stance" for every
 ## player (the view starts its look and entry animation from `stance_at`).
 func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
+	if hero.rope and not (tree == "Water" and n == 1):
+		_drop_rope(hero)
 	if n <= 0 or tree == "":
 		if hero.stance == 0:
 			return
@@ -1897,6 +1902,64 @@ func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
 		hero.stance = n
 	hero.stance_at = now
 	emit({"type": "stance", "source": hero.id, "tree": hero.stance_tree, "stance": hero.stance, "why": why})
+	if hero.stance_tree == "Water" and hero.stance == 1:
+		_form_rope(hero, true)
+
+
+# --- Water (the Water Pouch and the Water stance 1 rope, 2026-11-26) ---------------
+
+## Each tick: who is near water, and the rope forming once water is at hand (walking
+## up to a river, filling the pouch).
+func _track_water() -> void:
+	var idx := WaterTiles.of(zone)
+	for hero: Hero in _heroes.values():
+		hero.near_water = hero.alive and WaterTiles.nearest(idx, hero.move.pos, rules.water_near_tiles) != null
+		if hero.stance_tree == "Water" and hero.stance == 1 and not hero.rope and hero.alive:
+			_form_rope(hero, false)
+
+
+## Forms the Water stance 1 rope: from water nearby (free), else from the pouch
+## (water_rope_points taken; put back when it goes). `tell`: say why it can't.
+func _form_rope(hero: Hero, tell: bool) -> void:
+	if hero.rope:
+		return
+	var need := rules.water_rope_points
+	if hero.near_water:
+		hero.rope = true
+		hero.rope_from_pouch = false
+	elif hero.has_water_pouch() and hero.water >= need:
+		hero.water -= need
+		hero.rope = true
+		hero.rope_from_pouch = true
+	elif tell:
+		emit({"type": "no_water", "target": hero.id, "pouch": hero.has_water_pouch()})
+		return
+	if hero.rope:
+		emit({"type": "rope", "source": hero.id, "on": true, "from": "pouch" if hero.rope_from_pouch else "water"})
+
+
+## The rope goes: its water back into the pouch if it came from there.
+func _drop_rope(hero: Hero) -> void:
+	if not hero.rope:
+		return
+	if hero.rope_from_pouch:
+		hero.water = mini(hero.water + rules.water_rope_points, rules.water_pouch_capacity)
+	hero.rope = false
+	hero.rope_from_pouch = false
+	emit({"type": "rope", "source": hero.id, "on": false})
+
+
+## E at water: fills the Water Pouch.
+func _intent_fill_water(hero: Hero) -> String:
+	if not hero.alive:
+		return "dead"
+	if not hero.has_water_pouch():
+		return "no_pouch"
+	if WaterTiles.nearest(WaterTiles.of(zone), hero.move.pos, rules.water_fill_reach) == null:
+		return "too_far"
+	hero.water = rules.water_pouch_capacity
+	emit({"type": "pouch_filled", "target": hero.id, "water": hero.water})
+	return ""
 
 
 func _intent_stance(hero: Hero, tree: String, n: int, target_id: int, aim: Variant) -> String:

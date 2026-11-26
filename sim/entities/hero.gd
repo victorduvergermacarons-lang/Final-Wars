@@ -27,6 +27,24 @@ var records := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests"
 ## Bad-luck bonus added to boss rolls (LootRolls): +10 per Need roll lost, +15 per
 ## chosen Pass, 0 after winning one. Saved with the character.
 var loot_bonus := 0
+## Water points in the Water Pouch (it counts while a pouch is in the bag; saved).
+var water := 0
+## Whether the Water stance 1 rope is formed, and whether its water came from the
+## pouch (put back on leaving the stance) or from water nearby.
+var rope := false
+var rope_from_pouch := false
+## Host: whether a water tile is near (updated each tick).
+var near_water := false
+
+const WATER_POUCH := &"water_pouch"
+
+
+func has_water_pouch() -> bool:
+	for i in bag.size():
+		var it := bag.item_at(i)
+		if it != null and it.id == WATER_POUCH:
+			return true
+	return false
 ## Items and gold this hero has put into a trade window (held by the host until the
 ## trade ends): [[item id, count, bind], ...]. Kept so a save made mid-trade keeps
 ## them (CharacterData.capture puts them back in the saved bag).

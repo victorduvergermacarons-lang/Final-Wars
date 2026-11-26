@@ -186,6 +186,18 @@ const GAME_SPEED_MAX := 2.0
 ## The largest party scaled for.
 @export var party_max_size: int = 4
 
+@export_group("Water (waterbending)")
+## A Water Pouch holds this many water points (2026-11-26).
+@export var water_pouch_capacity: int = 200
+## The Water stance 1 rope is this many points: forming it away from water takes
+## them from the pouch, leaving the stance puts them back.
+@export var water_rope_points: int = 24
+## Within this many tiles of a water tile, water is unlimited: the rope forms from
+## it and abilities spend nothing from the pouch.
+@export var water_near_tiles: float = 3.0
+## E fills the pouch within this many tiles of a water tile.
+@export var water_fill_reach: float = 1.6
+
 @export_group("Dungeons")
 ## The smallest party that may enter a dungeon.
 @export var dungeon_min_party: int = 3

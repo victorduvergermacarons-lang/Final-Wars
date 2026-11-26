@@ -18,6 +18,8 @@ const REASONS := {
 	"out_of_range": "Out of range",
 	"no_line_of_sight": "Target not in line of sight",
 	"not_enough_mana": "Not enough mana",
+	"no_water": "No water (fill your Water Pouch at water with E)",
+	"no_pouch": "You have no Water Pouch",
 	"on_cooldown": "Not ready yet",
 	"invalid_target": "Invalid target",
 	"in_combat": "You can't do that in combat",
@@ -721,6 +723,11 @@ func _on_events(events: Array) -> void:
 					client.error(REASONS[e.reason] % int(e.get("need", 3)))
 				elif e.reason != "not_ready":
 					client.error(REASONS.get(e.reason, String(e.reason).capitalize()))
+			"pouch_filled":
+				client.say("Water Pouch filled (%d / %d)." % [int(e.water), session.rules().water_pouch_capacity])
+			"no_water":
+				client.error("No water for the orbit: fill your Water Pouch at water with E" if e.get("pouch", false)
+						else "No water for the orbit: you have no Water Pouch")
 			"act_complete":
 				_act_end_pending = e # opens once the hand-in conversation is over
 				client.say("%s is complete." % ActEndScreen.TITLES.get(int(e.act), "Act %d" % int(e.act)))

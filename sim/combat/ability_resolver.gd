@@ -19,6 +19,7 @@ enum Result {
 	STUNNED,
 	SILENCED,
 	BUSY, ## Already casting, winding up or channelling.
+	NO_WATER, ## Needs the Water stance 1 rope and water (the pouch, or water near).
 }
 
 
@@ -49,14 +50,27 @@ static func _check_cost(ctx: CombatContext, caster: Actor, ability: AbilityDef, 
 		return Result.SILENCED
 	if caster.mana + Cooldowns.EPSILON < ability.mana_cost:
 		return Result.NOT_ENOUGH_MANA
+	if not has_water(caster, ability):
+		return Result.NO_WATER
 	if not caster.cooldowns.can_use(ability, ctx.now, max_charges(caster, ability, ctx.now), check_gcd):
 		return Result.ON_COOLDOWN
 	return Result.OK
 
 
+## Whether a hero has the water an ability needs (AbilityDef.water_cost): the Water
+## stance 1 rope, and water near or enough in the pouch. Enemies need none.
+static func has_water(caster: Actor, ability: AbilityDef) -> bool:
+	if ability.water_cost <= 0 or not (caster is Hero):
+		return true
+	var h := caster as Hero
+	return h.rope and (h.near_water or (h.has_water_pouch() and h.water >= ability.water_cost))
+
+
 ## Spends mana and starts the cooldown (haste shortens it), and the GCD if asked.
 static func pay(ctx: CombatContext, caster: Actor, ability: AbilityDef, with_gcd: bool = true) -> void:
 	caster.mana -= ability.mana_cost
+	if ability.water_cost > 0 and caster is Hero and not (caster as Hero).near_water:
+		(caster as Hero).water = maxi((caster as Hero).water - ability.water_cost, 0)
 	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds if with_gcd else 0.0,
 			caster.buffs.cooldown_multiplier(ctx.now), max_charges(caster, ability, ctx.now))
 

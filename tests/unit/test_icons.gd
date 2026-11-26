@@ -12,6 +12,7 @@ const KNOWN_GAPS := [
 	&"quarrymans_gloves", &"quarrymans_hood", &"quarrymans_boots", &"granite_ring", &"bedrock_charm",
 	&"riverweave_gloves", &"riverweave_hood", &"riverweave_sandals", &"tidestone_ring", &"pearl_pendant",
 	&"emberstitch_gloves", &"emberstitch_cap", &"emberstitch_boots", &"cinder_ring", &"ashglass_pendant",
+	&"water_pouch", # 2026-11-26: no icon in the sheets yet
 	&"breezecloth_wraps", &"breezecloth_hood", &"breezecloth_shoes", &"gale_ring", &"feather_charm",
 	# The scrolls of the 9 abilities the stance rework added (2026-11-23).
 	&"scorch_scroll", &"kindling_heart_scroll", &"shrapnel_scroll", &"iron_cable_scroll",

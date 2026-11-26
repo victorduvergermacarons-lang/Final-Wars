@@ -386,6 +386,8 @@ func talk_to_nearest() -> void:
 		client.error("There's no one to talk to here")
 	elif what.kind == "examine":
 		session.send_intent({"type": "examine", "tile": what.tile})
+	elif what.kind == "fill":
+		session.send_intent({"type": "fill_water"})
 	else:
 		session.send_intent({"type": "talk", "npc": what.npc.id})
 
@@ -406,7 +408,12 @@ static func interaction(session) -> Dictionary:
 			best_spot = p
 	if best_spot != null:
 		return {"kind": "examine", "tile": best_spot}
-	return {"kind": "talk", "npc": npc} if npc != null else {}
+	if npc != null:
+		return {"kind": "talk", "npc": npc}
+	if hero.has_water_pouch() and hero.water < session.rules().water_pouch_capacity and WaterTiles.nearest(WaterTiles.of(session.zone()), hero.move.pos,
+			session.rules().water_fill_reach) != null:
+		return {"kind": "fill"}
+	return {}
 
 
 ## The NPC E would talk to: the one in front of the local hero, else the nearest

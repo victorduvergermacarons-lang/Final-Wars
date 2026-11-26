@@ -69,7 +69,7 @@ static func usability(hero: Hero, ability: AbilityDef, target: Actor, grid: Grid
 			return Usability.READY
 		AbilityResolver.Result.ON_COOLDOWN:
 			return Usability.COOLDOWN
-		AbilityResolver.Result.NOT_ENOUGH_MANA:
+		AbilityResolver.Result.NOT_ENOUGH_MANA, AbilityResolver.Result.NO_WATER:
 			return Usability.NO_MANA
 		AbilityResolver.Result.OUT_OF_RANGE, AbilityResolver.Result.NO_LINE_OF_SIGHT:
 			return Usability.OUT_OF_RANGE
@@ -83,7 +83,7 @@ static func _shape_usability(ctx: CombatContext, hero: Hero, ability: AbilityDef
 	match AbilityResolver.validate(ctx, hero, ability, null):
 		AbilityResolver.Result.ON_COOLDOWN:
 			return Usability.COOLDOWN
-		AbilityResolver.Result.NOT_ENOUGH_MANA:
+		AbilityResolver.Result.NOT_ENOUGH_MANA, AbilityResolver.Result.NO_WATER:
 			return Usability.NO_MANA
 	var hits := false
 	match ability.shape:
@@ -107,7 +107,7 @@ static func _m3_usability(grid: GridModel, rules: CombatRules, hero: Hero, abili
 			return Usability.READY
 		AbilityResolver.Result.ON_COOLDOWN, AbilityResolver.Result.BUSY:
 			return Usability.COOLDOWN
-		AbilityResolver.Result.NOT_ENOUGH_MANA:
+		AbilityResolver.Result.NOT_ENOUGH_MANA, AbilityResolver.Result.NO_WATER:
 			return Usability.NO_MANA
 		AbilityResolver.Result.OUT_OF_RANGE, AbilityResolver.Result.NO_LINE_OF_SIGHT:
 			# Aimed abilities can always be aimed elsewhere with the mouse.

@@ -1,15 +1,13 @@
 [gd_resource type="Resource" script_class="FxDef" format=3]
 
 [ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
-[ext_resource type="Resource" path="res://content/effects/water_whip_feel.tres" id="2_feel"]
 
 [resource]
 script = ExtResource("1_fx")
 id = &"water_whip"
 frames = 1
-fps = 24.0
+fps = 60.0
 rotate = false
 ribbon = true
 path = 4
-feel = ExtResource("2_feel")
-hit_frame = 7
+hit_frame = 30

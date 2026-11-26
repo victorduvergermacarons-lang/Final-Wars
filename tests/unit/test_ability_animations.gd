@@ -120,6 +120,10 @@ func test_fire_kick_sends_its_flame_arc_to_every_player() -> void:
 func test_water_whip_window_and_the_hit_on_the_snap() -> void:
 	var bar: TimingBarDef = ContentDB.abilities[&"W02"].timing_bar
 	assert_eq(bar.hold_zones, [Vector2(0.45, 2.3)] as Array[Vector2], "0.45 s to 2.75 s (was 0.75 s)")
+	# Water to bend (2026-11-26): a pouch and the stance 1 rope.
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.rope = true
 	var hp := wolf.hp
 	world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": wolf.id})
 	world.step()
@@ -132,7 +136,7 @@ func test_water_whip_window_and_the_hit_on_the_snap() -> void:
 	var events := world.step()
 	assert_eq(_of(events, "timing_result", &"W02")[0].grade, "perfect")
 	assert_eq(_of(events, "fx", &"W02").map(func(e): return e.fx), [&"water_whip"],
-			"the lash (a Verlet whip since 2026-11-25), at the release")
+			"the rope thrown (since 2026-11-26), at the release")
 	assert_eq(wolf.hp, hp, "not yet: the lash is still curling")
 	var fx: FxDef = ContentDB.effects[&"water_whip"]
 	assert_almost_eq(ContentDB.abilities[&"W02"].release_delay_seconds, fx.hit_frame / fx.fps, 0.001)

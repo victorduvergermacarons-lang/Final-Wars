@@ -77,7 +77,6 @@ func items(t: float, actors: Array, telegraphs: Array, abilities: Dictionary, ef
 		art_for: Callable, world: Dictionary = {}) -> Array:
 	var out := []
 	var keep := []
-	whips = []
 	var by_id := {}
 	for a in actors:
 		by_id[a.id] = a
@@ -98,9 +97,8 @@ func items(t: float, actors: Array, telegraphs: Array, abilities: Dictionary, ef
 			if by_id.has(e.on):
 				out.append_array(held_items(fx, since, by_id[e.on]))
 			continue
-		if fx.ribbon and fx.path == FxDef.Path.VERLET and fx.feel != null:
-			out.append_array(verlet_items(fx, e, since, by_id.get(e.source), art_for, world))
-			continue
+		if fx.ribbon and fx.path == FxDef.Path.ROPE:
+			continue # the hero's own rope is thrown (WaterRopes)
 		if fx.ribbon:
 			out.append_array(ribbon_items(fx, e.from, e.to, since, e.seed, e.reach, by_id.get(e.source), art_for,
 					String(e.ability)))
@@ -240,61 +238,6 @@ func items(t: float, actors: Array, telegraphs: Array, abilities: Dictionary, ef
 		if _particles.alive(i):
 			var pp := _particles.pos[i]
 			out.append({"particle": i, "pos": Vector2(pp.x, pp.y), "lift": pp.z, "z_tile": Vector2i(_particles.base_tile[i])})
-	return out
-
-
-## The Verlet whips drawn this frame (WorldView draws their debug view on top).
-var whips: Array = []
-
-
-## A Verlet whip (FxDef.Path.VERLET: the Water Whip) at `since`: one item per chain
-## segment with pixels this frame, filed under the tile that part of it is over
-## ("verlet", "seg"), plus one for its droplets, tip and splash ("extras"). The
-## chain lives on the event; the hand is the hero's right-hand anchor on the frame it
-## shows (`world` "pose": Callable(Actor) -> the animator's pick; "feet": Callable(Actor)
-## -> its drawn feet on screen; "ground": Callable(Vector2) -> the ground's height
-## there). Nothing shows before the ability's launch frame; facing a way listed in
-## its "hand_behind", the whip goes behind the hero.
-func verlet_items(fx: FxDef, e: Dictionary, since: float, caster: Actor, art_for: Callable, world: Dictionary) -> Array:
-	var out := []
-	var s := PixelCamera.ART_SCALE
-	var art: CreatureArtDef = art_for.call(caster) if caster != null else null
-	var own: Dictionary = art.ability_anim(e.ability) if art != null else {}
-	var pose: Dictionary = world.pose.call(caster) if caster != null and world.has("pose") else {}
-	var from: Vector2 = caster.move.pos if caster != null else e.from
-	var dir := str(pose.get("dir", ""))
-	if dir == "" and art != null:
-		dir = art.direction_for_angle((e.to - from).angle(), caster.facing)
-	var showing: bool = not own.is_empty() and str(pose.get("anim", "")) == str(own.anim)
-	if not e.has("whip"):
-		if showing and int(pose.get("frame", 0)) < art.launch_frame(e.ability, dir):
-			return out # not launched yet
-		e["whip"] = VerletWhip.new(fx.feel, fx.hit_seconds(), int(e.seed))
-		e["hand_off"] = Vector2.ZERO
-	var whip: VerletWhip = e.whip
-	if art != null and not own.is_empty():
-		# The hand on the frame showing; once the ability's animation is over (the hero
-		# back to idle or walking), that pose's hand, else its last frame's.
-		var a = art.anchor("right_hand", str(pose.get("anim", "")), dir, int(pose.get("frame", 0))) \
-				if not pose.is_empty() else null
-		if a == null:
-			a = art.anchor("right_hand", str(own.anim), dir, 999)
-		if a != null:
-			e.hand_off = Vector2(a.x * (-1.0 if pose.get("flip", false) else 1.0), -a.y)
-	var ground: Callable = world.get("ground", func(_p): return 0.0)
-	var feet: Vector2 = world.feet.call(caster) if caster != null and world.has("feet") \
-			else Iso.to_screen(from, float(ground.call(from)))
-	var target := Iso.to_screen(e.to, float(ground.call(e.to)) + RibbonPath.END_LIFT) / s
-	whip.advance(since, feet / s + e.hand_off, target)
-	if not whip.alive():
-		return out
-	whips.append(whip)
-	var behind := art != null and art.hand_behind(e.ability, dir)
-	var n := whip.pos.size()
-	for seg in whip.rasterize():
-		var u := (float(seg) + 0.5) / float(n - 1) * whip.length_share(whip.time)
-		out.append({"verlet": whip, "seg": seg, "pos": from.lerp(e.to, u), "behind": behind})
-	out.append({"verlet": whip, "extras": true, "pos": e.to, "behind": false})
 	return out
 
 
