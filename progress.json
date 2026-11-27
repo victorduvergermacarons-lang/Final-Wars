@@ -8546,6 +8546,121 @@
       "preview": [
         "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-west_2026-11-26_preview.gif"
       ]
+    },
+    "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west": {
+      "date": "2026-11-27",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_1.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_2.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_3.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_4.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_5.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_6.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_7.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_8.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02053321773476071
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west": {
+      "date": "2026-11-27",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_1.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_2.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_3.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_4.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_5.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_6.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_7.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_8.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02386933598915736
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_preview.gif"
+      ]
+    },
+    "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south": {
+      "date": "2026-11-27",
+      "files": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_1.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_2.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_3.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_4.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_5.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_6.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_7.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_8.png",
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.0185870986117257
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_preview.gif"
+      ]
+    },
+    "PL-01-1+earth-stance-2-plants-the-feet-and-slams@east": {
+      "date": "2026-11-27",
+      "files": [
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_1.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_2.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_3.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_4.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_5.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_6.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_7.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_8.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.020609335501988728
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_preview.gif"
+      ]
+    },
+    "PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east": {
+      "date": "2026-11-27",
+      "files": [
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_1.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_2.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_3.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_4.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_5.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_6.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_7.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_8.png",
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_9.png"
+      ],
+      "usage": {
+        "usd": 0.0,
+        "type": "generations",
+        "generations": 1,
+        "cost_if_paid": 0.02384572711918089
+      },
+      "preview": [
+        "art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_preview.gif"
+      ]
     }
   },
   "failures": {},
@@ -9524,6 +9639,18 @@
         "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-east",
         "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north",
         "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@north-west"
+      ],
+      "failed": [],
+      "stopped": ""
+    },
+    {
+      "date": "2026-11-27",
+      "made": [
+        "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west",
+        "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west",
+        "PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south",
+        "PL-01-1+earth-stance-2-plants-the-feet-and-slams@east",
+        "PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east"
       ],
       "failed": [],
       "stopped": ""

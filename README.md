@@ -113,6 +113,36 @@ keepers into the game's `assets/` folder by hand.
 
 ## Drafts
 
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west · Hero base body (2026-11-27)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@west_2026-11-27_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west · Hero base body (2026-11-27)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south-west_2026-11-27_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
+### PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south · Hero base body (2026-11-27)
+
+![PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south](art/PL-01/PL-01-1+fire-stance-5-sweeps-both-arms-in-a-wide@south_2026-11-27_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: fire stance 5: sweeps both arms in a wide circle around the body as if a fire dragon coils around it, ending in a wide stance with arms spread</sub>
+
+### PL-01-1+earth-stance-2-plants-the-feet-and-slams@east · Hero base body (2026-11-27)
+
+![PL-01-1+earth-stance-2-plants-the-feet-and-slams@east](art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@east_2026-11-27_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earth stance 2: plants the feet and slams both forearms together in front of the chest, ending with fists raised in a heavy guard</sub>
+
+### PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east · Hero base body (2026-11-27)
+
+![PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east](art/PL-01/PL-01-1+earth-stance-2-plants-the-feet-and-slams@north-east_2026-11-27_preview.gif)
+
+<sub>Made from approved/PL-01-1.png: earth stance 2: plants the feet and slams both forearms together in front of the chest, ending with fists raised in a heavy guard</sub>
+
 ### PL-01-1+fire-stance-4-presses-the-palms-together@south · Hero base body (2026-11-26)
 
 ![PL-01-1+fire-stance-4-presses-the-palms-together@south](art/PL-01/PL-01-1+fire-stance-4-presses-the-palms-together@south_2026-11-26_preview.gif)
