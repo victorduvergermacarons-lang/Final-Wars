@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="b"]
+[ext_resource type="Resource" path="res://content/abilities/F23_burst.tres" id="x"]
+
+[resource]
+script = ExtResource("b")
+id = &"overheat_burn"
+display_name = "Overheated"
+duration_seconds = 8.0
+is_debuff = true
+ramps = true
+end_ability = ExtResource("x")
+end_radius = 1.5

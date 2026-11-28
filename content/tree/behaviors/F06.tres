@@ -26,3 +26,4 @@ effects = Array[ExtResource("1_sweiq")]([SubResource("Resource_tt53n"), SubResou
 targeting = 2
 aim = 1
 pierce = true
+release_delay_fixed = 0.75

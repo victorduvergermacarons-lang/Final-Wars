@@ -19,4 +19,5 @@ mana_cost = 15.0
 ranged = true
 effects = Array[ExtResource("1_lpfdy")]([SubResource("Resource_m3hv6")])
 targeting = 2
+stops_at_aim = true
 impact_radius = 1.0

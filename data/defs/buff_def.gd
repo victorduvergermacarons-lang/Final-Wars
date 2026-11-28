@@ -43,6 +43,17 @@ extends Resource
 ## Gliding (Air Step, stance rework): the unit crosses gaps (holes in the map) at
 ## the height it left from, and drops from any height without falling.
 @export var glides: bool = false
+## Flies while it lasts (Jet Propulsion): crosses any walkable tile whatever its height,
+## and walls, hedges and water up to a level above, like the Sunscale Drake; lands on the
+## nearest walkable tile when it ends.
+@export var flies: bool = false
+## A damage over time that grows tick by tick (Overheat: stacks once a second): tick k of
+## n deals 2k / (n + 1) of an even tick, so the total is unchanged.
+@export var ramps: bool = false
+## Used on the owner's position by whoever applied the buff when it runs out (not when
+## dispelled or on death): Overheat's burst on every tile within 1 of the target.
+@export var end_ability: AbilityDef
+@export var end_radius: float = 1.5
 ## No spells (element abilities, heals, magical attacks); weapon arts still work.
 @export var silences: bool = false
 ## Like a stun, but any damage wakes the unit up.

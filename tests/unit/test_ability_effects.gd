@@ -74,6 +74,8 @@ func test_held_effects_ride_on_the_abilities_buffs() -> void:
 
 
 func test_painter_draws_buffs_projectiles_and_zones() -> void:
+	# The sprites are the low graphics fallback since the fire physics (2026-11-28).
+	FireEffects.low_graphics = true
 	var painter := FxPainter.new()
 	var art_for := func(_a): return null
 	hero.buffs.apply(ContentDB.buffs[&"scorched"], sim.now, 0.0, hero.id)
@@ -90,6 +92,12 @@ func test_painter_draws_buffs_projectiles_and_zones() -> void:
 		assert_almost_eq(flying[0].pos.x, hero.move.pos.x + 3.0, 0.01, "12 tiles/s for 0.25 s")
 	assert_eq(items.filter(func(i): return i.has("fx") and i.fx.id == &"flame_dash_trail").size(), 2,
 			"the trail on each burning tile")
+	# With the fire physics on, the fire draws them instead of the sprites.
+	FireEffects.low_graphics = false
+	items = painter.items(sim.now + 0.25, [hero], [], ContentDB.abilities, ContentDB.effects, art_for,
+			{"projectiles": [proj], "zones": [zone], "buffs": ContentDB.buffs})
+	assert_eq(items.filter(func(i): return i.has("fx") and i.fx.id in [&"fireball", &"flame_dash_trail"]).size(), 0,
+			"no flame sprites under the fire physics")
 
 
 func test_ice_spikes_land_with_their_tiles() -> void:

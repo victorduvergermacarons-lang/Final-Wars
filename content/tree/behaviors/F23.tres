@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="e"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="d"]
+[ext_resource type="Resource" path="res://content/buffs/overheat_burn.tres" id="ob"]
+
+[sub_resource type="Resource" id="a"]
+script = ExtResource("e")
+kind = 8
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+can_crit = false
+buff = ExtResource("ob")
+power = 1.2
+
+[resource]
+script = ExtResource("d")
+id = &"F23"
+max_range = 6
+mana_cost = 12.0
+effects = Array[ExtResource("e")]([SubResource("a")])
+targeting = 1

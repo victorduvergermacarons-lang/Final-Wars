@@ -84,8 +84,16 @@ func expire(now: float) -> Array[StringName]:
 		if not has(id, now):
 			gone.append(id)
 	for id in gone:
+		var d: BuffDef = _active[id].def
+		if d.end_ability != null:
+			ended.append({"ability": d.end_ability, "radius": d.end_radius, "source": _active[id].source})
 		_active.erase(id)
 	return gone
+
+
+## Buffs with an end ability that ran out (expire): [{"ability", "radius", "source"}];
+## the world uses and clears them.
+var ended: Array = []
 
 
 ## `stats` with every active buff applied: all flat bonuses, then all multipliers.
@@ -148,6 +156,10 @@ func zone_seconds_bonus(now: float) -> float:
 	for d in _active_defs(now):
 		s += d.zone_seconds_bonus
 	return s
+
+
+func is_flying(now: float) -> bool:
+	return _active_defs(now).any(func(d): return d.flies)
 
 
 func is_gliding(now: float) -> bool:
@@ -285,7 +297,12 @@ func due_ticks(now: float) -> Array:
 		var b: Dictionary = _active[id]
 		while b.tick_amount > 0.0 and b.next_tick <= now + Cooldowns.EPSILON \
 				and b.next_tick <= b.expires + Cooldowns.EPSILON:
-			out.append({"buff": id, "amount": b.tick_amount, "source": b.source,
+			var amount: float = b.tick_amount
+			if b.def.ramps:
+				var n := maxf(1.0, roundf(b.def.duration_seconds / maxf(b.def.tick_seconds, 0.01)))
+				b["k"] = int(b.get("k", 0)) + 1
+				amount *= 2.0 * minf(float(b.k), n) / (n + 1.0)
+			out.append({"buff": id, "amount": amount, "source": b.source,
 					"damage": b.tick_damage, "damage_type": b.damage_type})
 			b.next_tick += b.def.tick_seconds
 	return out

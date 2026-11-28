@@ -52,6 +52,8 @@ func on_events(events: Array, effects: Dictionary) -> void:
 			_codes.append({"code": str(e.code), "on": int(e.get("on", -1)), "at": float(e.get("at", 0.0)),
 					"for": float(e.get("for", 2.0))})
 			continue
+		if FireEffects.draws(StringName(e.get("ability", ""))):
+			continue # the fire physics draws it (FireEffects)
 		var fx: FxDef = effects.get(StringName(e.get("fx", "")))
 		if fx == null:
 			continue
@@ -184,6 +186,8 @@ func items(t: float, actors: Array, telegraphs: Array, abilities: Dictionary, ef
 		var ability: AbilityDef = abilities.get(StringName(p.get("ability", "")))
 		if ability == null or ability.fx_projectile == &"":
 			continue
+		if FireEffects.draws(ability.id):
+			continue # its head and trail are the fire physics' (Fire Dart, Fireball)
 		var fx: FxDef = effects.get(ability.fx_projectile)
 		if fx == null:
 			continue

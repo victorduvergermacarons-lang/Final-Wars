@@ -18,6 +18,16 @@ extends RefCounted
 ## - TILES: the tile under the aim (terrain, ground zones), as before.
 
 
+## How far a shape reaches: its hitbox's reach, or for a line that grows with Mastery
+## (Fire Stream, AbilityDef.reach_by_mastery) the flame's reach at the caster's Mastery.
+static func reach_of(ctx: CombatContext, caster: Actor, ability: AbilityDef) -> float:
+	var r := ability.reach_by_mastery
+	if r == Vector2.ZERO or not (caster is Hero):
+		return ability.hitbox.reach
+	var g := FireLookDef.growth(Mastery.total(caster, ability.tree, ctx.now))
+	return r.x + (r.y - r.x) * g
+
+
 ## Why the cast can't go off (Result), checked before paying.
 static func validate(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
 	var hb := ability.hitbox
@@ -129,7 +139,11 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 			hit_circle(ctx, caster, ability, origin, hb.radius, events, ability.target == AbilityDef.TargetType.ALLY)
 		HitboxDef.Shape.PROJECTILE:
 			AbilityResolver.apply_caster_effects(ctx, caster, ability, events)
-			var reach := Hitbox.clear_distance(ctx.grid, origin, dir, hb.reach, ctx.rules.los_height_tolerance)
+			var far := hb.reach
+			if ability.stops_at_aim:
+				# Fireball: it bursts at the aimed point if nothing is hit before it
+				far = clampf(origin.distance_to(point), 0.5, hb.reach)
+			var reach := Hitbox.clear_distance(ctx.grid, origin, dir, far, ctx.rules.los_height_tolerance)
 			var p := Projectile.new()
 			p.caster_id = caster.id
 			p.ability = ability
@@ -176,8 +190,9 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 static func hit_shape(ctx: CombatContext, caster: Actor, ability: AbilityDef, origin: Vector2, dir: Vector2,
 		point: Vector2, events: Array[Dictionary]) -> void:
 	var hb := ability.hitbox
-	var reach := Hitbox.clear_distance(ctx.grid, origin, dir, hb.reach, ctx.rules.los_height_tolerance) \
-			if hb.shape == HitboxDef.Shape.RECT else hb.reach
+	var full := reach_of(ctx, caster, ability)
+	var reach := Hitbox.clear_distance(ctx.grid, origin, dir, full, ctx.rules.los_height_tolerance) \
+			if hb.shape == HitboxDef.Shape.RECT else full
 	var victims: Array[Actor] = []
 	for a in _candidates(ctx, caster, ability):
 		var c := a.move.pos

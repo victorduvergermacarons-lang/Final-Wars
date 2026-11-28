@@ -24,7 +24,6 @@
 	"F09": {"cast": "fire_punch_burst"},
 	"F03": {"projectile": "fire_dart"},
 	"F05": {"tiles": "flame_dash_trail"},
-	"F11": {"held": "jet_propulsion"},
 	"F15": {"cast": "phoenix_kick_ring"},
 	"F07": {"projectile": "fireball"},
 	"F21": {"held": "solar_zenith_halo"},

@@ -4,6 +4,7 @@ extends GutTest
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
 const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09", "F22",
+		"F10", "F11", "F12", "F14", "F15", "F16", "F18", "F23", # fire physics, 2026-11-28
 		"W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09",
 		"A01", "A02", "A03", "A05", "E01", "E02", "E03", "E04", "E05",
 		"S01", "S04", "B01", "B02", "H01", "H02"]
@@ -168,6 +169,7 @@ func test_flame_dash_gets_a_charge_per_300_fire_mastery() -> void:
 func test_fire_whip_hits_every_enemy_in_the_line() -> void:
 	var second := world.add_enemy(foe.def, Vector2i(8, 5))
 	world.cast(hero, _a("F06"), null, Vector2(8, 5))
+	world.advance(0.8) # the lash cracks 0.75 s after the cast (fire physics)
 	assert_gt(_lost(foe), 0.0)
 	assert_gt(_lost(second), 0.0)
 
@@ -200,7 +202,7 @@ func test_fire_whip_pulls_only_the_first_enemy_a_tile() -> void:
 	var second := world.add_enemy(still, Vector2i(10, 5))
 	foe.move.place(Vector2i(12, 12))
 	world.cast(hero, _a("F06"), null, Vector2(10, 5))
-	world.advance(0.3)
+	world.advance(0.75 + 0.3) # the lash cracks 0.75 s after the cast (fire physics), then the pull
 	foe = first
 	assert_almost_eq(foe.move.pos.x, 7.0, 0.15, "the first one hit comes a tile closer")
 	assert_almost_eq(second.move.pos.x, 10.0, 0.05, "the one behind it only takes the lash")
@@ -410,7 +412,10 @@ func test_each_ability_has_the_planned_hitbox() -> void:
 		"W07": H.TARGETED, "W08": H.TARGETED, "W09": H.TILES, "A01": H.TARGETED, "A02": H.TARGETED,
 		"A03": H.NONE, "A05": H.TARGETED, "E01": H.LOB, "E02": H.NONE, "E03": H.TILES, "E04": H.SELF_CIRCLE,
 		"E05": H.TILES, "S01": H.CONE, "S04": H.DASH, "B01": H.TARGETED, "B02": H.PROJECTILE,
-		"H01": H.CONE, "H02": H.SELF_CIRCLE}
+		"H01": H.CONE, "H02": H.SELF_CIRCLE,
+		# fire physics (2026-11-28)
+		"F10": H.SELF_CIRCLE, "F11": H.NONE, "F12": H.RECT, "F14": H.CONE, "F15": H.TARGETED, "F16": H.TILES,
+		"F18": H.CIRCLE, "F23": H.TARGETED}
 	assert_eq(want.size(), FIRST.size())
 	for id in FIRST:
 		var hb: HitboxDef = _a(id).hitbox
@@ -437,6 +442,7 @@ func test_slash_aims_at_the_mouse_at_any_angle() -> void:
 func test_fire_whip_follows_the_mouse() -> void:
 	foe.move.place(Vector2i(7, 6)) # not on any of the 8 directions from (5, 5)
 	world.cast(hero, _a("F06"), null, Vector2(9, 7))
+	world.advance(0.8)
 	assert_gt(_lost(foe), 0.0)
 
 

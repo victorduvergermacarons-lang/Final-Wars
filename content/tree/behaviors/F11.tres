@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="e"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="d"]
+[ext_resource type="Resource" path="res://content/buffs/jet_propulsion.tres" id="jb"]
+
+[sub_resource type="Resource" id="a"]
+script = ExtResource("e")
+kind = 4
+buff = ExtResource("jb")
+
+[resource]
+script = ExtResource("d")
+id = &"F11"
+target = 0
+max_range = 0
+mana_cost = 15.0
+effects = Array[ExtResource("e")]([SubResource("a")])
+targeting = 4

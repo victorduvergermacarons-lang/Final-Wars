@@ -87,6 +87,19 @@ func start(look: FireLookDef, caster_id: int, pos: Vector2, h: float, at: Vector
 	return e
 
 
+static var _has_look := {}
+
+
+## Whether the fire physics draws this ability (then its old sprite effects are skipped,
+## unless on low graphics).
+static func draws(id: StringName) -> bool:
+	if low_graphics:
+		return false
+	if not _has_look.has(id):
+		_has_look[id] = ResourceLoader.exists("res://content/effects/fire/%s.tres" % id)
+	return _has_look[id]
+
+
 ## The look of an ability (content/effects/fire/<id>.tres), or null.
 static func look_of(id: StringName) -> FireLookDef:
 	var path := "res://content/effects/fire/%s.tres" % id
@@ -226,8 +239,12 @@ func _ground_window(tiles: Array, ab: StringName, grid: GridModel, zone: ZoneDef
 ## An Air ability went off: its wind pushes the fire's air from `from` toward `to`.
 func on_events(events: Array, abilities: Dictionary, grid: GridModel = null) -> void:
 	for ev in events:
-		if str(ev.get("type", "")) == "cast" and bool(ev.get("fire", false)):
-			start_from_event(ev, abilities, grid)
+		if str(ev.get("type", "")) in ["cast", "release"] and bool(ev.get("fire", false)):
+			# An ability released ahead of its hit (Fire Whip) starts its look at the release.
+			var ab: AbilityDef = abilities.get(StringName(ev.get("ability", "")))
+			var delayed := ab != null and ab.release_delay_seconds > 0.0
+			if (str(ev.type) == "release") == delayed:
+				start_from_event(ev, abilities, grid)
 			continue
 		if str(ev.get("type", "")) != "fx" or not ev.has("from") or not ev.has("to"):
 			continue

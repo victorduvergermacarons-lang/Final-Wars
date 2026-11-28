@@ -10,5 +10,5 @@ time_scale = 1.0
 time_scale_after = 0.5
 near = 48
 far = 96
-s0 = {"cfirst": 0.3, "cstart": 0.85, "cbeam": 0.2, "chold": 0.15, "popT": 1.1, "popR": 20.0, "popS": 1.3, "fade": 0.02, "cool": 0.04, "ptchT": 1.5, "ptchR": 14.0, "cign": 6.0, "gspread": 30.0, "gh": 10.0}
-m1 = {"cfirst": 0.3, "cstart": 0.85, "cbeam": 0.2, "chold": 0.15, "popT": 1.5, "popR": 26.0, "popS": 1.8, "fade": 0.02, "cool": 0.04, "ptchT": 2.5, "ptchR": 20.0, "cign": 9.0, "gspread": 40.0, "gh": 14.0}
+s0 = {"cfirst": 0.3, "cstart": 0.65, "cbeam": 0.2, "chold": 0.15, "popT": 1.1, "popR": 20.0, "popS": 1.3, "fade": 0.02, "cool": 0.04, "ptchT": 1.5, "ptchR": 14.0, "cign": 6.0, "gspread": 30.0, "gh": 10.0}
+m1 = {"cfirst": 0.3, "cstart": 0.65, "cbeam": 0.2, "chold": 0.15, "popT": 1.5, "popR": 26.0, "popS": 1.8, "fade": 0.02, "cool": 0.04, "ptchT": 2.5, "ptchR": 20.0, "cign": 9.0, "gspread": 40.0, "gh": 14.0}

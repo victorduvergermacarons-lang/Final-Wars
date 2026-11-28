@@ -412,7 +412,14 @@ func step() -> Array[Dictionary]:
 	_track_water()
 	_watch_water_shields()
 	for id in _sorted(ctx.actors):
-		ctx.actors[id].buffs.expire(now)
+		var owner: Actor = ctx.actors[id]
+		owner.buffs.expire(now)
+		# A buff's end ability (Overheat's burst), from whoever applied it, on the owner.
+		for en in owner.buffs.ended:
+			if get_actor(int(en.source)) != null:
+				_pending_hits.append({"caster": int(en.source), "ability": en.ability, "at": now, "bonus": 1.0,
+						"circle": [owner.move.pos, float(en.radius)]})
+		owner.buffs.ended.clear()
 	_record_history()
 	ctx.record_positions()
 	return _events
@@ -458,7 +465,13 @@ func _move_heroes() -> void:
 			wish = _walk_wish(hero, dt)
 		# Walking while casting slows the hero (Mover.cast_move_factor) instead of
 		# cancelling; a fall still cancels, and knockbacks do where they're resolved.
-		var r := Mover.step(hero, wish, dt, grid, rules, now)
+		var flying := hero.buffs.is_flying(now)
+		var r := Mover.step(hero, wish, dt, grid, rules, now, flying)
+		if flying:
+			hero.set_meta("was_flying", true)
+		elif hero.has_meta("was_flying"):
+			hero.remove_meta("was_flying")
+			_land_from_flight(hero)
 		if r.fell:
 			cancel_cast(hero, "moved")
 			emit({"type": "fall", "target": hero.id, "levels": m.z})
@@ -731,7 +744,7 @@ var _cast_aims := {}
 
 
 func emit(event: Dictionary) -> void:
-	if event.get("type", "") == "cast" and not event.has("fire"):
+	if event.get("type", "") in ["cast", "release"] and not event.has("fire"):
 		_add_fire_look(event)
 	_events.append(event)
 	_record(event)
@@ -1234,6 +1247,30 @@ func _update_releases() -> void:
 	_releases = waiting
 
 
+## Jet Propulsion ended (fire physics): the hero comes down on the nearest walkable tile
+## (from where it hovers, out to 6 tiles).
+func _land_from_flight(hero: Hero) -> void:
+	var t := hero.tile()
+	if grid.is_walkable(t) and not Mover.blocks(grid, t, grid.height_at(t), 99, false):
+		hero.move.ground_h = grid.height_at(t)
+		return
+	for r in range(1, 7):
+		var best := Vector2i(-1, -1)
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				if maxi(absi(dx), absi(dy)) != r:
+					continue
+				var c := t + Vector2i(dx, dy)
+				if grid.in_bounds(c) and grid.is_walkable(c) and not is_occupied(c) \
+						and (best.x < 0 or Vector2(c).distance_to(hero.move.pos) < Vector2(best).distance_to(hero.move.pos)):
+					best = c
+		if best.x >= 0:
+			hero.move.place(best)
+			hero.move.ground_h = grid.height_at(best)
+			emit({"type": "landed", "target": hero.id, "tile": best})
+			return
+
+
 ## A Fire ability went off (fire physics): what every player needs to play its look on
 ## their own GPU: where from, the aimed point (the mouse's floor point, else the target,
 ## else ahead), the caster's Fire Mastery and the host's time. Gameplay never reads it.
@@ -1346,6 +1383,12 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 		_pending_hits.append(out.pending)
 	else:
 		_credit_mastery(caster, ability, out.events)
+	# A leap's landing hit (Phoenix Kick), where and when it comes down.
+	if ability.landing_ability != null:
+		for ev in out.events:
+			if str(ev.get("type", "")) == "dash" and ev.has("end"):
+				_pending_hits.append({"caster": caster.id, "ability": ability.landing_ability, "at": now + float(ev.get("seconds", 0.35)),
+						"bonus": 1.0, "circle": [Vector2(ev.end), ability.landing_radius]})
 	if not ctx.release_locked:
 		_emit_fx(caster, ability, ability.fx_cast, target, aim) # released ones played theirs at the release
 	return out.result

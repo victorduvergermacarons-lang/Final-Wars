@@ -359,15 +359,20 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 		AbilityEffect.Kind.LEAP, AbilityEffect.Kind.BLINK:
 			if ctx.continuous:
 				var spot := ctx.cast_point
+				# A leap at a unit lands short of it (Phoenix Kick: base_amount tiles short)
+				if effect.kind == AbilityEffect.Kind.LEAP and effect.base_amount > 0.0:
+					var d := spot - caster.move.pos
+					spot -= (d.normalized() if d.length() > 0.001 else Vector2.RIGHT) * effect.base_amount
 				if not caster.alive or Hitbox.free_spot(ctx, caster, spot) != "":
 					events.append({"type": "whiff", "source": caster.id, "ability": ability.id, "tile": MoveState.tile_of(spot)})
 					return
 				caster.casting = {}
-				caster.move.begin(spot, ctx.now, 0.35 if effect.kind == AbilityEffect.Kind.LEAP else 0.0)
+				var secs := (effect.duration_seconds if effect.duration_seconds > 0.0 else 0.35) if effect.kind == AbilityEffect.Kind.LEAP else 0.0
+				caster.move.begin(spot, ctx.now, secs)
 				if effect.kind == AbilityEffect.Kind.BLINK:
 					caster.move.place(spot)
 				events.append({"type": "dash", "source": caster.id, "target": caster.id, "ability": ability.id,
-						"from": caster.tile(), "to": MoveState.tile_of(spot), "end": spot})
+						"from": caster.tile(), "to": MoveState.tile_of(spot), "end": spot, "seconds": secs})
 				return
 			var to := ctx.cast_aim
 			if not caster.alive or not ctx.grid.in_bounds(to) or not ctx.grid.is_walkable(to) or _occupied(ctx, to, caster):

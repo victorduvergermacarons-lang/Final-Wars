@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="e"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="d"]
+
+[sub_resource type="Resource" id="a"]
+script = ExtResource("e")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+power = 0.8
+
+
+[resource]
+script = ExtResource("d")
+id = &"F23_burst"
+effects = Array[ExtResource("e")]([SubResource("a")])
+targeting = 1
+tree = "Fire"
+tier = 2

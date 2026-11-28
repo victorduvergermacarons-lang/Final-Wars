@@ -206,22 +206,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 0.8,
-				"taps": [
-					[
-						0.5,
-						0.25
-					]
-				],
-				"crits": [
-					[
-						0.65,
-						0.1
-					]
-				],
+				"status": "manual",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
 				"holds": [],
-				"notes": "Fire: quick projectile, short bar, late snap. The dart flies when you press."
+				"notes": "No bar since 2026-11-28 (fire physics): the draft bar was removed."
 			},
 			"hitbox": {
 				"shape": "Projectile",
@@ -276,22 +266,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 1.2,
-				"taps": [
-					[
-						0.85,
-						0.3
-					]
-				],
-				"crits": [
-					[
-						1.05,
-						0.1
-					]
-				],
+				"status": "manual",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
 				"holds": [],
-				"notes": "Fire: a late snap like Fire Punch, a little longer (bigger hit plus a burn)."
+				"notes": "No bar since 2026-11-28 (fire physics): the draft bar was removed."
 			},
 			"hitbox": {
 				"shape": "Targeted",
@@ -458,22 +438,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 1.5,
-				"taps": [
-					[
-						1.0,
-						0.4
-					]
-				],
-				"crits": [
-					[
-						1.25,
-						0.1
-					]
-				],
+				"status": "manual",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
 				"holds": [],
-				"notes": "Fire: late snap. Planned: three taps, one per hit, once bars take several inputs."
+				"notes": "No bar since 2026-11-28 (fire physics): the draft bar was removed."
 			},
 			"hitbox": {
 				"shape": "Targeted",
@@ -501,7 +471,7 @@
 			"role": "Damage",
 			"item_type": "Scroll",
 			"taught_by": "Firestream Scroll",
-			"effect": "Channel a 6-tile line of fire for 2s.",
+			"effect": "Channel a line of fire for 2s; it reaches about 2 tiles at no Fire Mastery, growing toward 6 with Mastery.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim at any angle. The beam covers the 4 tiles along that line; you can slowly rotate it while channeling.",
 			"mastery_required_text": "Fire Mastery 130",
@@ -753,7 +723,7 @@
 			"role": "Damage / CC",
 			"item_type": "Scroll",
 			"taught_by": "Lash of Embers Scroll",
-			"effect": "Lash a 5-tile line; the first enemy hit is pulled 1 tile toward you.",
+			"effect": "Lash a 5-tile line; it cracks 0.75s after the cast. The first enemy hit is pulled 1 tile toward you.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim one of 8 directions. Instant 5-tile line; hits every enemy in it.",
 			"mastery_required_text": "Fire Mastery 260",
@@ -780,22 +750,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 1.5,
-				"taps": [
-					[
-						1.05,
-						0.35
-					]
-				],
-				"crits": [
-					[
-						1.25,
-						0.1
-					]
-				],
+				"status": "manual",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
 				"holds": [],
-				"notes": "Fire: a longer wind-up for a piercing line, late snap."
+				"notes": "No bar since 2026-11-28 (fire physics): the draft bar was removed. The lash cracks 0.75 s after the cast, near or far."
 			},
 			"hitbox": {
 				"shape": "Line",
@@ -1007,7 +967,7 @@
 			"role": "Burst / AoE damage",
 			"item_type": "Scroll",
 			"taught_by": "Scroll of the Fireball",
-			"effect": "Hurl a fireball up to 7 tiles; it explodes on the first enemy in its path, hitting every tile within 1 of the impact.",
+			"effect": "Hurl a fireball at the point you aim at, up to 7 tiles; it bursts there or on the first enemy in its path, hitting everything within 1.5 tiles.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim at any angle. The fireball flies up to 7 tiles and bursts on the first unit it hits, or at max range; 3x3 blast around the impact.",
 			"mastery_required_text": "Fire Mastery 415",
@@ -1034,22 +994,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 2.0,
-				"taps": [
-					[
-						1.45,
-						0.4
-					]
-				],
-				"crits": [
-					[
-						1.7,
-						0.1
-					]
-				],
+				"status": "manual",
+				"seconds": 0.0,
+				"taps": [],
+				"crits": [],
 				"holds": [],
-				"notes": "Fire: big spell, long bar, one late beat. The 0.4 s area warning still follows the press."
+				"notes": "No bar since 2026-11-28 (fire physics): the draft bar was removed."
 			},
 			"hitbox": {
 				"shape": "Projectile",
@@ -1267,9 +1217,9 @@
 			"role": "AoE damage",
 			"item_type": "Scroll",
 			"taught_by": "Inferno Codex",
-			"effect": "Firestorm over a 5x5 area for 4s.",
+			"effect": "Firestorm over a circle of 2.5 tiles (half-tile blocks) for 4s.",
 			"targeting": "Ground",
-			"targeting_details": "Pick a tile within 8. The 5x5 area is outlined for 0.75s before it ignites.",
+			"targeting_details": "Pick a point within 8. The circle is outlined for 0.75s before it ignites; every tile with a block of it burns.",
 			"mastery_required_text": "Fire Mastery 600",
 			"prerequisites_text": "Fireball",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -1328,9 +1278,9 @@
 			"role": "AoE damage / Debuff",
 			"item_type": "Scroll",
 			"taught_by": "Dragon's Breath Scroll",
-			"effect": "Exhale a 4-tile cone of fire; enemies hit lose Magic Defense for 8s.",
+			"effect": "Exhale a 5-tile cone of fire; enemies hit lose Magic Defense for 8s.",
 			"targeting": "Skillshot",
-			"targeting_details": "Aim one of 8 directions. 4-tile cone in front of you.",
+			"targeting_details": "Aim one of 8 directions. 5-tile cone in front of you.",
 			"mastery_required_text": "Fire Mastery 650",
 			"prerequisites_text": "Solar Zenith",
 			"scales_with_text": "Fire Mastery, Magic Atk",
@@ -1364,7 +1314,7 @@
 			},
 			"hitbox": {
 				"shape": "Cone",
-				"range": 4.0,
+				"range": 5.0,
 				"angle": 60.0,
 				"pierce": false
 			},
@@ -1389,7 +1339,7 @@
 			"role": "Burst damage",
 			"item_type": "Scroll",
 			"taught_by": "Scroll of the Third Eye",
-			"effect": "Telegraphed for 1s, range 12; huge explosion within 1 tile.",
+			"effect": "Telegraphed for 1s, range 12; huge explosion within 1.5 tiles.",
 			"targeting": "Ground",
 			"targeting_details": "Pick a tile within 12. The marker is visible to enemies for 1s, then explodes.",
 			"mastery_required_text": "Fire Mastery 700",

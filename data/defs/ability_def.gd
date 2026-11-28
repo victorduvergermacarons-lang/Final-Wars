@@ -206,6 +206,20 @@ var release_delay_seconds: float = 0.0
 @export var tier: int = 0
 ## Tree abilities without behavior data yet can't be learned or used.
 @export var implemented: bool = true
+
+# --- Fire physics (2026-11-28) ---
+## Hit when a leap lands (Phoenix Kick), on everyone within `landing_radius` tiles of
+## where the caster comes down; the leap's own time later.
+@export var landing_ability: AbilityDef
+@export var landing_radius: float = 1.5
+## An area of half-tile blocks (Inferno): every tile with a block whose centre is within
+## this many tiles of the aimed point burns, as the look draws it. 0: not used.
+@export var block_circle: float = 0.0
+## A line's reach grows with Fire Mastery like the flame's look (Fire Stream): from x at
+## none to y at the limit, by Mastery / (180 + Mastery). (0, 0): the hitbox's range.
+@export var reach_by_mastery := Vector2.ZERO
+## A projectile that bursts at the aimed point if it hits nothing first (Fireball).
+@export var stops_at_aim: bool = false
 ## The spreadsheet row (see AbilityTreeData): prerequisites, Mastery values, texts.
 var sheet: Dictionary = {}
 

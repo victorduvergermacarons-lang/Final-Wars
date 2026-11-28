@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="b"]
+
+[resource]
+script = ExtResource("b")
+id = &"jet_propulsion"
+display_name = "Jet Propulsion"
+duration_seconds = 3.0
+flies = true

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BuffDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/stat_modifier.gd" id="m"]
+[ext_resource type="Script" path="res://data/defs/buff_def.gd" id="b"]
+
+[sub_resource type="Resource" id="mod_0"]
+script = ExtResource("m")
+stat = 5
+flat = -15.0
+
+[resource]
+script = ExtResource("b")
+id = &"breath_scorched"
+display_name = "Scorched (Magic Defense down)"
+duration_seconds = 8.0
+modifiers = Array[ExtResource("m")]([SubResource("mod_0")])
+is_debuff = true

@@ -131,6 +131,8 @@ static func _resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, tar
 			_cast_skillshot(ctx, caster, ability, point, out)
 		AbilityDef.TargetingMode.GROUND:
 			var area := area_tiles(ctx.grid, ctx.cast_aim, ability.area_radius, ability.area_diamond)
+			if ability.block_circle > 0.0:
+				area = block_circle_tiles(ctx.grid, ctx.cast_point if ctx.continuous else Vector2(ctx.cast_aim), ability.block_circle)
 			events.append({"type": "cast", "source": caster.id, "target": -1, "ability": ability.id,
 					"tiles": area, "telegraph": ability.telegraph_seconds})
 			if ability.telegraph_seconds > 0.0:
@@ -212,6 +214,24 @@ static func lob_tile(origin: Vector2i, point: Vector2, max_range: int) -> Vector
 
 
 ## Square area around `center` (a diamond if `diamond`), on the map's tiles (not its holes).
+## Inferno's area: the tiles holding a half-tile block whose centre is within `r` tiles
+## of `p` (blocks on the world's half-tile grid, as the fire look draws them).
+static func block_circle_tiles(grid: GridModel, p: Vector2, r: float) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var n := ceili(r) + 1
+	var c := MoveState.tile_of(p)
+	for dy in range(-n, n + 1):
+		for dx in range(-n, n + 1):
+			var t := c + Vector2i(dx, dy)
+			if grid != null and (not grid.in_bounds(t) or not grid.has_tile(t)):
+				continue
+			for q in [Vector2(-0.25, -0.25), Vector2(0.25, -0.25), Vector2(-0.25, 0.25), Vector2(0.25, 0.25)]:
+				if (Vector2(t) + q).distance_to(p) <= r:
+					out.append(t)
+					break
+	return out
+
+
 static func area_tiles(grid: GridModel, center: Vector2i, radius: int, diamond: bool = false) -> Array[Vector2i]:
 	return TileGeometry.square(center, radius).filter(func(t): return grid.has_tile(t) \
 			and (not diamond or TileGeometry.range_distance(center, t) <= radius))

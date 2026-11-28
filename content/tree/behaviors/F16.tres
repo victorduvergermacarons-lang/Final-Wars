@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="e"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="d"]
+
+[sub_resource type="Resource" id="burn_d"]
+script = ExtResource("e")
+damage_type = 1
+base_amount = -1.0
+sheet_scaling = true
+can_crit = false
+power = 0.5
+
+[sub_resource type="Resource" id="burn"]
+script = ExtResource("d")
+id = &"F16_burn"
+effects = Array[ExtResource("e")]([SubResource("burn_d")])
+targeting = 1
+tree = "Fire"
+tier = 4
+
+[sub_resource type="Resource" id="z"]
+script = ExtResource("e")
+kind = 17
+applies = 2
+duration_seconds = 4.0
+zone_ability = SubResource("burn")
+
+[resource]
+script = ExtResource("d")
+id = &"F16"
+max_range = 8
+mana_cost = 25.0
+effects = Array[ExtResource("e")]([SubResource("z")])
+targeting = 3
+telegraph_seconds = 0.75
+block_circle = 2.5
