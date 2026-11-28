@@ -17,6 +17,9 @@ func before_each() -> void:
 	sim = world.zone_of(hero.id)
 	hero.mastered[&"W12"] = ContentDB.abilities[&"W12"]
 	hero.mana = 999
+	hero.stance_tree = "Water" # Water Shield draws on the stance water (2026-11-28)
+	hero.stance = ContentDB.abilities[&"W12"].stance
+	hero.stance_water = WaterBending.full(hero.stance)
 	world.step()
 
 

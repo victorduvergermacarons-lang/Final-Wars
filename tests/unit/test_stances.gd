@@ -17,6 +17,8 @@ func before_each() -> void:
 	for id in [&"F01", &"F02", &"F03", &"W01", &"W02", &"E01", &"E04"]:
 		hero.mastered[id] = ContentDB.abilities[id]
 	hero.mana = hero.current_stats(0.0).mana
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH]) # Water stances draw on the pouch
+	hero.water = 200
 	sim = world.zone_of(hero.id)
 	for d in GridModel.DIRECTIONS:
 		var t: Vector2i = hero.tile() + d
@@ -73,18 +75,18 @@ func test_an_unknown_element_is_refused() -> void:
 
 
 func test_crowd_control_drops_the_stance() -> void:
-	_stance("Water", 2)
+	_stance("Water", 1)
 	hero.buffs.apply(ContentDB.buffs[&"searing_dive_stun"], world.now, 0.0, wolf.id)
 	world.step()
 	assert_eq(hero.stance, 0, "a stun drops it")
-	_stance("Water", 2)
+	_stance("Water", 1)
 	assert_eq(hero.stance, 0, "and it can't be taken up while stunned")
 	world.advance(2.0)
-	_stance("Water", 2)
-	assert_eq(hero.stance, 2)
+	_stance("Water", 1)
+	assert_eq(hero.stance, 1)
 	sim.emit({"type": "pushed", "source": wolf.id, "target": hero.id})
 	assert_eq(hero.stance, 0, "a knockback drops it")
-	_stance("Water", 2)
+	_stance("Water", 1)
 	hero.hp = 0.0
 	hero.die()
 	world.step()

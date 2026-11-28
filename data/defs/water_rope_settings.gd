@@ -194,6 +194,28 @@ extends Resource
 ## Ground shadows darken what they fall on by this share (0.3 = 30% darker: black at
 ## 30% over the ground), each screen pixel at most once (2026-11-28).
 @export var SHADOW_DARKEN: float = 0.3
+
+@export_group("Stance 2 hoop (water_stance2_demo_approved.html)")
+## Hoop radius and height (reference px), seconds per lap, thickness, breathing.
+@export var HR: float = 22.0
+@export var HZ: float = 20.0
+@export var LAP2: float = 4.0
+@export var THICK: float = 1.5
+@export var BREATH: float = 2.0
+@export var BREATH_T: float = 4.0
+@export var HOOP_BASE_R: float = 2.0
+@export var HOOP_RIPPLE_AMP: float = 0.8
+@export var HOOP_RIPPLE_LEN: float = 14.0
+@export var HOOP_RIPPLE_SPEED: float = 0.08
+@export var HOOP_TILT: float = 1.5
+@export var HOOP_TILT_SPEED: float = 0.012
+## Frames: rope to hoop (and back), the hoop's closing link fading in.
+@export var ENTER_T: int = 48
+@export var WRAP_FADE: int = 20
+## The hoop closes once the blend reaches this and every point is there.
+@export var CLOSE_AT: float = 0.95
+## How hard each point follows its place on the hoop (the reference's FOLLOW_K).
+@export var HOOP_FOLLOW: float = 0.12
 @export_group("Palette")
 ## Outline and shade.
 @export var OUT: Color = Color("0C447C")

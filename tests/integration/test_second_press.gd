@@ -35,7 +35,7 @@ func before_each() -> void:
 	# Water to bend (the Water Pouch and the Water stance 1 rope, 2026-11-26).
 	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
 	hero.water = 200
-	hero.rope = true
+	hero.stance_water = 24
 	client = ClientState.new()
 	InputActions.apply_action_bar_keys(client.action_bar)
 	view = WorldView.new()

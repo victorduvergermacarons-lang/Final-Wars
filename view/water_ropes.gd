@@ -74,6 +74,9 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		if not wants and e.rope.st != "drain":
 			e.rope.drain()
 		var g := ground_of(h.move.pos)
+		if wants:
+			e.rope.set_stance(h.stance)
+			e.rope.set_count(h.stance_water)
 		e.rope.move_hero(g - e.ground)
 		e.ground = g
 		e.hero = h
@@ -87,7 +90,7 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		elif e.off:
 			e.off = false
 			if e.rope.st != "drain":
-				e.rope.fill_now() # back on screen: on its orbit, as if it had been all along
+				e.rope.fill_now(mini(h.stance_water, settings.NMAX)) # back on screen: on its orbit, as if it had been all along
 	for id in ropes.keys():
 		if not by_id.has(id):
 			ropes.erase(id) # left the zone
@@ -103,7 +106,7 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		var e: Dictionary = ropes.get(h.id, {})
 		if e.is_empty() or e.rope.st == "drain":
 			e = _new_entry(h)
-			e.rope.fill_now()
+			e.rope.fill_now(mini(h.stance_water, settings.NMAX))
 		var aim: Vector2 = ground_of(t.to) - e.ground
 		var dz := (float(grid.height_at(MoveState.tile_of(t.to))) - h.move.ground_h) * 8.0 / settings.WATER_SCALE \
 				if grid != null else 0.0
@@ -174,20 +177,30 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 			groups[key] = {"rope": true, "pos": Vector2(tile), "behind": behind, "origin": origin, kind: []}
 		groups[key][kind].append(piece)
 	var n := r.M()
-	var lit := func(i: int) -> bool:
-		return (i > 0 and r.conn[i - 1] and r.strength[i - 1] >= 0.35) or (i < n - 1 and r.conn[i] and r.strength[i] >= 0.35)
-	# Shadows under airborne water (on the ground: before everything on its tile).
+	# Segments to draw: each linked pair, plus the hoop's closing link once it shows.
+	var b := WaterRope.ramp(r.sb, 1.0)
+	var closed := r.wrap and r.wrap_str >= 0.35 and n > 2
+	var segs := []
 	for i in n - 1:
-		var a: Vector3 = r.R[i].p
-		var b: Vector3 = r.R[i + 1].p
-		if not r.conn[i] or r.strength[i] < 0.35 or (a.z < 1.5 and b.z < 1.5):
+		if r.conn[i] and r.strength[i] >= 0.35:
+			segs.append([i, i + 1])
+	if closed:
+		segs.append([n - 1, 0])
+	var lit := func(i: int) -> bool:
+		return closed or (i > 0 and r.conn[i - 1] and r.strength[i - 1] >= 0.35) or (i < n - 1 and r.conn[i] and r.strength[i] >= 0.35)
+	# Shadows under airborne water (on the ground: before everything on its tile).
+	var shadow_w := 3 if b > 0.5 else 2 # the hoop's shadow is a pixel wider
+	for sg in segs:
+		var a: Vector3 = r.R[sg[0]].p
+		var c: Vector3 = r.R[sg[1]].p
+		if a.z < 1.5 and c.z < 1.5:
 			continue
 		var sa := _proj(Vector3(a.x, a.y, 0))
-		var sb := _proj(Vector3(b.x, b.y, 0))
-		var k0 := maxi(1, ceili(sa.distance_to(sb)))
+		var sc := _proj(Vector3(c.x, c.y, 0))
+		var k0 := maxi(1, ceili(sa.distance_to(sc)))
 		for k in k0 + 1:
 			var t := float(k) / k0
-			put.call("shadows", Vector2(lerpf(a.x, b.x, t), lerpf(a.y, b.y, t)), [sa.lerp(sb, t), 2], true)
+			put.call("shadows", Vector2(lerpf(a.x, c.x, t), lerpf(a.y, c.y, t)), [sa.lerp(sc, t), shadow_w], true)
 	for i in n:
 		var p: Vector3 = r.R[i].p
 		if not lit.call(i) and p.z > 1.5:
@@ -198,33 +211,41 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 	for l in r.lost:
 		put.call("puddles", l.p, [_proj(Vector3(l.p.x, l.p.y, 0)), l.l / float(s.SOAK_TIME)], true)
 	# The rope: rippled slices, lit.
-	var kw := TAU / s.RIPPLE_LEN
+	var total := 0.0
+	for sg in segs:
+		total += _proj(r.R[sg[0]].p).distance_to(_proj(r.R[sg[1]].p))
+	var rl := lerpf(s.RIPPLE_LEN, s.HOOP_RIPPLE_LEN, b)
+	# A closed hoop fits a whole number of ripples round it, so they meet seamlessly.
+	var kw := TAU * maxf(1.0, roundf(total / rl)) / total if closed and total > 0.0 else TAU / rl
+	var r_amp := lerpf(s.RIPPLE_AMP, s.HOOP_RIPPLE_AMP, b)
+	var r_speed := lerpf(s.RIPPLE_SPEED, s.HOOP_RIPPLE_SPEED, b)
 	var arc := 0.0
 	var sun := s.SUN.normalized()
-	for i in n - 1:
+	for sg in segs:
+		var i: int = sg[0]
 		var a: Vector3 = r.R[i].p
-		var b: Vector3 = r.R[i + 1].p
+		var c: Vector3 = r.R[sg[1]].p
 		var sa := _proj(a)
-		var sb := _proj(b)
-		var L := sa.distance_to(sb)
-		if not r.conn[i] or r.strength[i] < 0.35:
-			arc += L
-			continue
-		var tdir := (sb - sa) / L if L > 0.0 else Vector2.RIGHT
+		var sc := _proj(c)
+		var L := sa.distance_to(sc)
+		var tdir := (sc - sa) / L if L > 0.0 else Vector2.RIGHT
 		var q := Vector2(-tdir.y, tdir.x)
 		var k0 := maxi(1, ceili(L))
 		for st in k0:
 			var k := float(st) / k0
 			var f := (i + k) / maxf(1.0, n - 1)
-			var ph := (arc + k * L) * kw - r.fr * s.RIPPLE_SPEED
-			var amp := s.RIPPLE_AMP * (0.4 + 0.6 * sin(PI * f))
-			var at := sa.lerp(sb, k) + q * amp * sin(ph)
+			var u := (arc + k * L) / (total if total > 0.0 else 1.0)
+			var ph := (arc + k * L) * kw - r.fr * r_speed
+			var amp := r_amp if closed else r_amp * (0.4 + 0.6 * sin(PI * f))
+			var at := sa.lerp(sc, k) + q * amp * sin(ph)
 			var rd := (tdir + q * amp * kw * cos(ph)).normalized()
 			var nrm := Vector2(-rd.y, rd.x)
 			if nrm.dot(sun) < 0.0:
 				nrm = -nrm
-			put.call("stamps", Vector2(lerpf(a.x, b.x, k), lerpf(a.y, b.y, k)),
-					[at, rad(f, r.fr) + s.BODY_GROW, nrm, nrm.dot(sun)])
+			var hoop_r := s.HOOP_BASE_R * s.THICK + sin(u * TAU * 3.0 - r.fr * 0.05) * 0.15
+			var radius := hoop_r if closed else lerpf(rad(f, r.fr) + s.BODY_GROW,
+					hoop_r * (0.5 + 0.5 * sin(PI * clampf(f, 0.04, 0.96))), b)
+			put.call("stamps", Vector2(lerpf(a.x, c.x, k), lerpf(a.y, c.y, k)), [at, radius, nrm, nrm.dot(sun)])
 		arc += L
 	for i in n:
 		if not lit.call(i):

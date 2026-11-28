@@ -1838,9 +1838,13 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Varia
 	# a test) puts the hero in that stance first, without its entry cast.
 	if ability.stance > 0 and ability.tree != "" and (hero.stance_tree != ability.tree or hero.stance != ability.stance) \
 			and can_hold_stance(hero, ability.tree) == "":
+		var refused := _water_stance_refusal(hero, ability.tree, ability.stance)
+		if refused != "":
+			return refused
 		set_stance(hero, ability.tree, ability.stance, "cast")
 	var walking: Variant = hero.walk_target
 	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
+	hero.stance_busy_at = now # using an ability keeps a Water stance up
 	var result := cast(hero, ability, get_actor(target_id), aim)
 	if result != AbilityResolver.Result.OK:
 		hero.walk_target = walking
@@ -1890,8 +1894,8 @@ func _stance_breaker(hero: Hero) -> String:
 ## Sets (or with stance 0, clears) the hero's stance; emits "stance" for every
 ## player (the view starts its look and entry animation from `stance_at`).
 func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
-	if hero.rope and not (tree == "Water" and n == 1):
-		_drop_rope(hero)
+	var was_water := WaterBending.in_water_stance(hero)
+	var old_n := hero.stance
 	if n <= 0 or tree == "":
 		if hero.stance == 0:
 			return
@@ -1901,55 +1905,98 @@ func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
 		hero.stance_tree = tree
 		hero.stance = n
 	hero.stance_at = now
+	hero.stance_busy_at = now
 	emit({"type": "stance", "source": hero.id, "tree": hero.stance_tree, "stance": hero.stance, "why": why})
-	if hero.stance_tree == "Water" and hero.stance == 1:
-		_form_rope(hero, true)
+	if WaterBending.in_water_stance(hero):
+		_gather_stance_water(hero, old_n if was_water else 0)
+	elif was_water:
+		_return_stance_water(hero)
 
 
-# --- Water (the Water Pouch and the Water stance 1 rope, 2026-11-26) ---------------
+# --- Water as a resource (water physics, phase 3, 2026-11-28) ----------------------
+## Stance 1 refills one point every 17 frames (at 60 fps).
+const WATER_REFILL_SECONDS := 17.0 / 60.0
+## A Water stance drops after this long out of combat without an ability.
+const WATER_STANCE_IDLE_SECONDS := 10.0
+## E at water fills an empty pouch in this long (a partly full one in less).
+const POUCH_FILL_SECONDS := 10.0
 
-## Each tick: who is near water, and the rope forming once water is at hand (walking
-## up to a river, filling the pouch).
+
+## Each tick: who is near water, the stance 1 refill, the idle drop and the pouch filling.
 func _track_water() -> void:
 	var idx := WaterTiles.of(zone)
+	var dt := rules.tick_seconds
 	for hero: Hero in _heroes.values():
 		hero.near_water = hero.alive and WaterTiles.nearest(idx, hero.move.pos, rules.water_near_tiles) != null
-		if hero.stance_tree == "Water" and hero.stance == 1 and not hero.rope and hero.alive:
-			_form_rope(hero, false)
+		_update_pouch_fill(hero, dt)
+		if not WaterBending.in_water_stance(hero) or not hero.alive:
+			continue
+		if hero.in_combat(now) or not hero.casting.is_empty():
+			hero.stance_busy_at = now
+		elif now - hero.stance_busy_at >= WATER_STANCE_IDLE_SECONDS:
+			set_stance(hero, "", 0, "idle")
+			continue
+		if hero.stance == 1:
+			_refill_stance_1(hero, dt)
 
 
-## Forms the Water stance 1 rope: from water nearby (free), else from the pouch
-## (water_rope_points taken; put back when it goes). `tell`: say why it can't.
-func _form_rope(hero: Hero, tell: bool) -> void:
-	if hero.rope:
+## Stance 1 grows back toward 24, a point every 17 frames, from water nearby or the
+## pouch; with the pouch empty and no water near, the rope stops growing.
+func _refill_stance_1(hero: Hero, dt: float) -> void:
+	var full := WaterBending.full(1)
+	if hero.stance_water >= full:
+		hero.water_refill_t = 0.0
 		return
-	var need := rules.water_rope_points
-	if hero.near_water:
-		hero.rope = true
-		hero.rope_from_pouch = false
-	elif hero.has_water_pouch() and hero.water >= need:
-		hero.water -= need
-		hero.rope = true
-		hero.rope_from_pouch = true
-	elif tell:
+	hero.water_refill_t += dt
+	while hero.water_refill_t >= WATER_REFILL_SECONDS and hero.stance_water < full:
+		if not hero.near_water:
+			if not hero.has_water_pouch() or hero.water <= 0:
+				hero.water_refill_t = 0.0
+				return
+			hero.water -= 1
+		hero.water_refill_t -= WATER_REFILL_SECONDS
+		hero.stance_water += 1
+
+
+## Entering a Water stance: stance 1 takes up to 24 at once, stance 2 up to 33 (stance
+## water first, then the pouch); leaving 2 for 1 sheds the points above 24 into the pouch.
+func _gather_stance_water(hero: Hero, from_n: int) -> void:
+	var full := WaterBending.full(hero.stance)
+	hero.water_refill_t = 0.0
+	var before := hero.stance_water
+	if hero.stance_water > full:
+		_to_pouch(hero, hero.stance_water - full)
+		hero.stance_water = full
+	else:
+		var need := full - hero.stance_water
+		if hero.near_water:
+			hero.stance_water = full
+		elif hero.has_water_pouch():
+			var take := mini(need, hero.water)
+			hero.water -= take
+			hero.stance_water += take
+	if hero.stance_water == 0:
 		emit({"type": "no_water", "target": hero.id, "pouch": hero.has_water_pouch()})
-		return
-	if hero.rope:
-		emit({"type": "rope", "source": hero.id, "on": true, "from": "pouch" if hero.rope_from_pouch else "water"})
+	emit({"type": "rope", "source": hero.id, "on": hero.stance_water > 0, "points": hero.stance_water,
+			"from": "water" if hero.near_water else "pouch", "was": before, "from_stance": from_n})
 
 
-## The rope goes: its water back into the pouch if it came from there.
-func _drop_rope(hero: Hero) -> void:
-	if not hero.rope:
-		return
-	if hero.rope_from_pouch:
-		hero.water = mini(hero.water + rules.water_rope_points, rules.water_pouch_capacity)
-	hero.rope = false
-	hero.rope_from_pouch = false
+## Leaving the Water stances: all the stance water flows back into the pouch.
+func _return_stance_water(hero: Hero) -> void:
+	if hero.stance_water > 0:
+		_to_pouch(hero, hero.stance_water)
+	hero.stance_water = 0
+	hero.cast_water.clear()
 	emit({"type": "rope", "source": hero.id, "on": false})
 
 
-## E at water: fills the Water Pouch.
+## Puts `points` into the pouch, up to its capacity (without a pouch they're lost).
+func _to_pouch(hero: Hero, points: int) -> void:
+	if hero.has_water_pouch():
+		hero.water = mini(hero.water + points, rules.water_pouch_capacity)
+
+
+## E at water: starts filling the Water Pouch (POUCH_FILL_SECONDS for an empty one).
 func _intent_fill_water(hero: Hero) -> String:
 	if not hero.alive:
 		return "dead"
@@ -1957,9 +2004,37 @@ func _intent_fill_water(hero: Hero) -> String:
 		return "no_pouch"
 	if WaterTiles.nearest(WaterTiles.of(zone), hero.move.pos, rules.water_fill_reach) == null:
 		return "too_far"
-	hero.water = rules.water_pouch_capacity
-	emit({"type": "pouch_filled", "target": hero.id, "water": hero.water})
+	if hero.water >= rules.water_pouch_capacity:
+		return "pouch_full"
+	hero.pouch_fill = {"at": now, "pos": hero.move.pos, "hp": hero.hp, "acc": 0.0}
+	emit({"type": "pouch_filling", "target": hero.id, "on": true})
 	return ""
+
+
+## Fills the pouch while the hero stands still and takes no damage.
+func _update_pouch_fill(hero: Hero, dt: float) -> void:
+	if hero.pouch_fill.is_empty():
+		return
+	var f := hero.pouch_fill
+	var stop := ""
+	if not hero.alive:
+		stop = "dead"
+	elif hero.move.pos.distance_to(f.pos) > 0.05:
+		stop = "moved"
+	elif hero.hp < int(f.hp):
+		stop = "hit"
+	if stop != "":
+		hero.pouch_fill = {}
+		emit({"type": "pouch_filling", "target": hero.id, "on": false, "why": stop})
+		return
+	f.hp = hero.hp
+	f.acc += float(rules.water_pouch_capacity) / POUCH_FILL_SECONDS * dt
+	var add := int(f.acc)
+	f.acc -= add
+	hero.water = mini(hero.water + add, rules.water_pouch_capacity)
+	if hero.water >= rules.water_pouch_capacity:
+		hero.pouch_fill = {}
+		emit({"type": "pouch_filled", "target": hero.id, "water": hero.water})
 
 
 func _intent_stance(hero: Hero, tree: String, n: int, target_id: int, aim: Variant) -> String:
@@ -1967,6 +2042,8 @@ func _intent_stance(hero: Hero, tree: String, n: int, target_id: int, aim: Varia
 		set_stance(hero, "", 0, "left")
 		return ""
 	var why := can_hold_stance(hero, tree)
+	if why == "":
+		why = _water_stance_refusal(hero, tree, n)
 	if why != "":
 		return why
 	var same := hero.stance_tree == tree and hero.stance == n
@@ -1981,6 +2058,14 @@ func _intent_stance(hero: Hero, tree: String, n: int, target_id: int, aim: Varia
 			emit({"type": "entry_cast_failed", "source": hero.id, "ability": entry.id,
 					"reason": AbilityResolver.Result.keys()[r].to_lower()})
 	return ""
+
+
+## Why the hero can't enter Water stance 2 ("not_enough_water": less than
+## WaterBending.STANCE_2_ENTRY in the stance and the pouch together), else "".
+func _water_stance_refusal(hero: Hero, tree: String, n: int) -> String:
+	if tree != "Water" or n != 2 or (hero.stance_tree == "Water" and hero.stance == 2):
+		return ""
+	return "" if WaterBending.total(hero) >= WaterBending.STANCE_2_ENTRY else "not_enough_water"
 
 
 ## The entry cast of `tree`'s stance `n` the hero can use, or null.

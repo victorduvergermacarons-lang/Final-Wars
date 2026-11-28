@@ -259,7 +259,7 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.stance_tree = str(st[0])
 	h.stance = int(st[1])
 	h.stance_at = float(st[2])
-	h.rope = bool(d.get("rope", false))
+	h.stance_water = int(d.get("stance_water", 0))
 	var anim: Dictionary = d.get("anim", {})
 	for k in ["died", "down", "up", "hit", "act_at", "buff_end"]:
 		h.anim[k] = float(anim.get(k, Hero.NEVER))
@@ -293,6 +293,7 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.loot_bonus = int(p.get("loot_bonus", 0))
 	h.water = int(p.get("water", 0))
 	h.near_water = bool(p.get("near_water", false))
+	h.pouch_fill = {"on": true} if bool(p.get("filling", false)) else {}
 	h.social = p.get("social", {"trade": {}, "requests": []})
 	var mine: Dictionary = h.social.get("trade", {}).get("mine", {})
 	h.escrow = mine.get("items", [])

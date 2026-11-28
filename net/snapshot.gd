@@ -18,7 +18,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		d.level = hero.level
 		d.element = String(hero.element)
 		d.stance = [hero.stance_tree, hero.stance, hero.stance_at]
-		d.rope = hero.rope
+		d.stance_water = hero.stance_water
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:
@@ -43,6 +43,7 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 				"loot_bonus": hero.loot_bonus,
 				"water": hero.water,
 				"near_water": hero.near_water,
+				"filling": not hero.pouch_fill.is_empty(),
 				"social": world.social_view(hero.id),
 				"def": hero.def_id,
 				"ack": world.intent_ack(hero.id),

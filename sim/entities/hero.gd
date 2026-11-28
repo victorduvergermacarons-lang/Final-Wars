@@ -29,10 +29,22 @@ var records := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests"
 var loot_bonus := 0
 ## Water points in the Water Pouch (it counts while a pouch is in the bag; saved).
 var water := 0
-## Whether the Water stance 1 rope is formed, and whether its water came from the
-## pouch (put back on leaving the stance) or from water nearby.
-var rope := false
-var rope_from_pouch := false
+## Water in the stance (the Water stance 1 rope, the stance 2 hoop; WaterBending).
+var stance_water := 0
+## Stance water an ability was cast with (its power), by ability id; set when paid.
+var cast_water := {}
+## Host: when the hero last cast, entered a stance or fought (the stance drops after
+## 10 s out of combat without an ability).
+var stance_busy_at := 0.0
+## Host: the stance water refill's progress (one point every 17 frames).
+var water_refill_t := 0.0
+## Host: filling the pouch at water with E: {"at", "from"} (empty when not filling).
+var pouch_fill := {}
+
+
+## Whether the hero has a water rope or hoop to draw.
+var rope: bool:
+	get: return stance_water > 0 and WaterBending.in_water_stance(self)
 ## Host: whether a water tile is near (updated each tick).
 var near_water := false
 

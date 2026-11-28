@@ -45,7 +45,7 @@ static func capture(hero: Hero) -> Dictionary:
 		"mastery_contrib": _contrib_out(hero.mastery_contrib),
 		"records": hero.records.duplicate(true),
 		"loot_bonus": hero.loot_bonus,
-		"water": hero.water + (24 if hero.rope and hero.rope_from_pouch else 0),
+		"water": hero.water + hero.stance_water, # the stance water goes back to the pouch
 	}
 
 

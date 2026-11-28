@@ -117,6 +117,7 @@ func test_forms_from_the_source_and_refills_from_the_hips() -> void:
 	assert_eq(r.M(), settings.NMAX, "the orbit forms point by point")
 	r.fill_now(10)
 	r.forming = false
+	r.set_count(settings.NMAX) # the host's stance water grew back
 	for i in settings.REFILL_EVERY * 3 + 1:
 		r.step()
 	assert_eq(r.M(), 13, "one point every REFILL_EVERY frames while idle")
@@ -156,7 +157,9 @@ func _hero_with_rope() -> Hero:
 	var h := Hero.new()
 	h.id = 7
 	h.move.place(Vector2i(10, 10))
-	h.rope = true
+	h.stance_tree = "Water"
+	h.stance = 1
+	h.stance_water = 24
 	return h
 
 
@@ -176,7 +179,7 @@ func test_each_hero_gets_its_rope_and_the_whip_event_throws_it() -> void:
 	assert_true(r.st == "fly" or r.st == "spin", "thrown at its host time")
 	var items := ropes.items(func(_h): return Vector2.ZERO)
 	assert_true(items.any(func(i): return i.has("stamps")), "slices to draw")
-	h.rope = false
+	h.stance_water = 0
 	for i in 30:
 		ropes.advance(0.2, 1.0 + i * 0.2, [h], null, null, on)
 	assert_null(ropes.rope_of(h.id), "drained away once the stance is left")

@@ -27,7 +27,8 @@ static func amount(caster: Actor, ability: AbilityDef, effect: AbilityEffect, no
 		for term in effect.scaling:
 			if term != null:
 				value += term.coefficient * stats.get_stat(term.stat)
-	return maxf(value * effect.power * mastery_multiplier(caster, ability, now, rules), 0.0)
+	var water := WaterBending.power(caster as Hero, ability) if caster is Hero else 1.0
+	return maxf(value * effect.power * mastery_multiplier(caster, ability, now, rules) * water, 0.0)
 
 
 ## 1 + Mastery × mastery_power_per_point (1 for non-tree abilities).

@@ -70,6 +70,12 @@ var v_hit := 0.0
 var poured: Array[bool] = []
 ## How many points the rope wants (NMAX; 0 while draining).
 var target_count := 0
+## Stance 2 (the hoop): the stance the rope is heading for (1 or 2), the blend toward
+## the hoop (0–1, over ENTER_T frames), and the closing link between tail and head.
+var goal := 1
+var sb := 0.0
+var wrap := false
+var wrap_str := 0.0
 ## Where new water comes from, hero-relative: the hips (the pouch) or a water tile.
 var source := Vector3.ZERO
 ## Still forming the orbit after entering the stance (points come FORM_EVERY frames apart).
@@ -120,6 +126,41 @@ func _speed_curve_exp() -> float:
 func dist_scale(length: float) -> float:
 	var df := _clamp(length / s.DIST_REF, 0.0, 1.0)
 	return s.SPEED_FLOOR + (1.0 - s.SPEED_FLOOR) * pow(df, _speed_curve_exp())
+
+
+## Stance 1 or 2 (the hoop). Leaving the hoop opens it at once.
+func set_stance(n: int) -> void:
+	if n == goal:
+		return
+	goal = n
+	if n != 2:
+		wrap = false
+		wrap_str = 0.0
+
+
+## The hoop's points: spread evenly over however many there are (27–33).
+func hoop_n() -> int:
+	return maxi(maxi(target_count, M()), 3)
+
+
+## Point `id`'s place on the hoop: round the chest, breathing and tilting.
+func hoop_t(id: int) -> Vector3:
+	var n := hoop_n()
+	var a := phase - id * TAU / n
+	var br := sin(fr * TAU / (s.BREATH_T * 60.0))
+	var r := s.HR + s.BREATH * br
+	return Vector3(cos(a) * r, sin(a) * r, s.HZ + s.BREATH * 0.6 * br + s.HOOP_TILT * sin(a - fr * s.HOOP_TILT_SPEED))
+
+
+## Where point `id` belongs while idling: the waist orbit, the hoop or between.
+func target_t(id: int) -> Vector3:
+	var b := ramp(sb, 1.0)
+	return orbit_t(id) if b <= 0.0 else orbit_t(id).lerp(hoop_t(id), b)
+
+
+## How far apart neighbouring points sit: the rope's spacing, or the hoop's.
+func seg_len() -> float:
+	return lerpf(s.SEG, TAU * s.HR / hoop_n(), ramp(sb, 1.0))
 
 
 func orbit_t(id: int) -> Vector3:
@@ -215,14 +256,37 @@ func fill_now(count := -1) -> void:
 	ib = 1.0
 	w = s.w_idle()
 	forming = false
-	target_count = s.NMAX
+	target_count = n
 
 
-## Leaving the stance: the water goes back where it came from, then the rope is gone.
+## The host's stance water (Hero.stance_water): how many points the rope holds. Fewer
+## while it idles: the tail's points spill as droplets that soak in; more: new points
+## join from the source one at a time (`step`).
+func set_count(n: int) -> void:
+	n = clampi(n, 0, WaterBending.full(2))
+	if n == target_count:
+		return
+	target_count = n
+	if st in ["idle", "wrap"]:
+		while M() > n:
+			var p: Pt = R.pop_back()
+			_splash(p.p, 2, p.p - p.q)
+			if conn.size() > maxi(M() - 1, 0):
+				conn.resize(maxi(M() - 1, 0))
+				strength.resize(maxi(M() - 1, 0))
+
+
+## Leaving the stance: the water flows back where it came from, the tail first, over
+## DRAIN_FRAMES; then the rope is gone.
+const DRAIN_FRAMES := 30
+var _drain_m := 0
+
+
 func drain() -> void:
 	target_count = 0
 	st = "drain"
 	tt = 0
+	_drain_m = M()
 	for i in conn.size():
 		conn[i] = false
 		strength[i] = 0.0
@@ -403,7 +467,10 @@ func _constrain(fix_n: int) -> void:
 	var tg := _tightness()
 	var cap := s.CAP_STEP * s.MAX_SPEED / 1.6 if _reforming() else 1e9
 	var n := M()
+	var SEG := seg_len() if st == "idle" else s.SEG
 	for _it in s.ITERATIONS:
+		if wrap and n > 2 and st == "idle":
+			_link(R[n - 1], R[0], SEG, wrap_str, tg)
 		for i in n - 1:
 			if not conn[i]:
 				continue
@@ -417,10 +484,10 @@ func _constrain(fix_n: int) -> void:
 			var d := dv.length()
 			if d == 0.0:
 				d = 1.0
-			if d <= s.SEG and tg == 0.0:
+			if d <= SEG and tg == 0.0:
 				continue
-			var corr := d - s.SEG
-			if d < s.SEG:
+			var corr := d - SEG
+			if d < SEG:
 				corr *= tg
 			corr *= strength[i]
 			if af:
@@ -430,6 +497,20 @@ func _constrain(fix_n: int) -> void:
 				var h := _clamp(corr * 0.5, -cap, cap)
 				a.p += dv / d * h
 				b.p -= dv / d * h
+
+
+## The hoop's closing link (tail to head), like the reference's link().
+func _link(a: Pt, b: Pt, L: float, k: float, push: float) -> void:
+	var dv := b.p - a.p
+	var d := dv.length()
+	if d == 0.0:
+		d = 1.0
+	var corr := d - L
+	if d < L:
+		corr *= push
+	corr *= k * 0.5
+	a.p += dv / d * corr
+	b.p -= dv / d * corr
 
 
 func _splash(at: Vector3, n: int, v: Vector3) -> void:
@@ -545,7 +626,13 @@ func step() -> void:
 	tt += 1
 	sim_t += 1
 	fr += 1
-	var tw := s.W_SPIN if st == "spin" else s.w_idle()
+	var tw := s.W_SPIN if st == "spin" else lerpf(s.w_idle(), TAU / (s.LAP2 * 60.0), ramp(sb, 1.0))
+	sb = _clamp(sb + (1.0 if goal == 2 else -1.0) / s.ENTER_T, 0.0, 1.0)
+	if goal == 2 and not wrap and sb >= s.CLOSE_AT and M() >= target_count and M() > 2:
+		wrap = true
+		wrap_str = 0.0
+	if wrap:
+		wrap_str = minf(1.0, wrap_str + 1.0 / s.WRAP_FADE)
 	w += (tw - w) * (s.SPIN_EASE if st == "spin" else s.WRAP_EASE if st == "wrap" else s.IDLE_EASE)
 	phase += w
 	if st == "drain":
@@ -591,8 +678,10 @@ func step() -> void:
 		"idle", "spin":
 			ib = minf(1.0, ib + 1.0 / s.IDLE_BLEND)
 			var k := s.SPIN_SPRING if st == "spin" else s.IDLE_SPRING * ib
+			if sb > 0.0 and st == "idle":
+				k = lerpf(k, s.HOOP_FOLLOW, ramp(sb, 1.0))
 			for p in R:
-				_spring(p, orbit_t(p.id), k)
+				_spring(p, target_t(p.id) if st == "idle" else orbit_t(p.id), k)
 			_constrain(0)
 			# Refill from the pouch (the hips) or the water nearby, one point at a time.
 			var every := s.FORM_EVERY if forming else s.REFILL_EVERY
@@ -762,16 +851,19 @@ func _step_drops() -> void:
 ## Draining: each point flows back to the source and is gone when it gets there.
 func _step_drain() -> void:
 	var keep: Array[Pt] = []
+	# Points let go one after another from the tail: the last ones first.
+	var free_from := _drain_m - ceili(float(tt) * _drain_m / DRAIN_FRAMES)
 	for p in R:
 		var v := (p.p - p.q) * s.RET_DRAG
 		p.q = p.p
 		p.p += v
-		_spring(p, source, 0.15)
+		if p.id >= free_from:
+			_spring(p, source, 0.15)
+		else:
+			_spring(p, orbit_t(p.id), s.IDLE_SPRING)
 		if p.p.distance_to(source) > 3.0:
 			keep.append(p)
 	R = keep
-	for i in R.size():
-		R[i].id = i
 	conn.resize(maxi(R.size() - 1, 0))
 	strength.resize(maxi(R.size() - 1, 0))
 	conn.fill(false)

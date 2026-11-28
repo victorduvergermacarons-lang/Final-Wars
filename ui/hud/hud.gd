@@ -18,7 +18,9 @@ const REASONS := {
 	"out_of_range": "Out of range",
 	"no_line_of_sight": "Target not in line of sight",
 	"not_enough_mana": "Not enough mana",
-	"no_water": "No water (fill your Water Pouch at water with E)",
+	"no_water": "Not enough water",
+	"not_enough_water": "Not enough water",
+	"pouch_full": "Your Water Pouch is full",
 	"no_pouch": "You have no Water Pouch",
 	"on_cooldown": "Not ready yet",
 	"invalid_target": "Invalid target",
@@ -722,10 +724,19 @@ func _on_events(events: Array) -> void:
 				elif e.reason != "not_ready":
 					client.error(REASONS.get(e.reason, String(e.reason).capitalize()))
 			"pouch_filled":
-				client.say("Water Pouch filled (%d / %d)." % [int(e.water), session.rules().water_pouch_capacity])
+				if int(e.get("target", -1)) == session.local_hero_id:
+					client.say("Water Pouch filled (%d / %d)." % [int(e.water), session.rules().water_pouch_capacity])
 			"no_water":
-				client.error("No water for the orbit: fill your Water Pouch at water with E" if e.get("pouch", false)
-						else "No water for the orbit: you have no Water Pouch")
+				if int(e.get("target", -1)) == session.local_hero_id:
+					client.error("Not enough water: fill your Water Pouch at water with E" if e.get("pouch", false)
+							else "Not enough water: you have no Water Pouch")
+			"pouch_filling":
+				if int(e.get("target", -1)) == session.local_hero_id:
+					if e.on:
+						client.say("Filling your Water Pouch… (stand still)")
+					else:
+						client.error({"moved": "You moved: the pouch stopped filling",
+								"hit": "You were hit: the pouch stopped filling"}.get(e.get("why", ""), "The pouch stopped filling"))
 			"act_complete":
 				_act_end_pending = e # opens once the hand-in conversation is over
 				client.say("%s is complete." % ActEndScreen.TITLES.get(int(e.act), "Act %d" % int(e.act)))

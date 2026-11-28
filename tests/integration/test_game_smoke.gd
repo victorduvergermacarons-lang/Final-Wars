@@ -42,6 +42,8 @@ func test_solo_game_runs_with_hud() -> void:
 	var heal_slot := game.client.action_bar.slots.find(&"W01")
 	assert_gt(heal_slot, -1, "Healing Touch on the bar")
 
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH]) # stance water comes from the pouch
+	hero.water = 200
 	# Out of its stance, its key enters Water stance 1 and doesn't cast; pressed again
 	# it heals, and the hero stays in the stance.
 	hero.hp -= 30

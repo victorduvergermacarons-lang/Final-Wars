@@ -1769,8 +1769,9 @@ func _draw_talk_prompt() -> void:
 		return
 	if what.kind == "fill":
 		var me: Hero = session.local_hero()
-		_draw_label(actor_screen_pos(me) + Vector2(0, -70), "[E] Fill Water Pouch (%d / %d)"
-				% [me.water, session.rules().water_pouch_capacity], Color(0.6, 0.85, 1), 13, true)
+		var verb := "Filling Water Pouch" if not me.pouch_fill.is_empty() else "[E] Fill Water Pouch"
+		_draw_label(actor_screen_pos(me) + Vector2(0, -70), "%s (%d / %d)"
+				% [verb, me.water, session.rules().water_pouch_capacity], Color(0.6, 0.85, 1), 13, true)
 		return
 	var npc: Npc = what.npc
 	var marker: String = client.npc_markers.get(npc.def.id, "") if client != null else ""

@@ -123,7 +123,7 @@ func test_water_whip_window_and_the_hit_on_the_snap() -> void:
 	# Water to bend (2026-11-26): a pouch and the stance 1 rope.
 	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
 	hero.water = 200
-	hero.rope = true
+	hero.stance_water = 24
 	var hp := wolf.hp
 	world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": wolf.id})
 	world.step()
