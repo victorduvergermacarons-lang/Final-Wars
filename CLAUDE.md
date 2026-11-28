@@ -34,7 +34,10 @@ Punch instant; see that section and `docs/playtest-checklist-ability-animations.
 every bending ability and nearly every item; see **Icons**. **Stances and effects** (branch `feature/stance-rework`,
 2026-11-23, all 5 phases): stance controls and looks, effects from the approved art, code-drawn
 effects; see **Stances**, **Ability effects from the approved art**, **Code-drawn effects** and
-`docs/playtest-checklist-stances-and-effects.md`. **Map editor**
+`docs/playtest-checklist-stances-and-effects.md`. **Water physics** (branch `feature/water-physics`,
+2026-11-28, all 5 phases): render fixes, every ability on the bar (pressing enters its stance), a
+bar per character, water as a resource, the stance 2 hoop, the five water abilities on the rope; see
+**Water as a resource**, **Water abilities** and `docs/playtest-checklist-water-physics.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
 new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
@@ -174,13 +177,13 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | F07 | Fireball | Scroll of the Fireball | Ground 5, 3×3, 0.4 s telegraph | 1.2 | 15 | 8 |
 | F08 | Burning Ground | Scorched Earth Scroll | Ground 4, 3×3 zone 6 s | 0.35 per s | 15 | 14 |
 | F09 | Blazing Combo | Blazing Fist Scroll | Targeted, adjacent | 3 × 0.5, knockback 1 | 12 | 10 |
-| W01 | Healing Touch | Mender's Scroll | Targeted ally, 2; water_heal (2026-11-21) | heal 1.0 | 8 | 3 |
-| W02 | Water Whip | River Lash Scroll | Targeted, 3, **3 s timing bar** (hold 0.45–2.75 s since 2026-11-21; was 0.75); the Water stance 1 rope is thrown at the release and the hit lands 0.5 s later (since 2026-11-26); 4 water points | 1.0 | 6 | 2 |
+| W01 | Healing Touch | Mender's Scroll | Targeted ally, 4; no bar, the whole rope, lands 1.2 s after the cast (water physics, 2026-11-28) | heal 1.5 | 8 | 3 |
+| W02 | Water Whip | River Lash Scroll | Targeted, 5; **instant** since 2026-11-28: the whole rope thrown, the hit 0.5 s later, a second press within 1.5 s calls the water back (see **Water abilities**) | 1.0 | 6 | 2 |
 | W03 | Flow State | Scroll of the Current | Targeted ally, 3 | Haste 30 s | 10 | 20 |
-| W04 | Frost Shard | Frost Shard Scroll | Skillshot, 4, 12 t/s | 0.9 + slow ×1.5 2 s | 8 | 4 |
+| W04 | Frost Shard | Frost Shard Scroll | Skillshot, 6, 12 t/s; instant, 4 water points (2026-11-28) | 0.9 + slow ×1.5 2 s | 8 | 1.5 |
 | W05 | Soothing Mist | Mist Scroll | Targeted ally, 4 | heal 1.5 over 12 s | 12 | 8 |
 | W06 | Water Pulse | Wave Scroll | Skillshot 8-way line 3, pierce | 0.9 + push 1 along the wave | 12 | 8 |
-| W07 | Leeching Tide | Leech Tide Scroll | Targeted, 3 | 1.0, heals you 50% | 12 | 10 |
+| W07 | Leeching Tide | Leech Tide Scroll | Targeted, 5; Water stance 2; a 3 s channel, 6 ticks (2026-11-28) | 1.0 in all, no heal; 4 water a tick into the pouch | 12 | 10 |
 | W08 | Tidal Blessing | Tidal Scroll | Targeted ally, 3 | +20 PhysDef/MagDef 45 s | 12 | 25 |
 | W09 | Ice Spikes | Glacier Scroll | Ground 4, 3×3, 0.4 s telegraph | 1.0 + slow ×1.5 3 s | 15 | 10 |
 | W12 | Water Shield | (sheet) | Targeted ally, 5; yourself with no ally targeted (2026-11-25) | shield 20 s (tier default + sheet stats); used up: splashes enemies within 1.5 tiles for 10 + 0.6×MagAtk (`BuffDef.break_ability`) | 10 | 20 |

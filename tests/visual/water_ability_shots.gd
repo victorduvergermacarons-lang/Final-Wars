@@ -28,6 +28,8 @@ func _wait(seconds: float) -> void:
 
 
 func _shot(name: String, region := crop) -> void:
+	if half:
+		name = name.replace("w4_", "w4h_")
 	await _frames(2)
 	var img := get_viewport().get_texture().get_image()
 	if region.has_area():
@@ -73,6 +75,10 @@ func _cast(id: StringName, target: Actor, aim: Variant = null) -> void:
 	world.submit(hero.id, intent)
 
 
+## SHOTS_HALF=1: every ability with half a rope (12 points; 17 in stance 2).
+var half := OS.get_environment("SHOTS_HALF") == "1"
+
+
 func _ready_again(stance := 1) -> void:
 	hero.cooldowns = Cooldowns.new()
 	hero.mana = 999
@@ -80,6 +86,9 @@ func _ready_again(stance := 1) -> void:
 	hero.stance = stance
 	hero.stance_water = WaterBending.full(stance)
 	await _wait(2.5)
+	if half:
+		hero.stance_water = WaterBending.full(stance) / 2 + (1 if stance == 2 else 0)
+		await _wait(0.2)
 
 
 func _run() -> void:

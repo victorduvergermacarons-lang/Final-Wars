@@ -61,6 +61,25 @@ func _go(t: Vector2i) -> void:
 	await _frames(8)
 
 
+## A tile of `terrain` with walkable ground of the same height round it, far from water.
+func _terrain_spot(sim: WorldSim, terrain: String) -> Vector2i:
+	var idx := WaterTiles.of(sim.zone)
+	for y in range(3, sim.grid.depth - 3):
+		for x in range(3, sim.grid.width - 3):
+			var t := Vector2i(x, y)
+			if sim.zone.terrain_at(t) != terrain or not sim.grid.is_walkable(t) or sim.is_occupied(t):
+				continue
+			if WaterTiles.nearest(idx, Vector2(t), 4.0) != null:
+				continue
+			var ok := true
+			for d in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1), Vector2i(1, 1)]:
+				if sim.zone.terrain_at(t + d) != terrain or sim.grid.height_at(t + d) != sim.grid.height_at(t):
+					ok = false
+			if ok:
+				return t
+	return Vector2i(-1, -1)
+
+
 func _run() -> void:
 	game = Game.new()
 	game.settings_path = "user://water_resource_shots.cfg"
@@ -72,6 +91,20 @@ func _run() -> void:
 		TreeRules.master(hero, ContentDB.abilities[id])
 	Mastery.add_permanent(hero, "Water", 200)
 	var sim := world.zone_of(hero.id)
+	if OS.get_environment("SHOTS_ONLY") == "shadows":
+		# The rope's shadow (black at 30%) on three kinds of ground.
+		_stance(1)
+		for terrain in ["grass", "cobble", "path"]:
+			var t := _terrain_spot(sim, terrain)
+			if t == Vector2i(-1, -1):
+				print("no ", terrain)
+				continue
+			await _go(t)
+			hero.stance_water = 24
+			await _wait(1.2)
+			await _shot("w5_shadow_on_" + terrain, Rect2i(960 - 120, 540 - 110, 240, 170))
+		get_tree().quit()
+		return
 	await _go(_spot(sim, 9.0, 30.0))
 	# 1. Stance 1 away from water: the rope forms from the hips.
 	_stance(1)
