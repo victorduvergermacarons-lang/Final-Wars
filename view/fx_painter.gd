@@ -254,6 +254,8 @@ func stance_items(t: float, actors: Array, effects: Dictionary, art_for: Callabl
 	for a in actors:
 		if not (a is Hero) or not a.alive or a.stance <= 0 or a.stance_tree == "":
 			continue
+		if a.stance_tree == "Water" and a.stance == 1:
+			continue # its look is the water rope (WaterRopes), not a ring
 		var art: CreatureArtDef = art_for.call(a)
 		var key := art.stance_look(a.stance_tree, a.stance) if art != null else ""
 		if key.begins_with("look:"):

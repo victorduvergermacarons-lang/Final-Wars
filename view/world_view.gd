@@ -308,7 +308,8 @@ func _tile_bounds(grid: GridModel, p: Vector2i) -> Rect2:
 func _clusters(items: Array) -> Array:
 	var out: Array = []
 	for item in items:
-		var c := {"rect": _snap_rect(item.rect), "depth": int(item.depth), "h": int(item.get("h", 0)), "cover": {}}
+		var c := {"rect": _snap_rect(item.rect), "depth": int(item.depth), "h": int(item.get("h", 0)), "cover": {},
+				"patch": {}}
 		var merged := true
 		while merged:
 			merged = false
@@ -350,6 +351,20 @@ func _collect_cover(grid: GridModel, cluster: Dictionary, members: Dictionary) -
 			if grid.in_bounds(p) and _tile_bounds(grid, p).intersects(rect) and _covers(grid, p, int(cluster.h)):
 				cluster.cover[p] = true
 				_add_member(members, p)
+	# A tile drawn again shows its lower faces, which the cached picture has hidden
+	# under the bare ground in front of it. That ground isn't drawn again on its own
+	# (it would cut feet and effects at its level), so it is put back right after the
+	# tile it hides, before anything standing in front is drawn (2026-11-28: the
+	# wall showing through around a hero whose rope reached behind a house).
+	for p: Vector2i in cluster.cover:
+		var under := []
+		for d in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+			var q: Vector2i = p + d
+			if grid.in_bounds(q) and grid.has_tile(q) and not cluster.cover.has(q) \
+					and _tile_bounds(grid, q).intersects(rect):
+				under.append(q)
+		if not under.is_empty():
+			cluster.patch[p] = under
 
 
 ## Whether tile `p` can hide something standing at ground height `h`: it rises above
@@ -557,6 +572,9 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 			for c in clusters:
 				if c.cover.has(p):
 					_draw_tile(self, grid, p, c.rect)
+					var hide: Rect2 = c.rect.intersection(_tile_bounds(grid, p))
+					for q in c.patch.get(p, []):
+						_draw_tile(self, grid, q, hide)
 			if quest_areas.has(p):
 				_draw_quest_area(grid, p, quest_areas[p])
 			for color in marks.get(p, []):

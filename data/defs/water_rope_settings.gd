@@ -191,6 +191,9 @@ extends Resource
 @export var DROP_ZDRAG: float = 0.92
 ## Splash drops: gravity.
 @export var DROP_GRAV: float = 0.12
+## Ground shadows darken what they fall on by this share (0.3 = 30% darker: black at
+## 30% over the ground), each screen pixel at most once (2026-11-28).
+@export var SHADOW_DARKEN: float = 0.3
 @export_group("Palette")
 ## Outline and shade.
 @export var OUT: Color = Color("0C447C")

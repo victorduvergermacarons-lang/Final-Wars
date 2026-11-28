@@ -23,6 +23,9 @@ var settings: WaterRopeSettings
 var ropes := {}
 var _pending: Array = [] # throws not reached yet: {"source", "to", "at"}
 var _acc := 0.0
+## Shadow pixels already darkened this frame (world px): overlapping shadows (two
+## ropes, a rope over its own drops) darken a pixel only once.
+var _shadow_seen := {}
 var _seed := 1
 
 
@@ -143,6 +146,7 @@ func rad(f: float, fr: int) -> float:
 ## "blobs", "drops", "shadows", "puddles"}. `feet`: Callable(Hero) -> the hero's feet
 ## on screen (world px).
 func items(feet: Callable) -> Array:
+	_shadow_seen.clear()
 	var out := []
 	for id in ropes:
 		var e: Dictionary = ropes[id]
@@ -253,8 +257,17 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 			var w := floori(sqrt(span))
 			canvas.draw_rect(Rect2((o + Vector2(cx - w, cy + yy)).round() * S, Vector2(2 * w + 1, 1) * S), col)
 	if item.has("shadows"):
+		# Black at SHADOW_DARKEN over the ground = the ground × (1 − SHADOW_DARKEN):
+		# a darker green on grass, a darker grey on stone. Each pixel once.
+		var shade := Color(0, 0, 0, s.SHADOW_DARKEN)
 		for sh in item.shadows:
-			px.call(sh[0].x, sh[0].y, s.SHAD, int(sh[1]), 1)
+			var at := (o + Vector2(roundf(sh[0].x), roundf(sh[0].y))).round()
+			for k in int(sh[1]):
+				var key := Vector2i(at) + Vector2i(k, 0)
+				if _shadow_seen.has(key):
+					continue
+				_shadow_seen[key] = true
+				canvas.draw_rect(Rect2(Vector2(key) * S, Vector2(S, S)), shade)
 	if item.has("puddles"):
 		for pd in item.puddles:
 			var q: float = pd[1]
