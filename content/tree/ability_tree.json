@@ -3017,7 +3017,7 @@
 			"branch_key": 4,
 			"unlock_step": 2,
 			"item_id": "frost_shard_scroll",
-			"cooldown": 1.5,
+			"cooldown": 0.5,
 			"mastery_on_learn": 5.0,
 			"mastery_per_use": 0.2,
 			"mastery_cap": 50.0,
@@ -3035,7 +3035,7 @@
 				"taps": [],
 				"crits": [],
 				"holds": [],
-				"notes": "Instant since 2026-11-28 (water physics): 4 points of the rope break off and freeze into the shard."
+				"notes": "Instant since 2026-11-28 (water physics): 4 points of the rope break off and freeze into the shard. Cooldown 0.5 s and a third of the damage since the follow-up (user)."
 			},
 			"hitbox": {
 				"shape": "Projectile",

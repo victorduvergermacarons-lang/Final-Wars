@@ -1968,7 +1968,7 @@ func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
 
 # --- Water as a resource (water physics, phase 3, 2026-11-28) ----------------------
 ## Stance 1 refills one point every 17 frames (at 60 fps).
-const WATER_REFILL_SECONDS := 17.0 / 60.0
+const WATER_REFILL_SECONDS := 8.5 / 60.0 # twice as fast since 2026-11-28 (user): 24 points in 3.4 s
 ## A Water stance drops after this long out of combat without an ability.
 const WATER_STANCE_IDLE_SECONDS := 10.0
 ## E at water fills an empty pouch in this long (a partly full one in less).

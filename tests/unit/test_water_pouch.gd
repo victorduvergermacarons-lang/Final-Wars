@@ -51,9 +51,9 @@ func _stance(n: int) -> void:
 	world.step()
 
 
-## Stance 1 fills a point every 17 frames: 24 points take 6.8 s.
+## Stance 1 fills a point every 8.5 frames: 24 points take 3.4 s.
 func _fill_rope() -> void:
-	world.advance(24 * 17.0 / 60.0 + 0.1)
+	world.advance(24 * 8.5 / 60.0 + 0.1)
 
 
 func _cast(target: Actor) -> Array:
@@ -154,13 +154,13 @@ func test_the_second_press_decides_how_much_water_comes_back() -> void:
 	assert_lt(hero.water, pouch, "the rope grows back from the pouch")
 
 
-func test_stance_1_refills_a_point_every_17_frames_from_the_pouch() -> void:
+func test_stance_1_refills_a_point_every_8_5_frames_from_the_pouch() -> void:
 	_go(_tile_from_water(8.0, 40.0))
 	_stance(1)
 	hero.stance_water = 20
 	hero.stance_busy_at = sim.now
 	var pouch := hero.water
-	world.advance(17.0 / 60.0 * 2 + 0.01)
+	world.advance(8.5 / 60.0 * 2 + 0.01)
 	assert_eq(hero.stance_water, 22)
 	assert_eq(hero.water, pouch - 2)
 	hero.water = 0

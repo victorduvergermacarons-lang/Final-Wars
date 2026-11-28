@@ -34,7 +34,7 @@ extends Resource
 ## Frames to blend into the idle springs.
 @export var IDLE_BLEND: int = 40
 ## Idle: one point added every this many frames until NMAX.
-@export var REFILL_EVERY: int = 26
+@export var REFILL_EVERY: int = 8
 ## Idle spring toward the orbit spot.
 @export var IDLE_SPRING: float = 0.08
 ## Spin spring toward the orbit spot.

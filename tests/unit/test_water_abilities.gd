@@ -140,11 +140,12 @@ func test_expired_what_is_left_comes_home() -> void:
 
 # --- Frost Shard -------------------------------------------------------------------
 
-func test_frost_shard_is_instant_costs_4_and_cools_down_in_1_5_s() -> void:
+func test_frost_shard_is_instant_costs_4_and_cools_down_in_0_5_s() -> void:
 	var w04: AbilityDef = ContentDB.abilities[&"W04"]
 	assert_null(w04.timing_bar, "instant")
 	assert_eq(w04.water_cost, 4)
-	assert_almost_eq(w04.cooldown_seconds, 1.5, 0.001)
+	assert_almost_eq(w04.cooldown_seconds, 0.5, 0.001, "a third of 1.5 s (2026-11-28)")
+	assert_almost_eq(w04.effects[0].power, 0.3, 0.001, "a third of the damage")
 	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(3, 0))
 	world.submit(hero.id, {"type": "cast", "ability": &"W04", "target": wolf.id, "aim": wolf.move.pos})
 	var events := world.step()
