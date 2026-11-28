@@ -34,7 +34,6 @@
 	"E21": {"projectile": "metal_shards"},
 	"E23": {"land": "boulder_crush"},
 	"W01": {"cast": "water_heal_helix"},
-	"W12": {"held": "water_shield"},
 	"W04": {"projectile": "frost_shard"},
 	"W13": {"held": "ice_prison"},
 	"W14": {"cast": "revive_column"},

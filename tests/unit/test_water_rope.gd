@@ -259,3 +259,69 @@ func test_a_self_heal_unwinds_into_the_orbit() -> void:
 	r.heal_back(1.0)
 	assert_eq(r.st, "idle", "straight back into the orbit")
 	assert_gt(r.M(), 0)
+
+
+# --- Water Shield (water physics phase 4) -------------------------------------------
+
+func _shield(target := Vector2(50, 10), is_self := false) -> WaterShieldRope:
+	var r := _rope()
+	var sh := WaterShieldRope.new(settings, 3)
+	var pts: Array[WaterRope.Pt] = r.R.duplicate()
+	sh.cast_shield(pts, target, is_self, r.phase, r.w)
+	return sh
+
+
+func test_the_shield_goes_up_on_time_and_stretches() -> void:
+	var sh := _shield()
+	for i in settings.SH_T - 1:
+		sh.step()
+	assert_false(sh.shield_up)
+	sh.step()
+	assert_true(sh.shield_up, "up at SH_T frames")
+	var r0 := sh.M()
+	for i in settings.GROW_T:
+		sh.step()
+	assert_gt(sh.M(), r0, "stretched (points fed in at the tail)")
+	assert_almost_eq(sh.wscale, settings.WIDTH_MULT, 0.01, "thinner")
+	# Every point on the bubble sits on its sphere.
+	var C: Vector3 = sh.sph.C
+	for j in range(1, sh.M()):
+		assert_almost_eq(sh.R[j].p.distance_to(C), float(sh.sph.r), 2.0) # the links pull a little, as in the demo
+
+
+func test_the_shield_rope_follows_the_shield_left() -> void:
+	var sh := _shield()
+	for i in settings.SH_T + settings.GROW_T:
+		sh.step()
+	var full := sh.M()
+	sh.set_left(0.5)
+	assert_gt(sh.drops.size(), 0, "the hit splashes")
+	for i in 60:
+		sh.step()
+	assert_almost_eq(float(sh.M()), full * 0.5, 2.0, "half as long")
+
+
+func test_broken_it_bursts_falls_and_soaks_in() -> void:
+	var sh := _shield()
+	for i in settings.SH_T + 10:
+		sh.step()
+	sh.pop()
+	assert_eq(sh.st, "shield_fall")
+	for i in settings.POP_FALL + 2:
+		sh.step()
+	assert_eq(sh.M(), 0, "none of it comes home")
+	assert_gt(sh.lost.size(), 0, "soaked in")
+
+
+func test_run_out_it_comes_home_with_what_is_left() -> void:
+	var sh := _shield()
+	for i in settings.SH_T + settings.GROW_T:
+		sh.step()
+	sh.unwind(0.5)
+	assert_eq(sh.st, "return")
+	var frames := 0
+	while sh.st != "wrap" and sh.st != "idle" and frames < 1500:
+		sh.step()
+		frames += 1
+	assert_true(sh.st == "wrap" or sh.st == "idle", "back at the orbit")
+	assert_eq(sh.M(), roundi(settings.NMAX * 0.5), "12 points")

@@ -71,9 +71,10 @@ static func pay(ctx: CombatContext, caster: Actor, ability: AbilityDef, with_gcd
 		# Its power is the water it was cast with; the water it uses is gone.
 		var h := caster as Hero
 		if ability.water_whole_rope:
-			if h.water_out.get("ability", &"") != ability.id or h.water_out.get("paid", true):
+			var out := WaterBending.out_of(h, ability)
+			if out.get("ability", &"") != ability.id or out.get("paid", true):
 				WaterBending.send_out(h, ability, ctx.now) # not sent out at a release before
-			h.water_out.paid = true
+			WaterBending.out_of(h, ability).paid = true
 		else:
 			h.cast_water[ability.id] = h.stance_water
 			h.stance_water = maxi(h.stance_water - ability.water_cost, 0)

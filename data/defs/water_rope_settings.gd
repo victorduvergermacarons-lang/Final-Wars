@@ -249,6 +249,64 @@ extends Resource
 @export var MIST_LIFE: int = 50
 @export var MIST_LIFE_RND: int = 40
 
+@export_group("Water Shield (water_shield_demo_approved.html)")
+## Frames from the cast to the shield going up.
+@export var SH_T: int = 48
+## Bubble radius (px) round a 26 px dummy; a hero's is × HERO_H / 26.
+@export var SH_R: float = 15.0
+@export var SH_DUMMY_H: float = 26.0
+## Spin speed (px per frame) and wind drift (rad per frame of spin).
+@export var VS: float = 2.0
+@export var PRECESS: float = 0.025
+## The loop's tilt from horizontal (rad).
+@export var TILT: float = 0.45
+## Stretch: to LEN_MULT × its length over GROW_T frames, thinning to WIDTH_MULT.
+@export var GROW_T: int = 240
+@export var LEN_MULT: float = 2.0
+@export var WIDTH_MULT: float = 0.67
+@export var SH_FOLLOW: float = 0.35
+@export var SH_DRAG: float = 0.8
+@export var M_MAX: float = 3.0
+## Entry choice: the spin lined up with the approach, minus this × the distance.
+@export var ENTRY_DIST_W: float = 0.03
+## The turn-in arc (radius px; done within this angle).
+@export var TURN_R: float = 10.0
+@export var TURN_OK: float = 0.35
+## The way home: a self-cast enters 0.8 rad ahead; others bow 0.3 × distance left.
+@export var SELF_HOME_AHEAD: float = 0.8
+@export var ARC_BEND: float = 0.3
+@export var LEAVE_CTRL: float = 0.3
+@export var MID_CTRL: float = 0.25
+## Broken: the burst outward, then falling, then soaking in.
+@export var POP_OUT: float = 1.3
+@export var POP_KEEP: float = 0.4
+@export var POP_UP: float = 0.6
+@export var POP_SPLASH_EVERY: int = 3
+@export var POP_FALL: int = 34
+@export var POP_DAMP: float = 0.93
+@export var BREAK_AWAY: float = 0.8
+## Below these shares of the shield left: strained (drift ×2, wobble), cracking (gaps).
+@export var STRAIN_AT: float = 0.5
+@export var CRACK_AT: float = 0.25
+## A hit: dents within DENT_R px pushed DENT_PUSH, fading ×DENT_DECAY a frame;
+## ripple ×RIPPLE_HIT fading ×RIPPLE_DECAY; spin ×KICK fading ×KICK_DECAY.
+@export var DENT_R: float = 8.0
+@export var DENT_PUSH: float = 2.0
+@export var DENT_DECAY: float = 0.85
+@export var RIPPLE_HIT: float = 3.0
+@export var RIPPLE_DECAY: float = 0.9
+@export var KICK: float = 1.3
+@export var KICK_DECAY: float = 0.93
+@export var SHED_EASE: float = 0.2
+@export var WOBBLE: float = 1.5
+@export var GAP_EVERY: int = 10
+@export var GAP_LIFE: int = 8
+@export var GAP_HOLD: float = 0.5
+@export var GAP_HOLD_EASE: float = 0.15
+@export var GAP_STR: float = 0.6
+@export var HOME_THICKEN: float = 0.08
+@export var MIN_HOME_PTS: int = 4
+
 ## Frames between points joining the hoop (the reference's ADD_EVERY).
 @export var HOOP_ADD_EVERY: int = 4
 @export_group("Palette")

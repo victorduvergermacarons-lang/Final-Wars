@@ -18,7 +18,7 @@ func apply(buff: BuffDef, now: float, tick_amount: float = 0.0, source: int = -1
 	_active[buff.id] = {"def": buff, "expires": now + duration, "tick_amount": tick_amount,
 			"tick_damage": opts.get("tick_damage", false), "damage_type": opts.get("damage_type", 0),
 			"next_tick": now + buff.tick_seconds, "source": source, "shield": float(opts.get("shield", 0.0)),
-			"charges": buff.charges}
+			"shield_max": float(opts.get("shield", 0.0)), "charges": buff.charges}
 
 
 ## Restores a buff with a known expiry time (client mirrors).
@@ -250,6 +250,14 @@ func absorb(amount: float) -> float:
 				if b.def.break_ability != null:
 					broken.append({"def": b.def, "source": int(b.get("source", -1))})
 	return left
+
+
+## The share of buff `id`'s shield still left (0–1), or -1 without that buff.
+func shield_left(id: StringName, now: float) -> float:
+	if not has(id, now):
+		return -1.0
+	var b: Dictionary = _active[id]
+	return clampf(b.shield / b.shield_max, 0.0, 1.0) if float(b.get("shield_max", 0.0)) > 0.0 else 0.0
 
 
 func shield_total() -> float:

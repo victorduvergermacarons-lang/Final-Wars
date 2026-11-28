@@ -22,6 +22,7 @@ class Pt:
 	var id := 0
 	var gnd := false
 	var near := false
+	var off := Vector3.ZERO # Water Shield's dents (WaterShieldRope)
 
 	func _init(at: Vector3, i: int) -> void:
 		p = at
@@ -95,6 +96,8 @@ var heal_tail: Array[Pt] = []
 var heal_tail_base := 0
 var heal_tt := 0
 var mists: Array = []
+## Drawn width (Water Shield thins as it stretches; WaterShieldRope).
+var wscale := 1.0
 var goal := 1
 var sb := 0.0
 var wrap := false
@@ -442,6 +445,11 @@ func _helix(pts: PackedVector3Array, C: Vector2, a0: float, r_start: float, z0: 
 		var r := lerpf(rb, s.TOP_R, ramp(u - s.NARROW_AT, 1.0 - s.NARROW_AT))
 		var a := a0 + A * u
 		pts.append(Vector3(C.x + cos(a) * r, C.y + sin(a) * r, lerpf(z0, z1, u)))
+
+
+## Water Shield's states (WaterShieldRope overrides this).
+func _step_shield() -> void:
+	pass
 
 
 func _herm(u: float) -> float:
@@ -853,6 +861,7 @@ func step() -> void:
 		_step_drops()
 		return
 	var damp := s.FLY_DAMP if st in ["fly", "fall", "pour"] else s.HEAL_DRAG if st == "heal" \
+			else s.SH_DRAG if st == "shield" else s.POP_DAMP if st == "shield_fall" \
 			else s.RET_DRAG if _reforming() else s.IDLE_DAMP
 	var homing := st == "return" or st == "wrap"
 	var att0: Array[bool] = attached() if homing else ([] as Array[bool])
@@ -874,7 +883,7 @@ func step() -> void:
 			var vl := v.length()
 			if vl > lim:
 				v *= lim / vl
-		var gz := s.GRAV if st == "fall" or (st == "pour" and i < poured.size() and poured[i]) else 0.0
+		var gz := s.GRAV if st == "fall" or st == "shield_fall" or (st == "pour" and i < poured.size() and poured[i]) else 0.0
 		p.q = p.p
 		p.p += v - Vector3(0, 0, gz)
 	for i in M() - 1:
@@ -884,6 +893,8 @@ func step() -> void:
 		var nb := bl + (s.RISE_STOP - bl) * s.RISE_DRIFT
 		base *= nb / bl
 	match st:
+		"shield", "shield_fall":
+			_step_shield()
 		"idle", "spin":
 			ib = minf(1.0, ib + 1.0 / s.IDLE_BLEND)
 			var k := s.SPIN_SPRING if st == "spin" else s.IDLE_SPRING * ib

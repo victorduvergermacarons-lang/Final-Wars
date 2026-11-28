@@ -260,6 +260,7 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.stance = int(st[1])
 	h.stance_at = float(st[2])
 	h.stance_water = int(d.get("stance_water", 0))
+	h.shield_out = d.get("shield_out", {})
 	var out: Dictionary = d.get("water_out", {})
 	if out.is_empty() or out.get("at") != h.water_out.get("at"):
 		h.water_out = out.duplicate() # keeps "called" while it is the same throw

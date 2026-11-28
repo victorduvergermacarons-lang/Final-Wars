@@ -16,6 +16,8 @@ extends RefCounted
 const STEP := 1.0 / 60.0
 ## Healing Touch's effect: the rope winds round the target (WaterRope.heal).
 const HEAL_FX := &"water_heal_helix"
+## Water Shield's effect: the rope leaves for the bubble (WaterShieldRope).
+const SHIELD_FX := &"water_shield_rope"
 ## Debug colours (the reference's): points, the front, the return path and entry mark.
 const PT := Color("D4537E")
 const TIPC := Color("EF9F27")
@@ -23,6 +25,9 @@ const TIPC := Color("EF9F27")
 var settings: WaterRopeSettings
 ## hero id -> {"rope": WaterRope, "ground": Vector2 (reference px), "off": bool, "hero": Hero}
 var ropes := {}
+## Water Shield ropes, by caster id: {"rope": WaterShieldRope, "ground", "off", "hero",
+## "target": actor id} (the caster's own rope refills meanwhile).
+var shields := {}
 var _pending: Array = [] # throws not reached yet: {"source", "to", "at"}
 var _acc := 0.0
 ## Shadow pixels already darkened this frame (world px): overlapping shadows (two
@@ -53,6 +58,13 @@ func on_events(events: Array, effects: Dictionary) -> void:
 			# Water Whip's second press, or what Healing Touch's heal didn't need:
 			# that share of the water out comes home.
 			var r := rope_of(int(e.get("source", -1)))
+			if e.get("ability", &"") == &"W12" and shields.has(int(e.get("source", -1))):
+				var sh: WaterShieldRope = shields[int(e.get("source", -1))].rope
+				if float(e.get("share", 0.0)) <= 0.0:
+					sh.pop() # broken: all of it lost
+				else:
+					sh.unwind(float(e.get("share", 0.0)))
+				continue
 			if r != null:
 				if r.st == "heal":
 					r.heal_back(float(e.get("share", 0.0)))
@@ -64,7 +76,7 @@ func on_events(events: Array, effects: Dictionary) -> void:
 		var fx: FxDef = effects.get(StringName(e.get("fx", "")))
 		if fx != null and fx.ribbon and fx.path == FxDef.Path.ROPE:
 			_pending.append({"source": int(e.get("source", -1)), "to": Vector2(e.get("to", Vector2.ZERO)),
-					"at": float(e.get("at", 0.0)), "fx": fx.id,
+					"at": float(e.get("at", 0.0)), "fx": fx.id, "target": int(e.get("target", -1)),
 					"self": int(e.get("target", -1)) == int(e.get("source", -1))})
 
 
@@ -122,6 +134,9 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 			e = _new_entry(h)
 			e.rope.fill_now(mini(h.stance_water, settings.NMAX))
 		var aim: Vector2 = ground_of(t.to) - e.ground
+		if t.get("fx", &"") == SHIELD_FX:
+			_send_shield(h, e, aim, bool(t.get("self", false)), int(t.get("target", -1)))
+			continue
 		if t.get("fx", &"") == HEAL_FX:
 			e.rope.heal(aim, bool(t.get("self", false)))
 			continue
@@ -129,6 +144,24 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 				if grid != null else 0.0
 		e.rope.cast(aim, dz)
 	_pending = keep
+	# Shields follow their target and the host's shield left.
+	for id in shields.keys():
+		var sh: Dictionary = shields[id]
+		var h: Hero = by_id.get(id)
+		if h == null:
+			shields.erase(id)
+			continue
+		var g := ground_of(h.move.pos)
+		sh.rope.move_hero(g - sh.ground)
+		sh.ground = g
+		sh.hero = h
+		sh.off = not on_screen.call(h)
+		var tgt: Actor = by_id.get(int(sh.target), h)
+		sh.rope.follow_target(ground_of(tgt.move.pos) - g)
+		if not h.shield_out.is_empty():
+			sh.rope.set_left(float(h.shield_out.get("left", 1.0)))
+		if sh.rope.st == "idle" or sh.rope.st == "wrap":
+			sh.rope.drain() # home: it flows into the hip
 	_acc = minf(_acc + dt, STEP * 30.0)
 	while _acc >= STEP:
 		_acc -= STEP
@@ -138,6 +171,31 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 				e.rope.step()
 			if e.rope.done():
 				ropes.erase(id)
+		for id in shields.keys():
+			var sh: Dictionary = shields[id]
+			sh.rope.step()
+			if sh.rope.done():
+				shields.erase(id)
+
+
+## Water Shield cast: the caster's rope leaves for the bubble round `target`; the
+## caster's rope then grows back from the source (the host refills it).
+func _send_shield(h: Hero, e: Dictionary, aim: Vector2, self_cast: bool, target_id: int) -> void:
+	var r: WaterRope = e.rope
+	if r.M() < 2:
+		r.fill_now(maxi(r.M(), settings.MIN_KEEP))
+	_seed += 1
+	var sh := WaterShieldRope.new(settings, hash([h.id, _seed, "shield"]))
+	sh.source = r.source
+	var pts: Array[WaterRope.Pt] = r.R.duplicate()
+	sh.cast_shield(pts, Vector2.ZERO if self_cast else aim, self_cast, r.phase, r.w)
+	r.R.clear()
+	r.conn.clear()
+	r.strength = PackedFloat32Array()
+	r.st = "idle"
+	r.tt = 0
+	shields[h.id] = {"rope": sh, "ground": e.ground, "off": false, "hero": h,
+			"target": h.id if self_cast else target_id}
 
 
 func _new_entry(h: Hero) -> Dictionary:
@@ -170,6 +228,11 @@ func items(feet: Callable) -> Array:
 	var out := []
 	for id in ropes:
 		var e: Dictionary = ropes[id]
+		if e.off:
+			continue
+		out.append_array(_rope_items(e, feet.call(e.hero) / PixelCamera.ART_SCALE))
+	for id in shields:
+		var e: Dictionary = shields[id]
 		if e.off:
 			continue
 		out.append_array(_rope_items(e, feet.call(e.hero) / PixelCamera.ART_SCALE))
@@ -248,6 +311,8 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 	# A closed hoop fits a whole number of ripples round it, so they meet seamlessly.
 	var kw := TAU * maxf(1.0, roundf(total / rl)) / total if closed and total > 0.0 else TAU / rl
 	var r_amp := lerpf(s.RIPPLE_AMP, s.HOOP_RIPPLE_AMP, b)
+	if r is WaterShieldRope:
+		r_amp *= (r as WaterShieldRope).rboost # a hit's ripple
 	var r_speed := lerpf(s.RIPPLE_SPEED, s.HOOP_RIPPLE_SPEED, b)
 	var arc := 0.0
 	var sun := s.SUN.normalized()
@@ -275,6 +340,7 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 			var hoop_r := s.HOOP_BASE_R * s.THICK + sin(u * TAU * 3.0 - r.fr * 0.05) * 0.15
 			var radius := hoop_r if closed else lerpf(rad(f, r.fr) + s.BODY_GROW,
 					hoop_r * (0.5 + 0.5 * sin(PI * clampf(f, 0.04, 0.96))), b)
+			radius = maxf(0.55, radius * r.wscale) # Water Shield thins as it stretches
 			put.call("stamps", Vector2(lerpf(a.x, c.x, k), lerpf(a.y, c.y, k)), [at, radius, nrm, nrm.dot(sun)])
 		arc += L
 	for i in n:

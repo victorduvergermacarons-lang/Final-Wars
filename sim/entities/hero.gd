@@ -37,6 +37,10 @@ var cast_water := {}
 ## {"ability": id, "points", "at"} (Water Whip: until the second press or 1.5 s).
 ## Stance 1 doesn't refill meanwhile.
 var water_out := {}
+## Water Shield's water, out on the shield ({"ability", "points", "at", "paid",
+## "target", "buff", "left"}); it comes home with what's left when the shield runs
+## out, none if it breaks. Kept apart from `water_out`: the rope refills meanwhile.
+var shield_out := {}
 ## Host: when the hero last cast, entered a stance or fought (the stance drops after
 ## 10 s out of combat without an ability).
 var stance_busy_at := 0.0

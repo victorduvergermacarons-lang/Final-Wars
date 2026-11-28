@@ -402,6 +402,7 @@ func step() -> Array[Dictionary]:
 	_check_stances()
 	_track_hero_anims()
 	_track_water()
+	_watch_water_shields()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
 	_record_history()
@@ -721,6 +722,12 @@ func emit(event: Dictionary) -> void:
 	_events.append(event)
 	_record(event)
 	# Shoved or pulled: the hero drops its stance (crowd control, stance rework).
+	# Water Shield broken: all of its water is lost (water physics phase 4).
+	if event.get("type", "") == "shield_break":
+		for h: Hero in _heroes.values():
+			if h.shield_out.get("target", -2) == int(event.get("target", -1)) \
+					and h.shield_out.get("buff", &"") == event.get("buff", &""):
+				_settle_shield_out(h, 0.0)
 	if event.get("type", "") in ["pushed", "pulled"]:
 		var moved = _heroes.get(int(event.get("target", -1)))
 		if moved != null and moved.stance > 0:
@@ -875,7 +882,7 @@ func _release_now(hero: Hero, ability: AbilityDef, target: Actor, aim: Variant) 
 	if ability.on_gcd:
 		hero.cooldowns.trigger_gcd(now, rules.gcd_seconds * hero.buffs.cooldown_multiplier(now))
 	if ability.water_whole_rope and WaterBending.uses_stance_water(ability):
-		WaterBending.send_out(hero, ability, now)
+		WaterBending.send_out(hero, ability, now, target.id if target != null else hero.id)
 	var t_id := target.id if target != null else -1
 	if not WorldSim.is_mouse_aimed(ability):
 		hero.anim.face_until = now + ability.release_delay_seconds # faces its target until it goes off
@@ -2046,6 +2053,32 @@ func _intent_water_return(hero: Hero) -> String:
 	return ""
 
 
+## Water Shield (AbilityDef.WaterBack.SHIELD_LEFT): once up, its water follows the
+## shield left (`left`, sent to every player: the rope is that much of its stretched
+## length); when it runs out, that share comes home. Run before buffs expire.
+func _watch_water_shields() -> void:
+	for h: Hero in _heroes.values():
+		var out := h.shield_out
+		if out.is_empty() or not out.get("paid", false):
+			continue
+		var a: AbilityDef = ContentDB.abilities.get(out.get("ability", &""))
+		if a == null:
+			h.shield_out = {}
+			continue
+		if not out.has("buff"):
+			for e in a.effects:
+				if e.kind == AbilityEffect.Kind.SHIELD and e.buff != null:
+					out.buff = e.buff.id
+		var target := get_actor(int(out.get("target", -1)))
+		var left := target.buffs.shield_left(out.get("buff", &""), now) if target != null else -1.0
+		if left < 0.0:
+			_settle_shield_out(h, float(out.get("left", 0.0))) # gone without breaking: what's left
+			continue
+		out.left = left
+		if target.buffs.remaining(out.buff, now) <= rules.tick_seconds:
+			_settle_shield_out(h, left) # it runs out this tick: that share comes home
+
+
 ## Water out past its window comes back by its rule (the whip: none, unpressed).
 func _check_water_out(hero: Hero) -> void:
 	var out := hero.water_out
@@ -2058,11 +2091,22 @@ func _check_water_out(hero: Hero) -> void:
 		_settle_water_out(hero, 0.0)
 
 
+## Water Shield's water comes home: `share` of it (what's left of the shield).
+func _settle_shield_out(hero: Hero, share: float) -> void:
+	var out := hero.shield_out
+	hero.shield_out = {}
+	_water_home(hero, out, share)
+
+
 ## `share` of the water out comes home: into the stance (up to full, the rest into
 ## the pouch), or into the pouch when the stance is gone. The rest is lost.
 func _settle_water_out(hero: Hero, share: float) -> void:
 	var out := hero.water_out
 	hero.water_out = {}
+	_water_home(hero, out, share)
+
+
+func _water_home(hero: Hero, out: Dictionary, share: float) -> void:
 	var back := roundi(share * int(out.get("points", 0)))
 	if WaterBending.in_water_stance(hero):
 		var room := WaterBending.full(hero.stance) - hero.stance_water

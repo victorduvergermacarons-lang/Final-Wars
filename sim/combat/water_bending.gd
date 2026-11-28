@@ -27,10 +27,19 @@ static func whip_share(t: float) -> float:
 
 ## Sends the whole stance water out for `ability` (AbilityDef.water_whole_rope): its
 ## power is that water; what comes back is settled later (Hero.water_out).
-static func send_out(hero: Hero, ability: AbilityDef, now: float) -> void:
+static func send_out(hero: Hero, ability: AbilityDef, now: float, target_id := -1) -> void:
 	hero.cast_water[ability.id] = hero.stance_water
-	hero.water_out = {"ability": ability.id, "points": hero.stance_water, "at": now, "paid": false}
+	var out := {"ability": ability.id, "points": hero.stance_water, "at": now, "paid": false, "target": target_id}
+	if ability.water_back == AbilityDef.WaterBack.SHIELD_LEFT:
+		hero.shield_out = out
+	else:
+		hero.water_out = out
 	hero.stance_water = 0
+
+
+## The water `ability` sent out (Hero.water_out, or Hero.shield_out for a shield).
+static func out_of(hero: Hero, ability: AbilityDef) -> Dictionary:
+	return hero.shield_out if ability.water_back == AbilityDef.WaterBack.SHIELD_LEFT else hero.water_out
 
 
 ## Total water (stance + reserve) needed to enter stance 2.
@@ -75,8 +84,9 @@ static func has_enough(hero: Hero, ability: AbilityDef) -> bool:
 	if not uses_stance_water(ability):
 		return true
 	var need := maxi(1, ability.water_cost)
-	if hero.water_out.get("ability", &"") == ability.id and not hero.water_out.get("paid", true):
-		return int(hero.water_out.points) >= need # sent out at its release: going off now
+	var out := out_of(hero, ability)
+	if out.get("ability", &"") == ability.id and not out.get("paid", true):
+		return int(out.points) >= need # sent out at its release: going off now
 	return hero.stance_water >= need
 
 

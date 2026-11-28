@@ -21,6 +21,9 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		d.stance_water = hero.stance_water
 		if not hero.water_out.is_empty(): # every player keeps drawing the water that is out
 			d.water_out = {"ability": hero.water_out.ability, "at": hero.water_out.at}
+		if not hero.shield_out.is_empty(): # Water Shield's rope: on whom, how much is left
+			d.shield_out = {"target": hero.shield_out.target, "at": hero.shield_out.at,
+					"left": float(hero.shield_out.get("left", 1.0)), "points": hero.shield_out.points}
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:

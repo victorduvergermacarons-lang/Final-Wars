@@ -36,12 +36,15 @@ func test_water_shield_is_built_and_self_cast_without_an_ally() -> void:
 	assert_eq(picked.error, "")
 	assert_eq(picked.target, hero.id, "no target: on yourself")
 	assert_eq(sim.cast(hero, w12, hero), AbilityResolver.Result.OK)
-	assert_gt(hero.buffs.shield_total(), 0.0, "a shield")
-	assert_eq(ContentDB.buffs[&"water_shield"].fx, &"water_shield", "its bubble shows")
+	assert_eq(hero.buffs.shield_total(), 0.0, "the rope is still on its way")
+	world.advance(w12.release_delay_seconds + 0.05)
+	assert_gt(hero.buffs.shield_total(), 0.0, "a shield, 0.8 s after the cast")
+	assert_eq(ContentDB.buffs[&"water_shield"].fx, &"", "its bubble is the rope now (no FX-13-3)")
 
 
 func test_the_shield_splashes_adjacent_enemies_when_it_breaks() -> void:
 	sim.cast(hero, ContentDB.abilities[&"W12"], hero)
+	world.advance(ContentDB.abilities[&"W12"].release_delay_seconds + 0.05)
 	wolf = sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(1, 0))
 	var far := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(4, 0))
 	var hp: float = wolf.hp
