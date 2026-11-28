@@ -427,7 +427,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Interpolated screen position of an actor's feet.
 func actor_screen_pos(actor: Actor) -> Vector2:
-	return Iso.to_screen(actor.move.position_at(session.render_time()), actor_draw_height(actor))
+	# Jet Propulsion's lift and Phoenix Kick's arc (the fire looks) raise the hero as drawn.
+	return Iso.to_screen(actor.move.position_at(session.render_time()), actor_draw_height(actor)) \
+			- Vector2(0, fire.lift_px(actor.id) * PixelCamera.ART_SCALE)
 
 
 ## The height (levels) an actor's feet are drawn at now.

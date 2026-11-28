@@ -100,6 +100,15 @@ static func draws(id: StringName) -> bool:
 	return _has_look[id]
 
 
+## How high (art px) a fire look lifts this unit as drawn: Jet Propulsion's flight and
+## Phoenix Kick's leap. Look only: the host's unit stays on its ground.
+func lift_px(actor_id: int) -> float:
+	for e in effects:
+		if e.caster_id == actor_id and e.hz > 0.0 and e.look.kind in ["jet", "phoenix"]:
+			return e.hz * (sim.height_scale if sim != null else 1.0)
+	return 0.0
+
+
 ## The look of an ability (content/effects/fire/<id>.tres), or null.
 static func look_of(id: StringName) -> FireLookDef:
 	var path := "res://content/effects/fire/%s.tres" % id
