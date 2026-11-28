@@ -38,6 +38,10 @@ const END_MARK := Color(1, 1, 1, 0.45)
 const GRADE_TEXT := {"perfect": "Perfect!", "good": "Good", "miss": "Miss"}
 const GRADE_COLOR := {"perfect": Color(1.0, 0.88, 0.3), "good": Color(0.35, 0.95, 0.45), "miss": Color(0.8, 0.8, 0.8)}
 
+## Water Whip's return bar (water physics, 2026-11-28): 1.5 s after the throw; a
+## press anywhere brings water back, most at 0.5 s (WaterBending.whip_share).
+static var WHIP_BAR: TimingBarDef = _whip_bar()
+
 var hud: Hud
 var place: int = Place.BELOW_HERO # Place
 var mode: int = Mode.LENGTH # Mode
@@ -59,6 +63,14 @@ func show_result(grade: String, at: float, accuracy: float = -1.0) -> void:
 	_result = {"grade": grade, "at": at, "accuracy": accuracy, "until": _real_now() + RESULT_SECONDS}
 
 
+static func _whip_bar() -> TimingBarDef:
+	var b := TimingBarDef.new()
+	b.seconds = WaterBending.WHIP_WINDOW
+	b.zones = [Vector2(0.0, 1.0)] # half the water or more
+	b.crit_zones = [Vector2(WaterBending.WHIP_PERFECT - 0.05, 0.1)] # all of it
+	return b
+
+
 func _process(_delta: float) -> void:
 	var hero: Hero = hud.session.local_hero() if hud.session != null else null
 	var c: Dictionary = hero.casting if hero != null else {}
@@ -67,6 +79,14 @@ func _process(_delta: float) -> void:
 	if active and float(c.start) != float(_shown.get("start", -1.0)):
 		_shown = {"bar": c.ability.timing_bar, "start": float(c.start), "name": c.ability.display_name}
 		_result = {}
+	# Water Whip's return window.
+	var out: Dictionary = hero.water_out if hero != null else {}
+	if not active and out.get("ability", &"") == &"W02" and not out.get("called", false) \
+			and hud.session.render_time() - float(out.at) < WaterBending.WHIP_WINDOW:
+		active = true
+		if float(out.at) != float(_shown.get("start", -1.0)):
+			_shown = {"bar": WHIP_BAR, "start": float(out.at), "name": "Call the water back"}
+			_result = {}
 	var showing_result: bool = not _result.is_empty() and _real_now() < float(_result.until)
 	visible = (active or showing_result) and not _shown.is_empty() and hero != null
 	if not visible:

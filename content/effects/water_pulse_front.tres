@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"water_pulse_front"
+frames = 1
+rotate = false
+front = true
+head_fx = &"pulse_front"
+blocked_fx = &"pulse_blocked"
+front_speed = 9.0
+wets = true
+hold_seconds = 1.0
+fps = 12.0

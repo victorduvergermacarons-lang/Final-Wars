@@ -61,6 +61,10 @@ class _Entry:
 		alignment = HORIZONTAL_ALIGNMENT_LEFT
 		focus_mode = Control.FOCUS_NONE
 		tooltip_text = SlotButton._tooltip(p_ability)
+		IconView.add_to_button(self, Icons.of_ability(p_ability))
+
+	func _make_custom_tooltip(for_text: String) -> Object:
+		return Icons.tooltip(self, Icons.of_ability(ability), for_text)
 
 	func _get_drag_data(_at: Vector2) -> Variant:
 		var preview := Label.new()

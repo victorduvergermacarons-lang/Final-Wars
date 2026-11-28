@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_7fe4s"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_eh5va"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_q0pi5"]
+[ext_resource type="Texture2D" uid="uid://bg8a74etsjgfq" path="res://assets/icons/items/grizzlehide_mantle.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_orqvq"]
 script = ExtResource("1_7fe4s")
@@ -21,6 +22,7 @@ mag_def = 10.0
 script = ExtResource("2_eh5va")
 id = &"grizzlehide_mantle"
 display_name = "Grizzlehide Mantle"
+icon = ExtResource("icon_tex")
 slot = 1
 rarity = 3
 price = 500

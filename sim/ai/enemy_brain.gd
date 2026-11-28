@@ -61,7 +61,7 @@ static func update(world: WorldSim, enemy: Enemy) -> void:
 			else:
 				# Pulled in by damage (a neutral stag only ever is): it turns hostile
 				# now, so it gets its aggro too, once, at the start of the fight.
-				world.emit({"type": "aggro", "source": enemy.id, "target": enemy.threat.top()})
+				world.emit({"type": "aggro", "source": enemy.id, "target": enemy.threat.highest()})
 			enemy.state = Enemy.State.COMBAT
 			enemy.home_tile = enemy.tile()
 			enemy.last_attack_at = world.now
@@ -112,9 +112,9 @@ static func _fight(world: WorldSim, enemy: Enemy) -> void:
 		_start_evade(world, enemy)
 		return
 	_check_enrage(world, enemy)
-	var target := world.get_actor(enemy.threat.top())
+	var target := world.get_actor(pick_target(world, enemy))
 	if target == null:
-		enemy.threat.remove(enemy.threat.top())
+		enemy.threat.remove(enemy.threat.target())
 		return
 
 	var seen := world.perceived_tile(target, enemy.def.reaction_seconds)
@@ -327,10 +327,21 @@ static func _landing_beside(world: WorldSim, enemy: Enemy, seen: Vector2i) -> Va
 	return best
 
 
+## The enemy's target this tick: the threat table's current target, re-checked
+## against the overtake rule (110% within melee range, 130% farther; a taunt forces
+## it for a while). Distances are edge to edge, from this tick's positions.
+static func pick_target(world: WorldSim, enemy: Enemy) -> int:
+	var rules := world.rules
+	return enemy.threat.update(world.now, rules.melee_overtake_percent, rules.ranged_overtake_percent,
+			func(id: int) -> bool:
+				var other := world.get_actor(id)
+				return other != null and Hitbox.gap(enemy, other) <= rules.melee_overtake_range)
+
+
 static func _chase(world: WorldSim, enemy: Enemy, seen: Vector2i) -> void:
 	if not _step_ready(world, enemy) or world.now < enemy.chase_retry_at:
 		return
-	var target := world.get_actor(enemy.threat.top()) if not enemy.threat.is_empty() else null
+	var target := world.get_actor(enemy.threat.target()) if not enemy.threat.is_empty() else null
 	var touch := enemy.move.radius + (target.move.radius if target != null else 0.3) + 0.05
 	var found: bool
 	if enemy.is_large():

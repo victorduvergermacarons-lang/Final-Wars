@@ -135,7 +135,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-241 keys, 13 with a file, 228 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+250 keys, 13 with a file, 237 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -242,6 +242,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `fire_kick_hit` | Fire Kick lands on someone | **missing** |
 | `fire_punch_cast` | Fire Punch is used | **missing** |
 | `fire_punch_hit` | Fire Punch lands on someone | **missing** |
+| `fire_scorch_cast` | Scorch is used | **missing** |
 | `fire_sun_warrior_s_breath_cast` | Sun Warrior's Breath is used | **missing** |
 | `fire_whip_cast` | Fire Whip is used | **missing** |
 | `fire_whip_hit` | Fire Whip lands on someone | **missing** |
@@ -261,6 +262,8 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 | `water_leeching_tide_hit` | Leeching Tide lands on someone | **missing** |
 | `water_pulse_cast` | Water Pulse is used | **missing** |
 | `water_pulse_hit` | Water Pulse lands on someone | **missing** |
+| `water_shield_cast` | Water Shield is used | **missing** |
+| `water_shield_hit` | Water Shield lands on someone | **missing** |
 | `water_soothing_mist_cast` | Soothing Mist is used | **missing** |
 | `water_tidal_blessing_cast` | Tidal Blessing is used | **missing** |
 | `water_whip_cast` | Water Whip is used | **missing** |
@@ -270,10 +273,16 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 | Key | Plays when | File |
 |-----|-----------|------|
+| `earth_armor_cast` | Earth Armor is used | **missing** |
+| `earth_boulder_shield_cast` | Boulder Shield is used | **missing** |
+| `earth_boulder_shield_hit` | Boulder Shield lands on someone | **missing** |
+| `earth_metalbending_cast` | Metalbending is used | **missing** |
 | `earth_raise_pillar_cast` | Raise Pillar is used | **missing** |
 | `earth_rock_throw_cast` | Rock Throw is used | **missing** |
 | `earth_rock_throw_hit` | Rock Throw lands on someone | **missing** |
+| `earth_rumbling_taunt_cast` | Rumbling Taunt is used | **missing** |
 | `earth_seismic_stomp_cast` | Seismic Stomp is used | **missing** |
+| `earth_seismic_stomp_hit` | Seismic Stomp lands on someone | **missing** |
 | `earth_stone_skin_cast` | Stone Skin is used | **missing** |
 | `earth_wall_cast` | Earth Wall is used | **missing** |
 | `earth_wall_hit` | Earth Wall lands on someone | **missing** |

@@ -31,13 +31,13 @@ func test_states_follow_the_rules() -> void:
 	var S := AbilityTreeWindow.State
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F01")), S.LEARNING, "Ember Fist Scroll is in the learning slot")
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F03")), S.LEARNABLE, "tier 1, no prerequisites")
-	assert_eq(AbilityTreeWindow.state_of(hero, _a("F06")), S.LOCKED, "needs Fire Punch and 150 Fire Mastery")
+	assert_eq(AbilityTreeWindow.state_of(hero, _a("F06")), S.LOCKED, "needs Fire Stream and 260 Fire Mastery")
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F10")), S.NOT_IN_GAME)
 	TreeRules.master(hero, _a("F03"))
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F03")), S.MASTERED)
-	assert_string_contains(AbilityTreeWindow.lock_reason(hero, _a("F06")), "Fire Mastery 150")
-	Mastery.add_permanent(hero, "Fire", 200)
-	TreeRules.master(hero, _a("F01"))
+	assert_string_contains(AbilityTreeWindow.lock_reason(hero, _a("F06")), "Fire Mastery 260")
+	Mastery.add_permanent(hero, "Fire", 260)
+	TreeRules.master(hero, _a("F12"))
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F06")), S.LEARNABLE, "unlocked")
 
 
@@ -71,20 +71,20 @@ func test_drag_a_usable_ability_onto_the_bar() -> void:
 
 
 func test_water_shows_each_abilitys_own_step() -> void:
-	# Water unlocks one ability per step (2026-11-15): a locked node says what it
-	# needs, columns open with their first ability, and each column goes down in
-	# unlock order.
-	assert_eq(AbilityTreeWindow.node_text(hero, _a("W03")).get_slice("\n", 1), "Needs 220",
-			"Flow State (tier 1) shows its own step")
-	assert_string_contains(AbilityTreeWindow.lock_reason(hero, _a("W03")), "Water Mastery 220")
+	# Every tree unlocks one ability per step (Water since 2026-11-15, all trees since
+	# the stance rework): a locked node says what it needs, columns open with their
+	# first ability, and each column goes down in unlock order.
+	assert_eq(AbilityTreeWindow.node_text(hero, _a("W03")).get_slice("\n", 1), "Needs 295",
+			"Flow State (tier 3, step 2) shows its own step")
+	assert_string_contains(AbilityTreeWindow.lock_reason(hero, _a("W03")), "Water Mastery 295")
 	hud._toggle(hud.trees_window)
 	hud.trees_window.show_tree("Water")
 	await wait_process_frames(3)
 	var canvas = hud.trees_window._canvas
 	assert_eq(canvas._nodes.size(), ContentDB.tree.ids("Water").size())
-	var shield: Control = canvas.node(&"W12") # tier 3, step 20
-	var spirit: Control = canvas.node(&"W10") # tier 3, step 185
-	assert_lt(shield.position.y, spirit.position.y, "Water Shield above Spirit Water in its column")
+	var mist: Control = canvas.node(&"W05") # tier 2, step 0 (100)
+	var blessing: Control = canvas.node(&"W08") # tier 2, step 2 (160)
+	assert_lt(mist.position.y, blessing.position.y, "Soothing Mist above Tidal Blessing in its column")
 	var headers := canvas.get_children().filter(func(c): return c is Label and c.text.begins_with("Tier 3"))
 	assert_eq(headers.size(), 1)
-	assert_string_contains(headers[0].text, "needs 20", "tier 3 opens with Water Shield")
+	assert_string_contains(headers[0].text, "needs 225", "tier 3 opens at its base (Revive, Ocean Spirit)")

@@ -142,8 +142,11 @@ static func event_message(e: Dictionary, quests: Dictionary) -> String:
 	return ""
 
 
+## An item in rich text: its icon (see Icons), then its name in its rarity's colour.
 static func item_name(item: ItemDef) -> String:
-	return "[color=#%s]%s[/color]" % [Rarity.color(item.rarity).to_html(false), item.display_name]
+	var icon := Icons.of_item(item)
+	return "%s[color=#%s]%s[/color]" % [Icons.bbcode(icon) + " " if icon != null else "",
+			Rarity.color(item.rarity).to_html(false), item.display_name]
 
 
 static func npc_name(npc_id: StringName) -> String:

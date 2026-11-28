@@ -55,7 +55,9 @@ static func line_for(r: Dictionary) -> String:
 		var name := item.display_name if item != null else str(pair[0])
 		if int(pair[1]) > 1:
 			name += " x%d" % pair[1]
-		parts.append("[color=%s]%s[/color]" % [Rarity.COLORS[item.rarity].to_html(false) if item else "000000", name])
+		var icon := Icons.of_item(item)
+		parts.append("%s[color=%s]%s[/color]" % [Icons.bbcode(icon) + " " if icon != null else "",
+				Rarity.COLORS[item.rarity].to_html(false) if item else "000000", name])
 	return "%s: %s" % [r.get("name", "?"), ", ".join(parts) if not parts.is_empty() else "nothing"]
 
 

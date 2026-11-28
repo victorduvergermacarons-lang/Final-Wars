@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"air_blast_wind"
+frames = 1
+rotate = false
+front = true
+head_fx = &"gust_front"
+front_speed = 12.0
+piece_scale = 2
+hold_seconds = 0.7
+fps = 12.0

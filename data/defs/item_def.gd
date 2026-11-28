@@ -7,6 +7,9 @@ extends Resource
 @export var id: StringName = &""
 @export var display_name: String = ""
 @export_multiline var description: String = ""
+## Its icon (assets/icons/items/<id>.png, 36x36; see Icons). Scrolls and tree
+## weapons get theirs by id when built (TreeContent).
+@export var icon: Texture2D
 ## Where it can be equipped (NONE: potions, quest items…).
 @export var slot: EquipSlot.Type = EquipSlot.Type.NONE
 @export var rarity: Rarity.Id = Rarity.Id.COMMON

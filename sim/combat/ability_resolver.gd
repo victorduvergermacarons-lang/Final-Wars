@@ -19,6 +19,7 @@ enum Result {
 	STUNNED,
 	SILENCED,
 	BUSY, ## Already casting, winding up or channelling.
+	NO_WATER, ## Too little stance water (WaterBending.has_enough): "Not enough water".
 }
 
 
@@ -49,14 +50,34 @@ static func _check_cost(ctx: CombatContext, caster: Actor, ability: AbilityDef, 
 		return Result.SILENCED
 	if caster.mana + Cooldowns.EPSILON < ability.mana_cost:
 		return Result.NOT_ENOUGH_MANA
+	if not has_water(caster, ability):
+		return Result.NO_WATER
 	if not caster.cooldowns.can_use(ability, ctx.now, max_charges(caster, ability, ctx.now), check_gcd):
 		return Result.ON_COOLDOWN
 	return Result.OK
 
 
+## Whether a hero has the stance water an ability needs (WaterBending). Enemies need none.
+static func has_water(caster: Actor, ability: AbilityDef) -> bool:
+	if not (caster is Hero):
+		return true
+	return WaterBending.has_enough(caster as Hero, ability)
+
+
 ## Spends mana and starts the cooldown (haste shortens it), and the GCD if asked.
 static func pay(ctx: CombatContext, caster: Actor, ability: AbilityDef, with_gcd: bool = true) -> void:
 	caster.mana -= ability.mana_cost
+	if caster is Hero and WaterBending.uses_stance_water(ability):
+		# Its power is the water it was cast with; the water it uses is gone.
+		var h := caster as Hero
+		if ability.water_whole_rope:
+			var out := WaterBending.out_of(h, ability)
+			if out.get("ability", &"") != ability.id or out.get("paid", true):
+				WaterBending.send_out(h, ability, ctx.now) # not sent out at a release before
+			WaterBending.out_of(h, ability).paid = true
+		else:
+			h.cast_water[ability.id] = h.stance_water
+			h.stance_water = maxi(h.stance_water - ability.water_cost, 0)
 	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds if with_gcd else 0.0,
 			caster.buffs.cooldown_multiplier(ctx.now), max_charges(caster, ability, ctx.now))
 
@@ -181,14 +202,15 @@ static func _extra(caster: Actor, ability: AbilityDef, effect: AbilityEffect, no
 	return mini(extra, effect.max_extra) if effect.max_extra > 0 else extra
 
 
-## A wall across the caster's facing, centred on the aimed tile. Units standing in
-## it ride up with it.
+## A wall across the caster's facing, centred on the aimed tile (with wall_front,
+## the row in front of it: the trench). Units standing in it ride up with it.
 static func _wall_tiles(ctx: CombatContext, caster: Actor, ability: AbilityDef, effect: AbilityEffect) -> Array:
 	var length := 3 + _extra(caster, ability, effect, ctx.now)
 	var across := Vector2i(caster.facing.y, caster.facing.x)
+	var centre := ctx.cast_aim + (caster.facing if effect.wall_front else Vector2i.ZERO)
 	var out := []
 	for k in range(-(length - 1) / 2, length / 2 + 1):
-		var t := ctx.cast_aim + across * k
+		var t := centre + across * k
 		if ctx.grid.has_tile(t):
 			out.append(t)
 	return out
@@ -211,6 +233,8 @@ static func _is_valid_target(caster: Actor, ability: AbilityDef, target: Actor) 
 
 static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef, target: Actor,
 		effect: AbilityEffect, events: Array[Dictionary]) -> void:
+	if effect.first_only and ctx.first_victim != null and target != ctx.first_victim:
+		return
 	var rules := ctx.rules
 	var caster_stats := caster.current_stats(ctx.now)
 	match effect.kind:
@@ -254,7 +278,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			if not caster is Enemy or caster.threat.is_empty():
 				return
 			var howler := caster as Enemy
-			var prey: int = howler.threat.top()
+			var prey: int = howler.threat.target()
 			for id in ctx.actors:
 				var other = ctx.actors[id]
 				if other == howler or not other is Enemy or not other.alive:
@@ -368,7 +392,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var healed := clampf(roundf(amount), 0.0, maxf(max_hp - target.hp, 0.0))
 			target.hp += healed
 			events.append({"type": "heal", "source": caster.id, "target": target.id,
-					"ability": ability.id, "amount": healed, "crit": crit})
+					"ability": ability.id, "amount": healed, "crit": crit, "full": roundf(amount)})
 			_share_support_threat(ctx, caster, target, healed * rules.heal_threat_multiplier * effect.threat_multiplier)
 
 		AbilityEffect.Kind.RESTORE_MANA:
@@ -383,8 +407,8 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 					"ability": ability.id, "amount": restored})
 
 		AbilityEffect.Kind.TAUNT:
-			if target.threat != null:
-				target.threat.taunt(caster.id, rules.taunt_lead_percent)
+			if target.threat != null and _taunt_allowed(ctx, caster, effect):
+				target.threat.taunt(caster.id, rules.taunt_lead_percent, ctx.now, effect.taunt_seconds)
 				events.append({"type": "taunt", "source": caster.id, "target": target.id, "ability": ability.id})
 
 		AbilityEffect.Kind.RESURRECT:
@@ -502,6 +526,7 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 		amount *= (source as Enemy).damage_scale # stronger against a bigger party
 	var taken := maxf(roundf(amount * target.buffs.damage_taken_multiplier(ctx.now)), ctx.rules.min_damage)
 	var through := target.buffs.absorb(taken)
+	_break_shields(ctx, target, events)
 	var dmg := minf(through, target.hp)
 	if target is Enemy and (target as Enemy).min_hp > 0.0:
 		dmg = clampf(dmg, 0.0, maxf(target.hp - (target as Enemy).min_hp, 0.0)) # held up by its heart
@@ -519,13 +544,34 @@ static func deal_damage(ctx: CombatContext, source: Actor, target: Actor, abilit
 		e.absorbed = taken - through
 	events.append(e)
 	if target.threat != null and source != null:
-		target.threat.add(source.id, dmg * threat_multiplier)
+		target.threat.add(source.id, dmg * threat_multiplier * defense_threat_multiplier(ctx, source))
 	if yielded:
 		ctx.requests.append({"type": "duel_yield", "loser": target.id, "winner": source.id})
 	elif target.hp <= 0.0:
 		target.die()
 		target.casting = {}
 		events.append({"type": "death", "source": source.id if source != null else -1, "target": target.id})
+
+
+## Shields used up by the last hit that do something when they break (Water Shield):
+## their break ability, from whoever put the shield on, on every enemy of the shielded
+## unit within the buff's break radius.
+static func _break_shields(ctx: CombatContext, target: Actor, events: Array[Dictionary]) -> void:
+	if target.buffs.broken.is_empty():
+		return
+	var broken: Array = target.buffs.broken
+	target.buffs.broken = []
+	for b in broken:
+		var def: BuffDef = b.def
+		var owner: Actor = ctx.get_actor(int(b.source))
+		if owner == null:
+			owner = target
+		events.append({"type": "shield_break", "target": target.id, "buff": def.id})
+		for a in ctx.actors.values():
+			if a == target or not a.alive or not a.is_hostile_to(target):
+				continue
+			if a.move.pos.distance_to(target.move.pos) - a.move.radius <= def.break_radius:
+				apply_effects(ctx, owner, def.break_ability, a, events)
 
 
 ## Free movement: a knockback or pull slides the unit along the line from the
@@ -736,12 +782,33 @@ static func _roll_crit(ctx: CombatContext, effect: AbilityEffect, caster_stats: 
 	return effect.can_crit and (ctx.force_crit or ctx.rng.randf() < CombatMath.crit_chance(caster_stats.crit_rate))
 
 
+## Heroes make more threat the tougher they are: 1 + Physical Defense ÷
+## `threat_def_divisor`, at most `max_def_threat_multiplier` (current Physical
+## Defense, buffs included, so Stone Skin and Earth Armor raise it while up).
+## Enemies and anything else: 1. Ability effects' own threat_multiplier stacks on top.
+static func defense_threat_multiplier(ctx: CombatContext, source: Actor) -> float:
+	if not source is Hero or ctx.rules.threat_def_divisor <= 0.0:
+		return 1.0
+	var def := maxf(source.current_stats(ctx.now).phys_def, 0.0)
+	return minf(1.0 + def / ctx.rules.threat_def_divisor, maxf(ctx.rules.max_def_threat_multiplier, 1.0))
+
+
+## A taunt that needs a buff on the caster (Metalbending: Stone Skin or Earth Armor).
+static func _taunt_allowed(ctx: CombatContext, caster: Actor, effect: AbilityEffect) -> bool:
+	if effect.taunt_requires_buffs.is_empty():
+		return true
+	for id in effect.taunt_requires_buffs:
+		if caster.buffs.has(id, ctx.now):
+			return true
+	return false
+
+
 ## Healing or buffing someone puts the caster on the threat table of every enemy
 ## fighting that target, splitting `total_threat` evenly between them.
 static func _share_support_threat(ctx: CombatContext, caster: Actor, target: Actor, total_threat: float) -> void:
 	var enemies := ctx.enemies_fighting(target.id)
 	if enemies.is_empty():
 		return
-	var share := total_threat / enemies.size()
+	var share := total_threat * defense_threat_multiplier(ctx, caster) / enemies.size()
 	for enemy in enemies:
 		enemy.threat.add(caster.id, share)

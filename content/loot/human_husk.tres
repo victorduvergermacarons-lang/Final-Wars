@@ -11,12 +11,12 @@ chance = 0.5
 
 [sub_resource type="Resource" id="Resource_e1"]
 script = ExtResource("1_entry")
-item_id = &"gale_scroll"
+item_id = &"breeze_scroll"
 chance = 0.04
 
 [sub_resource type="Resource" id="Resource_e2"]
 script = ExtResource("1_entry")
-item_id = &"glacier_scroll"
+item_id = &"frost_shard_scroll"
 chance = 0.04
 
 [resource]

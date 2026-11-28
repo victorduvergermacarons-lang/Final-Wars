@@ -23,6 +23,15 @@ func _process(_delta: float) -> void:
 	var a: Actor = source.call()
 	visible = a != null
 	queue_redraw()
+	if a == null:
+		return
+	# Hovering the frame lists its buffs with what they do (an icon's text).
+	var lines: PackedStringArray = []
+	for b in a.buffs.summary(hud.session.now()):
+		var def: BuffDef = ContentDB.buffs.get(StringName(b[0]))
+		if def != null and def.icon_text != "":
+			lines.append("%s: %s" % [def.display_name, def.icon_text])
+	tooltip_text = "\n".join(lines)
 
 
 func _draw() -> void:
@@ -53,8 +62,16 @@ func _draw() -> void:
 	if stats.mana > 0:
 		_bar(Rect2(6, 34, w, 8), a.mana, stats.mana, Color(0.25, 0.45, 0.95))
 	var effects: PackedStringArray = []
+	var icon_x := size.x - 6.0
 	for b in a.buffs.summary(now):
 		var def: BuffDef = ContentDB.buffs.get(StringName(b[0]))
+		if def != null and def.icon != null:
+			# Buffs with an icon: the icon at the frame's right edge, its text under it.
+			var isz := Vector2(24, 24) # the largest whole screen-pixel size that fits
+			icon_x -= isz.x
+			Icons.draw_fitted(self, def.icon, Rect2(Vector2(icon_x, 1), isz))
+			icon_x -= 4.0
+			continue
 		effects.append(def.display_name if def != null and def.display_name != "" else String(b[0]))
 	if not effects.is_empty():
 		_text(" · ".join(effects), Vector2(size.x * 0.45, 14), 10, Color(0.75, 0.85, 1))

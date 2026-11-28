@@ -225,7 +225,7 @@ func test_stone_skin_roots_then_shatters_when_it_ends() -> void:
 	assert_eq(_pick(T + 5.01).anim, "stone_shatter")
 	assert_eq(_pick(T + 5.0 + art.duration("stone_shatter") + 0.01).anim, "idle", "then the hero, without stone")
 	assert_true(art.looks.has(&"stone"), "the grey-stone look")
-	assert_eq(ContentDB.buffs[&"stone_skin"].look, &"stone")
+	assert_eq(ContentDB.buffs[&"stone_skin"].look, &"stone_25", "a quarter, like Earth stance 1")
 
 
 func test_the_host_records_when_stone_skin_ends() -> void:

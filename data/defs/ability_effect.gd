@@ -53,6 +53,11 @@ enum DamageType {
 @export var buff: BuffDef
 ## Multiplies the threat this effect generates (damage/heal amount × multiplier).
 @export var threat_multiplier: float = 1.0
+## TAUNT: seconds the enemy is forced to attack the taunter (overtaking is skipped).
+@export var taunt_seconds: float = 3.0
+## TAUNT: only taunts while the caster has one of these buffs (empty: always).
+## Metalbending taunts only under Stone Skin or Earth Armor.
+@export var taunt_requires_buffs: Array[StringName] = []
 ## Multiplies the whole amount (tier default + scaling): light hits < 1, heavy > 1.
 @export var power: float = 1.0
 ## DAMAGE: heals the caster this fraction of the damage dealt (Leeching Tide).
@@ -77,6 +82,12 @@ enum DamageType {
 ## caster's facing through the aimed tile instead of using the cast's area.
 @export var blocks_movement: bool = false
 @export var wall_line: bool = false
+## With wall_line: the row just in front of the wall (one tile further from the
+## caster) instead of the wall itself: Earth Wall's trench (stance rework).
+@export var wall_front: bool = false
+## Only the first unit the cast hits gets this effect (the nearest to the caster on a
+## piercing line): Fire Whip's pull.
+@export var first_only: bool = false
 ## TERRAIN: units on the tiles ride up with them; enemies of the caster take this
 ## much physical damage, + `lift_damage_per_mastery` per point of the tree's Mastery
 ## (then the usual Mastery power bonus and defense). Earth Wall.

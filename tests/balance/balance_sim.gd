@@ -177,6 +177,15 @@ static func make_bot(world: WorldSim, content, spec: Dictionary, hero_level: int
 		TreeRules.learn_from_bag(h, 0)
 	while h.level < hero_level:
 		Leveling.add_xp(h, Leveling.xp_to_next(h.level, content.rules), content.rules)
+	# Waterbenders carry a full Water Pouch (water abilities draw on the stance water).
+	if h.available_abilities().any(func(a): return WaterBending.uses_stance_water(a)):
+		h.bag.add(content.items[Hero.WATER_POUCH])
+		h.water = content.rules.water_pouch_capacity
+		# …and come to the fight in Water stance 1 with a full rope, as a player would.
+		if h.available_abilities().any(func(a): return a.tree == "Water" and a.stance == 1):
+			h.stance_tree = "Water"
+			h.stance = 1
+			h.stance_water = WaterBending.full(1)
 	h.refresh_stats()
 	h.hp = h.stats.hp
 	h.mana = h.stats.mana

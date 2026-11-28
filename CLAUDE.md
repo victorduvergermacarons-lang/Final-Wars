@@ -30,7 +30,14 @@ checklist `docs/playtest-checklist-act1-full.md`. **Free movement** (branch
 attacks aim at the mouse with hitbox shapes, enemies path and telegraph; see **Free movement**,
 `docs/FREE_MOVEMENT_PLAN.md` and `docs/playtest-checklist-free-movement.md`. **Ability animations and effects** (branch
 `feature/ability-animations`, 2026-11-21): Rock Throw's two presses, Stone Skin's stone look, Fire
-Punch instant; see that section and `docs/playtest-checklist-ability-animations.md`. **Map editor**
+Punch instant; see that section and `docs/playtest-checklist-ability-animations.md`. **Icons** (branch `feature/icons`, 2026-11-22):
+every bending ability and nearly every item; see **Icons**. **Stances and effects** (branch `feature/stance-rework`,
+2026-11-23, all 5 phases): stance controls and looks, effects from the approved art, code-drawn
+effects; see **Stances**, **Ability effects from the approved art**, **Code-drawn effects** and
+`docs/playtest-checklist-stances-and-effects.md`. **Water physics** (branch `feature/water-physics`,
+2026-11-28, all 5 phases): render fixes, every ability on the bar (pressing enters its stance), a
+bar per character, water as a resource, the stance 2 hoop, the five water abilities on the rope; see
+**Water as a resource**, **Water abilities** and `docs/playtest-checklist-water-physics.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
 new maps; change their shape (maps need not be rectangles, 2026-11-17); see **Map editor** and `docs/map-editor.md`. **Critters, the stag, the Foreman, dungeon fixes** (branch
@@ -170,23 +177,29 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | F07 | Fireball | Scroll of the Fireball | Ground 5, 3×3, 0.4 s telegraph | 1.2 | 15 | 8 |
 | F08 | Burning Ground | Scorched Earth Scroll | Ground 4, 3×3 zone 6 s | 0.35 per s | 15 | 14 |
 | F09 | Blazing Combo | Blazing Fist Scroll | Targeted, adjacent | 3 × 0.5, knockback 1 | 12 | 10 |
-| W01 | Healing Touch | Mender's Scroll | Targeted ally, 2; water_heal (2026-11-21) | heal 1.0 | 8 | 3 |
-| W02 | Water Whip | River Lash Scroll | Targeted, 3, **3 s timing bar** (hold 0.45–2.75 s since 2026-11-21; was 0.75); the lash's hit lands on its snap, 0.29 s after the release | 1.0 | 6 | 2 |
+| W01 | Healing Touch | Mender's Scroll | Targeted ally, 4; no bar, the whole rope, lands 1.2 s after the cast (water physics, 2026-11-28) | heal 1.5 | 8 | 3 |
+| W02 | Water Whip | River Lash Scroll | Targeted, 5; **instant** since 2026-11-28: the whole rope thrown, the hit 0.5 s later, a second press within 1.5 s calls the water back (see **Water abilities**) | 1.0 | 6 | 2 |
 | W03 | Flow State | Scroll of the Current | Targeted ally, 3 | Haste 30 s | 10 | 20 |
-| W04 | Frost Shard | Frost Shard Scroll | Skillshot, 4, 12 t/s | 0.9 + slow ×1.5 2 s | 8 | 4 |
+| W04 | Frost Shard | Frost Shard Scroll | Skillshot, 6, 12 t/s; instant, 4 water points (2026-11-28) | 0.9 + slow ×1.5 2 s | 8 | 1.5 |
 | W05 | Soothing Mist | Mist Scroll | Targeted ally, 4 | heal 1.5 over 12 s | 12 | 8 |
 | W06 | Water Pulse | Wave Scroll | Skillshot 8-way line 3, pierce | 0.9 + push 1 along the wave | 12 | 8 |
-| W07 | Leeching Tide | Leech Tide Scroll | Targeted, 3 | 1.0, heals you 50% | 12 | 10 |
+| W07 | Leeching Tide | Leech Tide Scroll | Targeted, 5; Water stance 2; a 3 s channel, 6 ticks (2026-11-28) | 1.0 in all, no heal; 4 water a tick into the pouch | 12 | 10 |
 | W08 | Tidal Blessing | Tidal Scroll | Targeted ally, 3 | +20 PhysDef/MagDef 45 s | 12 | 25 |
 | W09 | Ice Spikes | Glacier Scroll | Ground 4, 3×3, 0.4 s telegraph | 1.0 + slow ×1.5 3 s | 15 | 10 |
+| W12 | Water Shield | (sheet) | Targeted ally, 5; yourself with no ally targeted (2026-11-25) | shield 20 s (tier default + sheet stats); used up: splashes enemies within 1.5 tiles for 10 + 0.6×MagAtk (`BuffDef.break_ability`) | 10 | 20 |
 | A01 | Air Palm | Open Palm Scroll | Targeted, adjacent; air_palm + a wind spiral (2026-11-21) | 0.6 + knockback 1 | 6 | 4 |
 | A02 | Gust | Breeze Scroll | Targeted, 3; air_gust + a wind spiral (2026-11-21) | 0.5 + interrupt, off GCD | 8 | 10 |
 | A03 | Air Step | Featherstep Scroll | Self | +40% speed for 4 s (free movement), off GCD | 8 | 10 |
 | A05 | Air Blast | Gale Scroll | Targeted, 3 | 0.6 + knockback 3, +25 on impact | 12 | 10 |
-| E01 | Rock Throw | Pebble Scroll | **Two presses** (2026-11-21): a 3 s bar while the rock waits (rooted), the second press throws it (lob 0.3 s to the cursor, range 6); no press: it throws itself at the bar's end | 1.0 physical | 6 | 3 |
+| E01 | Rock Throw | Pebble Scroll | **Two presses** (2026-11-21): a 3 s bar while the rock waits (rooted), the second press throws it (lob 0.3 s to the cursor, range 6); no press: it throws itself at the bar's end | 1.0 physical, **threat ×3** | 6 | 3 |
+| E02 | Stone Skin | Granite Skin Scroll | Self | +20 PhysDef 10 s | 8 | sheet |
 | E03 | Raise Pillar | Pillar Scroll | Ground 3 | +1 level 15 s (+1 from 500 Earth) | 8 | 6 |
-| E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 | taunt | 8 | 10 |
+| E04 | Seismic Stomp | Stomp Scroll | Self, 3×3 (stance 1 entry cast) | taunt, forced 4 s, + 0.7 physical | 8 | 10 |
 | E05 | Earth Wall | Bulwark Scroll | Ground 4 | 3-tile wall +2 (climbable with Jump 2), 12 s (+1 tile / 300 Earth); lifts units on it, enemies take 10 + 0.02 per Earth Mastery | 15 | 15 |
+| E07 | Boulder Shield | (sheet) | Self | shield (heal default + PhysDef) 12 s | 12 | sheet |
+| E08 | Rumbling Taunt | (sheet) | Self, within 2 | taunt, forced 5 s | 12 | 15 |
+| E14 | Earth Armor | (sheet) | Self | +50 PhysDef, steps ×2 (half speed), 15 s (the recast to Fortress isn't built) | 15 | sheet |
+| E15 | Metalbending | (sheet) | Targeted, 4 | −20 PhysDef and speed halved, 8 s (since the stance rework: no pull, no taunt) | 15 | sheet |
 | S01 | Slash | Rusty Shortsword | Targeted, adjacent, **1 s timing bar** (see **Timing bars**) | 1.0 physical | — | 2 |
 | S04 | Lunge | Traveler's Longsword | Targeted, 3 | dash 2, then 1.1 if adjacent | — | 8 |
 | B01 | Quick Shot | Hunter's Shortbow | Targeted, 5 | 0.9 | — | 2 |
@@ -381,6 +394,34 @@ User brief, five parts. Built on `feature/element-start`.
     works for every hero, like any exit. Silent Shaft: (52, 17) in the Foreman's chamber
     to Deepcut (34, 12), just outside the mine entrance.
   - Tests in `tests/unit/test_dungeons.gd`.
+## Threat and tanking (branch `feature/threat-tanking`, 2026-11-17)
+
+User brief: WoW-style tanking. Tests: `tests/unit/test_threat_table.gd`,
+`test_threat_tanking.gd`, `test_earth_tanking.gd`, taunt cases in `test_ability_resolver.gd`.
+- **Overtake** (`ThreatTable.update`, called each tick by `EnemyBrain.pick_target`): an
+  enemy keeps its target until someone passes 110% of the target's threat within melee
+  range (`melee_overtake_percent`, gap ≤ `melee_overtake_range` 1 tile, edge to edge) or
+  130% farther away (`ranged_overtake_percent`). With no target yet, or when it leaves
+  the table: the highest threat; ties go to whoever was added first. `top()` is gone
+  (`target()`).
+- **Forced taunt:** `AbilityEffect.taunt_seconds` (default 3): top threat +10% and the
+  enemy stays on the taunter for that long whatever the threat; ends early if the taunter
+  dies or leaves the table; a second taunt by the same hero extends it.
+  `taunt_requires_buffs`: the taunt only lands while the caster has one of those buffs.
+- **Physical Defense raises heroes' threat** (`AbilityResolver.defense_threat_multiplier`):
+  × (1 + current PhysDef / `threat_def_divisor` 40), at most `max_def_threat_multiplier`
+  3.0; heroes only, buffs count, on damage and healing threat; an effect's
+  `threat_multiplier` stacks on top. Base 10 PhysDef → ×1.25; a geared tank (~60) → ×2.5;
+  with Stone Skin or Earth Armor up → the cap.
+- **Earth** (behaviors in `content/tree/behaviors/`, buffs `stone_skin`, `earth_armor`,
+  `boulder_shield`, `metalbent`; sheet patched by `tools/once/earth_tanking.py`): see the
+  E rows of the table above. Other Earth abilities make normal threat.
+- **Since the stance rework (merged 2026-11-25):** the stance sheet's Effect, Cooldown and
+  keys win (the newer design): Seismic Stomp (stance 1 entry cast) cooldown 10 s, Rumbling
+  Taunt 15 s, Boulder Shield 18 s, Earth Armor 40 s; **Metalbending** lowers Physical
+  Defense by 20 and halves its target's speed for 8 s, without the pull (moved to Metal
+  Cable) or the taunt. Earth Armor's recast (Fortress: 40% less damage, rooted, 6 s) isn't
+  built. Stone Skin turns a quarter of the body to stone. Sheet: `tools/once/earth_tanking_stances.py`.
 
 ## Map art (tileset, 2026-10-16)
 
@@ -1405,6 +1446,375 @@ network check's brute-dodging guest now does it in the Wilds. As it was:
   - projectiles, telegraphs, ground zones and raised terrain are cleared
   - every buff and debuff in the zone is removed, and heroes there leave combat
 
+## Icons (branch `feature/icons`, 2026-11-22)
+
+Every Fire, Earth, Water and Air ability (85) and almost every item (172) has an icon,
+cut from four bought sprite sheets on the `art-drafts` branch (`icons/`, with a README,
+two CSV maps, contact sheets and every sliced icon). Helper: `Icons` (`data/icons.gd`).
+- **Where they live:** `assets/icons/abilities/<ID>.png` (33×33: a 32 px tile plus a 1 px
+  shadow; named by ability ID, so renaming an ability keeps its icon) and
+  `assets/icons/items/<item_id>.png` (36×36, with room around the art for glows), plus
+  `assets/icons/placeholder.png` (a "?" tile).
+- **In the data:**
+  - Abilities: the **Icon** column at the end of the Abilities tab of
+    `design/Ability_Tree.xlsx` (a path such as `assets/icons/abilities/F07.png`; added by
+    `tools/once/add_icon_column.py`), read by the importer (an error if it isn't a .png
+    under `assets/icons/`, a warning if the file is missing) into `ability_tree.json`
+    (`icon`), and set as `AbilityDef.icon` by `TreeContent`. Sword, Bow and Hammer rows are
+    empty: those abilities keep showing their name.
+  - Items: `ItemDef.icon`. The item files in `content/items/` point at their PNG
+    (`tools/once/link_item_icons.py`); scrolls and tree weapons (built from the sheet) get
+    `assets/icons/items/<item_id>.png` by id in `TreeContent`. The six retired items have
+    icons too. `design/Item_Database.xlsx` has an **Icon** column (`tools/item_database.gd`).
+- **Missing:** the placeholder, and one warning per missing id when the content first
+  loads (`ContentDB`, once per run), never a crash. Exceptions: weapon-tree abilities
+  (their name) and the five Legs items in `Icons.KEEP_NAME` (their name). Known gaps
+  today (`tests/unit/test_icons.gd`): those five Legs items (the sheets have no trousers)
+  and the 20 element set pieces of 2026-11-20 (the placeholder).
+- **Import settings** (pixel art): lossless (`compress/mode=0`), no mipmaps, no
+  fix-alpha-border, in each icon's `.import` file. Godot has no per-folder import presets,
+  so `tools/pull_icons.py` writes these for every icon it copies, and a test checks every
+  file. Nearest filtering is the project's default for every texture.
+- **Drawing:** never stretched; always a whole number of **screen** pixels per art pixel,
+  centred (`Icons.fit_rect` / `draw_fitted`, `screen_scale_of` counts the window's stretch,
+  like the world camera). In text (`Icons.bbcode`): k screen pixels per art pixel, k = the
+  whole part of the window's stretch.
+
+  | Where | 1280×720 | 1920×1080 |
+  |-------|----------|-----------|
+  | Action bar (56 UI px; under the cooldown and global sweep; key and potion count kept) | 1× | 2× |
+  | Ability tree nodes (44 UI px square left of the text; greyscale and dimmed while locked or not in the game) | 1× | 2× |
+  | Bag slots on the book page (art frame 26) | 1× | 2× |
+  | Equipment and learning slots (inside the rarity border) | 1× | 2× |
+  | Dark item slots (64 UI px) | 1× | 2× |
+  | Spellbook rows, item buttons (quest reward choices) | 1× | 1× |
+  | Text: item tooltips, ability tooltips (action bar, tree, spellbook), shop, trade and roll rows, quest rewards, boss loot summary, loot feed (Log tab) | 1× | 1× (24 UI px) |
+  | Loot on the ground (at the beam's top, half the world art's pixel size) | 1× | 2× |
+
+  Tree nodes are 14 UI px apart (were 22) with 12 px text beside an icon, so names keep
+  a word per line.
+- **Add or swap an icon:** change it on `art-drafts` (`icons/abilities/` or
+  `icons/items/`, cut from `icons/sliced/`), then
+  `git fetch origin art-drafts && python3 tools/pull_icons.py [IDs…]` and
+  `godot --headless --path . --import`. A new ability also needs its Icon cell on the
+  sheet (then re-import the sheet); a new item file, `icon = ExtResource(...)` (or run
+  `tools/once/link_item_icons.py`). Take a gap off `KNOWN_GAPS` in the test once its art
+  is in. Never merge `art-drafts`.
+- Tests: `tests/unit/test_icons.gd`. Screenshots: `tests/visual/icon_shots.tscn` (action
+  bar, trees, inventory with every rarity, tooltips, spellbook, ground loot, boss
+  summary, roll and trade windows, at both sizes).
+
+## Stances (branch `feature/stance-rework`, 2026-11-23)
+
+User brief, five phases. Abilities are learned and cast through **stances**: each
+bending element (Fire, Earth, Water, Air) has 5 stances with 4 branch abilities each.
+Checklist: `docs/playtest-checklist-stances-and-effects.md`.
+- **The sheet** (`design/Ability_Tree.xlsx`, importer `tools/ability_tree_importer.gd`):
+  columns **Key (stance → branch)** (e.g. `2 → 3`; a stance-entry cast or a passive is
+  marked there), **Unlock Step** and the Tiers tab's **Step Points**; `AbilityDef.stance`,
+  `branch_key`, `entry_cast`, `passive`, `upgrades` (its first prerequisite ability),
+  `mastery_levels` ("X Mastery 200 / 400 / 600"). Removed ids F13, E10, E12, A08 (merged;
+  their scrolls become the merge target's, `CharacterData.RENAMED_ITEMS`). The importer
+  checks the 5 × 4 grid per element, entry casts, passives (no cooldown, no timing bar;
+  a hitbox is a warning) and the step rule.
+- **Tier rule (new):** Mastery Required = tier base 0 / 100 / 225 / 375 / 550 + Unlock
+  Step × the tier's step points 25 / 30 / 35 / 40 / 50. Fire, Earth and Air copy Water's
+  steps (2026-11-23). New characters start with 25 permanent Mastery in their element
+  (`StartingElementDef.starting_mastery`).
+- **Act I gives tier 1 only;** beating the Silent Shaft (the Foreman) gives the first
+  tier-2 scrolls (`tools/once/act1_tier1_rewards.py`).
+- **Since 2026-11-28 (water physics, phase 2) the controls below are replaced:** every
+  learned ability sits on the action bar again (stance entries are gone; old ones are
+  dropped on load and their abilities placed again). Pressing a bending ability while not
+  in its stance enters that stance instead of casting (`PlayerInput.needs_stance`); the
+  next press casts; one from another stance switches stance. A press during the ability's
+  own timing bar still plays the bar. A corner badge on each bending slot shows its stance
+  number in the element's colour, lit while that stance is held; the stance panel is
+  hidden. Unchanged: the hero stays in the stance after casting; Shift and crowd control
+  leave it; entering doesn't start the global cooldown; entry casts still fire when off
+  cooldown; stances are host-validated intents in each hero's snapshot (the host still
+  switches stance itself when a cast arrives from another one). **Each character keeps its
+  own action bar** (`SettingsStore` section `action_bar.<name>`; a new character starts
+  empty with the shared layout's keybinds), and the main menu's **Delete** removes a
+  character after a confirmation ("Delete <name>? This can't be undone."), with its bar.
+  Tests: `tests/unit/test_hotbar_stances.gd`; screenshots `tests/visual/hotbar_shots.tscn`.
+- **Controls as built 2026-11-23** (`PlayerInput`, `ActionBarModel`):
+  - Out of a stance, 1–0 are the action bar. Stances are bar entries
+    (`stance:<Tree>:<n>`); your element's 1–5 start in slots 1–5, other elements' in
+    free slots; any stance can go in any slot. Bending abilities left the bar once.
+  - A stance key enters that stance (entering never starts the GCD); in a stance keys
+    1–4 cast its branches (`WorldSim.stance_ability`) and you stay in it; 5–0 keep their
+    slots (another stance key switches). **Shift** leaves. Bar pages are **Ctrl+1–6**.
+  - Entry casts when entered and off cooldown: Fire 1 Fire Punch, Earth 1 Seismic Stomp,
+    Water 5 Octopus Form.
+  - Crowd control drops the stance: stun, silence, root, sleep, knockback, pull, a fall;
+    so does death. Casting a bending ability from the bar takes its stance.
+- **Network:** a `stance` intent (tree, n, target, aim); the host validates and keeps
+  `Hero.stance_tree / stance / stance_at`, sent in snapshots (`stance`).
+- **Stance panel** (`ui/hud/stance_panel.gd`) above the action bar: element, stance number,
+  the 4 branches with icons and cooldowns. Stance slots draw the element's colour.
+  Branches not in the game yet are crossed out ("not built"); hovering lists the four.
+- **Entry animations:** one table, `CreatureArtDef.stance_anims` (`pl01_art.tres`): Fire 1
+  fire_punch, Earth 1 earth_root then earth_hold, otherwise cast (`stance_anim_default`).
+- **Stance looks** (`CreatureArtDef.stance_looks`, drawn while held, from the host time
+  the stance was taken):
+
+  | | 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | Fire | ring of fire FX-15-2 (turns, flat) | flame ribbon FX-15-1 (spins) | heel flames FX-15-3 (flicker) | small sun FX-15-4 (bobs) | the fire dragon (code ribbon, see below) |
+  | Earth | stone ¼ | ½ | ¾ | all stone | faint ring (FX-15-9 not approved) |
+  | Water | faint ring (FX-15-10) | hoop FX-15-11 (bobs) | sphere FX-15-12 (orbits) | faint ring (FX-15-13) | octopus arms FX-13-21 (behind, sways) |
+  | Air | faint ring (FX-15-14) | faint ring (FX-15-15) | air ball FX-14-5 (orbits) | faint ring (FX-15-16) | wind column FX-15-17 (see-through, flickers) |
+
+  Earth's stone covers the body from the feet up: `coverage` in
+  `view/shaders/creature_recolor.gdshader` (looks `stone_25`, `stone_50`, `stone_75`,
+  `stone`); the Stone Guard buffs use the same levels (Stone Skin ¼ today; Boulder
+  Shield ½, Mountain's Stand ¾, Earth Armor full once built). A buff and a stance: the
+  one with more stone shows. Rings around the hero are split: the back half behind the
+  hero, the front half after the ground it lies on.
+- **Scorch (F22)**, the example new stance-1 ability: enemy within 5, burns 6 s (small
+  damage each second) and +15% damage taken (`scorched`); flames drawn in code
+  (`BuffDef.code_fx` "flames") and a debuff icon on unit frames (`BuffDef.icon`,
+  `icon_text`; `assets/icons/buffs/scorched.png`).
+- Tests: `tests/unit/test_stances.gd`, `test_ability_import.gd`, `test_first_abilities.gd`.
+  Screenshots: `tests/visual/stance_shots.tscn` (phases 1–5; `SHOTS_ONLY=rot|p4|p5`).
+
+## Water stance 1 rope, Water Whip and the Water Pouch (branch `feature/stance-rework`, 2026-11-26)
+
+User brief: physics-driven water, ported from `docs/reference/water_whip_reference.html` (the
+source of truth). Waterbending: the water never attaches to the hand; it lives in the
+bender's space. Replaces the Verlet whip of 2026-11-25 (removed).
+- **The rope** (`view/water_rope.gd`, `WaterRope`): 24 Verlet points in 2.5D (ground x, y and
+  height z; screen = (x, y × 0.5 − z) × WATER_SCALE, our 2:1 view instead of the reference's
+  0.4), the reference's states in order: idle (Water stance 1: a loop every 3 s at waist
+  height, radius 24, a ripple rolling along it) → spin (near throws) → fly (a timed Catmull-Rom
+  throw, pull-back over the shoulder when near, accelerating, impact 30 frames = 0.5 s after the
+  cast, near or far) → pour (whole until point 12 arrives, each point splashing off) → fall →
+  regroup (the farthest point becomes the front; strays over 12 px soak in, keeping at least 8)
+  → rise → return (one Bézier, out to the hero's left, into the entry point on the right along
+  the orbit's tangent, speed by length, rebuilt on the way and whole before the mark) → wrap
+  (the orbit brakes to its 3 s loop) → idle. Plus `drain`: leaving the stance, the water flows
+  back to where it came from. A cast while the water is still out snaps it onto its orbit and
+  throws at once (the cooldown is shorter than a return).
+- **Every constant** under the reference's name: `content/effects/water_rope_settings.tres`
+  (`WaterRopeSettings`), plus `WATER_SCALE` (1.0: the reference hero is ~36 px, ours ~34 art px),
+  `K` (0.5), `HIP_Z` (12), `FORM_EVERY` (3) and `REBUILD_EVERY` (4).
+- **Water comes from** the hips (the pouch) or, within 3 tiles of a water tile, from the
+  water itself: the orbit forms point by point from there; lost points are rebuilt from there
+  on the way home, chasing the tail at the rope's own speed.
+- **Per hero** (`view/water_ropes.gd`, `WaterRopes`, owned by WorldView): a rope while the host
+  says the hero has one (`Hero.rope`, in snapshots); Water Whip's effect event
+  (`water_whip`, `FxDef.Path.ROPE`) throws it at its host time. 60 steps per second of game
+  time in `_physics_process` (the game speed slows it too); heroes off screen aren't
+  simulated and come back on their orbit. Cosmetic: each player simulates their own.
+- **Drawing:** whole art pixels, four colours (outline #0C447C, body #378ADD, highlight
+  #9DC5EE, droplets #85B7EB) and grey shadows: rippled slices lit by a sun at the top left
+  (dark rim on the shaded side, highlight rows, the second rows inside the body), lit balls
+  for the tip and loose points, splash pixels, puddles fading. Each piece is filed under the
+  tile it is over; on the hero's tile the water behind the hero goes before it.
+- **The Water Pouch** (`content/items/water_pouch.tres`, a bag item, no icon yet): 200 water
+  points (`Hero.water`, saved; private in snapshots). Forming the orbit away from water takes
+  24 (`CombatRules.water_rope_points`), given back when the stance is left; Water Whip takes 4
+  (`AbilityDef.water_cost`, paid when it goes off). Within 3 tiles of water
+  (`water_near_tiles`) water is free. No water: no orbit ("No water for the orbit") and Water
+  Whip is refused (`NO_WATER`, "No water"). **E** at water (within 1.6 tiles,
+  `water_fill_reach`; "[E] Fill Water Pouch") fills it to 200 (`fill_water` intent). New Water
+  heroes start with a full one (`StartingElementDef.bag_ids`); older Water heroes get one on
+  load; Odo and Tamsin sell it (20 g). Water tiles: `WaterTiles` (`sim/world/water_tiles.gd`,
+  also used by the water sound).
+- **Water Whip:** damage, mana 6, range 5, cooldown 2 s and the timing bar unchanged; the hit
+  lands **0.5 s** after the release (was 0.29 s).
+- **Debug:** Escape menu → Gameplay test: "Show water rope points" and "Show the water rope's
+  return path". `tests/visual/water_lab.tscn`: a Water hero in stance 1, a near and a far
+  dummy, click to throw (the `fx` command), the reference's four sliders, Points / Return
+  path / Slow (×1/3), and its readouts; `WATER_SHOTS=<dir>` takes screenshots.
+- Tests: `tests/unit/test_water_rope.gd`, `tests/unit/test_water_pouch.gd`.
+- **Body anchors** (from 2026-11-25, kept): `content/heroes/pl01_anchors.json` and
+  `tools/hand_anchors.py` (guesses, or magenta pixels from the marked Aseprite file).
+
+## Water as a resource (water physics phase 3, branch `feature/water-physics`, 2026-11-28)
+
+User brief and answers. Replaces the rope's water rules of 2026-11-26 (the orbit taking 24
+and giving them back, free water near a river for abilities, the instant pouch fill).
+Rules in `WorldSim` "Water as a resource" and `WaterBending` (`sim/combat/water_bending.gd`).
+- **Two places, both counted by the host and sent in snapshots:** the **stance water**
+  (`Hero.stance_water`, public: the Water stance 1 rope, full at 24; the stance 2 hoop,
+  full at 33) and the **reserve** (`Hero.water`, private: the Water Pouch, 200).
+- **Entering** stance 1 takes nothing at once: the rope builds by the refill below (24
+  points in 6.8 s; user rule, 2026-11-28); stance 2 takes stance water first, then the
+  pouch, up to 33, and needs 27 in all (`WaterBending.STANCE_2_ENTRY`; refused with "Not
+  enough water", also when a stance 2 ability's key is pressed). 27–32 points are spread
+  evenly round the same hoop. Within 3 tiles of a water tile the water is free and comes
+  from it (drawn flowing from the nearest water tile).
+- **Stance 1 refills** one point every 17 frames (0.283 s) from water nearby or the pouch;
+  with the pouch empty the rope stops growing. Stance 2 doesn't refill.
+- **Leaving:** stance 2 → 1 sheds the points above 24 into the pouch (they spill as
+  droplets); leaving the Water stances (Shift, crowd control, death, another element, or
+  10 s out of combat without casting: `WATER_STANCE_IDLE_SECONDS`, Water stances only)
+  puts all the stance water back in the pouch (capped at 200); the rope flows back to the
+  hip, tail first, over 0.5 s (`WaterRope.drain`).
+- **Abilities** of Water stances 1–2 (`WaterBending.uses_stance_water`) need at least 1
+  point and at least their `water_cost` in the stance ("Not enough water", `NO_WATER`);
+  the water they use is gone. **Power** = 0.2 + 0.8 × stance points ÷ full, from the
+  points the ability was cast with (`Hero.cast_water`, recorded when paid), applied to
+  damage, healing and shields in `AbilityPower.amount`; tooltips show "Water: x / full in
+  stance n, power y%".
+- **The pouch at water (E):** fills at 20 points a second (10 s from empty, less from
+  part full); moving or losing health stops it ("Filling Water Pouch" over the hero).
+- **The hoop** (`WaterRope` `goal`, `sb`, `wrap`; settings "Stance 2 hoop" in
+  `WaterRopeSettings`, from `water_stance2_demo_approved.html`): the rope rises to the
+  chest over 48 frames, points join every 4 frames, it closes once every point is there
+  (the closing link fades in over 20 frames), one lap every 4 s, breathing and tilting,
+  ripples fitted round it, a shadow a pixel wider. The FX-15-11 sprite is no longer drawn.
+  Uses the existing hero art (no arm pose).
+- Tests: `tests/unit/test_water_pouch.gd`; screenshots `tests/visual/water_resource_shots.tscn`.
+
+## Water abilities (water physics phase 4, branch `feature/water-physics`, 2026-11-28)
+
+User brief, `water-physics-abilities.md` and the approved demos (`healing_touch_demo.html`,
+`water_shield_demo_approved.html`, `frost_shard_demo.html`, `leeching_tide_demo.html`).
+Gameplay uses fixed timings; players see the same rope from host events (`water_return`,
+`release`, `cast_start`, `projectile`, `shield_out` in snapshots). Numbers are in the
+ability data and the sheet (`tools/once/water_physics_sheet.py`); rope numbers in
+`WaterRopeSettings` (groups Healing Touch, Water Shield, Frost Shard, Leeching Tide).
+- **Water Whip (W02):** instant (no bar), the whole rope thrown (`AbilityDef.water_whole_rope`;
+  needs 4), the hit 0.5 s after the throw (`_release_now`). A **second press** (its key,
+  Space or right-click) within 1.5 s calls the water back (`water_return` intent;
+  `WaterBending.whip_share`): 50% at once, 100% at 0.5 s, 0% at 1.5 s or no press; a bar
+  ("Call the water back", green to 1 s, yellow at 0.5 s) shows the window. Pressed after
+  the water has landed (0.5 s), it waits regrouped on the ground (`WaterRope` "ground")
+  until the press; the share comes home off the front, the tail soaks in. No refill
+  while it's out (`Hero.water_out`).
+- **Healing Touch (W01):** no bar; healing ×1.5 (effect power 1.5); the whole rope winds
+  round the target (orbit arc → travel arc → helix, `WaterRope.heal`), the heal lands
+  1.2 s after the cast (`release_delay_fixed`), each point turns to mist at the top. The
+  share of the heal full health turned away (`heal` event `full`) comes home off the
+  tail (`WaterBack.UNUSED_HEAL`): along the shield's way home for an ally, straight into
+  the orbit for a self-cast; the rest climbs on into mist. Effect FX `water_heal_helix`.
+- **Water Shield (W12):** the whole rope; up 0.8 s after the cast; absorb = the power rule
+  (the tooltip shows the number). Its water (`Hero.shield_out`, kept apart: the rope
+  refills meanwhile) follows the shield left: the bubble is that share of its stretched
+  length; broken (`shield_break`): all lost (burst, fall, soak in; no regroup); run out:
+  that share comes home (overflow into the pouch). The bubble: `WaterShieldRope`
+  (great circle round the target's chest, tilted 0.45 rad, drifting; stretching ×2 and
+  thinning to 67% over 4 s; dents, splashes, ripples on hits; strained below 50%, gaps
+  below 25%). Duration stays the sheet's 20 s (the demo had 10).
+- **Frost Shard (W04):** instant, 4 points, cooldown 1.5 s (sheet). The 4 points of the
+  orbit facing the cast break off (`WaterRope.break_piece`; the ends re-link), bulge and
+  lean for 9 frames (visual only), fly along the host's projectile and pull together
+  into the shard over 9 frames; the sprite (FX-13-4 at 50%: `frost_shard_half.png`,
+  `tools/once/half_frost_shard.py`) shows from 0.15 s (`FxDef.appear_after`).
+- **Leeching Tide (W07, stance 2):** no bar; a 3 s channel ticking every 0.5 s (damage power
+  1/6 a tick: the same total), no heal; each tick that lands puts 4 water in the pouch
+  (`AbilityDef.water_per_tick`, 24 in all, capped; shown in the tooltip). The hoop opens
+  and reaches the target in 0.4 s, latches, a stream flows home drawing dark water out of
+  the target (leech tint, fading back over 2 s on the hoop); when the channel ends the
+  rest flows in and the hoop closes again (`WaterRope` "reach" / "leech").
+- **Not used any more:** FX-13-1 (`heal_ball`), FX-13-2 (`heal_splash`), FX-13-3 (`water_shield`
+  held on the buff), FX-16-14 (`leech_target`) and FX-16-15 (`leech_self`, through
+  `leeching_tide_ribbon`): their files stay (the `fx` debug command can still show them).
+- Tests: `tests/unit/test_water_abilities.gd`, rope cases in `test_water_rope.gd`, whip
+  cases in `test_water_pouch.gd`; screenshots `tests/visual/water_ability_shots.tscn`
+  (`SHOTS_ONLY=whip|heal|shield|selfshield|shard|leech`).
+
+## Ability effects from the approved art (stance rework phase 3, 2026-11-23)
+
+- **Source:** only `approved/<KEY>.png` on `art-drafts`; animation frames
+  (`art/<ID>/<KEY>+<action>_<date>_<n>.png`) are used automatically once the art bot makes
+  them. `tools/once/make_effect_sheets.py` copies them to `assets/effects/` and writes
+  missing `content/effects/<name>.tres`. No piece has frames yet: every still moves in code
+  (`FxDef.motion`: spin, bob, orbit, flicker, sway, pulse, drop; `fade_out`, `hold_seconds`).
+- **Which ability shows what, by role:** `content/effects/ability_effects.json` (cast,
+  hands, projectile, land, tiles, held; a role set in a behaviour file wins), linked at
+  load by ContentDB (`AbilityDef.fx_cast / fx_hands / fx_projectile / fx_land / fx_tiles /
+  fx_held`; a held effect goes on the ability's buffs as `BuffDef.fx`).
+
+  | Element | Effects (approved key → ability) |
+  |---|---|
+  | Fire | FX-11-1 Fire Punch / Blazing Combo burst · FX-11-2 Fire Dart · FX-11-8 Flame Dash trail · FX-11-10 Jet Propulsion · FX-11-12 Phoenix Kick ring · FX-11-13 Fireball · FX-11-14 Solar Zenith halo · FX-11-16 Flame Wheel · FX-11-17 Inferno / Burning Ground flames · FX-11-19 Combustion Blast |
+  | Earth | FX-12-3 Metal Shards · FX-12-10 Boulder Crush (drops) |
+  | Water | FX-13-1 Healing Touch ball, FX-13-2 splash · FX-13-3 Water Shield · FX-13-4 Frost Shard · FX-13-8 Ice Prison · FX-13-9 Revive / Tidal Resurgence · FX-13-12 Ice Wall · FX-13-13 Spirit Water · FX-13-15 Steam Veil · FX-13-19 Rising Tide · FX-13-20 Ice Spikes · FX-13-21 Octopus Form |
+  | Air | FX-14-1 Air Blade · FX-14-2 Air Step puff · FX-14-4 Stolen Breath · FX-14-5 Air Scooter · FX-14-8 Air Sphere · FX-14-9 Wind Walk · FX-14-10 Vortex / Eye of the Storm · FX-14-11 Updraft · FX-14-12 Suffocate · FX-14-14 Tornado · FX-14-15 Cyclone Spin · FX-14-18 Hurricane |
+
+- **Projectiles** turn to their flight without blurring: 32 pre-rotated cells made with
+  RotSprite (`<name>_rot.png`; `FxDef.drawn_angle`, `rot_sheet`, `rot_steps`). Drawn
+  directions: Fireball and Fire Dart south (90°), Frost Shard north (−90°), Metal Shards
+  right (0°), Air Blade 30°. The Tornado is drawn upright. Everything else is never turned.
+- **`fx <ability id or name>`** (debug console): plays an ability's effects from your hero
+  toward the cursor, no damage or cooldown; `fx <Tree>:<n>` holds a stance.
+- Most of these abilities aren't built yet: their effects show only through `fx`.
+
+## Code-drawn effects (stance rework phase 4, 2026-11-23)
+
+Effects that change shape with distance, angle or terrain, or need no art, built each
+frame from small pieces on FxDef / FxPainter / WorldView's back-to-front pass.
+- **Draw order:** no Line2D or particle nodes. A ribbon is cut into quads, one strip copy
+  at a time (`RibbonPath.quads`); every piece (quad, front piece, particle, shaded tile) is
+  filed under the tile it is over and drawn with that tile's actors, so walls and pillars
+  in front cover them. Ground pieces (wet, sand, cracks, the shock ring) go before the
+  tile's actors, back halves of rings too, front halves after. Since 2026-11-25 (user
+  report: looks cut off by the ground) bare ground at or below a tile's height never
+  covers what stands there (`WorldView._covers`: only higher tiles, props, objects and
+  graveyard markers are drawn again over actors and effects), so feet, rings and
+  effects on open ground show whole and walls and houses in front still hide them.
+  Seismic Sense is a screen shader on a canvas layer over the world, under the HUD.
+- **FxDef fields** (`data/defs/fx_def.gd`):
+  - Ribbon: `ribbon`, `path` (LINE / WHIP / FIGURE8 / COIL), `strip_rect`, `tip_fx`,
+    `head_fx`, `impact_fx`, `hand_fx`, `thickness` (whole pixels), `scroll_speed`, `curl`,
+    `extend_frames` / `snap_frame` / `retract_frames`, `jag_seconds` / `jag_amount`, `tint`.
+  - Front: `front`, `ray_spacing` (0.25), `front_speed`, `trail_fx`, `trail_fade_seconds`,
+    `blocked_fx`, `piece_scale`, `wets`.
+  - Tiles: `tile_mode` (WET, BURNING, SAND, RING, CRACKS, SANDSTORM, SENSE, RAIN),
+    `tile_tint`, `tile_seconds`.
+  - Effect data: `tools/once/make_code_effects.py` (writes missing files).
+- **Hand points by hand** (2026-11-25, user request): `tools/once/make_hand_point_aseprite.py`
+  writes `art/heroes/PL-01/<anim>_hand_points.aseprite` (the game's 48×48 cells, feet on
+  (24, 38), a tag per facing, an empty "Hand <FACING> (#FF00FF)" layer per facing, the
+  palette magenta) for the user to mark the hand; water_whip first.
+- **Hand points** (`CreatureArtDef.hand_points`, `hand_point`): measured on the strike
+  frame of water_whip, air_palm, fire_punch, water_heal, air_gust and fire_kick, for six
+  facings (the furthest opaque pixel toward the facing in the body band); south and north
+  hide the hand, so they are midway between their diagonals; other animations use
+  water_whip's.
+- **Ribbons** (`view/ribbon_path.gd`): whips (Water Whip, Fire Whip) curve to the side the
+  seed picks, deep close up and nearly straight at full range, reaching out, snapping
+  (Water Whip's hit lands on the snap: `hit_frame` 7 at 24 fps) and pulling back; streams
+  and jets (Fire Stream, Water Jet) straight, doubled, flowing, with a head and an impact;
+  Leeching Tide flows back to you; Metal Cable taut with sparks (its hook FX-16-17 isn't
+  approved); Lightning Bolt re-jagged every 0.05 s; Lightning Redirection a figure 8 from
+  the centre, up first. Strips (`tools/once/make_effect_sheets.py` STRIPS): each cut to
+  its most seamless span (the columns whose ends match best, empty end columns excluded):
+  water whip 10 px (cut from the lash's left bar, FX-09-1), fire 49 px (FX-16-4), cable
+  52 px (FX-16-16), lightning 50 px (FX-16-19), Air Blade trail 29 px (FX-16-35).
+- **Fronts:** Breath of Fire (FX-16-23, blocked FX-16-24), Tidal Wave (FX-16-28), Water
+  Pulse (FX-16-25, blocked FX-16-29), Gust (FX-16-30) and Air Blast (Gust's at double
+  size). The host fans rays across the cone, or lays them across the line's width, a
+  quarter tile apart (`FrontRays`); each stops where `Hitbox.clear_distance` stops a shot,
+  so a pillar in the cone leaves a gap. Pieces at the tips, a fading trail, the blocked
+  piece where a ray stops; near-duplicates (within a sixth of a tile) dropped. Waves wet
+  the tiles behind them. Gust and Air Blast lost their FX-08-5 spirals (Air Palm keeps its).
+- **Tiles and the screen:** wet ground (a glossy tint; FX-16-37 not approved), burning
+  ground (Burning Ground, Inferno: FX-11-17 flames on each tile, each side's edge at the
+  average of its two neighbours, full where they burn, 25% where open; FX-16-38/39 not
+  approved), Sinkhole sand (a tint; FX-12-5 not approved), Seismic Stomp / Rumbling Taunt
+  (a ring lifting and brightening the real tiles), Earthquake / Tectonic Shift (cracks,
+  shaking), Sandstorm (swirling sand), Healing Rain (drops + wet ground; FX-13-17 not
+  approved), Seismic Sense (greyscale and rings of light from the hero). Height changes
+  (pillars, walls) have no extra effect. Bloodbending draws nothing.
+- **Particles:** embers, drops and sparks off ribbons and fronts from a fixed pool of 384
+  (`view/fx_particles.gd`), cosmetic and each player's own.
+- **The fire dragon** (Fire stance 5): a flame ribbon (FX-16-4 stands in for FX-16-40/41/42,
+  not approved) coiled around the hero; a stance-5 Fire cast uncoils it toward the aim
+  over 0.4 s, it fades, and returns coiled.
+- **Network:** the host adds to each effect event what a shape needs
+  (`WorldSim.shape_fx_data`): a ribbon's end (clipped at the first unit or blocker), the
+  ability's reach and a seed (from the cast, not the combat dice); a front's rays with
+  where each stopped; a ring's radius. Clients decide nothing that changes a shape.
+- Used in play today: Water Whip, Fire Whip, Water Pulse, Leeching Tide, Gust, Air Blast,
+  Burning Ground, Seismic Stomp (and Stone Skin's stone level). The others through `fx`.
+- Tests: `tests/unit/test_code_effects.gd` (whip curve, stream stops, front rays and the
+  pillar gap, burning edges, clients rebuilding the same shapes), `test_ability_effects.gd`.
+
 ## Menu book (branch `ui-book-menus`, 2026-10-21; work in progress)
 
 - **Art:** `art/menu_book.aseprite` (the user's "livre menu", still being drawn; marks
@@ -1424,7 +1834,8 @@ network check's brute-dodging guest now does it in the Wilds. As it was:
   Accessory (165, 140), boots = Feet (130, 178) (confirmed by the user). An empty slot
   draws nothing (the picture shows). A filled equipment slot covers its picture with
   paper and shows the full rarity border, centred as drawn; a filled bag slot is tinted
-  30% with the rarity's colour. Then the item name in ink, until items have icons.
+  30% with the rarity's colour. Then the item's icon (since 2026-11-22; the name in ink
+  for items with no art).
   "Equipment" and "Bag" head the pages; the learning text sits left of the boots, gold
   centred under the bag. Other menus (loot) keep the dark slots.
 - **Item tooltips** (`ItemTooltip.text` / `label`, text 13, 280 wide; every tooltip opens
@@ -1825,6 +2236,7 @@ assets/tiles/    tilesets: one folder each (tile images + tileset.json)
 assets/creatures/ creature sprite sheets (one folder per creature; art data in content/creatures/)
 assets/heroes/   hero sprite sheets (art data in content/heroes/; source frames in art/heroes/)
 assets/effects/  effect sprite sheets (FxDef data in content/effects/; source frames in art/effects/)
+assets/icons/    ability and item icons (pixel art; tools/pull_icons.py brings them from art-drafts)
 assets/ui/       interface art (the menu book)
 art/             uploaded source art (zips, .aseprite, audio/ masters; ignored by Godot, never exported)
 view/            world view, iso tile renderer, actor views, camera, decor painter (placeholder objects)
@@ -2508,6 +2920,17 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-28 | Balance target "a starter + healer pair always beats 2 Wolves, under 75% HP lost" dropped | User decision. With Healing Touch sending the whole rope (about 7 s to grow back) the bots won 5 of 6 with 93% lost. The solo check (2 Wolves usually kill a lone starter) stays. |
+| 2026-11-28 | Water physics phase 4: Water Whip, Healing Touch, Water Shield, Frost Shard, Leeching Tide | User brief (see **Water abilities**). My choices, to confirm: Healing Touch and Leeching Tide lost their (AI-drafted) bars, since the demos fix their timings; Water Shield keeps the sheet's 20 s (the demo's 10 s was a demo value); the rope refills while a shield is up (its water is kept apart and overflows into the pouch on return), but not while the whip's or the heal's water is out; the whip needs at least 4 points and throws the whole rope; Leeching Tide's damage is split over its 6 ticks (power 1/6 each); a whip pressed after landing brings its share home from the regrouped water's front; Frost Shard's piece keeps the projectile's flight (no gameplay wind-up), so its 9-frame bulge plays as it leaves; the shard sprite was halved by 2×2 blocks keeping the outline; the shield bubble's radius is the demo's × 36/26 for every hero (allies are heroes too). |
+| 2026-11-28 | Water physics phase 3: water as a resource (stance water + pouch), the stance 2 hoop | User brief and answers (see **Water as a resource**). User answer (2026-11-28): entering stance 1 builds the rope by the 17-frame refill only (7 s is fine; my first build took 24 at once). My choices, to confirm: only stance 1 refills (stance 2's refill isn't in the brief); the 10 s idle drop applies to the Water stances only and a cast bar or combat keeps the stance up; power uses the stance water at the moment the ability is paid; the pouch fills at capacity ÷ 10 per second, stopped by moving or losing health; without a pouch, water put back is lost; the hoop's new points come from the hips (or the river), not from the tail as in the demo; test heroes and balance bots that use Water abilities now carry a full pouch. |
+| 2026-11-28 | Water physics phase 2: stances off the hotbar; a bar per character; deleting characters | User brief and requests. My choices: the second press of a timing bar is unchanged (same key, Space or right-click while that ability's bar runs; it never re-enters the stance); bending slots get a small stance badge (element colour, stance number, lit while held) and the stance panel is hidden; the host keeps switching stance on a cast from another stance (old clients, tests) while the client only switches; a new character's bar starts empty and takes the shared layout's keybinds; keybinds are saved with each character's bar; deleting a character also forgets its bar. Abilities whose stance can't be entered (stance 2 without water, phase 3) will show blue like "not enough mana" with "Not enough water". |
+| 2026-11-28 | Water physics pass (branch `feature/water-physics` from `feature/stance-rework`), phase 1: render fixes | User brief and screenshot. Shadow: black at 30% (`WaterRopeSettings.SHADOW_DARKEN`), which darkens what's under it by 30%, each screen pixel once a frame (`WaterRopes._shadow_seen`). The wall showing through in a box round the hero, and the flower bed's lower faces: the terrain cache redraws a covering tile (a wall, a prop) whole, including lower faces the cached picture hides under the bare ground in front; since 2026-11-25 that ground was never redrawn, so they showed (the rope's pieces filed behind the hero pulled the redraw box back to the house). Now the bare tiles in front of a redrawn tile are put back right after it, before anything in front is drawn (`WorldView._collect_cover` `patch`). The faint stance ring under Water stance 1 is gone (the rope is its look). User answers for later phases: the river stays a water source and stance water visibly flows from the nearest water tile when entering a stance; the pouch stays and refills fully in 10 s, interrupted by damage or moving; "Not enough water" counts the stance's water; stance 2's pose uses existing hero art; the whip's 1.5 s bar also decides when the water returns (no press by 0.5 s: the water stays on the ground until the press); Frost Shard's sprite scaled 50%; delete characters from the main menu with a confirmation; hotbars saved per character. |
+| 2026-11-25 | Playtest fixes: Water Shield built; bare ground no longer covers effects; unbuilt branches marked; a hand-point Aseprite file | User report and requests. My choices: Water Shield's shield size from the tier default and the sheet's Scales With (like Boulder Shield), its splash 10 + 0.6 Magic Attack to enemies within 1.5 tiles when the shield is used up (not when it times out), 10 mana; covering rule: only tiles higher than the ground an actor or effect stands on, or holding a prop, object or graveyard marker, are drawn again over it (the ground bucketing of ring halves removed); unbuilt stance branches crossed out with "not built" and a hover list; the Aseprite file has one empty layer per facing, a tag per facing, the palette set to #FF00FF. |
+| 2026-11-25 | Threat and tanking merged into the stance rework (`feature/threat-tanking` into `feature/stance-rework`; the art bot and Eloi's branch left out) | User request. My choices where the two designs differ: the stance sheet wins (it is the newer design): cooldowns from the sheet; Metalbending is the sheet's debuff (−20 Physical Defense, speed halved, 8 s) without the pull or the Stone Skin taunt; Seismic Stomp keeps the threat branch's light damage (it keeps threat after the taunt; the sheet's text only says taunt); Earth Armor's recast (Fortress) isn't built; Rock Throw keeps threat ×3. See **Threat and tanking**. |
+| 2026-11-23 | Stance rework, phases 2–5: stance controls and looks, effects from the approved art, code-drawn effects, tests and docs | User brief and choices: other elements' stances can go in any of slots 1–0; Shift leaves; pages on Ctrl+1–6; "start it" for phases 3, 4 and 5 after the phase 4 fields and draw order were shown. My choices: Stone Skin turns a quarter of the body to stone (the Stone Guard levels); rings around the hero split behind / in front; Octopus Form drawn upright behind the hero (flat on the ground it was cut by the tiles beside it); unapproved looks are a faint ring in the element's colour; code motion per still (listed in **Ability effects from the approved art**); 32 RotSprite turns per projectile, made offline; one JSON table of effects by role; Scorch's icon drawn by hand (16 × 16); `fx` also holds stances; strips cut to their most seamless span automatically; burning edges at the average of their two neighbours' sides; Gust and Air Blast lose their spirals; ribbon seeds from the cast, not the combat dice; the dragon's polished transformation proposed (the ability's effect from its head), not built. See **Stances**, **Ability effects from the approved art**, **Code-drawn effects**. |
+| 2026-11-23 | Stance rework, phase 1 follow-up: Act I gives tier 1 only; Fire, Earth and Air copy Water's unlock steps; dodging and Lunge balance targets removed | User decisions. Every Act I loot table's scrolls are built tier-1 ones of the same element (`tools/once/act1_tier1_rewards.py`: Fire Whip → Fire Dart, Flame Dash → Sun Warrior's Breath, Fireball → Scorch, Burning Ground → Fire Kick, Blazing Combo → Fire Punch, Soothing Mist → Healing Touch, Leeching Tide and Water Pulse → Water Whip, Tidal Blessing and Ice Spikes → Frost Shard, Air Blast → Gust, Earth Wall → Raise Pillar; chances kept); the Foreman (beating the Silent Shaft) drops the built tier-2 scrolls, 20% each (Blazing Combo, Burning Ground, Soothing Mist, Leeching Tide, Tidal Blessing); shops sell Scorch Scroll instead of Scroll of the Current; quest 1-04 gives Water Frost Shard, 1-06 gives Water and Air no scroll (no third built tier-1 one yet), the finales (1-07, The Beast of Greenfields) offer Scorch, Frost Shard, Raise Pillar or Air Step. Unlock steps: each Fire, Earth and Air ability unlocks like the Water ability in its stance slot (`tools/once/stance_copy_water_steps.py`; only stance 1 changed: Fire Kick, Stone Skin, Gust 0; Sun Warrior's Breath, Raise Pillar, Air Step 25; Scorch, Metal Shards 50; Air Blade 50). Removed from `tests/balance/test_balance.gd`: dodging halves the HP lost, heals + dodges beat the Brute, level-4 Lunge beats a Skirmisher (the report still measures them). The 25 starting Mastery stays (the starting kit no longer needs it; it opens the step-1 abilities). |
+| 2026-11-23 | Stance rework, phase 1: importer and abilities (branch `feature/stance-rework`, from `design/stance-rework` + the icons branch) | User brief and choices ("all the recommendations look good"): new characters start with 25 permanent Mastery in their element (`StartingElementDef.starting_mastery`; Fire Kick, Stone Skin and Gust unlock at 25 now); the four merged abilities' scrolls become their merge target's scroll (`CharacterData.RENAMED_ITEMS`; no AP kept, none were in the game); Ocean Spirit uses the Abilities row (225 / 375 / 550); Overheat's prerequisite "Spark" is Scorch (sheet fix). My choices: provisional Projectile Speed / Size for the four new projectiles (Fireball 12 / 0.4, Metal Shards 16 / 0.25, Metal Cable 18 / 0.2, Air Blade 18 / 0.3; `tools/once/stance_sheet_fixes.py`), to confirm; a passive with a hitbox (Ocean Spirit, Tidal Resurgence, Eye of the Storm) is a warning, not an error; Fireball also explodes where its flight ends or terrain stops it (impact radius 1); Fire Whip's pull uses the usual weight rule; Earth Wall's trench lowers the row just in front of the wall for its 12 s; Air Step's glide (10 s, a second buff) crosses holes in the map at the height it left from and turns drops into glides (no fall); Scorch: 0.3 × the tier default over 6 s (ticks each second), 6 mana, +15% damage taken from all sources (`scorched`). Shop, loot and quest fixes wait for the user (phase 1 report). |
+| 2026-11-22 | Icons for every bending ability and item, from the art-drafts icons/ folder | User brief and choices ("go with your recommendations"): the 20 element set pieces with no art are known gaps showing the placeholder (with a warning), like the five Legs items (which keep their name); whole-number scales count screen pixels (1× at 720p, 2× at 1080p where a slot fits it); 1× rich-text icons accepted in the loot feed and lists (taller lines). My choices: an Icon column on the sheet; `ItemDef.icon` / `AbilityDef.icon`; per-file import settings (Godot has no folder presets) written by `tools/pull_icons.py` and checked by a test; the action bar shows the icon instead of the name (weapon arts keep their name); tree nodes closer together (14) with 12 px text beside the icon; locked or not-in-game abilities in greyscale; ground loot icons at half the world art's pixel size (full size covered the hero); a warning once per run. **Need art:** `acolytes_leggings`, `emberstitch_trousers`, `riverweave_breeches`, `quarrymans_trousers`, `breezecloth_leggings` (no leg art in the sheets), and the 20 element set pieces (`quarrymans_gloves`, `_hood`, `_boots`, `granite_ring`, `bedrock_charm`; `riverweave_gloves`, `_hood`, `_sandals`, `tidestone_ring`, `pearl_pendant`; `emberstitch_gloves`, `_cap`, `_boots`, `cinder_ring`, `ashglass_pendant`; `breezecloth_wraps`, `_hood`, `_shoes`, `gale_ring`, `feather_charm`). |
 | 2026-11-21 | First sound effects, zone music and water near the hero (branch `audio/new-sounds`) | User brief. Theirs: the files (trimmed, levelled; music at -18 LUFS so zones never jump in volume); Healing Touch, Water Whip and Air Palm on `_hit` (their `_cast` plays when the timing bar starts), Gust on `_cast` (no bar); the Mixkit wolf bite shared with the iron wolf (free for games, no credit); the stag's first bellow cut from a 6 s take; "Millbrook / Greenfields" for town and explore in those two zones, "The Crossing", the draft kept for the title screen and zones with no track; the water emitters (approved): radius 10, at most 3, every 0.5 s, 1 s fades, client side, Ambience bus, numbers in AudioConfig. Mine: water = terrains whose tiles the catalog puts in "water" (fords and rocks in water are stone); clusters touch diagonally; a spot that moves under 3 tiles glides (walking along a river would otherwise fade every half second), further it crossfades; level from the grid distance with falloff 1.5 and 0 dB at the water; emitters kept outside the world view so they fade out on a zone change; every enemy pulled into a fight by damage sends `aggro` (not only the stag), once per fight. |
 | 2026-11-21 | Pressing an ability's key again during its timing bar plays the bar again, alongside right-click and Space | User request after testing the ability animations: the second press had been removed that morning (Space added instead). Both stay: right-click, Space or the key; letting go of the key ends a hold, as before. |
 | 2026-11-21 | Ability animations and effects; Rock Throw two presses; Stone Skin's look and shatter; Fire Punch instant; Water Whip from 0.45 s | User brief (all eight facings, user choice; "defaults fine": the phase model, walking shows the ability's pose, stone look on Stone Skin, my frame rates). My choices: strike frames read off the art (table in **Ability animations and effects**); hits on strike frames without delaying taps, by playing the frames before the strike during the bar and the rest from the strike when it goes off (heroes had no strike timing before: only creatures' `timed_abilities`); Rock Throw keeps a timing bar, adapted (3 s, tap 0.6–2.6, crit 0.9–1.1, no press throws at miss power through a client press at the end, Cast Move Speed 0); the throw and the whip go off after a release delay taken from the art (0.15 s, 0.29 s), paying mana and cooldown then and not re-checking range; the flying rock is the still moved and spun in code (FX-10-2 barely tumbles); effects drawn in the back-to-front pass on the tile under them; stone tint baked once per sheet; the mound cut from stone_shatter by height and colours (thin scraps remain). |
@@ -2533,6 +2956,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 | 2026-11-17 | Starting elements, the Foreman's guaranteed hit, faster enemy attacks, eight-facing hero art, a walk that keeps pace on screen, ability rebalance | User brief (seven parts; part 2 waits for the OK on its reward table). My choices: elements as data files; old characters and tool-made ones keep the old kit; shirt / pants numbers; Stone Skin ported from the threat-tanking branch; the Foreman's new ability Hurled Sunstone rather than changing slam, charge or pick, interruptible; wind-up floors 0.63 s for dodgeable attacks (the dodge warning) and 0.2 s for bites, boss telegraphs kept; eight facings by 45° slices of the facing angle; the walk by screen distance with per-facing measured strides; range +2 on every ranged ability (dashes excluded), only the first range number in each text cell; Air control and defense abilities 0.6 Phys Atk + 0.4 Magic Def. See **Starting elements, faster enemies, rebalance**. |
 | 2026-11-17 | The user's map edits merged: Greenfields, the Silent Shaft, Millbrook, Windsteppe, Deepcut, the Road to Deepcut, the Crossing | User's own edits in the map editor. User choices: the Foreman stays at his own level 10 (the edit had set level 1); Greenfields stays as edited: no Goblin Shamans, Fen Skirmishers or graveyard (a release there goes to its hero spawn), so Goblin Fetishes can only be done in the testing grounds for now (to rework later). Mine: the Silent Shaft's top row was trimmed, so the encounter's victory spot and quest 1-07's two places move up a row; tests describing the old maps follow the new ones. |
 | 2026-11-17 | Maps need not be rectangles: a Shape tool removes and adds tiles; a missing tile is a wall that shots fly over | User request and choice (a hole is a wall like the map's outside, not a pit). My choices: a space in `height_rows`/`terrain_rows` marks a missing tile, so existing maps are unchanged; maps stay stored as their bounding rectangle; adding past a side grows the map with 3 spare rows of holes and saving trims every empty side; new tiles take the Ground list's choice at the Level box's height; things already on removed tiles stay and are warned about; holes can't be painted or hold things; a map keeps at least one tile; fliers can't cross holes either; ground areas and terrain changes skip them. |
+| 2026-11-17 | WoW-style threat: overtake 110% in melee / 130% at range, forced taunts, Physical Defense threat multiplier, Earth tanking abilities | User brief. User choices: Metalbending's threat multiplier stays 0 (so the ×3 has no effect); Boulder Shield built. My choices: divisor 40 and cap 3.0 (cloth ×1.25, geared tank ~60 PhysDef ×2.5, Stone Skin or Earth Armor reach the cap); melee range 1 tile edge to edge; Seismic Stomp damage 0.7 × Rock Throw's; Stone Skin +20 PhysDef 10 s; Earth Armor +50 and half speed 15 s; Metalbent −20 for 8 s; Boulder Shield the tier heal default + PhysDef, 12 s; taunt durations don't scale with Mastery; the Earth abilities live as tree behaviors (`content/tree/behaviors/`), not `content/abilities/` (legacy only; `taunt.tres` got `taunt_seconds` 3). The footstep sound test now waits for the first footstep (it was timing-flaky). |
 | 2026-11-16 | The hero shows PL-01-1 in all four facings, with the PL-02 sword and bow attacks; frames picked from host times | User brief (replaces the 2026-11-15 mirrored south-east art and back stills). User choices: downed for stuns as well as while dead; animations play when the ability goes off, not over the timing bar; hammer arts and potions play the plain cast until they have their own; revived also after a release at a graveyard; death take 1 (was take 4). |
 | 2026-11-16 | Hero art measurements and fixes | Mine: facings shifted onto one feet point (24, 38) by whole pixels; the PL-02 bodies lined up by overlaying their stills on PL-01-1's (a scabbard below the feet fooled the sole test); walk 8 frames per tile from the stride, not a planted foot (the generated walk has no planted foot); while dead, death then downed's last frame held, not downed replayed or looped (both animations fall from standing); 20 / 18 / 20 / 15 fps for slash, lunge, quick shot, aimed shot; the source frames live in `art/heroes/PL-01`, `PL-02` (the old `art/heroes/PL-01-1` sheets and `make_pl01_sheets.py` removed). |
 | 2026-11-16 | Map editor part 2: things, map size, connections, new maps; saving through Godot's resource writer | User request and choices: each person placed once in the whole game; a New map button; a one-time re-save of every map (format only); all three parts. My choices: a Things tool and a Select tool (click again cycles a tile's things, drag moves, Delete removes); patrols start where the enemy stands; a resize keeps things on their ground and moves every reference to the map's coordinates in other files on save (quests, doors, edges, the encounter); this map's edges decide the partner's (opposite side and offset); doors pick their arrival on the destination map; warnings (asked, not refused) for one-way doors, edges landing on blocked ground, and quests losing a person or every enemy of a kind; new maps start with a spawn and a graveyard and regenerate `AUDIO_SPEC.md`. |

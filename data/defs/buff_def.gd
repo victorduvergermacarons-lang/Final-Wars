@@ -9,6 +9,20 @@ extends Resource
 ## A look the hero wears while it lasts (CreatureArtDef.looks, e.g. &"stone": the
 ## sprite tinted grey-stone by a shader; "" = none).
 @export var look: StringName = &""
+## An effect (FxDef id) held around the unit while it lasts (Water Shield's bubble);
+## set from its ability's `fx_held` at load when empty.
+@export var fx: StringName = &""
+## A look drawn in code around the unit while it lasts ("flames": Scorch's small
+## orange flames, until its own art is approved).
+@export var code_fx: String = ""
+## A shield buff: used by the one who put it on, on every enemy within
+## `break_radius` tiles of the shielded unit when the shield is used up (Water
+## Shield splashes). Not when it runs out of time.
+@export var break_ability: AbilityDef
+@export var break_radius: float = 1.5
+## Its icon on unit frames (with `icon_text` beside it, e.g. "+15%").
+@export var icon: Texture2D
+@export var icon_text: String = ""
 ## The hero animation played once when it ends (e.g. "stone_shatter"; "" = none).
 @export var end_anim: String = ""
 @export var modifiers: Array[StatModifier] = []
@@ -26,6 +40,9 @@ extends Resource
 @export_group("Crowd control")
 ## No stepping and no abilities.
 @export var stuns: bool = false
+## Gliding (Air Step, stance rework): the unit crosses gaps (holes in the map) at
+## the height it left from, and drops from any height without falling.
+@export var glides: bool = false
 ## No spells (element abilities, heals, magical attacks); weapon arts still work.
 @export var silences: bool = false
 ## Like a stun, but any damage wakes the unit up.

@@ -20,5 +20,5 @@ min_level = 3
 objectives = Array[ExtResource("1_rd1rx")]([SubResource("Resource_7iaoo")])
 reward_xp = 500
 reward_gold = 60
-reward_choice_ids = Array[StringName]([&"scroll_of_the_fireball", &"glacier_scroll", &"bulwark_scroll"])
+reward_choice_ids = Array[StringName]([&"scorch_scroll", &"frost_shard_scroll", &"pillar_scroll", &"featherstep_scroll"])
 sets_world_flag = &"grizzlehide_slain"

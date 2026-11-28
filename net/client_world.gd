@@ -138,7 +138,7 @@ func _step_local(hero: Hero, wish: Vector2, face: float, t: float) -> void:
 	for a in _actors.values():
 		if a != hero and a.alive:
 			Mover.separate_pair(hero, a, false, true)
-	Mover.resolve_terrain(hero, grid)
+	Mover.resolve_terrain(hero, grid, false, hero.buffs.is_gliding(t))
 	if hero.in_combat(t):
 		if not hero.holds_cast_facing(t):
 			hero.face_angle(face)
@@ -255,6 +255,15 @@ func _apply_actor(a: Actor, d: Dictionary) -> void:
 func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.level = d.level
 	h.element = StringName(d.get("element", ""))
+	var st: Array = d.get("stance", ["", 0, Hero.NEVER])
+	h.stance_tree = str(st[0])
+	h.stance = int(st[1])
+	h.stance_at = float(st[2])
+	h.stance_water = int(d.get("stance_water", 0))
+	h.shield_out = d.get("shield_out", {})
+	var out: Dictionary = d.get("water_out", {})
+	if out.is_empty() or out.get("at") != h.water_out.get("at"):
+		h.water_out = out.duplicate() # keeps "called" while it is the same throw
 	var anim: Dictionary = d.get("anim", {})
 	for k in ["died", "down", "up", "hit", "act_at", "buff_end"]:
 		h.anim[k] = float(anim.get(k, Hero.NEVER))
@@ -286,6 +295,9 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.quest_state = p.quests
 	h.drops = p.get("drops", [])
 	h.loot_bonus = int(p.get("loot_bonus", 0))
+	h.water = int(p.get("water", 0))
+	h.near_water = bool(p.get("near_water", false))
+	h.pouch_fill = {"on": true} if bool(p.get("filling", false)) else {}
 	h.social = p.get("social", {"trade": {}, "requests": []})
 	var mine: Dictionary = h.social.get("trade", {}).get("mine", {})
 	h.escrow = mine.get("items", [])

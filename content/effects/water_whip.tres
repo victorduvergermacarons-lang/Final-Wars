@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"water_whip"
+frames = 1
+fps = 60.0
+rotate = false
+ribbon = true
+path = 4
+hit_frame = 30

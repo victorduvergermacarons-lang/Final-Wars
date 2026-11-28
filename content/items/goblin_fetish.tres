@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_1bc6d"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_lxagt"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_urcne"]
+[ext_resource type="Texture2D" uid="uid://cfgdh25oojlxe" path="res://assets/icons/items/goblin_fetish.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_lfdmc"]
 script = ExtResource("1_1bc6d")
@@ -14,6 +15,7 @@ script = ExtResource("1_1bc6d")
 script = ExtResource("2_lxagt")
 id = &"goblin_fetish"
 display_name = "Goblin Fetish"
+icon = ExtResource("icon_tex")
 description = "A bundle of bones and feathers, humming faintly. Old Maren wants these."
 max_stack = 20
 quest_item = true

@@ -82,7 +82,8 @@ static func label(item: ItemDef, hero: Hero, rules: CombatRules, worn: bool, now
 	l.custom_minimum_size = Vector2(TOOLTIP_WIDTH, 0)
 	for font in ["normal_font_size", "bold_font_size", "italics_font_size", "bold_italics_font_size"]:
 		l.add_theme_font_size_override(font, TOOLTIP_FONT_SIZE)
-	l.text = text(item, hero, rules, worn, now, bind)
+	var icon := Icons.of_item(item)
+	l.text = (Icons.bbcode(icon) + "  " if icon != null else "") + text(item, hero, rules, worn, now, bind)
 	return l
 
 
@@ -118,6 +119,23 @@ static func ability_lines(ability: AbilityDef, hero: Hero, rules: CombatRules, n
 			how.append("%ss %s" % [_num(t[1]), t[0]])
 	if not how.is_empty():
 		out.append(" · ".join(how))
+	# A tooltip shows the power of a cast now, not the last one's (Hero.cast_water).
+	var last_cast: Variant = null
+	if hero != null and hero.cast_water.has(ability.id):
+		last_cast = hero.cast_water[ability.id]
+		hero.cast_water.erase(ability.id)
+	if WaterBending.uses_stance_water(ability) and hero != null:
+		# Its power follows the water in its stance (water physics, 2026-11-28).
+		var full := WaterBending.full(ability.stance)
+		var held := hero.stance_tree == "Water" and hero.stance == ability.stance
+		var pts := hero.stance_water if held else full
+		out.append("Water: %s%d / %d in stance %d, power %d%%" % [
+				"%d used · " % ability.water_cost if ability.water_cost > 0 else "", pts, full, ability.stance,
+				roundi(WaterBending.power(hero, ability) * 100.0)])
+	if ability.water_per_tick > 0 and ability.channel_seconds > 0.0 and ability.channel_tick_seconds > 0.0:
+		var ticks := floori(ability.channel_seconds / ability.channel_tick_seconds + 0.001)
+		out.append("Draws %d water into your pouch every %ss (%d over %ss)" % [ability.water_per_tick,
+				_num(ability.channel_tick_seconds), ability.water_per_tick * ticks, _num(ability.channel_seconds)])
 	for effect in ability.effects:
 		if effect != null:
 			var line := _effect_line(ability, effect, hero, rules, now)
@@ -137,6 +155,8 @@ static func ability_lines(ability: AbilityDef, hero: Hero, rules: CombatRules, n
 		var given := TreeRules.contribution(hero, ability)
 		if given.y > 0.0:
 			out.append("[color=%s]Mastery from using it: %d / %d[/color]" % [GREY, floori(given.x), int(given.y)])
+	if last_cast != null:
+		hero.cast_water[ability.id] = last_cast
 	return out
 
 

@@ -15,11 +15,15 @@ var store: CharacterStore = null
 ## Where the host keeps world state (one-time events); null disables it (tests).
 var world_store: WorldStore = null
 
+## The local character's name: its action bar is its own (SettingsStore).
+var hotbar_owner := ""
+
 const AUTOSAVE_SECONDS := 60.0
 var _since_save := 0.0
 
 
 func start_solo(character: Dictionary) -> void:
+	hotbar_owner = str(character.get("name", ""))
 	InputActions.ensure_registered()
 	var local := LocalSession.new()
 	local.name = "Session"
@@ -31,6 +35,7 @@ func start_solo(character: Dictionary) -> void:
 
 
 func start_host(character: Dictionary, port: int) -> Error:
+	hotbar_owner = str(character.get("name", ""))
 	InputActions.ensure_registered()
 	var host := ServerSession.new()
 	host.name = "Session"
@@ -47,6 +52,7 @@ func start_host(character: Dictionary, port: int) -> Error:
 
 ## Connects; the world appears once the host has welcomed us and sent state.
 func start_join(character: Dictionary, address: String, port: int) -> Error:
+	hotbar_owner = str(character.get("name", ""))
 	InputActions.ensure_registered()
 	var joiner := ClientSession.new()
 	joiner.name = "Session"
@@ -108,7 +114,7 @@ func _build_client(zone: ZoneDef) -> void:
 	var hud := Hud.new()
 	hud.name = "Hud"
 	add_child(hud)
-	hud.setup(session, client, input, settings_path)
+	hud.setup(session, client, input, settings_path, hotbar_owner)
 	hud.leave_requested.connect(func(): ended.emit("Your hero is saved."))
 	hud.act_completed.connect(func(_act): save_now()) # Act I complete: saved at once
 	var sound := SoundDirector.new()

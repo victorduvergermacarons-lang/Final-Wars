@@ -84,6 +84,8 @@ var _pending_hits: Array = []
 ## Released abilities waiting for their strike (AbilityDef.release_delay_seconds):
 ## [{"caster", "ability", "target", "aim", "bonus", "power", "crit", "at"}].
 var _releases: Array = []
+## What the release going off now did (`_update_releases`).
+var _release_events: Array = []
 ## Temporary terrain changes: [{"delta": {tile: levels added}, "blocked": {tile: true}, "until"}].
 var _terrain: Array = []
 ## Walkability of changed tiles before any change touched them.
@@ -397,7 +399,10 @@ func step() -> Array[Dictionary]:
 	_update_way_out()
 	_remove_gone_npcs()
 	_update_quests()
+	_check_stances()
 	_track_hero_anims()
+	_track_water()
+	_watch_water_shields()
 	for id in _sorted(ctx.actors):
 		ctx.actors[id].buffs.expire(now)
 	_record_history()
@@ -510,7 +515,7 @@ func _walk_wish(hero: Hero, dt: float) -> Vector2:
 	if d.length() <= reach or now > hero.walk_deadline:
 		if d.length() <= reach and Mover.speed_of(hero, rules, now) > 0.0:
 			m.pos = hero.walk_target
-			Mover.resolve_terrain(hero, grid)
+			Mover.resolve_terrain(hero, grid, false, hero.buffs.is_gliding(now))
 		m.vel = Vector2.ZERO
 		hero.walk_target = null
 		return Vector2.ZERO
@@ -579,7 +584,7 @@ func _separate_units() -> void:
 			Mover.separate_pair(h, other, h.move.gliding or (h is Enemy and not h.casting.is_empty()), fixed)
 	for h in list:
 		if not h.move.gliding:
-			Mover.resolve_terrain(h, grid, h is Enemy and (h as Enemy).airborne(now))
+			Mover.resolve_terrain(h, grid, h is Enemy and (h as Enemy).airborne(now), h.buffs.is_gliding(now))
 
 
 # --- Dungeons: party wipes ---------------------------------------------------------
@@ -716,6 +721,17 @@ func intent_ack(hero_id: int) -> int:
 func emit(event: Dictionary) -> void:
 	_events.append(event)
 	_record(event)
+	# Shoved or pulled: the hero drops its stance (crowd control, stance rework).
+	# Water Shield broken: all of its water is lost (water physics phase 4).
+	if event.get("type", "") == "shield_break":
+		for h: Hero in _heroes.values():
+			if h.shield_out.get("target", -2) == int(event.get("target", -1)) \
+					and h.shield_out.get("buff", &"") == event.get("buff", &""):
+				_settle_shield_out(h, 0.0)
+	if event.get("type", "") in ["pushed", "pulled"]:
+		var moved = _heroes.get(int(event.get("target", -1)))
+		if moved != null and moved.stance > 0:
+			set_stance(moved, "", 0, "moved")
 
 
 ## Keeps each hero's records (Hero.records) from the events of their deeds, and
@@ -848,7 +864,34 @@ func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Vari
 			or _has_timing_bar(caster, ability)
 	if timed:
 		return _start_timed_cast(caster, ability, target, aim)
+	if caster is Hero and ability.release_delay_seconds > 0.0 and ability.timing_bar == null:
+		return _release_now(caster as Hero, ability, target, aim) # (bars switched off: at once, as before)
 	return _finish_cast(caster, ability, target, aim, CastResolver.Pay.INSTANT)
+
+
+## An instant ability whose hit follows its art (Water Whip: the lash lands 0.5 s
+## after the throw): checked and released now (animation, effect, its water sent
+## out), goes off on its strike like a timing bar's release (`_releases`). The global
+## cooldown starts now; mana and the cooldown are paid when it goes off.
+func _release_now(hero: Hero, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
+	var r := CastResolver.validate(ctx, hero, ability, target, aim)
+	if r != AbilityResolver.Result.OK:
+		return r
+	var point: Variant = CastResolver.aim_point(hero, target, aim)
+	CastResolver.face_cast(hero, ability, target, aim)
+	if ability.on_gcd:
+		hero.cooldowns.trigger_gcd(now, rules.gcd_seconds * hero.buffs.cooldown_multiplier(now))
+	if ability.water_whole_rope and WaterBending.uses_stance_water(ability):
+		WaterBending.send_out(hero, ability, now, target.id if target != null else hero.id)
+	var t_id := target.id if target != null else -1
+	if not WorldSim.is_mouse_aimed(ability):
+		hero.anim.face_until = now + ability.release_delay_seconds # faces its target until it goes off
+	emit({"type": "release", "source": hero.id, "ability": ability.id, "target": t_id})
+	_emit_fx(hero, ability, ability.fx_cast, target, point)
+	_releases.append({"caster": hero.id, "ability": ability, "target": t_id, "aim": point,
+			"bonus": hero.buffs.damage_dealt_multiplier(ability.tree, now), "power": 1.0, "crit": false,
+			"at": now + ability.release_delay_seconds})
+	return AbilityResolver.Result.OK
 
 
 ## Only heroes play timing bars (enemies cast those abilities straight away).
@@ -902,7 +945,8 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 	if kind != "cast" and kind != "timing":
 		caster.buffs.consume_on_cast(ability.tree, now)
 	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
-			"target": caster.casting.target, "end": caster.casting.end})
+			"target": caster.casting.target, "end": caster.casting.end,
+			"to": target.move.pos if target != null else (Vector2(point) if point is Vector2 or point is Vector2i else caster.move.pos)})
 	return AbilityResolver.Result.OK
 
 
@@ -952,7 +996,9 @@ func _update_casts() -> void:
 			"channel":
 				while not a.casting.is_empty() and now + 0.0001 >= c.next_tick and c.next_tick <= c.end + 0.0001:
 					c.next_tick += ability.channel_tick_seconds
-					_finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
+					var tick_ok := _finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
+					if a is Hero and ability.water_per_tick > 0 and tick_ok == AbilityResolver.Result.OK:
+						_to_pouch(a as Hero, ability.water_per_tick) # Leeching Tide draws water home
 				if not a.casting.is_empty() and now + 0.0001 >= c.end:
 					a.casting = {}
 					emit({"type": "channel_end", "source": a.id, "ability": ability.id})
@@ -1138,7 +1184,18 @@ func _update_releases() -> void:
 		ctx.force_crit = r.crit
 		ctx.timing_power = r.power
 		ctx.release_locked = true
+		_release_events = []
 		var res := _finish_cast(caster, r.ability, get_actor(r.target), r.aim, CastResolver.Pay.COMPLETE, r.bonus)
+		if caster is Hero and r.ability.water_back == AbilityDef.WaterBack.UNUSED_HEAL \
+				and (caster as Hero).water_out.get("ability", &"") == r.ability.id:
+			# Healing Touch: the share of the heal full health turned away comes back.
+			var full := 0.0
+			var healed := 0.0
+			for e in _release_events:
+				if e.type == "heal" and e.get("ability", &"") == r.ability.id:
+					full += float(e.get("full", e.amount))
+					healed += float(e.amount)
+			_settle_water_out(caster as Hero, 1.0 - healed / full if full > 0.0 else 1.0)
 		ctx.release_locked = false
 		ctx.force_crit = false
 		ctx.timing_power = 1.0
@@ -1158,8 +1215,54 @@ func _emit_fx(caster: Actor, ability: AbilityDef, fx: StringName, target: Actor,
 		to = target.move.pos
 	elif aim is Vector2 or aim is Vector2i:
 		to = Vector2(aim)
-	emit({"type": "fx", "fx": fx, "source": caster.id, "ability": ability.id, "from": caster.move.pos, "to": to,
-			"at": now})
+	var e := {"type": "fx", "fx": fx, "source": caster.id, "ability": ability.id, "from": caster.move.pos, "to": to,
+			"at": now, "target": target.id if target != null else -1}
+	e.merge(shape_fx_data(caster, ability, fx, target, aim), true)
+	emit(e)
+
+
+## What players need to rebuild a code-drawn effect's shape the same way (stance
+## rework phase 4): a ribbon's end (where its hitbox stops: the target, the first
+## unit in its way, a wall, or its range), its full reach and a seed; a front's rays;
+## a ring's radius.
+func shape_fx_data(caster: Actor, ability: AbilityDef, fx_id: StringName, target: Actor, aim: Variant) -> Dictionary:
+	var fx: FxDef = ContentDB.effects.get(fx_id)
+	if fx == null:
+		return {}
+	var hb: HitboxDef = ability.hitbox if ability.hitbox != null else ability.sheet_hitbox
+	var reach := hb.reach if hb != null else float(ability.max_range)
+	var from := caster.move.pos
+	var point: Vector2 = from + caster.facing_vector()
+	if target != null and target != caster:
+		point = target.move.pos
+	elif aim is Vector2 or aim is Vector2i:
+		point = Vector2(aim)
+	var dir := (point - from).normalized() if point.distance_to(from) > 0.001 else caster.facing_vector()
+	var tol := rules.los_height_tolerance
+	if fx.ribbon:
+		var end := point
+		if fx.path == FxDef.Path.LINE and (target == null or target == caster):
+			var clear := Hitbox.clear_distance(grid, from, dir, reach, tol)
+			end = from + dir * clear
+			if hb == null or not hb.pierce:
+				var nearest := clear
+				for a: Actor in ctx.actors.values():
+					if a == caster or not a.alive or not a.is_hostile_to(caster):
+						continue
+					var along := (a.move.pos - from).dot(dir)
+					if along > 0.0 and along < nearest and absf((a.move.pos - from).cross(dir)) <= a.move.radius + 0.3:
+						nearest = along
+				end = from + dir * nearest
+		# The seed comes from the cast, not the combat dice (which it would shift).
+		return {"to": end, "reach": reach, "seed": absi(hash([ability.id, caster.id, roundi(now * 1000.0)])) % 100000}
+	if fx.front:
+		var angle := hb.angle if hb != null and hb.shape == HitboxDef.Shape.CONE else 0.0
+		var width := hb.width if hb != null and hb.width > 0.0 else 1.0
+		var length := minf(from.distance_to(point), reach) if target != null and target != caster else reach
+		return {"rays": FrontRays.rays(grid, from, dir, length, angle, width, tol, fx.ray_spacing)}
+	if fx.tile_mode == FxDef.TileMode.RING or fx.tile_mode == FxDef.TileMode.SENSE:
+		return {"radius": hb.radius if hb != null and hb.radius > 0.0 else 3.0, "to": from}
+	return {}
 
 
 func cancel_cast(actor: Actor, reason: String) -> void:
@@ -1172,6 +1275,7 @@ func cancel_cast(actor: Actor, reason: String) -> void:
 func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, pay_mode: CastResolver.Pay,
 		bonus: float = -1.0) -> AbilityResolver.Result:
 	var out := CastResolver.cast(ctx, caster, ability, target, aim, pay_mode, bonus)
+	_release_events.append_array(out.events)
 	_emit_resolved(out.events)
 	if out.result != AbilityResolver.Result.OK:
 		return out.result
@@ -1185,7 +1289,7 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 		_pending_hits.append(out.pending)
 	else:
 		_credit_mastery(caster, ability, out.events)
-	if ability.release_delay_seconds <= 0.0 or not (caster is Hero) or not _has_timing_bar(caster, ability):
+	if not ctx.release_locked:
 		_emit_fx(caster, ability, ability.fx_cast, target, aim) # released ones played theirs at the release
 	return out.result
 
@@ -1248,6 +1352,9 @@ func _update_pending_hits() -> void:
 		if h.ability.fx_land != &"" and h.has("circle"):
 			emit({"type": "fx", "fx": h.ability.fx_land, "source": caster.id, "ability": h.ability.id,
 					"from": h.circle[0], "to": h.circle[0], "at": now})
+		if h.ability.fx_tiles != &"" and h.has("tiles") and not h.tiles.is_empty():
+			emit({"type": "fx", "fx": h.ability.fx_tiles, "source": caster.id, "ability": h.ability.id,
+					"tiles": h.tiles.duplicate(), "at": now})
 	_pending_hits = waiting
 
 
@@ -1455,6 +1562,12 @@ func _fly_continuous(p: Projectile, caster: Actor) -> bool:
 	for h in hits:
 		var u: Actor = h[1]
 		p.hit_ids[u.id] = true
+		if p.ability.impact_radius > 0.0 and not p.pierce:
+			_explode(p, caster, u.move.pos, events)
+			emit({"type": "projectile_end", "id": p.id, "tile": u.tile(), "target": u.id})
+			_emit_resolved(events)
+			_credit_mastery(caster, p.ability, events)
+			return false
 		ctx.damage_bonus = p.damage_bonus
 		ctx.force_crit = p.force_crit
 		ctx.continuous = true
@@ -1473,9 +1586,32 @@ func _fly_continuous(p: Projectile, caster: Actor) -> bool:
 		_emit_resolved(events)
 		_credit_mastery(caster, p.ability, events)
 	if p.is_spent(now):
+		if p.ability.impact_radius > 0.0:
+			# Stopped by terrain or out of range: it explodes where it stops.
+			var spent: Array[Dictionary] = []
+			_explode(p, caster, b, spent)
+			_emit_resolved(spent)
+			_credit_mastery(caster, p.ability, spent)
 		emit({"type": "projectile_end", "id": p.id, "tile": MoveState.tile_of(b), "target": -1})
 		return false
 	return true
+
+
+## A projectile with an impact radius (Fireball) explodes at `at`: every unit within
+## the radius takes its effects (with the cast's damage bonus and timing crit), then
+## its area effects on the tiles there.
+func _explode(p: Projectile, caster: Actor, at: Vector2, events: Array[Dictionary]) -> void:
+	ctx.damage_bonus = p.damage_bonus
+	ctx.force_crit = p.force_crit
+	ctx.continuous = true
+	ctx.cast_vec = p.dirv
+	ctx.cast_point = at
+	HitboxResolver.hit_circle(ctx, caster, p.ability, at, p.ability.impact_radius, events)
+	events.append({"type": "explosion", "source": caster.id, "ability": p.ability.id, "at": at,
+			"radius": p.ability.impact_radius})
+	ctx.continuous = false
+	ctx.damage_bonus = 1.0
+	ctx.force_crit = false
 
 
 ## Moves a Milestone 3 projectile; returns whether it is still flying.
@@ -1581,12 +1717,19 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_timing_release(hero, intent.get("at", 0.0), intent.get("aim"))
 		"cancel_cast":
 			reason = _intent_cancel_cast(hero)
+		"stance":
+			reason = _intent_stance(hero, intent.get("tree", ""), intent.get("stance", 0), intent.get("target", -1),
+					intent.get("aim"))
 		"cancel_bar":
 			reason = _intent_cancel_bar(hero)
 		"talk":
 			reason = _intent_talk(hero, intent.get("npc", -1))
 		"examine":
 			reason = _intent_examine(hero, intent.get("tile", Vector2i(-99, -99)))
+		"fill_water":
+			reason = _intent_fill_water(hero)
+		"water_return":
+			reason = _intent_water_return(hero)
 		"accept_shared_quest":
 			reason = _intent_accept_shared_quest(hero, StringName(intent.get("quest", &"")))
 		"finish_act":
@@ -1644,7 +1787,7 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			if debug_content == null:
 				reason = "debug_disabled"
 			else:
-				var r := DebugCommands.run(self, hero, intent.get("line", ""), debug_content)
+				var r := DebugCommands.run(self, hero, intent.get("line", ""), debug_content, intent.get("aim"))
 				for e in r.events:
 					emit(e)
 				emit({"type": "debug", "target": hero.id, "ok": r.ok, "text": r.text})
@@ -1744,14 +1887,345 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Varia
 	var ability := hero.find_ability(ability_id)
 	if ability == null:
 		return "unknown_ability"
+	# A bending ability is cast from its stance: casting one (an old action bar slot,
+	# a test) puts the hero in that stance first, without its entry cast.
+	if ability.stance > 0 and ability.tree != "" and (hero.stance_tree != ability.tree or hero.stance != ability.stance) \
+			and can_hold_stance(hero, ability.tree) == "":
+		var refused := _water_stance_refusal(hero, ability.tree, ability.stance)
+		if refused != "":
+			return refused
+		set_stance(hero, ability.tree, ability.stance, "cast")
 	var walking: Variant = hero.walk_target
 	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
+	hero.stance_busy_at = now # using an ability keeps a Water stance up
 	var result := cast(hero, ability, get_actor(target_id), aim)
 	if result != AbilityResolver.Result.OK:
 		hero.walk_target = walking
 	if result != AbilityResolver.Result.OK:
 		return AbilityResolver.Result.keys()[result].to_lower()
 	return ""
+
+
+# --- Stances (stance rework, 2026-11-23) ------------------------------------------
+## A hero holds one bending stance at a time: a stance key enters it, the branch keys
+## cast its four abilities, the hero stays in it after casting. Shift (a "stance"
+## intent with 0), death and crowd control (stun, silence, sleep, root, a fall, a
+## knockback or pull) drop it. Entering never starts the global cooldown; a stance's
+## entry cast (Fire Punch, Seismic Stomp, Octopus Form) goes off as it is entered when
+## the hero has it and it is off cooldown.
+
+const BENDING_TREES := ["Fire", "Earth", "Water", "Air"]
+
+
+## "" if `hero` can take up a stance of `tree` now, else why not.
+func can_hold_stance(hero: Hero, tree: String) -> String:
+	if not BENDING_TREES.has(tree):
+		return "no_such_stance"
+	if not hero.alive:
+		return "dead"
+	if _stance_breaker(hero) != "":
+		return "cant_now"
+	for a in hero.available_abilities():
+		if a.tree == tree:
+			return ""
+	return "unknown_element"
+
+
+## Why the hero can't hold a stance right now (crowd control), or "".
+func _stance_breaker(hero: Hero) -> String:
+	if hero.buffs.is_stunned(now):
+		return "stunned"
+	if hero.buffs.is_silenced(now):
+		return "silenced"
+	if hero.buffs.is_rooted(now):
+		return "rooted"
+	if hero.move.falling():
+		return "fell"
+	return ""
+
+
+## Sets (or with stance 0, clears) the hero's stance; emits "stance" for every
+## player (the view starts its look and entry animation from `stance_at`).
+func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
+	var was_water := WaterBending.in_water_stance(hero)
+	var old_n := hero.stance
+	if n <= 0 or tree == "":
+		if hero.stance == 0:
+			return
+		hero.stance_tree = ""
+		hero.stance = 0
+	else:
+		hero.stance_tree = tree
+		hero.stance = n
+	hero.stance_at = now
+	hero.stance_busy_at = now
+	emit({"type": "stance", "source": hero.id, "tree": hero.stance_tree, "stance": hero.stance, "why": why})
+	if WaterBending.in_water_stance(hero):
+		_gather_stance_water(hero, old_n if was_water else 0)
+	elif was_water:
+		_return_stance_water(hero)
+
+
+# --- Water as a resource (water physics, phase 3, 2026-11-28) ----------------------
+## Stance 1 refills one point every 17 frames (at 60 fps).
+const WATER_REFILL_SECONDS := 17.0 / 60.0
+## A Water stance drops after this long out of combat without an ability.
+const WATER_STANCE_IDLE_SECONDS := 10.0
+## E at water fills an empty pouch in this long (a partly full one in less).
+const POUCH_FILL_SECONDS := 10.0
+
+
+## Each tick: who is near water, the stance 1 refill, the idle drop and the pouch filling.
+func _track_water() -> void:
+	var idx := WaterTiles.of(zone)
+	var dt := rules.tick_seconds
+	for hero: Hero in _heroes.values():
+		hero.near_water = hero.alive and WaterTiles.nearest(idx, hero.move.pos, rules.water_near_tiles) != null
+		_update_pouch_fill(hero, dt)
+		if not hero.water_out.is_empty():
+			_check_water_out(hero) # even out of the stance: its window still closes
+		if not WaterBending.in_water_stance(hero) or not hero.alive:
+			continue
+		if hero.in_combat(now) or not hero.casting.is_empty():
+			hero.stance_busy_at = now
+		elif now - hero.stance_busy_at >= WATER_STANCE_IDLE_SECONDS:
+			set_stance(hero, "", 0, "idle")
+			continue
+		if hero.water_out.is_empty() and hero.stance == 1: # no refill while the rope is out
+			_refill_stance_1(hero, dt)
+
+
+## Stance 1 grows back toward 24, a point every 17 frames, from water nearby or the
+## pouch; with the pouch empty and no water near, the rope stops growing.
+func _refill_stance_1(hero: Hero, dt: float) -> void:
+	var full := WaterBending.full(1)
+	if hero.stance_water >= full:
+		hero.water_refill_t = 0.0
+		return
+	hero.water_refill_t += dt
+	while hero.water_refill_t >= WATER_REFILL_SECONDS and hero.stance_water < full:
+		if not hero.near_water:
+			if not hero.has_water_pouch() or hero.water <= 0:
+				hero.water_refill_t = 0.0
+				return
+			hero.water -= 1
+		hero.water_refill_t -= WATER_REFILL_SECONDS
+		hero.stance_water += 1
+
+
+## Entering a Water stance: stance 1 takes nothing at once (it fills by the 17-frame
+## refill, user rule 2026-11-28); stance 2 takes up to 33 (stance water first, then the
+## pouch); leaving 2 for 1 sheds the points above 24 into the pouch.
+func _gather_stance_water(hero: Hero, from_n: int) -> void:
+	var full := WaterBending.full(hero.stance)
+	hero.water_refill_t = 0.0
+	var before := hero.stance_water
+	if hero.stance_water > full:
+		_to_pouch(hero, hero.stance_water - full)
+		hero.stance_water = full
+	elif hero.stance == 2:
+		var need := full - hero.stance_water
+		if hero.near_water:
+			hero.stance_water = full
+		elif hero.has_water_pouch():
+			var take := mini(need, hero.water)
+			hero.water -= take
+			hero.stance_water += take
+	if hero.stance_water == 0 and not hero.near_water and (not hero.has_water_pouch() or hero.water <= 0):
+		emit({"type": "no_water", "target": hero.id, "pouch": hero.has_water_pouch()})
+	emit({"type": "rope", "source": hero.id, "on": true, "points": hero.stance_water,
+			"from": "water" if hero.near_water else "pouch", "was": before, "from_stance": from_n})
+
+
+## Leaving the Water stances: all the stance water flows back into the pouch.
+func _return_stance_water(hero: Hero) -> void:
+	if hero.stance_water > 0:
+		_to_pouch(hero, hero.stance_water)
+	hero.stance_water = 0
+	hero.cast_water.clear()
+	emit({"type": "rope", "source": hero.id, "on": false})
+
+
+## Water Whip's second press: the share of the thrown water that comes back
+## (WaterBending.whip_share by how long after the cast it came).
+func _intent_water_return(hero: Hero) -> String:
+	var a: AbilityDef = ContentDB.abilities.get(hero.water_out.get("ability", &""))
+	if a == null or a.water_back != AbilityDef.WaterBack.SECOND_PRESS:
+		return "not_ready"
+	_settle_water_out(hero, WaterBending.whip_share(now - float(hero.water_out.at)))
+	return ""
+
+
+## Water Shield (AbilityDef.WaterBack.SHIELD_LEFT): once up, its water follows the
+## shield left (`left`, sent to every player: the rope is that much of its stretched
+## length); when it runs out, that share comes home. Run before buffs expire.
+func _watch_water_shields() -> void:
+	for h: Hero in _heroes.values():
+		var out := h.shield_out
+		if out.is_empty() or not out.get("paid", false):
+			continue
+		var a: AbilityDef = ContentDB.abilities.get(out.get("ability", &""))
+		if a == null:
+			h.shield_out = {}
+			continue
+		if not out.has("buff"):
+			for e in a.effects:
+				if e.kind == AbilityEffect.Kind.SHIELD and e.buff != null:
+					out.buff = e.buff.id
+		var target := get_actor(int(out.get("target", -1)))
+		var left := target.buffs.shield_left(out.get("buff", &""), now) if target != null else -1.0
+		if left < 0.0:
+			_settle_shield_out(h, float(out.get("left", 0.0))) # gone without breaking: what's left
+			continue
+		out.left = left
+		if target.buffs.remaining(out.buff, now) <= rules.tick_seconds:
+			_settle_shield_out(h, left) # it runs out this tick: that share comes home
+
+
+## Water out past its window comes back by its rule (the whip: none, unpressed).
+func _check_water_out(hero: Hero) -> void:
+	var out := hero.water_out
+	var a: AbilityDef = ContentDB.abilities.get(out.get("ability", &""))
+	if a == null:
+		_settle_water_out(hero, 0.0)
+	elif a.water_back == AbilityDef.WaterBack.SECOND_PRESS and now - float(out.at) >= WaterBending.WHIP_WINDOW:
+		_settle_water_out(hero, 0.0)
+	elif a.water_back == AbilityDef.WaterBack.LOST and out.get("paid", false):
+		_settle_water_out(hero, 0.0)
+
+
+## Water Shield's water comes home: `share` of it (what's left of the shield).
+func _settle_shield_out(hero: Hero, share: float) -> void:
+	var out := hero.shield_out
+	hero.shield_out = {}
+	_water_home(hero, out, share)
+
+
+## `share` of the water out comes home: into the stance (up to full, the rest into
+## the pouch), or into the pouch when the stance is gone. The rest is lost.
+func _settle_water_out(hero: Hero, share: float) -> void:
+	var out := hero.water_out
+	hero.water_out = {}
+	_water_home(hero, out, share)
+
+
+func _water_home(hero: Hero, out: Dictionary, share: float) -> void:
+	var back := roundi(share * int(out.get("points", 0)))
+	if WaterBending.in_water_stance(hero):
+		var room := WaterBending.full(hero.stance) - hero.stance_water
+		hero.stance_water += mini(back, maxi(room, 0))
+		_to_pouch(hero, back - mini(back, maxi(room, 0)))
+	else:
+		_to_pouch(hero, back)
+	emit({"type": "water_return", "source": hero.id, "ability": out.get("ability", &""), "share": share,
+			"points": back, "sent": int(out.get("points", 0)), "t": now - float(out.get("at", now))})
+
+
+## Puts `points` into the pouch, up to its capacity (without a pouch they're lost).
+func _to_pouch(hero: Hero, points: int) -> void:
+	if hero.has_water_pouch():
+		hero.water = mini(hero.water + points, rules.water_pouch_capacity)
+
+
+## E at water: starts filling the Water Pouch (POUCH_FILL_SECONDS for an empty one).
+func _intent_fill_water(hero: Hero) -> String:
+	if not hero.alive:
+		return "dead"
+	if not hero.has_water_pouch():
+		return "no_pouch"
+	if WaterTiles.nearest(WaterTiles.of(zone), hero.move.pos, rules.water_fill_reach) == null:
+		return "too_far"
+	if hero.water >= rules.water_pouch_capacity:
+		return "pouch_full"
+	hero.pouch_fill = {"at": now, "pos": hero.move.pos, "hp": hero.hp, "acc": 0.0}
+	emit({"type": "pouch_filling", "target": hero.id, "on": true})
+	return ""
+
+
+## Fills the pouch while the hero stands still and takes no damage.
+func _update_pouch_fill(hero: Hero, dt: float) -> void:
+	if hero.pouch_fill.is_empty():
+		return
+	var f := hero.pouch_fill
+	var stop := ""
+	if not hero.alive:
+		stop = "dead"
+	elif hero.move.pos.distance_to(f.pos) > 0.05:
+		stop = "moved"
+	elif hero.hp < int(f.hp):
+		stop = "hit"
+	if stop != "":
+		hero.pouch_fill = {}
+		emit({"type": "pouch_filling", "target": hero.id, "on": false, "why": stop})
+		return
+	f.hp = hero.hp
+	f.acc += float(rules.water_pouch_capacity) / POUCH_FILL_SECONDS * dt
+	var add := int(f.acc)
+	f.acc -= add
+	hero.water = mini(hero.water + add, rules.water_pouch_capacity)
+	if hero.water >= rules.water_pouch_capacity:
+		hero.pouch_fill = {}
+		emit({"type": "pouch_filled", "target": hero.id, "water": hero.water})
+
+
+func _intent_stance(hero: Hero, tree: String, n: int, target_id: int, aim: Variant) -> String:
+	if n <= 0:
+		set_stance(hero, "", 0, "left")
+		return ""
+	var why := can_hold_stance(hero, tree)
+	if why == "":
+		why = _water_stance_refusal(hero, tree, n)
+	if why != "":
+		return why
+	var same := hero.stance_tree == tree and hero.stance == n
+	set_stance(hero, tree, n, "entered")
+	if same:
+		return ""
+	var entry := _entry_cast(hero, tree, n)
+	if entry != null and hero.cooldowns.ability_remaining(entry.cooldown_key(), now) <= 0.0:
+		var target := get_actor(target_id)
+		var r := cast(hero, entry, target, aim)
+		if r != AbilityResolver.Result.OK:
+			emit({"type": "entry_cast_failed", "source": hero.id, "ability": entry.id,
+					"reason": AbilityResolver.Result.keys()[r].to_lower()})
+	return ""
+
+
+## Why the hero can't enter Water stance 2 ("not_enough_water": less than
+## WaterBending.STANCE_2_ENTRY in the stance and the pouch together), else "".
+func _water_stance_refusal(hero: Hero, tree: String, n: int) -> String:
+	if tree != "Water" or n != 2 or (hero.stance_tree == "Water" and hero.stance == 2):
+		return ""
+	return "" if WaterBending.total(hero) >= WaterBending.STANCE_2_ENTRY else "not_enough_water"
+
+
+## The entry cast of `tree`'s stance `n` the hero can use, or null.
+func _entry_cast(hero: Hero, tree: String, n: int) -> AbilityDef:
+	for a in hero.available_abilities():
+		if a.entry_cast and a.tree == tree and a.stance == n:
+			return a
+	return null
+
+
+## The ability on branch key `b` of `tree`'s stance `n` (learned or not), or null.
+static func stance_ability(abilities: Dictionary, tree: String, n: int, b: int) -> AbilityDef:
+	for a in abilities.values():
+		if a.tree == tree and a.stance == n and a.branch_key == b and not a.entry_cast:
+			return a
+	return null
+
+
+## Each tick: crowd control or death drops a held stance.
+func _check_stances() -> void:
+	for h in _heroes.values():
+		if h.stance <= 0:
+			continue
+		if not h.alive:
+			set_stance(h, "", 0, "died")
+		else:
+			var why := _stance_breaker(h)
+			if why != "":
+				set_stance(h, "", 0, why)
 
 
 const TALK_RANGE := 2

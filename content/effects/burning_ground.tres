@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"burning_ground"
+frames = 1
+rotate = false
+tile_mode = 2
+head_fx = &"inferno_flames"
+loop = true
+fps = 12.0

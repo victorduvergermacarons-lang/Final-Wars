@@ -14,25 +14,7 @@ const BUCKET := 8
 ## Water tiles of `zone` by bucket: {Vector2i bucket: Array[Vector2i] tiles}.
 ## Empty for a zone without terrain, a tileset or water.
 static func index(zone: ZoneDef, tileset: TilesetData) -> Dictionary:
-	var out := {}
-	if zone == null or tileset == null or not zone.has_terrain():
-		return out
-	var water := {} # terrain name -> is water (a map has only a few terrains)
-	for c in zone.terrain_legend:
-		var name := str(zone.terrain_legend[c])
-		water[name] = tileset.is_water_terrain(name)
-	if not water.values().has(true):
-		return out
-	for y in zone.terrain_rows.size():
-		var row: String = zone.terrain_rows[y]
-		for x in row.length():
-			var name := str(zone.terrain_legend.get(row[x], ""))
-			if water.get(name, false):
-				var b := Vector2i(floori(float(x) / BUCKET), floori(float(y) / BUCKET))
-				if not out.has(b):
-					out[b] = [] as Array[Vector2i]
-				out[b].append(Vector2i(x, y))
-	return out
+	return WaterTiles.index(zone, tileset)
 
 
 ## The water tiles within `radius` tiles (straight-line distance to the tile's

@@ -47,8 +47,10 @@ func _rejection(events: Array) -> String:
 func test_hilda_sells_potions_common_gear_and_tier_1_tree_items() -> void:
 	var ids := hilda.def.sells.map(func(i): return i.id)
 	for id in [&"minor_health_potion", &"minor_mana_potion", &"iron_helm", &"swift_boots",
-			&"ember_fist_scroll", &"menders_scroll", &"rusty_shortsword", &"hunters_shortbow", &"iron_mallet"]:
+			&"ember_fist_scroll", &"menders_scroll", &"rusty_shortsword", &"hunters_shortbow", &"iron_mallet",
+			&"scorch_scroll"]:
 		assert_has(ids, id)
+	assert_does_not_have(ids, &"scroll_of_the_current", "Flow State is tier 3 since the stance rework")
 	for item in hilda.def.sells:
 		assert_eq(item.rarity, Rarity.Id.COMMON, "only Common goods")
 		assert_false(item.retired)

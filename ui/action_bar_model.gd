@@ -136,6 +136,14 @@ func load_dict(d: Dictionary) -> void:
 	_auto_placed = {}
 	for id in d.get("auto_placed", []):
 		_auto_placed[StringName(id)] = true
+	# Stances were bar entries from 2026-11-23 to 2026-11-28; they are gone, and the
+	# bending abilities they had taken off the bar are placed again.
+	if _auto_placed.has(&"stances"):
+		_auto_placed = {}
+	for bar in pages:
+		for i in SLOT_COUNT:
+			if is_stance_slot(bar[i]):
+				bar[i] = &""
 	changed.emit()
 
 
@@ -152,3 +160,32 @@ static func item_id_of(entry: StringName) -> StringName:
 
 static func item_entry(item_id: StringName) -> StringName:
 	return StringName(ITEM_PREFIX + String(item_id))
+
+
+# --- Stances -----------------------------------------------------------------------
+## From 2026-11-23 to 2026-11-28 a slot could hold a stance ("stance:<Tree>:<n>").
+## Since then every learned ability sits on the bar and pressing one of another stance
+## enters that stance (PlayerInput.use_slot); old stance entries are dropped on load.
+const STANCE_PREFIX := "stance:"
+
+
+static func stance_entry(tree: String, n: int) -> StringName:
+	return StringName("%s%s:%d" % [STANCE_PREFIX, tree, n])
+
+
+static func is_stance_slot(entry: StringName) -> bool:
+	return String(entry).begins_with(STANCE_PREFIX)
+
+
+## [tree, n] of a stance slot.
+static func stance_of(entry: StringName) -> Array:
+	var parts := String(entry).trim_prefix(STANCE_PREFIX).split(":")
+	return [parts[0], int(parts[1])] if parts.size() == 2 else ["", 0]
+
+
+func _put_in_first_empty(entry: StringName) -> void:
+	for pg in pages:
+		var i: int = pg.find(&"")
+		if i >= 0:
+			pg[i] = entry
+			return

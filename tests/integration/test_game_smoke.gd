@@ -29,9 +29,10 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(30)
 	assert_ne(hero.tile(), start, "hero moved")
 
-	# Heroes start without a weapon: Fire Punch (the scroll in the learning slot)
-	# was auto-placed first on the bar.
+	# Heroes start without a weapon. Every learned ability sits on the bar (as before
+	# the stance rework, 2026-11-28): Fire Punch (in the learning slot) on key 1.
 	assert_eq(game.client.action_bar.slots[0], &"F01")
+	assert_false(game.client.action_bar.slots.any(func(e): return ActionBarModel.is_stance_slot(e)), "no stances")
 	assert_false(game.client.action_bar.slots.has(&"S01"), "no sword, no Slash")
 
 	# Put Mender's Scroll in the learning slot: Healing Touch joins the bar.
@@ -41,16 +42,35 @@ func test_solo_game_runs_with_hud() -> void:
 	var heal_slot := game.client.action_bar.slots.find(&"W01")
 	assert_gt(heal_slot, -1, "Healing Touch on the bar")
 
-	# Healing Touch casts on self with no target; the GCD starts.
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH]) # stance water comes from the pouch
+	hero.water = 200
+	# Out of its stance, its key enters Water stance 1 and doesn't cast; pressed again
+	# it heals, and the hero stays in the stance.
 	hero.hp -= 30
+	var hp := hero.hp
 	input.use_slot(heal_slot)
 	await wait_physics_frames(6)
-	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "heal went through the action bar")
+	assert_eq([hero.stance_tree, hero.stance], ["Water", 1])
+	assert_lt(hero.hp - hp, 5.0, "entering the stance cast nothing (only regeneration)")
+	assert_eq(hero.cooldowns.gcd_remaining(session.now()), 0.0, "entering doesn't start the global cooldown")
+	await wait_physics_frames(20) # the rope's first point of water
+	input.use_slot(heal_slot)
+	await wait_physics_frames(6)
+	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "the second press casts")
+	assert_eq(hero.stance, 1, "still in the stance")
+	# Fire Punch belongs to Fire stance 1: its key switches stance, nothing more.
+	TreeRules.master(hero, ContentDB.abilities[&"F01"]) # its scroll left the learning slot
+	input.use_slot(0)
+	await wait_physics_frames(6)
+	assert_eq([hero.stance_tree, hero.stance], ["Fire", 1])
+	session.send_intent({"type": "stance", "tree": "", "stance": 0})
+	await wait_physics_frames(4)
 
 	# Equip a new sword from the inventory window (out of combat): Lunge appears on the bar.
 	hero.wear(ContentDB.items[&"rusty_shortsword"])
 	await wait_physics_frames(6)
 	hero.bag.add(ContentDB.items[&"travelers_longsword"])
+	Mastery.add_permanent(hero, "Sword", 50) # Lunge unlocks a step in (stance rework)
 	hud._toggle(hud.inventory_window)
 	hud._toggle(hud._character)
 	hud._toggle(hud._spellbook)
@@ -67,15 +87,15 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_process_frames(2)
 	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"travelers_longsword")
 	assert_eq(hero.bag.count_of(ContentDB.items[&"rusty_shortsword"]), 1, "the old sword went to the bag")
-	assert_true(game.client.action_bar.slots.has(&"S04"))
-	assert_true(game.client.action_bar.slots.has(&"S01"), "Slash's slot stays (dimmed)")
+	assert_true(game.client.action_bar.has_anywhere(&"S04"))
+	assert_true(game.client.action_bar.has_anywhere(&"S01"), "Slash's slot stays (dimmed)")
 	var tooltip = main_hand._make_custom_tooltip("")
 	assert_not_null(tooltip, "tooltip builds")
 	tooltip.free()
 
 	# The layout was saved to the settings file.
 	var reloaded := ActionBarModel.new()
-	SettingsStore.load_action_bar(reloaded, SETTINGS)
+	SettingsStore.load_action_bar(reloaded, SETTINGS, "Tester") # each character's own bar
 	assert_eq(reloaded.slots, game.client.action_bar.slots)
 
 	# Talking to Hilda opens the dialogue box; walking away closes it.

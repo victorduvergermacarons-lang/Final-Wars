@@ -31,12 +31,35 @@ enum TargetType {
 
 @export var id: StringName = &""
 @export var display_name: String = ""
+## Its icon (assets/icons/abilities/<ID>.png, 33x33; see Icons): tree abilities
+## from the sheet's Icon column (TreeContent).
+@export var icon: Texture2D
 @export_multiline var description: String = ""
 @export var shape: Shape = Shape.TARGETED
 @export var target: TargetType = TargetType.ENEMY
 @export var min_range: int = 0
 @export var max_range: int = 1
 @export var mana_cost: float = 0.0
+## Water points a cast takes from the Water Pouch (none near water) and the Water
+## stance 1 rope it needs (Water Whip 4; 2026-11-26).
+@export var water_cost: int = 0
+## Water physics (2026-11-28): the cast sends the whole stance water out (Water Whip,
+## Healing Touch, Water Shield); `water_cost` is then the least it needs. What comes
+## back depends on the ability (WorldSim "Water as a resource").
+@export var water_whole_rope: bool = false
+## What brings the water sent out (water_whole_rope) back:
+## LOST: none of it; SECOND_PRESS: the share the second press decides (Water Whip,
+## WaterBending.whip_share); UNUSED_HEAL: the share of the heal full health turned away
+## (Healing Touch); SHIELD_LEFT: the share of the shield left when it ends, none if it
+## breaks (Water Shield).
+enum WaterBack { LOST, SECOND_PRESS, UNUSED_HEAL, SHIELD_LEFT }
+@export var water_back: WaterBack = WaterBack.LOST
+## A fixed time between the release and the hit (Healing Touch: the rope winds round
+## the target for 1.2 s), instead of one from its art (`release_delay_from`).
+@export var release_delay_fixed: float = 0.0
+## Water drawn into the caster's pouch on each channel tick that lands (Leeching
+## Tide: 4 per 0.5 s tick, 24 over its 3 s; capped by the pouch).
+@export var water_per_tick: int = 0
 @export var cooldown_seconds: float = 0.0
 ## Whether using it triggers (and is blocked by) the global cooldown.
 @export var on_gcd: bool = true
@@ -69,6 +92,24 @@ enum LineShape { LINE, CONE, ARC }
 @export var line_shape: LineShape = LineShape.LINE
 ## SKILLSHOT: keeps going through units instead of stopping at the first one.
 @export var pierce: bool = false
+## A projectile that explodes where it stops (the first unit it hits, a blocker or
+## the end of its flight): every affected unit within this many tiles of that point
+## takes its effects, area effects on the tiles there (Fireball; 0 = no explosion).
+@export var impact_radius: float = 0.0
+
+# --- Stances (2026-11-23; from the sheet's Key column, set by TreeContent) ---
+## The stance (1-5, = the tier) it is cast from; 0: not a stance ability (weapon arts,
+## passives, enemy abilities).
+var stance: int = 0
+## Its branch key in that stance (1-4); 0 for an entry cast.
+var branch_key: int = 0
+## Cast on entering its stance (Fire Punch, Seismic Stomp, Octopus Form).
+var entry_cast: bool = false
+## Always on once learned: never cast. A passive upgrade changes `upgrades`.
+var passive: bool = false
+var upgrades: StringName = &""
+## A passive's Mastery steps (its strength goes up at each).
+var mastery_levels: Array = []
 ## SKILLSHOT: lobbed instead of flying (e.g. Rock Throw): lands on the aimed tile
 ## after this many seconds, over obstacles; hits whoever is on it then.
 @export var arc_seconds: float = 0.0
@@ -139,6 +180,14 @@ var sheet_hitbox: HitboxDef
 ## Sprite of what it throws while it flies (a lob: the rock), and while it waits
 ## beside the caster during its bar ("" = drawn as before).
 @export var fx_carried: StringName = &""
+## Sprite of what it fires while it flies (a projectile), turned to its flight.
+@export var fx_projectile: StringName = &""
+## Held at the caster's hands while it casts (a cast bar, wind-up or timing bar).
+@export var fx_hands: StringName = &""
+## On each tile it affects: its ground zones while they last, its landing tiles once.
+@export var fx_tiles: StringName = &""
+## Around whoever has one of its buffs, while the buff lasts (BuffDef.fx).
+@export var fx_held: StringName = &""
 ## A timing bar with no press goes off at the bar's end with the cursor's aim (the
 ## client presses for the player): Rock Throw throws itself.
 @export var bar_goes_off_at_end: bool = false

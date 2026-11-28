@@ -17,6 +17,13 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 		d.kind = KIND_HERO
 		d.level = hero.level
 		d.element = String(hero.element)
+		d.stance = [hero.stance_tree, hero.stance, hero.stance_at]
+		d.stance_water = hero.stance_water
+		if not hero.water_out.is_empty(): # every player keeps drawing the water that is out
+			d.water_out = {"ability": hero.water_out.ability, "at": hero.water_out.at}
+		if not hero.shield_out.is_empty(): # Water Shield's rope: on whom, how much is left
+			d.shield_out = {"target": hero.shield_out.target, "at": hero.shield_out.at,
+					"left": float(hero.shield_out.get("left", 1.0)), "points": hero.shield_out.points}
 		var eq := {}
 		var equipment := hero.equipment()
 		for slot in equipment:
@@ -39,6 +46,9 @@ static func capture(world: WorldSim, viewer_id: int) -> Dictionary:
 				"quests": hero.quest_state,
 				"drops": world.drops.for_owner(hero.id),
 				"loot_bonus": hero.loot_bonus,
+				"water": hero.water,
+				"near_water": hero.near_water,
+				"filling": not hero.pouch_fill.is_empty(),
 				"social": world.social_view(hero.id),
 				"def": hero.def_id,
 				"ack": world.intent_ack(hero.id),

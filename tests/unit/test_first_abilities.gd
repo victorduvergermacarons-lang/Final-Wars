@@ -3,10 +3,12 @@ extends GutTest
 ## through ContentDB, every one can be cast and does what its sheet row says.
 
 const ContentDBScript := preload("res://autoload/content_db.gd")
-const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09",
+const FIRST := ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09", "F22",
 		"W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09",
 		"A01", "A02", "A03", "A05", "E01", "E02", "E03", "E04", "E05",
 		"S01", "S04", "B01", "B02", "H01", "H02"]
+## Built later for tanking (2026-11-17, tests/unit/test_earth_tanking.gd).
+const EARTH_TANKING := ["E07", "E08", "E14", "E15", "W12"] # E02 Stone Skin is in FIRST; W12 built 2026-11-25
 
 var db
 var world: WorldSim
@@ -49,6 +51,10 @@ func before_each() -> void:
 	hd.base_stats = StatBlock.make({Stat.Id.HP: 500, Stat.Id.MANA: 500, Stat.Id.MAG_ATK: 10, Stat.Id.PHYS_ATK: 10,
 			Stat.Id.JUMP: 2})
 	hero = world.add_hero(hd)
+	# Water to bend (the Water Pouch and the Water stance 1 rope, 2026-11-26).
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.stance_water = 24
 	world.step()
 	foe.face(Vector2i(-1, 0))
 
@@ -62,10 +68,11 @@ func _lost(actor: Actor) -> float:
 
 
 func test_the_first_abilities_are_implemented_and_the_rest_are_not() -> void:
-	for id in FIRST:
+	var built: Array = FIRST + EARTH_TANKING
+	for id in built:
 		assert_true(_a(id).implemented, id)
-	var others: Array = db.tree.ids().filter(func(id): return not String(id) in FIRST)
-	assert_eq(others.size(), 145 - FIRST.size())
+	var others: Array = db.tree.ids().filter(func(id): return not String(id) in built)
+	assert_eq(others.size(), 150 - built.size())
 	for id in others:
 		assert_false(db.abilities[StringName(id)].implemented, String(id))
 
@@ -75,7 +82,7 @@ func test_behavior_keeps_sheet_numbers() -> void:
 	assert_eq(fireball.display_name, "Fireball")
 	assert_eq(fireball.cooldown_seconds, 8.0, "cooldown from the sheet")
 	assert_eq(fireball.tree, "Fire")
-	assert_eq(fireball.tier, 2)
+	assert_eq(fireball.tier, 4, "stance 4 since the stance rework")
 
 
 func test_every_first_ability_can_be_cast() -> void:
@@ -165,12 +172,95 @@ func test_fire_whip_hits_every_enemy_in_the_line() -> void:
 	assert_gt(_lost(second), 0.0)
 
 
-func test_fireball_is_telegraphed_then_hits_the_area() -> void:
-	world.cast(hero, _a("F07"), null, Vector2(7, 5))
-	assert_eq(_lost(foe), 0.0, "not yet")
-	assert_eq(world.pending_hits().size(), 1)
-	world.advance(0.45)
-	assert_gt(_lost(foe), 0.0)
+## Stance rework: Fireball flies and explodes on the first enemy in its path; every
+## unit within 1 tile of the impact is hit.
+func test_fireball_explodes_on_the_first_enemy_in_its_path() -> void:
+	var beside := world.add_enemy(foe.def, Vector2i(6, 6)) # beside the first, off the line
+	var behind := world.add_enemy(foe.def, Vector2i(9, 5)) # further along, out of the blast
+	world.cast(hero, _a("F07"), null, Vector2(10, 5))
+	assert_eq(_lost(foe), 0.0, "it flies first")
+	world.advance(0.3)
+	assert_gt(_lost(foe), 0.0, "the first enemy in its path")
+	assert_gt(_lost(beside), 0.0, "and everyone within 1 tile of it")
+	assert_eq(_lost(behind), 0.0, "it stopped there")
+
+
+func test_fireball_explodes_where_it_lands_if_it_hits_nothing() -> void:
+	foe.move.place(Vector2i(12, 12))
+	var near_end := world.add_enemy(foe.def, Vector2i(5, 13))
+	world.cast(hero, _a("F07"), null, Vector2(5, 14)) # straight down past the dummy, 7 tiles
+	world.advance(1.0)
+	assert_gt(_lost(near_end), 0.0, "at the end of its flight it still explodes")
+
+
+func test_fire_whip_pulls_only_the_first_enemy_a_tile() -> void:
+	var still: EnemyDef = foe.def.duplicate()
+	still.immobile = true # they'd walk to the hero once hit
+	var first := world.add_enemy(still, Vector2i(8, 5))
+	var second := world.add_enemy(still, Vector2i(10, 5))
+	foe.move.place(Vector2i(12, 12))
+	world.cast(hero, _a("F06"), null, Vector2(10, 5))
+	world.advance(0.3)
+	foe = first
+	assert_almost_eq(foe.move.pos.x, 7.0, 0.15, "the first one hit comes a tile closer")
+	assert_almost_eq(second.move.pos.x, 10.0, 0.05, "the one behind it only takes the lash")
+	assert_gt(_lost(second), 0.0)
+
+
+func test_earth_wall_digs_a_trench_in_front() -> void:
+	for x in range(3, 8):
+		for y in range(7, 11):
+			world.grid.set_tile(Vector2i(x, y), 1, true)
+	world.cast(hero, _a("E05"), null, Vector2(5, 8))
+	for x in [4, 5, 6]:
+		assert_eq(world.grid.height_at(Vector2i(x, 8)), 3, "the wall: +2")
+		assert_eq(world.grid.height_at(Vector2i(x, 9)), 0, "the trench in front: -1")
+	assert_eq(world.grid.height_at(Vector2i(5, 10)), 1, "only one row")
+	world.advance(12.5)
+	assert_eq(world.grid.height_at(Vector2i(5, 9)), 1, "back when the wall falls")
+	assert_eq(world.grid.height_at(Vector2i(5, 8)), 1)
+
+
+func test_air_step_glides_over_gaps_and_down_without_falling() -> void:
+	world.cast(hero, _a("A03"), hero)
+	assert_true(hero.buffs.is_gliding(world.now), "for 10 s")
+	world.grid.remove_tile(Vector2i(6, 5))
+	foe.move.place(Vector2i(12, 12))
+	var hb := hero.move.pos
+	for i in 20:
+		world.submit(hero.id, {"type": "move", "dir": Vector2i(1, 1), "face": 0.0})
+		world.step()
+	assert_gt(hero.move.pos.x, hb.x + 1.2, "across the hole at (6, 5)")
+	world.advance(10.5)
+	assert_false(hero.buffs.is_gliding(world.now))
+
+
+func test_air_step_drops_from_any_height_without_falling() -> void:
+	for x in range(0, 15):
+		for y in range(0, 15):
+			world.grid.set_tile(Vector2i(x, y), 8 if x <= 5 else 0, true)
+	hero.move.place(Vector2i(5, 5))
+	hero.move.ground_h = 8
+	foe.move.place(Vector2i(12, 12))
+	world.cast(hero, _a("A03"), hero)
+	var hp := hero.hp
+	for i in 15:
+		world.submit(hero.id, {"type": "move", "dir": Vector2i(1, 1), "face": 0.0})
+		world.step()
+	assert_false(hero.move.falling(), "a glide down, not a fall")
+	world.advance(1.0)
+	assert_eq(hero.hp, hp, "no fall damage from 8 levels")
+
+
+func test_scorch_burns_a_little_and_makes_the_target_take_more() -> void:
+	foe.move.place(Vector2i(9, 5)) # 4 tiles away: within its range of 5
+	world.cast(hero, _a("F22"), foe)
+	assert_true(foe.buffs.has(&"scorched", world.now))
+	assert_almost_eq(foe.buffs.damage_taken_multiplier(world.now), 1.15, 0.001, "+15% damage taken")
+	world.advance(6.2)
+	var burned := _lost(foe)
+	assert_between(burned, 1.0, 30.0, "very small damage each second for 6 s")
+	assert_false(foe.buffs.has(&"scorched", world.now), "gone after 6 s")
 
 
 func test_burning_ground_burns_while_standing_in_it() -> void:
@@ -213,7 +303,7 @@ func test_seismic_stomp_taunts_adjacent_enemies() -> void:
 	tank.move.place(Vector2i(7, 6))
 	foe.threat.add(hero.id, 100.0)
 	assert_eq(world.cast(tank, _a("E04"), null), AbilityResolver.Result.OK)
-	assert_eq(foe.threat.top(), tank.id)
+	assert_eq(foe.threat.target(), tank.id)
 
 
 func test_earth_wall_can_be_climbed_with_enough_jump() -> void:
@@ -236,9 +326,12 @@ func test_earth_wall_lifts_an_enemy_and_hurts_it() -> void:
 func test_healing_touch_and_soothing_mist_heal() -> void:
 	hero.hp = 100
 	world.cast(hero, _a("W01"), hero)
+	world.advance(_a("W01").release_delay_seconds + 0.05) # the rope winds round first (1.2 s)
 	assert_gt(hero.hp, 100.0)
 	var after := hero.hp
-	world.advance(1.1)
+	hero.stance_tree = "Water" # Soothing Mist: Water stance 2
+	hero.stance = 2
+	hero.stance_water = 33
 	world.cast(hero, _a("W05"), hero)
 	world.advance(12.1)
 	assert_gt(hero.hp, after, "mist heals over time")
@@ -312,7 +405,7 @@ func test_air_step_is_a_burst_of_speed() -> void:
 func test_each_ability_has_the_planned_hitbox() -> void:
 	var H := HitboxDef.Shape
 	var want := {"F01": H.TARGETED, "F02": H.TARGETED, "F03": H.PROJECTILE, "F04": H.NONE, "F05": H.DASH,
-		"F06": H.RECT, "F07": H.CIRCLE, "F08": H.TILES, "F09": H.TARGETED, "W01": H.TARGETED,
+		"F06": H.RECT, "F07": H.PROJECTILE, "F08": H.TILES, "F09": H.TARGETED, "F22": H.TARGETED, "W01": H.TARGETED,
 		"W02": H.TARGETED, "W03": H.TARGETED, "W04": H.PROJECTILE, "W05": H.TARGETED, "W06": H.RECT,
 		"W07": H.TARGETED, "W08": H.TARGETED, "W09": H.TILES, "A01": H.TARGETED, "A02": H.TARGETED,
 		"A03": H.NONE, "A05": H.TARGETED, "E01": H.LOB, "E02": H.NONE, "E03": H.TILES, "E04": H.SELF_CIRCLE,
@@ -325,7 +418,9 @@ func test_each_ability_has_the_planned_hitbox() -> void:
 		assert_eq(hb.shape, want[id], "%s is a %s" % [id, hb.shape_name()])
 	assert_eq(_a("S01").hitbox.angle, 100.0)
 	assert_eq(_a("F03").hitbox.speed, 16.0)
-	assert_false(_a("F07").uses_hitbox() == false, "Fireball is a circle in continuous space")
+	assert_true(_a("F07").uses_hitbox(), "Fireball is a projectile in continuous space")
+	assert_eq(_a("F07").impact_radius, 1.0, "that explodes")
+	assert_eq(_a("F06").hitbox.reach, 5.0, "Fire Whip: a 5-tile line")
 	assert_false(_a("F08").uses_hitbox(), "Burning Ground stays on the tiles")
 
 

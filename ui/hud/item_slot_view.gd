@@ -90,7 +90,11 @@ func _draw() -> void:
 	var c := Rarity.color(it.rarity).lightened(0.45)
 	draw_rect(rect.grow(-3), Color(c, 0.18))
 	draw_rect(rect.grow(-1), c, false, 2.0)
-	_lines(it.display_name, 19, NAME_SIZE, Color.WHITE)
+	var icon := Icons.of_item(it)
+	if icon != null:
+		Icons.draw_fitted(self, icon, rect.grow(-3))
+	else: # no art yet: its name, as before icons
+		_lines(it.display_name, 19, NAME_SIZE, Color.WHITE)
 	if kind == Kind.BAG:
 		var n: int = hud.session.local_hero().bag.count_at(index)
 		if n > 1:
@@ -111,8 +115,8 @@ func _draw() -> void:
 ## frame and the empty-slot picture are in the art, so an empty slot draws
 ## nothing. With an item: an equipment slot covers its picture with paper and
 ## shows the item's full rarity border (the art's 28×29 frames, centred as
-## drawn); a bag slot is tinted with the rarity's colour. Then the item's name in
-## ink, until items have icons.
+## drawn); a bag slot is tinted with the rarity's colour. Then the item's icon
+## inside the frame (its name in ink for items with no art yet).
 func _draw_on_page() -> void:
 	var it := item()
 	var px := BookView.REF_ART_SCALE # UI units per art pixel on the page
@@ -120,6 +124,7 @@ func _draw_on_page() -> void:
 	if it == null:
 		_draw_highlight(rect, px)
 		return
+	var room := rect.grow(-px)
 	if kind == Kind.BAG:
 		# The frame line is on the edge of a bag frame.
 		draw_rect(rect.grow(-px), UiPalette.PAPER.lerp(RARITY_TINTS[it.rarity], BAG_TINT))
@@ -128,10 +133,16 @@ func _draw_on_page() -> void:
 		draw_rect(rect.grow(-2.0 * px), UiPalette.PAPER)
 		var border := RARITY_BORDERS[it.rarity]
 		var border_size := Vector2(border.get_size()) * px
-		draw_texture_rect(border, Rect2(((size - border_size) * 0.5).round(), border_size.round()), false)
+		var border_rect := Rect2(((size - border_size) * 0.5).round(), border_size.round())
+		draw_texture_rect(border, border_rect, false)
+		room = border_rect.grow(-px) # inside the border's 1 art pixel line
 	_draw_highlight(rect, px)
 	var ink := UiPalette.INK
-	_lines(it.display_name, size.y * 0.5 - 2, PAGE_NAME_SIZE, ink, false)
+	var icon := Icons.of_item(it)
+	if icon != null:
+		Icons.draw_fitted(self, icon, room)
+	else: # no art yet: its name in ink, as before icons
+		_lines(it.display_name, size.y * 0.5 - 2, PAGE_NAME_SIZE, ink, false)
 	if kind == Kind.BAG:
 		var n: int = hud.session.local_hero().bag.count_at(index)
 		if n > 1:

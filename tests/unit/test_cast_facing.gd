@@ -27,6 +27,9 @@ func before_each() -> void:
 	healer = world.add_saved_hero(CharacterData.new_character("Mender", ContentDB.heroes[&"adventurer"],
 			ContentDB.elements[&"water"]), ContentDB)
 	ally = world.add_hero(ContentDB.heroes[&"adventurer"])
+	healer.stance_tree = "Water" # Healing Touch draws on the rope (water physics, 2026-11-28)
+	healer.stance = 1
+	healer.stance_water = 24
 	healer.move.place(Vector2i(10, 10))
 	ally.move.place(Vector2i(13, 10)) # due east (grid +x)
 	# Something fighting the healer, so it's in combat (faces the mouse).
@@ -53,13 +56,12 @@ func test_healing_touch_faces_the_ally_until_it_goes_off() -> void:
 	# The cast carries the cursor point (west), as a client sends it.
 	world.submit(healer.id, {"type": "cast", "ability": &"W01", "target": ally.id, "aim": Vector2(5, 10)})
 	world.step()
-	assert_false(healer.casting.is_empty(), "its timing bar runs")
 	assert_almost_eq(healer.facing_angle, 0.0, 0.01, "turned toward the ally (east)")
+	# Released at once; the heal lands 1.2 s later (water physics, 2026-11-28).
 	for i in 5:
 		_mouse_west()
-		assert_almost_eq(healer.facing_angle, 0.0, 0.01, "kept while casting, whatever the mouse")
-	world.advance(healer.casting.end - world.now + 0.3) # the bar runs out: casts at miss power
-	assert_true(healer.casting.is_empty(), "gone off")
+		assert_almost_eq(healer.facing_angle, 0.0, 0.01, "kept until it goes off, whatever the mouse")
+	world.advance(ContentDB.abilities[&"W01"].release_delay_seconds) # the heal lands
 	_mouse_west()
 	if world.now - float(healer.anim.act_at) < Hero.FACE_HOLD_SECONDS:
 		assert_almost_eq(healer.facing_angle, 0.0, 0.01, "held a moment for the cast animation")

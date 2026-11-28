@@ -127,16 +127,31 @@ func test_loot_quests_and_vendor_point_at_tree_items() -> void:
 			assert_false(entry.item.retired, "%s drops nothing retired" % e.id)
 			if entry.item.tree != "":
 				drops[entry.item.id] = entry.item
-	assert_gt(drops.size(), 5, "tier 2 scrolls drop in Greenfields")
-	for item in drops.values():
-		assert_eq(item.tier, 2, "%s is tier 2" % item.id)
-		assert_true(item.tree_ability().implemented)
+	assert_gt(drops.size(), 5, "scrolls drop across Act I")
+	# Stance rework (2026-11-23, user decision): only tier-1 scrolls drop or are given
+	# during Act I; the Foreman (beating the Silent Shaft) drops the first tier-2 ones.
+	for e in db.enemies.values():
+		if e.loot == null:
+			continue
+		for entry in e.loot.entries:
+			var item: ItemDef = entry.item
+			if item.tree == "":
+				continue
+			assert_true(item.tree_ability().implemented, "%s drops %s, which works" % [e.id, item.id])
+			assert_eq(item.tier, 2 if e.id == &"foreman" else 1, "%s drops %s (tier %d)" % [e.id, item.id, item.tier])
 	for q in db.quests.values():
 		for item in q.reward_items + q.reward_choices:
 			assert_false(item.retired, "%s rewards nothing retired" % q.id)
+			if item.tree != "":
+				assert_eq(item.tier, 1, "%s rewards %s: Act I gives tier 1 only" % [q.id, item.id])
+		for list in q.element_reward_ids.values() + q.element_choice_ids.values():
+			for id in list:
+				var it: ItemDef = db.items.get(StringName(id))
+				if it != null and it.tree != "":
+					assert_eq(it.tier, 1, "%s gives %s: tier 1 only" % [q.id, id])
 	var beast: QuestDef = db.quests[&"beast_of_greenfields"]
 	assert_eq(beast.reward_choices.map(func(i): return i.id),
-			[&"scroll_of_the_fireball", &"glacier_scroll", &"bulwark_scroll"])
+			[&"scorch_scroll", &"frost_shard_scroll", &"pillar_scroll", &"featherstep_scroll"])
 
 
 func test_linking_twice_does_not_duplicate() -> void:

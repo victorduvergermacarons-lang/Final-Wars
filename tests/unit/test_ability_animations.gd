@@ -117,23 +117,20 @@ func test_fire_kick_sends_its_flame_arc_to_every_player() -> void:
 
 # --- Water Whip -------------------------------------------------------------------
 
-func test_water_whip_window_and_the_hit_on_the_snap() -> void:
-	var bar: TimingBarDef = ContentDB.abilities[&"W02"].timing_bar
-	assert_eq(bar.hold_zones, [Vector2(0.45, 2.3)] as Array[Vector2], "0.45 s to 2.75 s (was 0.75 s)")
+func test_water_whip_is_thrown_at_once_and_hits_on_the_snap() -> void:
+	assert_null(ContentDB.abilities[&"W02"].timing_bar, "instant since 2026-11-28")
+	# Water to bend: a pouch and the stance 1 rope.
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.stance_tree = "Water"
+	hero.stance = 1
+	hero.stance_water = 24
 	var hp := wolf.hp
 	world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": wolf.id})
-	world.step()
-	world.advance(0.45 - _since_start())
-	world.submit(hero.id, {"type": "timing_press", "at": 0.45})
-	world.step()
-	assert_true(hero.casting.has("hold_from"), "held from 0.45 s")
-	world.advance(2.75 - _since_start())
-	world.submit(hero.id, {"type": "timing_release", "at": 2.75})
 	var events := world.step()
-	assert_eq(_of(events, "timing_result", &"W02")[0].grade, "perfect")
-	assert_eq(_of(events, "fx", &"W02").map(func(e): return e.fx), [&"water_lash"], "the lash, at the release")
+	assert_eq(_of(events, "fx", &"W02").map(func(e): return e.fx), [&"water_whip"], "the rope thrown at once")
 	assert_eq(wolf.hp, hp, "not yet: the lash is still curling")
-	var fx: FxDef = ContentDB.effects[&"water_lash"]
+	var fx: FxDef = ContentDB.effects[&"water_whip"]
 	assert_almost_eq(ContentDB.abilities[&"W02"].release_delay_seconds, fx.hit_frame / fx.fps, 0.001)
 	world.advance(ContentDB.abilities[&"W02"].release_delay_seconds + 0.05)
 	assert_lt(wolf.hp, hp, "the hit lands on the lash's snap")
@@ -145,4 +142,4 @@ func test_air_effects_are_see_through_and_point_at_their_target() -> void:
 		assert_almost_eq(fx.alpha, 0.6, 0.001, "%s at 60%%" % id)
 		assert_true(fx.rotate)
 	assert_eq(ContentDB.abilities[&"A01"].fx_cast, &"air_palm_spiral")
-	assert_eq(ContentDB.abilities[&"A02"].fx_cast, &"air_gust_spiral")
+	assert_eq(ContentDB.abilities[&"A02"].fx_cast, &"gust_wind", "Gust: a front since phase 4 (the spiral is gone)")

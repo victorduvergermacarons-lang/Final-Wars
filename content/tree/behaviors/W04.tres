@@ -22,6 +22,7 @@ script = ExtResource("4_0g37c")
 id = &"W04"
 max_range = 6
 mana_cost = 8.0
+water_cost = 4
 ranged = true
 projectile_speed = 12.0
 effects = Array[ExtResource("1_uwwyq")]([SubResource("Resource_j3y37"), SubResource("Resource_fd14v")])

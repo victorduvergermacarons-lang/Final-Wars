@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Script" path="res://data/defs/ability_scaling.gd" id="2_scl"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_def"]
+
+[sub_resource type="Resource" id="eff_0"]
+script = ExtResource("1_eff")
+kind = 2
+taunt_seconds = 5.0
+
+[resource]
+script = ExtResource("3_def")
+id = &"E08"
+max_range = 0
+mana_cost = 12.0
+targeting = 4
+area_radius = 2
+effects = Array[ExtResource("1_eff")]([SubResource("eff_0")])

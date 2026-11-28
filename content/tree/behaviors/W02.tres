@@ -13,10 +13,13 @@ sheet_scaling = true
 [resource]
 script = ExtResource("3_w155g")
 id = &"W02"
-fx_cast = &"water_lash"
+fx_cast = &"water_whip"
 release_delay_from = "fx"
 max_range = 5
 mana_cost = 6.0
+water_cost = 4
+water_whole_rope = true
+water_back = 1
 ranged = true
 effects = Array[ExtResource("1_h3ta4")]([SubResource("Resource_6d6di")])
 targeting = 1

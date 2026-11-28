@@ -109,7 +109,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	# uses it). So is the ability's own key again (_second_press).
 	var bar_press: bool = (event is InputEventMouseButton and event.pressed \
 			and event.button_index == MOUSE_BUTTON_RIGHT) or event.is_action_pressed(&"timing_press")
-	if bar_press and press_timing_bar():
+	if bar_press and (press_timing_bar() or call_water_back()):
 		get_viewport().set_input_as_handled()
 		return
 	if not _aiming.is_empty() and _aim_input(event):
@@ -133,6 +133,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			session.send_intent({"type": "talk", "npc": picked.id})
 		elif picked is Hero and picked.id != session.local_hero_id:
 			player_menu_requested.emit(picked.id, get_viewport().get_mouse_position())
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SHIFT:
+		# Shift leaves the bending stance.
+		var hero: Hero = session.local_hero()
+		if hero != null and hero.stance > 0:
+			session.send_intent({"type": "stance", "tree": "", "stance": 0})
 	else:
 		for p in ActionBarModel.PAGE_COUNT:
 			if event.is_action_pressed(InputActions.page_action(p), false, true):
@@ -140,7 +145,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				return
 		for i in ActionBarModel.SLOT_COUNT:
-			if event.is_action_pressed(InputActions.slot_action(i), false, true):
+			if InputMap.has_action(InputActions.slot_action(i)) \
+					and event.is_action_pressed(InputActions.slot_action(i), false, true):
 				use_slot(i, InputActions.slot_action(i))
 				get_viewport().set_input_as_handled()
 				return
@@ -241,12 +247,18 @@ func _input(event: InputEvent) -> void:
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was
 ## pressed (aimed abilities fire when it's released); "" for a click on the bar.
+
+
 func use_slot(i: int, key: StringName = &"") -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return
 	var id := client.action_bar.slots[i]
 	if id == &"":
 		return
-	var hero: Hero = session.local_hero()
-	if hero == null:
+	if ActionBarModel.is_stance_slot(id):
+		var st := ActionBarModel.stance_of(id)
+		enter_stance(st[0], st[1])
 		return
 	if ActionBarModel.is_item_slot(id):
 		use_item(ActionBarModel.item_id_of(id))
@@ -255,7 +267,50 @@ func use_slot(i: int, key: StringName = &"") -> void:
 	if ability == null:
 		client.error("You can't use that right now")
 		return
+	# A bending ability of another stance (or out of any stance) enters that stance
+	# instead of casting; the next press casts (2026-11-28). A press during the
+	# ability's own timing bar still plays the bar.
+	if needs_stance(hero, ability) and not _bar_running_for(hero, ability):
+		enter_stance(ability.tree, ability.stance)
+		return
 	use_ability(ability, key)
+
+
+## Whether `ability` is cast from a stance the hero isn't in.
+static func needs_stance(hero: Hero, ability: AbilityDef) -> bool:
+	return ability.stance > 0 and WorldSim.BENDING_TREES.has(ability.tree) \
+			and (hero.stance_tree != ability.tree or hero.stance != ability.stance)
+
+
+## Water Whip's second press (its key again, right-click or Space) within its 1.5 s
+## window: the host decides how much of the thrown water comes back by when it came
+## (WaterBending.whip_share). True if the whip's water was out.
+func call_water_back() -> bool:
+	var hero: Hero = session.local_hero()
+	if hero == null or hero.water_out.get("ability", &"") != &"W02" or hero.water_out.get("called", false):
+		return false
+	if session.render_time() - float(hero.water_out.get("at", 0.0)) >= WaterBending.WHIP_WINDOW:
+		return false
+	hero.water_out.called = true # once (until the host's next snapshot settles it)
+	session.send_intent({"type": "water_return"})
+	return true
+
+
+func _bar_running_for(hero: Hero, ability: AbilityDef) -> bool:
+	return not hero.casting.is_empty() and hero.casting.get("kind", "") == "timing" \
+			and hero.casting.get("ability") == ability
+
+
+## Enters (or switches to) a bending stance; its entry cast, if any, goes at the
+## current target and the cursor.
+func enter_stance(tree: String, n: int) -> void:
+	var hero: Hero = session.local_hero()
+	if hero == null:
+		return
+	if hero.stance_tree == tree and hero.stance == n:
+		return
+	session.send_intent({"type": "stance", "tree": tree, "stance": n, "target": client.target_id,
+			"aim": mouse_point(null)})
 
 
 ## Uses one of the named consumable from the bag.
@@ -275,6 +330,10 @@ var _bar_key: StringName = &""
 
 
 func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
+	# Water Whip's key again while its water is out calls it back (water physics).
+	var me: Hero = session.local_hero() if session != null else null
+	if me != null and me.water_out.get("ability", &"") == ability.id and call_water_back():
+		return
 	var hero: Hero = session.local_hero()
 	if hero != null and _second_press(hero, ability, key):
 		return
@@ -330,6 +389,8 @@ func talk_to_nearest() -> void:
 		client.error("There's no one to talk to here")
 	elif what.kind == "examine":
 		session.send_intent({"type": "examine", "tile": what.tile})
+	elif what.kind == "fill":
+		session.send_intent({"type": "fill_water"})
 	else:
 		session.send_intent({"type": "talk", "npc": what.npc.id})
 
@@ -350,7 +411,12 @@ static func interaction(session) -> Dictionary:
 			best_spot = p
 	if best_spot != null:
 		return {"kind": "examine", "tile": best_spot}
-	return {"kind": "talk", "npc": npc} if npc != null else {}
+	if npc != null:
+		return {"kind": "talk", "npc": npc}
+	if hero.has_water_pouch() and hero.water < session.rules().water_pouch_capacity and WaterTiles.nearest(WaterTiles.of(session.zone()), hero.move.pos,
+			session.rules().water_fill_reach) != null:
+		return {"kind": "fill"}
+	return {}
 
 
 ## The NPC E would talk to: the one in front of the local hero, else the nearest
@@ -528,7 +594,7 @@ func mouse_point(ability: AbilityDef) -> Vector2:
 	var height: int = session.grid().height_at(tile) if tile != null \
 			else session.grid().height_at(hero.tile()) if session.grid().in_bounds(hero.tile()) else 0
 	var point := Iso.from_screen(mouse, height)
-	if ability.uses_hitbox():
+	if ability == null or ability.uses_hitbox():
 		return point
 	return Vector2(tile) if tile != null else Vector2(MoveState.tile_of(point))
 

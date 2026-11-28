@@ -8,7 +8,15 @@ const VERSION := 1
 const MAX_LEVEL_SANITY := 999
 const MAX_GOLD := 999_999_999
 ## Items whose id changed (renamed in the spreadsheet): old id -> new id.
-const RENAMED_ITEMS := {"kindling_scroll": "sun_warriors_breath_scroll"}
+## Old item ids -> the item that replaced them, applied when a character loads.
+## 2026-11-23 (stance rework): the scrolls of the four merged abilities become the
+## scroll of the ability each merged into (their AP is dropped: none of them was
+## ever in the game).
+## A new Water Pouch's water points (CombatRules.water_pouch_capacity's default).
+const WATER_POUCH_START := 200
+const RENAMED_ITEMS := {"kindling_scroll": "sun_warriors_breath_scroll",
+	"shimmering_heat_scroll": "dragons_breath_scroll", "fortress_scroll": "stone_armor_codex",
+	"trench_scroll": "bulwark_scroll", "glider_scroll": "featherstep_scroll"}
 
 
 static func capture(hero: Hero) -> Dictionary:
@@ -37,6 +45,7 @@ static func capture(hero: Hero) -> Dictionary:
 		"mastery_contrib": _contrib_out(hero.mastery_contrib),
 		"records": hero.records.duplicate(true),
 		"loot_bonus": hero.loot_bonus,
+		"water": hero.water + hero.stance_water, # the stance water goes back to the pouch
 	}
 
 
@@ -70,6 +79,7 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 	hero.display_name = clean_name(str(data.get("name", "Adventurer")))
 	hero.level = clampi(_int(data.get("level"), 1), 1, MAX_LEVEL_SANITY)
 	hero.loot_bonus = maxi(int(data.get("loot_bonus", 0)), 0)
+	hero.water = clampi(int(data.get("water", 0)), 0, 100000)
 	var elements = content.get("elements")
 	var element := StringName(str(data.get("element", "")))
 	if elements is Dictionary and elements.has(element):
@@ -101,6 +111,11 @@ static func restore(id: int, data: Dictionary, content) -> Hero:
 				continue
 			if slot >= 0 and slot < EquipSlot.COUNT and item != null:
 				hero.wear(item, slot)
+	# Water heroes from before the Water Pouch (2026-11-26) get one, full.
+	if hero.element == &"water" and not data.has("water") and not hero.has_water_pouch() \
+			and content.items.has(Hero.WATER_POUCH):
+		hero.bag.add(content.items[Hero.WATER_POUCH])
+		hero.water = WATER_POUCH_START
 	var ap = data.get("ap")
 	if typeof(ap) == TYPE_DICTIONARY:
 		for key in ap:
@@ -198,6 +213,8 @@ static func apply_element(hero: Hero, element: StartingElementDef, content) -> v
 		if held != null and held.is_scroll:
 			hero.bag.remove_at(i, hero.bag.count_at(i))
 	hero.element = element.id
+	if element.tree != "" and element.starting_mastery > 0.0:
+		Mastery.add_permanent(hero, element.tree, element.starting_mastery)
 	var ability: AbilityDef = content.abilities.get(element.mastered_ability_id)
 	hero.bag.add(content.items[element.mastered_scroll_id])
 	if ability != null:
@@ -206,6 +223,10 @@ static func apply_element(hero: Hero, element: StartingElementDef, content) -> v
 	TreeRules.learn_from_bag(hero, hero.bag.index_of(content.items[element.learning_scroll_id]))
 	for id in element.clothes_ids:
 		hero.wear(content.items[id])
+	for id in element.bag_ids:
+		hero.bag.add(content.items[id])
+		if id == Hero.WATER_POUCH:
+			hero.water = WATER_POUCH_START
 	hero.refresh_stats()
 	hero.hp = hero.stats.hp
 	hero.mana = hero.stats.mana

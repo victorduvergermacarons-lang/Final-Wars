@@ -85,7 +85,7 @@ this file by hand). What people say is in `content/dialogue/act1.json`.
   - Escort: Guild Grain Wagon in Road to Deepcut, 5 waypoints ("Escort the grain wagon to Deepcut's end of the road")
 - **Rewards:** 450 XP, 40 gold, 2 × Minor Health Potion
   - Earth heroes: in the choice of one: Granite Ring, Pillar Scroll
-  - Water heroes: in the choice of one: Tidestone Ring, Mist Scroll
+  - Water heroes: in the choice of one: Tidestone Ring, Frost Shard Scroll
   - Fire heroes: in the choice of one: Cinder Ring, Spark Scroll
   - Air heroes: in the choice of one: Gale Ring, Featherstep Scroll
 
@@ -123,9 +123,7 @@ this file by hand). What people say is in `content/dialogue/act1.json`.
   - Talk: Prince Caedan Ashvale (The Crossing) ("Hear out Prince Caedan Ashvale")
 - **Rewards:** 450 XP, 60 gold
   - Earth heroes: given Stomp Scroll
-  - Water heroes: given Tidal Scroll
   - Fire heroes: given Sun Warrior's Breath Scroll
-  - Air heroes: given Gale Scroll
 - **Sets world flag:** `brann_descended`
 
 > Three missions, three successes. The ledgers are delighted with you. Come to the hall: the Prince himself has asked to meet our newest members.
@@ -142,7 +140,7 @@ this file by hand). What people say is in `content/dialogue/act1.json`.
   - Kill: 1 × The Grey Heart ("Break the Grey Heart")
   - Talk: Prince Caedan Ashvale ("Speak with Prince Caedan")
 - **Rewards:** 1200 XP, 120 gold, 3 × Minor Health Potion, 3 × Minor Mana Potion
-  - Choice of one: Scroll of the Fireball, Glacier Scroll, Bulwark Scroll
+  - Choice of one: Scorch Scroll, Frost Shard Scroll, Pillar Scroll, Featherstep Scroll
 - **Sets world flag:** `act1_complete`
 - **Ends Act 1**
 
@@ -204,7 +202,7 @@ this file by hand). What people say is in `content/dialogue/act1.json`.
 - **Objectives:**
   - Kill: 1 × Old Grizzlehide ("Old Grizzlehide slain")
 - **Rewards:** 500 XP, 60 gold
-  - Choice of one: Scroll of the Fireball, Glacier Scroll, Bulwark Scroll
+  - Choice of one: Scorch Scroll, Frost Shard Scroll, Pillar Scroll, Featherstep Scroll
 - **Sets world flag:** `grizzlehide_slain`
 
 > Old Grizzlehide. He roams the fields between the river crossings and nothing alone survives him. Gather friends — at least four — and end him.

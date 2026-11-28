@@ -46,10 +46,17 @@ func test_game_sounds_and_combat_music() -> void:
 	var hero := session.local_hero()
 	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
 	session.send_intent({"type": "step", "to": hero.tile() + Vector2i.UP})
-	await wait_physics_frames(12)
+	# Wait for the footfall rather than a fixed number of frames: how many sim ticks
+	# fit in a few physics frames varies, and a footstep only sounds once a step is
+	# taken (this used to fail now and then).
+	var stepped := func() -> bool:
+		return Audio.missing_keys().keys().any(func(k): return String(k).begins_with("footstep_"))
+	for i in 60:
+		if stepped.call():
+			break
+		await wait_physics_frames(1)
 	await wait_process_frames(2)
-	assert_true(Audio.missing_keys().keys().any(func(k): return String(k).begins_with("footstep_")),
-			"a footstep was asked for")
+	assert_true(stepped.call(), "a footstep was asked for")
 
 	# A wolf next to the hero starts a fight: combat music, then back afterwards.
 	session.send_intent({"type": "debug", "line": "spawn wolf"})

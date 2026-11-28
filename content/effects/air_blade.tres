@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+[ext_resource type="Texture2D" path="res://assets/effects/air_blade.png" id="2_sheet"]
+[ext_resource type="Texture2D" path="res://assets/effects/air_blade_rot.png" id="3_rot"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"air_blade"
+sheet = ExtResource("2_sheet")
+frame_size = Vector2i(32, 32)
+frames = 1
+fps = 1.0
+loop = true
+pivot = Vector2(16, 16)
+anchor = 0
+forward_tiles = 0.0
+height_levels = 1.0
+rotate = true
+alpha = 0.8
+hold_seconds = 0.0
+fade_out = false
+drawn_angle = 30.0
+rot_sheet = ExtResource("3_rot")
+rot_steps = 32
+motion = 0
+motion_hz = 0.5
+motion_amount = 0.1
+split = false
+behind = false
+trail_fx = &"air_blade_trail_ribbon"

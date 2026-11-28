@@ -89,6 +89,7 @@ static func collect() -> Dictionary:
 			"price": it.price, "sells_for": floori(it.price * rules.vendor_sell_fraction),
 			"stack": it.max_stack, "stats": _stats(it.stats), "growth": _stats(it.growth),
 			"description": it.description,
+			"icon": it.icon.resource_path.trim_prefix("res://") if it.icon != null else "",
 		})
 	var sources := []
 	var loot := []

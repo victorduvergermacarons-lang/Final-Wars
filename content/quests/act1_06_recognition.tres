@@ -25,9 +25,9 @@ reward_xp = 450
 reward_gold = 60
 element_reward_ids = {
 "earth": [&"stomp_scroll"],
-"water": [&"tidal_scroll"],
+"water": [],
 "fire": [&"sun_warriors_breath_scroll"],
-"air": [&"gale_scroll"]
+"air": []
 }
 reward_choice_ids = Array[StringName]([])
 sets_world_flag = &"brann_descended"

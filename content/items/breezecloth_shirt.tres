@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://data/defs/stat_block.gd" id="1_stats"]
 [ext_resource type="Script" path="res://data/defs/item_def.gd" id="2_item"]
+[ext_resource type="Texture2D" uid="uid://bbch5t3og74ql" path="res://assets/icons/items/breezecloth_shirt.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="stats"]
 script = ExtResource("1_stats")
@@ -17,6 +18,7 @@ mag_def = 0.5
 script = ExtResource("2_item")
 id = &"breezecloth_shirt"
 display_name = "Breezecloth Shirt"
+icon = ExtResource("icon_tex")
 description = "Plain clothes for a new Air adept."
 slot = 1
 price = 10

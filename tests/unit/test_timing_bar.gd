@@ -24,6 +24,10 @@ func before_each() -> void:
 	world = World.new(db.zones.values(), db.rules, 5, &"town", db.quests)
 	hero = world.add_saved_hero(CharacterData.new_character("Blade", db.heroes[&"adventurer"]), db)
 	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
+	# Water to bend (the Water Pouch and the Water stance 1 rope, 2026-11-26).
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.stance_water = 24
 	sim = world.zone_of(hero.id)
 	# A wolf right next to the hero, on the first free walkable neighbour.
 	for d in GridModel.DIRECTIONS:
@@ -116,11 +120,16 @@ func test_moving_cancels_the_bar() -> void:
 
 
 ## Healing Touch (a 2 s bar, hold 0.5–1.75) on the hero itself: the healed amount.
+## Soothing Mist (W05, Water stance 2): a 2.5 s bar, hold 0.5–1.75 s; returns the
+## healing it gave over its whole time.
 func _heal_with(press_at: float, release_at: float) -> float:
 	hero.hp = 1.0
 	hero.cooldowns = Cooldowns.new()
-	var r := sim.cast(hero, db.abilities[&"W01"], hero)
-	assert_eq(r, AbilityResolver.Result.OK, "Healing Touch starts (%s)" % AbilityResolver.Result.keys()[r])
+	hero.stance_tree = "Water"
+	hero.stance = 2
+	hero.stance_water = WaterBending.full(2)
+	var r := sim.cast(hero, db.abilities[&"W05"], hero)
+	assert_eq(r, AbilityResolver.Result.OK, "Soothing Mist starts (%s)" % AbilityResolver.Result.keys()[r])
 	world.step()
 	var events := []
 	events.append_array(world.advance(press_at - (world.now - float(hero.casting.start))))
@@ -128,21 +137,23 @@ func _heal_with(press_at: float, release_at: float) -> float:
 	events.append_array(world.step())
 	events.append_array(world.advance(release_at - (world.now - float(hero.casting.start))))
 	world.submit(hero.id, {"type": "timing_release", "at": release_at})
-	events.append_array(world.advance(1.0))
+	events.append_array(world.advance(14.0))
+	var total := 0.0
 	for e in events:
-		if e.type == "heal" and e.get("ability", &"") == &"W01":
-			return e.amount / (1.5 if e.get("crit", false) else 1.0)
-	return -1.0
+		if e.type == "heal" and e.get("source", -1) == hero.id: # its ticks carry the buff's id
+			total += float(e.amount)
+	return total
 
 
 func test_timing_scales_healing_too() -> void:
 	sim.remove_enemy(wolf.id) # nothing bites the hero at 1 HP
-	var good := _heal_with(0.5, 1.4) # let go 0.35 s early in a 1.25 s zone: 72%
+	TreeRules.master(hero, db.abilities[&"W05"])
+	var good := _heal_with(0.5, 1.45) # let go 0.3 s early in a 1.25 s zone: 76%
 	var miss := _heal_with(0.5, 0.9) # held well under half: miss power
 	assert_gt(good, 0.0)
 	assert_gt(miss, 0.0)
-	var accuracy := TimingBarDef.hold_accuracy(db.abilities[&"W01"].timing_bar.hold_zones[0], 0.5, 1.4)
-	assert_almost_eq(miss / good, db.rules.timing_miss_power / TimingBarDef.hold_power(accuracy, db.rules.timing_miss_power), 0.03)
+	var accuracy := TimingBarDef.hold_accuracy(db.abilities[&"W05"].timing_bar.hold_zones[0], 0.5, 1.45)
+	assert_almost_eq(miss / good, db.rules.timing_miss_power / TimingBarDef.hold_power(accuracy, db.rules.timing_miss_power), 0.05)
 
 
 func test_fire_punch_has_no_bar() -> void:
@@ -150,10 +161,12 @@ func test_fire_punch_has_no_bar() -> void:
 	assert_null(db.abilities[&"F01"].timing_bar)
 
 
-## Water Whip: a 3 s bar; hold right-click from 0.45 s to 2.75 s (the blue zone
-## ends 0.25 s before the bar; it started at 0.75 s until 2026-11-21).
+## Quick Shot (a bow): a 2 s bar; hold right-click from 0.25 s to 1.75 s (the blue
+## zone ends 0.25 s before the bar). Water Whip held this bar's tests until it became
+## instant (water physics, 2026-11-28).
 func _whip() -> void:
-	sim.cast(hero, db.abilities[&"W02"], wolf)
+	hero.wear(db.items[&"hunters_shortbow"])
+	sim.cast(hero, db.abilities[&"B01"], wolf)
 	world.step()
 
 
@@ -180,17 +193,13 @@ static func _result(events: Array) -> Dictionary:
 
 static func _whip_hit(events: Array) -> Dictionary:
 	for e in events:
-		if e.type == "damage" and e.ability == &"W02":
+		if e.type == "damage" and e.ability == &"B01":
 			return e
 	return {}
 
 
-func test_water_whip_bar() -> void:
-	var bar: TimingBarDef = db.abilities[&"W02"].timing_bar
-	assert_eq(bar.seconds, 3.0)
-	assert_eq(bar.hold_zones, [Vector2(0.45, 2.3)] as Array[Vector2], "0.45 s to 2.75 s (2026-11-21)")
-	assert_null(bar.hold_zone_at(0.2), "more than 0.2 s early: just a tap")
-	assert_not_null(bar.hold_zone_at(0.3), "a little early starts the hold")
+func test_water_whip_is_instant() -> void:
+	assert_null(db.abilities[&"W02"].timing_bar, "instant since 2026-11-28 (its return has its own bar)")
 
 
 func test_hold_zones_end_before_their_bar() -> void:
@@ -223,32 +232,32 @@ func test_hold_accuracy_loses_the_mistiming_in_proportion() -> void:
 func test_letting_go_as_the_zone_ends_is_a_crit() -> void:
 	_whip()
 	assert_eq(hero.casting.get("kind", ""), "timing")
-	var events := _hold(0.45, 2.75)
+	var events := _hold(0.25, 1.75)
 	assert_eq(_result(events).get("grade", ""), "perfect")
 	assert_true(_whip_hit(events).get("crit", false), "a sure crit")
 
 
 func test_letting_go_early_loses_power_in_proportion() -> void:
 	_whip()
-	var events := _hold(0.45, 2.35) # 0.4 s early of 2.3 s: 83%
+	var events := _hold(0.25, 1.5) # 0.25 s early of 1.5 s: 83%
 	assert_eq(_result(events).get("grade", ""), "good")
-	assert_almost_eq(float(_result(events).accuracy), 1.0 - 0.4 / 2.3, 0.02)
+	assert_almost_eq(float(_result(events).accuracy), 1.0 - 0.25 / 1.5, 0.02)
 	_whip_again()
-	events = _hold(0.45, 1.5) # under half: a miss
+	events = _hold(0.25, 0.9) # under half: a miss
 	assert_eq(_result(events).get("grade", ""), "miss")
 	assert_false(_whip_hit(events).is_empty(), "still hits, softer")
 
 
 func test_still_holding_when_the_bar_ends_counts_the_overhold() -> void:
 	_whip()
-	var events := _hold(0.45, -1.0) # never let go: 0.25 s too long
+	var events := _hold(0.25, -1.0) # never let go: 0.25 s too long
 	assert_eq(_result(events).get("grade", ""), "good")
-	assert_almost_eq(float(_result(events).accuracy), 1.0 - 0.25 / 2.3, 0.02)
+	assert_almost_eq(float(_result(events).accuracy), 1.0 - 0.25 / 1.5, 0.02)
 
 
 func test_pressing_long_before_the_blue_zone_is_a_missed_tap() -> void:
 	_whip()
-	var events := _hold(0.2, -1.0)
+	var events := _hold(0.02, -1.0)
 	assert_eq(_result(events).get("grade", ""), "miss")
 
 
@@ -339,9 +348,9 @@ func test_aimed_bars_fire_where_the_last_input_points() -> void:
 
 func test_ground_bars_start_beyond_range_and_land_at_its_edge() -> void:
 	var far := Vector2(hero.tile()) + Vector2(20, 0)
-	assert_eq(sim.cast(hero, db.abilities[&"F07"], null, far), AbilityResolver.Result.OK, "Fireball starts anyway")
+	assert_eq(sim.cast(hero, db.abilities[&"F08"], null, far), AbilityResolver.Result.OK, "Burning Ground starts anyway")
 	var aim: Vector2 = hero.casting.aim
-	assert_lte(hero.range_to(Vector2i(aim.round())), db.abilities[&"F07"].max_range, "pulled back into range")
+	assert_lte(hero.range_to(Vector2i(aim.round())), db.abilities[&"F08"].max_range, "pulled back into range")
 	assert_gt(aim.x, float(hero.tile().x), "toward where the cursor was")
 
 

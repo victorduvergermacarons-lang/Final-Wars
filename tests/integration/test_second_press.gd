@@ -32,6 +32,10 @@ func before_each() -> void:
 			CharacterData.new_character("Presser", ContentDB.heroes[&"adventurer"]))
 	hero = session.local_hero()
 	hero.wear(ContentDB.items[&"rusty_shortsword"]) # heroes start without a weapon
+	# Water to bend (the Water Pouch and the Water stance 1 rope, 2026-11-26).
+	hero.bag.add(ContentDB.items[Hero.WATER_POUCH])
+	hero.water = 200
+	hero.stance_water = 24
 	client = ClientState.new()
 	InputActions.apply_action_bar_keys(client.action_bar)
 	view = WorldView.new()
@@ -118,19 +122,17 @@ func test_space_plays_slash_s_bar() -> void:
 
 
 func test_letting_go_of_the_key_ends_a_hold() -> void:
-	# Water Whip: one blue hold zone. Second press = start the hold; let go of the
-	# key at the zone's end = a well-held bar.
-	hero.bag.add(ContentDB.items[&"river_lash_scroll"])
-	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
+	# Quick Shot: one blue hold zone (Water Whip's until it became instant, 2026-11-28).
+	hero.wear(ContentDB.items[&"hunters_shortbow"])
 	client.target_id = wolf.id
-	_press(&"W02", &"action_slot_2")
+	_press(&"B01", &"action_slot_2")
 	await wait_physics_frames(4)
 	assert_eq(hero.casting.get("kind", ""), "timing")
 	if hero.casting.is_empty():
 		return
 	var z := _first_zone()
 	await _until(z.x + 0.02)
-	_press(&"W02", &"action_slot_2")
+	_press(&"B01", &"action_slot_2")
 	await wait_physics_frames(2)
 	assert_true(hero.casting.has("hold_from"), "the second press started the hold")
 	await _until(z.x + z.y - 0.03)
@@ -139,18 +141,16 @@ func test_letting_go_of_the_key_ends_a_hold() -> void:
 	release.pressed = false
 	input._input(release)
 	await wait_physics_frames(3)
-	assert_true(hero.casting.is_empty(), "letting go of the key ended the hold and released the lash")
-	await wait_seconds(ContentDB.abilities[&"W02"].release_delay_seconds + 0.15)
-	assert_gt(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0)
+	assert_true(hero.casting.is_empty(), "letting go of the key ended the hold and shot")
+	await wait_physics_frames(3)
+	assert_gt(hero.cooldowns.ability_remaining(&"B01", session.now()), 0.0)
 
 
 func test_letting_go_of_space_ends_a_hold() -> void:
-	# Water Whip: one blue hold zone. Space = start the hold; let go of Space at the
-	# zone's end = a well-held bar.
-	hero.bag.add(ContentDB.items[&"river_lash_scroll"])
-	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
+	# Quick Shot: one blue hold zone (Water Whip's until it became instant, 2026-11-28).
+	hero.wear(ContentDB.items[&"hunters_shortbow"])
 	client.target_id = wolf.id
-	_press(&"W02", &"action_slot_2")
+	_press(&"B01", &"action_slot_2")
 	await wait_physics_frames(4)
 	assert_eq(hero.casting.get("kind", ""), "timing")
 	if hero.casting.is_empty():
@@ -163,10 +163,9 @@ func test_letting_go_of_space_ends_a_hold() -> void:
 	await _until(z.x + z.y - 0.03)
 	_space(false)
 	await wait_physics_frames(3)
-	assert_true(hero.casting.is_empty(), "letting go of Space ended the hold and released the lash")
-	# It goes off on the lash's snap (AbilityDef.release_delay_seconds, since 2026-11-21).
-	await wait_seconds(ContentDB.abilities[&"W02"].release_delay_seconds + 0.15)
-	assert_gt(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0)
+	assert_true(hero.casting.is_empty(), "letting go of Space ended the hold and shot")
+	await wait_physics_frames(3)
+	assert_gt(hero.cooldowns.ability_remaining(&"B01", session.now()), 0.0)
 
 
 func test_another_abilitys_key_switches_without_casting_either() -> void:
@@ -175,20 +174,21 @@ func test_another_abilitys_key_switches_without_casting_either() -> void:
 	_press(&"S01")
 	await wait_physics_frames(4)
 	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"S01"], "Slash's bar runs")
-	hero.bag.add(ContentDB.items[&"river_lash_scroll"]) # Fire Punch is instant since 2026-11-21
-	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
-	_press(&"W02", &"action_slot_2") # Water Whip's key
+	hero.bag.add(ContentDB.items[&"pebble_scroll"]) # Fire Punch and Water Whip are instant
+	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"pebble_scroll"]))
+	_press(&"E01", &"action_slot_2") # Rock Throw's key
 	await wait_physics_frames(4)
-	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"W02"],
-			"switched to Water Whip's bar (the global cooldown Slash took was given back)")
+	assert_eq(hero.casting.get("ability", null), ContentDB.abilities[&"E01"],
+			"switched to Rock Throw's bar (the global cooldown Slash took was given back)")
 	assert_eq(hero.cooldowns.ability_remaining(&"S01", session.now()), 0.0, "Slash didn't go off")
-	assert_eq(hero.cooldowns.ability_remaining(&"W02", session.now()), 0.0, "nor Water Whip, yet")
+	assert_eq(hero.cooldowns.ability_remaining(&"E01", session.now()), 0.0, "nor Rock Throw, yet")
 	assert_eq(hero.mana, mana, "nothing paid")
 
 
 func test_a_second_press_fires_an_aimed_ability_without_a_bar() -> void:
 	# Lunge has no bar: clicked on the action bar it aims; its key then fires it.
 	hero.bag.add(ContentDB.items[&"travelers_longsword"])
+	Mastery.add_permanent(hero, "Sword", 50) # Lunge unlocks a step in (stance rework)
 	hero.equip_from_bag(hero.bag.index_of(ContentDB.items[&"travelers_longsword"]))
 	wolf.move.place(_t(9, 4))
 	_point_at(_a(5, 5)) # north
@@ -219,3 +219,25 @@ func test_a_held_key_is_not_a_second_press() -> void:
 	input._unhandled_input(echo)
 	await wait_physics_frames(3)
 	assert_eq(hero.casting.get("kind", ""), "timing", "the held key's repeats didn't play the bar")
+
+
+func test_water_whip_s_key_again_calls_the_water_back() -> void:
+	# Instant since 2026-11-28 (water physics): the whole rope is thrown; the key again
+	# within 1.5 s brings water back, all of it at 0.5 s.
+	hero.bag.add(ContentDB.items[&"river_lash_scroll"])
+	TreeRules.learn_from_bag(hero, hero.bag.index_of(ContentDB.items[&"river_lash_scroll"]))
+	hero.stance_tree = "Water"
+	hero.stance = 1
+	hero.stance_water = 24
+	client.target_id = wolf.id
+	_press(&"W02", &"action_slot_2")
+	await wait_physics_frames(3)
+	assert_eq(hero.water_out.get("ability", &""), &"W02", "the rope is out")
+	assert_eq(hero.stance_water, 0)
+	var thrown: float = float(hero.water_out.at)
+	while session.now() - thrown < 0.5:
+		await wait_physics_frames(1)
+	_press(&"W02", &"action_slot_2")
+	await wait_physics_frames(3)
+	assert_true(hero.water_out.is_empty(), "called back")
+	assert_between(hero.stance_water, 22, 24, "nearly all of it, pressed at about 0.5 s")

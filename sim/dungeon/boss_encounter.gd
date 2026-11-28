@@ -102,7 +102,7 @@ func _pulse(sim: WorldSim, b: Enemy, h: Enemy) -> void:
 		add.set_party_size(sim.heroes().size(), sim.rules)
 		add.state = Enemy.State.COMBAT
 		add.home_tile = tile
-		var top := b.threat.top()
+		var top := b.threat.target()
 		if top >= 0:
 			add.threat.add(top, 0.0)
 		_adds.append(add.id)

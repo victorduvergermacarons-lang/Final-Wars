@@ -52,6 +52,9 @@ func _pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 	var first := action_first_frame(hero, art)
 	if act != "" and acted >= 0.0 and acted < (art.frame_count(act) - first) / art.anim_fps(act):
 		return _from(art, act, dir, first, acted)
+	var entry := _stance_entry(hero, art, dir, t)
+	if not entry.is_empty():
+		return entry
 	var windup := _windup(hero, art, dir, t)
 	if not windup.is_empty():
 		return windup
@@ -62,6 +65,29 @@ func _pick_hero(actor: Actor, art: CreatureArtDef, t: float) -> Dictionary:
 		return {"anim": "run", "dir": dir, "frame": art.run_frame(actor.move, dir)}
 	var idle_n := maxi(art.frame_count("idle"), 1)
 	return {"anim": "idle", "dir": dir, "frame": int(t * art.anim_fps("idle")) % idle_n}
+
+
+## Just after entering a stance (host time Hero.stance_at): its entry animation
+## (CreatureArtDef.stance_anim), the second one held stance_hold_seconds. {} after.
+func _stance_entry(hero: Hero, art: CreatureArtDef, dir: String, t: float) -> Dictionary:
+	if hero == null or hero.stance <= 0:
+		return {}
+	var since := t - hero.stance_at
+	if since < 0.0:
+		return {}
+	var names := art.stance_anim(hero.stance_tree, hero.stance)
+	if names.is_empty():
+		return {}
+	var first: String = names[0]
+	if since < art.duration(first):
+		return _once(art, first, dir, since, false)
+	if names.size() > 1:
+		var held := since - art.duration(first)
+		if held < art.stance_hold_seconds:
+			var then: String = names[1]
+			var n := maxi(art.frame_count(then), 1)
+			return {"anim": then, "dir": dir, "frame": int(held * art.anim_fps(then)) % n}
+	return {}
 
 
 ## The animation for the hero's last ability: its own while its weapon type is in

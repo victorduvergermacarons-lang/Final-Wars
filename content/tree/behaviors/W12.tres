@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AbilityDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="1_eff"]
+[ext_resource type="Script" path="res://data/defs/ability_def.gd" id="3_def"]
+[ext_resource type="Resource" path="res://content/buffs/water_shield.tres" id="4_buff"]
+
+[sub_resource type="Resource" id="eff_0"]
+script = ExtResource("1_eff")
+kind = 9
+base_amount = -1.0
+sheet_scaling = true
+buff = ExtResource("4_buff")
+
+[resource]
+script = ExtResource("3_def")
+id = &"W12"
+target = 2
+max_range = 5
+mana_cost = 10.0
+water_whole_rope = true
+water_back = 3
+release_delay_fixed = 0.8
+fx_cast = &"water_shield_rope"
+targeting = 1
+effects = Array[ExtResource("1_eff")]([SubResource("eff_0")])

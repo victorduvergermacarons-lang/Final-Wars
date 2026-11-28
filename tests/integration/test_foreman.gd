@@ -206,9 +206,9 @@ func test_the_foreman_has_a_tank_to_beat() -> void:
 	var b := _boss()
 	_pull()
 	b.threat.add(heroes[1].id, 5000.0)
-	assert_eq(b.threat.top(), heroes[1].id)
+	assert_eq(b.threat.target(), heroes[1].id)
 	var taunt: AbilityDef = db.abilities[&"E04"] # Seismic Stomp: top threat + 10%
 	heroes[0].move.place(sim.find_free_tile_near(b.tile()))
 	var events: Array[Dictionary] = []
 	AbilityResolver.apply_effects(sim.ctx, heroes[0], taunt, b, events)
-	assert_eq(b.threat.top(), heroes[0].id, "a taunt takes him")
+	assert_eq(b.threat.target(), heroes[0].id, "a taunt takes him")

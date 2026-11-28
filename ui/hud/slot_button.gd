@@ -35,6 +35,7 @@ func _process(_delta: float) -> void:
 	queue_redraw()
 	var ability := _ability()
 	var item := _item()
+	var entry := hud.client.action_bar.slots[index]
 	if item != null:
 		tooltip_text = "%s\n%s" % [item.display_name, item.description]
 	else:
@@ -49,7 +50,7 @@ func _item() -> ItemDef:
 
 func _ability() -> AbilityDef:
 	var id := hud.client.action_bar.slots[index]
-	if id == &"":
+	if id == &"" or ActionBarModel.is_stance_slot(id):
 		return null
 	if ActionBarModel.is_item_slot(id):
 		var item := _item()
@@ -59,8 +60,27 @@ func _ability() -> AbilityDef:
 	return known if known != null else ContentDB.abilities.get(id)
 
 
+## Element colours for stance slots and the stance panel.
+const STANCE_COLORS := {"Fire": Color(0.85, 0.35, 0.15), "Water": Color(0.25, 0.5, 0.95),
+	"Earth": Color(0.6, 0.45, 0.25), "Air": Color(0.7, 0.82, 0.88)}
+
+
+## A stance slot: the element's colour, its initial and the stance number; brighter
+## while that stance is held.
+func _draw_stance(rect: Rect2, entry: StringName, hero: Hero) -> void:
+	var st := ActionBarModel.stance_of(entry)
+	var c: Color = STANCE_COLORS.get(st[0], Color.GRAY)
+	var held: bool = hero != null and hero.stance_tree == st[0] and hero.stance == st[1]
+	draw_rect(rect, c.darkened(0.25 if held else 0.65))
+	draw_rect(rect, c.lightened(0.4) if held else c, false, 3.0 if held else 1.0)
+	_text(String(st[0]).left(1), Vector2(6, 22), 18, c.lightened(0.5))
+	_text(str(st[1]), Vector2(size.x * 0.5 - 4, size.y - 9), 22, Color.WHITE)
+	_text(hud.client.action_bar.key_label(index), Vector2(size.x - 14, 13), 11, Color(0.85, 0.85, 0.9))
+
+
 func _draw() -> void:
 	var rect := Rect2(Vector2.ZERO, size)
+	var entry := hud.client.action_bar.slots[index]
 	var ability := _ability()
 	var hero: Hero = hud.session.local_hero()
 	var now: float = hud.session.now()
@@ -77,11 +97,20 @@ func _draw() -> void:
 	var hovered := hud.bind_mode and hud.hovered_slot == index
 	draw_rect(rect, Color(1, 0.85, 0.2) if hovered else Color(0.5, 0.5, 0.55), false, 2.0 if hovered else 1.0)
 	if ability != null:
-		var name := ability.display_name if ability.display_name != "" else String(ability.id)
+		# Its icon (a potion's item icon) at a whole screen scale, centred; the
+		# ability's name only where there is no icon (Sword, Bow, Hammer arts).
+		var icon := Icons.of_item(item) if item != null else Icons.of_ability(ability)
+		if icon != null:
+			Icons.draw_fitted(self, icon, rect.grow(-2.0),
+					Color(1, 1, 1) if usable in [Targeting.Usability.READY, Targeting.Usability.COOLDOWN]
+					else TINTS[usable].lightened(0.55))
+		else:
+			var name := ability.display_name if ability.display_name != "" else String(ability.id)
+			if item != null:
+				name = item.display_name.trim_prefix("Minor ")
+			_text(name.left(8), Vector2(4, size.y - 8), 11, Color.WHITE)
 		if item != null:
-			name = item.display_name.trim_prefix("Minor ")
-			_text(str(held), Vector2(size.x - 14, size.y - 20), 12, Color(1, 1, 0.7))
-		_text(name.left(8), Vector2(4, size.y - 8), 11, Color.WHITE)
+			_text(str(held), Vector2(size.x - 14, size.y - 6), 12, Color(1, 1, 0.7))
 		if hero != null:
 			var cd := hero.cooldowns.ability_remaining(ability.cooldown_key(), now)
 			var frac := hero.cooldowns.ability_fraction(ability.cooldown_key(), now)
@@ -92,6 +121,20 @@ func _draw() -> void:
 			if cd > hero.cooldowns.gcd_remaining(now) and cd > 0.0:
 				_text("%d" % ceili(cd) if cd >= 1.0 else "%.1f" % cd, Vector2(size.x * 0.5 - 8, size.y * 0.5 + 6), 16, Color(1, 1, 0.6))
 	_text(hud.client.action_bar.key_label(index), Vector2(size.x - 14, 13), 11, Color(0.85, 0.85, 0.9))
+	if ability != null and ability.stance > 0 and STANCE_COLORS.has(ability.tree):
+		_draw_stance_badge(ability, hero)
+
+
+## A bending ability's stance in the slot's corner (its element's colour and the
+## stance number), lit while that stance is held: pressing an ability of another
+## stance enters that stance first (2026-11-28).
+func _draw_stance_badge(ability: AbilityDef, hero: Hero) -> void:
+	var c: Color = STANCE_COLORS[ability.tree]
+	var held: bool = hero != null and hero.stance_tree == ability.tree and hero.stance == ability.stance
+	var box := Rect2(Vector2(2, size.y - 16), Vector2(14, 14))
+	draw_rect(box, c.darkened(0.1 if held else 0.6))
+	draw_rect(box, c.lightened(0.5) if held else c.darkened(0.2), false, 1.0)
+	_text(str(ability.stance), box.position + Vector2(4, 12), 11, Color.WHITE if held else Color(0.8, 0.8, 0.85))
 
 
 func _draw_sweep(rect: Rect2, fraction: float) -> void:
@@ -108,6 +151,13 @@ func _draw_sweep(rect: Rect2, fraction: float) -> void:
 func _text(t: String, pos: Vector2, font_size: int, color: Color) -> void:
 	draw_string_outline(_font, pos, t, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, 3, Color.BLACK)
 	draw_string(_font, pos, t, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
+
+
+func _make_custom_tooltip(for_text: String) -> Object:
+	var ability := _ability()
+	var item := _item()
+	var icon := Icons.of_item(item) if item != null else Icons.of_ability(ability)
+	return Icons.tooltip(self, icon, for_text)
 
 
 static func _tooltip(a: AbilityDef) -> String:

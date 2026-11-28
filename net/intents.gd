@@ -49,7 +49,26 @@ static func sanitize(raw: Variant) -> Dictionary:
 				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
 					return {}
 				out.aim = aim
-		"release", "cancel_bar", "cancel_cast":
+		"stance":
+			# Enter (or switch to) stance `stance` of `tree`; 0 leaves. Optional target
+			# and aim for the stance's entry cast (Fire Punch, Seismic Stomp, Octopus Form).
+			var tree = raw.get("tree", "")
+			var n = raw.get("stance", 0)
+			if (typeof(tree) != TYPE_STRING and typeof(tree) != TYPE_STRING_NAME) or typeof(n) != TYPE_INT:
+				return {}
+			if typeof(raw.get("target", -1)) != TYPE_INT:
+				return {}
+			out.tree = String(tree)
+			out.stance = clampi(n, 0, 5)
+			out.target = raw.get("target", -1)
+			if raw.has("aim"):
+				var aim = raw.aim
+				if typeof(aim) == TYPE_VECTOR2I:
+					aim = Vector2(aim)
+				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
+					return {}
+				out.aim = aim
+		"release", "cancel_bar", "cancel_cast", "fill_water", "water_return":
 			pass
 		"talk":
 			if not _ints(raw, out, ["npc"]):
@@ -120,6 +139,9 @@ static func sanitize(raw: Variant) -> Dictionary:
 			if typeof(line) != TYPE_STRING or line.length() > 200:
 				return {}
 			out.line = line
+			var aim = raw.get("aim")
+			if aim is Vector2 and aim.is_finite():
+				out.aim = aim
 		"game_speed":
 			var value = raw.get("value")
 			if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:

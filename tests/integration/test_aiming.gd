@@ -82,6 +82,22 @@ func _outline(id: StringName, aim: Vector2) -> PackedVector2Array:
 			aim, null, session.now()).outline
 
 
+## A telegraphed circle at the aim (Fireball's shape until the stance rework made it
+## a projectile; no ability has it now): registered as &"test_circle".
+func _circle() -> AbilityDef:
+	var a: AbilityDef = ContentDB.abilities[&"F07"].duplicate()
+	a.id = &"test_circle"
+	a.targeting = AbilityDef.TargetingMode.GROUND
+	a.telegraph_seconds = 0.4
+	a.impact_radius = 0.0
+	a.hitbox = HitboxDef.new()
+	a.hitbox.shape = HitboxDef.Shape.CIRCLE
+	a.hitbox.reach = 7.0
+	a.hitbox.radius = 1.5
+	ContentDB.abilities[a.id] = a
+	return a
+
+
 func _inside(poly: PackedVector2Array, p: Vector2) -> bool:
 	return Geometry2D.is_point_in_polygon(p, poly)
 
@@ -92,9 +108,14 @@ func test_previews_show_the_exact_shape() -> void:
 	assert_false(_inside(dart, _a(5, 10)), "nothing beside it")
 	var whip := _outline(&"F06", _a(9, 12))
 	assert_true(_inside(whip, _a(5, 8).lerp(_a(9, 12), 0.4)), "the whip follows the mouse at any angle")
-	var blast := _outline(&"F07", _a(8, 8))
+	_circle()
+	var blast := _outline(&"test_circle", _a(8, 8))
 	assert_true(_inside(blast, _a(8, 8)) and _inside(blast, _a(9, 8)), "a circle at the aim")
 	assert_false(_inside(blast, _a(10, 8)))
+	ContentDB.abilities.erase(&"test_circle")
+	var fireball := _outline(&"F07", _a(12, 8))
+	assert_true(_inside(fireball, _a(9, 8)), "Fireball: its flight lane (a projectile since the stance rework)")
+	assert_false(_inside(fireball, _a(9, 10)))
 	var wall := _preview(&"E05", _a(5, 11))
 	assert_eq(wall, [_t(4, 11), _t(5, 11), _t(6, 11)], "a wall across the aim, still on tiles")
 	assert_eq(hero.facing, Vector2i.RIGHT, "previewing doesn't turn the hero")
@@ -139,10 +160,11 @@ func test_escape_cancels_aiming() -> void:
 
 
 func test_out_of_range_aims_are_pulled_back_or_refused() -> void:
-	hero.bag.add(ContentDB.items[&"scroll_of_the_fireball"])
-	TreeRules.master(hero, ContentDB.abilities[&"F07"])
-	var p := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, ContentDB.abilities[&"F07"],
+	var circle := _circle()
+	hero.mastered[circle.id] = circle
+	var p := AimPreview.preview(session.grid(), session.rules(), session.actors(), hero, circle,
 			_a(16, 8), null, session.now())
+	ContentDB.abilities.erase(circle.id)
 	assert_eq(p.result, AbilityResolver.Result.OK, "a circle aimed too far lands at the edge of its range")
 	assert_true(_inside(p.outline, _a(12, 8)), "7 tiles out (5 until the 2026-11-17 rebalance)")
 	assert_false(_inside(p.outline, _a(16, 8)))
@@ -157,14 +179,16 @@ func test_telegraphs_and_zones_reach_the_view() -> void:
 	var sim := session.zone_sim()
 	TreeRules.master(hero, ContentDB.abilities[&"F08"])
 	sim.cast(hero, ContentDB.abilities[&"F08"], null, _a(8, 8))
-	TreeRules.master(hero, ContentDB.abilities[&"F07"])
+	var circle := _circle()
+	hero.mastered[circle.id] = circle
 	hero.cooldowns = Cooldowns.new()
-	sim.cast(hero, ContentDB.abilities[&"F07"], null, _a(8, 6))
+	sim.cast(hero, circle, null, _a(8, 6))
 	var marks := view._tile_marks()
 	assert_true(marks.has(_t(8, 8)), "burning ground")
 	var outlined := session.telegraphs().filter(func(h): return h.get("outline", PackedVector2Array()).size() > 2)
-	assert_eq(outlined.size(), 1, "the fireball's circle is telegraphed")
+	assert_eq(outlined.size(), 1, "a telegraphed circle")
 	assert_true(_inside(outlined[0].outline, _a(8, 6)))
+	ContentDB.abilities.erase(circle.id)
 
 
 func test_an_aimed_bar_ability_pressed_while_dead_does_nothing() -> void:
@@ -226,6 +250,7 @@ func test_slash_on_a_timing_bar_swings_where_the_cursor_is_at_the_last_press() -
 
 func test_lunge_dashes_toward_the_cursor_with_a_target_elsewhere() -> void:
 	hero.bag.add(ContentDB.items[&"travelers_longsword"])
+	Mastery.add_permanent(hero, "Sword", 50) # Lunge unlocks a step in (stance rework)
 	hero.equip_from_bag(hero.bag.index_of(ContentDB.items[&"travelers_longsword"]))
 	assert_not_null(hero.find_ability(&"S04"), "Lunge from the longsword in hand")
 	client.target_id = wolf.id # to the east

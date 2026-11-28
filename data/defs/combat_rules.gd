@@ -91,6 +91,17 @@ const GAME_SPEED_MAX := 2.0
 @export var heal_threat_multiplier: float = 0.5
 ## Taunt sets the caster's threat to the current top threat plus this percent.
 @export var taunt_lead_percent: float = 10.0
+## Overtaking aggro (WoW's 110% / 130%): another actor becomes an enemy's target only
+## once their threat is above the target's × this percent, within melee range of the
+## enemy (melee_overtake_range tiles, edge to edge) or farther away.
+@export var melee_overtake_percent: float = 110.0
+@export var ranged_overtake_percent: float = 130.0
+@export var melee_overtake_range: float = 1.0
+## Heroes' threat × (1 + Physical Defense / threat_def_divisor), at most
+## max_def_threat_multiplier (current Physical Defense, buffs included; enemies don't
+## have it). The per-effect threat_multiplier multiplies on top.
+@export var threat_def_divisor: float = 40.0
+@export var max_def_threat_multiplier: float = 3.0
 
 @export_group("Combat state")
 ## Seconds after no enemy lists a hero before they leave combat.
@@ -174,6 +185,18 @@ const GAME_SPEED_MAX := 2.0
 @export var party_damage_per_extra_hero: float = 0.1
 ## The largest party scaled for.
 @export var party_max_size: int = 4
+
+@export_group("Water (waterbending)")
+## A Water Pouch holds this many water points (2026-11-26).
+@export var water_pouch_capacity: int = 200
+## The Water stance 1 rope is this many points: forming it away from water takes
+## them from the pouch, leaving the stance puts them back.
+@export var water_rope_points: int = 24
+## Within this many tiles of a water tile, water is unlimited: the rope forms from
+## it and abilities spend nothing from the pouch.
+@export var water_near_tiles: float = 3.0
+## E fills the pouch within this many tiles of a water tile.
+@export var water_fill_reach: float = 1.6
 
 @export_group("Dungeons")
 ## The smallest party that may enter a dungeon.

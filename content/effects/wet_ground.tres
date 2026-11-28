@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FxDef" format=3]
+
+[ext_resource type="Script" path="res://data/defs/fx_def.gd" id="1_fx"]
+
+[resource]
+script = ExtResource("1_fx")
+id = &"wet_ground"
+frames = 1
+rotate = false
+tile_mode = 1
+tile_tint = Color(0.12, 0.28, 0.5, 0.35)
+tile_seconds = 4.0
+fps = 12.0

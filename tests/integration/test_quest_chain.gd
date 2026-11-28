@@ -91,7 +91,7 @@ func test_rowans_chain_end_to_end() -> void:
 			["choose_reward"])
 	var events := _talk_to(&"rowan", {"type": "turn_in_quest", "quest": &"beast_of_greenfields", "choice": 0})
 	assert_true(events.any(func(e): return e.type == "world_flag" and e.flag == &"grizzlehide_slain"))
-	assert_eq(hero.bag.count_of(db.items[&"scroll_of_the_fireball"]), 1, "chose the Fireball scroll")
+	assert_eq(hero.bag.count_of(db.items[&"scorch_scroll"]), 1, "chose the first choice, Scorch (tier 1 in Act I)")
 	assert_true(world.world_flags.has("grizzlehide_slain"))
 	assert_eq(QuestLog.npc_marker(hero, db.quests, &"rowan"), "", "chain finished")
 

@@ -18,6 +18,10 @@ const REASONS := {
 	"out_of_range": "Out of range",
 	"no_line_of_sight": "Target not in line of sight",
 	"not_enough_mana": "Not enough mana",
+	"no_water": "Not enough water",
+	"not_enough_water": "Not enough water",
+	"pouch_full": "Your Water Pouch is full",
+	"no_pouch": "You have no Water Pouch",
 	"on_cooldown": "Not ready yet",
 	"invalid_target": "Invalid target",
 	"in_combat": "You can't do that in combat",
@@ -62,6 +66,10 @@ var settings_path := SettingsStore.DEFAULT_PATH
 
 var bind_mode := false
 var hovered_slot := -1
+## The stance held, above the action bar (stance rework).
+var stance_panel: StancePanel
+## Whose action bar this is (the character's name): each character keeps its own.
+var hotbar_owner := ""
 ## The bag item under the mouse, and the item being dragged (ItemSlotView): the
 ## equipment slots it would go in light up.
 var hovered_item: ItemDef
@@ -109,12 +117,14 @@ var _bind_banner: Label
 var _error: Label
 
 
-func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_path: String = SettingsStore.DEFAULT_PATH) -> void:
+func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_path: String = SettingsStore.DEFAULT_PATH,
+		p_hotbar_owner: String = "") -> void:
 	session = p_session
 	client = p_client
 	input = p_input
 	settings_path = p_settings_path
-	SettingsStore.load_action_bar(client.action_bar, settings_path)
+	hotbar_owner = p_hotbar_owner
+	SettingsStore.load_action_bar(client.action_bar, settings_path, hotbar_owner)
 	InputActions.apply_action_bar_keys(client.action_bar)
 	client.action_bar.changed.connect(_on_bar_changed)
 	session.events_received.connect(_on_events)
@@ -183,6 +193,9 @@ func _build() -> void:
 	_bind_banner.add_theme_constant_override("outline_size", 4)
 	_bind_banner.visible = false
 	bottom.add_child(_bind_banner)
+	stance_panel = StancePanel.new(self)
+	stance_panel.hidden_for_good = true # the abilities are on the bar again (2026-11-28)
+	bottom.add_child(stance_panel)
 	var bar := HBoxContainer.new()
 	bar.add_theme_constant_override("separation", 4)
 	for i in ActionBarModel.SLOT_COUNT:
@@ -199,13 +212,13 @@ func _build() -> void:
 	timing_bar.mode = saved_mode if saved_mode in TimingBarView.Mode.values() else TimingBarView.Mode.LENGTH
 	_root.add_child(timing_bar)
 
-	# Bottom-right: which action bar page is shown (Shift+1–6, or the arrows).
+	# Bottom-right: which action bar page is shown (Ctrl+1–6, or the arrows).
 	var pager := PanelContainer.new()
 	pager.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	pager.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	pager.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	pager.position = Vector2(-10, -10)
-	pager.tooltip_text = "Action bar page. Shift+1 to Shift+%d switch pages." % ActionBarModel.PAGE_COUNT
+	pager.tooltip_text = "Action bar page. Ctrl+1 to Ctrl+%d switch pages." % ActionBarModel.PAGE_COUNT
 	_root.add_child(pager)
 	var pager_box := VBoxContainer.new()
 	pager_box.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -227,7 +240,7 @@ func _build() -> void:
 	pager_row.add_child(_page_label)
 	pager_row.add_child(_small_button(">", func(): client.action_bar.set_page(client.action_bar.page + 1)))
 	var pager_hint := Label.new()
-	pager_hint.text = "Shift+1–%d" % ActionBarModel.PAGE_COUNT
+	pager_hint.text = "Ctrl+1–%d" % ActionBarModel.PAGE_COUNT
 	pager_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	pager_hint.add_theme_font_size_override("font_size", 11)
 	pager_hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
@@ -392,6 +405,10 @@ func _build() -> void:
 	_root.add_child(act_end)
 
 
+static func _is_bending(a: AbilityDef) -> bool:
+	return a != null and WorldSim.BENDING_TREES.has(a.tree)
+
+
 func _process(_delta: float) -> void:
 	if not _act_end_pending.is_empty() and not dialogue.visible:
 		close_menus()
@@ -402,9 +419,12 @@ func _process(_delta: float) -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null:
 		return
+	# Every learned ability sits on the bar (as before the stance rework; since
+	# 2026-11-28): pressing one of another stance enters that stance first.
 	var ids: Array[StringName] = []
 	for a in hero.available_abilities():
-		ids.append(a.id)
+		if not a.passive:
+			ids.append(a.id)
 	client.action_bar.auto_place(ids)
 	_death.visible = not hero.alive
 	_sync_party(hero)
@@ -617,7 +637,7 @@ func _close_menu(w: Control) -> void:
 
 func _on_bar_changed() -> void:
 	InputActions.apply_action_bar_keys(client.action_bar)
-	SettingsStore.save_action_bar(client.action_bar, settings_path)
+	SettingsStore.save_action_bar(client.action_bar, settings_path, hotbar_owner)
 
 
 func _on_events(events: Array) -> void:
@@ -703,6 +723,26 @@ func _on_events(events: Array) -> void:
 					client.error(REASONS[e.reason] % int(e.get("need", 3)))
 				elif e.reason != "not_ready":
 					client.error(REASONS.get(e.reason, String(e.reason).capitalize()))
+			"pouch_filled":
+				if int(e.get("target", -1)) == session.local_hero_id:
+					client.say("Water Pouch filled (%d / %d)." % [int(e.water), session.rules().water_pouch_capacity])
+			"no_water":
+				if int(e.get("target", -1)) == session.local_hero_id:
+					client.error("Not enough water: fill your Water Pouch at water with E" if e.get("pouch", false)
+							else "Not enough water: you have no Water Pouch")
+			"water_return":
+				if int(e.get("source", -1)) == session.local_hero_id and e.get("ability", &"") == &"W02":
+					var share := float(e.get("share", 0.0))
+					timing_bar.show_result("perfect" if share >= 0.95 else ("miss" if share <= 0.0 else "good"),
+							float(e.get("t", -1.0)) if share > 0.0 else -1.0, share)
+					client.say("%d of %d water came back." % [int(e.points), int(e.sent)])
+			"pouch_filling":
+				if int(e.get("target", -1)) == session.local_hero_id:
+					if e.on:
+						client.say("Filling your Water Pouch… (stand still)")
+					else:
+						client.error({"moved": "You moved: the pouch stopped filling",
+								"hit": "You were hit: the pouch stopped filling"}.get(e.get("why", ""), "The pouch stopped filling"))
 			"act_complete":
 				_act_end_pending = e # opens once the hand-in conversation is over
 				client.say("%s is complete." % ActEndScreen.TITLES.get(int(e.act), "Act %d" % int(e.act)))
@@ -724,19 +764,20 @@ func _on_events(events: Array) -> void:
 					parts.append("%d gold" % e.gold)
 				for pair in e.items:
 					var item: ItemDef = ContentDB.items.get(StringName(str(pair[0])))
-					parts.append((item.display_name if item else str(pair[0])) + (" ×%d" % pair[1] if pair[1] > 1 else ""))
+					parts.append(_icon_of(item) + (item.display_name if item else str(pair[0])) + (" ×%d" % pair[1] if pair[1] > 1 else ""))
 				if not parts.is_empty():
 					client.say("You loot " + ", ".join(parts) + ".")
 			"looted":
 				# The party feed: "<Player> looted <Item> [Rarity]".
 				var it: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				if it != null:
-					client.say("%s looted %s%s [%s]" % [e.name, it.display_name,
+					client.say("%s looted %s%s%s [%s]" % [e.name, _icon_of(it), it.display_name,
 							" x%d" % e.count if int(e.count) > 1 else "", Rarity.NAMES[it.rarity]])
 			"drop":
 				var dropped: ItemDef = ContentDB.items.get(StringName(str(e.item)))
 				if dropped != null and dropped.rarity >= Rarity.Id.RARE:
-					client.say("A %s item dropped for you: %s." % [Rarity.NAMES[dropped.rarity], dropped.display_name])
+					client.say("A %s item dropped for you: %s%s." % [Rarity.NAMES[dropped.rarity], _icon_of(dropped),
+							dropped.display_name])
 			"boss_loot":
 				boss_loot.show_summary(e)
 			"request_declined":
@@ -837,6 +878,12 @@ func ask(hero_id: int, kind: String) -> void:
 	var other: Actor = session.get_actor(hero_id)
 	if other != null:
 		client.say("You ask %s to %s." % [other.display_name, "trade" if kind == "trade" else "duel"])
+
+
+## An item's icon for a feed line in the Escape menu's Log (rich text), with a space.
+static func _icon_of(item: ItemDef) -> String:
+	var icon := Icons.of_item(item)
+	return Icons.bbcode(icon) + " " if icon != null else ""
 
 
 ## The party feed lines of a settled boss roll: "Mara: Need 87 (+25) = 112" for

@@ -6,6 +6,12 @@ extends Actor
 ## Which HeroDef this hero was made from (for saves).
 var def_id: StringName = &"adventurer"
 var level: int = 1
+## The bending stance held (stance rework, 2026-11-23): its tree ("Fire", "Earth",
+## "Water", "Air"; "" = none) and number (1-5), and when it was entered (host clock,
+## for the stance-entry animation). Kept by the host, sent in every snapshot.
+var stance_tree: String = ""
+var stance: int = 0
+var stance_at: float = -1.0e9
 ## The element picked when the character was made (&"earth", &"water", &"fire",
 ## &"air"; ContentDB.elements), or empty for characters made before the element
 ## screen. Saved, and sent to every player in the snapshot.
@@ -21,6 +27,44 @@ var records := {"kills": 0, "damage": 0.0, "healing": 0.0, "deaths": 0, "quests"
 ## Bad-luck bonus added to boss rolls (LootRolls): +10 per Need roll lost, +15 per
 ## chosen Pass, 0 after winning one. Saved with the character.
 var loot_bonus := 0
+## Water points in the Water Pouch (it counts while a pouch is in the bag; saved).
+var water := 0
+## Water in the stance (the Water stance 1 rope, the stance 2 hoop; WaterBending).
+var stance_water := 0
+## Stance water an ability was cast with (its power), by ability id; set when paid.
+var cast_water := {}
+## Water sent out whole by an ability (AbilityDef.water_whole_rope) and not home yet:
+## {"ability": id, "points", "at"} (Water Whip: until the second press or 1.5 s).
+## Stance 1 doesn't refill meanwhile.
+var water_out := {}
+## Water Shield's water, out on the shield ({"ability", "points", "at", "paid",
+## "target", "buff", "left"}); it comes home with what's left when the shield runs
+## out, none if it breaks. Kept apart from `water_out`: the rope refills meanwhile.
+var shield_out := {}
+## Host: when the hero last cast, entered a stance or fought (the stance drops after
+## 10 s out of combat without an ability).
+var stance_busy_at := 0.0
+## Host: the stance water refill's progress (one point every 17 frames).
+var water_refill_t := 0.0
+## Host: filling the pouch at water with E: {"at", "from"} (empty when not filling).
+var pouch_fill := {}
+
+
+## Whether the hero has a water rope or hoop to draw.
+var rope: bool:
+	get: return (stance_water > 0 or not water_out.is_empty()) and WaterBending.in_water_stance(self)
+## Host: whether a water tile is near (updated each tick).
+var near_water := false
+
+const WATER_POUCH := &"water_pouch"
+
+
+func has_water_pouch() -> bool:
+	for i in bag.size():
+		var it := bag.item_at(i)
+		if it != null and it.id == WATER_POUCH:
+			return true
+	return false
 ## Items and gold this hero has put into a trade window (held by the host until the
 ## trade ends): [[item id, count, bind], ...]. Kept so a save made mid-trade keeps
 ## them (CharacterData.capture puts them back in the saved bag).
@@ -284,6 +328,8 @@ func holds_cast_facing(t: float) -> bool:
 	var ab = casting.get("ability")
 	if ab is AbilityDef:
 		return not WorldSim.is_mouse_aimed(ab)
+	if t < float(anim.get("face_until", NEVER)):
+		return true # a released ability that hasn't gone off (Healing Touch's 1.2 s)
 	if t - float(anim.get("act_at", NEVER)) < FACE_HOLD_SECONDS:
 		var done := find_ability(StringName(anim.get("act", &"")))
 		return done != null and not WorldSim.is_mouse_aimed(done)

@@ -10,6 +10,8 @@ signal join_requested(character: Dictionary, address: String, port: int)
 signal map_editor_requested
 
 var store: CharacterStore
+## Where action bars are saved (deleting a character forgets its bar).
+var settings_path := SettingsStore.DEFAULT_PATH
 var _characters: OptionButton
 var _new_name: LineEdit
 var _address: LineEdit
@@ -38,8 +40,12 @@ func _ready() -> void:
 	var pick_label := Label.new()
 	pick_label.text = "Character"
 	box.add_child(pick_label)
+	var pick_row := HBoxContainer.new()
 	_characters = OptionButton.new()
-	box.add_child(_characters)
+	_characters.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pick_row.add_child(_characters)
+	pick_row.add_child(_button("Delete", _on_delete))
+	box.add_child(pick_row)
 	var create_row := HBoxContainer.new()
 	_new_name = LineEdit.new()
 	_new_name.placeholder_text = "New character name"
@@ -145,6 +151,35 @@ func _close_element_screen() -> void:
 	if element_screen != null:
 		element_screen.queue_free()
 		element_screen = null
+
+
+## Delete: asks first ("Delete <name>? This can't be undone."), then removes the
+## character's save and its action bar (2026-11-28).
+func _on_delete() -> void:
+	if _characters.selected < 0 or _characters.item_count == 0:
+		show_status("No character to delete.")
+		return
+	var char_name := _characters.get_item_text(_characters.selected)
+	if delete_dialog != null:
+		delete_dialog.queue_free()
+	delete_dialog = ConfirmationDialog.new()
+	delete_dialog.title = "Delete character"
+	delete_dialog.dialog_text = "Delete %s? This can't be undone." % char_name
+	delete_dialog.ok_button_text = "Delete"
+	delete_dialog.confirmed.connect(func(): delete_character(char_name))
+	add_child(delete_dialog)
+	delete_dialog.popup_centered()
+
+
+## The confirmation while it is open (null otherwise).
+var delete_dialog: ConfirmationDialog
+
+
+func delete_character(char_name: String) -> void:
+	store.delete(char_name)
+	SettingsStore.forget_action_bar(char_name, settings_path)
+	show_status("Deleted %s." % char_name)
+	_refresh_characters("")
 
 
 func _refresh_characters(select: String) -> void:
