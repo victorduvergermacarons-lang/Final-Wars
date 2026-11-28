@@ -133,9 +133,19 @@ func _ground_bench(sim: WorldSim, t: Vector2i) -> void:
 	dummy.move.pos = at
 	world.submit(hero.id, {"type": "cast", "ability": &"F08", "target": -1, "aim": at})
 	var t0 := Time.get_ticks_msec()
-	for when in [0.4, 1.0, 2.5, 6.5, 12.0]:
+	for when in [0.4, 1.0, 2.5, 4.5, 6.5, 12.0]:
 		while world.zone_of(hero.id).now < float(when) + _cast_at(sim):
+			if OS.get_environment("FIRE_HOOKS") == "1" and world.zone_of(hero.id).now > 3.5 + _cast_at(sim) \
+					and world.zone_of(hero.id).now < 4.0 + _cast_at(sim):
+				# a line of water lying across the fire, and a gust blowing over it (the hooks)
+				var pts := []
+				for i in 12:
+					pts.append({"pos": at + Vector2(-1.2 + i * 0.2, 1.2 - i * 0.2) + Vector2(0.4, 0.4), "z": 0.0, "ground": true})
+				view.fire.extra_water = pts
+				if view.fire._gusts.is_empty() and view.fire.extra_water.size() < 13:
+					view.fire._gusts.append({"from": at + Vector2(-2, -2), "to": at + Vector2(2, 2), "left": 30})
 			await _frames(1)
+		view.fire.extra_water = []
 		await _shot("ground_F08_%04.1fs" % when, Vector2(t))
 		print("ground %.1f s: zones %d, fire windows %d, burnt plants %d" % [when, world.zone_of(hero.id).ground_zones().size(),
 				view.fire.effects.size(), view.fire.burnt.size()])

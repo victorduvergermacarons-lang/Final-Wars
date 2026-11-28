@@ -42,6 +42,8 @@ var _zones_seen := {}
 var _gusts: Array = []
 ## Water for the fire this frame (WaterRopes.water_points).
 var water: Array = []
+## Extra water for benches and tests (kept; added to `water`).
+var extra_water: Array = []
 
 
 ## `parent` hosts the GPU passes (WorldView).
@@ -208,7 +210,7 @@ func _hooks(e: FireEffect) -> void:
 				continue
 			sim.air(e.slot, c.x, c.y, 10.0, 2, 0.06, dir.x, dir.y)
 	var k := 0
-	for w in water:
+	for w in water + extra_water:
 		var lp := e.to_local(w.pos)
 		if lp.x < 0 or lp.y < 0 or lp.x >= FireSim.SW or lp.y >= FireSim.SW:
 			continue
