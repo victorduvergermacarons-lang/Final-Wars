@@ -1176,6 +1176,20 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     fall under gravity (40 levels/s², 60% of the speed carried, no steering, casts
     cancelled, a shadow on the ground below); more than 3 levels hurts 10% of max HP per
     extra level, at most 60%, never below 1 HP unless `fall_damage_can_kill`.
+  - **Going over a ledge** (2026-11-28, user: walking off the back of a ledge looked like
+    clipping through it):
+    - **Covered by drawn height:** a tile in front covers a unit only when its top is
+      above the unit's feet as drawn (`WorldView.actor_draw_height`, `_covers`); it used
+      the ground tile's height, so a ledge cut off the legs of a hero still level with it.
+    - **1-level steps are a ramp** 0.3 tiles wide centred on the edge (`Mover.ramp_height`,
+      `MovementDef.step_ramp_width`): the body goes down (or up) while crossing, halfway at
+      the edge, by distance not time. Changes the ramp doesn't explain (terrain rising
+      under a unit, a teleport) still ease in at `step_smooth_rate`.
+    - **Falls start moving down** at `fall_start_speed` (3 levels/s), so leaving a ledge is
+      one arc. The ground still changes when the centre crosses; fall damage and landing
+      are the host's as before.
+    - Screenshots: `tests/visual/ledge_shots.tscn` (steps and falls, away from the camera
+      and toward it, a shot every 0.05 s). Tests in `tests/unit/test_mover.gd`.
   - `{"type": "step", "to": tile}` walks to a tile's centre (tests, later click-to-move);
     a cast ends such a walk, a held key cancels a cast bar.
   - Map edges: pushing against a side that leads somewhere leaves through it.
@@ -2976,6 +2990,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-28 | Going over a ledge: covered by the drawn height; 1-level steps drawn as a ramp across the edge; falls start moving down | User report and approval of both parts of the proposal. My numbers: the ramp is 0.3 tiles wide (halfway at the edge); falls start at 3 levels/s down; the drawn height follows the ramp exactly unless it jumps by more than 0.8 of a level in a tick (then it eases at 8 levels/s as before). The ramp is used by every unit that moves with the Mover (heroes, enemies, client prediction); it is drawing only, so the host's ground, falls and damage don't change apart from falls landing a little sooner. |
 | 2026-11-28 | Water physics second follow-ups: the shield's rope doesn't regrow on screen; highlights on thin water; Healing Touch's water spirals back down before joining the orbit; stances drop after 20 s idle; new water spirals out of the waist (pouch) or flows over from the river, linked into the rope as it comes; bigger drops; the action bar shows Water abilities ready while water can be had; the whip from the hoop isn't twice as long; stance 2 abilities from the rope | User report and requests. My choices: the heal's water turns once on the way down; a stance 2 ability from stance 1 goes off 0.5 s after the press (the hoop rising), only with 27 water in all, else the press just tries stance 2; new water takes 0.6 s to reach its place, starting half a turn behind it, 4 px from the waist; red on the bar only when the hero has no water at all (in the stance, a shield or a throw, the pouch, or a water tile within 3 tiles); the cause of the double-length whip: the hoop's points were still at its wider spacing when thrown. |
 | 2026-11-28 | Water physics follow-ups: Hilda sells the pouch; stance 1 twice as fast; Frost Shard a third of the cooldown and damage, drawn as in the demo; stance 1 abilities from the hoop; the Water Shield holds the whole rope; Healing Touch's mist and return arc; the whip's early press; input buffering | User request. User answers: twice as fast for both entering and the refill (8.5 frames a point); a stance 1 ability pressed in stance 2 goes off 0.25 s after the press; Frost Shard off a shield round an ally goes along you → ally, onward; input buffer 0.3 s. User rules: no stance 1 rebuild while the shield is out; another whole-rope ability or a stance recalls it; shards off the shield cost it points and absorb. My choices: a recalled shield ends on its target and its water comes home × the share left (all of it before it is up, and it never goes up); a shard leaves the bubble 0.45 tiles from its holder's centre; a shard taking the last of the shield ends it (its water lost); the client throw waits up to 0.6 s for a recalled bubble's rope to get home; a hero in a Water stance always keeps a rope to draw (the cause of "half the water disappears" and of the whole-heal mist being cut: the rope was dropped when the stance water hit 0); buffering covers every ability except aimed ones without a bar, and only cooldowns, the GCD and casts (not range or mana). Whip bug: a second press before the hit settled the water at once, so the hit sent the refilled rope out again and lost it; now kept and settled after the hit. |
 | 2026-11-28 | Balance target "a starter + healer pair always beats 2 Wolves, under 75% HP lost" dropped | User decision. With Healing Touch sending the whole rope (about 7 s to grow back) the bots won 5 of 6 with 93% lost. The solo check (2 Wolves usually kill a lone starter) stays. |
