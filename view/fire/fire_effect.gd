@@ -44,6 +44,29 @@ var ground_light: Array = []
 var now := 0.0           # the host clock, set each frame
 var zone: ZoneDef
 var grid: GridModel
+## The kinds' state (FireKinds): the target or aimed point, the leap, the lift, the
+## projectile, the whip, the beam, Inferno's circle, the heat haze.
+var tg := Vector2.ZERO
+var start := Vector2.ZERO
+var land := Vector2.ZERO
+var hz := 0.0
+var proj := {}
+var whip_pts: Array = []
+var streak := 0.0
+var beam := 0.0
+var btail := 0.0
+var ctr := Vector2.ZERO
+var blocks: Array = []
+var marker := {}
+var haze := 0.0
+var bmul := 1.0
+var p_punch := {}          # Blazing Combo: the punches' and the kick's own looks
+var p_kick := {}
+var p_now := {}
+var units: Array = []      # Vector3 (x, y, r) this step
+## Ground patches waiting for the host's tiles: re-sent for a while, since fuel only
+## goes where the host's zone says (it may arrive a frame later than the cast).
+var patches: Array = []
 
 
 ## Where to put the window for a caster at `pos` aiming along `dir`: the caster near the
@@ -67,23 +90,45 @@ func to_world(local: Vector2) -> Vector2:
 func step(sim: FireSim) -> void:
 	var dd := atan2(sin(aim_t - aim), cos(aim_t - aim))
 	aim += clampf(dd, -0.08, 0.08)
-	var ax := cos(aim)
-	var ay := sin(aim)
-	match look.kind:
-		"stream":
-			if ct < hold_steps:
-				var wob := 0.04 * sin(f * 0.21) + 0.03 * sin(f * 0.53 + 1.0)
-				sim.emit(slot, hero.x + ax * 6.5, hero.y + ay * 6.5, ax, ay, 1.25, float(p.temp), float(p.launch), wob)
+	p_now = p
+	if look.kind != "ground":
+		FireKinds.step(self, sim)
 	step_parts(sim)
+	for q in patches:
+		sim.patch(slot, q.x, q.y, q.r, q.sec, q.ign)
+		q.left -= 1
+	patches = patches.filter(func(q): return q.left > 0)
 	if ground:
 		_step_ground(sim)
-	var params := p.duplicate()
-	params["aim"] = Vector2(ax, ay)
+	var params: Dictionary = p_now.duplicate()
+	params["aim"] = Vector2(cos(aim), sin(aim))
 	params["ground"] = ground
+	params["bmul"] = bmul
+	for k in ["gspread", "gh"]:
+		if p.has(k):
+			params[k] = p[k]
 	params["contact"] = 1 if look.kind in ["stream", "punch", "wheel", "breathfire", "jet"] else (2 if look.kind in ["kick", "combo"] else 0)
 	sim.set_params(slot, params)
+	sim.set_rate(slot, FireKinds.rate(self))
 	ct += 1
 	f += 1
+
+
+## A ground patch (the reference's gpatch) that waits for the host's burning tiles.
+func patch_later(x: float, y: float, r: float, sec: float, ign: float) -> void:
+	if r <= 0.0 or sec <= 0.0:
+		return
+	ground = true
+	patches.append({"x": x, "y": y, "r": r, "sec": sec, "ign": ign, "left": 30})
+
+
+## Whether a local point touches a unit's body (`pad` cells more), as the reference's
+## dart and fireball stop at the dummy.
+func hits_unit(pt: Vector2, pad: float) -> bool:
+	for u in units:
+		if Vector2(u.x, u.y).distance_to(pt) < float(u.z) + pad:
+			return true
+	return false
 
 
 ## The host's burning tiles of this window: fuel the new ones, light the zone's middle,
@@ -177,9 +222,14 @@ func step_parts(sim: FireSim) -> void:
 			parts.remove_at(q)
 
 
-## A fire drop reached the floor (ground fire hooks in here).
-func landed(_o: Dictionary) -> void:
-	pass
+## A fire drop reached the floor: a patch of ground fire (Phoenix Kick), or it lights the
+## cell it lands on (Inferno's falling fire).
+func landed(o: Dictionary) -> void:
+	if float(o.gr) > 0.0:
+		patch_later(o.x, o.y, float(o.gr), float(o.gs), 1.0)
+	else:
+		ground = true
+		patches.append({"x": o.x, "y": o.y, "r": 0.6, "sec": 0.0, "ign": 1.0, "left": 3})
 
 
 func finished() -> bool:

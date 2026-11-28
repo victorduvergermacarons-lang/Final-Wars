@@ -164,6 +164,7 @@ func _process(delta: float) -> void:
 		refresh_tiles(burnt_changed)
 	fire.water = ropes.water_points()
 	fire.advance(clampf(t - _fire_t, 0.0, 0.25) if _fire_t >= 0.0 else 0.0, session.actors())
+	fire.update_haze(self, get_viewport().get_canvas_transform().get_scale().x)
 	_fire_t = t
 	_update_terrain_cache()
 	_update_sense(t)
@@ -1537,7 +1538,7 @@ func _queue_float_texts() -> void:
 func _on_events(events: Array) -> void:
 	_fx.on_events(events, ContentDB.effects)
 	ropes.on_events(events, ContentDB.effects)
-	fire.on_events(events, ContentDB.abilities)
+	fire.on_events(events, ContentDB.abilities, session.grid())
 	_fx.on_casts(events, ContentDB.abilities)
 	var t: float = session.render_time()
 	for e in events:

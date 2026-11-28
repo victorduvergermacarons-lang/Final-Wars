@@ -726,7 +726,13 @@ func intent_ack(hero_id: int) -> int:
 	return _acks.get(hero_id, 0)
 
 
+## The last point each hero aimed a cast at (fire physics: the looks go there).
+var _cast_aims := {}
+
+
 func emit(event: Dictionary) -> void:
+	if event.get("type", "") == "cast" and not event.has("fire"):
+		_add_fire_look(event)
 	_events.append(event)
 	_record(event)
 	# Shoved or pulled: the hero drops its stance (crowd control, stance rework).
@@ -1226,6 +1232,28 @@ func _update_releases() -> void:
 			emit({"type": "cast_failed", "source": caster.id, "ability": r.ability.id,
 					"reason": AbilityResolver.Result.keys()[res].to_lower()})
 	_releases = waiting
+
+
+## A Fire ability went off (fire physics): what every player needs to play its look on
+## their own GPU: where from, the aimed point (the mouse's floor point, else the target,
+## else ahead), the caster's Fire Mastery and the host's time. Gameplay never reads it.
+func _add_fire_look(e: Dictionary) -> void:
+	var ability: AbilityDef = ContentDB.abilities.get(StringName(e.get("ability", "")))
+	var caster: Actor = get_actor(int(e.get("source", -1)))
+	if ability == null or caster == null or ability.tree != "Fire":
+		return
+	var target: Actor = get_actor(int(e.get("target", -1)))
+	var to: Vector2 = caster.move.pos + caster.facing_vector() * 3.0
+	if _cast_aims.has(caster.id):
+		to = _cast_aims[caster.id]
+	if target != null and target != caster and not ability.uses_hitbox():
+		to = target.move.pos
+	e["fire"] = true
+	e["from"] = caster.move.pos
+	e["to"] = to
+	e["at"] = now
+	e["h"] = float(caster.move.ground_h)
+	e["mastery"] = Mastery.total(caster, "Fire", now) if caster is Hero else 0.0
 
 
 ## An effect (FxDef id) for every player: from the caster toward its target (else
@@ -1913,6 +1941,8 @@ func _intent_face(hero: Hero, dir: Vector2i) -> String:
 
 
 func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Variant = null) -> String:
+	if aim is Vector2 or aim is Vector2i:
+		_cast_aims[hero.id] = Vector2(aim)
 	var ability := hero.find_ability(ability_id)
 	if ability == null:
 		return "unknown_ability"

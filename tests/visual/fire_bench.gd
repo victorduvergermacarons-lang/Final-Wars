@@ -70,6 +70,10 @@ func _run() -> void:
 	dd.aggro_radius = 0
 	dummy = sim.add_enemy(dd, t + Vector2i(2, -2))
 	await _frames(10)
+	if ability == &"all" or OS.get_environment("FIRE_LIST") != "":
+		await _all_bench(sim, t)
+		get_tree().quit()
+		return
 	if ability == &"ground":
 		await _ground_bench(sim, t)
 		get_tree().quit()
@@ -158,3 +162,34 @@ func _cast_at(sim: WorldSim) -> float:
 	if _cast_t < 0.0:
 		_cast_t = sim.now
 	return _cast_t
+
+
+
+## FIRE_ABILITY=all (or FIRE_LIST=F01,F06,...): every Fire look through the host's cast
+## event path (start_from_event), at Fire Mastery 1000 against the dummy at the look's
+## near distance; shots at a quarter, half and most of the way through.
+func _all_bench(sim: WorldSim, t: Vector2i) -> void:
+	var ids := ["F01", "F02", "F09", "F03", "F04", "F12", "F23", "F06", "F11", "F15", "F07", "F10", "F16", "F14", "F18"]
+	if OS.get_environment("FIRE_LIST") != "":
+		ids = OS.get_environment("FIRE_LIST").split(",")
+	var m := float(OS.get_environment("FIRE_MASTERY")) if OS.get_environment("FIRE_MASTERY") != "" else 1000.0
+	for id in ids:
+		var look := FireEffects.look_of(StringName(id))
+		var at := Vector2(t) + DIR.normalized() * (float(look.near) / 16.0)
+		dummy.move.place(at)
+		dummy.move.pos = at
+		await _frames(2)
+		var ev := {"type": "cast", "fire": true, "ability": StringName(id), "source": hero.id, "target": dummy.id,
+				"from": Vector2(t), "to": at, "h": float(sim.grid.height_at(t)), "mastery": m}
+		var e := view.fire.start_from_event(ev, ContentDB.abilities, sim.grid)
+		if e == null:
+			print(id, ": no look")
+			continue
+		var steps := FireKinds.length(e)
+		for frac in [0.25, 0.5, 0.85]:
+			while e.ct < int(steps * frac) and view.fire.effects.has(e):
+				await _frames(1)
+			await _shot("look_%s_m%d_%02d" % [id, int(m), int(frac * 100)], Vector2(t))
+		print("%s (%s): %d steps" % [id, look.kind, steps])
+		view.fire.clear()
+		await _frames(3)

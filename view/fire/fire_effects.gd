@@ -20,6 +20,9 @@ const GROUND_LOOKS := {
 	&"F08": {"gspread": 14.0, "gh": 10.0},       # Burning Ground
 	&"F16": {},                                  # Inferno (its look)
 	&"F07": {},                                  # Fireball (its look)
+	&"F18": {},                                  # Combustion Blast (its look)
+	&"F15": {},                                  # Phoenix Kick's fire drops (its look)
+	&"F11": {},                                  # Jet Propulsion's splash (its look)
 	&"sunfire_breath": {"gspread": 16.0, "gh": 10.0},
 	&"searing_dive": {"gspread": 14.0, "gh": 9.0},
 	&"ember_trail": {"gspread": 10.0, "gh": 6.0},
@@ -72,9 +75,42 @@ func start(look: FireLookDef, caster_id: int, pos: Vector2, h: float, at: Vector
 	e.origin = FireEffect.place_origin(pos, dir)
 	e.base_h = h
 	e.hero = e.to_local(pos)
+	e.start = e.hero
+	e.tg = e.to_local(at)
 	e.aim = atan2(dir.y, dir.x)
 	e.aim_t = e.aim
+	if look.kind == "combo":
+		e.p_punch = (load("res://content/effects/fire/F01.tres") as FireLookDef).settings(mastery)
+		e.p_kick = (load("res://content/effects/fire/F02.tres") as FireLookDef).settings(mastery)
+	e.done_after = FireKinds.length(e)
 	effects.append(e)
+	return e
+
+
+## The look of an ability (content/effects/fire/<id>.tres), or null.
+static func look_of(id: StringName) -> FireLookDef:
+	var path := "res://content/effects/fire/%s.tres" % id
+	return load(path) if ResourceLoader.exists(path) else null
+
+
+## A Fire ability went off on the host ("cast" with "fire": WorldSim._add_fire_look):
+## start its look on this player's GPU.
+func start_from_event(ev: Dictionary, abilities: Dictionary, grid: GridModel) -> FireEffect:
+	if low_graphics:
+		return null
+	var look := look_of(StringName(ev.get("ability", "")))
+	if look == null:
+		return null
+	var e := start(look, int(ev.get("source", -1)), Vector2(ev.from), float(ev.get("h", 0.0)), Vector2(ev.to), float(ev.get("mastery", 0.0)))
+	if e == null:
+		return null
+	e.target_id = int(ev.get("target", -1))
+	var ab: AbilityDef = abilities.get(StringName(ev.get("ability", "")))
+	if look.kind == "stream":
+		var secs := ab.channel_seconds if ab != null and ab.channel_seconds > 0.0 else 2.0
+		e.hold_steps = roundi(secs * 60.0 * look.time_scale)
+		e.done_after = e.hold_steps
+	set_walls(e, grid)
 	return e
 
 
@@ -99,15 +135,20 @@ func sync_ground(zones: Array, now: float, grid: GridModel, zone: ZoneDef) -> Ar
 		var e := _ground_window(tiles, ab, grid, zone)
 		if e == null:
 			continue
+		e.ground = true
 		for t in tiles:
 			e.ground_until[t] = maxf(float(e.ground_until.get(t, 0.0)), float(z.until))
-			e.ground_new.append(t)
+			# An ability's own window lays its fuel itself (its ragged patches): the zone only
+			# says where and until when. A plain burning zone is fueled tile by tile.
+			if e.look.kind == "ground":
+				e.ground_new.append(t)
 			if zone != null and _plant_burns(zone, t):
 				if not burnt.has(t):
 					changed.append(t)
 				burnt[t] = maxf(float(burnt.get(t, 0.0)), float(z.until) + REGROW_SECONDS)
 		e.ground_light.append(_middle(tiles))
 		e.done_after = maxi(e.done_after, e.ct + int((float(z.until) - now) * 60.0) + 60)
+		e.tail_steps = maxi(e.tail_steps, int((CHAR_FADE_LONG + 3.0) * 60.0))
 	for t in burnt.keys():
 		if now >= float(burnt[t]):
 			burnt.erase(t)
@@ -144,7 +185,7 @@ func _ground_window(tiles: Array, ab: StringName, grid: GridModel, zone: ZoneDef
 		lo = Vector2i(mini(lo.x, t.x), mini(lo.y, t.y))
 		hi = Vector2i(maxi(hi.x, t.x), maxi(hi.y, t.y))
 	for e in effects:
-		if e.look.kind != "ground" and not e.ground:
+		if e.look.kind != "ground" and e.look.id != ab:
 			continue
 		var a := e.origin + Vector2i(1, 1)
 		var b := e.origin + Vector2i(6, 6)
@@ -183,8 +224,11 @@ func _ground_window(tiles: Array, ab: StringName, grid: GridModel, zone: ZoneDef
 
 
 ## An Air ability went off: its wind pushes the fire's air from `from` toward `to`.
-func on_events(events: Array, abilities: Dictionary) -> void:
+func on_events(events: Array, abilities: Dictionary, grid: GridModel = null) -> void:
 	for ev in events:
+		if str(ev.get("type", "")) == "cast" and bool(ev.get("fire", false)):
+			start_from_event(ev, abilities, grid)
+			continue
 		if str(ev.get("type", "")) != "fx" or not ev.has("from") or not ev.has("to"):
 			continue
 		var ab: AbilityDef = abilities.get(StringName(ev.get("ability", "")))
@@ -262,13 +306,24 @@ func advance(dt: float, actors: Array) -> void:
 			effects.erase(e)
 			continue
 		if sim.due(e.slot, dt) > 0:
-			sim.set_units(e.slot, _units(e, actors))
+			_follow(e, actors)
+			e.units = _units(e, actors)
+			sim.set_units(e.slot, e.units)
 			_hooks(e)
 			e.step(sim)
 	for g in _gusts:
 		g.left -= 1
 	_gusts = _gusts.filter(func(g): return g.left > 0)
 	sim.run()
+
+
+## The caster and the target move: the look follows them.
+func _follow(e: FireEffect, actors: Array) -> void:
+	for a in actors:
+		if a.id == e.caster_id and a.alive:
+			e.hero = e.to_local(a.move.pos)
+		elif a.id == e.target_id and a.alive and e.target_id >= 0:
+			e.tg = e.to_local(a.move.pos)
 
 
 func _units(e: FireEffect, actors: Array) -> Array:
@@ -374,6 +429,24 @@ func _draw_parts(canvas: CanvasItem, item: Dictionary) -> void:
 			_:
 				var c := _ramp(mini(4, 1 + int(q * 4.0)))
 				_px(canvas, top, p.x, p.y, c, 2 if (o.k == 3 and q < 0.4) else 1)
+	# Fire Whip: its segments, each with the band of its middle (the reference's drawSeg)
+	var wp := e.whip_pts
+	var wt := maxi(1, roundi(float(e.p.get("wthick", 2.0))))
+	for k in range(wp.size() - 1):
+		var a: Vector3 = wp[k]
+		var c: Vector3 = wp[k + 1]
+		if band_of((a.x + c.x) * 0.5, (a.y + c.y) * 0.5) != b:
+			continue
+		var p0 := _sp(a.x, a.y, a.z)
+		var p1 := _sp(c.x, c.y, c.z)
+		_line(canvas, top, p0 - Vector2(0, wt >> 1), p1 - Vector2(0, wt >> 1), _ramp(3), wt + 1)
+		_line(canvas, top, p0, p1, _ramp(1), maxi(1, wt - 1))
+	# Combustion Blast: the first laser and the beam, from the eyes, drawn with the hero's band
+	if (e.streak > 0.0 or e.beam > 0.0) and band_of(e.hero.x, e.hero.y) == b:
+		_draw_beam(canvas, top, e)
+	# Inferno's warning: the dotted, blinking outline of its blocks, on the floor
+	if not e.marker.is_empty() and float(e.marker.t) < 1.5:
+		_draw_marker(canvas, top, e, b)
 	var hd := e.head
 	if not hd.is_empty() and band_of(hd.x, hd.y) == b:
 		var p := _sp(hd.x, hd.y, FireSim.ZC)
@@ -401,3 +474,112 @@ func _draw_parts(canvas: CanvasItem, item: Dictionary) -> void:
 					if dd > 0.8 and BAY[(X & 3) | ((Y & 3) << 2)] > 10:
 						continue
 					_px(canvas, top, X, Y, _ramp(0 if dd < 0.35 else 1 if dd < 0.6 else 2 if dd < 0.85 else 3))
+
+
+
+func _line(canvas: CanvasItem, top: Vector2, a: Vector2, b: Vector2, c: Color, t: int) -> void:
+	var n := maxi(1, ceili(maxf(absf(b.x - a.x), absf(b.y - a.y))))
+	for k in n + 1:
+		var q := float(k) / n
+		_px(canvas, top, roundf(a.x + (b.x - a.x) * q), roundf(a.y + (b.y - a.y) * q), c, t, t)
+
+
+func _draw_beam(canvas: CanvasItem, top: Vector2, e: FireEffect) -> void:
+	var a := _sp(e.hero.x, e.hero.y, 21.0 + e.hz)
+	var z := _sp(e.tg.x, e.tg.y, FireKinds.ZC)
+	var n := maxi(40, roundi(a.distance_to(z)))
+	var st := e.streak
+	var ci := 0 if st > 0.8 else 1 if st > 0.5 else 2 if st > 0.3 else 3 if st > 0.2 else 4
+	for k in n + 1:
+		var q := float(k) / n
+		var X := roundf(a.x + (z.x - a.x) * q)
+		var Y := roundf(a.y + (z.y - a.y) * q)
+		if e.beam > 0.0 and q <= e.beam and q >= e.btail:
+			var hd := e.beam - q < 0.06
+			_px(canvas, top, X, Y, _ramp(0) if hd else _ramp(1))
+			_px(canvas, top, X, Y - 1, _ramp(0) if hd else _ramp(2))
+			_px(canvas, top, X, Y + 1, _ramp(3))
+			continue
+		if st <= 0.0 or (st < 0.5 and randf() > st * 1.8):
+			continue
+		_px(canvas, top, X, Y + (1.0 if randf() < 0.25 else 0.0), _ramp(0) if (q > 0.92 and st > 0.5) else _ramp(ci))
+
+
+const MARK := Color8(216, 69, 44)
+const MARK2 := Color8(122, 36, 24)
+
+
+func _draw_marker(canvas: CanvasItem, top: Vector2, e: FireEffect, b: int) -> void:
+	var t := float(e.marker.t)
+	if t < 1.0 and ((e.f >> 3) & 1) == 0:
+		return
+	var c := MARK if t < 1.0 else MARK2
+	var inside := {}
+	for bc in e.blocks:
+		inside[Vector2i(int(bc.x) >> 3, int(bc.y) >> 3)] = true
+	for bk in inside:
+		# the edges of a block that has no neighbour on that side, dotted
+		var x0: int = bk.x * 8
+		var y0: int = bk.y * 8
+		for side in [[Vector2i(-1, 0), Vector2i(0, 0), Vector2i(0, 1)], [Vector2i(1, 0), Vector2i(8, 0), Vector2i(0, 1)],
+				[Vector2i(0, -1), Vector2i(0, 0), Vector2i(1, 0)], [Vector2i(0, 1), Vector2i(0, 8), Vector2i(1, 0)]]:
+			if inside.has(bk + side[0]):
+				continue
+			for k in 8:
+				var X: int = x0 + side[1].x + side[2].x * k
+				var Y: int = y0 + side[1].y + side[2].y * k
+				if (X + Y) % 3 == 2 or band_of(X, Y) != b:
+					continue
+				var sp := _sp(X, Y, 0.0)
+				_px(canvas, top, sp.x, sp.y, c)
+
+
+# --- Heat haze (Overheat): rows of pixels shifted sideways over the target ----------
+
+var _haze_nodes := {}
+const HAZE_SHADER := """
+shader_type canvas_item;
+uniform sampler2D screen_tex : hint_screen_texture, filter_nearest;
+uniform float haze = 0.0;
+uniform float t = 0.0;
+uniform float px = 2.0; // screen pixels per art pixel
+void fragment() {
+	float r = floor(FRAGCOORD.y / px);
+	float off = round(sin(r * 0.9 + t * 0.35) * haze * 1.6) * px;
+	COLOR = texture(screen_tex, (FRAGCOORD.xy - vec2(off, 0.0)) * SCREEN_PIXEL_SIZE);
+	if (off == 0.0) COLOR.a = 0.0;
+}
+"""
+
+
+## Places a shimmering rect over each Overheat target (in `parent`'s canvas, above the world).
+func update_haze(parent: Node2D, screen_scale: float) -> void:
+	var live := {}
+	for e in effects:
+		if e.haze < 0.03:
+			continue
+		live[e] = true
+		var r: ColorRect = _haze_nodes.get(e)
+		if r == null:
+			r = ColorRect.new()
+			var m := ShaderMaterial.new()
+			var sh := Shader.new()
+			sh.code = HAZE_SHADER
+			m.shader = sh
+			r.material = m
+			r.z_index = 50
+			parent.add_child(r)
+			_haze_nodes[e] = r
+		var hw := maxf(4.0, roundf(9.0 * float(e.p.get("ohsize", 1.0))))
+		var hr := maxf(8.0, roundf(30.0 * float(e.p.get("ohsize", 1.0))))
+		var feet := Iso.to_screen(e.to_world(e.tg), e.base_h)
+		var s := PixelCamera.ART_SCALE
+		r.position = feet + Vector2(-hw, -2.0 - hr) * s
+		r.size = Vector2(hw * 2.0 + 1.0, hr) * s
+		(r.material as ShaderMaterial).set_shader_parameter("haze", e.haze)
+		(r.material as ShaderMaterial).set_shader_parameter("t", float(e.f))
+		(r.material as ShaderMaterial).set_shader_parameter("px", s * screen_scale)
+	for e in _haze_nodes.keys():
+		if not live.has(e):
+			_haze_nodes[e].queue_free()
+			_haze_nodes.erase(e)
