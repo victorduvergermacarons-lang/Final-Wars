@@ -23,6 +23,8 @@ class Pt:
 	var gnd := false
 	var near := false
 	var off := Vector3.ZERO # Water Shield's dents (WaterShieldRope)
+	var s := 0.0 # Leeching Tide: distance along the stream
+	var dark := 0.0 # Leeching Tide: leeched water's tint (1 = full leech colours)
 
 	func _init(at: Vector3, i: int) -> void:
 		p = at
@@ -96,6 +98,18 @@ var heal_tail: Array[Pt] = []
 var heal_tail_base := 0
 var heal_tt := 0
 var mists: Array = []
+## Leeching Tide: the reach path, the stream (conduit) and its length, the hoop angle
+## where it enters, the reach's speed curve, and whether water is still drawn out of
+## the target (`end_leech` stops it).
+var lpath := {}
+var lead_s := 0.0
+var leech_s0 := 0.0
+var leech_Lt := 0.0
+var leech_m0 := 0.0
+var cd := {}
+var cd_L := 0.0
+var a_e := 0.0
+var spawning := false
 ## Drawn width (Water Shield thins as it stretches; WaterShieldRope).
 var wscale := 1.0
 var goal := 1
@@ -170,7 +184,7 @@ func hoop_n() -> int:
 
 
 ## Point `id`'s place on the hoop: round the chest, breathing and tilting.
-func hoop_t(id: int) -> Vector3:
+func hoop_t(id: float) -> Vector3:
 	var n := hoop_n()
 	var a := phase - id * TAU / n
 	var br := sin(fr * TAU / (s.BREATH_T * 60.0))
@@ -445,6 +459,173 @@ func _helix(pts: PackedVector3Array, C: Vector2, a0: float, r_start: float, z0: 
 		var r := lerpf(rb, s.TOP_R, ramp(u - s.NARROW_AT, 1.0 - s.NARROW_AT))
 		var a := a0 + A * u
 		pts.append(Vector3(C.x + cos(a) * r, C.y + sin(a) * r, lerpf(z0, z1, u)))
+
+
+## Leeching Tide: the hoop opens at its front and the whole of it arcs out to
+## `target` (ground px from the hero), latching at the target's chest after REACH_T
+## frames; then a stream flows home, drawing new (dark) water out of the target, until
+## `end_leech`. The rest flows into the hoop, which closes again.
+func leech(target: Vector2) -> void:
+	if M() < 2:
+		fill_now(maxi(M(), s.MIN_KEEP))
+	wrap = false
+	wrap_str = 0.0
+	aim = Vector3(target.x, target.y, 10.0)
+	var n := M()
+	var pts := PackedVector3Array()
+	var k := (n - 1) * 4
+	while k >= 0:
+		pts.append(hoop_t(k / 4.0))
+		k -= 1
+	leech_s0 = poly_path(pts).L
+	var P0 := pts[pts.size() - 1]
+	var d := target.normalized() if target.length() > 0.0 else Vector2.RIGHT
+	var A := Vector3(target.x - d.x * s.ATTACH_R, target.y - d.y * s.ATTACH_R, s.ATTACH_Z)
+	var vdir := Vector2(-sin(phase), cos(phase))
+	var ti := WaterShieldRope.turn_in_static(s, Vector2(P0.x, P0.y), vdir, Vector2(A.x, A.y))
+	var Q: Vector2 = ti.Q
+	var Dq := maxf(2.0, Vector2(A.x, A.y).distance_to(Q))
+	var tr: Array = [Vector2(P0.x, P0.y)]
+	tr.append_array(ti.pts)
+	WaterShieldRope._cubic(Q, Q + ti.h * minf(Dq * s.TRAVEL_CTRL, s.TRAVEL_CTRL_MAX),
+			Vector2(A.x, A.y) - d * Dq * s.ARRIVE_CTRL, Vector2(A.x, A.y), 80, tr)
+	var lz := WaterShieldRope._lift_z(tr, P0.z, A.z, s.LIFT_BASE + Vector2(A.x - P0.x, A.y - P0.y).length() * s.LIFT_PER, false)
+	for i in range(1, lz.size()):
+		pts.append(lz[i])
+	lpath = poly_path(pts)
+	leech_Lt = float(lpath.L) - leech_s0
+	leech_m0 = clampf(w * s.HR * s.REACH_T / maxf(leech_Lt, 1.0), 0.0, s.M_MAX)
+	lead_s = leech_s0
+	for i in conn.size():
+		conn[i] = true
+		strength[i] = 1.0
+	st = "reach"
+	tt = 0
+	prev = R[0].p
+	forming = false
+
+
+func end_leech() -> void:
+	spawning = false
+	if st == "reach":
+		_latch()
+		spawning = false
+
+
+func _leech_herm(u: float) -> float:
+	var u2 := u * u
+	var u3 := u2 * u
+	return (u3 - 2.0 * u2 + u) * leech_m0 + (-2.0 * u3 + 3.0 * u2) + (u3 - u2) * 0.6
+
+
+## The stream home: from the attach point a turn-in arc toward a point bowed toward
+## the caster's left, then onto the hoop's tangent at the entry on the caster's right.
+func _build_conduit(A: Vector3) -> void:
+	var ep := entry_point()
+	var f: Vector2 = ep.f
+	var E := Vector3(-f.y * s.HR, f.x * s.HR, s.HZ)
+	a_e = atan2(E.y, E.x)
+	var Ag := Vector2(A.x, A.y)
+	var Eg := Vector2(E.x, E.y)
+	var hd := (-Ag).normalized() if Ag.length() > 0.0 else Vector2.LEFT
+	var D := maxf(8.0, Eg.distance_to(Ag))
+	var cdir := (Eg - Ag) / D
+	var nrm := Vector2(-cdir.y, cdir.x)
+	var Lp := Vector2(f.y * s.HR, -f.x * s.HR)
+	var mid := (Ag + Eg) / 2.0
+	if nrm.dot(Lp - mid) < 0.0:
+		nrm = -nrm
+	var Wm := mid + nrm * D * s.STREAM_BEND
+	var ti := WaterShieldRope.turn_in_static(s, Ag, hd, Wm)
+	var Q: Vector2 = ti.Q
+	var D1 := maxf(2.0, Wm.distance_to(Q))
+	var D2 := maxf(2.0, Eg.distance_to(Wm))
+	var u := (Eg - Q).normalized()
+	var tr: Array = [Ag]
+	tr.append_array(ti.pts)
+	WaterShieldRope._cubic(Q, Q + ti.h * D1 * s.LEAVE_CTRL * 1.3, Wm - u * D1 * s.MID_CTRL * 1.3, Wm, 100, tr)
+	WaterShieldRope._cubic(Wm, Wm + u * D2 * s.MID_CTRL * 1.3, Eg + f * D2 * s.END_CTRL, Eg, 100, tr)
+	var pts := WaterShieldRope._lift_z(tr, A.z, s.HZ, s.STREAM_LIFT, false)
+	pts[pts.size() - 1] = E
+	cd = poly_path(pts)
+	cd_L = cd.L
+
+
+## Along the stream, then round the hoop past its entry.
+func _cd_at(sv: float) -> Vector3:
+	if sv <= cd_L:
+		return along(cd, sv / cd_L)
+	var a := a_e + (sv - cd_L) / s.HR
+	var h := Vector3(cos(a) * s.HR, sin(a) * s.HR, s.HZ)
+	var br := sin(fr * TAU / (s.BREATH_T * 60.0))
+	var hb := Vector3(cos(a) * (s.HR + s.BREATH * br), sin(a) * (s.HR + s.BREATH * br),
+			s.HZ + s.BREATH * 0.6 * br + s.HOOP_TILT * sin(a - fr * s.HOOP_TILT_SPEED))
+	return h.lerp(hb, ramp(sv - cd_L, s.HOOP_BLEND_IN))
+
+
+func _latch() -> void:
+	_build_conduit(lpath.pts[lpath.pts.size() - 1])
+	R.reverse()
+	var n := M()
+	var sp := TAU * s.HR / maxf(float(hoop_n()), 1.0)
+	for i in n:
+		R[i].s = (n - 1 - i) * sp
+		R[i].id = i
+	conn.resize(maxi(n - 1, 0))
+	strength.resize(maxi(n - 1, 0))
+	conn.fill(true)
+	strength.fill(1.0)
+	st = "leech"
+	tt = 0
+	spawning = true
+
+
+func _step_leech() -> void:
+	var sp := TAU * s.HR / maxf(float(hoop_n()), 1.0)
+	if st == "reach":
+		lead_s = leech_s0 + leech_Lt * _leech_herm(float(tt) / s.REACH_T) if tt <= s.REACH_T else leech_s0 + leech_Lt
+		for j in M():
+			var q := along(lpath, maxf(0.0, lead_s - j * sp) / lpath.L)
+			if j == 0:
+				R[j].q = prev
+				R[j].p = q
+				prev = q
+			else:
+				_spring(R[j], q, s.REACH_FOLLOW)
+		_constrain(1)
+		if tt >= s.REACH_T:
+			_latch()
+		return
+	var k := lerpf(s.LATCH_K0, s.LATCH_K1, ramp(tt, s.LATCH_BLEND))
+	for p in R:
+		p.s += s.FLOW_V
+		_spring(p, _cd_at(p.s), k)
+		if p.s > cd_L:
+			p.dark = maxf(0.0, p.dark - s.DARK_FADE)
+	var arc_max := (hoop_n() - 1) * sp + sp * 0.5
+	while M() > 1 and R[0].s > cd_L + arc_max: # a full ring home: the front soaks into the hero
+		R.pop_front()
+		conn.resize(maxi(M() - 1, 0))
+		strength.resize(maxi(M() - 1, 0))
+	if spawning:
+		var t := R[M() - 1]
+		if t.s >= sp: # new water drawn out of the target
+			var np := Pt.new(_cd_at(t.s - sp), M())
+			np.s = t.s - sp
+			np.dark = 1.0
+			R.append(np)
+			conn.append(true)
+			strength.append(1.0)
+	elif R[M() - 1].s > cd_L + 2.0:
+		# Everything is back in the hoop: it takes over at the stream's speed.
+		phase = a_e + (R[0].s - cd_L) / s.HR
+		w = s.FLOW_V / s.HR
+		for i in M():
+			R[i].id = i
+		st = "idle"
+		tt = 0
+		ib = 1.0
+	_constrain(0)
 
 
 ## Water Shield's states (WaterShieldRope overrides this).
@@ -895,7 +1076,7 @@ func step() -> void:
 			_add_point(true)
 		_step_drops()
 		return
-	var damp := s.FLY_DAMP if st in ["fly", "fall", "pour"] else s.HEAL_DRAG if st == "heal" \
+	var damp := s.FLY_DAMP if st in ["fly", "fall", "pour"] else s.HEAL_DRAG if st in ["heal", "reach", "leech"] \
 			else s.SH_DRAG if st == "shield" else s.POP_DAMP if st == "shield_fall" \
 			else s.RET_DRAG if _reforming() else s.IDLE_DAMP
 	var homing := st == "return" or st == "wrap"
@@ -930,6 +1111,8 @@ func step() -> void:
 	match st:
 		"shield", "shield_fall":
 			_step_shield()
+		"reach", "leech":
+			_step_leech()
 		"idle", "spin":
 			ib = minf(1.0, ib + 1.0 / s.IDLE_BLEND)
 			var k := s.SPIN_SPRING if st == "spin" else s.IDLE_SPRING * ib
@@ -937,6 +1120,7 @@ func step() -> void:
 				k = lerpf(k, s.HOOP_FOLLOW, ramp(sb, 1.0))
 			for p in R:
 				_spring(p, target_t(p.id) if st == "idle" else orbit_t(p.id), k)
+				p.dark = maxf(0.0, p.dark - s.DARK_FADE)
 			_constrain(0)
 			# Refill from the pouch (the hips) or the water nearby, one point at a time.
 			var every := s.FORM_EVERY if forming else s.HOOP_ADD_EVERY if goal == 2 else s.REFILL_EVERY

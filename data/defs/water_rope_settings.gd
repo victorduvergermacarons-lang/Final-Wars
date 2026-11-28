@@ -317,6 +317,32 @@ extends Resource
 ## Frames for the water to pull together into the shard; drawn as water until 75%.
 @export var SHARD_FREEZE: int = 9
 
+@export_group("Leeching Tide (leeching_tide_demo.html)")
+## Frames to reach the target (the hoop opens and arcs out).
+@export var REACH_T: int = 24
+## Stream speed (px per frame) and its bow toward the caster's left (× distance).
+@export var FLOW_V: float = 1.5
+@export var STREAM_BEND: float = 0.3
+## Where it latches: this far in front of the target, at this height.
+@export var ATTACH_R: float = 4.0
+@export var ATTACH_Z: float = 13.0
+@export var REACH_FOLLOW: float = 0.35
+## The stream's spring grows from LATCH_K0 to LATCH_K1 over LATCH_BLEND frames.
+@export var LATCH_K0: float = 0.25
+@export var LATCH_K1: float = 0.6
+@export var LATCH_BLEND: int = 14
+@export var STREAM_LIFT: float = 6.0
+@export var END_CTRL: float = 0.4
+## Past the entry it follows the hoop, blended in over this many px.
+@export var HOOP_BLEND_IN: float = 20.0
+## Leeched water fades back to blue over 2 s (per frame).
+@export var DARK_FADE: float = 1.0 / 120.0
+## The leech tint (approved with the demo).
+@export var LOUT: Color = Color("082A4D")
+@export var LBODY: Color = Color("2A5F99")
+@export var LHI: Color = Color("6E9BCF")
+@export var LDROP: Color = Color("4A78AC")
+
 ## Frames between points joining the hoop (the reference's ADD_EVERY).
 @export var HOOP_ADD_EVERY: int = 4
 @export_group("Palette")

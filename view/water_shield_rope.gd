@@ -179,6 +179,11 @@ func _pos_at(sc: float) -> Vector3:
 
 
 func _turn_in(P: Vector2, h: Vector2, T: Vector2) -> Dictionary:
+	return turn_in_static(s, P, h, T)
+
+
+## A turn-in arc (radius TURN_R) from `P` heading `h` until it faces `T` within TURN_OK.
+static func turn_in_static(s: WaterRopeSettings, P: Vector2, h: Vector2, T: Vector2) -> Dictionary:
 	var pts: Array = []
 	var x := P
 	var turned := 0.0

@@ -325,3 +325,32 @@ func test_run_out_it_comes_home_with_what_is_left() -> void:
 		frames += 1
 	assert_true(sh.st == "wrap" or sh.st == "idle", "back at the orbit")
 	assert_eq(sh.M(), roundi(settings.NMAX * 0.5), "12 points")
+
+
+# --- Leeching Tide (water physics phase 4) ------------------------------------------
+
+func test_the_hoop_reaches_out_latches_drains_and_closes_again() -> void:
+	var r := _rope()
+	r.set_stance(2)
+	r.set_count(33)
+	for i in 400:
+		r.step()
+	assert_true(r.wrap, "a closed hoop first")
+	r.leech(Vector2(60, -20))
+	assert_eq(r.st, "reach")
+	assert_false(r.wrap, "the hoop opens")
+	for i in settings.REACH_T:
+		r.step()
+	assert_eq(r.st, "leech", "latched after REACH_T frames")
+	for i in 120:
+		r.step()
+	assert_true(r.R.any(func(p): return p.dark > 0.5), "dark water drawn out of the target")
+	r.end_leech()
+	var frames := 0
+	while r.st != "idle" and frames < 2000:
+		r.step()
+		frames += 1
+	assert_eq(r.st, "idle", "the rest flowed home")
+	for i in 300:
+		r.step()
+	assert_true(r.wrap, "the hoop closes again")

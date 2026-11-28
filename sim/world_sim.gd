@@ -945,7 +945,8 @@ func _start_timed_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: V
 	if kind != "cast" and kind != "timing":
 		caster.buffs.consume_on_cast(ability.tree, now)
 	emit({"type": "cast_start", "source": caster.id, "ability": ability.id, "kind": kind,
-			"target": caster.casting.target, "end": caster.casting.end})
+			"target": caster.casting.target, "end": caster.casting.end,
+			"to": target.move.pos if target != null else (Vector2(point) if point is Vector2 or point is Vector2i else caster.move.pos)})
 	return AbilityResolver.Result.OK
 
 

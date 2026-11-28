@@ -192,4 +192,22 @@ func _run() -> void:
 		await _shot("w4_18_shield_run_out_coming_home")
 		await _wait(1.5)
 		await _shot("w4_19_shield_home")
+	if only == "" or only == "shard":
+		await _ready_again()
+		_cast(&"W04", dummy, dummy.move.pos)
+		var waited := 0.0
+		for when in [0.05, 0.12, 0.2, 0.4]:
+			await _wait(when - waited)
+			waited = when
+			await _shot("w4_2%d_shard_%.2f" % [int(when * 100) % 10, when])
+	if only == "" or only == "leech":
+		await _ready_again(2)
+		await _wait(1.5) # the hoop closes
+		await _shot("w4_30_hoop_before_leech")
+		_cast(&"W07", dummy)
+		var waited2 := 0.0
+		for when in [0.2, 0.6, 1.5, 3.2, 4.5]:
+			await _wait(when - waited2)
+			waited2 = when
+			await _shot("w4_3%d_leech_%.1f" % [int(when * 10) % 10, when])
 	get_tree().quit()

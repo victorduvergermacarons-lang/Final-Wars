@@ -59,6 +59,17 @@ func tiles_of(g: Vector2) -> Vector2:
 ## Takes the throws from an event batch (the Water Whip's effect events).
 func on_events(events: Array, effects: Dictionary) -> void:
 	for e in events:
+		if e.get("ability", &"") == &"W07":
+			# Leeching Tide: the hoop reaches out as the channel starts, and stops drawing
+			# water when it ends.
+			if e.get("type", "") == "cast_start":
+				_pending.append({"source": int(e.get("source", -1)), "to": Vector2(e.get("to", Vector2.ZERO)),
+						"at": -INF, "fx": &"leech"})
+			elif e.get("type", "") in ["channel_end", "cast_cancel"]:
+				var lr := rope_of(int(e.get("source", -1)))
+				if lr != null:
+					lr.end_leech()
+			continue
 		if e.get("type", "") == "projectile" and e.get("projectile", {}).get("ability", &"") == &"W04":
 			_new_shards.append(e.projectile) # Frost Shard: a piece of the rope breaks off
 			continue
@@ -142,6 +153,9 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 			e = _new_entry(h)
 			e.rope.fill_now(mini(h.stance_water, settings.NMAX))
 		var aim: Vector2 = ground_of(t.to) - e.ground
+		if t.get("fx", &"") == &"leech":
+			e.rope.leech(aim)
+			continue
 		if t.get("fx", &"") == SHIELD_FX:
 			_send_shield(h, e, aim, bool(t.get("self", false)), int(t.get("target", -1)))
 			continue
@@ -335,10 +349,13 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 	# The points to draw: the rope, then Healing Touch's front still climbing to its
 	# mist after the tail went home (WaterRope.heal_tail, always linked).
 	var P: Array[Vector3] = []
+	var D: Array[float] = [] # Leeching Tide's tint per point
 	for pt in r.R:
 		P.append(pt.p)
+		D.append(pt.dark)
 	for pt in r.heal_tail:
 		P.append(pt.p)
+		D.append(0.0)
 	var tail_n := r.heal_tail.size()
 	# Segments to draw ([from, to, index in its chain, chain length]): each linked
 	# pair, the hoop's closing link once it shows, and the climbing front.
@@ -416,7 +433,8 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 			var radius := hoop_r if closed else lerpf(rad(f, r.fr) + s.BODY_GROW,
 					hoop_r * (0.5 + 0.5 * sin(PI * clampf(f, 0.04, 0.96))), b)
 			radius = maxf(0.55, radius * r.wscale) # Water Shield thins as it stretches
-			put.call("stamps", Vector2(lerpf(a.x, c.x, k), lerpf(a.y, c.y, k)), [at, radius, nrm, nrm.dot(sun)])
+			put.call("stamps", Vector2(lerpf(a.x, c.x, k), lerpf(a.y, c.y, k)),
+					[at, radius, nrm, nrm.dot(sun), lerpf(D[sg[0]], D[sg[1]], k) > 0.5])
 		arc += L
 	for i in n:
 		if not lit.call(i):
@@ -473,20 +491,24 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 				px.call(pd[0].x, pd[0].y, s.OUT)
 	if item.has("stamps"):
 		var S2: Array = item.stamps
+		# Leeched water (a stamp's 5th value) in the leech tint.
+		var out_c := func(q) -> Color: return s.LOUT if q.size() > 4 and q[4] else s.OUT
+		var body_c := func(q) -> Color: return s.LBODY if q.size() > 4 and q[4] else s.BODY
+		var hi_c := func(q) -> Color: return s.LHI if q.size() > 4 and q[4] else s.HI
 		for q in S2:
-			disc.call(q[0].x - q[2].x, q[0].y - q[2].y, q[1], s.OUT)
+			disc.call(q[0].x - q[2].x, q[0].y - q[2].y, q[1], out_c.call(q))
 		for q in S2:
-			disc.call(q[0].x, q[0].y, q[1], s.BODY)
+			disc.call(q[0].x, q[0].y, q[1], body_c.call(q))
 		for q in S2:
 			var r: float = q[1]
 			if q[3] > s.FACE_T and r > s.SHADE2_MIN_R:
-				px.call(q[0].x - q[2].x * (r - 0.45), q[0].y - q[2].y * (r - 0.45), s.OUT)
+				px.call(q[0].x - q[2].x * (r - 0.45), q[0].y - q[2].y * (r - 0.45), out_c.call(q))
 		for q in S2:
 			var r: float = q[1]
 			if r > s.HI_MIN_R:
-				px.call(q[0].x + q[2].x * (r - 1.0), q[0].y + q[2].y * (r - 1.0), s.HI)
+				px.call(q[0].x + q[2].x * (r - 1.0), q[0].y + q[2].y * (r - 1.0), hi_c.call(q))
 				if q[3] > s.FACE_T and r > s.HI2_MIN_R:
-					px.call(q[0].x + q[2].x * (r - 2.0), q[0].y + q[2].y * (r - 2.0), s.HI)
+					px.call(q[0].x + q[2].x * (r - 2.0), q[0].y + q[2].y * (r - 2.0), hi_c.call(q))
 	if item.has("blobs"):
 		var sun := s.SUN.normalized()
 		for b in item.blobs:
