@@ -53,6 +53,7 @@ func test_solo_game_runs_with_hud() -> void:
 	assert_eq([hero.stance_tree, hero.stance], ["Water", 1])
 	assert_lt(hero.hp - hp, 5.0, "entering the stance cast nothing (only regeneration)")
 	assert_eq(hero.cooldowns.gcd_remaining(session.now()), 0.0, "entering doesn't start the global cooldown")
+	await wait_physics_frames(20) # the rope's first point of water
 	input.use_slot(heal_slot)
 	await wait_physics_frames(6)
 	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "the second press casts")

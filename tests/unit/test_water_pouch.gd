@@ -51,6 +51,11 @@ func _stance(n: int) -> void:
 	world.step()
 
 
+## Stance 1 fills a point every 17 frames: 24 points take 6.8 s.
+func _fill_rope() -> void:
+	world.advance(24 * 17.0 / 60.0 + 0.1)
+
+
 func _cast(target: Actor) -> Array:
 	world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": target.id})
 	return world.step()
@@ -65,6 +70,8 @@ func test_stance_1_takes_24_from_the_pouch_and_gives_them_back() -> void:
 	_go(_tile_from_water(8.0, 40.0))
 	assert_false(hero.near_water)
 	_stance(1)
+	assert_eq(hero.stance_water, 0, "nothing at once: it fills by the refill")
+	_fill_rope()
 	assert_eq(hero.stance_water, 24)
 	assert_true(hero.rope)
 	assert_eq(hero.water, 176)
@@ -78,6 +85,7 @@ func test_near_water_the_stance_is_free() -> void:
 	_go(_tile_from_water(1.0, 2.5))
 	assert_true(hero.near_water)
 	_stance(1)
+	_fill_rope()
 	assert_eq(hero.stance_water, 24)
 	assert_eq(hero.water, 200)
 
@@ -86,6 +94,7 @@ func test_a_short_pouch_makes_a_short_rope_and_no_water_no_whip() -> void:
 	_go(_tile_from_water(8.0, 40.0))
 	hero.water = 10
 	_stance(1)
+	_fill_rope()
 	assert_eq(hero.stance_water, 10, "what the pouch had")
 	assert_eq(hero.water, 0)
 	hero.stance_water = 3
@@ -100,6 +109,7 @@ func test_each_whip_takes_4_from_the_stance_and_lands_half_a_second_after_the_re
 	ContentDB.rules.timing_bars_enabled = true
 	_go(_tile_from_water(8.0, 40.0))
 	_stance(1)
+	_fill_rope()
 	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
 	var hp := wolf.hp
 	_cast(wolf)
@@ -181,6 +191,7 @@ func test_stance_2_needs_27_and_takes_33() -> void:
 	_stance(0)
 	hero.water = 200
 	_stance(1)
+	_fill_rope()
 	_stance(2)
 	assert_eq(hero.stance_water, 33, "stance water first, then the pouch, up to 33")
 	assert_eq(hero.water, 167)
@@ -221,6 +232,7 @@ func test_e_at_water_fills_the_pouch_over_10_s_and_moving_stops_it() -> void:
 func test_saved_with_the_character_and_older_water_heroes_get_a_pouch() -> void:
 	_go(_tile_from_water(8.0, 40.0))
 	_stance(1)
+	_fill_rope()
 	hero.water = 50
 	var data := CharacterData.capture(hero)
 	assert_eq(int(data.water), 74, "the orbit's water counts as the pouch's")

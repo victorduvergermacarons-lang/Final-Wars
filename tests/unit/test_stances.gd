@@ -55,6 +55,7 @@ func test_entering_a_stance_without_the_global_cooldown() -> void:
 
 func test_casting_keeps_the_stance_and_another_key_switches() -> void:
 	_stance("Water", 1)
+	world.advance(0.3) # the rope's first point (stance 1 fills a point every 17 frames)
 	hero.hp = 50
 	world.submit(hero.id, {"type": "cast", "ability": &"W01", "target": hero.id})
 	world.step()

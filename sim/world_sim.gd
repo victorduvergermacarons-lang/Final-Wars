@@ -1958,8 +1958,9 @@ func _refill_stance_1(hero: Hero, dt: float) -> void:
 		hero.stance_water += 1
 
 
-## Entering a Water stance: stance 1 takes up to 24 at once, stance 2 up to 33 (stance
-## water first, then the pouch); leaving 2 for 1 sheds the points above 24 into the pouch.
+## Entering a Water stance: stance 1 takes nothing at once (it fills by the 17-frame
+## refill, user rule 2026-11-28); stance 2 takes up to 33 (stance water first, then the
+## pouch); leaving 2 for 1 sheds the points above 24 into the pouch.
 func _gather_stance_water(hero: Hero, from_n: int) -> void:
 	var full := WaterBending.full(hero.stance)
 	hero.water_refill_t = 0.0
@@ -1967,7 +1968,7 @@ func _gather_stance_water(hero: Hero, from_n: int) -> void:
 	if hero.stance_water > full:
 		_to_pouch(hero, hero.stance_water - full)
 		hero.stance_water = full
-	else:
+	elif hero.stance == 2:
 		var need := full - hero.stance_water
 		if hero.near_water:
 			hero.stance_water = full
@@ -1975,9 +1976,9 @@ func _gather_stance_water(hero: Hero, from_n: int) -> void:
 			var take := mini(need, hero.water)
 			hero.water -= take
 			hero.stance_water += take
-	if hero.stance_water == 0:
+	if hero.stance_water == 0 and not hero.near_water and (not hero.has_water_pouch() or hero.water <= 0):
 		emit({"type": "no_water", "target": hero.id, "pouch": hero.has_water_pouch()})
-	emit({"type": "rope", "source": hero.id, "on": hero.stance_water > 0, "points": hero.stance_water,
+	emit({"type": "rope", "source": hero.id, "on": true, "points": hero.stance_water,
 			"from": "water" if hero.near_water else "pouch", "was": before, "from_stance": from_n})
 
 
