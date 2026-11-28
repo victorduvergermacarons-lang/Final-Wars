@@ -39,7 +39,7 @@ func test_every_listed_effect_exists_and_is_linked() -> void:
 			assert_not_null(fx, "%s %s" % [id, role])
 			if fx == null:
 				continue
-			if not fx.front and fx.tile_mode == FxDef.TileMode.NONE:
+			if not fx.front and fx.tile_mode == FxDef.TileMode.NONE and not (fx.ribbon and fx.path == FxDef.Path.ROPE): # the rope is drawn in code
 				assert_not_null(fx.sheet, "%s has its picture" % fx.id)
 			elif fx.front:
 				assert_true(ContentDB.effects.has(fx.head_fx), "%s's front piece" % fx.id)
