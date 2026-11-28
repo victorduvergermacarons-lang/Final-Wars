@@ -53,7 +53,8 @@ func _host(port: int, players: int, scenario: String) -> void:
 		_finish(false, "host: could not listen on %d" % port)
 		return
 	var world: World = game.session.world
-	if not await _wait_until(func(): return world.heroes().size() == players):
+	var at_start := players - 1 if scenario == "fire" else players # fire: the last guest joins late
+	if not await _wait_until(func(): return world.heroes().size() == at_start):
 		_finish(false, "host: only %d of %d players joined" % [world.heroes().size(), players])
 		return
 	await get_tree().create_timer(1.0).timeout # every guest is listening
@@ -78,6 +79,8 @@ func _host(port: int, players: int, scenario: String) -> void:
 			await _host_trade(town, guests)
 		"duel":
 			await _host_duel(town, guests)
+		"fire":
+			await _host_fire(town, guests, players)
 		_:
 			_finish(false, "host: unknown scenario %s" % scenario)
 
@@ -258,7 +261,8 @@ func _join(port: int, players: int, scenario: String, index: int) -> void:
 		_finish(false, "%s: never welcomed" % me)
 		return
 	var heroes := func(): return session.actors().filter(func(a): return a is Hero).size()
-	if not await _wait_until(func(): return heroes.call() == players):
+	var want := players - 1 if (scenario == "fire" and index < players - 1) else players
+	if not await _wait_until(func(): return heroes.call() >= want):
 		_finish(false, "%s: only ever saw %d heroes" % [me, heroes.call()])
 		return
 	match scenario:
@@ -272,6 +276,8 @@ func _join(port: int, players: int, scenario: String, index: int) -> void:
 			await _join_trade(session, index)
 		"duel":
 			await _join_duel(session, index)
+		"fire":
+			await _join_fire(session, index)
 		_:
 			_finish(false, "%s: unknown scenario %s" % [me, scenario])
 	game.store.delete(me)
@@ -486,3 +492,72 @@ func _join_loot(session: ClientSession) -> void:
 		_finish(false, "%s: never heard the other guest loot their helm (party feed)" % me)
 		return
 	_finish(true, "%s: saw only its own drop, picked it up, got the shared pelts, heard the other guest's pickup" % me)
+
+
+# --- Fire physics (phase 4): the same ground fire for everyone, late joiners too -----
+
+## The burning zones as everyone should see them: "ability:tiles:until" per fire zone.
+static func fire_signature(zones: Array) -> String:
+	var parts: PackedStringArray = []
+	for z in zones:
+		if not FireEffects.GROUND_LOOKS.has(StringName(z.ability)):
+			continue
+		var tiles: Array = z.tiles.duplicate()
+		tiles.sort()
+		parts.append("%s:%s:%.2f" % [z.ability, str(tiles), float(z.until)])
+	parts.sort()
+	return "|".join(parts)
+
+
+## Host: two overlapping Infernos and a Burning Ground near the guests; then the last
+## guest joins while they burn. Prints the burning zones it owns.
+func _host_fire(town: WorldSim, guests: Array, players: int) -> void:
+	var hero: Hero = game.session.local_hero()
+	for id in [&"F08", &"F16"]:
+		TreeRules.master(hero, ContentDB.abilities[id])
+	var c := SPOT + Vector2i(2, -3)
+	var cast := func(id: StringName, at: Vector2) -> void:
+		hero.mana = 999.0
+		hero.cooldowns = Cooldowns.new()
+		game.session.send_intent({"type": "cast", "ability": id, "target": -1, "aim": at})
+	cast.call(&"F16", Vector2(c))
+	await get_tree().create_timer(1.5).timeout
+	cast.call(&"F16", Vector2(c) + Vector2(1.5, 0.5))
+	await get_tree().create_timer(0.5).timeout
+	cast.call(&"F08", Vector2(c) + Vector2(-1, 2))
+	if not await _wait_until(func(): return game.session.world.heroes().size() == players):
+		_finish(false, "host: the late guest never joined")
+		return
+	await get_tree().create_timer(1.0).timeout
+	print("FIRESIG host %s" % fire_signature(town.ground_zones()))
+	var view: WorldView = game.get_node("WorldView")
+	print("FIREWINDOWS host %d" % view.fire.effects.size())
+	await get_tree().create_timer(2.0).timeout
+	_finish(true, "host: cast two overlapping Infernos and a Burning Ground; the last guest joined while they burned")
+
+
+## Guests: the zones in their snapshots match the host's, and their own fire windows
+## hold exactly those tiles until those times (late joiner included).
+func _join_fire(session: ClientSession, index: int) -> void:
+	var view: WorldView = game.get_node("WorldView")
+	if not await _wait_until(func(): return fire_signature(session.ground_zones()).contains("F08")):
+		_finish(false, "%s: never saw the Burning Ground" % me)
+		return
+	await get_tree().create_timer(0.3).timeout
+	var zones := session.ground_zones()
+	print("FIRESIG %s %s" % [me, fire_signature(zones)])
+	# Every burning tile is in one of our fire windows, until the host's time.
+	for z in zones:
+		if not FireEffects.GROUND_LOOKS.has(StringName(z.ability)):
+			continue
+		for t in z.tiles:
+			var found := false
+			for e in view.fire.effects:
+				if e.ground_until.has(t) and absf(float(e.ground_until[t]) - float(z.until)) < 0.01 or \
+						(e.ground_until.has(t) and float(e.ground_until[t]) >= float(z.until)):
+					found = true
+			if not found:
+				_finish(false, "%s: tile %s of %s isn't in any fire window" % [me, t, z.ability])
+				return
+	print("FIREWINDOWS %s %d" % [me, view.fire.effects.size()])
+	_finish(true, "%s: its fire windows hold every burning tile until the host's time%s" % [me, " (joined late)" if index == 2 else ""])

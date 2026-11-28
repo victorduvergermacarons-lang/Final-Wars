@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Multi-process check of loot, boss rolls, binding, trading and duels: a headless
 # host and two headless clients on localhost play one scenario.
-# Usage: tests/net/run_party_check.sh SCENARIO   (loot | roll | trade | duel)
+# Usage: tests/net/run_party_check.sh SCENARIO   (loot | roll | bind | trade | duel | fire)
 # env: GODOT, PORT, PLAYERS (3)
 set -uo pipefail
 cd "$(dirname "$0")/../.."
@@ -21,13 +21,20 @@ for i in $(seq 1 $((PLAYERS - 1))); do
 	timeout 90 "$GODOT" --headless --path . tests/net/party_probe.tscn -- join "$PORT" "$PLAYERS" "$SCENARIO" "$i" > "$LOGS/join$i.log" 2>&1 &
 	PIDS+=($!)
 	sleep 0.3
+	# fire: the last guest joins late, while the host's fires burn
+	if [[ "$SCENARIO" == "fire" && $i -eq $((PLAYERS - 2)) ]]; then sleep 4.5; fi
 done
 FAIL=0
 for pid in "${PIDS[@]}"; do
 	wait "$pid" || FAIL=1
 done
 wait $HOST_PID || FAIL=1
-grep -h "PARTYCHECK\|SCRIPT ERROR" "$LOGS"/*.log
+grep -h "PARTYCHECK\|SCRIPT ERROR\|FIRESIG\|FIREWINDOWS" "$LOGS"/*.log
+if [[ "$SCENARIO" == "fire" ]]; then
+	# Everyone saw the same Burning Ground: tiles and end time.
+	N=$(grep -h "^FIRESIG" "$LOGS"/*.log | grep -o "F08:[^|]*" | sort -u | wc -l)
+	if [[ "$N" -ne 1 ]]; then echo "Fire check: the Burning Ground differs between players ($N versions)."; FAIL=1; fi
+fi
 if [[ $FAIL -eq 0 ]]; then
 	echo "Party check '$SCENARIO' passed ($PLAYERS players)."
 	exit 0
