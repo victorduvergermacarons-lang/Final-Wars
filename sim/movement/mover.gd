@@ -77,10 +77,40 @@ static func step(actor: Actor, wish: Vector2, dt: float, grid: GridModel, rules:
 	if started:
 		out.fell = true
 	if not m.falling():
-		m.draw_h = move_toward(m.draw_h, float(m.ground_h), md.step_smooth_rate * dt)
+		var want := ramp_height(grid, m.pos, m.ground_h, md, flying)
+		# Following the ramp exactly; anything it doesn't explain eases in.
+		m.draw_h = want if absf(want - m.draw_h) <= 0.8 else move_toward(m.draw_h, want, md.step_smooth_rate * dt)
 	else:
 		m.draw_h = m.ground_h + m.z
 	return out
+
+
+## The height a unit at `pos` (standing on ground `ground_h`) is drawn at: its ground,
+## except within step_ramp_width / 2 of an edge onto a walkable tile 1 level up or down,
+## where it ramps to halfway at the edge itself. Drawing only: the ground (`ground_h`)
+## still changes when the centre crosses.
+static func ramp_height(grid: GridModel, pos: Vector2, ground_h: int, md: MovementDef, flying := false) -> float:
+	var w := md.step_ramp_width * 0.5
+	if w <= 0.0 or grid == null or flying:
+		return float(ground_h)
+	var t := MoveState.tile_of(pos)
+	var h := float(ground_h)
+	var off := pos - Vector2(t)
+	for axis in 2:
+		var d: float = off[axis]
+		if absf(d) <= 0.5 - w:
+			continue
+		var n := t
+		n[axis] += 1 if d > 0.0 else -1
+		if not grid.in_bounds(n) or not grid.has_tile(n) or not grid.is_walkable(n):
+			continue
+		var dh := grid.height_at(n) - ground_h
+		if absi(dh) != 1:
+			continue
+		# 0 at the start of the band, 0.5 at the edge.
+		var k := (absf(d) - (0.5 - w)) / (2.0 * w)
+		h += dh * k * k * (3.0 - 2.0 * k) # smoothstep over the whole band, half of it on this side
+	return h
 
 
 ## Moves by `delta` in sub-steps, pushing out of solid tiles after each and
@@ -114,7 +144,7 @@ static func _update_ground(actor: Actor, grid: GridModel, md: MovementDef, flyin
 	if not flying and not glide and drop >= md.fall_min_levels and not m.falling():
 		m.fall_from = m.ground_h
 		m.z = float(drop)
-		m.vz = 0.0
+		m.vz = md.fall_start_speed # already on its way down: one arc off the edge
 		m.vel *= md.fall_carry
 		m.ground_h = h
 		return true

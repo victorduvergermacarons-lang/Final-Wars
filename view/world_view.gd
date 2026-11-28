@@ -308,7 +308,7 @@ func _tile_bounds(grid: GridModel, p: Vector2i) -> Rect2:
 func _clusters(items: Array) -> Array:
 	var out: Array = []
 	for item in items:
-		var c := {"rect": _snap_rect(item.rect), "depth": int(item.depth), "h": int(item.get("h", 0)), "cover": {},
+		var c := {"rect": _snap_rect(item.rect), "depth": int(item.depth), "h": float(item.get("h", 0)), "cover": {},
 				"patch": {}}
 		var merged := true
 		while merged:
@@ -317,7 +317,7 @@ func _clusters(items: Array) -> Array:
 				if out[i].rect.intersects(c.rect):
 					c.rect = c.rect.merge(out[i].rect)
 					c.depth = mini(c.depth, out[i].depth)
-					c.h = mini(c.h, out[i].h)
+					c.h = minf(c.h, out[i].h)
 					out.remove_at(i)
 					merged = true
 		out.append(c)
@@ -348,7 +348,7 @@ func _collect_cover(grid: GridModel, cluster: Dictionary, members: Dictionary) -
 			if (s + u) & 1:
 				continue
 			var p := Vector2i((s + u) / 2, (s - u) / 2)
-			if grid.in_bounds(p) and _tile_bounds(grid, p).intersects(rect) and _covers(grid, p, int(cluster.h)):
+			if grid.in_bounds(p) and _tile_bounds(grid, p).intersects(rect) and _covers(grid, p, float(cluster.h)):
 				cluster.cover[p] = true
 				_add_member(members, p)
 	# A tile drawn again shows its lower faces, which the cached picture has hidden
@@ -371,8 +371,8 @@ func _collect_cover(grid: GridModel, cluster: Dictionary, members: Dictionary) -
 ## it, or holds a prop, an object or a graveyard marker. Bare ground at or below
 ## `h` never hides what stands on it or at its level (a hero's feet, a ring around
 ## them, an effect lying on the ground), so it isn't drawn over them again.
-func _covers(grid: GridModel, p: Vector2i, h: int) -> bool:
-	if grid.height_at(p) > h:
+func _covers(grid: GridModel, p: Vector2i, h: float) -> bool:
+	if grid.height_at(p) > h + 0.01:
 		return true
 	if _zone == null:
 		return true
@@ -415,18 +415,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Interpolated screen position of an actor's feet.
 func actor_screen_pos(actor: Actor) -> Vector2:
+	return Iso.to_screen(actor.move.position_at(session.render_time()), actor_draw_height(actor))
+
+
+## The height (levels) an actor's feet are drawn at now.
+func actor_draw_height(actor: Actor) -> float:
 	var grid: GridModel = session.grid()
 	var m := actor.move
 	var t: float = session.render_time()
-	var at := m.position_at(t)
-	var h: float
 	if m.gliding or (m.duration > 0.0 and t < m.start_time + m.duration):
 		# A tile step or a forced move: the height follows the ground along the way.
 		var k := m.progress(t)
-		h = lerpf(grid.height_at(m.from_tile), grid.height_at(m.to_tile), k)
-	else:
-		h = m.height_at_time(t)
-	return Iso.to_screen(at, h)
+		return lerpf(grid.height_at(m.from_tile), grid.height_at(m.to_tile), k)
+	return m.height_at_time(t)
 
 
 ## The map tile under a point (world coordinates), the highest one drawn there
@@ -552,7 +553,9 @@ func _draw_over_cache(grid: GridModel, actors_by_tile: Dictionary, after: Dictio
 	for p in actors_by_tile:
 		_add_member(members, p)
 		for a in actors_by_tile[p]:
-			items.append({"rect": _actor_rect(a), "depth": Iso.depth(p), "h": grid.height_at(p)})
+			# Covered only by what rises above its feet as drawn (2026-11-28): a hero
+			# stepping off the back of a ledge is still level with it for a moment.
+			items.append({"rect": _actor_rect(a), "depth": Iso.depth(p), "h": actor_draw_height(a)})
 	for p in marks.keys() + quest_areas.keys():
 		_add_member(members, p)
 		items.append({"rect": _mark_rect(grid, p), "depth": Iso.depth(p), "h": grid.height_at(p)})
