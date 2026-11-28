@@ -4,6 +4,13 @@ extends Node
 ## bench's distances), with frame times.
 ##   SHOTS_DIR=<dir> FIRE_ABILITY=F12 godot --path . res://tests/visual/fire_bench.tscn
 ## FIRE_STRESS=1: four casters on the same spot, for the frame time on your machine.
+## From the Godot editor: open this scene, tick "Stress" on the FireBench node (or set
+## "Ability"), and run it with F6; the times show in the Output panel.
+
+## Four casters at once (same as FIRE_STRESS=1).
+@export var stress := false
+## The ability to show (same as FIRE_ABILITY), F12 when empty.
+@export var ability_id := ""
 
 var out_dir := OS.get_environment("SHOTS_DIR").path_join("") if OS.get_environment("SHOTS_DIR") != "" else ProjectSettings.globalize_path("user://shots/")
 var ability := StringName(OS.get_environment("FIRE_ABILITY")) if OS.get_environment("FIRE_ABILITY") != "" else &"F12"
@@ -64,7 +71,9 @@ func _run() -> void:
 	dummy = sim.add_enemy(dd, t + Vector2i(2, -2))
 	await _frames(10)
 	var look: FireLookDef = load("res://content/effects/fire/%s.tres" % ability)
-	var stress := OS.get_environment("FIRE_STRESS") == "1"
+	stress = stress or OS.get_environment("FIRE_STRESS") == "1" or "--stress" in OS.get_cmdline_user_args()
+	if ability_id != "":
+		ability = StringName(ability_id)
 	var ms_idle := await _frame_ms(20)
 	print("frame time with no fire: %.2f ms" % ms_idle)
 	var dists := [look.near, look.far] if OS.get_environment("FIRE_QUICK") != "1" else [look.near]
@@ -89,6 +98,7 @@ func _run() -> void:
 					view.fire.effects.size(), view.fire.sim.frames_run])
 			view.fire.clear()
 			await _frames(2)
+	print("Fire bench done. Screenshots in ", out_dir)
 	get_tree().quit()
 
 
