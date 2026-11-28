@@ -216,6 +216,8 @@ extends Resource
 @export var CLOSE_AT: float = 0.95
 ## How hard each point follows its place on the hoop (the reference's FOLLOW_K).
 @export var HOOP_FOLLOW: float = 0.12
+## Frames between points joining the hoop (the reference's ADD_EVERY).
+@export var HOOP_ADD_EVERY: int = 4
 @export_group("Palette")
 ## Outline and shade.
 @export var OUT: Color = Color("0C447C")

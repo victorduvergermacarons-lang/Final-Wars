@@ -684,7 +684,7 @@ func step() -> void:
 				_spring(p, target_t(p.id) if st == "idle" else orbit_t(p.id), k)
 			_constrain(0)
 			# Refill from the pouch (the hips) or the water nearby, one point at a time.
-			var every := s.FORM_EVERY if forming else s.REFILL_EVERY
+			var every := s.FORM_EVERY if forming else s.HOOP_ADD_EVERY if goal == 2 else s.REFILL_EVERY
 			if st == "idle" and M() < target_count and tt % every == 0:
 				_add_point(true)
 			if forming and M() >= target_count:

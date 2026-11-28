@@ -1629,6 +1629,42 @@ bender's space. Replaces the Verlet whip of 2026-11-25 (removed).
 - **Body anchors** (from 2026-11-25, kept): `content/heroes/pl01_anchors.json` and
   `tools/hand_anchors.py` (guesses, or magenta pixels from the marked Aseprite file).
 
+## Water as a resource (water physics phase 3, branch `feature/water-physics`, 2026-11-28)
+
+User brief and answers. Replaces the rope's water rules of 2026-11-26 (the orbit taking 24
+and giving them back, free water near a river for abilities, the instant pouch fill).
+Rules in `WorldSim` "Water as a resource" and `WaterBending` (`sim/combat/water_bending.gd`).
+- **Two places, both counted by the host and sent in snapshots:** the **stance water**
+  (`Hero.stance_water`, public: the Water stance 1 rope, full at 24; the stance 2 hoop,
+  full at 33) and the **reserve** (`Hero.water`, private: the Water Pouch, 200).
+- **Entering** stance 1 takes up to 24 at once; stance 2 takes stance water first, then the
+  pouch, up to 33, and needs 27 in all (`WaterBending.STANCE_2_ENTRY`; refused with "Not
+  enough water", also when a stance 2 ability's key is pressed). 27–32 points are spread
+  evenly round the same hoop. Within 3 tiles of a water tile the water is free and comes
+  from it (drawn flowing from the nearest water tile).
+- **Stance 1 refills** one point every 17 frames (0.283 s) from water nearby or the pouch;
+  with the pouch empty the rope stops growing. Stance 2 doesn't refill.
+- **Leaving:** stance 2 → 1 sheds the points above 24 into the pouch (they spill as
+  droplets); leaving the Water stances (Shift, crowd control, death, another element, or
+  10 s out of combat without casting: `WATER_STANCE_IDLE_SECONDS`, Water stances only)
+  puts all the stance water back in the pouch (capped at 200); the rope flows back to the
+  hip, tail first, over 0.5 s (`WaterRope.drain`).
+- **Abilities** of Water stances 1–2 (`WaterBending.uses_stance_water`) need at least 1
+  point and at least their `water_cost` in the stance ("Not enough water", `NO_WATER`);
+  the water they use is gone. **Power** = 0.2 + 0.8 × stance points ÷ full, from the
+  points the ability was cast with (`Hero.cast_water`, recorded when paid), applied to
+  damage, healing and shields in `AbilityPower.amount`; tooltips show "Water: x / full in
+  stance n, power y%".
+- **The pouch at water (E):** fills at 20 points a second (10 s from empty, less from
+  part full); moving or losing health stops it ("Filling Water Pouch" over the hero).
+- **The hoop** (`WaterRope` `goal`, `sb`, `wrap`; settings "Stance 2 hoop" in
+  `WaterRopeSettings`, from `water_stance2_demo_approved.html`): the rope rises to the
+  chest over 48 frames, points join every 4 frames, it closes once every point is there
+  (the closing link fades in over 20 frames), one lap every 4 s, breathing and tilting,
+  ripples fitted round it, a shadow a pixel wider. The FX-15-11 sprite is no longer drawn.
+  Uses the existing hero art (no arm pose).
+- Tests: `tests/unit/test_water_pouch.gd`; screenshots `tests/visual/water_resource_shots.tscn`.
+
 ## Ability effects from the approved art (stance rework phase 3, 2026-11-23)
 
 - **Source:** only `approved/<KEY>.png` on `art-drafts`; animation frames
@@ -2832,6 +2868,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-28 | Water physics phase 3: water as a resource (stance water + pouch), the stance 2 hoop | User brief and answers (see **Water as a resource**). My choices, to confirm: stance 1 takes up to 24 at once on entry (the 17-frame refill alone would take 7 s); only stance 1 refills (stance 2's refill isn't in the brief); the 10 s idle drop applies to the Water stances only and a cast bar or combat keeps the stance up; power uses the stance water at the moment the ability is paid; the pouch fills at capacity ÷ 10 per second, stopped by moving or losing health; without a pouch, water put back is lost; the hoop's new points come from the hips (or the river), not from the tail as in the demo; test heroes and balance bots that use Water abilities now carry a full pouch. |
 | 2026-11-28 | Water physics phase 2: stances off the hotbar; a bar per character; deleting characters | User brief and requests. My choices: the second press of a timing bar is unchanged (same key, Space or right-click while that ability's bar runs; it never re-enters the stance); bending slots get a small stance badge (element colour, stance number, lit while held) and the stance panel is hidden; the host keeps switching stance on a cast from another stance (old clients, tests) while the client only switches; a new character's bar starts empty and takes the shared layout's keybinds; keybinds are saved with each character's bar; deleting a character also forgets its bar. Abilities whose stance can't be entered (stance 2 without water, phase 3) will show blue like "not enough mana" with "Not enough water". |
 | 2026-11-28 | Water physics pass (branch `feature/water-physics` from `feature/stance-rework`), phase 1: render fixes | User brief and screenshot. Shadow: black at 30% (`WaterRopeSettings.SHADOW_DARKEN`), which darkens what's under it by 30%, each screen pixel once a frame (`WaterRopes._shadow_seen`). The wall showing through in a box round the hero, and the flower bed's lower faces: the terrain cache redraws a covering tile (a wall, a prop) whole, including lower faces the cached picture hides under the bare ground in front; since 2026-11-25 that ground was never redrawn, so they showed (the rope's pieces filed behind the hero pulled the redraw box back to the house). Now the bare tiles in front of a redrawn tile are put back right after it, before anything in front is drawn (`WorldView._collect_cover` `patch`). The faint stance ring under Water stance 1 is gone (the rope is its look). User answers for later phases: the river stays a water source and stance water visibly flows from the nearest water tile when entering a stance; the pouch stays and refills fully in 10 s, interrupted by damage or moving; "Not enough water" counts the stance's water; stance 2's pose uses existing hero art; the whip's 1.5 s bar also decides when the water returns (no press by 0.5 s: the water stays on the ground until the press); Frost Shard's sprite scaled 50%; delete characters from the main menu with a confirmation; hotbars saved per character. |
 | 2026-11-25 | Playtest fixes: Water Shield built; bare ground no longer covers effects; unbuilt branches marked; a hand-point Aseprite file | User report and requests. My choices: Water Shield's shield size from the tier default and the sheet's Scales With (like Boulder Shield), its splash 10 + 0.6 Magic Attack to enemies within 1.5 tiles when the shield is used up (not when it times out), 10 mana; covering rule: only tiles higher than the ground an actor or effect stands on, or holding a prop, object or graveyard marker, are drawn again over it (the ground bucketing of ring halves removed); unbuilt stance branches crossed out with "not built" and a hover list; the Aseprite file has one empty layer per facing, a tag per facing, the palette set to #FF00FF. |
