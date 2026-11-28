@@ -84,6 +84,8 @@ var _pending_hits: Array = []
 ## Released abilities waiting for their strike (AbilityDef.release_delay_seconds):
 ## [{"caster", "ability", "target", "aim", "bonus", "power", "crit", "at"}].
 var _releases: Array = []
+## What the release going off now did (`_update_releases`).
+var _release_events: Array = []
 ## Temporary terrain changes: [{"delta": {tile: levels added}, "blocked": {tile: true}, "until"}].
 var _terrain: Array = []
 ## Walkability of changed tiles before any change touched them.
@@ -855,7 +857,34 @@ func _cast_targeted(caster: Actor, ability: AbilityDef, target: Actor, aim: Vari
 			or _has_timing_bar(caster, ability)
 	if timed:
 		return _start_timed_cast(caster, ability, target, aim)
+	if caster is Hero and ability.release_delay_seconds > 0.0 and ability.timing_bar == null:
+		return _release_now(caster as Hero, ability, target, aim) # (bars switched off: at once, as before)
 	return _finish_cast(caster, ability, target, aim, CastResolver.Pay.INSTANT)
+
+
+## An instant ability whose hit follows its art (Water Whip: the lash lands 0.5 s
+## after the throw): checked and released now (animation, effect, its water sent
+## out), goes off on its strike like a timing bar's release (`_releases`). The global
+## cooldown starts now; mana and the cooldown are paid when it goes off.
+func _release_now(hero: Hero, ability: AbilityDef, target: Actor, aim: Variant) -> AbilityResolver.Result:
+	var r := CastResolver.validate(ctx, hero, ability, target, aim)
+	if r != AbilityResolver.Result.OK:
+		return r
+	var point: Variant = CastResolver.aim_point(hero, target, aim)
+	CastResolver.face_cast(hero, ability, target, aim)
+	if ability.on_gcd:
+		hero.cooldowns.trigger_gcd(now, rules.gcd_seconds * hero.buffs.cooldown_multiplier(now))
+	if ability.water_whole_rope and WaterBending.uses_stance_water(ability):
+		WaterBending.send_out(hero, ability, now)
+	var t_id := target.id if target != null else -1
+	if not WorldSim.is_mouse_aimed(ability):
+		hero.anim.face_until = now + ability.release_delay_seconds # faces its target until it goes off
+	emit({"type": "release", "source": hero.id, "ability": ability.id, "target": t_id})
+	_emit_fx(hero, ability, ability.fx_cast, target, point)
+	_releases.append({"caster": hero.id, "ability": ability, "target": t_id, "aim": point,
+			"bonus": hero.buffs.damage_dealt_multiplier(ability.tree, now), "power": 1.0, "crit": false,
+			"at": now + ability.release_delay_seconds})
+	return AbilityResolver.Result.OK
 
 
 ## Only heroes play timing bars (enemies cast those abilities straight away).
@@ -1145,7 +1174,18 @@ func _update_releases() -> void:
 		ctx.force_crit = r.crit
 		ctx.timing_power = r.power
 		ctx.release_locked = true
+		_release_events = []
 		var res := _finish_cast(caster, r.ability, get_actor(r.target), r.aim, CastResolver.Pay.COMPLETE, r.bonus)
+		if caster is Hero and r.ability.water_back == AbilityDef.WaterBack.UNUSED_HEAL \
+				and (caster as Hero).water_out.get("ability", &"") == r.ability.id:
+			# Healing Touch: the share of the heal full health turned away comes back.
+			var full := 0.0
+			var healed := 0.0
+			for e in _release_events:
+				if e.type == "heal" and e.get("ability", &"") == r.ability.id:
+					full += float(e.get("full", e.amount))
+					healed += float(e.amount)
+			_settle_water_out(caster as Hero, 1.0 - healed / full if full > 0.0 else 1.0)
 		ctx.release_locked = false
 		ctx.force_crit = false
 		ctx.timing_power = 1.0
@@ -1225,6 +1265,7 @@ func cancel_cast(actor: Actor, reason: String) -> void:
 func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, pay_mode: CastResolver.Pay,
 		bonus: float = -1.0) -> AbilityResolver.Result:
 	var out := CastResolver.cast(ctx, caster, ability, target, aim, pay_mode, bonus)
+	_release_events.append_array(out.events)
 	_emit_resolved(out.events)
 	if out.result != AbilityResolver.Result.OK:
 		return out.result
@@ -1238,7 +1279,7 @@ func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Varian
 		_pending_hits.append(out.pending)
 	else:
 		_credit_mastery(caster, ability, out.events)
-	if ability.release_delay_seconds <= 0.0 or not (caster is Hero) or not _has_timing_bar(caster, ability):
+	if not ctx.release_locked:
 		_emit_fx(caster, ability, ability.fx_cast, target, aim) # released ones played theirs at the release
 	return out.result
 
@@ -1677,6 +1718,8 @@ func _handle_intent(hero_id: int, intent: Dictionary) -> void:
 			reason = _intent_examine(hero, intent.get("tile", Vector2i(-99, -99)))
 		"fill_water":
 			reason = _intent_fill_water(hero)
+		"water_return":
+			reason = _intent_water_return(hero)
 		"accept_shared_quest":
 			reason = _intent_accept_shared_quest(hero, StringName(intent.get("quest", &"")))
 		"finish_act":
@@ -1929,6 +1972,8 @@ func _track_water() -> void:
 	for hero: Hero in _heroes.values():
 		hero.near_water = hero.alive and WaterTiles.nearest(idx, hero.move.pos, rules.water_near_tiles) != null
 		_update_pouch_fill(hero, dt)
+		if not hero.water_out.is_empty():
+			_check_water_out(hero) # even out of the stance: its window still closes
 		if not WaterBending.in_water_stance(hero) or not hero.alive:
 			continue
 		if hero.in_combat(now) or not hero.casting.is_empty():
@@ -1936,7 +1981,7 @@ func _track_water() -> void:
 		elif now - hero.stance_busy_at >= WATER_STANCE_IDLE_SECONDS:
 			set_stance(hero, "", 0, "idle")
 			continue
-		if hero.stance == 1:
+		if hero.water_out.is_empty() and hero.stance == 1: # no refill while the rope is out
 			_refill_stance_1(hero, dt)
 
 
@@ -1989,6 +2034,44 @@ func _return_stance_water(hero: Hero) -> void:
 	hero.stance_water = 0
 	hero.cast_water.clear()
 	emit({"type": "rope", "source": hero.id, "on": false})
+
+
+## Water Whip's second press: the share of the thrown water that comes back
+## (WaterBending.whip_share by how long after the cast it came).
+func _intent_water_return(hero: Hero) -> String:
+	var a: AbilityDef = ContentDB.abilities.get(hero.water_out.get("ability", &""))
+	if a == null or a.water_back != AbilityDef.WaterBack.SECOND_PRESS:
+		return "not_ready"
+	_settle_water_out(hero, WaterBending.whip_share(now - float(hero.water_out.at)))
+	return ""
+
+
+## Water out past its window comes back by its rule (the whip: none, unpressed).
+func _check_water_out(hero: Hero) -> void:
+	var out := hero.water_out
+	var a: AbilityDef = ContentDB.abilities.get(out.get("ability", &""))
+	if a == null:
+		_settle_water_out(hero, 0.0)
+	elif a.water_back == AbilityDef.WaterBack.SECOND_PRESS and now - float(out.at) >= WaterBending.WHIP_WINDOW:
+		_settle_water_out(hero, 0.0)
+	elif a.water_back == AbilityDef.WaterBack.LOST and out.get("paid", false):
+		_settle_water_out(hero, 0.0)
+
+
+## `share` of the water out comes home: into the stance (up to full, the rest into
+## the pouch), or into the pouch when the stance is gone. The rest is lost.
+func _settle_water_out(hero: Hero, share: float) -> void:
+	var out := hero.water_out
+	hero.water_out = {}
+	var back := roundi(share * int(out.get("points", 0)))
+	if WaterBending.in_water_stance(hero):
+		var room := WaterBending.full(hero.stance) - hero.stance_water
+		hero.stance_water += mini(back, maxi(room, 0))
+		_to_pouch(hero, back - mini(back, maxi(room, 0)))
+	else:
+		_to_pouch(hero, back)
+	emit({"type": "water_return", "source": hero.id, "ability": out.get("ability", &""), "share": share,
+			"points": back, "sent": int(out.get("points", 0)), "t": now - float(out.get("at", now))})
 
 
 ## Puts `points` into the pouch, up to its capacity (without a pouch they're lost).

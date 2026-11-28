@@ -47,6 +47,12 @@ func tiles_of(g: Vector2) -> Vector2:
 ## Takes the throws from an event batch (the Water Whip's effect events).
 func on_events(events: Array, effects: Dictionary) -> void:
 	for e in events:
+		if e.get("type", "") == "water_return":
+			# Water Whip's second press: that share of the thrown water comes home.
+			var r := rope_of(int(e.get("source", -1)))
+			if r != null:
+				r.call_back(float(e.get("share", 0.0)))
+			continue
 		if e.get("type", "") != "fx":
 			continue
 		var fx: FxDef = effects.get(StringName(e.get("fx", "")))
@@ -76,7 +82,8 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		var g := ground_of(h.move.pos)
 		if wants:
 			e.rope.set_stance(h.stance)
-			e.rope.set_count(h.stance_water)
+			if h.water_out.is_empty():
+				e.rope.set_count(h.stance_water)
 		e.rope.move_hero(g - e.ground)
 		e.ground = g
 		e.hero = h

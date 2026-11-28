@@ -72,6 +72,10 @@ var poured: Array[bool] = []
 var target_count := 0
 ## Stance 2 (the hoop): the stance the rope is heading for (1 or 2), the blend toward
 ## the hoop (0–1, over ENTER_T frames), and the closing link between tail and head.
+## Water Whip's return (water physics phase 4): the share of the thrown water that
+## comes back (0–1), set by the player's second press (`call_back`); < 0: not yet, and
+## the water waits on the ground ("ground") until it is.
+var return_share := -1.0
 var goal := 1
 var sb := 0.0
 var wrap := false
@@ -340,12 +344,37 @@ func cast(target: Vector2, z_offset := 0.0) -> void:
 	Ts = roundi(_clamp((s.VREF * s.HIT - (d + 2.0 * Bk)) / s.VREF, 0.0, s.HIT - s.TF_MIN))
 	Tf = s.HIT - Ts
 	cast_at = sim_t
+	return_share = -1.0
 	st = "spin" if Ts > 0 else "fly"
 	tt = 0
 	forming = false
 	if st == "fly":
 		_release()
 	readout = {"pull_back": Bk, "spin_s": Ts / 60.0, "flight_s": Tf / 60.0, "recast": recast}
+
+
+## The second press: `share` of the thrown water comes home, the rest soaks in.
+## Before the water has landed it is kept for the landing; on the ground it rises now.
+func call_back(share: float) -> void:
+	return_share = clampf(share, 0.0, 1.0)
+	if st == "ground":
+		_cut_and_rise()
+
+
+## Keeps the front `return_share` of the regrouped water; the tail's points soak in.
+func _cut_and_rise() -> void:
+	var keep := roundi(return_share * M())
+	while M() > keep:
+		var p: Pt = R.pop_back()
+		lost.append({"p": Vector2(p.p.x, p.p.y), "l": float(s.SOAK_TIME)})
+	conn.resize(maxi(M() - 1, 0))
+	strength.resize(maxi(M() - 1, 0))
+	tt = 0
+	if M() == 0:
+		st = "idle" # all of it soaked in: the rope grows back from the source
+		has_base = false
+		return
+	st = "rise"
 
 
 func _release() -> void:
@@ -737,8 +766,12 @@ func step() -> void:
 		"fall":
 			if tt >= mini(s.FALL_TIME_MAX, s.RETURN_AT):
 				_regroup()
-				st = "rise"
+				st = "ground"
 				tt = 0
+				if return_share >= 0.0:
+					_cut_and_rise()
+		"ground":
+			pass # regrouped on the ground, waiting for the second press (call_back)
 		"rise":
 			var k := s.RISE_K * ramp(tt, s.RISE_RAMP)
 			for i in M():

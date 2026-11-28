@@ -2824,7 +2824,7 @@
 			"role": "Heal",
 			"item_type": "Scroll",
 			"taught_by": "Mender's Scroll",
-			"effect": "Heal yourself or an ally within 4 tiles.",
+			"effect": "Heal yourself or an ally within 4 tiles with the whole rope; what full health turns away comes back.",
 			"targeting": "Targeted",
 			"targeting_details": "Yourself or an ally within 4. Can't miss.",
 			"mastery_required_text": "Water Mastery 0",
@@ -2856,17 +2856,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 2.0,
+				"status": "manual",
+				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
-				"holds": [
-					[
-						0.5,
-						1.25
-					]
-				],
-				"notes": "Water: a hold. Timing power scales the heal."
+				"holds": [],
+				"notes": "No bar since 2026-11-28 (water physics): the rope winds round the target and the heal lands 1.2 s after the cast."
 			},
 			"hitbox": {
 				"shape": "Targeted",
@@ -2920,16 +2915,11 @@
 			],
 			"timing": {
 				"status": "manual",
-				"seconds": 3.0,
+				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
-				"holds": [
-					[
-						0.45,
-						2.3
-					]
-				],
-				"notes": "Designer's bar: the hold starts at 0.45 s (was 0.75 s, 2026-11-21) and ends 0.25 s before the bar."
+				"holds": [],
+				"notes": "Instant since 2026-11-28 (water physics): the whole rope is thrown; a second press within 1.5 s decides how much water comes back (100% at 0.5 s, 50% at once, 0% at 1.5 s or no press)."
 			},
 			"hitbox": {
 				"shape": "Targeted",
@@ -2955,7 +2945,7 @@
 			"role": "Shield",
 			"item_type": "Scroll",
 			"taught_by": "Bubble Ward Scroll",
-			"effect": "Absorb shield on you or an ally for 20s; when it breaks it splashes damage on adjacent enemies.",
+			"effect": "Absorb shield on you or an ally for 20s, as strong as the water in your rope; it loses water as it absorbs. When it breaks it splashes damage on adjacent enemies and its water is lost; when it ends the rest comes back.",
 			"targeting": "Targeted",
 			"targeting_details": "Yourself or an ally within 5.",
 			"mastery_required_text": "Water Mastery 25",
@@ -3013,7 +3003,7 @@
 			"role": "Damage / CC",
 			"item_type": "Scroll",
 			"taught_by": "Frost Shard Scroll",
-			"effect": "Range 6; damages and slows the target for 2s.",
+			"effect": "Range 6; 4 points of your rope freeze into a shard that damages and slows the target for 2s.",
 			"targeting": "Skillshot",
 			"targeting_details": "Aim at an enemy within 6. Fast shard at any angle; hits the first unit in its path.",
 			"mastery_required_text": "Water Mastery 50",
@@ -3027,7 +3017,7 @@
 			"branch_key": 4,
 			"unlock_step": 2,
 			"item_id": "frost_shard_scroll",
-			"cooldown": 4.0,
+			"cooldown": 1.5,
 			"mastery_on_learn": 5.0,
 			"mastery_per_use": 0.2,
 			"mastery_cap": 50.0,
@@ -3040,17 +3030,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 1.5,
+				"status": "manual",
+				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
-				"holds": [
-					[
-						0.4,
-						0.85
-					]
-				],
-				"notes": "Water: a short hold; the shard flies when you let go."
+				"holds": [],
+				"notes": "Instant since 2026-11-28 (water physics): 4 points of the rope break off and freeze into the shard."
 			},
 			"hitbox": {
 				"shape": "Projectile",
@@ -3148,7 +3133,7 @@
 			"role": "Damage / Self heal",
 			"item_type": "Scroll",
 			"taught_by": "Leech Tide Scroll",
-			"effect": "Damage an enemy within 5 tiles and heal yourself for 50% of the damage dealt.",
+			"effect": "Latch onto an enemy within 5 tiles for 3s: damage every 0.5s, and each tick draws 4 water into your pouch (24 in all).",
 			"targeting": "Targeted",
 			"targeting_details": "Enemy within 5. The heal applies to you automatically.",
 			"mastery_required_text": "Water Mastery 130",
@@ -3175,17 +3160,12 @@
 				}
 			],
 			"timing": {
-				"status": "generated",
-				"seconds": 2.5,
+				"status": "manual",
+				"seconds": 0.0,
 				"taps": [],
 				"crits": [],
-				"holds": [
-					[
-						0.75,
-						1.5
-					]
-				],
-				"notes": "Water: a hold; the drain heals you half the (scaled) damage."
+				"holds": [],
+				"notes": "No bar since 2026-11-28 (water physics): a 0.4 s reach, then a 3 s channel ticking every 0.5 s."
 			},
 			"hitbox": {
 				"shape": "Targeted",

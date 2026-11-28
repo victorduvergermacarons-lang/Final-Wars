@@ -70,8 +70,13 @@ static func pay(ctx: CombatContext, caster: Actor, ability: AbilityDef, with_gcd
 	if caster is Hero and WaterBending.uses_stance_water(ability):
 		# Its power is the water it was cast with; the water it uses is gone.
 		var h := caster as Hero
-		h.cast_water[ability.id] = h.stance_water
-		h.stance_water = maxi(h.stance_water - ability.water_cost, 0)
+		if ability.water_whole_rope:
+			if h.water_out.get("ability", &"") != ability.id or h.water_out.get("paid", true):
+				WaterBending.send_out(h, ability, ctx.now) # not sent out at a release before
+			h.water_out.paid = true
+		else:
+			h.cast_water[ability.id] = h.stance_water
+			h.stance_water = maxi(h.stance_water - ability.water_cost, 0)
 	caster.cooldowns.trigger(ability, ctx.now, ctx.rules.gcd_seconds if with_gcd else 0.0,
 			caster.buffs.cooldown_multiplier(ctx.now), max_charges(caster, ability, ctx.now))
 
@@ -386,7 +391,7 @@ static func _apply_effect(ctx: CombatContext, caster: Actor, ability: AbilityDef
 			var healed := clampf(roundf(amount), 0.0, maxf(max_hp - target.hp, 0.0))
 			target.hp += healed
 			events.append({"type": "heal", "source": caster.id, "target": target.id,
-					"ability": ability.id, "amount": healed, "crit": crit})
+					"ability": ability.id, "amount": healed, "crit": crit, "full": roundf(amount)})
 			_share_support_threat(ctx, caster, target, healed * rules.heal_threat_multiplier * effect.threat_multiplier)
 
 		AbilityEffect.Kind.RESTORE_MANA:

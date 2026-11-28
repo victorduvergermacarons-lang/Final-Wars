@@ -9,6 +9,7 @@ script = ExtResource("1_a1sgk")
 kind = 1
 base_amount = -1.0
 sheet_scaling = true
+power = 1.5
 
 [resource]
 script = ExtResource("3_heo0o")
@@ -16,5 +17,8 @@ id = &"W01"
 target = 2
 max_range = 4
 mana_cost = 8.0
+water_whole_rope = true
+water_back = 2
+release_delay_fixed = 1.2
 effects = Array[ExtResource("1_a1sgk")]([SubResource("Resource_uvb21")])
 targeting = 1

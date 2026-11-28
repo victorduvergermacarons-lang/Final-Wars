@@ -43,6 +43,20 @@ enum TargetType {
 ## Water points a cast takes from the Water Pouch (none near water) and the Water
 ## stance 1 rope it needs (Water Whip 4; 2026-11-26).
 @export var water_cost: int = 0
+## Water physics (2026-11-28): the cast sends the whole stance water out (Water Whip,
+## Healing Touch, Water Shield); `water_cost` is then the least it needs. What comes
+## back depends on the ability (WorldSim "Water as a resource").
+@export var water_whole_rope: bool = false
+## What brings the water sent out (water_whole_rope) back:
+## LOST: none of it; SECOND_PRESS: the share the second press decides (Water Whip,
+## WaterBending.whip_share); UNUSED_HEAL: the share of the heal full health turned away
+## (Healing Touch); SHIELD_LEFT: the share of the shield left when it ends, none if it
+## breaks (Water Shield).
+enum WaterBack { LOST, SECOND_PRESS, UNUSED_HEAL, SHIELD_LEFT }
+@export var water_back: WaterBack = WaterBack.LOST
+## A fixed time between the release and the hit (Healing Touch: the rope winds round
+## the target for 1.2 s), instead of one from its art (`release_delay_from`).
+@export var release_delay_fixed: float = 0.0
 @export var cooldown_seconds: float = 0.0
 ## Whether using it triggers (and is blocked by) the global cooldown.
 @export var on_gcd: bool = true

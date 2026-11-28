@@ -66,6 +66,7 @@ func test_pours_then_breaks_at_point_12() -> void:
 func test_regroup_keeps_at_least_8() -> void:
 	var r := _rope()
 	r.cast(Vector2(120, -80))
+	r.call_back(1.0) # the second press, early (water physics phase 4)
 	_until(r, "rise")
 	assert_gte(r.M(), settings.MIN_KEEP)
 	assert_eq(r.M() + r.lost.size(), settings.NMAX, "the rest soaked in")
@@ -78,6 +79,7 @@ func test_regroup_keeps_at_least_8() -> void:
 func test_returns_whole_wraps_and_idles() -> void:
 	var r := _rope()
 	r.cast(Vector2(120, -80))
+	r.call_back(1.0) # the second press, early (water physics phase 4)
 	assert_gt(_until(r, "return"), 0)
 	assert_gt(_until(r, "wrap"), 0, "back at the orbit")
 	assert_eq(r.M(), settings.NMAX, "rebuilt from the pouch: whole before it re-enters")
@@ -86,9 +88,29 @@ func test_returns_whole_wraps_and_idles() -> void:
 	assert_gt(_until(r, "idle"), 0)
 
 
+func test_the_water_waits_on_the_ground_for_the_second_press() -> void:
+	var r := _rope()
+	r.cast(Vector2(120, -80))
+	assert_gt(_until(r, "ground"), 0, "regrouped on the ground")
+	for i in 120:
+		r.step()
+	assert_eq(r.st, "ground", "still waiting")
+	var m := r.M()
+	var soaked := r.lost.size()
+	r.call_back(0.5)
+	assert_eq(r.st, "rise", "the press brings it back")
+	assert_eq(r.M(), roundi(m * 0.5), "half of it")
+	assert_eq(r.lost.size(), soaked + m - roundi(m * 0.5), "the tail soaks in")
+	r.cast(Vector2(80, 0))
+	r.call_back(0.0)
+	assert_gt(_until(r, "idle"), 0, "none of it: it soaks in where it landed")
+	assert_lte(r.M(), 1, "the rope grows back from the source")
+
+
 func test_recast_during_wrap() -> void:
 	var r := _rope()
 	r.cast(Vector2(100, 0))
+	r.call_back(1.0) # the second press, early (water physics phase 4)
 	_until(r, "wrap")
 	assert_true(r.can_cast())
 	r.cast(Vector2(-80, 30))

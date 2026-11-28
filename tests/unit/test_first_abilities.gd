@@ -326,9 +326,12 @@ func test_earth_wall_lifts_an_enemy_and_hurts_it() -> void:
 func test_healing_touch_and_soothing_mist_heal() -> void:
 	hero.hp = 100
 	world.cast(hero, _a("W01"), hero)
+	world.advance(_a("W01").release_delay_seconds + 0.05) # the rope winds round first (1.2 s)
 	assert_gt(hero.hp, 100.0)
 	var after := hero.hp
-	world.advance(1.1)
+	hero.stance_tree = "Water" # Soothing Mist: Water stance 2
+	hero.stance = 2
+	hero.stance_water = 33
 	world.cast(hero, _a("W05"), hero)
 	world.advance(12.1)
 	assert_gt(hero.hp, after, "mist heals over time")

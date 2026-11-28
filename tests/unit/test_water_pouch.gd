@@ -105,31 +105,53 @@ func test_a_short_pouch_makes_a_short_rope_and_no_water_no_whip() -> void:
 			"refused: not enough water")
 
 
-func test_each_whip_takes_4_from_the_stance_and_lands_half_a_second_after_the_release() -> void:
-	ContentDB.rules.timing_bars_enabled = true
+func test_the_whip_throws_the_whole_rope_and_lands_half_a_second_later() -> void:
+	ContentDB.rules.timing_bars_enabled = true # instant since 2026-11-28 anyway
 	_go(_tile_from_water(8.0, 40.0))
 	_stance(1)
 	_fill_rope()
 	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
 	var hp := wolf.hp
-	_cast(wolf)
-	var start := float(hero.casting.get("start", sim.now))
-	world.advance(start + 0.45 - sim.now)
-	world.submit(hero.id, {"type": "timing_press", "at": 0.45})
-	world.step()
-	world.advance(start + 2.3 - sim.now)
-	world.submit(hero.id, {"type": "timing_release", "at": 2.3})
-	world.step()
-	var released := sim.now
-	assert_almost_eq(ContentDB.abilities[&"W02"].release_delay_seconds, 0.5, 0.001, "the hit 0.5 s after the release")
-	world.advance(released + 0.42 - sim.now)
+	var events := _cast(wolf)
+	assert_true(events.any(func(e): return e.type == "release" and e.ability == &"W02"), "thrown at once")
+	assert_eq(hero.stance_water, 0, "the whole rope is out")
+	assert_eq(int(hero.water_out.points), 24)
+	assert_almost_eq(ContentDB.abilities[&"W02"].release_delay_seconds, 0.5, 0.001)
+	world.advance(0.42)
 	assert_eq(wolf.hp, hp, "not yet")
-	world.step()
-	world.step()
-	world.step()
+	world.advance(0.15)
 	assert_lt(wolf.hp, hp, "landed")
-	assert_eq(hero.stance_water, 20, "4 from the stance")
-	assert_eq(hero.cast_water[&"W02"], 24, "cast with 24")
+	assert_eq(hero.cast_water[&"W02"], 24, "its power: 24 points")
+
+
+func test_the_second_press_decides_how_much_water_comes_back() -> void:
+	assert_almost_eq(WaterBending.whip_share(0.0), 0.5, 0.001, "at once: half")
+	assert_almost_eq(WaterBending.whip_share(0.25), 0.75, 0.001)
+	assert_almost_eq(WaterBending.whip_share(0.5), 1.0, 0.001, "at 0.5 s: all")
+	assert_almost_eq(WaterBending.whip_share(1.0), 0.5, 0.001)
+	assert_almost_eq(WaterBending.whip_share(1.5), 0.0, 0.001, "at 1.5 s: none")
+	_go(_tile_from_water(8.0, 40.0))
+	_stance(1)
+	_fill_rope()
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	_cast(wolf)
+	world.advance(1.0 - 0.05) # pressed 1 s after the throw: half comes back
+	world.submit(hero.id, {"type": "water_return"})
+	var events := world.step()
+	var back: Array = events.filter(func(e): return e.type == "water_return")
+	assert_eq(back.size(), 1)
+	assert_eq(hero.stance_water, 12, "half of 24")
+	assert_true(hero.water_out.is_empty())
+	# No press: nothing comes back after 1.5 s, and the rope grows again from the pouch.
+	world.advance(3.0)
+	var pouch := hero.water
+	var stance := hero.stance_water
+	_cast(wolf)
+	assert_eq(hero.stance_water, 0)
+	world.advance(1.6)
+	assert_true(hero.water_out.is_empty(), "the window closed")
+	assert_lt(hero.stance_water, stance, "the water left on the ground is lost")
+	assert_lt(hero.water, pouch, "the rope grows back from the pouch")
 
 
 func test_stance_1_refills_a_point_every_17_frames_from_the_pouch() -> void:

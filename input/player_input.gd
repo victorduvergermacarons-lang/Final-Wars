@@ -109,7 +109,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	# uses it). So is the ability's own key again (_second_press).
 	var bar_press: bool = (event is InputEventMouseButton and event.pressed \
 			and event.button_index == MOUSE_BUTTON_RIGHT) or event.is_action_pressed(&"timing_press")
-	if bar_press and press_timing_bar():
+	if bar_press and (press_timing_bar() or call_water_back()):
 		get_viewport().set_input_as_handled()
 		return
 	if not _aiming.is_empty() and _aim_input(event):
@@ -282,6 +282,20 @@ static func needs_stance(hero: Hero, ability: AbilityDef) -> bool:
 			and (hero.stance_tree != ability.tree or hero.stance != ability.stance)
 
 
+## Water Whip's second press (its key again, right-click or Space) within its 1.5 s
+## window: the host decides how much of the thrown water comes back by when it came
+## (WaterBending.whip_share). True if the whip's water was out.
+func call_water_back() -> bool:
+	var hero: Hero = session.local_hero()
+	if hero == null or hero.water_out.get("ability", &"") != &"W02" or hero.water_out.get("called", false):
+		return false
+	if session.render_time() - float(hero.water_out.get("at", 0.0)) >= WaterBending.WHIP_WINDOW:
+		return false
+	hero.water_out.called = true # once (until the host's next snapshot settles it)
+	session.send_intent({"type": "water_return"})
+	return true
+
+
 func _bar_running_for(hero: Hero, ability: AbilityDef) -> bool:
 	return not hero.casting.is_empty() and hero.casting.get("kind", "") == "timing" \
 			and hero.casting.get("ability") == ability
@@ -316,6 +330,10 @@ var _bar_key: StringName = &""
 
 
 func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
+	# Water Whip's key again while its water is out calls it back (water physics).
+	var me: Hero = session.local_hero() if session != null else null
+	if me != null and me.water_out.get("ability", &"") == ability.id and call_water_back():
+		return
 	var hero: Hero = session.local_hero()
 	if hero != null and _second_press(hero, ability, key):
 		return

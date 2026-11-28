@@ -730,6 +730,12 @@ func _on_events(events: Array) -> void:
 				if int(e.get("target", -1)) == session.local_hero_id:
 					client.error("Not enough water: fill your Water Pouch at water with E" if e.get("pouch", false)
 							else "Not enough water: you have no Water Pouch")
+			"water_return":
+				if int(e.get("source", -1)) == session.local_hero_id and e.get("ability", &"") == &"W02":
+					var share := float(e.get("share", 0.0))
+					timing_bar.show_result("perfect" if share >= 0.95 else ("miss" if share <= 0.0 else "good"),
+							float(e.get("t", -1.0)) if share > 0.0 else -1.0, share)
+					client.say("%d of %d water came back." % [int(e.points), int(e.sent)])
 			"pouch_filling":
 				if int(e.get("target", -1)) == session.local_hero_id:
 					if e.on:

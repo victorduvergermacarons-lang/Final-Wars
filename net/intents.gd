@@ -68,7 +68,7 @@ static func sanitize(raw: Variant) -> Dictionary:
 				if typeof(aim) != TYPE_VECTOR2 or not aim.is_finite() or absf(aim.x) > 10000.0 or absf(aim.y) > 10000.0:
 					return {}
 				out.aim = aim
-		"release", "cancel_bar", "cancel_cast", "fill_water":
+		"release", "cancel_bar", "cancel_cast", "fill_water", "water_return":
 			pass
 		"talk":
 			if not _ints(raw, out, ["npc"]):

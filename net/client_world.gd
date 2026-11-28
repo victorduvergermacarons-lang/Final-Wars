@@ -260,6 +260,9 @@ func _apply_hero_extras(h: Hero, d: Dictionary) -> void:
 	h.stance = int(st[1])
 	h.stance_at = float(st[2])
 	h.stance_water = int(d.get("stance_water", 0))
+	var out: Dictionary = d.get("water_out", {})
+	if out.is_empty() or out.get("at") != h.water_out.get("at"):
+		h.water_out = out.duplicate() # keeps "called" while it is the same throw
 	var anim: Dictionary = d.get("anim", {})
 	for k in ["died", "down", "up", "hit", "act_at", "buff_end"]:
 		h.anim[k] = float(anim.get(k, Hero.NEVER))

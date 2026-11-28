@@ -91,7 +91,7 @@ static var _icons_checked := false
 
 func _time_releases() -> void:
 	for a in abilities.values():
-		a.release_delay_seconds = 0.0
+		a.release_delay_seconds = a.release_delay_fixed
 		match a.release_delay_from:
 			"anim":
 				for h in heroes.values():

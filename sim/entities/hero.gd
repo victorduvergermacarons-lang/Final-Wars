@@ -33,6 +33,10 @@ var water := 0
 var stance_water := 0
 ## Stance water an ability was cast with (its power), by ability id; set when paid.
 var cast_water := {}
+## Water sent out whole by an ability (AbilityDef.water_whole_rope) and not home yet:
+## {"ability": id, "points", "at"} (Water Whip: until the second press or 1.5 s).
+## Stance 1 doesn't refill meanwhile.
+var water_out := {}
 ## Host: when the hero last cast, entered a stance or fought (the stance drops after
 ## 10 s out of combat without an ability).
 var stance_busy_at := 0.0
@@ -44,7 +48,7 @@ var pouch_fill := {}
 
 ## Whether the hero has a water rope or hoop to draw.
 var rope: bool:
-	get: return stance_water > 0 and WaterBending.in_water_stance(self)
+	get: return (stance_water > 0 or not water_out.is_empty()) and WaterBending.in_water_stance(self)
 ## Host: whether a water tile is near (updated each tick).
 var near_water := false
 
@@ -320,6 +324,8 @@ func holds_cast_facing(t: float) -> bool:
 	var ab = casting.get("ability")
 	if ab is AbilityDef:
 		return not WorldSim.is_mouse_aimed(ab)
+	if t < float(anim.get("face_until", NEVER)):
+		return true # a released ability that hasn't gone off (Healing Touch's 1.2 s)
 	if t - float(anim.get("act_at", NEVER)) < FACE_HOLD_SECONDS:
 		var done := find_ability(StringName(anim.get("act", &"")))
 		return done != null and not WorldSim.is_mouse_aimed(done)

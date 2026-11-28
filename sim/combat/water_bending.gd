@@ -10,6 +10,29 @@ extends RefCounted
 
 ## Full stance water per Water stance.
 const FULL := {1: 24, 2: 33}
+## Water Whip's return (water physics phase 4): a second press `t` seconds after the
+## cast brings back 50% at once, 100% at WHIP_PERFECT, falling to 0% at WHIP_WINDOW
+## (no press: 0%).
+const WHIP_PERFECT := 0.5
+const WHIP_WINDOW := 1.5
+
+
+static func whip_share(t: float) -> float:
+	if t < 0.0 or t >= WHIP_WINDOW:
+		return 0.0
+	if t <= WHIP_PERFECT:
+		return 0.5 + 0.5 * t / WHIP_PERFECT
+	return 1.0 - (t - WHIP_PERFECT) / (WHIP_WINDOW - WHIP_PERFECT)
+
+
+## Sends the whole stance water out for `ability` (AbilityDef.water_whole_rope): its
+## power is that water; what comes back is settled later (Hero.water_out).
+static func send_out(hero: Hero, ability: AbilityDef, now: float) -> void:
+	hero.cast_water[ability.id] = hero.stance_water
+	hero.water_out = {"ability": ability.id, "points": hero.stance_water, "at": now, "paid": false}
+	hero.stance_water = 0
+
+
 ## Total water (stance + reserve) needed to enter stance 2.
 const STANCE_2_ENTRY := 27
 ## Power at an empty stance, and what the stance water adds up to full.
@@ -51,7 +74,10 @@ static func power(hero: Hero, ability: AbilityDef) -> float:
 static func has_enough(hero: Hero, ability: AbilityDef) -> bool:
 	if not uses_stance_water(ability):
 		return true
-	return hero.stance_water >= maxi(1, ability.water_cost)
+	var need := maxi(1, ability.water_cost)
+	if hero.water_out.get("ability", &"") == ability.id and not hero.water_out.get("paid", true):
+		return int(hero.water_out.points) >= need # sent out at its release: going off now
+	return hero.stance_water >= need
 
 
 ## The water `hero` could put into a stance: stance water + reserve, or unlimited by
