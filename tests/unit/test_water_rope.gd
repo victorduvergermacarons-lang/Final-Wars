@@ -253,13 +253,26 @@ func test_the_heal_s_unused_share_goes_home_off_the_tail() -> void:
 	assert_true(r.heal_tail.is_empty(), "all of the front turned to mist")
 
 
-func test_a_self_heal_unwinds_into_the_orbit() -> void:
+func test_a_self_heal_spirals_down_into_the_orbit() -> void:
+	# User, 2026-11-28: the water spirals back down the way it climbed, then joins the orbit.
 	var r := _rope()
 	r.heal(Vector2.ZERO, true)
 	for i in settings.HEAL_T:
 		r.step()
 	r.heal_back(1.0)
-	assert_eq(r.st, "idle", "straight back into the orbit")
+	assert_eq(r.st, "return", "spiralling home")
+	var P: PackedVector3Array = r.rpath.pts
+	var end: Vector3 = P[P.size() - 1]
+	assert_almost_eq(Vector2(end.x, end.y).length(), settings.ORB, 0.5, "it ends on the orbit")
+	# It turns the orbit's way all the way down: the angle round the hero only grows.
+	var turned := 0.0
+	var k0 := P.size() - 60
+	for k in range(k0, P.size() - 1):
+		turned += angle_difference(atan2(P[k].y, P[k].x), atan2(P[k + 1].y, P[k + 1].x))
+	assert_gt(turned, 0.0, "the same way round as the orbit")
+	for i in 600:
+		r.step()
+	assert_true(r.st == "idle" or r.st == "wrap", "back on its orbit")
 	assert_gt(r.M(), 0)
 
 
