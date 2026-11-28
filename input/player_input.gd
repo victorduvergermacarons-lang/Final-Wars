@@ -343,6 +343,14 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
 	if hero != null and _second_press(hero, ability, key):
 		return
+	# Input buffering (2026-11-28): pressed up to BUFFER_SECONDS before it could go, it
+	# waits and goes off the moment it can (a newer press replaces it).
+	if hero != null and not _buffering and not _starts_aiming(ability):
+		var wait := ready_in(hero, ability)
+		if wait > 0.0 and wait <= BUFFER_SECONDS:
+			_buffered = {"ability": ability, "key": key, "until": session.now() + wait + BUFFER_GRACE}
+			return
+	_buffered = {}
 	if AimPreview.is_aimed(ability) and aims_during_bar(ability):
 		_start_bar_aiming(ability)
 		return
@@ -565,7 +573,54 @@ func is_aiming_bar() -> bool:
 	return _aiming.get("during_bar", false)
 
 
+## Input buffering: how early a press can come and still go off by itself.
+const BUFFER_SECONDS := 0.3
+## …and how long past the expected moment it is kept (a late snapshot).
+const BUFFER_GRACE := 0.25
+var _buffered := {}
+var _buffering := false
+
+
+## Seconds until `ability` could go: its cooldown, the global cooldown, or a cast,
+## wind-up or channel still running (a timing bar doesn't count: another key stops
+## it). 0 when it could go now.
+func ready_in(hero: Hero, ability: AbilityDef) -> float:
+	var now: float = session.now()
+	var wait := hero.cooldowns.ability_remaining(ability.cooldown_key(), now)
+	if ability.on_gcd:
+		wait = maxf(wait, hero.cooldowns.gcd_remaining(now))
+	var c: Dictionary = hero.casting
+	if not c.is_empty() and c.get("kind", "") != "timing":
+		wait = maxf(wait, float(c.get("end", now)) - now)
+	return maxf(wait, 0.0)
+
+
+## Aimed abilities without a bar start aiming on the press; only the release casts,
+## so they aren't buffered (melee cones swing at once and are).
+func _starts_aiming(ability: AbilityDef) -> bool:
+	if not AimPreview.is_aimed(ability) or aims_during_bar(ability):
+		return false
+	return not (ability.uses_hitbox() and ability.hitbox.shape == HitboxDef.Shape.CONE)
+
+
+func _fire_buffered() -> void:
+	if _buffered.is_empty() or session == null:
+		return
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive or session.now() > float(_buffered.until):
+		_buffered = {}
+		return
+	if ready_in(hero, _buffered.ability) > 0.0:
+		return
+	var b := _buffered
+	_buffered = {}
+	_buffering = true
+	use_ability(b.ability, b.key)
+	_buffering = false
+
+
 func _process(_delta: float) -> void:
+	_fire_buffered()
 	_go_off_at_bar_end()
 	if _aiming.get("during_bar", false):
 		_follow_bar_aiming()
@@ -649,3 +704,4 @@ func fire_aimed() -> void:
 	var picked := Targeting.pick(session.local_hero(), ability, session.get_actor(client.target_id))
 	cancel_aiming()
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target, "aim": point})
+
