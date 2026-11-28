@@ -122,8 +122,90 @@ func items(grid: GridModel) -> Array:
 			var off := FireSim.band_offset(b) * PixelCamera.ART_SCALE
 			var rect := Rect2(top + off, Vector2(FireSim.BAND_W, FireSim.BAND_H) * PixelCamera.ART_SCALE)
 			out.append({"fireband": e.slot, "band": b, "pos": Vector2(tile), "rect": rect})
+			out.append({"fireparts": e, "band": b, "pos": Vector2(tile), "rect": rect, "top": top})
 	return out
 
 
 func draw(canvas: CanvasItem, item: Dictionary) -> void:
+	if item.has("fireparts"):
+		_draw_parts(canvas, item)
+		return
 	canvas.draw_texture_rect_region(sim.bands_texture(), item.rect, FireSim.band_rect(int(item.fireband), int(item.band)))
+
+
+# --- Particles and heads, drawn in code with the reference's ramps ------------
+
+const RAMP := [Color8(255, 251, 230), Color8(255, 226, 122), Color8(255, 176, 48), Color8(242, 102, 28), Color8(200, 50, 26), Color8(110, 28, 22)]
+const RAMP_BLUE := [Color8(244, 251, 255), Color8(191, 230, 255), Color8(108, 195, 255), Color8(47, 128, 232), Color8(29, 75, 176), Color8(20, 40, 94)]
+const GOLD := [Color8(255, 246, 200), Color8(255, 224, 122), Color8(246, 192, 74), Color8(201, 138, 38)]
+const BAY := [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+
+
+func _ramp(q: int) -> Color:
+	return (RAMP_BLUE if sim.blue_ramp else RAMP)[clampi(q, 0, 5)]
+
+
+## The band a local point belongs to (its tile diagonal).
+static func band_of(x: float, y: float) -> int:
+	return (int(floor(x)) >> 4) + (int(floor(y)) >> 4)
+
+
+func _px(canvas: CanvasItem, top: Vector2, x: float, y: float, c: Color, w := 1, h := 1) -> void:
+	var s := PixelCamera.ART_SCALE
+	canvas.draw_rect(Rect2(top + Vector2(roundf(x), roundf(y)) * s, Vector2(w, h) * s), c)
+
+
+## Screen (art px from the window's top vertex) of a local point `z` px above the floor.
+func _sp(x: float, y: float, z: float) -> Vector2:
+	return Vector2(x - y, (x + y) * 0.5 - z * sim.height_scale)
+
+
+func _draw_parts(canvas: CanvasItem, item: Dictionary) -> void:
+	var e: FireEffect = item.fireparts
+	var b: int = item.band
+	var top: Vector2 = item.top
+	for o in e.parts:
+		if band_of(o.x, o.y) != b:
+			continue
+		var p := _sp(o.x, o.y, o.z)
+		var q := float(o.l) / float(o.L)
+		match int(o.k):
+			0:
+				var c: Color = GOLD[mini(3, int(q * 4.0))]
+				_px(canvas, top, p.x, p.y, c, 2 if q < 0.5 else 1)
+			2:
+				_px(canvas, top, p.x, p.y, _ramp(mini(4, 1 + int(q * 3.0))))
+				_px(canvas, top, p.x, p.y - 1, _ramp(1))
+			4:
+				for k in 4:
+					_px(canvas, top, p.x, p.y - k, _ramp(1 + k))
+			_:
+				var c := _ramp(mini(4, 1 + int(q * 4.0)))
+				_px(canvas, top, p.x, p.y, c, 2 if (o.k == 3 and q < 0.4) else 1)
+	var hd := e.head
+	if not hd.is_empty() and band_of(hd.x, hd.y) == b:
+		var p := _sp(hd.x, hd.y, FireSim.ZC)
+		if not bool(hd.get("ball", false)):
+			# the dart: a short streak, hot at its tip
+			var d := _sp(hd.dx, hd.dy, 0.0) - _sp(0, 0, 0)
+			d = d.normalized() if d.length() > 0.0 else Vector2.RIGHT
+			var size := float(hd.size)
+			var L := int(3.0 + size * 2.0)
+			var t := maxi(1, roundi(size / 2.0))
+			for k in range(L, -1, -1):
+				var w := t + 1 if k < 2 else t
+				_px(canvas, top, p.x - d.x * k, p.y - d.y * k, _ramp(mini(4, int(float(k) / L * 4.0))), w, w)
+		else:
+			# the fireball: a dithered ball, white at its heart
+			var r := float(hd.size) + (0.5 if (e.f & 2) != 0 else 0.0)
+			var n := int(ceil(r))
+			for j in range(-n, n + 1):
+				for i in range(-n, n + 1):
+					var dd := Vector2(i, j).length() / r
+					if dd > 1.0:
+						continue
+					var X := roundi(p.x + i)
+					var Y := roundi(p.y + j)
+					if dd > 0.8 and BAY[(X & 3) | ((Y & 3) << 2)] > 10:
+						continue
+					_px(canvas, top, X, Y, _ramp(0 if dd < 0.35 else 1 if dd < 0.6 else 2 if dd < 0.85 else 3))

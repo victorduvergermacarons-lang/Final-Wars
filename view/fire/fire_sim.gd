@@ -26,6 +26,7 @@ const BAND_W := 260
 const BAND_H := 128
 const BANDS := 15
 const STEPS_PER_SECOND := 60.0
+const ZC := 13.0 ## the reference's chest height (px above the floor)
 const SHADER_PATH := "res://view/fire/shaders/fire_core.gdshaderinc"
 
 ## Rings of the velocity extension each step (the reference runs up to 18, as many as

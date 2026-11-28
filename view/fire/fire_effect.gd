@@ -27,6 +27,13 @@ var f := 0                 # steps alive
 var hold_steps := 0        # the stream: steps the caster keeps it on
 var done_after := 0        # steps after which nothing more is emitted
 var tail_steps := 180      # steps the fire is left to burn out before the slot is freed
+## Particles (the reference's parts): {x, y, z, vx, vy, vz, l, L, k, gr, gs, gz}; local
+## cells and px above the floor. k: 0 gold mote, 1 falling spark, 2 jet spark, 3 trail
+## ember, 4 fire drop (lands, licks the floor and lights it).
+var parts: Array = []
+## A projectile's head, drawn in code: {} or {x, y, dx, dy, ball (bool), size}.
+var head := {}
+const MAX_PARTS := 900
 
 
 ## Where to put the window for a caster at `pos` aiming along `dir`: the caster near the
@@ -57,12 +64,83 @@ func step(sim: FireSim) -> void:
 			if ct < hold_steps:
 				var wob := 0.04 * sin(f * 0.21) + 0.03 * sin(f * 0.53 + 1.0)
 				sim.emit(slot, hero.x + ax * 6.5, hero.y + ay * 6.5, ax, ay, 1.25, float(p.temp), float(p.launch), wob)
+	step_parts(sim)
 	var params := p.duplicate()
 	params["aim"] = Vector2(ax, ay)
 	params["contact"] = 1 if look.kind in ["stream", "punch", "wheel", "breathfire", "jet"] else (2 if look.kind in ["kick", "combo"] else 0)
 	sim.set_params(slot, params)
 	ct += 1
 	f += 1
+
+
+# --- The reference's sources and particles ---------------------------------
+
+func part(x: float, y: float, z: float, vx: float, vy: float, vz: float, life: float, k: int) -> void:
+	if parts.size() < MAX_PARTS:
+		parts.append({"x": x, "y": y, "z": z, "vx": vx, "vy": vy, "vz": vz, "l": 0.0, "L": life, "k": k, "gr": 0.0, "gs": 0.0, "gz": 0.0})
+
+
+func drop(x: float, y: float, z: float, vx: float, vy: float, vz: float, gr: float, gs: float, gz: float = 0.0) -> void:
+	if parts.size() < MAX_PARTS:
+		parts.append({"x": x, "y": y, "z": z, "vx": vx, "vy": vy, "vz": vz, "l": 0.0, "L": 200.0, "k": 4, "gr": gr, "gs": gs, "gz": gz})
+
+
+## A lick of flame on one cell (the reference's lick).
+func lick(sim: FireSim, x: float, y: float, t: float, zz: float, sp: float) -> void:
+	var a := randf() * TAU
+	sim.point(slot, roundf(x), roundf(y), t, 1.0, 0.3, zz, cos(a) * sp, sin(a) * sp)
+
+
+## Flames licking up around a unit's body (the reference's burnUnit): `rate` a step.
+func burn_unit(sim: FireSim, x: float, y: float, rate: float, t: float, body: float = 2.6) -> void:
+	var n := rate
+	while n > 0.0:
+		if n < 1.0 and randf() > n:
+			break
+		n -= 1.0
+		var a := randf() * TAU
+		var rr := body + 0.6 + randf() * 0.8
+		sim.point(slot, roundf(x + cos(a) * rr), roundf(y + sin(a) * rr), t * (0.6 + 0.4 * randf()), 1.0, 0.3,
+				-FireSim.ZC + 3.0 + randf() * 8.0, cos(a) * 0.15, sin(a) * 0.15)
+
+
+## Moves every particle one step; a fire drop that lands licks the floor
+## (and lights the ground fire, phase 2).
+func step_parts(sim: FireSim) -> void:
+	for q in range(parts.size() - 1, -1, -1):
+		var o: Dictionary = parts[q]
+		o.l += 1.0
+		o.x += o.vx
+		o.y += o.vy
+		o.z += o.vz
+		if o.k == 0:
+			o.vz += float(p.get("srise", 0.25)) * 0.05
+			o.vx *= 0.96
+			o.vy *= 0.96
+			if o.z < 1.0:
+				o.z = 1.0
+				o.vz = absf(o.vz) * 0.3
+		else:
+			if o.gz != 0.0:
+				o.vz -= o.gz
+			if o.k == 1:
+				o.vz -= 0.02
+			if o.k == 3:
+				o.vx *= 0.95
+				o.vy *= 0.95
+		if o.k == 4 and o.z <= 0.0:
+			lick(sim, o.x, o.y, 0.9, -FireSim.ZC + 2.0, 0.2)
+			landed(o)
+			o.l = o.L
+		if o.k == 2 and o.z <= 0.0:
+			o.l = o.L
+		if o.l >= o.L:
+			parts.remove_at(q)
+
+
+## A fire drop reached the floor (ground fire hooks in here).
+func landed(_o: Dictionary) -> void:
+	pass
 
 
 func finished() -> bool:

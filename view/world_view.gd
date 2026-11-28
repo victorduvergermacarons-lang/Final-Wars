@@ -614,7 +614,7 @@ func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
 func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
 	if item.has("rope"):
 		return ropes.rect_of(item)
-	if item.has("fireband"):
+	if item.has("fireband") or item.has("fireparts"):
 		return item.rect
 	var r := RING_RADIUS.x if item.has("ring") else 0.0
 	if item.has("quad") or item.has("tilefx"):
@@ -804,7 +804,7 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 	if item.has("rope"):
 		ropes.draw(self, item)
 		return
-	if item.has("fireband"):
+	if item.has("fireband") or item.has("fireparts"):
 		fire.draw(self, item)
 		return
 	if item.has("quad"):
