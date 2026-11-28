@@ -165,6 +165,13 @@ func _cast_at(sim: WorldSim) -> float:
 
 
 
+## Seconds after the cast for each look's three shots (its moments).
+const MOMENTS := {"F01": [0.05, 0.1, 0.25], "F02": [0.08, 0.15, 1.0], "F09": [0.15, 0.45, 0.75], "F03": [0.08, 0.16, 0.3],
+	"F04": [0.2, 0.45, 0.8], "F12": [0.5, 1.5, 2.4], "F23": [0.2, 4.0, 8.35], "F06": [0.4, 0.76, 0.95],
+	"F11": [0.4, 1.5, 3.1], "F15": [0.25, 0.52, 1.2], "F07": [0.2, 0.45, 0.8], "F10": [0.15, 0.3, 0.6],
+	"F16": [0.5, 2.0, 4.5], "F14": [0.3, 0.7, 1.2], "F18": [0.2, 0.95, 1.3]}
+
+
 ## FIRE_ABILITY=all (or FIRE_LIST=F01,F06,...): every Fire look through the host's cast
 ## event path (start_from_event), at Fire Mastery 1000 against the dummy at the look's
 ## near distance; shots at a quarter, half and most of the way through.
@@ -186,10 +193,12 @@ func _all_bench(sim: WorldSim, t: Vector2i) -> void:
 			print(id, ": no look")
 			continue
 		var steps := FireKinds.length(e)
-		for frac in [0.25, 0.5, 0.85]:
-			while e.ct < int(steps * frac) and view.fire.effects.has(e):
+		var k := 0
+		for sec in MOMENTS.get(id, [0.25, 0.5, 1.0]):
+			while e.ct < int(float(sec) * 60.0 * look.time_scale) and view.fire.effects.has(e):
 				await _frames(1)
-			await _shot("look_%s_m%d_%02d" % [id, int(m), int(frac * 100)], Vector2(t))
+			await _shot("look_%s_m%d_%d" % [id, int(m), k], Vector2(t))
+			k += 1
 		print("%s (%s): %d steps" % [id, look.kind, steps])
 		view.fire.clear()
 		await _frames(3)
