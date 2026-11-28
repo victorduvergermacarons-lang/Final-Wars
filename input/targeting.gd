@@ -60,7 +60,9 @@ static func usability(hero: Hero, ability: AbilityDef, target: Actor, grid: Grid
 	var ctx := CombatContext.new(grid, rules, null)
 	ctx.now = now
 	if ability.targeting != AbilityDef.TargetingMode.LEGACY:
-		return _m3_usability(grid, rules, hero, ability, target, now, actors)
+		# The target the press would use (an ally ability falls back to yourself).
+		var used: Actor = hero if picked.target == hero.id else target
+		return _water_usability(hero, ability, _m3_usability(grid, rules, hero, ability, used, now, actors))
 	if ability.shape != AbilityDef.Shape.TARGETED:
 		return _shape_usability(ctx, hero, ability, actors)
 	var chosen: Actor = hero if picked.target == hero.id else target
@@ -75,6 +77,21 @@ static func usability(hero: Hero, ability: AbilityDef, target: Actor, grid: Grid
 			return Usability.OUT_OF_RANGE
 		_:
 			return Usability.NO_TARGET
+
+
+## Water abilities (2026-11-28, user): what matters is whether there is water to be
+## had. Out of the stance (pressing enters it) or while the rope still forms, they show
+## ready; only with no water at all (stance, pouch, and no water tile near) they show
+## red. Mana and cooldowns still count.
+static func _water_usability(hero: Hero, ability: AbilityDef, u: Usability) -> Usability:
+	if not WaterBending.uses_stance_water(ability) or u in [Usability.READY, Usability.COOLDOWN,
+			Usability.DEAD, Usability.UNAVAILABLE]:
+		return u
+	if WaterBending.total(hero) + WaterBending.shield_water(hero) + int(hero.water_out.get("points", 0)) <= 0:
+		return Usability.OUT_OF_RANGE
+	if u == Usability.NO_MANA and hero.mana >= ability.mana_cost:
+		return Usability.READY # the water comes: the stance fills, or pressing enters it
+	return u
 
 
 static func _shape_usability(ctx: CombatContext, hero: Hero, ability: AbilityDef, actors: Array) -> Usability:
