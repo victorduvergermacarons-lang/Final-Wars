@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F04"
+kind = "swb"
+time_scale = 1.0
+time_scale_after = 1.0
+near = 16
+far = 32
+s0 = {"sdur": 0.6, "srate": 2.0, "sspd": 0.5, "srise": 0.25, "slife": 22.0}
+m1 = {"sdur": 0.9, "srate": 3.5, "sspd": 0.6, "srise": 0.3, "slife": 30.0}

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F10"
+kind = "wheel"
+time_scale = 1.0
+time_scale_after = 1.0
+near = 16
+far = 32
+s0 = {"wspin": 0.4, "wrev": 1.0, "wrad": 5.0, "launch": 2.0, "wtan": 0.6, "temp": 1.4, "cool": 0.04, "boom": 1.4, "fade": 0.015, "frad": 2.8, "kz0": 8.0}
+m1 = {"wspin": 0.4, "wrev": 1.5, "wrad": 5.0, "launch": 2.6, "wtan": 0.6, "temp": 1.7, "cool": 0.035, "boom": 2.0, "fade": 0.012, "frad": 3.2, "kz0": 8.0}

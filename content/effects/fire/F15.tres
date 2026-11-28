@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F15"
+kind = "phoenix"
+time_scale = 1.0
+time_scale_after = 1.0
+near = 48
+far = 90
+s0 = {"pleap": 0.5, "pheight": 18.0, "ptrail": 2.0, "popT": 1.4, "popR": 18.0, "popS": 1.2, "cool": 0.05, "fade": 0.03, "prain": 1.5, "pspread": 0.4, "pdrop": 2.0, "ptchT": 1.2, "gspread": 10.0, "gh": 8.0}
+m1 = {"pleap": 0.5, "pheight": 26.0, "ptrail": 4.0, "popT": 1.9, "popR": 24.0, "popS": 1.7, "cool": 0.05, "fade": 0.03, "prain": 4.0, "pspread": 0.6, "pdrop": 6.0, "ptchT": 1.8, "gspread": 14.0, "gh": 12.0}

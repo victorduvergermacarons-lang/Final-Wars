@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F16"
+kind = "inferno"
+time_scale = 0.5
+time_scale_after = 0.5
+near = 48
+far = 72
+s0 = {"itele": 0.75, "idur": 4.0, "irad": 40.0, "ivort": 0.02, "irain": 0.6, "gspread": 14.0, "gh": 10.0, "cool": 0.05, "fade": 0.03}
+m1 = {"itele": 0.75, "idur": 4.0, "irad": 40.0, "ivort": 0.05, "irain": 1.2, "gspread": 20.0, "gh": 16.0, "cool": 0.05, "fade": 0.03}

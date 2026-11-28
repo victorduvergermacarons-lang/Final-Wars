@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F12"
+kind = "stream"
+time_scale = 1.0
+time_scale_after = 1.0
+near = 34
+far = 65
+s0 = {"temp": 0.7, "heat": 0.005, "hts": 0.2, "launch": 0.4, "thrust": 0.1, "tts": 0.2, "cool": 0.02, "widen": 0.1, "boom": 1.0, "push": 2.0, "fade": 0.005}
+m1 = {"temp": 0.9, "heat": 0.07, "hts": 0.25, "launch": 0.8, "thrust": 0.1, "tts": 0.2, "cool": 0.02, "widen": 0.1, "boom": 2.0, "push": 2.0, "fade": 0.005}

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F23"
+kind = "overheat"
+time_scale = 1.0
+time_scale_after = 0.5
+near = 48
+far = 90
+s0 = {"odur": 8.0, "ocast": 0.25, "oburn": 0.8, "obtemp": 0.9, "ohaze": 0.35, "ohrise": 1.5, "ohsize": 0.6, "popT": 0.9, "popR": 14.0, "popS": 1.0, "cool": 0.05, "fade": 0.03}
+m1 = {"odur": 8.0, "ocast": 0.25, "oburn": 1.6, "obtemp": 1.3, "ohaze": 1.0, "ohrise": 8.0, "ohsize": 1.0, "popT": 1.4, "popR": 24.0, "popS": 1.6, "cool": 0.05, "fade": 0.03}

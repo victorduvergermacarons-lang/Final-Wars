@@ -61,6 +61,9 @@ var _animator := CreatureAnimator.new()
 var _fx := FxPainter.new()
 ## Every hero's Water stance 1 rope on this screen (the Water Whip), stepped at 60 Hz.
 var ropes := WaterRopes.new()
+## The fire on the GPU fluid (fire physics), stepped each frame in _process.
+var fire := FireEffects.new()
+var _fire_t := -1.0
 var _rope_t := -1.0
 static var _frames_cache := {} # CreatureArtDef -> SpriteFrames
 ## Actor id -> render time its hit flash ends.
@@ -154,6 +157,10 @@ func _process(delta: float) -> void:
 		camera.follow(actor_screen_pos(hero), delta)
 	var t: float = session.render_time()
 	_float_texts = _float_texts.filter(func(f): return t - f.t < FLOAT_TEXT_SECONDS)
+	if fire.sim == null:
+		fire.attach(self)
+	fire.advance(clampf(t - _fire_t, 0.0, 0.25) if _fire_t >= 0.0 else 0.0, session.actors())
+	_fire_t = t
 	_update_terrain_cache()
 	_update_sense(t)
 	queue_redraw()
@@ -506,6 +513,11 @@ func _draw() -> void:
 		if not fx_by_tile.has(ft):
 			fx_by_tile[ft] = []
 		fx_by_tile[ft].append(item)
+	for item in fire.items(grid):
+		var ft := Vector2i(item.pos)
+		if not fx_by_tile.has(ft):
+			fx_by_tile[ft] = []
+		fx_by_tile[ft].append(item)
 	for item in ropes.items(func(h): return actor_screen_pos(h)):
 		var ft := MoveState.tile_of(item.pos)
 		if not grid.in_bounds(ft):
@@ -602,6 +614,8 @@ func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
 func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
 	if item.has("rope"):
 		return ropes.rect_of(item)
+	if item.has("fireband"):
+		return item.rect
 	var r := RING_RADIUS.x if item.has("ring") else 0.0
 	if item.has("quad") or item.has("tilefx"):
 		r = 160.0 # a strip piece or a shaded tile (and a sandstorm over its area)
@@ -789,6 +803,9 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 		return
 	if item.has("rope"):
 		ropes.draw(self, item)
+		return
+	if item.has("fireband"):
+		fire.draw(self, item)
 		return
 	if item.has("quad"):
 		_draw_ribbon_quad(grid, item)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F02"
+kind = "kick"
+time_scale = 0.5
+time_scale_after = 0.5
+near = 16
+far = 32
+s0 = {"temp": 1.0, "heat": 0.0, "hts": 0.0, "launch": 1.3, "cool": 0.06, "boom": 0.8, "fade": 0.02, "ktime": 0.2, "karc": 180.0, "ktilt": 30.0, "kz0": 4.0, "kapex": 13.0, "frad": 1.8, "btime": 2.0, "btemp": 0.8, "brate": 0.5}
+m1 = {"temp": 1.15, "heat": 0.03, "hts": 0.15, "launch": 1.6, "cool": 0.06, "boom": 1.1, "fade": 0.02, "ktime": 0.2, "karc": 180.0, "ktilt": 30.0, "kz0": 4.0, "kapex": 13.0, "frad": 2.2, "btime": 3.0, "btemp": 1.0, "brate": 0.9}

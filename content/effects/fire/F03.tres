@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F03"
+kind = "dart"
+time_scale = 0.5
+time_scale_after = 0.5
+near = 48
+far = 96
+s0 = {"dspd": 4.3, "dsize": 2.0, "ttemp": 0.7, "trad": 1.0, "tlaunch": 0.15, "cool": 0.08, "popT": 1.0, "popR": 4.0, "popS": 0.8, "fade": 0.03}
+m1 = {"dspd": 4.3, "dsize": 3.5, "ttemp": 1.2, "trad": 1.6, "tlaunch": 0.15, "cool": 0.08, "popT": 1.6, "popR": 9.0, "popS": 1.4, "fade": 0.03}

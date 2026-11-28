@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F11"
+kind = "jet"
+time_scale = 1.0
+time_scale_after = 1.0
+near = 32
+far = 64
+s0 = {"jdur": 3.0, "jlift": 10.0, "jrate": 2.0, "jsplash": 0.6, "jrad": 2.5, "jsT": 0.7, "gpush": 0.05, "cool": 0.06, "fade": 0.03, "jgrate": 0.15, "jgr": 1.5, "jgb": 0.8, "gspread": 6.0, "gh": 5.0}
+m1 = {"jdur": 3.0, "jlift": 16.0, "jrate": 4.0, "jsplash": 0.9, "jrad": 2.5, "jsT": 1.0, "gpush": 0.1, "cool": 0.06, "fade": 0.03, "jgrate": 0.25, "jgr": 2.0, "jgb": 1.2, "gspread": 8.0, "gh": 7.0}

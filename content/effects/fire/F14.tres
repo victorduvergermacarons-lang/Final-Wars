@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="FireLookDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/defs/fire_look_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"F14"
+kind = "breathfire"
+time_scale = 1.0
+time_scale_after = 1.0
+near = 32
+far = 80
+s0 = {"bdur": 0.8, "bcone": 60.0, "launch": 1.5, "temp": 1.3, "heat": 0.02, "hts": 0.25, "thrust": 0.1, "tts": 0.3, "cool": 0.025, "widen": 0.12, "bloose": 0.25, "boom": 1.5, "push": 2.0, "fade": 0.01, "bz": 6.0}
+m1 = {"bdur": 0.8, "bcone": 60.0, "launch": 2.0, "temp": 1.7, "heat": 0.05, "hts": 0.3, "thrust": 0.12, "tts": 0.3, "cool": 0.02, "widen": 0.12, "bloose": 0.25, "boom": 2.0, "push": 2.0, "fade": 0.01, "bz": 6.0}
