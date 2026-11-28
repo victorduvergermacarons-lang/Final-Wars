@@ -42,6 +42,21 @@ static func out_of(hero: Hero, ability: AbilityDef) -> Dictionary:
 	return hero.shield_out if ability.water_back == AbilityDef.WaterBack.SHIELD_LEFT else hero.water_out
 
 
+## Water Shield's water while it is up: its points × the share of the shield left.
+static func shield_water(hero: Hero) -> int:
+	var out := hero.shield_out
+	if out.is_empty() or not out.get("paid", false):
+		return 0
+	return roundi(int(out.get("points", 0)) * float(out.get("left", 1.0)))
+
+
+## Frost Shard while a Water Shield is up (2026-11-28, user): the stance doesn't
+## rebuild while the shield holds the rope, so the shard is thrown off the shield.
+static func from_shield(hero: Hero, ability: AbilityDef) -> bool:
+	return ability != null and ability.id == &"W04" and not hero.shield_out.is_empty() \
+			and hero.shield_out.get("paid", false) and hero.stance_water < maxi(1, ability.water_cost)
+
+
 ## Total water (stance + reserve) needed to enter stance 2.
 const STANCE_2_ENTRY := 27
 ## Power at an empty stance, and what the stance water adds up to full.
@@ -84,6 +99,8 @@ static func has_enough(hero: Hero, ability: AbilityDef) -> bool:
 	if not uses_stance_water(ability):
 		return true
 	var need := maxi(1, ability.water_cost)
+	if from_shield(hero, ability):
+		return shield_water(hero) >= need
 	var out := out_of(hero, ability)
 	if out.get("ability", &"") == ability.id and not out.get("paid", true):
 		return int(out.points) >= need # sent out at its release: going off now

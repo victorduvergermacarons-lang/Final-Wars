@@ -253,6 +253,16 @@ func absorb(amount: float) -> float:
 
 
 ## The share of buff `id`'s shield still left (0–1), or -1 without that buff.
+## Multiplies what is left of shield `id` by `f` (Frost Shard thrown off a Water
+## Shield takes its share of the absorb). Returns what is left.
+func scale_shield(id: StringName, f: float) -> float:
+	if not _active.has(id):
+		return 0.0
+	var b: Dictionary = _active[id]
+	b.shield = maxf(0.0, float(b.get("shield", 0.0)) * f)
+	return b.shield
+
+
 func shield_left(id: StringName, now: float) -> float:
 	if not has(id, now):
 		return -1.0

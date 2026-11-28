@@ -716,7 +716,7 @@ func _step_mists() -> void:
 ## the orbit's gap faces it, the nearer end breaks off. The two ends re-link (the link
 ## fading in), and the orbit springs pull the tail forward. Returns the piece's
 ## positions, front first.
-func break_piece(dir: Vector2, n: int) -> Array[Vector3]:
+func break_piece(dir: Vector2, n: int, center := Vector2.ZERO) -> Array[Vector3]:
 	var out: Array[Vector3] = []
 	n = mini(n, M())
 	if n <= 0:
@@ -725,7 +725,7 @@ func break_piece(dir: Vector2, n: int) -> Array[Vector3]:
 	var best := 0
 	var bd := INF
 	for i in M():
-		var d := absf(angle_difference(atan2(R[i].p.y, R[i].p.x), want))
+		var d := absf(angle_difference(atan2(R[i].p.y - center.y, R[i].p.x - center.x), want))
 		if d < bd:
 			bd = d
 			best = i

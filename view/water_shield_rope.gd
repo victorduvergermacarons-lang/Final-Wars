@@ -149,10 +149,31 @@ func follow_target(target: Vector2) -> void:
 ## a drop is a hit (dents, splash, ripple, a kick in the spin).
 func set_left(f: float) -> void:
 	f = clampf(f, 0.0, 1.0)
+	if _quiet > 0: # a shard just left: its drop isn't a hit
+		_shown_left = f
 	if f < _shown_left - 0.001 and shield_up and st == "shield":
 		_hit(_shown_left - f)
 	_shown_left = f
 	left = f
+
+
+## Frames during which a fall in the shield left isn't drawn as a hit.
+var _quiet := 0
+
+
+## Frost Shard thrown off the shield (2026-11-28): `n` points of the bubble facing
+## `dir` (from the bubble's centre) break off; the rope is that much shorter.
+func throw_shard(dir: Vector2, n: int) -> Array[Vector3]:
+	if st != "shield" or sph.is_empty():
+		return [] as Array[Vector3]
+	var C: Vector3 = sph.C
+	var pts := break_piece(dir, n, Vector2(C.x, C.y))
+	var cut := pts.size() * s.sp()
+	if shield_up:
+		lcap = maxf(lcap - cut, s.sp())
+		tail_s += cut
+	_quiet = 45
+	return pts
 
 
 func _phase_at(tau: float) -> float:
@@ -442,6 +463,7 @@ func _start_home() -> void:
 
 func step() -> void:
 	super()
+	_quiet = maxi(_quiet - 1, 0)
 	if home_n > 0 and (st == "return" or st == "wrap"):
 		if M() > home_n:
 			R.pop_back()

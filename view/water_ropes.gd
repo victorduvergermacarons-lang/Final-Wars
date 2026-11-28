@@ -120,8 +120,8 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		var g := ground_of(h.move.pos)
 		if wants:
 			e.rope.set_stance(h.stance)
-			if h.water_out.is_empty():
-				e.rope.set_count(h.stance_water)
+			if h.water_out.is_empty() and h.shield_out.is_empty() and not _shield_coming_home(h.id):
+				e.rope.set_count(h.stance_water) # (the shield holds the rope: no rebuild, 2026-11-28)
 		e.rope.move_hero(g - e.ground)
 		e.ground = g
 		e.hero = h
@@ -148,6 +148,10 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		var h: Hero = by_id.get(t.source)
 		if h == null:
 			continue
+		if _shield_coming_home(h.id) and now < float(t.at) + RECALL_WAIT:
+			keep.append(t) # a recalled shield's rope first gets home, then this goes
+			continue
+		_adopt_shield(h)
 		var e: Dictionary = ropes.get(h.id, {})
 		if e.is_empty() or e.rope.st == "drain":
 			e = _new_entry(h)
@@ -170,11 +174,16 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 	for p in _new_shards:
 		var h: Hero = by_id.get(int(p.get("source", -1)))
 		var e: Dictionary = ropes.get(int(p.get("source", -1)), {})
+		var sh: Dictionary = shields.get(int(p.get("source", -1)), {})
+		var off_shield: bool = not sh.is_empty() and sh.rope.st == "shield"
+		if off_shield:
+			e = sh # thrown off the Water Shield (its bubble, toward the shot)
 		if h == null or e.is_empty():
 			continue
 		var dir_t: Vector2 = FxPainter.projectile_dir(p)
 		var dir_px: Vector2 = ground_of(h.move.pos + dir_t) - ground_of(h.move.pos)
-		var pts: Array[Vector3] = e.rope.break_piece(dir_px, settings.SHARD_PIECE)
+		var pts: Array[Vector3] = e.rope.throw_shard(dir_px, settings.SHARD_PIECE) if off_shield \
+				else e.rope.break_piece(dir_px, settings.SHARD_PIECE)
 		if pts.is_empty():
 			continue
 		var c := Vector3.ZERO
@@ -205,8 +214,8 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		sh.rope.follow_target(ground_of(tgt.move.pos) - g)
 		if not h.shield_out.is_empty():
 			sh.rope.set_left(float(h.shield_out.get("left", 1.0)))
-		if sh.rope.st == "idle" or sh.rope.st == "wrap":
-			sh.rope.drain() # home: it flows into the hip
+		if sh.rope.st == "idle":
+			_adopt_shield(h) # home: it is the rope again (or flows into the hip)
 	_acc = minf(_acc + dt, STEP * 30.0)
 	while _acc >= STEP:
 		_acc -= STEP
@@ -230,7 +239,10 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 ## caster's rope then grows back from the source (the host refills it).
 func _send_shield(h: Hero, e: Dictionary, aim: Vector2, self_cast: bool, target_id: int) -> void:
 	var r: WaterRope = e.rope
-	if r.M() < 2:
+	var n := int(h.shield_out.get("points", r.M()))
+	if r.M() < maxi(n, 2) and r.can_cast():
+		r.fill_now(maxi(n, settings.MIN_KEEP)) # the whole rope goes, never part of it
+	elif r.M() < 2:
 		r.fill_now(maxi(r.M(), settings.MIN_KEEP))
 	_seed += 1
 	var sh := WaterShieldRope.new(settings, hash([h.id, _seed, "shield"]))
@@ -244,6 +256,43 @@ func _send_shield(h: Hero, e: Dictionary, aim: Vector2, self_cast: bool, target_
 	r.tt = 0
 	shields[h.id] = {"rope": sh, "ground": e.ground, "off": false, "hero": h,
 			"target": h.id if self_cast else target_id}
+
+
+## A recalled or run-out shield's rope on its way home.
+func _shield_coming_home(id: int) -> bool:
+	return shields.has(id) and shields[id].rope.st in ["return", "wrap"]
+
+
+## How long (host seconds) a throw waits for a recalled shield's rope to get home.
+const RECALL_WAIT := 0.6
+
+
+## A shield's rope coming home becomes the hero's rope again, where its points are,
+## when the rope is empty (the shield held all of it); else it flows into the hip.
+func _adopt_shield(h: Hero) -> void:
+	if not shields.has(h.id):
+		return
+	var sh: WaterShieldRope = shields[h.id].rope
+	if sh.st in ["shield", "shield_fall"]:
+		return
+	var e: Dictionary = ropes.get(h.id, {})
+	if e.is_empty() or e.rope.st == "drain" or e.rope.M() > 0 or not h.rope:
+		sh.drain()
+		return
+	var r: WaterRope = e.rope
+	r.R = sh.R
+	r.conn = sh.conn
+	r.strength = sh.strength
+	r.phase = sh.phase
+	r.w = sh.w
+	r.st = "idle"
+	r.tt = 0
+	r.forming = false
+	r.target_count = r.M()
+	sh.R = []
+	sh.conn = []
+	sh.strength = PackedFloat32Array()
+	sh.drain()
 
 
 func _new_entry(h: Hero) -> Dictionary:

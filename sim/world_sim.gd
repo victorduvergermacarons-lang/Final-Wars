@@ -1294,7 +1294,13 @@ func cancel_cast(actor: Actor, reason: String) -> void:
 
 func _finish_cast(caster: Actor, ability: AbilityDef, target: Actor, aim: Variant, pay_mode: CastResolver.Pay,
 		bonus: float = -1.0) -> AbilityResolver.Result:
+	var off_shield := caster is Hero and WaterBending.from_shield(caster as Hero, ability)
+	if off_shield:
+		ctx.cast_from = _shard_from_shield(caster as Hero, target, aim)
 	var out := CastResolver.cast(ctx, caster, ability, target, aim, pay_mode, bonus)
+	ctx.cast_from = {}
+	if off_shield and out.result == AbilityResolver.Result.OK:
+		_take_from_shield(caster as Hero, ability.water_cost)
 	_release_events.append_array(out.events)
 	_emit_resolved(out.events)
 	if out.result != AbilityResolver.Result.OK:
@@ -1924,6 +1930,8 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Varia
 			_delayed_casts.append({"hero": hero.id, "ability": ability.id, "target": target_id, "aim": aim,
 					"at": now + HOOP_TO_ROPE_CAST_SECONDS})
 			return ""
+	if ability.water_whole_rope and WaterBending.uses_stance_water(ability) and not hero.shield_out.is_empty():
+		recall_shield(hero) # it needs the whole rope: the shield's water comes back first
 	var walking: Variant = hero.walk_target
 	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
 	hero.stance_busy_at = now # using an ability keeps a Water stance up
@@ -1976,6 +1984,9 @@ func _stance_breaker(hero: Hero) -> String:
 ## Sets (or with stance 0, clears) the hero's stance; emits "stance" for every
 ## player (the view starts its look and entry animation from `stance_at`).
 func set_stance(hero: Hero, tree: String, n: int, why := "") -> void:
+	if tree == "Water" and WaterBending.FULL.has(n) and (hero.stance_tree != tree or hero.stance != n) \
+			and not hero.shield_out.is_empty():
+		recall_shield(hero) # entering a Water stance takes the whole rope: the shield comes home
 	var was_water := WaterBending.in_water_stance(hero)
 	var old_n := hero.stance
 	if n <= 0 or tree == "":
@@ -2020,7 +2031,7 @@ func _track_water() -> void:
 		elif now - hero.stance_busy_at >= WATER_STANCE_IDLE_SECONDS:
 			set_stance(hero, "", 0, "idle")
 			continue
-		if hero.water_out.is_empty() and hero.stance == 1: # no refill while the rope is out
+		if hero.water_out.is_empty() and hero.shield_out.is_empty() and hero.stance == 1: # no refill while the rope is out (a shield too)
 			_refill_stance_1(hero, dt)
 
 
@@ -2129,6 +2140,64 @@ func _check_water_out(hero: Hero) -> void:
 		_settle_water_out(hero, 0.0)
 	elif a.water_back == AbilityDef.WaterBack.LOST and out.get("paid", false):
 		_settle_water_out(hero, 0.0)
+
+
+## Recalls a Water Shield's rope (user, 2026-11-28): another ability that needs the
+## whole rope, or entering a Water stance, ends the shield on its target and brings
+## its water home, × the share of the shield left (all of it before it is up).
+func recall_shield(hero: Hero) -> void:
+	var out := hero.shield_out
+	if out.is_empty():
+		return
+	var share := 1.0
+	if out.get("paid", false):
+		share = float(out.get("left", 1.0))
+		var t := get_actor(int(out.get("target", -1)))
+		if t != null and out.has("buff"):
+			t.buffs.remove(out.buff)
+			emit({"type": "shield_recalled", "source": hero.id, "target": t.id, "buff": out.buff})
+	else: # not up yet: it never goes up
+		var id: StringName = out.get("ability", &"")
+		_releases = _releases.filter(func(r): return not (int(r.caster) == hero.id and r.ability.id == id))
+	_settle_shield_out(hero, share)
+
+
+## Frost Shard thrown off a Water Shield: from the bubble toward the aim when it is
+## round the caster; round an ally, out of the ally's bubble on the far side, along
+## the caster → ally line, onward (user, 2026-11-28).
+func _shard_from_shield(hero: Hero, target: Actor, aim: Variant) -> Dictionary:
+	var holder := get_actor(int(hero.shield_out.get("target", hero.id)))
+	if holder == null:
+		holder = hero
+	var dir: Vector2
+	if holder == hero:
+		var point: Variant = HitboxResolver.aim_point(hero, target, aim)
+		dir = ((point as Vector2) - hero.move.pos).normalized() if point != null \
+				and (point as Vector2).distance_to(hero.move.pos) > 0.001 else hero.facing_vector()
+	else:
+		var d := holder.move.pos - hero.move.pos
+		dir = d.normalized() if d.length() > 0.001 else hero.facing_vector()
+	return {"origin": holder.move.pos + dir * SHIELD_BUBBLE_TILES, "dir": dir, "holder": holder.id}
+
+
+## How far from its holder's centre a shard leaves a Water Shield's bubble (tiles).
+const SHIELD_BUBBLE_TILES := 0.45
+
+
+## The shard's water leaves the shield: its absorb shrinks by the same share; with
+## nothing left the shield is gone (its water lost).
+func _take_from_shield(hero: Hero, cost: int) -> void:
+	var out := hero.shield_out
+	var had := WaterBending.shield_water(hero)
+	var t := get_actor(int(out.get("target", -1)))
+	if t == null or had <= 0 or not out.has("buff"):
+		return
+	var f := maxf(0.0, float(had - maxi(1, cost)) / had)
+	t.buffs.scale_shield(out.buff, f)
+	out.left = float(out.get("left", 1.0)) * f
+	if f <= 0.0:
+		t.buffs.remove(out.buff)
+		_settle_shield_out(hero, 0.0)
 
 
 ## Water Shield's water comes home: `share` of it (what's left of the shield).

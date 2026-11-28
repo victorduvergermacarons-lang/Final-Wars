@@ -75,6 +75,8 @@ static func pay(ctx: CombatContext, caster: Actor, ability: AbilityDef, with_gcd
 			if out.get("ability", &"") != ability.id or out.get("paid", true):
 				WaterBending.send_out(h, ability, ctx.now) # not sent out at a release before
 			WaterBending.out_of(h, ability).paid = true
+		elif WaterBending.from_shield(h, ability):
+			h.cast_water[ability.id] = WaterBending.shield_water(h) # the shield's water (WorldSim takes it)
 		else:
 			h.cast_water[ability.id] = h.stance_water
 			h.stance_water = maxi(h.stance_water - ability.water_cost, 0)

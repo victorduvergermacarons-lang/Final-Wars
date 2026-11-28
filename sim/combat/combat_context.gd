@@ -31,6 +31,9 @@ var continuous := false
 ## The first unit a cast hits (nearest the caster), for AbilityEffect.first_only.
 var first_victim: Actor = null
 var cast_point := Vector2.ZERO
+## Where a cast leaves from and which way, when not from the caster: {"origin", "dir"}
+## (Frost Shard thrown off a Water Shield). Set by WorldSim around one cast.
+var cast_from: Dictionary = {}
 var cast_vec := Vector2.RIGHT
 ## Things only the world can do, queued during resolution and handled by WorldSim
 ## right after: {"type": "terrain"|"zone"|"counter", ...}.

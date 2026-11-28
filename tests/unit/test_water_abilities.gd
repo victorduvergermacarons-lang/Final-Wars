@@ -317,3 +317,79 @@ func test_a_stance_1_ability_from_the_hoop_goes_off_a_moment_after_the_switch() 
 	events = world.advance(0.15)
 	assert_true(events.any(func(e): return e.type == "release" and e.ability == &"W02"), "thrown 0.25 s after")
 	assert_true(PlayerInput.casts_from_hoop(hero, ContentDB.abilities[&"W02"]) == false, "(now in stance 1)")
+
+
+# --- Water Shield holds the rope (user, 2026-11-28) -------------------------------
+
+func test_the_rope_doesnt_rebuild_while_the_shield_is_out() -> void:
+	_shield_self()
+	world.advance(5.0)
+	assert_eq(hero.stance_water, 0, "no refill while the shield holds the rope")
+
+
+func test_a_whole_rope_ability_recalls_the_shield_then_goes() -> void:
+	_shield_self()
+	hero.buffs.absorb(hero.buffs.shield_total() * 0.5) # half used
+	world.advance(1.0) # the global cooldown
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	wolf.hp = 100000.0
+	world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": wolf.id})
+	var events := world.step()
+	var back: Array = events.filter(func(e): return e.type == "water_return" and e.ability == &"W12")
+	assert_eq(back.size(), 1, "the shield's rope came back")
+	assert_almost_eq(float(back[0].share), 0.5, 0.02, "× the share left")
+	assert_eq(hero.buffs.shield_total(), 0.0, "the shield is gone")
+	assert_true(hero.shield_out.is_empty())
+	assert_eq(int(hero.water_out.get("points", 0)), 12, "the whip went with the 12 points that came back")
+
+
+func test_entering_stance_2_recalls_the_shield() -> void:
+	_shield_self()
+	hero.water = 100
+	world.submit(hero.id, {"type": "stance", "tree": "Water", "stance": 2})
+	var events := world.step()
+	assert_eq(events.filter(func(e): return e.type == "water_return" and e.ability == &"W12").size(), 1)
+	assert_true(hero.shield_out.is_empty())
+	assert_eq(hero.stance, 2)
+	assert_eq(hero.stance_water, 33, "the hoop, from the shield's water and the pouch")
+
+
+func test_frost_shard_is_thrown_off_a_self_shield() -> void:
+	_shield_self()
+	world.advance(1.0) # the global cooldown
+	var total := hero.buffs.shield_total()
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(3, 0))
+	world.submit(hero.id, {"type": "cast", "ability": &"W04", "target": wolf.id, "aim": wolf.move.pos})
+	var events := world.step()
+	var shots: Array = events.filter(func(e): return e.type == "projectile")
+	assert_eq(shots.size(), 1, "thrown")
+	var p: Dictionary = shots[0].projectile
+	var from: Vector2 = p.get("from", Vector2.ZERO)
+	assert_almost_eq(from.distance_to(hero.move.pos), WorldSim.SHIELD_BUBBLE_TILES, 0.05, "off the bubble")
+	assert_gt((wolf.move.pos - hero.move.pos).dot(from - hero.move.pos), 0.0, "on the side facing the aim")
+	assert_almost_eq(hero.buffs.shield_total() / total, 20.0 / 24.0, 0.01, "4 of 24 points: a sixth less absorb")
+	assert_almost_eq(float(hero.shield_out.left), 20.0 / 24.0, 0.01)
+	assert_eq(hero.stance_water, 0, "the stance still holds nothing")
+
+
+func test_frost_shard_off_an_ally_s_shield_goes_along_you_to_them_onward() -> void:
+	var data := CharacterData.new_character("Ally", ContentDB.heroes[&"adventurer"])
+	var ally := world.add_saved_hero(data, ContentDB)
+	var spot := hero.tile() + Vector2i(0, 2)
+	ally.move.place(spot)
+	world.step()
+	world.submit(hero.id, {"type": "cast", "ability": &"W12", "target": ally.id})
+	world.step()
+	world.advance(ContentDB.abilities[&"W12"].release_delay_seconds + 0.05)
+	assert_gt(ally.buffs.shield_total(), 0.0, "the ally is shielded")
+	world.advance(1.0) # the global cooldown
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(3, 0)) # off to the side
+	world.submit(hero.id, {"type": "cast", "ability": &"W04", "target": wolf.id, "aim": wolf.move.pos})
+	var events := world.step()
+	var shots: Array = events.filter(func(e): return e.type == "projectile")
+	assert_eq(shots.size(), 1)
+	var p: Dictionary = shots[0].projectile
+	var line := (ally.move.pos - hero.move.pos).normalized()
+	assert_almost_eq(Vector2(p.get("from", Vector2.ZERO)).distance_to(ally.move.pos + line * WorldSim.SHIELD_BUBBLE_TILES),
+			0.0, 0.05, "out of the ally's bubble on the far side")
+	assert_almost_eq(FxPainter.projectile_dir(p).angle_to(line), 0.0, 0.05, "along you → ally, onward (not at the aim)")
