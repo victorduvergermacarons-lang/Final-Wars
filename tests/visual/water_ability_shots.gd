@@ -209,6 +209,24 @@ func _run() -> void:
 			await _wait(when - waited)
 			waited = when
 			await _shot("w4_2%d_shard_%.2f" % [int(when * 100) % 10, when])
+	if only == "hoopwhip":
+		# Water Whip pressed in stance 2 (2026-11-28): the hoop turns back into the rope,
+		# then the whip goes 0.25 s later.
+		await _ready_again(2)
+		await _wait(1.5)
+		await _shot("w4_80_hoop")
+		_cast(&"W02", dummy)
+		var w5 := 0.0
+		for when in [0.1, 0.25, 0.4, 0.6, 0.9, 1.4]:
+			await _wait(when - w5)
+			w5 = when
+			var rv: WorldView = game.get_node("WorldView")
+			var rr: WaterRope = rv.ropes.rope_of(hero.id)
+			var Ltot := 0.0
+			for k in rr.M() - 1:
+				Ltot += rr.R[k].p.distance_to(rr.R[k + 1].p)
+			print("HOOPDBG ", when, " L=", Ltot, " st=", rr.st, " M=", rr.M(), " goal=", rr.goal, " sb=", rr.sb, " sw=", hero.stance_water, " stance=", hero.stance)
+			await _shot("w4_8_hoopwhip_%.2f" % when)
 	if only == "healseq":
 		# Healing Touch in close-up (2026-11-28): all of it into the heal (mist), then a
 		# heal at full health (the water comes home on an arc).

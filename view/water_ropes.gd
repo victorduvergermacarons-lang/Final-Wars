@@ -252,6 +252,7 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 ## caster's rope then grows back from the source (the host refills it).
 func _send_shield(h: Hero, e: Dictionary, aim: Vector2, self_cast: bool, target_id: int) -> void:
 	var r: WaterRope = e.rope
+	r.leave_hoop_now()
 	var n := int(h.shield_out.get("points", r.M()))
 	if r.M() < maxi(n, 2) and r.can_cast():
 		r.fill_now(maxi(n, settings.MIN_KEEP)) # the whole rope goes, never part of it

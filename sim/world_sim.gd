@@ -88,6 +88,9 @@ var _releases: Array = []
 ## stance 2): [{"hero", "ability", "target", "aim", "at"}].
 var _delayed_casts: Array = []
 const HOOP_TO_ROPE_CAST_SECONDS := 0.25
+## …and a stance 2 ability pressed in stance 1 goes off this long after the rope starts
+## rising into the hoop.
+const ROPE_TO_HOOP_CAST_SECONDS := 0.5
 ## What the release going off now did (`_update_releases`).
 var _release_events: Array = []
 ## Temporary terrain changes: [{"delta": {tile: levels added}, "blocked": {tile: true}, "until"}].
@@ -1922,13 +1925,16 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Varia
 			return refused
 		var from_hoop := ability.tree == "Water" and ability.stance == 1 \
 				and hero.stance_tree == "Water" and hero.stance == 2
+		var into_hoop := ability.tree == "Water" and ability.stance == 2 \
+				and hero.stance_tree == "Water" and hero.stance == 1
 		set_stance(hero, ability.tree, ability.stance, "cast")
-		if from_hoop:
+		if from_hoop or into_hoop:
 			# A stance 1 ability from the hoop: the hoop turns back into the rope and
-			# the ability goes off a moment later (user, 2026-11-28).
+			# the ability goes off a moment later (user, 2026-11-28); the other way, the
+			# rope rises into the hoop first (with enough water: refused above if not).
 			hero.stance_busy_at = now
 			_delayed_casts.append({"hero": hero.id, "ability": ability.id, "target": target_id, "aim": aim,
-					"at": now + HOOP_TO_ROPE_CAST_SECONDS})
+					"at": now + (HOOP_TO_ROPE_CAST_SECONDS if from_hoop else ROPE_TO_HOOP_CAST_SECONDS)})
 			return ""
 	if ability.water_whole_rope and WaterBending.uses_stance_water(ability) and not hero.shield_out.is_empty():
 		recall_shield(hero) # it needs the whole rope: the shield's water comes back first

@@ -360,8 +360,29 @@ func move_hero(delta: Vector2) -> void:
 ## Throws the front of the rope at `target` (ground, reference px, hero-relative).
 ## The hit lands HIT frames later. A cast while the water is still out snaps the rope
 ## back onto its orbit first (the game's cooldown is shorter than a full return).
+## Leaving the hoop for a throw (a stance 1 ability pressed in stance 2): the points
+## are still at the hoop's wider spacing, so the rope would fly out about twice as
+## long. They are put back at the rope's spacing along its own shape (from the front).
+func leave_hoop_now() -> void:
+	if sb <= 0.0 or M() < 2:
+		return
+	var pts := PackedVector3Array()
+	for p in R:
+		pts.append(p.p)
+	var P := poly_path(pts)
+	var sp := s.SEG
+	for i in M():
+		var q := along(P, minf(i * sp, float(P.L)) / maxf(float(P.L), 0.001))
+		R[i].q = q - (R[i].p - R[i].q)
+		R[i].p = q
+	sb = 0.0
+	wrap = false
+	wrap_str = 0.0
+
+
 func cast(target: Vector2, z_offset := 0.0) -> void:
 	var recast := st == "wrap"
+	leave_hoop_now()
 	if not can_cast() or M() < 2:
 		fill_now(maxi(M(), s.MIN_KEEP))
 	if recast:
@@ -395,6 +416,7 @@ func cast(target: Vector2, z_offset := 0.0) -> void:
 ## the waist up past the head, turning to mist at the top. The heal lands as the lead
 ## reaches the top, HEAL_T frames after the cast.
 func heal(target: Vector2, self_cast: bool) -> void:
+	leave_hoop_now()
 	if not can_cast() or M() < 2:
 		fill_now(maxi(M(), s.MIN_KEEP))
 	heal_self = self_cast

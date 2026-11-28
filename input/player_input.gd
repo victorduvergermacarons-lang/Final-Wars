@@ -279,7 +279,13 @@ func use_slot(i: int, key: StringName = &"") -> void:
 ## A stance 1 Water ability pressed while holding the hoop (Water stance 2) is cast:
 ## the host turns the hoop back into the rope and casts it 0.25 s later (2026-11-28).
 static func casts_from_hoop(hero: Hero, ability: AbilityDef) -> bool:
-	return ability.tree == "Water" and ability.stance == 1 and hero.stance_tree == "Water" and hero.stance == 2
+	if ability.tree != "Water" or hero.stance_tree != "Water":
+		return false
+	if ability.stance == 1 and hero.stance == 2:
+		return true
+	# The other way (2026-11-28, user): a stance 2 ability from the rope, when there is
+	# water enough for the hoop; else pressing just tries to enter stance 2 (refused).
+	return ability.stance == 2 and hero.stance == 1 and WaterBending.total(hero) >= WaterBending.STANCE_2_ENTRY
 
 
 ## Whether `ability` is cast from a stance the hero isn't in.

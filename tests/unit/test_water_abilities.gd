@@ -393,3 +393,22 @@ func test_frost_shard_off_an_ally_s_shield_goes_along_you_to_them_onward() -> vo
 	assert_almost_eq(Vector2(p.get("from", Vector2.ZERO)).distance_to(ally.move.pos + line * WorldSim.SHIELD_BUBBLE_TILES),
 			0.0, 0.05, "out of the ally's bubble on the far side")
 	assert_almost_eq(FxPainter.projectile_dir(p).angle_to(line), 0.0, 0.05, "along you → ally, onward (not at the aim)")
+
+
+func test_a_stance_2_ability_from_the_rope_goes_off_once_the_hoop_rises() -> void:
+	hero.water = 100
+	var w07: AbilityDef = ContentDB.abilities[&"W07"]
+	assert_true(PlayerInput.casts_from_hoop(hero, w07), "water enough: the press casts")
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	wolf.hp = 100000.0
+	world.submit(hero.id, {"type": "cast", "ability": &"W07", "target": wolf.id})
+	var events := world.step()
+	assert_eq(hero.stance, 2, "into the hoop at once")
+	assert_false(events.any(func(e): return e.type == "cast_start" and e.ability == &"W07"), "not yet")
+	events = world.advance(0.55)
+	assert_true(events.any(func(e): return e.type == "cast_start" and e.ability == &"W07"), "goes off 0.5 s after")
+	hero.stance = 1
+	hero.stance_water = 3
+	hero.water = 0
+	hero.near_water = false
+	assert_false(PlayerInput.casts_from_hoop(hero, w07), "without water for the hoop, no cast")
