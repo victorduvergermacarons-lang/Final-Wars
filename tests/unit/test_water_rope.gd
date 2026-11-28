@@ -202,6 +202,8 @@ func test_each_hero_gets_its_rope_and_the_whip_event_throws_it() -> void:
 	var items := ropes.items(func(_h): return Vector2.ZERO)
 	assert_true(items.any(func(i): return i.has("stamps")), "slices to draw")
 	h.stance_water = 0
+	h.stance_tree = "" # (an empty rope still shows while in the stance, 2026-11-28)
+	h.stance = 0
 	for i in 30:
 		ropes.advance(0.2, 1.0 + i * 0.2, [h], null, null, on)
 	assert_null(ropes.rope_of(h.id), "drained away once the stance is left")

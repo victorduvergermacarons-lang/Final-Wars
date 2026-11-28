@@ -664,7 +664,11 @@ func heal_back(share: float) -> void:
 	else:
 		aim = heal_to
 		st = "return"
-		_start_return()
+		for i in M():
+			R[i].near = true
+			R[i].off = Vector3.ZERO
+		has_base = false
+		_start_home_arc()
 
 
 ## Moves points along the heal path: the lead exactly, the others springing to
@@ -824,6 +828,54 @@ func _start_return() -> void:
 	ret_at = sim_t
 	prev = lead.p
 	ret_scale = dist_scale(rpath.L)
+
+
+## Healing Touch's water coming home from an ally (2026-11-28, user): it doesn't
+## turn back down the helix; it keeps its heading and curves home, as the Water
+## Shield's rope does: the rope's own shape (tail to head) as the start of the path,
+## a turn-in arc toward a point bowed toward the caster's left, then a cubic onto the
+## orbit's entry.
+func _start_home_arc() -> void:
+	var lead := R[0]
+	var ep := entry_point()
+	var E: Vector3 = ep.E
+	var f: Vector2 = ep.f
+	var pre := PackedVector3Array()
+	for i in range(M() - 1, -1, -1):
+		pre.append(R[i].p)
+	var P0 := Vector2(lead.p.x, lead.p.y)
+	var Eg := Vector2(E.x, E.y)
+	var D := maxf(8.0, Eg.distance_to(P0))
+	var Lp := Vector2(f.y * s.ORB, -f.x * s.ORB)
+	var sd := (Vector2(R[0].p.x - R[1].p.x, R[0].p.y - R[1].p.y) if M() > 1 else Lp - P0).normalized()
+	var u := (Eg - P0).normalized()
+	var nrm := Vector2(-u.y, u.x)
+	var mid := (P0 + Eg) / 2.0
+	if nrm.dot(Lp - mid) < 0.0:
+		nrm = -nrm
+	var Wm := mid + nrm * D * s.ARC_BEND
+	var ti := WaterShieldRope.turn_in_static(s, P0, sd, Wm)
+	var Q: Vector2 = ti.Q
+	var D1 := maxf(2.0, Wm.distance_to(Q))
+	var D2 := maxf(2.0, Eg.distance_to(Wm))
+	var mu := (Eg - Q).normalized()
+	var tr: Array = [P0]
+	tr.append_array(ti.pts)
+	WaterShieldRope._cubic(Q, Q + ti.h * D1 * s.LEAVE_CTRL * 1.3, Wm - mu * D1 * s.MID_CTRL * 1.3, Wm, s.PATH_SAMPLES / 2, tr)
+	WaterShieldRope._cubic(Wm, Wm + mu * D2 * s.MID_CTRL * 1.3, Eg + f * D2 * s.CTRL_END, Eg, s.PATH_SAMPLES / 2, tr)
+	var lifted := WaterShieldRope._lift_z(tr, lead.p.z, s.ZW, s.ARC_LIFT, true)
+	lifted[lifted.size() - 1] = Vector3(E.x, E.y, s.ZW)
+	var all := pre.duplicate()
+	for i in range(1, lifted.size()):
+		all.append(lifted[i])
+	var pre_L: float = poly_path(pre).L
+	rpath = poly_path(all)
+	rs = pre_L
+	hold = 1.0
+	joined_at = -1.0
+	ret_at = sim_t
+	prev = lead.p
+	ret_scale = dist_scale(rpath.L - pre_L)
 
 
 func _ground_ratio_at_end() -> float:

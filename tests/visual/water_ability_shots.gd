@@ -209,6 +209,25 @@ func _run() -> void:
 			await _wait(when - waited)
 			waited = when
 			await _shot("w4_2%d_shard_%.2f" % [int(when * 100) % 10, when])
+	if only == "healseq":
+		# Healing Touch in close-up (2026-11-28): all of it into the heal (mist), then a
+		# heal at full health (the water comes home on an arc).
+		crop = Rect2i(960 - 260, 540 - 230, 520, 360)
+		ally.hp = 1.0
+		_cast(&"W01", ally)
+		var waited3 := 0.0
+		for when in [0.6, 0.9, 1.1, 1.25, 1.4, 1.6, 1.9, 2.3]:
+			await _wait(when - waited3)
+			waited3 = when
+			await _shot("w4_6%d_heal_all_%.2f" % [int(when * 10) % 10, when])
+		await _ready_again()
+		ally.hp = ally.current_stats(world.zone_of(hero.id).now).hp
+		_cast(&"W01", ally)
+		waited3 = 0.0
+		for when in [1.25, 1.35, 1.45, 1.55, 1.65, 1.8, 1.95, 2.2, 2.6]:
+			await _wait(when - waited3)
+			waited3 = when
+			await _shot("w4_7_heal_back_%.2f" % when)
 	if only == "" or only == "shieldplay":
 		# The shield holds the whole rope (2026-11-28): shards off it, then a recall.
 		await _ready_again()
