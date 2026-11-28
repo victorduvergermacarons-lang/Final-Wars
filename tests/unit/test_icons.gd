@@ -25,7 +25,8 @@ const ELEMENTS := ["Fire", "Earth", "Water", "Air"]
 
 
 func _bending() -> Array:
-	return ContentDB.abilities.values().filter(func(a): return ELEMENTS.has(a.tree))
+	# Tree abilities only (from the sheet): not their parts (Overheat's burst, Phoenix Kick's landing).
+	return ContentDB.abilities.values().filter(func(a): return ELEMENTS.has(a.tree) and not a.sheet.is_empty())
 
 
 func test_every_bending_ability_has_its_icon() -> void:

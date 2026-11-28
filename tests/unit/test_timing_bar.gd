@@ -335,15 +335,23 @@ func test_skipping_the_tap_halves_the_score() -> void:
 
 
 func test_aimed_bars_fire_where_the_last_input_points() -> void:
-	# Fire Dart (0.8 s, tap 0.5–0.75), started aimed away from the wolf…
+	# Aimed Shot (tap 0.2–0.6, hold 1.0–3.75), started aimed away from the wolf… (Fire
+	# Dart's bar checked this until the fire physics took it away, 2026-11-28)
 	var away := Vector2(hero.tile() - (wolf.tile() - hero.tile()) * 3)
-	assert_eq(sim.cast(hero, db.abilities[&"F03"], null, away), AbilityResolver.Result.OK)
+	assert_eq(sim.cast(hero, db.abilities[&"B02"], null, away), AbilityResolver.Result.OK)
 	world.step()
-	world.advance(0.55 - (world.now - float(hero.casting.start)))
-	# …and the press points at it: the dart flies at the wolf.
-	world.submit(hero.id, {"type": "timing_press", "at": 0.55, "aim": Vector2(wolf.tile())})
-	var events := world.advance(1.0)
-	assert_true(events.any(func(e): return e.type == "damage" and e.target == wolf.id and e.ability == &"F03"))
+	var at := Vector2(wolf.tile())
+	world.advance(0.4 - (world.now - float(hero.casting.start)))
+	world.submit(hero.id, {"type": "timing_press", "at": 0.4, "aim": at})
+	world.step()
+	world.advance(1.0 - (world.now - float(hero.casting.start)))
+	world.submit(hero.id, {"type": "timing_press", "at": 1.0, "aim": at})
+	world.step()
+	world.advance(3.75 - (world.now - float(hero.casting.start)))
+	# …and the last input points at it: the arrow flies at the wolf.
+	world.submit(hero.id, {"type": "timing_release", "at": 3.75, "aim": at})
+	var events := world.advance(1.5)
+	assert_true(events.any(func(e): return e.type == "damage" and e.target == wolf.id and e.ability == &"B02"))
 
 
 func test_ground_bars_start_beyond_range_and_land_at_its_edge() -> void:

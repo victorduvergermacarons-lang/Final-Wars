@@ -32,7 +32,7 @@ func test_states_follow_the_rules() -> void:
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F01")), S.LEARNING, "Ember Fist Scroll is in the learning slot")
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F03")), S.LEARNABLE, "tier 1, no prerequisites")
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F06")), S.LOCKED, "needs Fire Stream and 260 Fire Mastery")
-	assert_eq(AbilityTreeWindow.state_of(hero, _a("F10")), S.NOT_IN_GAME)
+	assert_eq(AbilityTreeWindow.state_of(hero, _a("F17")), S.NOT_IN_GAME)
 	TreeRules.master(hero, _a("F03"))
 	assert_eq(AbilityTreeWindow.state_of(hero, _a("F03")), S.MASTERED)
 	assert_string_contains(AbilityTreeWindow.lock_reason(hero, _a("F06")), "Fire Mastery 260")

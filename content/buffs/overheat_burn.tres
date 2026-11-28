@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BuffDef" format=3]
 
 [ext_resource type="Script" path="res://data/defs/buff_def.gd" id="b"]
-[ext_resource type="Resource" path="res://content/abilities/F23_burst.tres" id="x"]
+[ext_resource type="Resource" path="res://content/abilities/overheat_burst.tres" id="x"]
 
 [resource]
 script = ExtResource("b")

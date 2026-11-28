@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://data/defs/ability_effect.gd" id="e"]
 [ext_resource type="Script" path="res://data/defs/ability_def.gd" id="d"]
-[ext_resource type="Resource" path="res://content/abilities/F15_landing.tres" id="land"]
+[ext_resource type="Resource" path="res://content/abilities/phoenix_kick_landing.tres" id="land"]
 
 [sub_resource type="Resource" id="a"]
 script = ExtResource("e")

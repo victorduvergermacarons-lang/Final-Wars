@@ -8,13 +8,14 @@ script = ExtResource("e")
 damage_type = 1
 base_amount = -1.0
 sheet_scaling = true
-power = 0.8
+power = 1.3
 
 
 [resource]
 script = ExtResource("d")
-id = &"F23_burst"
+id = &"phoenix_kick_landing"
+display_name = "Phoenix Kick landing"
 effects = Array[ExtResource("e")]([SubResource("a")])
 targeting = 1
 tree = "Fire"
-tier = 2
+tier = 3

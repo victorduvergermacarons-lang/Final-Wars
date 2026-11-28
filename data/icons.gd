@@ -46,7 +46,8 @@ static func placeholder() -> Texture2D:
 ## Whether this ability should have an icon (bending trees yes; weapon arts and
 ## enemy abilities no).
 static func ability_expects_icon(a: AbilityDef) -> bool:
-	return a != null and a.tree != "" and not NAME_ONLY_TREES.has(a.tree)
+	# Not the parts of tree abilities kept with the enemy abilities (Overheat's burst, Phoenix Kick's landing).
+	return a != null and a.tree != "" and not NAME_ONLY_TREES.has(a.tree) and not a.resource_path.begins_with("res://content/abilities/")
 
 
 ## What to draw for an ability: its icon, the placeholder if it should have one,

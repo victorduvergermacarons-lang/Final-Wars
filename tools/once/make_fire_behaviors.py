@@ -44,7 +44,7 @@ def ability(aid, body, subs, extra_ext=''):
 write('content/buffs/overheat_burn.tres', f'''[gd_resource type="Resource" script_class="BuffDef" format=3]
 
 [ext_resource type="Script" path="{BUFF}" id="b"]
-[ext_resource type="Resource" path="res://content/abilities/F23_burst.tres" id="x"]
+[ext_resource type="Resource" path="res://content/abilities/overheat_burst.tres" id="x"]
 
 [resource]
 script = ExtResource("b")
@@ -87,9 +87,9 @@ flies = true
 ''')
 
 # --- part abilities (sub abilities in their own files, so buffs can point at them) ----
-write('content/abilities/F23_burst.tres', ability('F23_burst', 'effects = Array[ExtResource("e")]([SubResource("a")])\ntargeting = 1\ntree = "Fire"\ntier = 2\n',
+write('content/abilities/overheat_burst.tres', ability('overheat_burst', 'effects = Array[ExtResource("e")]([SubResource("a")])\ntargeting = 1\ntree = "Fire"\ntier = 2\n',
       dmg('a', 0.8)))
-write('content/abilities/F15_landing.tres', ability('F15_landing', 'effects = Array[ExtResource("e")]([SubResource("a")])\ntargeting = 1\ntree = "Fire"\ntier = 3\n',
+write('content/abilities/phoenix_kick_landing.tres', ability('phoenix_kick_landing', 'effects = Array[ExtResource("e")]([SubResource("a")])\ntargeting = 1\ntree = "Fire"\ntier = 3\n',
       dmg('a', 1.3)))
 
 # --- the eight abilities -------------------------------------------------------
@@ -141,7 +141,7 @@ kind = 14
 applies = 1
 base_amount = 1.0
 duration_seconds = 0.5
-''', '[ext_resource type="Resource" path="res://content/abilities/F15_landing.tres" id="land"]\n'))
+''', '[ext_resource type="Resource" path="res://content/abilities/phoenix_kick_landing.tres" id="land"]\n'))
 # F10 Flame Wheel: a spinning kick on everyone around you
 write('content/tree/behaviors/F10.tres', ability('F10', '''target = 0
 max_range = 0

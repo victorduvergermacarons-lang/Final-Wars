@@ -104,10 +104,8 @@ func test_fire_punch_hits_as_the_key_is_pressed() -> void:
 
 
 func test_fire_kick_sends_its_flame_arc_to_every_player() -> void:
+	# No bar since the fire physics (2026-11-28): it goes off at once.
 	world.submit(hero.id, {"type": "cast", "ability": &"F02", "target": wolf.id})
-	world.step()
-	world.advance(0.9 - _since_start())
-	world.submit(hero.id, {"type": "timing_press", "at": 0.9})
 	var events := world.step()
 	var fx := _of(events, "fx", &"F02")
 	assert_eq(fx.size(), 1)

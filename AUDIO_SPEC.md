@@ -135,7 +135,7 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 
 <!-- sound keys start: written by tools/write_audio_spec.gd -->
 
-250 keys, 13 with a file, 237 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
+267 keys, 13 with a file, 254 missing. File = `audio/<folder>/<key>.wav` (`.ogg` for ambience).
 
 ### Interface (audio/sfx/ui, UI bus)
 
@@ -230,19 +230,36 @@ plays where an ability hits or heals; "is used" plays at the caster when it star
 |-----|-----------|------|
 | `fire_blazing_combo_cast` | Blazing Combo is used | **missing** |
 | `fire_blazing_combo_hit` | Blazing Combo lands on someone | **missing** |
+| `fire_breath_of_fire_cast` | Breath of Fire is used | **missing** |
+| `fire_breath_of_fire_hit` | Breath of Fire lands on someone | **missing** |
 | `fire_burning_ground_burn_hit` | Burning Ground: its ground zone hurts someone standing in it | **missing** |
 | `fire_burning_ground_cast` | Burning Ground is used | **missing** |
+| `fire_combustion_blast_cast` | Combustion Blast is used | **missing** |
+| `fire_combustion_blast_hit` | Combustion Blast lands on someone | **missing** |
 | `fire_dart_cast` | Fire Dart is used | **missing** |
 | `fire_dart_hit` | Fire Dart lands on someone | **missing** |
 | `fire_fireball_cast` | Fireball is used | **missing** |
 | `fire_fireball_hit` | Fireball lands on someone | **missing** |
 | `fire_flame_dash_burn_hit` | Flame Dash: its ground zone hurts someone standing in it | **missing** |
 | `fire_flame_dash_cast` | Flame Dash is used | **missing** |
+| `fire_flame_wheel_cast` | Flame Wheel is used | **missing** |
+| `fire_flame_wheel_hit` | Flame Wheel lands on someone | **missing** |
+| `fire_inferno_burn_hit` | Inferno: its ground zone hurts someone standing in it | **missing** |
+| `fire_inferno_cast` | Inferno is used | **missing** |
+| `fire_jet_propulsion_cast` | Jet Propulsion is used | **missing** |
 | `fire_kick_cast` | Fire Kick is used | **missing** |
 | `fire_kick_hit` | Fire Kick lands on someone | **missing** |
+| `fire_overheat_burst_cast` | Overheat burst is used | **missing** |
+| `fire_overheat_burst_hit` | Overheat burst lands on someone | **missing** |
+| `fire_overheat_cast` | Overheat is used | **missing** |
+| `fire_phoenix_kick_cast` | Phoenix Kick is used | **missing** |
+| `fire_phoenix_kick_landing_cast` | Phoenix Kick landing is used | **missing** |
+| `fire_phoenix_kick_landing_hit` | Phoenix Kick landing lands on someone | **missing** |
 | `fire_punch_cast` | Fire Punch is used | **missing** |
 | `fire_punch_hit` | Fire Punch lands on someone | **missing** |
 | `fire_scorch_cast` | Scorch is used | **missing** |
+| `fire_stream_cast` | Fire Stream is used | **missing** |
+| `fire_stream_hit` | Fire Stream lands on someone | **missing** |
 | `fire_sun_warrior_s_breath_cast` | Sun Warrior's Breath is used | **missing** |
 | `fire_whip_cast` | Fire Whip is used | **missing** |
 | `fire_whip_hit` | Fire Whip lands on someone | **missing** |
