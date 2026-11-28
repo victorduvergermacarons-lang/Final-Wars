@@ -186,3 +186,116 @@ func test_leeching_tide_drains_for_3_s_and_draws_24_water_home() -> void:
 func test_leeching_tide_s_total_damage_is_unchanged() -> void:
 	var w07: AbilityDef = ContentDB.abilities[&"W07"]
 	assert_almost_eq(w07.effects[0].power * 6.0, 1.0, 0.01, "six ticks of a sixth")
+
+
+# --- The brief's list (water physics phase 5) ---------------------------------------
+
+func test_each_ability_takes_its_water() -> void:
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	wolf.hp = 100000.0
+	var cases := [[&"W02", wolf, 0, "the whip: the whole rope (until it comes back)"],
+			[&"W01", hero, 0, "Healing Touch: the whole rope"],
+			[&"W12", hero, 0, "Water Shield: the whole rope"],
+			[&"W04", wolf, 20, "Frost Shard: 4 points"]]
+	for c in cases:
+		hero.stance = 1
+		hero.stance_water = 24
+		hero.water_out = {}
+		hero.shield_out = {}
+		hero.cooldowns = Cooldowns.new()
+		var intent := {"type": "cast", "ability": c[0], "target": c[1].id}
+		if c[0] == &"W04":
+			intent.aim = wolf.move.pos
+		world.submit(hero.id, intent)
+		world.step()
+		assert_eq(hero.stance_water, c[2], c[3])
+	hero.stance = 2
+	hero.stance_water = 33
+	hero.cooldowns = Cooldowns.new()
+	world.submit(hero.id, {"type": "cast", "ability": &"W07", "target": wolf.id})
+	world.step()
+	assert_eq(hero.stance_water, 33, "Leeching Tide spends none of the hoop")
+
+
+func test_the_power_rule_in_both_stances() -> void:
+	var whip: AbilityDef = ContentDB.abilities[&"W02"]
+	var leech: AbilityDef = ContentDB.abilities[&"W07"]
+	hero.cast_water.clear()
+	hero.stance = 1
+	hero.stance_water = 24
+	assert_almost_eq(WaterBending.power(hero, whip), 1.0, 0.001, "24 → 100%")
+	hero.stance_water = 12
+	assert_almost_eq(WaterBending.power(hero, whip), 0.6, 0.001, "12 → 60%")
+	hero.stance = 2
+	hero.stance_water = 33
+	assert_almost_eq(WaterBending.power(hero, leech), 1.0, 0.001, "33 → 100% in stance 2")
+
+
+func test_shift_and_crowd_control_send_the_stance_water_home() -> void:
+	hero.water = 100
+	world.submit(hero.id, {"type": "stance", "tree": "", "stance": 0})
+	world.step()
+	assert_eq(hero.stance, 0)
+	assert_eq(hero.water, 124, "Shift: all 24 back in the pouch")
+	world.submit(hero.id, {"type": "stance", "tree": "Water", "stance": 1})
+	world.step()
+	hero.stance_water = 24
+	hero.water = 100
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(3, 0))
+	hero.buffs.apply(ContentDB.buffs[&"searing_dive_stun"], world.now, 0.0, wolf.id)
+	world.step()
+	assert_eq(hero.stance, 0, "a stun drops it")
+	assert_eq(hero.water, 124, "crowd control: all 24 back in the pouch")
+
+
+func test_leeching_tide_is_capped_by_the_pouch() -> void:
+	hero.stance = 2
+	hero.stance_water = 33
+	hero.water = 190
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	wolf.hp = 100000.0
+	world.submit(hero.id, {"type": "cast", "ability": &"W07", "target": wolf.id})
+	world.step()
+	world.advance(3.2)
+	assert_eq(hero.water, 200, "only up to the pouch's 200")
+
+
+func _heal_with_room(share_blocked: float) -> float:
+	var w01: AbilityDef = ContentDB.abilities[&"W01"]
+	hero.stance = 1
+	hero.stance_water = 24
+	hero.cooldowns = Cooldowns.new()
+	hero.cast_water.clear()
+	var full := AbilityPower.amount(hero, w01, w01.effects[0], world.now, ContentDB.rules)
+	var max_hp := hero.current_stats(world.now).hp
+	hero.hp = max_hp - roundf(full * (1.0 - share_blocked))
+	var events := _heal_self()
+	for e in events:
+		if e.type == "water_return" and e.ability == &"W01":
+			return float(e.share)
+	return -1.0
+
+
+func test_healing_touch_returns_what_full_health_blocks() -> void:
+	var regen := ContentDB.rules.out_of_combat_hp_regen_percent
+	ContentDB.rules.out_of_combat_hp_regen_percent = 0.0 # no healing meanwhile
+	assert_almost_eq(_heal_with_room(0.0), 0.0, 0.03, "nothing blocked: nothing back")
+	assert_almost_eq(_heal_with_room(0.3), 0.3, 0.03, "30% blocked: 30% back")
+	assert_almost_eq(_heal_with_room(1.0), 1.0, 0.001, "all blocked: all back")
+	ContentDB.rules.out_of_combat_hp_regen_percent = regen
+
+
+func test_the_shield_returns_what_is_left_at_several_levels() -> void:
+	for used in [0.0, 0.5, 0.9]:
+		hero.stance = 1
+		hero.stance_water = 24
+		hero.shield_out = {}
+		hero.cooldowns = Cooldowns.new()
+		hero.buffs = ActiveBuffs.new()
+		_shield_self()
+		hero.buffs.absorb(hero.buffs.shield_total() * used)
+		var events := world.advance(ContentDB.buffs[&"water_shield"].duration_seconds * 1.5)
+		var back: Array = events.filter(func(e): return e.type == "water_return" and e.ability == &"W12")
+		assert_eq(back.size(), 1)
+		if back.size() == 1:
+			assert_eq(int(back[0].points), roundi(24 * (1.0 - used)), "%d%% used" % roundi(used * 100))

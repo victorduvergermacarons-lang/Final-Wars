@@ -42,14 +42,11 @@ func test_starter_kit_beats_one_wolf_in_about_8s_with_half_hp() -> void:
 	assert_eq(r.win_rate, 1.0, str(r))
 
 
-func test_two_wolves_are_dangerous_solo_but_fine_for_a_pair() -> void:
+## The pair target (a starter + healer always beats 2 Wolves) was dropped 2026-11-28 at
+## the user's request: Healing Touch now sends the whole water rope, which takes about
+## 7 s to grow back (water physics).
+func test_two_wolves_are_dangerous_solo() -> void:
 	assert_lt(_avg([S.STARTER], &"wolf", 2).win_rate, 0.5)
-	var pair := _avg([S.STARTER, S.STARTER_HEALER], &"wolf", 2)
-	if _target(pair.win_rate == 1.0 and pair.hp_lost_pct < 75,
-			"a pair vs 2 Wolves (target: always wins, under 75%% HP lost): %s" % str(pair)):
-		return
-	assert_eq(pair.win_rate, 1.0, str(pair))
-	assert_lt(pair.hp_lost_pct, 75, str(pair))
 
 
 func test_single_weapon_builds_beat_a_wolf() -> void:
