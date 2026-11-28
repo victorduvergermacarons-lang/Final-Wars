@@ -645,7 +645,11 @@ void fragment() {
 	vec4 col = vec4(0.0);
 	bool on_slot = prm(4).w > 0.5; // a slot not in use draws nothing
 	bool ground_on = prm(6).z > 0.5;
-	for (int s = band * 16; on_slot && s <= band * 16 + 30; s++) {
+	// A cell draws only at or above its ground row (s / 2), and at most UP px above it
+	// (heights x1.55 included): only the diagonals that can reach this pixel are read.
+	int s_lo = max(band * 16, 2 * QY - 1);
+	int s_hi = min(band * 16 + 30, 2 * (QY + UP) + 1);
+	for (int s = s_lo; on_slot && s <= s_hi; s++) {
 		// the ground fire's tongues of this diagonal (the reference's gtongue), behind its flames
 		for (int kt = -5; ground_on && kt <= 5; kt++) {
 			int k = QX + kt;

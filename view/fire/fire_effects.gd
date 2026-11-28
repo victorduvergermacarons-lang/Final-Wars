@@ -9,6 +9,13 @@ extends RefCounted
 var sim: FireSim
 var effects: Array[FireEffect] = []
 
+## CPU time (µs) the fire's GDScript side took this frame (syncing zones, stepping the
+## looks, uploading their sources), and the most windows in use at once: for benches.
+static var cpu_us := 0
+static var windows_peak := 0
+## Looks that found every window taken (and were skipped).
+static var dropped := 0
+
 ## Low graphics: no fluid fire; burning zones keep the old flame sprites (FxPainter).
 static var low_graphics := false
 
@@ -63,6 +70,7 @@ func start(look: FireLookDef, caster_id: int, pos: Vector2, h: float, at: Vector
 		return null
 	var slot := sim.alloc(look.time_scale)
 	if slot < 0:
+		dropped += 1
 		return null
 	var e := FireEffect.new()
 	e.look = look
@@ -326,6 +334,7 @@ func clear() -> void:
 func advance(dt: float, actors: Array) -> void:
 	if sim == null:
 		return
+	var t0 := Time.get_ticks_usec()
 	for e in effects.duplicate():
 		if e.finished():
 			sim.release(e.slot)
@@ -341,6 +350,8 @@ func advance(dt: float, actors: Array) -> void:
 		g.left -= 1
 	_gusts = _gusts.filter(func(g): return g.left > 0)
 	sim.run()
+	cpu_us = Time.get_ticks_usec() - t0
+	windows_peak = maxi(windows_peak, effects.size())
 
 
 ## The caster and the target move: the look follows them.

@@ -16,7 +16,7 @@ extends Node
 
 const SW := 128                 ## cells per slot side
 const COLS := 4
-const ROWS := 2
+const ROWS := 3 ## 12 windows: four heroes casting with two Infernos and their ground fire (phase 4)
 const SLOTS := COLS * ROWS
 const ATLAS := Vector2i(SW * COLS, SW * ROWS)
 const MAX_SOURCES := 32
@@ -53,6 +53,7 @@ var _src_tex: ImageTexture
 var _wall_tex: ImageTexture
 var _wall_dirty := false
 var _passes := {}          # name -> SubViewport
+var _slot_rects: Array = [] # per atlas pass: its rect for each window
 var _order: Array = []     # names in render order
 var _keep_flip := false
 var _sources := {}         # slot -> Array of PackedFloat32Array(16) for this step
@@ -291,6 +292,9 @@ func run() -> void:
 			vp.render_target_update_mode = SubViewport.UPDATE_ONCE if _ran else SubViewport.UPDATE_DISABLED
 	if _ran:
 		frames_run += 1
+		for rects in _slot_rects:
+			for k in SLOTS:
+				rects[k].visible = _slots.has(k)
 	_stepping.clear()
 	for s in _sources:
 		_sources[s] = []
@@ -319,12 +323,36 @@ func _pass(name: String, pass_id: int, size: Vector2i, inputs: Dictionary, extra
 	vp.disable_3d = true
 	vp.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	vp.render_target_clear_mode = SubViewport.CLEAR_MODE_NEVER
-	var r := ColorRect.new()
-	r.size = Vector2(size)
 	var m := ShaderMaterial.new()
 	m.shader = _shader(pass_id)
-	r.material = m
-	vp.add_child(r)
+	# Passes over the whole atlas draw one rect per window, hidden while the window is
+	# unused, so the GPU only works on the fires there are (phase 4). Small passes (the
+	# contact sums) keep one rect.
+	var per_slot := size == ATLAS or name == "band" or name == "floor"
+	var count := SLOTS if per_slot else 1
+	var rects: Array = []
+	for k in count:
+		var r := ColorRect.new()
+		r.material = m
+		if not per_slot:
+			r.size = Vector2(size)
+		else:
+			var col := k % COLS
+			var row := k / COLS
+			if name == "band":
+				r.position = Vector2(col * BAND_W, row * BANDS * BAND_H)
+				r.size = Vector2(BAND_W, BANDS * BAND_H)
+			elif name == "floor":
+				r.position = Vector2(col * BAND_W, row * BANDS * FLOOR_H)
+				r.size = Vector2(BAND_W, BANDS * FLOOR_H)
+			else:
+				r.position = Vector2(col * SW, row * SW)
+				r.size = Vector2(SW, SW)
+			r.visible = false
+		vp.add_child(r)
+		rects.append(r)
+	if per_slot:
+		_slot_rects.append(rects)
 	add_child(vp)
 	_passes[name] = vp
 	_order.append(name)
@@ -406,6 +434,24 @@ func _build() -> void:
 		m.set_shader_parameter("t_keep", _passes.keep_a.get_texture())
 	_passes.band.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
 	_passes.floor.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
+
+
+## Turns on Godot's per-viewport render timing for every pass (benches).
+func measure(on: bool) -> void:
+	for n in _order:
+		RenderingServer.viewport_set_measure_render_time(_passes[n].get_viewport_rid(), on)
+
+
+## The fire passes' last measured render time: [CPU ms, GPU ms] summed over the chain
+## (the GPU figure is 0 where the driver doesn't report it).
+func measured_ms() -> Vector2:
+	var c := 0.0
+	var g := 0.0
+	for n in _order:
+		var rid: RID = _passes[n].get_viewport_rid()
+		c += RenderingServer.viewport_get_measured_render_time_cpu(rid)
+		g += RenderingServer.viewport_get_measured_render_time_gpu(rid)
+	return Vector2(c, g)
 
 
 func set_blue(on: bool) -> void:

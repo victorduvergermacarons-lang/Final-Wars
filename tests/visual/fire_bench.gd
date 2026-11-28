@@ -70,6 +70,10 @@ func _run() -> void:
 	dd.aggro_radius = 0
 	dummy = sim.add_enemy(dd, t + Vector2i(2, -2))
 	await _frames(10)
+	if ability == &"stress":
+		await _stress_bench(sim, t)
+		get_tree().quit()
+		return
 	if ability == &"all" or OS.get_environment("FIRE_LIST") != "":
 		await _all_bench(sim, t)
 		get_tree().quit()
@@ -202,3 +206,86 @@ func _all_bench(sim: WorldSim, t: Vector2i) -> void:
 		print("%s (%s): %d steps" % [id, look.kind, steps])
 		view.fire.clear()
 		await _frames(3)
+
+
+
+## FIRE_ABILITY=stress: four Fire heroes casting the heaviest abilities for real (host
+## gameplay and looks): two overlapping Infernos, Fire Stream, Breath of Fire,
+## Combustion Blast and Fireball, over and over for FIRE_SECONDS (12). Prints the frame
+## time (average, 95th percentile, worst), the fire's own CPU time a frame and the most
+## windows in use. Run it on your machine for the real numbers.
+func _stress_bench(sim: WorldSim, t: Vector2i) -> void:
+	var seconds := float(OS.get_environment("FIRE_SECONDS")) if OS.get_environment("FIRE_SECONDS") != "" else 12.0
+	var heroes: Array = [hero]
+	for n in ["Ash", "Cinder", "Blaze"]:
+		heroes.append(world.add_saved_hero(CharacterData.new_character(n, ContentDB.heroes[&"adventurer"], ContentDB.elements[&"fire"]), ContentDB))
+	var spots := [Vector2i(0, 0), Vector2i(0, 2), Vector2i(-2, 1), Vector2i(1, 3)]
+	for i in heroes.size():
+		var h: Hero = heroes[i]
+		var at: Vector2i = sim.find_free_tile_near(t + spots[i])
+		h.move.place(at)
+		h.move.ground_h = sim.grid.height_at(at)
+		for id in ["F07", "F12", "F14", "F16", "F18"]:
+			TreeRules.master(h, ContentDB.abilities[StringName(id)])
+		Mastery.add_permanent(h, "Fire", 600)
+	var target := Vector2(t) + DIR.normalized() * 3.0
+	dummy.move.place(target)
+	dummy.move.pos = target
+	var plans := [["F16", "F16"], ["F12"], ["F14"], ["F18", "F07"]]
+	var aims := [[target, target + Vector2(1.5, 0.5)], [target], [target], [target, target]]
+	var k := [0, 0, 0, 0]
+	await _frames(10)
+	var ms_idle := await _frame_ms(30)
+	FireEffects.windows_peak = 0
+	FireEffects.dropped = 0
+	var times: Array = []
+	var cpu: Array = []
+	var gpu: Array = []
+	view.fire.sim.measure(true)
+	var t_end := Time.get_ticks_msec() + int(seconds * 1000.0)
+	var next_cast := 0
+	var last := Time.get_ticks_usec()
+	while Time.get_ticks_msec() < t_end:
+		if Time.get_ticks_msec() >= next_cast:
+			next_cast = Time.get_ticks_msec() + 250
+			for i in heroes.size():
+				var h: Hero = heroes[i]
+				h.mana = 9999.0
+				if not h.casting.is_empty():
+					continue
+				var plan: Array = plans[i]
+				var id: String = plan[k[i] % plan.size()]
+				var aim: Vector2 = aims[i][k[i] % plan.size()]
+				if h.cooldowns.ability_remaining(StringName(id), sim.now) > 0.0:
+					continue # each casts as soon as its ability is ready (real cooldowns)
+				world.submit(h.id, {"type": "cast", "ability": StringName(id), "target": dummy.id if id == "F12" else -1, "aim": aim})
+				k[i] += 1
+		await get_tree().process_frame
+		var now := Time.get_ticks_usec()
+		times.append((now - last) / 1000.0)
+		cpu.append(FireEffects.cpu_us / 1000.0)
+		gpu.append(view.fire.sim.measured_ms())
+		last = now
+	times.sort()
+	var avg := 0.0
+	for x in times:
+		avg += x
+	avg /= maxf(1.0, times.size())
+	var cavg := 0.0
+	for x in cpu:
+		cavg += x
+	cavg /= maxf(1.0, cpu.size())
+	var pass_cpu := 0.0
+	var pass_gpu := 0.0
+	for v in gpu:
+		pass_cpu += v.x
+		pass_gpu += v.y
+	pass_cpu /= maxf(1.0, gpu.size())
+	pass_gpu /= maxf(1.0, gpu.size())
+	print("STRESS fire passes: %.2f ms GPU, %.2f ms CPU (render submission) a frame, as Godot measures them" % [pass_gpu, pass_cpu])
+	print("STRESS no fire: %.2f ms a frame" % ms_idle)
+	print("STRESS 4 heroes, 2 Infernos: %.2f ms average, %.2f ms 95th percentile, %.2f ms worst (%d frames)" % [avg,
+			times[int(times.size() * 0.95)], times[times.size() - 1], times.size()])
+	print("STRESS fire CPU (GDScript side): %.2f ms average a frame; windows in use at most %d of %d; looks skipped %d" % [cavg,
+			FireEffects.windows_peak, FireSim.SLOTS, FireEffects.dropped])
+	await _shot("stress", Vector2(t))
