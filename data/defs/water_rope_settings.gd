@@ -49,6 +49,14 @@ extends Resource
 @export var DRIP_EVERY: int = 20
 ## Forming the orbit (entering the stance): a point every this many frames (not in the reference).
 @export var FORM_EVERY: int = 3
+## How new water reaches the orbit (2026-11-28, user): frames on its way, how far
+## behind its place it starts (radians: it spirals out the orbit's way), the radius
+## it leaves the waist at, how hard it follows its path, and the arc from the water.
+@export var FORM_T: int = 36
+@export var FORM_SPIRAL: float = 3.14159
+@export var FORM_R0: float = 4.0
+@export var FORM_K: float = 0.45
+@export var FORM_LIFT: float = 8.0
 @export_group("Throw")
 ## Frames from cast to impact (0.5 s). Gameplay uses its own 0.5 s.
 @export var HIT: int = 30

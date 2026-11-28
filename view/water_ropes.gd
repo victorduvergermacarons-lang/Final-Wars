@@ -685,9 +685,11 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 				if r > s.HI2_MIN_R:
 					px.call(at.x + sun.x * (r - 2.0), at.y + sun.y * (r - 2.0), s.HI)
 	if item.has("drops"):
+		# Two pixels each, lit, outlined below (2026-11-28, user: they were too faint).
 		for d in item.drops:
-			px.call(d[0].x + 1, d[0].y + 1, s.OUT)
-			px.call(d[0].x, d[0].y, s.DROP)
+			px.call(d[0].x, d[0].y + 1, s.OUT, 2, 1)
+			px.call(d[0].x, d[0].y, s.DROP, 2, 1)
+			px.call(d[0].x, d[0].y, s.HI)
 	if item.has("ice"):
 		# The demo's shardShape: a point ahead, a rounder tail; outlined below-right,
 		# lit on the side toward the sun (ice body, shade, highlight on its top edges).

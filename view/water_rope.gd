@@ -25,6 +25,8 @@ class Pt:
 	var off := Vector3.ZERO # Water Shield's dents (WaterShieldRope)
 	var s := 0.0 # Leeching Tide: distance along the stream
 	var dark := 0.0 # Leeching Tide: leeched water's tint (1 = full leech colours)
+	var born := -1 # the frame it joined the rope (forming: on its way to its place)
+	var src := Vector3.ZERO # where it came from (the waist, or the water)
 
 	func _init(at: Vector3, i: int) -> void:
 		p = at
@@ -1032,6 +1034,8 @@ func _constrain(fix_n: int) -> void:
 			var bf := i + 1 < fix_n
 			if af and bf:
 				continue
+			if forming_now(a) or forming_now(b):
+				continue # on its way: its path places it
 			var dv := b.p - a.p
 			var d := dv.length()
 			if d == 0.0:
@@ -1049,6 +1053,27 @@ func _constrain(fix_n: int) -> void:
 				var h := _clamp(corr * 0.5, -cap, cap)
 				a.p += dv / d * h
 				b.p -= dv / d * h
+
+
+## A point still on its way from where it came from to its place (FORM_T frames).
+func forming_now(p: Pt) -> bool:
+	return p.born >= 0 and sim_t - p.born < s.FORM_T
+
+
+## Where a forming point is going now (2026-11-28, user): from the pouch it spirals
+## out of the waist, turning the orbit's way, into its place `g`; from the water it
+## flows over from the water along a low arc.
+func _forming_goal(p: Pt, g: Vector3) -> Vector3:
+	var u := ramp(float(sim_t - p.born), float(s.FORM_T))
+	if p.src.distance_to(Vector3(0, 0, s.HIP_Z)) <= s.FORM_R0 + 0.5:
+		var a_t := atan2(g.y, g.x)
+		var r_t := Vector2(g.x, g.y).length()
+		var a := a_t - (1.0 - u) * s.FORM_SPIRAL
+		var r := lerpf(s.FORM_R0, r_t, u)
+		return Vector3(cos(a) * r, sin(a) * r, lerpf(p.src.z, g.z, u))
+	var q := p.src.lerp(g, u)
+	q.z += s.FORM_LIFT * sin(PI * u)
+	return q
 
 
 ## The hoop's closing link (tail to head), like the reference's link().
@@ -1166,10 +1191,18 @@ func _pour_off(j: int) -> void:
 ## (`linked`: tightening over LINK_FADE frames) or loose (it chases the tail).
 func _add_point(linked: bool) -> void:
 	var at := source
-	R.append(Pt.new(at, R.size()))
+	var hip := source.distance_to(Vector3(0, 0, s.HIP_Z)) < 0.5
+	var shaped := st == "idle" # forming on the orbit (lost water rebuilt on the way home chases as before)
+	if hip and shaped: # from the pouch: out of the waist, close in, at once part of the rope
+		var a := phase - R.size() * s.ang() - s.FORM_SPIRAL
+		at = Vector3(cos(a) * s.FORM_R0, sin(a) * s.FORM_R0, s.HIP_Z)
+	var p := Pt.new(at, R.size())
+	p.born = sim_t if shaped else -1
+	p.src = at
+	R.append(p)
 	if R.size() > 1:
 		conn.append(linked)
-		strength.append(0.0)
+		strength.append(1.0 if linked and shaped else 0.0) # drawn linked from the start (formed along its way)
 
 
 # --- One frame ----------------------------------------------------------------------
@@ -1248,7 +1281,11 @@ func step() -> void:
 			if sb > 0.0 and st == "idle":
 				k = lerpf(k, s.HOOP_FOLLOW, ramp(sb, 1.0))
 			for p in R:
-				_spring(p, target_t(p.id) if st == "idle" else orbit_t(p.id), k)
+				var g := target_t(p.id) if st == "idle" else orbit_t(p.id)
+				if forming_now(p):
+					_spring(p, _forming_goal(p, g), s.FORM_K)
+				else:
+					_spring(p, g, k)
 				p.dark = maxf(0.0, p.dark - s.DARK_FADE)
 			_constrain(0)
 			# Refill from the pouch (the hips) or the water nearby, one point at a time.

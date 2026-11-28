@@ -186,10 +186,11 @@ func test_power_follows_the_stance_water() -> void:
 	assert_almost_eq(WaterBending.power(hero, whip), 1.0, 0.0001, "a tooltip out of the stance: full")
 
 
-func test_the_stance_drops_after_10_s_idle_out_of_combat() -> void:
+func test_the_stance_drops_after_20_s_idle_out_of_combat() -> void:
+	# 10 s until 2026-11-28 (user: 20).
 	_go(_tile_from_water(8.0, 40.0))
 	_stance(1)
-	world.advance(9.5)
+	world.advance(19.5)
 	assert_eq(hero.stance, 1)
 	var events := []
 	for i in 20:
