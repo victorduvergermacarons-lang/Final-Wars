@@ -300,3 +300,20 @@ func test_the_shield_returns_what_is_left_at_several_levels() -> void:
 		assert_eq(back.size(), 1)
 		if back.size() == 1:
 			assert_eq(int(back[0].points), roundi(24 * (1.0 - used)), "%d%% used" % roundi(used * 100))
+
+
+# --- Follow-ups (2026-11-28) ------------------------------------------------------
+
+func test_a_stance_1_ability_from_the_hoop_goes_off_a_moment_after_the_switch() -> void:
+	hero.stance = 2
+	hero.stance_water = 33
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	world.submit(hero.id, {"type": "cast", "ability": &"W02", "target": wolf.id})
+	var events := world.step()
+	assert_eq(hero.stance, 1, "back to the rope at once")
+	assert_false(events.any(func(e): return e.type == "release"), "not thrown yet")
+	world.advance(0.15)
+	assert_true(hero.water_out.is_empty())
+	events = world.advance(0.15)
+	assert_true(events.any(func(e): return e.type == "release" and e.ability == &"W02"), "thrown 0.25 s after")
+	assert_true(PlayerInput.casts_from_hoop(hero, ContentDB.abilities[&"W02"]) == false, "(now in stance 1)")

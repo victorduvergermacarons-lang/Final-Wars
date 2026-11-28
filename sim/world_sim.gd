@@ -84,6 +84,10 @@ var _pending_hits: Array = []
 ## Released abilities waiting for their strike (AbilityDef.release_delay_seconds):
 ## [{"caster", "ability", "target", "aim", "bonus", "power", "crit", "at"}].
 var _releases: Array = []
+## Casts waiting for a stance change to settle (a stance 1 ability pressed in Water
+## stance 2): [{"hero", "ability", "target", "aim", "at"}].
+var _delayed_casts: Array = []
+const HOOP_TO_ROPE_CAST_SECONDS := 0.25
 ## What the release going off now did (`_update_releases`).
 var _release_events: Array = []
 ## Temporary terrain changes: [{"delta": {tile: levels added}, "blocked": {tile: true}, "until"}].
@@ -379,6 +383,7 @@ func step() -> Array[Dictionary]:
 	_separate_units()
 	_update_casts()
 	_update_releases()
+	_update_delayed_casts()
 	_update_projectiles()
 	_update_pending_hits()
 	_update_terrain_and_zones()
@@ -1172,6 +1177,21 @@ func _resolve_timing(caster: Actor, grade: TimingBarDef.Grade, at: float, power:
 ## Released abilities whose strike has come go off now. Range isn't checked again
 ## (it was valid when released, like a locked-on throw); a dead caster or target
 ## stops it.
+func _update_delayed_casts() -> void:
+	var waiting: Array = []
+	for d in _delayed_casts:
+		if now + 0.0001 < d.at:
+			waiting.append(d)
+			continue
+		var hero: Hero = _heroes.get(int(d.hero))
+		if hero == null or not hero.alive:
+			continue
+		var reason := _intent_cast(hero, d.ability, int(d.target), d.aim)
+		if reason != "":
+			emit({"type": "rejected", "target": hero.id, "reason": reason, "intent": "cast"})
+	_delayed_casts = waiting
+
+
 func _update_releases() -> void:
 	var waiting: Array = []
 	for r in _releases:
@@ -1894,7 +1914,16 @@ func _intent_cast(hero: Hero, ability_id: StringName, target_id: int, aim: Varia
 		var refused := _water_stance_refusal(hero, ability.tree, ability.stance)
 		if refused != "":
 			return refused
+		var from_hoop := ability.tree == "Water" and ability.stance == 1 \
+				and hero.stance_tree == "Water" and hero.stance == 2
 		set_stance(hero, ability.tree, ability.stance, "cast")
+		if from_hoop:
+			# A stance 1 ability from the hoop: the hoop turns back into the rope and
+			# the ability goes off a moment later (user, 2026-11-28).
+			hero.stance_busy_at = now
+			_delayed_casts.append({"hero": hero.id, "ability": ability.id, "target": target_id, "aim": aim,
+					"at": now + HOOP_TO_ROPE_CAST_SECONDS})
+			return ""
 	var walking: Variant = hero.walk_target
 	hero.walk_target = null # casting ends an automatic walk (held keys still cancel casts)
 	hero.stance_busy_at = now # using an ability keeps a Water stance up

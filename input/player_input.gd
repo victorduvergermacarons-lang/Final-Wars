@@ -270,10 +270,16 @@ func use_slot(i: int, key: StringName = &"") -> void:
 	# A bending ability of another stance (or out of any stance) enters that stance
 	# instead of casting; the next press casts (2026-11-28). A press during the
 	# ability's own timing bar still plays the bar.
-	if needs_stance(hero, ability) and not _bar_running_for(hero, ability):
+	if needs_stance(hero, ability) and not _bar_running_for(hero, ability) and not casts_from_hoop(hero, ability):
 		enter_stance(ability.tree, ability.stance)
 		return
 	use_ability(ability, key)
+
+
+## A stance 1 Water ability pressed while holding the hoop (Water stance 2) is cast:
+## the host turns the hoop back into the rope and casts it 0.25 s later (2026-11-28).
+static func casts_from_hoop(hero: Hero, ability: AbilityDef) -> bool:
+	return ability.tree == "Water" and ability.stance == 1 and hero.stance_tree == "Water" and hero.stance == 2
 
 
 ## Whether `ability` is cast from a stance the hero isn't in.
