@@ -267,6 +267,7 @@ func _send_shield(h: Hero, e: Dictionary, aim: Vector2, self_cast: bool, target_
 	r.strength = PackedFloat32Array()
 	r.st = "idle"
 	r.tt = 0
+	r.target_count = 0 # the shield holds the rope: nothing regrows until it comes home
 	shields[h.id] = {"rope": sh, "ground": e.ground, "off": false, "hero": h,
 			"target": h.id if self_cast else target_id}
 
@@ -660,6 +661,11 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 				px.call(q[0].x + q[2].x * (r - 1.0), q[0].y + q[2].y * (r - 1.0), hi_c.call(q))
 				if q[3] > s.FACE_T and r > s.HI2_MIN_R:
 					px.call(q[0].x + q[2].x * (r - 2.0), q[0].y + q[2].y * (r - 2.0), hi_c.call(q))
+			elif r > 0.9: # thin water (the rope's ends, a stretched shield): one lit pixel
+				if q[3] > 0.3:
+					px.call(q[0].x + q[2].x * maxf(0.0, r - 1.0), q[0].y + q[2].y * maxf(0.0, r - 1.0), hi_c.call(q))
+			elif q[3] > s.FACE_T:
+				px.call(q[0].x, q[0].y, hi_c.call(q))
 	if item.has("blobs"):
 		var sun := s.SUN.normalized()
 		for b in item.blobs:
