@@ -680,17 +680,13 @@ func heal_back(share: float) -> void:
 	tt = 0
 	if M() == 0:
 		st = "idle"
-	elif heal_self:
-		st = "idle"
-		ib = 0.15
 	else:
-		aim = heal_to
 		st = "return"
 		for i in M():
 			R[i].near = true
 			R[i].off = Vector3.ZERO
 		has_base = false
-		_start_home_arc()
+		_start_home_spiral()
 
 
 ## Moves points along the heal path: the lead exactly, the others springing to
@@ -890,6 +886,65 @@ func _start_home_arc() -> void:
 	var all := pre.duplicate()
 	for i in range(1, lifted.size()):
 		all.append(lifted[i])
+	var pre_L: float = poly_path(pre).L
+	rpath = poly_path(all)
+	rs = pre_L
+	hold = 1.0
+	joined_at = -1.0
+	ret_at = sim_t
+	prev = lead.p
+	ret_scale = dist_scale(rpath.L - pre_L)
+
+
+## How many turns Healing Touch's water takes spiralling back down.
+const HEAL_DOWN_LOOPS := 1.0
+
+
+## Healing Touch's water coming home (2026-11-28, user): what the heal didn't use
+## spirals back down round the target, turning the same way it climbed (the orbit's
+## way), then joins the orbit: round yourself the spiral widens straight into it; from
+## an ally it leaves the bottom of the spiral along its heading and curves onto it.
+## The path starts with the rope's own shape, so nothing turns back on itself.
+func _start_home_spiral() -> void:
+	var lead := R[0]
+	var C := Vector2.ZERO if heal_self else Vector2(heal_to.x, heal_to.y)
+	var L := lead.p
+	var aL := atan2(L.y - C.y, L.x - C.x)
+	var rL := Vector2(L.x - C.x, L.y - C.y).length()
+	var r_end := s.ORB if heal_self else s.WRAP_R
+	var z_end := s.ZW if heal_self else s.HERO_H * s.WAIST
+	var A := TAU * HEAL_DOWN_LOOPS
+	var N := maxi(40, ceili(HEAL_DOWN_LOOPS * 72.0))
+	var pre := PackedVector3Array()
+	for i in range(M() - 1, -1, -1):
+		pre.append(R[i].p)
+	var all := pre.duplicate()
+	for k in range(1, N + 1):
+		var u := float(k) / N
+		var a := aL + A * u
+		var r := lerpf(rL, r_end, ramp(u, 1.0))
+		all.append(Vector3(C.x + cos(a) * r, C.y + sin(a) * r, lerpf(L.z, z_end, ramp(u, 1.0))))
+	var a_end := aL + A
+	if heal_self:
+		# The orbit's entry is where the spiral ends, reached along the orbit's way.
+		var d := Vector2(cos(a_end), sin(a_end))
+		aim = Vector3(d.y, -d.x, 0.0) * 20.0
+		all[all.size() - 1] = Vector3(d.x * s.ORB, d.y * s.ORB, s.ZW)
+	else:
+		aim = heal_to
+		var ep := entry_point()
+		var E: Vector3 = ep.E
+		var f: Vector2 = ep.f
+		var B := Vector2(all[all.size() - 1].x, all[all.size() - 1].y)
+		var h := Vector2(-sin(a_end), cos(a_end))
+		var Eg := Vector2(E.x, E.y)
+		var D := maxf(8.0, Eg.distance_to(B))
+		var tr: Array = [B]
+		WaterShieldRope._cubic(B, B + h * D * s.LEAVE_CTRL * 1.3, Eg + f * D * s.CTRL_END, Eg, s.PATH_SAMPLES, tr)
+		var lifted := WaterShieldRope._lift_z(tr, z_end, s.ZW, s.ARC_LIFT, true)
+		lifted[lifted.size() - 1] = E
+		for i in range(1, lifted.size()):
+			all.append(lifted[i])
 	var pre_L: float = poly_path(pre).L
 	rpath = poly_path(all)
 	rs = pre_L

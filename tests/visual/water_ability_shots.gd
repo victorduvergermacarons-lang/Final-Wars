@@ -246,6 +246,15 @@ func _run() -> void:
 			await _wait(when - waited3)
 			waited3 = when
 			await _shot("w4_7_heal_back_%.2f" % when)
+		await _ready_again()
+		hero.hp = hero.current_stats(world.zone_of(hero.id).now).hp
+		crop = Rect2i(960 - 160, 540 - 200, 320, 260)
+		_cast(&"W01", hero)
+		waited3 = 0.0
+		for when in [1.25, 1.4, 1.55, 1.7, 1.9, 2.2]:
+			await _wait(when - waited3)
+			waited3 = when
+			await _shot("w4_7s_heal_self_back_%.2f" % when)
 	if only == "" or only == "shieldplay":
 		# The shield holds the whole rope (2026-11-28): shards off it, then a recall.
 		await _ready_again()
