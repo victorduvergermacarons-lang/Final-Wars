@@ -119,7 +119,7 @@ func test_fx_command_plays_an_abilitys_effects_toward_the_cursor() -> void:
 		assert_gt(float(fx[0].fly), 0.0, "flies at its speed")
 	events = _debug("fx W01", hero.move.pos + Vector2(2, 0))
 	fx = events.filter(func(e): return e.get("type", "") == "fx")
-	assert_eq(fx.map(func(e): return e.fx), [&"heal_ball", &"heal_splash"], "in the hands, then on the target")
+	assert_eq(fx.map(func(e): return e.fx), [&"water_heal_helix"], "the rope's helix (water physics, 2026-11-28)")
 	events = _debug("fx F22", hero.move.pos)
 	assert_eq(events.filter(func(e): return e.get("code", "") == "flames").size(), 1, "Scorch's code flames")
 	var before := hero.hp
