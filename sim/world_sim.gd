@@ -2050,9 +2050,15 @@ func _return_stance_water(hero: Hero) -> void:
 ## (WaterBending.whip_share by how long after the cast it came).
 func _intent_water_return(hero: Hero) -> String:
 	var a: AbilityDef = ContentDB.abilities.get(hero.water_out.get("ability", &""))
-	if a == null or a.water_back != AbilityDef.WaterBack.SECOND_PRESS:
+	if a == null or a.water_back != AbilityDef.WaterBack.SECOND_PRESS or hero.water_out.has("pressed"):
 		return "not_ready"
-	_settle_water_out(hero, WaterBending.whip_share(now - float(hero.water_out.at)))
+	var t := now - float(hero.water_out.at)
+	if not hero.water_out.get("paid", false):
+		# Pressed before the hit landed: kept, and settled once it has (settling now
+		# would let the hit send the rope out again; the 2026-11-28 report).
+		hero.water_out.pressed = t
+		return ""
+	_settle_water_out(hero, WaterBending.whip_share(t), t)
 	return ""
 
 
@@ -2088,6 +2094,8 @@ func _check_water_out(hero: Hero) -> void:
 	var a: AbilityDef = ContentDB.abilities.get(out.get("ability", &""))
 	if a == null:
 		_settle_water_out(hero, 0.0)
+	elif a.water_back == AbilityDef.WaterBack.SECOND_PRESS and out.get("paid", false) and out.has("pressed"):
+		_settle_water_out(hero, WaterBending.whip_share(float(out.pressed)), float(out.pressed))
 	elif a.water_back == AbilityDef.WaterBack.SECOND_PRESS and now - float(out.at) >= WaterBending.WHIP_WINDOW:
 		_settle_water_out(hero, 0.0)
 	elif a.water_back == AbilityDef.WaterBack.LOST and out.get("paid", false):
@@ -2103,9 +2111,11 @@ func _settle_shield_out(hero: Hero, share: float) -> void:
 
 ## `share` of the water out comes home: into the stance (up to full, the rest into
 ## the pouch), or into the pouch when the stance is gone. The rest is lost.
-func _settle_water_out(hero: Hero, share: float) -> void:
+func _settle_water_out(hero: Hero, share: float, t := -1.0) -> void:
 	var out := hero.water_out
 	hero.water_out = {}
+	if t >= 0.0:
+		out.t = t # when the second press came
 	_water_home(hero, out, share)
 
 
@@ -2118,7 +2128,7 @@ func _water_home(hero: Hero, out: Dictionary, share: float) -> void:
 	else:
 		_to_pouch(hero, back)
 	emit({"type": "water_return", "source": hero.id, "ability": out.get("ability", &""), "share": share,
-			"points": back, "sent": int(out.get("points", 0)), "t": now - float(out.get("at", now))})
+			"points": back, "sent": int(out.get("points", 0)), "t": float(out.get("t", now - float(out.get("at", now))))})
 
 
 ## Puts `points` into the pouch, up to its capacity (without a pouch they're lost).

@@ -272,3 +272,28 @@ func test_saved_with_the_character_and_older_water_heroes_get_a_pouch() -> void:
 func test_sold_by_odo_and_tamsin() -> void:
 	assert_true(ContentDB.npcs[&"apothecary_odo"].sells_ids.has(&"water_pouch"))
 	assert_true(ContentDB.npcs[&"trader_tamsin"].sells_ids.has(&"water_pouch"))
+
+
+func test_a_press_before_the_hit_brings_its_share_home_after_it() -> void:
+	# The 2026-11-28 report: a press before 0.5 s lost all the water (the hit, going
+	# off after the press had settled, sent the rope out again).
+	_go(_tile_from_water(8.0, 40.0))
+	_stance(1)
+	_fill_rope()
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	var hp := wolf.hp
+	_cast(wolf)
+	world.advance(0.2)
+	world.submit(hero.id, {"type": "water_return"}) # at about 0.25 s: 75%
+	world.step()
+	assert_eq(hero.stance_water, 0, "not yet: the lash is still out")
+	var events := world.advance(0.4)
+	assert_lt(wolf.hp, hp, "the hit landed")
+	var back: Array = events.filter(func(e): return e.type == "water_return")
+	assert_eq(back.size(), 1, "settled once, after the hit")
+	assert_almost_eq(float(back[0].share), 0.75, 0.05)
+	assert_almost_eq(float(back[0].t), 0.25, 0.05, "the press's own time")
+	assert_true(hero.water_out.is_empty(), "nothing out any more")
+	assert_gte(hero.stance_water, 17, "about 18 points home (and refilling)")
+	world.advance(2.0)
+	assert_eq(hero.stance_water, 24, "and none lost to a second throw")
