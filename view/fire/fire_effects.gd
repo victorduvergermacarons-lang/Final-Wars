@@ -9,6 +9,40 @@ extends RefCounted
 var sim: FireSim
 var effects: Array[FireEffect] = []
 
+## Low graphics: no fluid fire; burning zones keep the old flame sprites (FxPainter).
+static var low_graphics := false
+
+## Ground zones that burn (by the ability that made them) and how their fire looks:
+## spread speed (cells/s) and flame height (px). Inferno and Fireball use their own
+## look's settings. The host owns which tiles burn and until when; this is the look.
+const GROUND_LOOKS := {
+	&"F05": {"gspread": 12.0, "gh": 7.0},        # Flame Dash's trail
+	&"F08": {"gspread": 14.0, "gh": 10.0},       # Burning Ground
+	&"F16": {},                                  # Inferno (its look)
+	&"F07": {},                                  # Fireball (its look)
+	&"sunfire_breath": {"gspread": 16.0, "gh": 10.0},
+	&"searing_dive": {"gspread": 14.0, "gh": 9.0},
+	&"ember_trail": {"gspread": 10.0, "gh": 6.0},
+}
+## Char fades in 30 s on grass, plants and wood, in 5 s on everything else (stone,
+## earth). Seconds.
+const CHAR_FADE_LONG := 30.0
+const CHAR_FADE_SHORT := 5.0
+const LONG_FADE_TERRAINS := ["grass", "meadow", "dark_grass", "dense_grass", "tall_grass", "bush", "steppe",
+		"steppe_dry", "roof_thatch"]
+const WOOD_PROPS := ["logs", "stump"]
+## Plants that burn away, and grow back a minute after the fire.
+const REGROW_TERRAINS := ["tall_grass", "dense_grass"]
+const REGROW_PROPS := ["flowers", "weeds"]
+const REGROW_SECONDS := 60.0
+## Burnt plants: tile -> when they grow back (host clock).
+var burnt := {}
+var _zones_seen := {}
+## Air abilities pushing the fire's air: [{"from", "to", "left"}] (steps left).
+var _gusts: Array = []
+## Water for the fire this frame (WaterRopes.water_points).
+var water: Array = []
+
 
 ## `parent` hosts the GPU passes (WorldView).
 func attach(parent: Node) -> void:
@@ -42,6 +76,151 @@ func start(look: FireLookDef, caster_id: int, pos: Vector2, h: float, at: Vector
 	return e
 
 
+## Burning zones from the host: each gets the ground fire in a window holding its tiles
+## (a window already there takes it when they fit). Returns the tiles whose plants just
+## burnt or grew back (WorldView redraws them).
+func sync_ground(zones: Array, now: float, grid: GridModel, zone: ZoneDef) -> Array:
+	var changed := []
+	if sim == null:
+		return changed
+	for z in zones:
+		var ab := StringName(z.get("ability", ""))
+		if not GROUND_LOOKS.has(ab) or low_graphics:
+			continue
+		var tiles: Array = z.get("tiles", [])
+		if tiles.is_empty():
+			continue
+		var key := "%s|%s|%s|%s" % [z.get("source", -1), ab, z.get("until", 0.0), tiles[0]]
+		if _zones_seen.has(key):
+			continue
+		_zones_seen[key] = float(z.until)
+		var e := _ground_window(tiles, ab, grid, zone)
+		if e == null:
+			continue
+		for t in tiles:
+			e.ground_until[t] = maxf(float(e.ground_until.get(t, 0.0)), float(z.until))
+			e.ground_new.append(t)
+			if zone != null and _plant_burns(zone, t):
+				if not burnt.has(t):
+					changed.append(t)
+				burnt[t] = maxf(float(burnt.get(t, 0.0)), float(z.until) + REGROW_SECONDS)
+		e.ground_light.append(_middle(tiles))
+		e.done_after = maxi(e.done_after, e.ct + int((float(z.until) - now) * 60.0) + 60)
+	for t in burnt.keys():
+		if now >= float(burnt[t]):
+			burnt.erase(t)
+			changed.append(t)
+	for k in _zones_seen.keys():
+		if now > float(_zones_seen[k]) + 5.0:
+			_zones_seen.erase(k)
+	for e in effects:
+		e.now = now
+	return changed
+
+
+static func _plant_burns(zone: ZoneDef, t: Vector2i) -> bool:
+	return zone.terrain_at(t) in REGROW_TERRAINS or zone.prop_at(t) in REGROW_PROPS
+
+
+## The tile in the middle of a set (the one nearest its centre): where the fire is lit.
+static func _middle(tiles: Array) -> Vector2i:
+	var c := Vector2.ZERO
+	for t in tiles:
+		c += Vector2(t)
+	c /= float(tiles.size())
+	var best: Vector2i = tiles[0]
+	for t in tiles:
+		if Vector2(t).distance_to(c) < Vector2(best).distance_to(c):
+			best = t
+	return best
+
+
+func _ground_window(tiles: Array, ab: StringName, grid: GridModel, zone: ZoneDef) -> FireEffect:
+	var lo := Vector2i(tiles[0])
+	var hi := lo
+	for t in tiles:
+		lo = Vector2i(mini(lo.x, t.x), mini(lo.y, t.y))
+		hi = Vector2i(maxi(hi.x, t.x), maxi(hi.y, t.y))
+	for e in effects:
+		if e.look.kind != "ground" and not e.ground:
+			continue
+		var a := e.origin + Vector2i(1, 1)
+		var b := e.origin + Vector2i(6, 6)
+		if lo.x >= a.x and lo.y >= a.y and hi.x <= b.x and hi.y <= b.y:
+			return e
+	var look := FireLookDef.new()
+	look.id = ab
+	look.kind = "ground"
+	var gl: Dictionary = GROUND_LOOKS.get(ab, {})
+	if gl.is_empty():
+		var own: FireLookDef = load("res://content/effects/fire/%s.tres" % ab) if ResourceLoader.exists("res://content/effects/fire/%s.tres" % ab) else null
+		gl = own.settings(0.0) if own != null else {}
+	look.s0 = {"gspread": float(gl.get("gspread", 12.0)), "gh": float(gl.get("gh", 10.0)), "cool": 0.05, "fade": 0.03}
+	look.m1 = look.s0
+	var slot := sim.alloc(1.0)
+	if slot < 0:
+		return null
+	var e := FireEffect.new()
+	e.look = look
+	e.p = look.settings(0.0)
+	e.slot = slot
+	e.ground = true
+	var mid := (Vector2(lo) + Vector2(hi)) * 0.5
+	e.origin = Vector2i(roundi(mid.x) - 3, roundi(mid.y) - 3)
+	var h := 0.0
+	if grid != null and grid.in_bounds(_middle(tiles)):
+		h = float(grid.height_at(_middle(tiles)))
+	e.base_h = h
+	e.hero = Vector2(64, 64)
+	e.zone = zone
+	e.grid = grid
+	e.tail_steps = int((CHAR_FADE_LONG + 3.0) * 60.0) # the char stays, then fades
+	effects.append(e)
+	set_walls(e, grid)
+	return e
+
+
+## An Air ability went off: its wind pushes the fire's air from `from` toward `to`.
+func on_events(events: Array, abilities: Dictionary) -> void:
+	for ev in events:
+		if str(ev.get("type", "")) != "fx" or not ev.has("from") or not ev.has("to"):
+			continue
+		var ab: AbilityDef = abilities.get(StringName(ev.get("ability", "")))
+		if ab == null or ab.tree != "Air":
+			continue
+		_gusts.append({"from": Vector2(ev.from), "to": Vector2(ev.to), "left": 20})
+
+
+## This step's air and water on the effect: gusts push its air along their line;
+## water in the air cools flame cells, water on the ground puts the fire out there.
+func _hooks(e: FireEffect) -> void:
+	for g in _gusts:
+		var a := e.to_local(g.from)
+		var b := e.to_local(g.to)
+		var d := b - a
+		if d.length() < 0.5:
+			continue
+		var dir := d.normalized()
+		var n := clampi(int(d.length() / 16.0) + 1, 1, 6)
+		for i in n:
+			var c := a + d * (float(i) + 0.5) / float(n)
+			if c.x < -10 or c.y < -10 or c.x > FireSim.SW + 10 or c.y > FireSim.SW + 10:
+				continue
+			sim.air(e.slot, c.x, c.y, 10.0, 2, 0.06, dir.x, dir.y)
+	var k := 0
+	for w in water:
+		var lp := e.to_local(w.pos)
+		if lp.x < 0 or lp.y < 0 or lp.x >= FireSim.SW or lp.y >= FireSim.SW:
+			continue
+		if bool(w.ground):
+			sim.water_ground(e.slot, lp.x, lp.y, 3.0)
+		else:
+			sim.water_air(e.slot, lp.x, lp.y, 2.5, 0.35)
+		k += 1
+		if k >= 12:
+			break
+
+
 ## Walls for a new effect: tiles of its window that rise more than a level above its
 ## ground, block sight, or don't exist.
 func set_walls(e: FireEffect, grid: GridModel) -> void:
@@ -67,6 +246,7 @@ func clear() -> void:
 	for e in effects:
 		sim.release(e.slot)
 	effects.clear()
+	_zones_seen.clear()
 
 
 ## Steps every effect that is due (dt: game time) and renders the passes.
@@ -81,7 +261,11 @@ func advance(dt: float, actors: Array) -> void:
 			continue
 		if sim.due(e.slot, dt) > 0:
 			sim.set_units(e.slot, _units(e, actors))
+			_hooks(e)
 			e.step(sim)
+	for g in _gusts:
+		g.left -= 1
+	_gusts = _gusts.filter(func(g): return g.left > 0)
 	sim.run()
 
 
@@ -123,10 +307,16 @@ func items(grid: GridModel) -> Array:
 			var rect := Rect2(top + off, Vector2(FireSim.BAND_W, FireSim.BAND_H) * PixelCamera.ART_SCALE)
 			out.append({"fireband": e.slot, "band": b, "pos": Vector2(tile), "rect": rect})
 			out.append({"fireparts": e, "band": b, "pos": Vector2(tile), "rect": rect, "top": top})
+			if e.ground:
+				var frect := Rect2(top + Vector2(-128, b * 8) * PixelCamera.ART_SCALE, Vector2(FireSim.BAND_W, FireSim.FLOOR_H) * PixelCamera.ART_SCALE)
+				out.append({"firefloor": e.slot, "band": b, "pos": Vector2(tile), "rect": frect, "behind": true})
 	return out
 
 
 func draw(canvas: CanvasItem, item: Dictionary) -> void:
+	if item.has("firefloor"):
+		canvas.draw_texture_rect_region(sim.floor_texture(), item.rect, FireSim.floor_rect(int(item.firefloor), int(item.band)))
+		return
 	if item.has("fireparts"):
 		_draw_parts(canvas, item)
 		return

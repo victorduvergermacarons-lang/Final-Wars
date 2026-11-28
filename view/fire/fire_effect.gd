@@ -34,6 +34,16 @@ var parts: Array = []
 ## A projectile's head, drawn in code: {} or {x, y, dx, dy, ball (bool), size}.
 var head := {}
 const MAX_PARTS := 900
+## Ground fire (phase 2): this window draws the ground fire. ground_until: world tile ->
+## when the host's fire there ends (host clock); ground_new: tiles to fuel next step;
+## ground_light: tiles to light next step.
+var ground := false
+var ground_until := {}
+var ground_new: Array = []
+var ground_light: Array = []
+var now := 0.0           # the host clock, set each frame
+var zone: ZoneDef
+var grid: GridModel
 
 
 ## Where to put the window for a caster at `pos` aiming along `dir`: the caster near the
@@ -65,12 +75,41 @@ func step(sim: FireSim) -> void:
 				var wob := 0.04 * sin(f * 0.21) + 0.03 * sin(f * 0.53 + 1.0)
 				sim.emit(slot, hero.x + ax * 6.5, hero.y + ay * 6.5, ax, ay, 1.25, float(p.temp), float(p.launch), wob)
 	step_parts(sim)
+	if ground:
+		_step_ground(sim)
 	var params := p.duplicate()
 	params["aim"] = Vector2(ax, ay)
+	params["ground"] = ground
 	params["contact"] = 1 if look.kind in ["stream", "punch", "wheel", "breathfire", "jet"] else (2 if look.kind in ["kick", "combo"] else 0)
 	sim.set_params(slot, params)
 	ct += 1
 	f += 1
+
+
+## The host's burning tiles of this window: fuel the new ones, light the zone's middle,
+## and tell the sim how long each tile may still burn and how fast its char fades.
+func _step_ground(sim: FireSim) -> void:
+	for t in ground_new:
+		var c := to_local(Vector2(t))
+		var lit := ground_light.has(t) or ground_new.size() <= 3 # a trail lights as it is laid
+		sim.patch(slot, c.x, c.y, 11.0, maxf(float(ground_until.get(t, now)) - now, 0.0), 3.0 if lit else 0.0)
+	ground_new.clear()
+	ground_light.clear()
+	var left := PackedFloat32Array()
+	var fade := PackedFloat32Array()
+	left.resize(64)
+	fade.resize(64)
+	for ty in 8:
+		for tx in 8:
+			var t := origin + Vector2i(tx, ty)
+			var secs := maxf(float(ground_until.get(t, 0.0)) - now, 0.0)
+			var ts: TilesetData = ContentDB.tilesets.get(zone.tileset) if zone != null and zone.has_terrain() else null
+			if ts != null and ts.is_water_terrain(zone.terrain_at(t)):
+				secs = 0.0 # nothing burns on water
+			left[ty * 8 + tx] = secs * 60.0 * float(look.time_scale)
+			var long := zone != null and (zone.terrain_at(t) in FireEffects.LONG_FADE_TERRAINS or zone.prop_at(t) in FireEffects.WOOD_PROPS)
+			fade[ty * 8 + tx] = (FireEffects.CHAR_FADE_LONG if long else FireEffects.CHAR_FADE_SHORT) * 60.0
+	sim.set_tiles(slot, left, fade)
 
 
 # --- The reference's sources and particles ---------------------------------

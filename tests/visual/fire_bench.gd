@@ -70,6 +70,10 @@ func _run() -> void:
 	dd.aggro_radius = 0
 	dummy = sim.add_enemy(dd, t + Vector2i(2, -2))
 	await _frames(10)
+	if ability == &"ground":
+		await _ground_bench(sim, t)
+		get_tree().quit()
+		return
 	var look: FireLookDef = load("res://content/effects/fire/%s.tres" % ability)
 	stress = stress or OS.get_environment("FIRE_STRESS") == "1" or "--stress" in OS.get_cmdline_user_args()
 	if ability_id != "":
@@ -117,3 +121,30 @@ func _shot(name: String, centre: Vector2) -> void:
 	var c := Vector2i(img.get_size() / 2) + Vector2i(140, -40)
 	var r := Rect2i(c.x - 300, c.y - 170, 600, 300).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
 	img.get_region(r).save_png(out_dir + name + ".png")
+
+
+## FIRE_ABILITY=ground: the hero casts Burning Ground (F08) on the dummy's spot; shots
+## as the front spreads, burns, goes out and leaves char.
+func _ground_bench(sim: WorldSim, t: Vector2i) -> void:
+	TreeRules.master(hero, ContentDB.abilities[&"F08"])
+	hero.mana = 9999.0
+	var at := Vector2(t) + DIR.normalized() * 2.5
+	dummy.move.place(at)
+	dummy.move.pos = at
+	world.submit(hero.id, {"type": "cast", "ability": &"F08", "target": -1, "aim": at})
+	var t0 := Time.get_ticks_msec()
+	for when in [0.4, 1.0, 2.5, 6.5, 12.0]:
+		while world.zone_of(hero.id).now < float(when) + _cast_at(sim):
+			await _frames(1)
+		await _shot("ground_F08_%04.1fs" % when, Vector2(t))
+		print("ground %.1f s: zones %d, fire windows %d, burnt plants %d" % [when, world.zone_of(hero.id).ground_zones().size(),
+				view.fire.effects.size(), view.fire.burnt.size()])
+
+
+var _cast_t := -1.0
+
+
+func _cast_at(sim: WorldSim) -> float:
+	if _cast_t < 0.0:
+		_cast_t = sim.now
+	return _cast_t

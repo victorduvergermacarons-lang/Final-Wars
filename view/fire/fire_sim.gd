@@ -25,6 +25,7 @@ const PRM_W := 16
 const BAND_W := 260
 const BAND_H := 128
 const BANDS := 15
+const FLOOR_H := 16
 const STEPS_PER_SECOND := 60.0
 const ZC := 13.0 ## the reference's chest height (px above the floor)
 const SHADER_PATH := "res://view/fire/shaders/fire_core.gdshaderinc"
@@ -44,6 +45,9 @@ var _slots := {}
 var _prm := Image.create(PRM_W, SLOTS, false, Image.FORMAT_RGBAF)
 var _src := Image.create(MAX_SOURCES * 4, SLOTS, false, Image.FORMAT_RGBAF)
 var _wall := Image.create(ATLAS.x, ATLAS.y, false, Image.FORMAT_R8)
+## Per tile of every slot: steps the host's fire has left there (r) and its char fade (g).
+var _tile := Image.create(COLS * 8, ROWS * 8, false, Image.FORMAT_RGBAF)
+var _tile_tex: ImageTexture
 var _prm_tex: ImageTexture
 var _src_tex: ImageTexture
 var _wall_tex: ImageTexture
@@ -66,12 +70,24 @@ func _ready() -> void:
 	_prm_tex = ImageTexture.create_from_image(_prm)
 	_src_tex = ImageTexture.create_from_image(_src)
 	_wall_tex = ImageTexture.create_from_image(_wall)
+	_tile.fill(Color(0, 0, 0, 0))
+	_tile_tex = ImageTexture.create_from_image(_tile)
 	_build()
 
 
 ## The band image atlas (art px, transparent where nothing burns).
 func bands_texture() -> Texture2D:
 	return _passes.band.get_texture()
+
+
+## The floor strips atlas: the burnt and burning ground, drawn under what stands on it.
+func floor_texture() -> Texture2D:
+	return _passes.floor.get_texture()
+
+
+## Where the floor strip of band `b` of `slot` sits in floor_texture().
+static func floor_rect(slot: int, b: int) -> Rect2:
+	return Rect2((slot % COLS) * BAND_W, ((slot / COLS) * BANDS + b) * FLOOR_H, BAND_W, FLOOR_H)
 
 
 ## Where band `b` of `slot` sits in bands_texture().
@@ -107,6 +123,7 @@ func release(slot: int) -> void:
 	_sources.erase(slot)
 	_prm.set_pixel(4, slot, Color(0, 0, 0, 0))
 	_prm.set_pixel(0, slot, Color(0, 0, 0, 0))
+	_tile.fill_rect(Rect2i((slot % COLS) * 8, (slot / COLS) * 8, 8, 8), Color(0, 0, 0, 0))
 
 
 func in_use(slot: int) -> bool:
@@ -137,6 +154,16 @@ func set_walls(slot: int, cells: PackedByteArray) -> void:
 		for x in SW:
 			_wall.set_pixel(ox + x, oy + y, Color(float(cells[x + y * SW]), 0, 0))
 	_wall_dirty = true
+
+
+## The ground fire's tiles: `left[ty * 8 + tx]` steps the host's fire has left on that
+## tile of the window (0: it doesn't burn), `fade[...]` the steps its char takes to fade.
+func set_tiles(slot: int, left: PackedFloat32Array, fade: PackedFloat32Array) -> void:
+	var ox := (slot % COLS) * 8
+	var oy := (slot / COLS) * 8
+	for ty in 8:
+		for tx in 8:
+			_tile.set_pixel(ox + tx, oy + ty, Color(left[ty * 8 + tx], fade[ty * 8 + tx], 0, 0))
 
 
 func _clear_walls(slot: int) -> void:
@@ -180,6 +207,22 @@ func point(slot: int, x: float, y: float, t: float, b: float, d: float, z0: floa
 	_push(slot, [3, x, y, t, b, d, z0, fu, fv, 0, 0, 0, 0, 0, 0, 0])
 
 
+## Ground fuel in a noisy disc of radius `r` for `sec` seconds (capped by the tiles'
+## time), lit within `ign` (the reference's gpatch).
+func patch(slot: int, cx: float, cy: float, r: float, sec: float, ign: float) -> void:
+	_push(slot, [5, cx, cy, r, sec, ign, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
+## Water on the ground: no heat, no flame, wet.
+func water_ground(slot: int, cx: float, cy: float, r: float) -> void:
+	_push(slot, [6, cx, cy, r, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
+## Water in the air: flame cells within `r` lose `k` of their heat.
+func water_air(slot: int, cx: float, cy: float, r: float, k: float) -> void:
+	_push(slot, [7, cx, cy, r, k, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
 ## The air: mode 0 a radial push, 1 a swirl (inferno), 2 a push (ux, uy) in a square.
 func air(slot: int, cx: float, cy: float, r: float, mode: int, k: float, ux: float = 0.0, uy: float = 0.0) -> void:
 	_push(slot, [4, cx, cy, r, mode, k, ux, uy, 0, 0, 0, 0, 0, 0, 0, 0])
@@ -212,6 +255,9 @@ func run() -> void:
 		_prm.set_pixel(2, s, Color(float(p.get("cool", 0.05)), float(p.get("widen", 0.1)), float(p.get("push", 2.0)), float(p.get("fade", 0.02))))
 		_prm.set_pixel(3, s, Color(float(p.get("brk", 0.75)), float(p.get("boom", 1.0)) * float(p.get("bmul", 1.0)), float(p.get("contact", 0)), float(units.size())))
 		_prm.set_pixel(4, s, Color(aim.x, aim.y, float(p.get("wind", 0.0)), 1.0 if used else 0.0))
+		var ts: float = _slots[s].rate if used else 1.0
+		_prm.set_pixel(6, s, Color(float(p.get("gspread", 10.0)) / (60.0 * maxf(ts, 0.01)) * 1.15, float(p.get("gh", 10.0)),
+				1.0 if bool(p.get("ground", false)) else 0.0, ts))
 		for k in MAX_UNITS:
 			var u: Vector3 = units[k] if k < units.size() else Vector3.ZERO
 			_prm.set_pixel(8 + k, s, Color(u.x, u.y, u.z, 1.0))
@@ -227,6 +273,7 @@ func run() -> void:
 	_clear_pending.clear()
 	_prm_tex.update(_prm)
 	_src_tex.update(_src)
+	_tile_tex.update(_tile)
 	if _wall_dirty:
 		_wall_tex.update(_wall)
 		_wall_dirty = false
@@ -337,7 +384,14 @@ func _build() -> void:
 	_pass("r4", 27, Vector2i(COLS * 2, ROWS * 1), {"t_a": "r3"}, {"lvl_in": 2})
 	_pass("keep_a", 28, Vector2i(SLOTS * 2, 1), {"t_a": "r4"})
 	_pass("keep_b", 28, Vector2i(SLOTS * 2, 1), {"t_a": "r4"})
-	_pass("band", 29, Vector2i(COLS * BAND_W, ROWS * BANDS * BAND_H), {"t_fa": "fa", "t_fb": "fb", "t_fc": "fc"},
+	# The ground fire (phase 2): inject, then step, after this frame's air.
+	var gprev := {"t_g1": "g1", "t_g2": "g2", "t_sol": "sol"}
+	_pass("gi1", 30, A, gprev)
+	_pass("gi2", 31, A, gprev)
+	_pass("g1", 32, A, {"t_g1": "gi1", "t_g2": "gi2", "t_air": "air", "t_sol": "sol"})
+	_pass("g2", 33, A, {"t_g1": "gi1", "t_g2": "gi2", "t_air": "air", "t_sol": "sol"})
+	_pass("floor", 34, Vector2i(COLS * BAND_W, ROWS * BANDS * FLOOR_H), {"t_g1": "g1", "t_g2": "g2"}, {}, false)
+	_pass("band", 29, Vector2i(COLS * BAND_W, ROWS * BANDS * BAND_H), {"t_fa": "fa", "t_fb": "fb", "t_fc": "fc", "t_g1": "g1", "t_air": "air"},
 			{"height_scale": height_scale}, false)
 	for n in _order:
 		var vp: SubViewport = _passes[n]
@@ -348,8 +402,10 @@ func _build() -> void:
 		m.set_shader_parameter("t_prm", _prm_tex)
 		m.set_shader_parameter("t_src", _src_tex)
 		m.set_shader_parameter("t_wall", _wall_tex)
+		m.set_shader_parameter("t_tile", _tile_tex)
 		m.set_shader_parameter("t_keep", _passes.keep_a.get_texture())
 	_passes.band.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
+	_passes.floor.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
 
 
 func set_blue(on: bool) -> void:

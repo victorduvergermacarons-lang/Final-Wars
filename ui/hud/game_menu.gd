@@ -176,6 +176,13 @@ func _speed_tab() -> Control:
 	_dungeon_testing.toggled.connect(func(on: bool):
 		hud.session.send_intent({"type": "dungeon_testing", "on": on}))
 	page.add_child(_dungeon_testing)
+	# Fire physics: low graphics keeps the old flame sprites (saved per player).
+	var low_fire := CheckBox.new()
+	low_fire.focus_mode = Control.FOCUS_NONE
+	low_fire.text = "Low graphics fire: flame sprites instead of the fire physics"
+	low_fire.set_pressed_no_signal(FireEffects.low_graphics)
+	low_fire.toggled.connect(func(on: bool): hud.set_fire_low_graphics(on))
+	page.add_child(low_fire)
 	for d in [["Show water rope points (only on your screen)", "debug_rope_points"],
 			["Show the water rope's return path", "debug_rope_path"]]:
 		var box := CheckBox.new()

@@ -159,6 +159,10 @@ func _process(delta: float) -> void:
 	_float_texts = _float_texts.filter(func(f): return t - f.t < FLOAT_TEXT_SECONDS)
 	if fire.sim == null:
 		fire.attach(self)
+	var burnt_changed := fire.sync_ground(session.ground_zones(), session.now(), session.grid(), session.zone())
+	if not burnt_changed.is_empty():
+		refresh_tiles(burnt_changed)
+	fire.water = ropes.water_points()
 	fire.advance(clampf(t - _fire_t, 0.0, 0.25) if _fire_t >= 0.0 else 0.0, session.actors())
 	_fire_t = t
 	_update_terrain_cache()
@@ -614,7 +618,7 @@ func _fx_anchor(grid: GridModel, item: Dictionary) -> Vector2:
 func _fx_rect(grid: GridModel, item: Dictionary) -> Rect2:
 	if item.has("rope"):
 		return ropes.rect_of(item)
-	if item.has("fireband") or item.has("fireparts"):
+	if item.has("fireband") or item.has("fireparts") or item.has("firefloor"):
 		return item.rect
 	var r := RING_RADIUS.x if item.has("ring") else 0.0
 	if item.has("quad") or item.has("tilefx"):
@@ -804,7 +808,7 @@ func _draw_fx(grid: GridModel, item: Dictionary) -> void:
 	if item.has("rope"):
 		ropes.draw(self, item)
 		return
-	if item.has("fireband") or item.has("fireparts"):
+	if item.has("fireband") or item.has("fireparts") or item.has("firefloor"):
 		fire.draw(self, item)
 		return
 	if item.has("quad"):
@@ -992,6 +996,10 @@ func _draw_terrain_column(canvas: CanvasItem, grid: GridModel, p: Vector2i, clip
 	var h := grid.height_at(p)
 	var front := mini(_front_height(grid, p + Vector2i(1, 0)), _front_height(grid, p + Vector2i(0, 1)))
 	var terrain := _zone.terrain_at(p)
+	# Plants burnt by the fire (FireEffects.burnt) show bare grass until they grow back.
+	var burnt := fire.burnt.has(p)
+	if burnt and terrain in FireEffects.REGROW_TERRAINS:
+		terrain = "grass"
 	# With the terrain cache, water animates by itself (TileArt.animated_texture).
 	var live := _cached()
 	var anim: String = str(_art.data.terrains.get(terrain, {}).get("animation", "")) if live else ""
@@ -1011,6 +1019,8 @@ func _draw_terrain_column(canvas: CanvasItem, grid: GridModel, p: Vector2i, clip
 	# The prop goes with its tile, so the tiles in front still cover what's behind
 	# a boulder, and a unit behind it is hidden by it.
 	var group := _zone.prop_at(p)
+	if burnt and group in FireEffects.REGROW_PROPS:
+		group = ""
 	if group != "":
 		_art.draw_prop(canvas, _art.data.pick_prop(group, p), p, h, clip)
 	var decor := _zone.decor_at(p)
@@ -1527,6 +1537,7 @@ func _queue_float_texts() -> void:
 func _on_events(events: Array) -> void:
 	_fx.on_events(events, ContentDB.effects)
 	ropes.on_events(events, ContentDB.effects)
+	fire.on_events(events, ContentDB.abilities)
 	_fx.on_casts(events, ContentDB.abilities)
 	var t: float = session.render_time()
 	for e in events:

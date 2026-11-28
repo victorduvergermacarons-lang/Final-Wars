@@ -162,6 +162,9 @@ func items(t: float, actors: Array, telegraphs: Array, abilities: Dictionary, ef
 				out.append_array(held_items(fx, t, a))
 	# A ground zone's effect on each of its tiles while it lasts (Flame Dash's trail).
 	for z in world.get("zones", []):
+		# Burning zones are drawn by the fire physics (FireEffects), unless on low graphics.
+		if not FireEffects.low_graphics and FireEffects.GROUND_LOOKS.has(StringName(z.get("ability", ""))):
+			continue
 		var ability: AbilityDef = abilities.get(StringName(z.get("ability", "")))
 		if ability == null or ability.fx_tiles == &"":
 			continue

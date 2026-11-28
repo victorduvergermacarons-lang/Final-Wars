@@ -65,6 +65,27 @@ func tiles_of(g: Vector2) -> Vector2:
 	return Vector2((a.x + a.y) / 32.0, (a.y - a.x) / 32.0)
 
 
+## Where the bent water is, for the fire (fire physics phase 2): world tile points with
+## their height in reference px; "ground" for water lying on the floor (soaking in,
+## splashes landed). Each player's own rope simulation, like the rest of the look.
+func water_points() -> Array:
+	var out := []
+	for id in ropes:
+		var e: Dictionary = ropes[id]
+		var r: WaterRope = e.get("rope")
+		var hero: Hero = e.get("hero")
+		if r == null or hero == null:
+			continue
+		for pt in r.R:
+			out.append({"pos": hero.move.pos + tiles_of(Vector2(pt.p.x, pt.p.y)), "z": pt.p.z, "ground": pt.gnd or pt.p.z < 2.0})
+		for d in r.drops:
+			var dp: Vector3 = d.p
+			out.append({"pos": hero.move.pos + tiles_of(Vector2(dp.x, dp.y)), "z": dp.z, "ground": dp.z < 2.0})
+		for l in r.lost:
+			out.append({"pos": hero.move.pos + tiles_of(l.p), "z": 0.0, "ground": true})
+	return out
+
+
 ## Takes the throws from an event batch (the Water Whip's effect events).
 func on_events(events: Array, effects: Dictionary) -> void:
 	for e in events:

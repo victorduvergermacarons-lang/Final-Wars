@@ -144,6 +144,12 @@ func set_timing_bar_place(place: int) -> void:
 	SettingsStore.save_ui("timing_bar_place", place, settings_path)
 
 
+## Fire physics or the old flame sprites (FireEffects.low_graphics), and saves the choice.
+func set_fire_low_graphics(on: bool) -> void:
+	FireEffects.low_graphics = on
+	SettingsStore.save_ui("fire_low_graphics", on, settings_path)
+
+
 ## The timing bar's mode (TimingBarView.Mode: the bar's length follows the ability,
 ## or zones slide toward a fixed hit line), and saves the choice.
 func set_timing_bar_mode(mode: int) -> void:
@@ -206,6 +212,7 @@ func _build() -> void:
 	# The local hero's timing bar (right-click on its zones), under the hero or
 	# above the action bar.
 	timing_bar = TimingBarView.new(self)
+	FireEffects.low_graphics = bool(SettingsStore.load_ui("fire_low_graphics", false, settings_path))
 	var saved_place := int(SettingsStore.load_ui("timing_bar_place", TimingBarView.Place.BELOW_HERO, settings_path))
 	timing_bar.place = saved_place if saved_place in TimingBarView.Place.values() else TimingBarView.Place.BELOW_HERO
 	var saved_mode := int(SettingsStore.load_ui("timing_bar_mode", TimingBarView.Mode.LENGTH, settings_path))

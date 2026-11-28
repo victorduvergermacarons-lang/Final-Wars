@@ -87,6 +87,21 @@ float z_of(float Z0, float ZH, float AH, float AG) {
 	return max(z, -ZC + 1.0);
 }
 
+uniform sampler2D t_tile : filter_nearest;
+uniform sampler2D t_g1 : filter_nearest;
+uniform sampler2D t_g2 : filter_nearest;
+
+float vnoise(Ctx X, ivec2 lc, float cs, float salt) {
+	vec2 f = vec2(lc) / cs;
+	ivec2 i = ivec2(floor(f));
+	vec2 s = f - vec2(i);
+	vec2 u = s * s * (3.0 - 2.0 * s);
+	float sd = float(X.slot) * 31.0 + salt;
+	float a = hash(i, sd, 1.0), b = hash(i + ivec2(1, 0), sd, 1.0), c = hash(i + ivec2(0, 1), sd, 1.0), d = hash(i + ivec2(1, 1), sd, 1.0);
+	return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}
+vec4 tile_at(Ctx X, ivec2 lc) { return texelFetch(t_tile, ivec2(X.so / 16) + lc / 16, 0); }
+
 #if PASS == 0
 // ---- SOL: solids from the slot's units and walls, plus the open edge's fade ----
 void fragment() {
@@ -114,7 +129,6 @@ Cell inject(Ctx X) {
 	Cell k = load(X, t_fa, t_fb, t_fc, t_air, LC);
 	if (prm(5).x > 0.5) { // a slot taken anew starts empty
 		k.F = 0.0; k.fu = 0.0; k.fv = 0.0; k.AG = 0.0; k.D = 0.0; k.B = 0.0; k.Z0 = 0.0; k.AH = 0.0; k.ZH = 0.0; k.u = 0.0; k.v = 0.0;
-		return k;
 	}
 	if (!STEPPING || is_sol(LC)) return k;
 	bool edge2 = LC.x < 2 || LC.y < 2 || LC.x > SW - 3 || LC.y > SW - 3;
@@ -214,6 +228,13 @@ Cell inject(Ctx X) {
 				float tu = (-xy.y / d) * w - xy.x / d * w * 0.15, tv = (xy.x / d) * w - xy.y / d * w * 0.15;
 				k.u += (tu - k.u) * 0.05; k.v += (tv - k.v) * 0.05;
 			}
+		} else if (type == 6 || type == 7) {
+			// water: 7 in the air cools the flame cells it passes (F x (1 - k)); 6 on the
+			// ground puts out the flames near the floor (the ground pass zeroes its heat and wets it)
+			float d = length(P - a.yz);
+			if (d > a.w) continue;
+			if (type == 7) k.F *= 1.0 - clamp(b.x, 0.0, 1.0);
+			else if (z_of(k.Z0, k.ZH, k.AH, k.AG) < -ZC + 8.0) k.F = 0.0;
 		}
 	}
 	return k;
@@ -623,7 +644,31 @@ void fragment() {
 	int QY = px.y - by * BH + band * 8 - UP;     // screen y relative to cell (0, 0)
 	vec4 col = vec4(0.0);
 	bool on_slot = prm(4).w > 0.5; // a slot not in use draws nothing
+	bool ground_on = prm(6).z > 0.5;
 	for (int s = band * 16; on_slot && s <= band * 16 + 30; s++) {
+		// the ground fire's tongues of this diagonal (the reference's gtongue), behind its flames
+		for (int kt = -5; ground_on && kt <= 5; kt++) {
+			int k = QX + kt;
+			if (((s + k) & 1) != 0) continue;
+			int gx = (s + k) / 2, gy = (s - k) / 2;
+			if (gx < 0 || gy < 0 || gx >= SW || gy >= SW || (gx >> 4) + (gy >> 4) != band) continue;
+			if (((gx * 5 + gy * 3) % 6) != 0) continue;
+			ivec2 lc = ivec2(gx, gy);
+			vec4 g1 = at(t_g1, lc);
+			if (g1.w < 0.5 || g1.w > 1.5 || g1.z <= 0.08) continue;
+			float fl = hash(lc, floor(prm(0).z / 4.0), 17.0);
+			int h = int(round(prm(6).y * g1.z * (0.4 + 0.6 * fl) * height_scale));
+			vec2 w = at(t_air, lc).xy;
+			float lean = clamp(clamp((w.x - w.y) * 8.0, -3.0, 3.0) * float(h) * 0.18, -4.0, 4.0);
+			int y0 = int(round(float(gx + gy) * 0.5));
+			int kh = y0 - QY;
+			if (kh < 0 || kh >= h) continue;
+			float q = float(kh) / float(h);
+			int xp = int(round(float(k) + lean * q * q));
+			if (!(xp == QX || (q < 0.5 && xp + 1 == QX))) continue;
+			if (q > 0.65 && BAY[((QX + 4096) & 3) | (((QY + 4096) & 3) << 2)] > (q > 0.85 ? 6 : 10)) continue;
+			col = vec4(ramp(q < 0.15 ? 1 : q < 0.4 ? 2 : q < 0.7 ? 3 : 4), 1.0);
+		}
 		for (int kk = 0; kk < 2; kk++) {
 			int k = QX - 1 + kk;                    // gx - gy of the column (a column is 2 px wide)
 			if (((s + k) & 1) != 0) continue;
@@ -652,6 +697,157 @@ void fragment() {
 			if (kq > 0.7 && BAY[bx | (byy << 2)] > 9) continue;
 			int q = bd + (kq > 0.7 ? 2 : kq > 0.4 ? 1 : 0);
 			col = vec4(ramp(q), 1.0);
+		}
+	}
+	COLOR = col;
+}
+#endif
+
+// ============================ GROUND FIRE (phase 2) ============================
+// The spreading front of the reference's ground(): G1 = (fuel, fuel0, heat, state:
+// 0 unlit, 1 burning, 2 burnt), G2 = (char, ember, wet). Fuel only where the host's
+// tiles burn, and never for longer than they do: t_tile holds, per tile of a slot
+// (8 x 8 texels), the steps its gameplay fire has left (r) and its char fade in steps (g).
+#if PASS >= 30 && PASS <= 33
+struct Ground { float GU; float GU0; float GH; float st; float GC; float GE; float wet; };
+Ground gload(Ctx X, sampler2D g1, sampler2D g2, ivec2 lc) {
+	vec4 a = at(g1, lc), b = at(g2, lc);
+	Ground g; g.GU = a.x; g.GU0 = a.y; g.GH = a.z; g.st = a.w; g.GC = b.x; g.GE = b.y; g.wet = b.z;
+	return g;
+}
+#endif
+
+#if PASS == 30 || PASS == 31
+// ---- GROUND INJECT: fuel and ignition (patches), water on the ground ----
+Ground ginject(Ctx X) {
+	Ground g = gload(X, t_g1, t_g2, LC);
+	if (prm(5).x > 0.5) { g.GU = 0.0; g.GU0 = 0.0; g.GH = 0.0; g.st = 0.0; g.GC = 0.0; g.GE = 0.0; g.wet = 0.0; }
+	if (!STEPPING) return g;
+	float left = tile_at(X, LC).x; // steps the host's fire has left on this tile (0: not burning)
+	bool edge2 = LC.x < 2 || LC.y < 2 || LC.x > SW - 3 || LC.y > SW - 3;
+	int ns = int(prm(0).w);
+	vec2 P = vec2(LC);
+	for (int s = 0; s < 32; s++) {
+		if (s >= ns) break;
+		vec4 a = texelFetch(t_src, ivec2(s * 4, SLOT), 0);
+		vec4 b = texelFetch(t_src, ivec2(s * 4 + 1, SLOT), 0);
+		int type = int(a.x + 0.5);
+		if (type == 5) {
+			// gpatch(cx, cy, R, sec, ign): fuel in a noisy disc, lit within `ign`
+			if (edge2 || is_sol(LC)) continue;
+			vec2 xy = P - round(a.yz);
+			float d = length(xy), R = a.w;
+			if (R <= 0.0 || d > R * (0.75 + 0.45 * vnoise(X, LC, 9.0, 1.0))) continue;
+			float steps = b.x * 60.0 * prm(6).w; // sec x 60 x the playback speed
+			float v = steps * (0.55 + 0.9 * vnoise(X, LC, 5.0, 2.0));
+			v = min(v, left);
+			if (g.st < 0.5 || g.st > 1.5) {
+				if (v > g.GU && g.wet < 0.3) { g.GU = v; g.GU0 = v; g.st = 0.0; }
+			}
+			if (d <= b.y && g.GU > 0.0 && g.st < 0.5) { g.st = 1.0; g.GH = 0.25; }
+		} else if (type == 6) {
+			// water on the ground: no heat, no flame, wet
+			if (length(P - a.yz) > a.w) continue;
+			if (g.st > 0.5 && g.st < 1.5) { g.st = 2.0; g.GC = max(g.GC, 0.6); }
+			g.GU = 0.0; g.GH = 0.0; g.GE = 0.0; g.wet = 1.0;
+		}
+	}
+	// the host's fire on this tile is over: what still burns runs out now
+	if (g.GU > left) g.GU = left;
+	return g;
+}
+void fragment() {
+	Ctx X = locate(FRAGCOORD.xy);
+	Ground g = ginject(X);
+#if PASS == 30
+	COLOR = vec4(g.GU, g.GU0, g.GH, g.st);
+#else
+	COLOR = vec4(g.GC, g.GE, g.wet, 0.0);
+#endif
+}
+#endif
+
+#if PASS == 32 || PASS == 33
+// ---- GROUND STEP: burn, burn out, spread to fueled neighbours (wind-driven), char fades ----
+// t_g1/t_g2 = the inject outputs, t_air = this frame's air.
+void fragment() {
+	Ctx X = locate(FRAGCOORD.xy);
+	Ground g = gload(X, t_g1, t_g2, LC);
+	if (STEPPING) {
+		vec4 pg = prm(6); // p0 (spread a step), flame height, char fade steps fallback
+		bool burnt_now = false;
+		if (g.st > 1.5) { if (g.GE > 0.01) g.GE *= 0.985; }
+		else if (g.st > 0.5) {
+			g.GU -= 1.0;
+			float life = g.GU0 > 0.0 ? g.GU / g.GU0 : 0.0, tg = life > 0.2 ? 1.0 : life / 0.2;
+			g.GH += (tg - g.GH) * 0.12;
+			if (g.GU <= 0.0) { g.st = 2.0; g.GC = 1.0; g.GE = 1.0; g.GH = 0.0; burnt_now = true; }
+		} else if (g.GU > 0.0 && g.wet < 0.3) {
+			// gathered from every burning neighbour: lit with 1 - prod(1 - p)
+			float none = 1.0;
+			for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) {
+				if (dx == 0 && dy == 0) continue;
+				ivec2 j = LC + ivec2(dx, dy);
+				vec4 n = at(t_g1, j);
+				if (n.w < 0.5 || n.w > 1.5 || n.z <= 0.35) continue;
+				vec2 w = at(t_air, j).xy * 4.0;
+				float d = (dx != 0 && dy != 0) ? 1.414 : 1.0;
+				float dot_ = clamp((float(-dx) * w.x + float(-dy) * w.y) / d, -1.0, 2.0);
+				float pp = pg.x * n.z / d * max(0.05, 1.0 + 1.1 * dot_);
+				none *= 1.0 - clamp(pp, 0.0, 1.0);
+			}
+			if (hash(LC, prm(0).z, 13.0) < 1.0 - none) { g.st = 1.0; g.GH = 0.2; }
+		}
+		// char fades: 5 s on stone, 30 s on grass and wood (the tile says how long)
+		float fade = tile_at(X, LC).y;
+		if (!burnt_now && g.st > 1.5 && g.GC > 0.0) g.GC = max(0.0, g.GC - 1.0 / max(fade, 1.0));
+		if (g.st > 1.5 && g.GC <= 0.0 && g.GE <= 0.01) g.st = 0.0; // gone: the ground can burn again
+		g.wet = max(0.0, g.wet - 1.0 / 600.0);
+	}
+#if PASS == 32
+	COLOR = vec4(g.GU, g.GU0, g.GH, g.st);
+#else
+	COLOR = vec4(g.GC, g.GE, g.wet, 0.0);
+#endif
+}
+#endif
+
+#if PASS == 34
+// ---- FLOOR: the burnt and burning ground, drawn under everything on it ----
+// One 260 x 16 strip per band (the tiles of that diagonal), stacked 15 per slot.
+const int FW = 260;
+const int FH = 16;
+const vec3 E4 = vec3(200, 50, 26) / 255.0;
+const vec3 E5 = vec3(110, 28, 22) / 255.0;
+const vec3 R3 = vec3(242, 102, 28) / 255.0;
+const vec3 R4 = vec3(200, 50, 26) / 255.0;
+const int BAYF[16] = int[16](0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5);
+void fragment() {
+	ivec2 px = ivec2(floor(FRAGCOORD.xy));
+	int sx = px.x / FW, by = px.y / FH;
+	int slot_row = by / 15, band = by - slot_row * 15;
+	Ctx X;
+	X.cell = px; X.lc = ivec2(0); X.so = ivec2(sx * SW, slot_row * SW); X.slot = sx + slot_row * 4;
+	int QX = px.x - sx * FW - 128;
+	int QY = px.y - by * FH + band * 8;
+	vec4 col = vec4(0.0);
+	if (prm(4).w > 0.5 && prm(6).z > 0.5) {
+		// the floor cell under this pixel (the reference's cellOf)
+		float a = float(QX), b = 2.0 * float(QY);
+		ivec2 c = ivec2(floor(vec2((b + a) * 0.5, (b - a) * 0.5)));
+		if (c.x >= 0 && c.y >= 0 && c.x < SW && c.y < SW && (c.x >> 4) + (c.y >> 4) == band) {
+			vec4 g1 = at(t_g1, c), g2 = at(t_g2, c);
+			float bay = float(BAYF[(QX & 3) | ((QY & 3) << 2)]) / 16.0;
+			if (g2.x > 0.0) {
+				col = vec4(0.0, 0.0, 0.0, 0.62 * g2.x);
+				float e = g2.y * (0.6 + 0.4 * vnoise(X, c, 3.0, floor(prm(0).z / 8.0)));
+				if (e > bay) col = vec4(e > 0.55 + bay * 0.3 ? E4 : E5, 1.0);
+			}
+			if (g1.w > 0.5 && g1.w < 1.5) {
+				if (g1.z > bay * 0.9) col = vec4(g1.z > 0.7 ? R3 : R4, 1.0);
+				else col = vec4(0.08, 0.0, 0.0, max(col.a, 0.35));
+			}
+			if (g2.z > 0.02 && col.a < 1.0) col = vec4(0.1, 0.16, 0.26, max(col.a, 0.35 * g2.z));
 		}
 	}
 	COLOR = col;
