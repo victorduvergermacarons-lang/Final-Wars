@@ -3,7 +3,7 @@ extends Node
 ## thrown, waiting on the ground, called back; Healing Touch's helix on an ally and on
 ## yourself; Water Shield going out, up, stretched, hit, broken and run out.
 ##   SHOTS_DIR=/tmp/w4 xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . res://tests/visual/water_ability_shots.tscn
-## SHOTS_ONLY=whip|heal|shield|shard|leech: one group.
+## SHOTS_ONLY=whip|heal|shield|selfshield|shard|shieldplay|leech: one group.
 
 var out_dir := OS.get_environment("SHOTS_DIR").path_join("") if OS.get_environment("SHOTS_DIR") != "" else ProjectSettings.globalize_path("user://shots/")
 var game: Game
@@ -205,10 +205,95 @@ func _run() -> void:
 		await _ready_again()
 		_cast(&"W04", dummy, dummy.move.pos)
 		var waited := 0.0
-		for when in [0.05, 0.12, 0.2, 0.4]:
+		for when in [0.05, 0.12, 0.2, 0.3, 0.45, 0.7]:
 			await _wait(when - waited)
 			waited = when
 			await _shot("w4_2%d_shard_%.2f" % [int(when * 100) % 10, when])
+	if only == "hoopwhip":
+		# Water Whip pressed in stance 2 (2026-11-28): the hoop turns back into the rope,
+		# then the whip goes 0.25 s later.
+		await _ready_again(2)
+		await _wait(1.5)
+		await _shot("w4_80_hoop")
+		_cast(&"W02", dummy)
+		var w5 := 0.0
+		for when in [0.1, 0.25, 0.4, 0.6, 0.9, 1.4]:
+			await _wait(when - w5)
+			w5 = when
+			var rv: WorldView = game.get_node("WorldView")
+			var rr: WaterRope = rv.ropes.rope_of(hero.id)
+			var Ltot := 0.0
+			for k in rr.M() - 1:
+				Ltot += rr.R[k].p.distance_to(rr.R[k + 1].p)
+			print("HOOPDBG ", when, " L=", Ltot, " st=", rr.st, " M=", rr.M(), " goal=", rr.goal, " sb=", rr.sb, " sw=", hero.stance_water, " stance=", hero.stance)
+			await _shot("w4_8_hoopwhip_%.2f" % when)
+	if only == "healseq":
+		# Healing Touch in close-up (2026-11-28): all of it into the heal (mist), then a
+		# heal at full health (the water comes home on an arc).
+		crop = Rect2i(960 - 260, 540 - 230, 520, 360)
+		ally.hp = 1.0
+		_cast(&"W01", ally)
+		var waited3 := 0.0
+		for when in [0.6, 0.9, 1.1, 1.25, 1.4, 1.6, 1.9, 2.3]:
+			await _wait(when - waited3)
+			waited3 = when
+			await _shot("w4_6%d_heal_all_%.2f" % [int(when * 10) % 10, when])
+		await _ready_again()
+		ally.hp = ally.current_stats(world.zone_of(hero.id).now).hp
+		_cast(&"W01", ally)
+		waited3 = 0.0
+		for when in [1.25, 1.35, 1.45, 1.55, 1.65, 1.8, 1.95, 2.2, 2.6]:
+			await _wait(when - waited3)
+			waited3 = when
+			await _shot("w4_7_heal_back_%.2f" % when)
+		await _ready_again()
+		hero.hp = hero.current_stats(world.zone_of(hero.id).now).hp
+		crop = Rect2i(960 - 160, 540 - 200, 320, 260)
+		_cast(&"W01", hero)
+		waited3 = 0.0
+		for when in [1.25, 1.4, 1.55, 1.7, 1.9, 2.2]:
+			await _wait(when - waited3)
+			waited3 = when
+			await _shot("w4_7s_heal_self_back_%.2f" % when)
+	if only == "" or only == "shieldplay":
+		# The shield holds the whole rope (2026-11-28): shards off it, then a recall.
+		await _ready_again()
+		crop = Rect2i(960 - 200, 540 - 220, 400, 300)
+		_cast(&"W12", hero)
+		await _wait(0.3)
+		await _shot("w4_40_self_shield_whole_rope_leaves")
+		await _wait(1.5)
+		await _shot("w4_41_self_shield_up_no_rope_rebuilt")
+		hero.cooldowns = Cooldowns.new()
+		_cast(&"W04", dummy, dummy.move.pos)
+		await _wait(0.1)
+		await _shot("w4_42_shard_off_the_self_shield")
+		await _wait(0.4)
+		await _shot("w4_43_self_shield_after_the_shard")
+		hero.cooldowns = Cooldowns.new()
+		_cast(&"W02", dummy)
+		await _wait(0.2)
+		await _shot("w4_44_whip_recalls_the_shield")
+		await _wait(0.5)
+		await _shot("w4_45_whip_after_the_recall")
+		await _ready_again()
+		crop = Rect2i(960 - 300, 540 - 200, 600, 400) # the ally is beside the hero
+		_cast(&"W12", ally)
+		await _wait(1.6)
+		await _shot("w4_46_ally_shield_up")
+		hero.cooldowns = Cooldowns.new()
+		_cast(&"W04", dummy, dummy.move.pos)
+		await _wait(0.1)
+		await _shot("w4_47_shard_off_the_ally_shield")
+		await _wait(0.25)
+		await _shot("w4_48_shard_onward")
+		hero.cooldowns = Cooldowns.new()
+		world.submit(hero.id, {"type": "stance", "tree": "Water", "stance": 2})
+		await _wait(0.4)
+		await _shot("w4_49_hoop_recalls_the_ally_shield")
+		await _wait(1.0)
+		await _shot("w4_50_hoop_after_the_recall")
+		crop = Rect2i(960 - 160, 540 - 130, 320, 260)
 	if only == "" or only == "leech":
 		await _ready_again(2)
 		await _wait(1.5) # the hoop closes

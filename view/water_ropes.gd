@@ -33,6 +33,15 @@ var shields := {}
 ## launch), "age" (frames), "dir" (ground px)}.
 var shards: Array = []
 var _new_shards: Array = []
+## Frost Shard's ice after it froze: sparkles, and fragments when it shatters. Each
+## {"hero", "p": Vector3 (ground px, absolute), "v", "l", ...}.
+var sparks: Array = []
+var frags: Array = []
+
+
+## Projectiles WaterRopes draws itself (the world view's generic ball skips them).
+static func draws_projectile(p: Dictionary) -> bool:
+	return StringName(p.get("ability", "")) == &"W04"
 var _pending: Array = [] # throws not reached yet: {"source", "to", "at"}
 var _acc := 0.0
 ## Shadow pixels already darkened this frame (world px): overlapping shadows (two
@@ -72,6 +81,12 @@ func on_events(events: Array, effects: Dictionary) -> void:
 			continue
 		if e.get("type", "") == "projectile" and e.get("projectile", {}).get("ability", &"") == &"W04":
 			_new_shards.append(e.projectile) # Frost Shard: a piece of the rope breaks off
+			continue
+		if e.get("type", "") == "projectile_end":
+			for sd in shards: # it hit something, or reached its range: it shatters
+				if int(sd.p.get("id", -1)) == int(e.get("id", -2)):
+					sd.ended = true
+					sd.hit = int(e.get("target", -1)) >= 0
 			continue
 		if e.get("type", "") == "water_return":
 			# Water Whip's second press, or what Healing Touch's heal didn't need:
@@ -120,8 +135,8 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		var g := ground_of(h.move.pos)
 		if wants:
 			e.rope.set_stance(h.stance)
-			if h.water_out.is_empty():
-				e.rope.set_count(h.stance_water)
+			if h.water_out.is_empty() and h.shield_out.is_empty() and not _shield_coming_home(h.id):
+				e.rope.set_count(h.stance_water) # (the shield holds the rope: no rebuild, 2026-11-28)
 		e.rope.move_hero(g - e.ground)
 		e.ground = g
 		e.hero = h
@@ -148,6 +163,10 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		var h: Hero = by_id.get(t.source)
 		if h == null:
 			continue
+		if _shield_coming_home(h.id) and now < float(t.at) + RECALL_WAIT:
+			keep.append(t) # a recalled shield's rope first gets home, then this goes
+			continue
+		_adopt_shield(h)
 		var e: Dictionary = ropes.get(h.id, {})
 		if e.is_empty() or e.rope.st == "drain":
 			e = _new_entry(h)
@@ -170,11 +189,16 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 	for p in _new_shards:
 		var h: Hero = by_id.get(int(p.get("source", -1)))
 		var e: Dictionary = ropes.get(int(p.get("source", -1)), {})
+		var sh: Dictionary = shields.get(int(p.get("source", -1)), {})
+		var off_shield: bool = not sh.is_empty() and sh.rope.st == "shield"
+		if off_shield:
+			e = sh # thrown off the Water Shield (its bubble, toward the shot)
 		if h == null or e.is_empty():
 			continue
 		var dir_t: Vector2 = FxPainter.projectile_dir(p)
 		var dir_px: Vector2 = ground_of(h.move.pos + dir_t) - ground_of(h.move.pos)
-		var pts: Array[Vector3] = e.rope.break_piece(dir_px, settings.SHARD_PIECE)
+		var pts: Array[Vector3] = e.rope.throw_shard(dir_px, settings.SHARD_PIECE) if off_shield \
+				else e.rope.break_piece(dir_px, settings.SHARD_PIECE)
 		if pts.is_empty():
 			continue
 		var c := Vector3.ZERO
@@ -187,7 +211,7 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		# The piece's centre relative to where the shard starts (the caster).
 		var start_px: Vector2 = ground_of(FxPainter.projectile_pos(p, float(p.start))) - e.ground
 		shards.append({"hero": h.id, "p": p, "off": off, "c0": c - Vector3(start_px.x, start_px.y, 0.0),
-				"ground": e.ground, "age": 0, "dir": dir_px.normalized()})
+				"ground": e.ground, "age": 0, "dir": dir_px.normalized(), "ended": false, "hit": false})
 	_new_shards.clear()
 	# Shields follow their target and the host's shield left.
 	for id in shields.keys():
@@ -205,8 +229,8 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 		sh.rope.follow_target(ground_of(tgt.move.pos) - g)
 		if not h.shield_out.is_empty():
 			sh.rope.set_left(float(h.shield_out.get("left", 1.0)))
-		if sh.rope.st == "idle" or sh.rope.st == "wrap":
-			sh.rope.drain() # home: it flows into the hip
+		if sh.rope.st == "idle":
+			_adopt_shield(h) # home: it is the rope again (or flows into the hip)
 	_acc = minf(_acc + dt, STEP * 30.0)
 	while _acc >= STEP:
 		_acc -= STEP
@@ -221,16 +245,18 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 			sh.rope.step()
 			if sh.rope.done():
 				shields.erase(id)
-		for sd in shards:
-			sd.age += 1
-		shards = shards.filter(func(sd): return sd.age <= settings.SHARD_FREEZE + 2)
+		_step_ice()
 
 
 ## Water Shield cast: the caster's rope leaves for the bubble round `target`; the
 ## caster's rope then grows back from the source (the host refills it).
 func _send_shield(h: Hero, e: Dictionary, aim: Vector2, self_cast: bool, target_id: int) -> void:
 	var r: WaterRope = e.rope
-	if r.M() < 2:
+	r.leave_hoop_now()
+	var n := int(h.shield_out.get("points", r.M()))
+	if r.M() < maxi(n, 2) and r.can_cast():
+		r.fill_now(maxi(n, settings.MIN_KEEP)) # the whole rope goes, never part of it
+	elif r.M() < 2:
 		r.fill_now(maxi(r.M(), settings.MIN_KEEP))
 	_seed += 1
 	var sh := WaterShieldRope.new(settings, hash([h.id, _seed, "shield"]))
@@ -242,8 +268,46 @@ func _send_shield(h: Hero, e: Dictionary, aim: Vector2, self_cast: bool, target_
 	r.strength = PackedFloat32Array()
 	r.st = "idle"
 	r.tt = 0
+	r.target_count = 0 # the shield holds the rope: nothing regrows until it comes home
 	shields[h.id] = {"rope": sh, "ground": e.ground, "off": false, "hero": h,
 			"target": h.id if self_cast else target_id}
+
+
+## A recalled or run-out shield's rope on its way home.
+func _shield_coming_home(id: int) -> bool:
+	return shields.has(id) and shields[id].rope.st in ["return", "wrap"]
+
+
+## How long (host seconds) a throw waits for a recalled shield's rope to get home.
+const RECALL_WAIT := 0.6
+
+
+## A shield's rope coming home becomes the hero's rope again, where its points are,
+## when the rope is empty (the shield held all of it); else it flows into the hip.
+func _adopt_shield(h: Hero) -> void:
+	if not shields.has(h.id):
+		return
+	var sh: WaterShieldRope = shields[h.id].rope
+	if sh.st in ["shield", "shield_fall"]:
+		return
+	var e: Dictionary = ropes.get(h.id, {})
+	if e.is_empty() or e.rope.st == "drain" or e.rope.M() > 0 or not h.rope:
+		sh.drain()
+		return
+	var r: WaterRope = e.rope
+	r.R = sh.R
+	r.conn = sh.conn
+	r.strength = sh.strength
+	r.phase = sh.phase
+	r.w = sh.w
+	r.st = "idle"
+	r.tt = 0
+	r.forming = false
+	r.target_count = r.M()
+	sh.R = []
+	sh.conn = []
+	sh.strength = PackedFloat32Array()
+	sh.drain()
 
 
 func _new_entry(h: Hero) -> Dictionary:
@@ -291,7 +355,100 @@ func items(feet: Callable) -> Array:
 		var tmp := _shard_rope(sd, e.ground)
 		if tmp != null:
 			out.append_array(_rope_items({"rope": tmp, "hero": e.hero}, feet.call(e.hero) / PixelCamera.ART_SCALE))
+	out.append_array(_ice_items(feet))
 	return out
+
+
+## Frost Shard after the throw (2026-11-28, as frost_shard_demo.html): it freezes
+## (sparkles), flies as ice, and shatters into fragments and two drops where it hits
+## or at the end of its range.
+func _step_ice() -> void:
+	var s := settings
+	var keep := []
+	for sd in shards:
+		sd.age += 1
+		var c := shard_centre(sd)
+		if sd.age == s.SHARD_FREEZE:
+			for k in s.SPARK_N:
+				sparks.append({"hero": sd.hero, "p": c + Vector3(randf_range(-2.5, 2.5), randf_range(-2.5, 2.5),
+						randf_range(-2, 2)), "l": randf_range(8, 14)})
+		var flight: float = float(sd.p.get("length", 0.0)) / maxf(float(sd.p.get("speed", 1.0)), 0.001)
+		if sd.ended or sd.age / 60.0 > flight + 0.3:
+			var d := Vector3(sd.dir.x, sd.dir.y, 0.0) * (-0.4 if sd.hit else 1.0)
+			for k in s.FRAG_N:
+				frags.append({"hero": sd.hero, "p": c, "v": Vector3(d.x * 0.6 + randf_range(-0.7, 0.7),
+						d.y * 0.6 + randf_range(-0.7, 0.7), randf_range(0.4, 1.6)),
+						"l": randf_range(30, 50), "hi": k % 3 == 0, "gnd": false})
+			for k in 2:
+				frags.append({"hero": sd.hero, "p": c, "v": Vector3(randf_range(-0.6, 0.6), randf_range(-0.6, 0.6),
+						randf_range(0.6, 1.6)), "l": 30.0, "drop": true, "gnd": false})
+			continue
+		keep.append(sd)
+	shards = keep
+	for f in frags:
+		f.p += f.v
+		f.v.x *= 0.92 if not f.has("drop") else 0.9
+		f.v.y *= 0.92 if not f.has("drop") else 0.9
+		f.v.z -= s.FRAG_GRAV
+		f.l -= 1.0
+		if f.p.z < 0.0:
+			f.p.z = 0.0
+			f.v.z *= -0.25
+			f.v.x *= 0.4
+			f.v.y *= 0.4
+			f.gnd = true
+	frags = frags.filter(func(f): return f.l > 0.0)
+	for sp in sparks:
+		sp.l -= 1.0
+	sparks = sparks.filter(func(sp): return sp.l > 0.0)
+
+
+## The shard's centre now (ground px, absolute: ground_of of its path, at its height).
+func shard_centre(sd: Dictionary) -> Vector3:
+	var s := settings
+	var a := float(sd.age)
+	var flight_end: float = float(sd.p.start) + float(sd.p.get("length", 0.0)) / maxf(float(sd.p.get("speed", 1.0)), 0.001)
+	var t: float = minf(float(sd.p.start) + a / 60.0, flight_end)
+	var g := ground_of(FxPainter.projectile_pos(sd.p, t))
+	var k := WaterRope.ramp(a, float(s.SHARD_FREEZE))
+	var z: float = lerpf(float(sd.c0.z), s.TARGET_Z, k)
+	return Vector3(g.x + sd.c0.x * (1.0 - k), g.y + sd.c0.y * (1.0 - k), z)
+
+
+## Draw items for the ice (shards in flight, sparkles, fragments), relative to the
+## hero who threw them.
+func _ice_items(feet: Callable) -> Array:
+	var s := settings
+	var groups := {}
+	var put := func(hero_id: int, kind: String, g: Vector3, piece: Array, ground_level := false) -> void:
+		var e: Dictionary = ropes.get(hero_id, {})
+		if e.is_empty() or e.off:
+			return
+		var rel: Vector2 = Vector2(g.x, g.y) - Vector2(e.ground)
+		var tile := MoveState.tile_of((e.hero as Hero).move.pos + tiles_of(rel))
+		var key := [hero_id, tile, ground_level, kind]
+		if not groups.has(key):
+			groups[key] = {"rope": true, "pos": Vector2(tile), "behind": ground_level,
+					"origin": feet.call(e.hero) / PixelCamera.ART_SCALE, kind: []}
+		piece[0] = _proj(Vector3(rel.x, rel.y, g.z))
+		groups[key][kind].append(piece)
+	for sd in shards:
+		var fp := WaterRope.ramp(float(sd.age), float(s.SHARD_FREEZE))
+		if fp <= 0.05:
+			continue
+		var c := shard_centre(sd)
+		var d := _proj(Vector3(sd.dir.x, sd.dir.y, 0.0))
+		d = d.normalized() if d.length() > 0.0 else Vector2.RIGHT
+		put.call(sd.hero, "ice", c, [Vector2.ZERO, d, maxf(2.0, s.SHARD_LEN * fp), maxf(0.6, s.SHARD_W * fp)])
+		put.call(sd.hero, "shadows", Vector3(c.x, c.y, 0.0), [Vector2.ZERO, maxi(1, roundi(s.SHARD_LEN * fp * 0.5))], true)
+	for f in frags:
+		if f.p.z > 1.0:
+			put.call(f.hero, "shadows", Vector3(f.p.x, f.p.y, 0.0), [Vector2.ZERO, 1], true)
+		var col: Color = s.DROP if f.has("drop") or (f.gnd and f.l < 15.0) else (s.ICE_HI if f.hi else s.ICE_BODY)
+		put.call(f.hero, "frags", f.p, [Vector2.ZERO, col])
+	for sp in sparks:
+		put.call(sp.hero, "sparks", sp.p, [Vector2.ZERO, sp.l > 8.0])
+	return groups.values()
 
 
 ## A Frost Shard piece as a short rope to draw: its points pull together toward the
@@ -321,10 +478,6 @@ func _shard_rope(sd: Dictionary, ground_now: Vector2) -> WaterRope:
 			r.conn.append(true)
 			r.strength.append(1.0)
 		r.wscale = lerpf(1.0, 0.55, clampf(a / (s.SHARD_FREEZE * 0.75), 0.0, 1.0))
-	elif a >= s.SHARD_FREEZE:
-		for i in 3: # it freezes: sparkles
-			r.drops.append({"p": c + Vector3(randf_range(-3, 3), randf_range(-3, 3), randf_range(-2, 2)),
-					"v": Vector3.ZERO, "l": 4.0})
 	return r
 
 
@@ -509,6 +662,11 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 				px.call(q[0].x + q[2].x * (r - 1.0), q[0].y + q[2].y * (r - 1.0), hi_c.call(q))
 				if q[3] > s.FACE_T and r > s.HI2_MIN_R:
 					px.call(q[0].x + q[2].x * (r - 2.0), q[0].y + q[2].y * (r - 2.0), hi_c.call(q))
+			elif r > 0.9: # thin water (the rope's ends, a stretched shield): one lit pixel
+				if q[3] > 0.3:
+					px.call(q[0].x + q[2].x * maxf(0.0, r - 1.0), q[0].y + q[2].y * maxf(0.0, r - 1.0), hi_c.call(q))
+			elif q[3] > s.FACE_T:
+				px.call(q[0].x, q[0].y, hi_c.call(q))
 	if item.has("blobs"):
 		var sun := s.SUN.normalized()
 		for b in item.blobs:
@@ -527,9 +685,28 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 				if r > s.HI2_MIN_R:
 					px.call(at.x + sun.x * (r - 2.0), at.y + sun.y * (r - 2.0), s.HI)
 	if item.has("drops"):
+		# Two pixels each, lit, outlined below (2026-11-28, user: they were too faint).
 		for d in item.drops:
-			px.call(d[0].x + 1, d[0].y + 1, s.OUT)
-			px.call(d[0].x, d[0].y, s.DROP)
+			px.call(d[0].x, d[0].y + 1, s.OUT, 2, 1)
+			px.call(d[0].x, d[0].y, s.DROP, 2, 1)
+			px.call(d[0].x, d[0].y, s.HI)
+	if item.has("ice"):
+		# The demo's shardShape: a point ahead, a rounder tail; outlined below-right,
+		# lit on the side toward the sun (ice body, shade, highlight on its top edges).
+		for q in item.ice:
+			_draw_shard(px, q[0], q[1], q[2], q[3])
+	if item.has("frags"):
+		for f in item.frags:
+			px.call(f[0].x + 1, f[0].y + 1, s.OUT)
+			px.call(f[0].x, f[0].y, f[1])
+	if item.has("sparks"):
+		for sp in item.sparks:
+			px.call(sp[0].x, sp[0].y, s.ICE_HI)
+			if sp[1]:
+				px.call(sp[0].x - 1, sp[0].y, s.ICE_HI)
+				px.call(sp[0].x + 1, sp[0].y, s.ICE_HI)
+				px.call(sp[0].x, sp[0].y - 1, s.ICE_HI)
+				px.call(sp[0].x, sp[0].y + 1, s.ICE_HI)
 	if item.has("mists"):
 		# Drifting mist pixels, dithering out in their last 30%.
 		for m in item.mists:
@@ -539,11 +716,52 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 			px.call(m[0].x, m[0].y, s.HI if q > 0.55 else s.DROP, 2 if q > 0.7 else 1, 1)
 
 
+## The demo's shard: pixels whose centre lies inside a spindle `len` long and `wid`
+## half-wide along `d` (pointed ahead, rounder behind), at `c` (art px).
+static func shard_pixels(c: Vector2, d: Vector2, len: float, wid: float) -> Dictionary:
+	var half := len / 2.0
+	var set := {}
+	var R := ceili(half) + 2
+	var X := roundi(c.x)
+	var Y := roundi(c.y)
+	for y in range(Y - R, Y + R + 1):
+		for x in range(X - R, X + R + 1):
+			var ex := x + 0.5 - c.x
+			var ey := y + 0.5 - c.y
+			var u := ex * d.x + ey * d.y
+			var v := -ex * d.y + ey * d.x
+			if u > half or u < -half:
+				continue
+			var wu := wid * (1.0 - u / half) if u >= 0.0 else wid * (1.0 - pow(-u / half, 2.2))
+			if absf(v) <= wu + 0.35:
+				set[Vector2i(x, y)] = true
+	return set
+
+
+func _draw_shard(px: Callable, c: Vector2, d: Vector2, len: float, wid: float) -> void:
+	var s := settings
+	var set := shard_pixels(c, d, len, wid)
+	var side := Vector2(-d.y, d.x)
+	if side.dot(s.SUN) < 0.0:
+		side = -side
+	for k in set:
+		for o in [Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+			if not set.has(k + o):
+				px.call(k.x + o.x, k.y + o.y, s.OUT)
+	for k in set:
+		var v := (Vector2(k) + Vector2(0.5, 0.5) - c).dot(side)
+		px.call(k.x, k.y, s.ICE_BODY if v > -0.3 else s.ICE_SHADE)
+	for k in set:
+		var v := (Vector2(k) + Vector2(0.5, 0.5) - c).dot(side)
+		if v > 0.0 and (not set.has(k - Vector2i(1, 0)) or not set.has(k - Vector2i(0, 1))):
+			px.call(k.x, k.y, s.ICE_HI)
+
+
 ## The screen box an item can touch (world px), for the terrain cache.
 func rect_of(item: Dictionary) -> Rect2:
 	var o: Vector2 = item.origin
 	var r := Rect2(o * PixelCamera.ART_SCALE, Vector2.ZERO)
-	for kind in ["stamps", "blobs", "drops", "shadows", "puddles", "mists"]:
+	for kind in ["stamps", "blobs", "drops", "shadows", "puddles", "mists", "ice", "frags", "sparks"]:
 		for piece in item.get(kind, []):
 			r = r.expand((o + piece[0]) * PixelCamera.ART_SCALE)
 	return r.grow(8.0 * PixelCamera.ART_SCALE)

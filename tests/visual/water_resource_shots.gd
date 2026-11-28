@@ -91,6 +91,23 @@ func _run() -> void:
 		TreeRules.master(hero, ContentDB.abilities[id])
 	Mastery.add_permanent(hero, "Water", 200)
 	var sim := world.zone_of(hero.id)
+	if OS.get_environment("SHOTS_ONLY") == "forming":
+		# The rope forming (2026-11-28): out of the waist spiralling into the orbit, or
+		# over from the river.
+		await _go(_spot(sim, 9.0, 30.0))
+		_stance(1)
+		for when in [0.3, 0.7, 1.2, 1.8, 3.6]:
+			await _wait(0.3 if when == 0.3 else (when - [0.3, 0.7, 1.2, 1.8, 3.6][[0.3, 0.7, 1.2, 1.8, 3.6].find(when) - 1]))
+			await _shot("w6_pouch_%.1f" % when, Rect2i(960 - 120, 540 - 110, 240, 170))
+		_stance(0)
+		await _wait(1.0)
+		await _go(_spot(sim, 1.5, 2.6))
+		_stance(1)
+		for when in [0.3, 0.7, 1.2, 2.5]:
+			await _wait(0.3 if when == 0.3 else (when - [0.3, 0.7, 1.2, 2.5][[0.3, 0.7, 1.2, 2.5].find(when) - 1]))
+			await _shot("w6_river_%.1f" % when, Rect2i(960 - 200, 540 - 140, 400, 260))
+		get_tree().quit()
+		return
 	if OS.get_environment("SHOTS_ONLY") == "shadows":
 		# The rope's shadow (black at 30%) on three kinds of ground.
 		_stance(1)
@@ -141,7 +158,7 @@ func _run() -> void:
 	hero.water = 200
 	_stance(1)
 	await _wait(2.0)
-	hero.stance_busy_at = world.zone_of(hero.id).now - 9.9
+	hero.stance_busy_at = world.zone_of(hero.id).now - WorldSim.WATER_STANCE_IDLE_SECONDS + 0.1
 	await _wait(0.25)
 	await _shot("w3_09_dropping_tail_first")
 	await _wait(1.0)

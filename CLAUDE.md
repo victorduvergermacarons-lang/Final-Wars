@@ -36,7 +36,8 @@ every bending ability and nearly every item; see **Icons**. **Stances and effect
 effects; see **Stances**, **Ability effects from the approved art**, **Code-drawn effects** and
 `docs/playtest-checklist-stances-and-effects.md`. **Water physics** (branch `feature/water-physics`,
 2026-11-28, all 5 phases): render fixes, every ability on the bar (pressing enters its stance), a
-bar per character, water as a resource, the stance 2 hoop, the five water abilities on the rope; see
+bar per character, water as a resource, the stance 2 hoop, the five water abilities on the rope, then follow-ups (the shield holds the
+rope, Frost Shard drawn in code, input buffering); see
 **Water as a resource**, **Water abilities** and `docs/playtest-checklist-water-physics.md`. **Map editor**
 (2026-11-16, branch `feature/map-editor`): paint ground, heights and props; place and edit
 enemies, people, spawns, graveyards, objects, landmarks and doors; resize maps; link edges; make
@@ -180,7 +181,7 @@ values live in `content/rules/default_rules.tres` and `content/tree/tuning.tres`
 | W01 | Healing Touch | Mender's Scroll | Targeted ally, 4; no bar, the whole rope, lands 1.2 s after the cast (water physics, 2026-11-28) | heal 1.5 | 8 | 3 |
 | W02 | Water Whip | River Lash Scroll | Targeted, 5; **instant** since 2026-11-28: the whole rope thrown, the hit 0.5 s later, a second press within 1.5 s calls the water back (see **Water abilities**) | 1.0 | 6 | 2 |
 | W03 | Flow State | Scroll of the Current | Targeted ally, 3 | Haste 30 s | 10 | 20 |
-| W04 | Frost Shard | Frost Shard Scroll | Skillshot, 6, 12 t/s; instant, 4 water points (2026-11-28) | 0.9 + slow ×1.5 2 s | 8 | 1.5 |
+| W04 | Frost Shard | Frost Shard Scroll | Skillshot, 6, 12 t/s; instant, 4 water points (2026-11-28); off the Water Shield while it holds the rope | 0.3 + slow ×1.5 2 s | 8 | 0.5 |
 | W05 | Soothing Mist | Mist Scroll | Targeted ally, 4 | heal 1.5 over 12 s | 12 | 8 |
 | W06 | Water Pulse | Wave Scroll | Skillshot 8-way line 3, pierce | 0.9 + push 1 along the wave | 12 | 8 |
 | W07 | Leeching Tide | Leech Tide Scroll | Targeted, 5; Water stance 2; a 3 s channel, 6 ticks (2026-11-28) | 1.0 in all, no heal; 4 water a tick into the pouch | 12 | 10 |
@@ -1175,6 +1176,20 @@ centre of tile (x, y) is the point (x, y); `tile()` is the tile under the centre
     fall under gravity (40 levels/s², 60% of the speed carried, no steering, casts
     cancelled, a shadow on the ground below); more than 3 levels hurts 10% of max HP per
     extra level, at most 60%, never below 1 HP unless `fall_damage_can_kill`.
+  - **Going over a ledge** (2026-11-28, user: walking off the back of a ledge looked like
+    clipping through it):
+    - **Covered by drawn height:** a tile in front covers a unit only when its top is
+      above the unit's feet as drawn (`WorldView.actor_draw_height`, `_covers`); it used
+      the ground tile's height, so a ledge cut off the legs of a hero still level with it.
+    - **1-level steps are a ramp** 0.3 tiles wide centred on the edge (`Mover.ramp_height`,
+      `MovementDef.step_ramp_width`): the body goes down (or up) while crossing, halfway at
+      the edge, by distance not time. Changes the ramp doesn't explain (terrain rising
+      under a unit, a teleport) still ease in at `step_smooth_rate`.
+    - **Falls start moving down** at `fall_start_speed` (3 levels/s), so leaving a ledge is
+      one arc. The ground still changes when the centre crosses; fall damage and landing
+      are the host's as before.
+    - Screenshots: `tests/visual/ledge_shots.tscn` (steps and falls, away from the camera
+      and toward it, a shot every 0.05 s). Tests in `tests/unit/test_mover.gd`.
   - `{"type": "step", "to": tile}` walks to a tile's centre (tests, later click-to-move);
     a cast ends such a walk, a held key cancels a cast bar.
   - Map edges: pushing against a side that leads somewhere leaves through it.
@@ -1641,16 +1656,36 @@ Rules in `WorldSim` "Water as a resource" and `WaterBending` (`sim/combat/water_
   (`Hero.stance_water`, public: the Water stance 1 rope, full at 24; the stance 2 hoop,
   full at 33) and the **reserve** (`Hero.water`, private: the Water Pouch, 200).
 - **Entering** stance 1 takes nothing at once: the rope builds by the refill below (24
-  points in 6.8 s; user rule, 2026-11-28); stance 2 takes stance water first, then the
+  points in 3.4 s; user rule, 2026-11-28, twice as fast since the follow-ups); stance 2 takes stance water first, then the
   pouch, up to 33, and needs 27 in all (`WaterBending.STANCE_2_ENTRY`; refused with "Not
   enough water", also when a stance 2 ability's key is pressed). 27–32 points are spread
   evenly round the same hoop. Within 3 tiles of a water tile the water is free and comes
   from it (drawn flowing from the nearest water tile).
-- **Stance 1 refills** one point every 17 frames (0.283 s) from water nearby or the pouch;
-  with the pouch empty the rope stops growing. Stance 2 doesn't refill.
+- **Stance 1 refills** one point every 8.5 frames (0.142 s; was 17 until the follow-ups)
+  from water nearby or the pouch; with the pouch empty the rope stops growing. Stance 2
+  doesn't refill, nor stance 1 while any of its water is out (a whip, a heal, a shield).
+- **A stance 1 ability pressed in stance 2** (follow-ups, user): the hoop turns back into
+  the rope (the stance switch) and the ability goes off 0.25 s after the press
+  (`WorldSim.HOOP_TO_ROPE_CAST_SECONDS`, `_delayed_casts`; the client sends the cast
+  without entering the stance first, `PlayerInput.casts_from_hoop`). A throw, heal or
+  shield leaving the hoop first puts the points back at the rope's spacing
+  (`WaterRope.leave_hoop_now`; they flew out about twice as long). **The other way:** a
+  stance 2 ability pressed in stance 1, with water enough for the hoop (27 in all), rises
+  into the hoop and goes off 0.5 s later (`ROPE_TO_HOOP_CAST_SECONDS`); without, the
+  press only tries to enter stance 2 ("Not enough water").
+- **How new water reaches the orbit** (second follow-ups, user; `WaterRope._forming_goal`,
+  settings `FORM_T` 36 frames, `FORM_SPIRAL` half a turn, `FORM_R0` 4 px, `FORM_K`,
+  `FORM_LIFT`): from the pouch, each point leaves the waist close in and spirals out the
+  orbit's way into its place; from a river, it rises out of the water and flows over on a
+  low arc. It is part of the rope from the start (linked and drawn, not pulled by its
+  links until it arrives), so the rope streams out rather than loose drops drifting in.
+  Drops are two pixels, lit (`WaterRopes.draw`).
+- **The rope is drawn while in a Water stance** (`Hero.rope`), even empty, so water still
+  out (a heal's mist, a whip, a shield) keeps being drawn and comes home to it.
 - **Leaving:** stance 2 → 1 sheds the points above 24 into the pouch (they spill as
   droplets); leaving the Water stances (Shift, crowd control, death, another element, or
-  10 s out of combat without casting: `WATER_STANCE_IDLE_SECONDS`, Water stances only)
+  20 s out of combat without casting: `WATER_STANCE_IDLE_SECONDS`, 10 until the second
+  follow-ups; Water stances only)
   puts all the stance water back in the pouch (capped at 200); the rope flows back to the
   hip, tail first, over 0.5 s (`WaterRope.drain`).
 - **Abilities** of Water stances 1–2 (`WaterBending.uses_stance_water`) need at least 1
@@ -1684,26 +1719,49 @@ ability data and the sheet (`tools/once/water_physics_sheet.py`); rope numbers i
   ("Call the water back", green to 1 s, yellow at 0.5 s) shows the window. Pressed after
   the water has landed (0.5 s), it waits regrouped on the ground (`WaterRope` "ground")
   until the press; the share comes home off the front, the tail soaks in. No refill
-  while it's out (`Hero.water_out`).
+  while it's out (`Hero.water_out`). A press before the hit is kept (`water_out.pressed`)
+  and settled once the hit is paid (it used to settle at once, so the hit sent out the
+  refilled rope again, which was then lost).
 - **Healing Touch (W01):** no bar; healing ×1.5 (effect power 1.5); the whole rope winds
   round the target (orbit arc → travel arc → helix, `WaterRope.heal`), the heal lands
   1.2 s after the cast (`release_delay_fixed`), each point turns to mist at the top. The
   share of the heal full health turned away (`heal` event `full`) comes home off the
-  tail (`WaterBack.UNUSED_HEAL`): along the shield's way home for an ally, straight into
-  the orbit for a self-cast; the rest climbs on into mist. Effect FX `water_heal_helix`.
-- **Water Shield (W12):** the whole rope; up 0.8 s after the cast; absorb = the power rule
-  (the tooltip shows the number). Its water (`Hero.shield_out`, kept apart: the rope
-  refills meanwhile) follows the shield left: the bubble is that share of its stretched
+  tail (`WaterBack.UNUSED_HEAL`); the rest climbs on into mist. When the whole heal is
+  used, all of the rope climbs to the top and turns to mist. What comes home spirals
+  back down round the target, turning the way it climbed (the orbit's way), then joins
+  the orbit (`WaterRope._start_home_spiral`, one turn down, `HEAL_DOWN_LOOPS`): from an
+  ally it leaves the bottom of the spiral along its heading and curves onto your orbit;
+  round yourself the spiral widens straight into it. Effect FX `water_heal_helix`.
+- **Water Shield (W12):** the whole rope (all of it goes into the bubble); up 0.8 s
+  after the cast; absorb = the power rule (the tooltip shows the number). Its water
+  (`Hero.shield_out`) holds the rope: stance 1 doesn't rebuild while it is out
+  (follow-ups, user; the client rope's count goes to 0 when its points leave, so it
+  doesn't regrow on screen either). Thin water (the stretched bubble, the rope's
+  tapered ends) gets the demo's single highlight pixel. **Recall** (`WorldSim.recall_shield`): another whole-rope ability
+  (Water Whip, Healing Touch, a new shield) or entering a Water stance (the hoop) ends
+  the shield on its target and brings its water home × the share left (all of it before
+  it is up); the client's throw waits up to 0.6 s for the bubble's rope to get home
+  (`WaterRopes.RECALL_WAIT`), which becomes the rope again. **Frost Shard off the
+  shield** (`WaterBending.from_shield`): thrown from the bubble, 0.45 tiles from its
+  holder's centre (`WorldSim.SHIELD_BUBBLE_TILES`): toward the aim round yourself; round
+  an ally, on the far side, along you → ally, onward (the aim is ignored). It takes 4
+  points: the absorb shrinks by that share (`ActiveBuffs.scale_shield`); its power is the
+  shield's water. The bubble's water follows the shield left: the bubble is that share of its stretched
   length; broken (`shield_break`): all lost (burst, fall, soak in; no regroup); run out:
   that share comes home (overflow into the pouch). The bubble: `WaterShieldRope`
   (great circle round the target's chest, tilted 0.45 rad, drifting; stretching ×2 and
   thinning to 67% over 4 s; dents, splashes, ripples on hits; strained below 50%, gaps
   below 25%). Duration stays the sheet's 20 s (the demo had 10).
-- **Frost Shard (W04):** instant, 4 points, cooldown 1.5 s (sheet). The 4 points of the
-  orbit facing the cast break off (`WaterRope.break_piece`; the ends re-link), bulge and
-  lean for 9 frames (visual only), fly along the host's projectile and pull together
-  into the shard over 9 frames; the sprite (FX-13-4 at 50%: `frost_shard_half.png`,
-  `tools/once/half_frost_shard.py`) shows from 0.15 s (`FxDef.appear_after`).
+- **Frost Shard (W04):** instant, 4 points, cooldown 0.5 s and a third of the damage
+  (effect power 0.3; follow-ups, user). The 4 points of the orbit (or of the shield's
+  bubble) facing the cast break off (`WaterRope.break_piece`; the ends re-link), bulge
+  and lean for 9 frames (visual only), fly along the host's projectile and pull together
+  into the shard over 9 frames. **Drawn in code as in the demo** (no sprite since the
+  follow-ups; `WaterRopes` draws W04's projectile, `draws_projectile`): an ice spindle
+  9 art px long, 1.5 half-wide (`shard_pixels`: pointed ahead, rounder behind; outline,
+  ice body, shade on the side away from the sun, highlight on its lit edges; ice colours
+  `ICE_SHADE` / `ICE_BODY` / `ICE_HI`), 3 sparkles as it freezes, and where it hits or at
+  its range (`projectile_end`) 8 fragments and 2 drops that fall and settle.
 - **Leeching Tide (W07, stance 2):** no bar; a 3 s channel ticking every 0.5 s (damage power
   1/6 a tick: the same total), no heal; each tick that lands puts 4 water in the pouch
   (`AbilityDef.water_per_tick`, 24 in all, capped; shown in the tooltip). The hoop opens
@@ -1715,7 +1773,19 @@ ability data and the sheet (`tools/once/water_physics_sheet.py`); rope numbers i
   `leeching_tide_ribbon`): their files stay (the `fx` debug command can still show them).
 - Tests: `tests/unit/test_water_abilities.gd`, rope cases in `test_water_rope.gd`, whip
   cases in `test_water_pouch.gd`; screenshots `tests/visual/water_ability_shots.tscn`
-  (`SHOTS_ONLY=whip|heal|shield|selfshield|shard|leech`).
+  (`SHOTS_ONLY=whip|heal|healseq|shield|selfshield|shard|shieldplay|leech`).
+- **Input buffering** (follow-ups, user: 0.3 s): an ability pressed up to 0.3 s before it
+  could go (its cooldown, the global cooldown, or a cast, wind-up or channel still
+  running) waits and goes off by itself the moment it can (`PlayerInput.BUFFER_SECONDS`,
+  `ready_in`; kept 0.25 s past the expected moment). A newer press replaces it. Aimed
+  abilities without a bar aren't buffered (the press only starts aiming). Every ability,
+  not only Water's. Test: `tests/integration/test_input_buffer.gd`.
+- **Hilda** sells the Water Pouch too (follow-ups).
+- **Action bar** (second follow-ups, user; `Targeting._water_usability`): a Water ability
+  shows ready while there is water to be had (out of the stance, where pressing enters
+  it, or while the rope still forms); red only with no water at all (stance, shield,
+  water out, pouch, no water tile near). Ally abilities (Healing Touch, Water Shield) are
+  judged on the target a press would use: yourself when an enemy or no one is targeted.
 
 ## Ability effects from the approved art (stance rework phase 3, 2026-11-23)
 
@@ -2920,6 +2990,9 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-28 | Going over a ledge: covered by the drawn height; 1-level steps drawn as a ramp across the edge; falls start moving down | User report and approval of both parts of the proposal. My numbers: the ramp is 0.3 tiles wide (halfway at the edge); falls start at 3 levels/s down; the drawn height follows the ramp exactly unless it jumps by more than 0.8 of a level in a tick (then it eases at 8 levels/s as before). The ramp is used by every unit that moves with the Mover (heroes, enemies, client prediction); it is drawing only, so the host's ground, falls and damage don't change apart from falls landing a little sooner. |
+| 2026-11-28 | Water physics second follow-ups: the shield's rope doesn't regrow on screen; highlights on thin water; Healing Touch's water spirals back down before joining the orbit; stances drop after 20 s idle; new water spirals out of the waist (pouch) or flows over from the river, linked into the rope as it comes; bigger drops; the action bar shows Water abilities ready while water can be had; the whip from the hoop isn't twice as long; stance 2 abilities from the rope | User report and requests. My choices: the heal's water turns once on the way down; a stance 2 ability from stance 1 goes off 0.5 s after the press (the hoop rising), only with 27 water in all, else the press just tries stance 2; new water takes 0.6 s to reach its place, starting half a turn behind it, 4 px from the waist; red on the bar only when the hero has no water at all (in the stance, a shield or a throw, the pouch, or a water tile within 3 tiles); the cause of the double-length whip: the hoop's points were still at its wider spacing when thrown. |
+| 2026-11-28 | Water physics follow-ups: Hilda sells the pouch; stance 1 twice as fast; Frost Shard a third of the cooldown and damage, drawn as in the demo; stance 1 abilities from the hoop; the Water Shield holds the whole rope; Healing Touch's mist and return arc; the whip's early press; input buffering | User request. User answers: twice as fast for both entering and the refill (8.5 frames a point); a stance 1 ability pressed in stance 2 goes off 0.25 s after the press; Frost Shard off a shield round an ally goes along you → ally, onward; input buffer 0.3 s. User rules: no stance 1 rebuild while the shield is out; another whole-rope ability or a stance recalls it; shards off the shield cost it points and absorb. My choices: a recalled shield ends on its target and its water comes home × the share left (all of it before it is up, and it never goes up); a shard leaves the bubble 0.45 tiles from its holder's centre; a shard taking the last of the shield ends it (its water lost); the client throw waits up to 0.6 s for a recalled bubble's rope to get home; a hero in a Water stance always keeps a rope to draw (the cause of "half the water disappears" and of the whole-heal mist being cut: the rope was dropped when the stance water hit 0); buffering covers every ability except aimed ones without a bar, and only cooldowns, the GCD and casts (not range or mana). Whip bug: a second press before the hit settled the water at once, so the hit sent the refilled rope out again and lost it; now kept and settled after the hit. |
 | 2026-11-28 | Balance target "a starter + healer pair always beats 2 Wolves, under 75% HP lost" dropped | User decision. With Healing Touch sending the whole rope (about 7 s to grow back) the bots won 5 of 6 with 93% lost. The solo check (2 Wolves usually kill a lone starter) stays. |
 | 2026-11-28 | Water physics phase 4: Water Whip, Healing Touch, Water Shield, Frost Shard, Leeching Tide | User brief (see **Water abilities**). My choices, to confirm: Healing Touch and Leeching Tide lost their (AI-drafted) bars, since the demos fix their timings; Water Shield keeps the sheet's 20 s (the demo's 10 s was a demo value); the rope refills while a shield is up (its water is kept apart and overflows into the pouch on return), but not while the whip's or the heal's water is out; the whip needs at least 4 points and throws the whole rope; Leeching Tide's damage is split over its 6 ticks (power 1/6 each); a whip pressed after landing brings its share home from the regrouped water's front; Frost Shard's piece keeps the projectile's flight (no gameplay wind-up), so its 9-frame bulge plays as it leaves; the shard sprite was halved by 2×2 blocks keeping the outline; the shield bubble's radius is the demo's × 36/26 for every hero (allies are heroes too). |
 | 2026-11-28 | Water physics phase 3: water as a resource (stance water + pouch), the stance 2 hoop | User brief and answers (see **Water as a resource**). User answer (2026-11-28): entering stance 1 builds the rope by the 17-frame refill only (7 s is fine; my first build took 24 at once). My choices, to confirm: only stance 1 refills (stance 2's refill isn't in the brief); the 10 s idle drop applies to the Water stances only and a cast bar or combat keeps the stance up; power uses the stance water at the moment the ability is paid; the pouch fills at capacity ÷ 10 per second, stopped by moving or losing health; without a pouch, water put back is lost; the hoop's new points come from the hips (or the river), not from the tail as in the demo; test heroes and balance bots that use Water abilities now carry a full pouch. |

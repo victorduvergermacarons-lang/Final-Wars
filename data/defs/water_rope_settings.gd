@@ -34,7 +34,7 @@ extends Resource
 ## Frames to blend into the idle springs.
 @export var IDLE_BLEND: int = 40
 ## Idle: one point added every this many frames until NMAX.
-@export var REFILL_EVERY: int = 26
+@export var REFILL_EVERY: int = 8
 ## Idle spring toward the orbit spot.
 @export var IDLE_SPRING: float = 0.08
 ## Spin spring toward the orbit spot.
@@ -49,6 +49,14 @@ extends Resource
 @export var DRIP_EVERY: int = 20
 ## Forming the orbit (entering the stance): a point every this many frames (not in the reference).
 @export var FORM_EVERY: int = 3
+## How new water reaches the orbit (2026-11-28, user): frames on its way, how far
+## behind its place it starts (radians: it spirals out the orbit's way), the radius
+## it leaves the waist at, how hard it follows its path, and the arc from the water.
+@export var FORM_T: int = 36
+@export var FORM_SPIRAL: float = 3.14159
+@export var FORM_R0: float = 4.0
+@export var FORM_K: float = 0.45
+@export var FORM_LIFT: float = 8.0
 @export_group("Throw")
 ## Frames from cast to impact (0.5 s). Gameplay uses its own 0.5 s.
 @export var HIT: int = 30
@@ -316,6 +324,18 @@ extends Resource
 @export var SHARD_WINDUP: int = 9
 ## Frames for the water to pull together into the shard; drawn as water until 75%.
 @export var SHARD_FREEZE: int = 9
+## The shard drawn in code (the demo's shardShape, 2026-11-28, instead of the FX-13-4
+## sprite): its length and half-width at full size (art px), and its ice colours.
+@export var SHARD_LEN: float = 9.0
+@export var SHARD_W: float = 1.5
+@export var ICE_SHADE: Color = Color("7DB3E3")
+@export var ICE_BODY: Color = Color("C2E2F7")
+@export var ICE_HI: Color = Color("F5FAFE")
+## Sparkles as it freezes; fragments (and 2 drops) when it shatters on a hit or at
+## its range; fragments' gravity (px per frame²).
+@export var SPARK_N: int = 3
+@export var FRAG_N: int = 8
+@export var FRAG_GRAV: float = 0.12
 
 @export_group("Leeching Tide (leeching_tide_demo.html)")
 ## Frames to reach the target (the hoop opens and arcs out).

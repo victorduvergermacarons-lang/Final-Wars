@@ -69,3 +69,31 @@ func test_deleting_a_character_forgets_its_bar() -> void:
 	var back := ActionBarModel.new()
 	SettingsStore.load_action_bar(back, PATH, "Kanna")
 	assert_false(back.has_anywhere(&"W02"))
+
+
+func test_self_castable_water_abilities_show_ready_with_water_to_be_had() -> void:
+	# User, 2026-11-28: Healing Touch and Water Shield are never dark or red while there
+	# is water to be had (out of the stance, an enemy targeted, the rope still forming).
+	var world := World.new(ContentDB.zones.values(), ContentDB.rules, 5, &"town", ContentDB.quests)
+	var hero := world.add_saved_hero(CharacterData.new_character("Mira", ContentDB.heroes[&"adventurer"],
+			ContentDB.elements[&"water"]), ContentDB)
+	var sim := world.zone_of(hero.id)
+	for id in [&"W01", &"W12"]:
+		TreeRules.master(hero, ContentDB.abilities[id])
+	hero.mana = 999
+	hero.water = 200
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	var u := func(id: StringName) -> int:
+		return Targeting.usability(hero, ContentDB.abilities[id], wolf, sim.grid, ContentDB.rules, sim.now, sim.ctx.actors.values())
+	for id in [&"W01", &"W12"]:
+		assert_eq(u.call(id), Targeting.Usability.READY, "%s out of the stance, an enemy targeted" % id)
+	hero.stance_tree = "Water"
+	hero.stance = 1
+	hero.stance_water = 2
+	for id in [&"W01", &"W12"]:
+		assert_eq(u.call(id), Targeting.Usability.READY, "%s while the rope forms" % id)
+	hero.stance_water = 0
+	hero.water = 0
+	hero.near_water = false
+	for id in [&"W01", &"W12"]:
+		assert_eq(u.call(id), Targeting.Usability.OUT_OF_RANGE, "%s with no water at all: red" % id)

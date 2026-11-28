@@ -28,8 +28,15 @@ extends Resource
 @export var fall_damage_max_percent: float = 60.0
 ## Off: a fall leaves at least 1 HP.
 @export var fall_damage_can_kill: bool = false
-## How fast the drawn height follows a 1-level step (levels per second).
+## How fast the drawn height follows a 1-level step (levels per second): only for
+## changes the ramp below doesn't explain (a teleport, terrain rising under a unit).
 @export var step_smooth_rate: float = 8.0
+## A 1-level step is drawn as a ramp this wide (tiles), centred on the tile edge, so
+## the body goes down (or up) as it crosses instead of after (2026-11-28, user).
+@export var step_ramp_width: float = 0.3
+## A fall starts already moving down at this speed (levels per second), so leaving a
+## ledge reads as one arc, not a slide and then a drop (2026-11-28, user).
+@export var fall_start_speed: float = 3.0
 
 @export_group("Collision")
 ## Longest move between collision checks (tiles).

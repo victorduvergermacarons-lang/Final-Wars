@@ -202,6 +202,8 @@ func test_each_hero_gets_its_rope_and_the_whip_event_throws_it() -> void:
 	var items := ropes.items(func(_h): return Vector2.ZERO)
 	assert_true(items.any(func(i): return i.has("stamps")), "slices to draw")
 	h.stance_water = 0
+	h.stance_tree = "" # (an empty rope still shows while in the stance, 2026-11-28)
+	h.stance = 0
 	for i in 30:
 		ropes.advance(0.2, 1.0 + i * 0.2, [h], null, null, on)
 	assert_null(ropes.rope_of(h.id), "drained away once the stance is left")
@@ -251,13 +253,26 @@ func test_the_heal_s_unused_share_goes_home_off_the_tail() -> void:
 	assert_true(r.heal_tail.is_empty(), "all of the front turned to mist")
 
 
-func test_a_self_heal_unwinds_into_the_orbit() -> void:
+func test_a_self_heal_spirals_down_into_the_orbit() -> void:
+	# User, 2026-11-28: the water spirals back down the way it climbed, then joins the orbit.
 	var r := _rope()
 	r.heal(Vector2.ZERO, true)
 	for i in settings.HEAL_T:
 		r.step()
 	r.heal_back(1.0)
-	assert_eq(r.st, "idle", "straight back into the orbit")
+	assert_eq(r.st, "return", "spiralling home")
+	var P: PackedVector3Array = r.rpath.pts
+	var end: Vector3 = P[P.size() - 1]
+	assert_almost_eq(Vector2(end.x, end.y).length(), settings.ORB, 0.5, "it ends on the orbit")
+	# It turns the orbit's way all the way down: the angle round the hero only grows.
+	var turned := 0.0
+	var k0 := P.size() - 60
+	for k in range(k0, P.size() - 1):
+		turned += angle_difference(atan2(P[k].y, P[k].x), atan2(P[k + 1].y, P[k + 1].x))
+	assert_gt(turned, 0.0, "the same way round as the orbit")
+	for i in 600:
+		r.step()
+	assert_true(r.st == "idle" or r.st == "wrap", "back on its orbit")
 	assert_gt(r.M(), 0)
 
 
@@ -354,3 +369,13 @@ func test_the_hoop_reaches_out_latches_drains_and_closes_again() -> void:
 	for i in 300:
 		r.step()
 	assert_true(r.wrap, "the hoop closes again")
+
+
+func test_the_code_drawn_shard_points_ahead() -> void:
+	# The demo's shardShape: 9 px long, 1.5 half-wide, pointed at the front.
+	var set := WaterRopes.shard_pixels(Vector2(0.5, 0.5), Vector2.RIGHT, 9.0, 1.5)
+	var xs := set.keys().map(func(k): return k.x)
+	assert_between(xs.max() - xs.min() + 1, 8, 10, "about 9 px long")
+	var front := set.keys().filter(func(k): return k.x == xs.max()).size()
+	var back_mid := set.keys().filter(func(k): return k.x == -2).size()
+	assert_lt(front, back_mid, "narrow at the point, fuller behind")

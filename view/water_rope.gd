@@ -25,6 +25,8 @@ class Pt:
 	var off := Vector3.ZERO # Water Shield's dents (WaterShieldRope)
 	var s := 0.0 # Leeching Tide: distance along the stream
 	var dark := 0.0 # Leeching Tide: leeched water's tint (1 = full leech colours)
+	var born := -1 # the frame it joined the rope (forming: on its way to its place)
+	var src := Vector3.ZERO # where it came from (the waist, or the water)
 
 	func _init(at: Vector3, i: int) -> void:
 		p = at
@@ -360,8 +362,29 @@ func move_hero(delta: Vector2) -> void:
 ## Throws the front of the rope at `target` (ground, reference px, hero-relative).
 ## The hit lands HIT frames later. A cast while the water is still out snaps the rope
 ## back onto its orbit first (the game's cooldown is shorter than a full return).
+## Leaving the hoop for a throw (a stance 1 ability pressed in stance 2): the points
+## are still at the hoop's wider spacing, so the rope would fly out about twice as
+## long. They are put back at the rope's spacing along its own shape (from the front).
+func leave_hoop_now() -> void:
+	if sb <= 0.0 or M() < 2:
+		return
+	var pts := PackedVector3Array()
+	for p in R:
+		pts.append(p.p)
+	var P := poly_path(pts)
+	var sp := s.SEG
+	for i in M():
+		var q := along(P, minf(i * sp, float(P.L)) / maxf(float(P.L), 0.001))
+		R[i].q = q - (R[i].p - R[i].q)
+		R[i].p = q
+	sb = 0.0
+	wrap = false
+	wrap_str = 0.0
+
+
 func cast(target: Vector2, z_offset := 0.0) -> void:
 	var recast := st == "wrap"
+	leave_hoop_now()
 	if not can_cast() or M() < 2:
 		fill_now(maxi(M(), s.MIN_KEEP))
 	if recast:
@@ -395,6 +418,7 @@ func cast(target: Vector2, z_offset := 0.0) -> void:
 ## the waist up past the head, turning to mist at the top. The heal lands as the lead
 ## reaches the top, HEAL_T frames after the cast.
 func heal(target: Vector2, self_cast: bool) -> void:
+	leave_hoop_now()
 	if not can_cast() or M() < 2:
 		fill_now(maxi(M(), s.MIN_KEEP))
 	heal_self = self_cast
@@ -658,13 +682,13 @@ func heal_back(share: float) -> void:
 	tt = 0
 	if M() == 0:
 		st = "idle"
-	elif heal_self:
-		st = "idle"
-		ib = 0.15
 	else:
-		aim = heal_to
 		st = "return"
-		_start_return()
+		for i in M():
+			R[i].near = true
+			R[i].off = Vector3.ZERO
+		has_base = false
+		_start_home_spiral()
 
 
 ## Moves points along the heal path: the lead exactly, the others springing to
@@ -716,7 +740,7 @@ func _step_mists() -> void:
 ## the orbit's gap faces it, the nearer end breaks off. The two ends re-link (the link
 ## fading in), and the orbit springs pull the tail forward. Returns the piece's
 ## positions, front first.
-func break_piece(dir: Vector2, n: int) -> Array[Vector3]:
+func break_piece(dir: Vector2, n: int, center := Vector2.ZERO) -> Array[Vector3]:
 	var out: Array[Vector3] = []
 	n = mini(n, M())
 	if n <= 0:
@@ -725,7 +749,7 @@ func break_piece(dir: Vector2, n: int) -> Array[Vector3]:
 	var best := 0
 	var bd := INF
 	for i in M():
-		var d := absf(angle_difference(atan2(R[i].p.y, R[i].p.x), want))
+		var d := absf(angle_difference(atan2(R[i].p.y - center.y, R[i].p.x - center.x), want))
 		if d < bd:
 			bd = d
 			best = i
@@ -826,6 +850,113 @@ func _start_return() -> void:
 	ret_scale = dist_scale(rpath.L)
 
 
+## Healing Touch's water coming home from an ally (2026-11-28, user): it doesn't
+## turn back down the helix; it keeps its heading and curves home, as the Water
+## Shield's rope does: the rope's own shape (tail to head) as the start of the path,
+## a turn-in arc toward a point bowed toward the caster's left, then a cubic onto the
+## orbit's entry.
+func _start_home_arc() -> void:
+	var lead := R[0]
+	var ep := entry_point()
+	var E: Vector3 = ep.E
+	var f: Vector2 = ep.f
+	var pre := PackedVector3Array()
+	for i in range(M() - 1, -1, -1):
+		pre.append(R[i].p)
+	var P0 := Vector2(lead.p.x, lead.p.y)
+	var Eg := Vector2(E.x, E.y)
+	var D := maxf(8.0, Eg.distance_to(P0))
+	var Lp := Vector2(f.y * s.ORB, -f.x * s.ORB)
+	var sd := (Vector2(R[0].p.x - R[1].p.x, R[0].p.y - R[1].p.y) if M() > 1 else Lp - P0).normalized()
+	var u := (Eg - P0).normalized()
+	var nrm := Vector2(-u.y, u.x)
+	var mid := (P0 + Eg) / 2.0
+	if nrm.dot(Lp - mid) < 0.0:
+		nrm = -nrm
+	var Wm := mid + nrm * D * s.ARC_BEND
+	var ti := WaterShieldRope.turn_in_static(s, P0, sd, Wm)
+	var Q: Vector2 = ti.Q
+	var D1 := maxf(2.0, Wm.distance_to(Q))
+	var D2 := maxf(2.0, Eg.distance_to(Wm))
+	var mu := (Eg - Q).normalized()
+	var tr: Array = [P0]
+	tr.append_array(ti.pts)
+	WaterShieldRope._cubic(Q, Q + ti.h * D1 * s.LEAVE_CTRL * 1.3, Wm - mu * D1 * s.MID_CTRL * 1.3, Wm, s.PATH_SAMPLES / 2, tr)
+	WaterShieldRope._cubic(Wm, Wm + mu * D2 * s.MID_CTRL * 1.3, Eg + f * D2 * s.CTRL_END, Eg, s.PATH_SAMPLES / 2, tr)
+	var lifted := WaterShieldRope._lift_z(tr, lead.p.z, s.ZW, s.ARC_LIFT, true)
+	lifted[lifted.size() - 1] = Vector3(E.x, E.y, s.ZW)
+	var all := pre.duplicate()
+	for i in range(1, lifted.size()):
+		all.append(lifted[i])
+	var pre_L: float = poly_path(pre).L
+	rpath = poly_path(all)
+	rs = pre_L
+	hold = 1.0
+	joined_at = -1.0
+	ret_at = sim_t
+	prev = lead.p
+	ret_scale = dist_scale(rpath.L - pre_L)
+
+
+## How many turns Healing Touch's water takes spiralling back down.
+const HEAL_DOWN_LOOPS := 1.0
+
+
+## Healing Touch's water coming home (2026-11-28, user): what the heal didn't use
+## spirals back down round the target, turning the same way it climbed (the orbit's
+## way), then joins the orbit: round yourself the spiral widens straight into it; from
+## an ally it leaves the bottom of the spiral along its heading and curves onto it.
+## The path starts with the rope's own shape, so nothing turns back on itself.
+func _start_home_spiral() -> void:
+	var lead := R[0]
+	var C := Vector2.ZERO if heal_self else Vector2(heal_to.x, heal_to.y)
+	var L := lead.p
+	var aL := atan2(L.y - C.y, L.x - C.x)
+	var rL := Vector2(L.x - C.x, L.y - C.y).length()
+	var r_end := s.ORB if heal_self else s.WRAP_R
+	var z_end := s.ZW if heal_self else s.HERO_H * s.WAIST
+	var A := TAU * HEAL_DOWN_LOOPS
+	var N := maxi(40, ceili(HEAL_DOWN_LOOPS * 72.0))
+	var pre := PackedVector3Array()
+	for i in range(M() - 1, -1, -1):
+		pre.append(R[i].p)
+	var all := pre.duplicate()
+	for k in range(1, N + 1):
+		var u := float(k) / N
+		var a := aL + A * u
+		var r := lerpf(rL, r_end, ramp(u, 1.0))
+		all.append(Vector3(C.x + cos(a) * r, C.y + sin(a) * r, lerpf(L.z, z_end, ramp(u, 1.0))))
+	var a_end := aL + A
+	if heal_self:
+		# The orbit's entry is where the spiral ends, reached along the orbit's way.
+		var d := Vector2(cos(a_end), sin(a_end))
+		aim = Vector3(d.y, -d.x, 0.0) * 20.0
+		all[all.size() - 1] = Vector3(d.x * s.ORB, d.y * s.ORB, s.ZW)
+	else:
+		aim = heal_to
+		var ep := entry_point()
+		var E: Vector3 = ep.E
+		var f: Vector2 = ep.f
+		var B := Vector2(all[all.size() - 1].x, all[all.size() - 1].y)
+		var h := Vector2(-sin(a_end), cos(a_end))
+		var Eg := Vector2(E.x, E.y)
+		var D := maxf(8.0, Eg.distance_to(B))
+		var tr: Array = [B]
+		WaterShieldRope._cubic(B, B + h * D * s.LEAVE_CTRL * 1.3, Eg + f * D * s.CTRL_END, Eg, s.PATH_SAMPLES, tr)
+		var lifted := WaterShieldRope._lift_z(tr, z_end, s.ZW, s.ARC_LIFT, true)
+		lifted[lifted.size() - 1] = E
+		for i in range(1, lifted.size()):
+			all.append(lifted[i])
+	var pre_L: float = poly_path(pre).L
+	rpath = poly_path(all)
+	rs = pre_L
+	hold = 1.0
+	joined_at = -1.0
+	ret_at = sim_t
+	prev = lead.p
+	ret_scale = dist_scale(rpath.L - pre_L)
+
+
 func _ground_ratio_at_end() -> float:
 	var P: PackedVector3Array = rpath.pts
 	var n := P.size()
@@ -903,6 +1034,8 @@ func _constrain(fix_n: int) -> void:
 			var bf := i + 1 < fix_n
 			if af and bf:
 				continue
+			if forming_now(a) or forming_now(b):
+				continue # on its way: its path places it
 			var dv := b.p - a.p
 			var d := dv.length()
 			if d == 0.0:
@@ -920,6 +1053,27 @@ func _constrain(fix_n: int) -> void:
 				var h := _clamp(corr * 0.5, -cap, cap)
 				a.p += dv / d * h
 				b.p -= dv / d * h
+
+
+## A point still on its way from where it came from to its place (FORM_T frames).
+func forming_now(p: Pt) -> bool:
+	return p.born >= 0 and sim_t - p.born < s.FORM_T
+
+
+## Where a forming point is going now (2026-11-28, user): from the pouch it spirals
+## out of the waist, turning the orbit's way, into its place `g`; from the water it
+## flows over from the water along a low arc.
+func _forming_goal(p: Pt, g: Vector3) -> Vector3:
+	var u := ramp(float(sim_t - p.born), float(s.FORM_T))
+	if p.src.distance_to(Vector3(0, 0, s.HIP_Z)) <= s.FORM_R0 + 0.5:
+		var a_t := atan2(g.y, g.x)
+		var r_t := Vector2(g.x, g.y).length()
+		var a := a_t - (1.0 - u) * s.FORM_SPIRAL
+		var r := lerpf(s.FORM_R0, r_t, u)
+		return Vector3(cos(a) * r, sin(a) * r, lerpf(p.src.z, g.z, u))
+	var q := p.src.lerp(g, u)
+	q.z += s.FORM_LIFT * sin(PI * u)
+	return q
 
 
 ## The hoop's closing link (tail to head), like the reference's link().
@@ -1037,10 +1191,18 @@ func _pour_off(j: int) -> void:
 ## (`linked`: tightening over LINK_FADE frames) or loose (it chases the tail).
 func _add_point(linked: bool) -> void:
 	var at := source
-	R.append(Pt.new(at, R.size()))
+	var hip := source.distance_to(Vector3(0, 0, s.HIP_Z)) < 0.5
+	var shaped := st == "idle" # forming on the orbit (lost water rebuilt on the way home chases as before)
+	if hip and shaped: # from the pouch: out of the waist, close in, at once part of the rope
+		var a := phase - R.size() * s.ang() - s.FORM_SPIRAL
+		at = Vector3(cos(a) * s.FORM_R0, sin(a) * s.FORM_R0, s.HIP_Z)
+	var p := Pt.new(at, R.size())
+	p.born = sim_t if shaped else -1
+	p.src = at
+	R.append(p)
 	if R.size() > 1:
 		conn.append(linked)
-		strength.append(0.0)
+		strength.append(1.0 if linked and shaped else 0.0) # drawn linked from the start (formed along its way)
 
 
 # --- One frame ----------------------------------------------------------------------
@@ -1119,7 +1281,11 @@ func step() -> void:
 			if sb > 0.0 and st == "idle":
 				k = lerpf(k, s.HOOP_FOLLOW, ramp(sb, 1.0))
 			for p in R:
-				_spring(p, target_t(p.id) if st == "idle" else orbit_t(p.id), k)
+				var g := target_t(p.id) if st == "idle" else orbit_t(p.id)
+				if forming_now(p):
+					_spring(p, _forming_goal(p, g), s.FORM_K)
+				else:
+					_spring(p, g, k)
 				p.dark = maxf(0.0, p.dark - s.DARK_FADE)
 			_constrain(0)
 			# Refill from the pouch (the hips) or the water nearby, one point at a time.

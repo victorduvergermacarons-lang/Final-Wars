@@ -75,6 +75,10 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 	var point: Vector2 = aim_point(caster, target, aim) if aim_point(caster, target, aim) != null \
 			else origin + caster.facing_vector()
 	var dir := (point - origin).normalized() if point.distance_to(origin) > 0.001 else caster.facing_vector()
+	if not ctx.cast_from.is_empty(): # thrown off something else (a Water Shield)
+		origin = ctx.cast_from.origin
+		dir = ctx.cast_from.dir
+		point = origin + dir * hb.reach
 	ctx.continuous = true
 	ctx.cast_point = point
 	ctx.cast_vec = dir
@@ -130,7 +134,7 @@ static func resolve(ctx: CombatContext, caster: Actor, ability: AbilityDef, targ
 			p.caster_id = caster.id
 			p.ability = ability
 			p.continuous = true
-			p.origin = caster.tile()
+			p.origin = MoveState.tile_of(origin)
 			p.from = origin
 			p.dirv = dir
 			p.max_dist = reach

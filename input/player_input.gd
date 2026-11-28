@@ -270,10 +270,22 @@ func use_slot(i: int, key: StringName = &"") -> void:
 	# A bending ability of another stance (or out of any stance) enters that stance
 	# instead of casting; the next press casts (2026-11-28). A press during the
 	# ability's own timing bar still plays the bar.
-	if needs_stance(hero, ability) and not _bar_running_for(hero, ability):
+	if needs_stance(hero, ability) and not _bar_running_for(hero, ability) and not casts_from_hoop(hero, ability):
 		enter_stance(ability.tree, ability.stance)
 		return
 	use_ability(ability, key)
+
+
+## A stance 1 Water ability pressed while holding the hoop (Water stance 2) is cast:
+## the host turns the hoop back into the rope and casts it 0.25 s later (2026-11-28).
+static func casts_from_hoop(hero: Hero, ability: AbilityDef) -> bool:
+	if ability.tree != "Water" or hero.stance_tree != "Water":
+		return false
+	if ability.stance == 1 and hero.stance == 2:
+		return true
+	# The other way (2026-11-28, user): a stance 2 ability from the rope, when there is
+	# water enough for the hoop; else pressing just tries to enter stance 2 (refused).
+	return ability.stance == 2 and hero.stance == 1 and WaterBending.total(hero) >= WaterBending.STANCE_2_ENTRY
 
 
 ## Whether `ability` is cast from a stance the hero isn't in.
@@ -337,6 +349,14 @@ func use_ability(ability: AbilityDef, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
 	if hero != null and _second_press(hero, ability, key):
 		return
+	# Input buffering (2026-11-28): pressed up to BUFFER_SECONDS before it could go, it
+	# waits and goes off the moment it can (a newer press replaces it).
+	if hero != null and not _buffering and not _starts_aiming(ability):
+		var wait := ready_in(hero, ability)
+		if wait > 0.0 and wait <= BUFFER_SECONDS:
+			_buffered = {"ability": ability, "key": key, "until": session.now() + wait + BUFFER_GRACE}
+			return
+	_buffered = {}
 	if AimPreview.is_aimed(ability) and aims_during_bar(ability):
 		_start_bar_aiming(ability)
 		return
@@ -559,7 +579,54 @@ func is_aiming_bar() -> bool:
 	return _aiming.get("during_bar", false)
 
 
+## Input buffering: how early a press can come and still go off by itself.
+const BUFFER_SECONDS := 0.3
+## …and how long past the expected moment it is kept (a late snapshot).
+const BUFFER_GRACE := 0.25
+var _buffered := {}
+var _buffering := false
+
+
+## Seconds until `ability` could go: its cooldown, the global cooldown, or a cast,
+## wind-up or channel still running (a timing bar doesn't count: another key stops
+## it). 0 when it could go now.
+func ready_in(hero: Hero, ability: AbilityDef) -> float:
+	var now: float = session.now()
+	var wait := hero.cooldowns.ability_remaining(ability.cooldown_key(), now)
+	if ability.on_gcd:
+		wait = maxf(wait, hero.cooldowns.gcd_remaining(now))
+	var c: Dictionary = hero.casting
+	if not c.is_empty() and c.get("kind", "") != "timing":
+		wait = maxf(wait, float(c.get("end", now)) - now)
+	return maxf(wait, 0.0)
+
+
+## Aimed abilities without a bar start aiming on the press; only the release casts,
+## so they aren't buffered (melee cones swing at once and are).
+func _starts_aiming(ability: AbilityDef) -> bool:
+	if not AimPreview.is_aimed(ability) or aims_during_bar(ability):
+		return false
+	return not (ability.uses_hitbox() and ability.hitbox.shape == HitboxDef.Shape.CONE)
+
+
+func _fire_buffered() -> void:
+	if _buffered.is_empty() or session == null:
+		return
+	var hero: Hero = session.local_hero()
+	if hero == null or not hero.alive or session.now() > float(_buffered.until):
+		_buffered = {}
+		return
+	if ready_in(hero, _buffered.ability) > 0.0:
+		return
+	var b := _buffered
+	_buffered = {}
+	_buffering = true
+	use_ability(b.ability, b.key)
+	_buffering = false
+
+
 func _process(_delta: float) -> void:
+	_fire_buffered()
 	_go_off_at_bar_end()
 	if _aiming.get("during_bar", false):
 		_follow_bar_aiming()
@@ -643,3 +710,4 @@ func fire_aimed() -> void:
 	var picked := Targeting.pick(session.local_hero(), ability, session.get_actor(client.target_id))
 	cancel_aiming()
 	session.send_intent({"type": "cast", "ability": ability.id, "target": picked.target, "aim": point})
+

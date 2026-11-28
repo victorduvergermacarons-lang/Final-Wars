@@ -50,9 +50,11 @@ var water_refill_t := 0.0
 var pouch_fill := {}
 
 
-## Whether the hero has a water rope or hoop to draw.
+## Whether the hero has a water rope or hoop to draw: while in a Water stance, even
+## with no water in it right now (all of it in a heal's mist, a whip or a shield), so
+## what is still out keeps being drawn and comes home to it (2026-11-28).
 var rope: bool:
-	get: return (stance_water > 0 or not water_out.is_empty()) and WaterBending.in_water_stance(self)
+	get: return WaterBending.in_water_stance(self)
 ## Host: whether a water tile is near (updated each tick).
 var near_water := false
 

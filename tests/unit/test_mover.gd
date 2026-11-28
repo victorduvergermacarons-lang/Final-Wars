@@ -272,3 +272,50 @@ func test_positions_interpolate_between_ticks() -> void:
 	var m := hero.move
 	var mid := m.position_at(m.time + rules.tick_seconds * 0.5)
 	assert_almost_eq(mid.x, (m.prev_pos.x + m.pos.x) / 2.0, 0.001, "half way between the last two ticks")
+
+
+# --- Going over a ledge (2026-11-28, user: it looked like clipping) -----------------
+
+func test_a_one_level_step_is_drawn_as_a_ramp_across_the_edge() -> void:
+	var md := rules.movement
+	var g := world.grid # the step of 1 at (3, 8), open ground at 0 around it
+	assert_eq(Mover.ramp_height(g, Vector2(3, 8), 1, md), 1.0, "on its middle: its own height")
+	assert_almost_eq(Mover.ramp_height(g, Vector2(3, 8.499), 1, md), 0.5, 0.01, "at the edge: halfway")
+	assert_almost_eq(Mover.ramp_height(g, Vector2(3, 8.5), 0, md), 0.5, 0.01, "the same from the other side")
+	var near := Mover.ramp_height(g, Vector2(3, 8.42), 1, md)
+	assert_true(near < 1.0 and near > 0.5, "on the way down before the edge (%s)" % near)
+	assert_eq(Mover.ramp_height(g, Vector2(3, 8.3), 1, md), 1.0, "outside the band: flat")
+
+
+func test_walking_off_a_step_goes_down_while_crossing() -> void:
+	hero.move.place(Vector2i(3, 8))
+	hero.move.ground_h = 1
+	hero.move.draw_h = 1.0
+	world.step()
+	var seen := []
+	world.submit(hero.id, {"type": "move", "dir": Vector2i(-1, 1), "face": 0.0}) # S+A: grid +y
+	for i in 12:
+		world.step()
+		seen.append([hero.move.pos.y, hero.move.draw_h])
+	for s in seen:
+		if s[0] > 8.45 and s[0] < 8.55:
+			assert_almost_eq(float(s[1]), 0.5, 0.2, "about halfway at the edge (y %s)" % s[0])
+
+
+func test_a_fall_starts_already_moving_down() -> void:
+	var md := rules.movement
+	assert_gt(md.fall_start_speed, 0.0)
+	hero.move.place(Vector2i(5, 8)) # the 2-level block
+	hero.move.ground_h = 2
+	hero.move.draw_h = 2.0
+	world.step()
+	world.submit(hero.id, {"type": "move", "dir": Vector2i(-1, 1), "face": 0.0})
+	for i in 20:
+		world.step()
+		if hero.move.falling():
+			assert_almost_eq(hero.move.vz, md.fall_start_speed, 0.001, "already on its way down")
+			world.step()
+			assert_lt(hero.move.draw_h, 2.0 - md.fall_start_speed * rules.tick_seconds * 0.9,
+					"its first tick in the air goes down at least that fast")
+			return
+	fail_test("never fell")

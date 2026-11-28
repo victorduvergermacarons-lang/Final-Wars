@@ -51,9 +51,9 @@ func _stance(n: int) -> void:
 	world.step()
 
 
-## Stance 1 fills a point every 17 frames: 24 points take 6.8 s.
+## Stance 1 fills a point every 8.5 frames: 24 points take 3.4 s.
 func _fill_rope() -> void:
-	world.advance(24 * 17.0 / 60.0 + 0.1)
+	world.advance(24 * 8.5 / 60.0 + 0.1)
 
 
 func _cast(target: Actor) -> Array:
@@ -154,13 +154,13 @@ func test_the_second_press_decides_how_much_water_comes_back() -> void:
 	assert_lt(hero.water, pouch, "the rope grows back from the pouch")
 
 
-func test_stance_1_refills_a_point_every_17_frames_from_the_pouch() -> void:
+func test_stance_1_refills_a_point_every_8_5_frames_from_the_pouch() -> void:
 	_go(_tile_from_water(8.0, 40.0))
 	_stance(1)
 	hero.stance_water = 20
 	hero.stance_busy_at = sim.now
 	var pouch := hero.water
-	world.advance(17.0 / 60.0 * 2 + 0.01)
+	world.advance(8.5 / 60.0 * 2 + 0.01)
 	assert_eq(hero.stance_water, 22)
 	assert_eq(hero.water, pouch - 2)
 	hero.water = 0
@@ -186,10 +186,11 @@ func test_power_follows_the_stance_water() -> void:
 	assert_almost_eq(WaterBending.power(hero, whip), 1.0, 0.0001, "a tooltip out of the stance: full")
 
 
-func test_the_stance_drops_after_10_s_idle_out_of_combat() -> void:
+func test_the_stance_drops_after_20_s_idle_out_of_combat() -> void:
+	# 10 s until 2026-11-28 (user: 20).
 	_go(_tile_from_water(8.0, 40.0))
 	_stance(1)
-	world.advance(9.5)
+	world.advance(19.5)
 	assert_eq(hero.stance, 1)
 	var events := []
 	for i in 20:
@@ -272,3 +273,28 @@ func test_saved_with_the_character_and_older_water_heroes_get_a_pouch() -> void:
 func test_sold_by_odo_and_tamsin() -> void:
 	assert_true(ContentDB.npcs[&"apothecary_odo"].sells_ids.has(&"water_pouch"))
 	assert_true(ContentDB.npcs[&"trader_tamsin"].sells_ids.has(&"water_pouch"))
+
+
+func test_a_press_before_the_hit_brings_its_share_home_after_it() -> void:
+	# The 2026-11-28 report: a press before 0.5 s lost all the water (the hit, going
+	# off after the press had settled, sent the rope out again).
+	_go(_tile_from_water(8.0, 40.0))
+	_stance(1)
+	_fill_rope()
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	var hp := wolf.hp
+	_cast(wolf)
+	world.advance(0.2)
+	world.submit(hero.id, {"type": "water_return"}) # at about 0.25 s: 75%
+	world.step()
+	assert_eq(hero.stance_water, 0, "not yet: the lash is still out")
+	var events := world.advance(0.4)
+	assert_lt(wolf.hp, hp, "the hit landed")
+	var back: Array = events.filter(func(e): return e.type == "water_return")
+	assert_eq(back.size(), 1, "settled once, after the hit")
+	assert_almost_eq(float(back[0].share), 0.75, 0.05)
+	assert_almost_eq(float(back[0].t), 0.25, 0.05, "the press's own time")
+	assert_true(hero.water_out.is_empty(), "nothing out any more")
+	assert_gte(hero.stance_water, 17, "about 18 points home (and refilling)")
+	world.advance(2.0)
+	assert_eq(hero.stance_water, 24, "and none lost to a second throw")
