@@ -66,6 +66,8 @@ var bind_mode := false
 var hovered_slot := -1
 ## The stance held, above the action bar (stance rework).
 var stance_panel: StancePanel
+## Whose action bar this is (the character's name): each character keeps its own.
+var hotbar_owner := ""
 ## The bag item under the mouse, and the item being dragged (ItemSlotView): the
 ## equipment slots it would go in light up.
 var hovered_item: ItemDef
@@ -113,12 +115,14 @@ var _bind_banner: Label
 var _error: Label
 
 
-func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_path: String = SettingsStore.DEFAULT_PATH) -> void:
+func setup(p_session, p_client: ClientState, p_input: PlayerInput, p_settings_path: String = SettingsStore.DEFAULT_PATH,
+		p_hotbar_owner: String = "") -> void:
 	session = p_session
 	client = p_client
 	input = p_input
 	settings_path = p_settings_path
-	SettingsStore.load_action_bar(client.action_bar, settings_path)
+	hotbar_owner = p_hotbar_owner
+	SettingsStore.load_action_bar(client.action_bar, settings_path, hotbar_owner)
 	InputActions.apply_action_bar_keys(client.action_bar)
 	client.action_bar.changed.connect(_on_bar_changed)
 	session.events_received.connect(_on_events)
@@ -188,6 +192,7 @@ func _build() -> void:
 	_bind_banner.visible = false
 	bottom.add_child(_bind_banner)
 	stance_panel = StancePanel.new(self)
+	stance_panel.hidden_for_good = true # the abilities are on the bar again (2026-11-28)
 	bottom.add_child(stance_panel)
 	var bar := HBoxContainer.new()
 	bar.add_theme_constant_override("separation", 4)
@@ -412,19 +417,12 @@ func _process(_delta: float) -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null:
 		return
-	# Bending is cast from stances (stance rework): the bar gets the stances of each
-	# known element, and only other abilities (weapon arts) are placed one by one.
+	# Every learned ability sits on the bar (as before the stance rework; since
+	# 2026-11-28): pressing one of another stance enters that stance first.
 	var ids: Array[StringName] = []
-	var trees: Array = []
 	for a in hero.available_abilities():
-		if _is_bending(a):
-			if not trees.has(a.tree):
-				trees.append(a.tree)
-		else:
+		if not a.passive:
 			ids.append(a.id)
-	trees.sort()
-	client.action_bar.place_stances(trees, String(hero.element).capitalize(),
-			func(id): return _is_bending(ContentDB.abilities.get(id)))
 	client.action_bar.auto_place(ids)
 	_death.visible = not hero.alive
 	_sync_party(hero)
@@ -637,7 +635,7 @@ func _close_menu(w: Control) -> void:
 
 func _on_bar_changed() -> void:
 	InputActions.apply_action_bar_keys(client.action_bar)
-	SettingsStore.save_action_bar(client.action_bar, settings_path)
+	SettingsStore.save_action_bar(client.action_bar, settings_path, hotbar_owner)
 
 
 func _on_events(events: Array) -> void:

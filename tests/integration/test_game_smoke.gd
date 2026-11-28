@@ -29,30 +29,37 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_physics_frames(30)
 	assert_ne(hero.tile(), start, "hero moved")
 
-	# Heroes start without a weapon. Bending is cast from stances (stance rework):
-	# Fire's five stances (Fire Punch, in the learning slot) went on keys 1-5.
-	assert_eq(game.client.action_bar.slots[0], ActionBarModel.stance_entry("Fire", 1))
-	assert_eq(game.client.action_bar.slots[4], ActionBarModel.stance_entry("Fire", 5))
-	assert_false(game.client.action_bar.slots.has(&"F01"), "no bending ability on the bar itself")
+	# Heroes start without a weapon. Every learned ability sits on the bar (as before
+	# the stance rework, 2026-11-28): Fire Punch (in the learning slot) on key 1.
+	assert_eq(game.client.action_bar.slots[0], &"F01")
+	assert_false(game.client.action_bar.slots.any(func(e): return ActionBarModel.is_stance_slot(e)), "no stances")
 	assert_false(game.client.action_bar.slots.has(&"S01"), "no sword, no Slash")
 
-	# Put Mender's Scroll in the learning slot: Water's stances join the bar.
+	# Put Mender's Scroll in the learning slot: Healing Touch joins the bar.
 	session.send_intent({"type": "learn", "bag_index": hero.bag.index_of(ContentDB.items[&"menders_scroll"])})
 	await wait_physics_frames(6)
 	assert_eq(hero.learning_item.id, &"menders_scroll")
-	var water_slot := game.client.action_bar.slots.find(ActionBarModel.stance_entry("Water", 1))
-	assert_gt(water_slot, -1, "Water stance 1 on the bar")
+	var heal_slot := game.client.action_bar.slots.find(&"W01")
+	assert_gt(heal_slot, -1, "Healing Touch on the bar")
 
-	# Its key enters Water stance 1; then key 1 casts Healing Touch (1 → 1) on self.
+	# Out of its stance, its key enters Water stance 1 and doesn't cast; pressed again
+	# it heals, and the hero stays in the stance.
 	hero.hp -= 30
-	input.use_slot(water_slot)
+	var hp := hero.hp
+	input.use_slot(heal_slot)
 	await wait_physics_frames(6)
 	assert_eq([hero.stance_tree, hero.stance], ["Water", 1])
+	assert_lt(hero.hp - hp, 5.0, "entering the stance cast nothing (only regeneration)")
 	assert_eq(hero.cooldowns.gcd_remaining(session.now()), 0.0, "entering doesn't start the global cooldown")
+	input.use_slot(heal_slot)
+	await wait_physics_frames(6)
+	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "the second press casts")
+	assert_eq(hero.stance, 1, "still in the stance")
+	# Fire Punch belongs to Fire stance 1: its key switches stance, nothing more.
+	TreeRules.master(hero, ContentDB.abilities[&"F01"]) # its scroll left the learning slot
 	input.use_slot(0)
 	await wait_physics_frames(6)
-	assert_gt(hero.cooldowns.gcd_remaining(session.now()), 0.0, "the heal went through branch key 1")
-	assert_eq(hero.stance, 1, "still in the stance")
+	assert_eq([hero.stance_tree, hero.stance], ["Fire", 1])
 	session.send_intent({"type": "stance", "tree": "", "stance": 0})
 	await wait_physics_frames(4)
 
@@ -77,7 +84,6 @@ func test_solo_game_runs_with_hud() -> void:
 	await wait_process_frames(2)
 	assert_eq(hero.equipped_in(EquipSlot.Id.MAIN_HAND).id, &"travelers_longsword")
 	assert_eq(hero.bag.count_of(ContentDB.items[&"rusty_shortsword"]), 1, "the old sword went to the bag")
-	# Page 1 is full of stances (Fire and Water): the sword arts go on page 2.
 	assert_true(game.client.action_bar.has_anywhere(&"S04"))
 	assert_true(game.client.action_bar.has_anywhere(&"S01"), "Slash's slot stays (dimmed)")
 	var tooltip = main_hand._make_custom_tooltip("")
@@ -86,7 +92,7 @@ func test_solo_game_runs_with_hud() -> void:
 
 	# The layout was saved to the settings file.
 	var reloaded := ActionBarModel.new()
-	SettingsStore.load_action_bar(reloaded, SETTINGS)
+	SettingsStore.load_action_bar(reloaded, SETTINGS, "Tester") # each character's own bar
 	assert_eq(reloaded.slots, game.client.action_bar.slots)
 
 	# Talking to Hilda opens the dialogue box; walking away closes it.

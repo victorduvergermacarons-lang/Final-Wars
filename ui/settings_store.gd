@@ -5,13 +5,32 @@ extends RefCounted
 const DEFAULT_PATH := "user://settings.cfg"
 
 
-static func load_action_bar(bar: ActionBarModel, path: String = DEFAULT_PATH) -> void:
+## The action bar of character `owner` (each keeps its own, 2026-11-28; "" = the one
+## shared layout, as before). A character without one yet starts with an empty bar
+## (its abilities are placed as it has them) and the shared layout's keybinds.
+static func load_action_bar(bar: ActionBarModel, path: String = DEFAULT_PATH, owner: String = "") -> void:
 	var cfg := ConfigFile.new()
 	if cfg.load(path) != OK:
 		return
-	var d = cfg.get_value("action_bar", "layout", {})
+	var d = cfg.get_value(_bar_section(owner), "layout", {}) if cfg.has_section_key(_bar_section(owner), "layout") else null
+	if d == null and owner != "":
+		var shared = cfg.get_value("action_bar", "layout", {})
+		d = {"keys": shared.get("keys", [])} if typeof(shared) == TYPE_DICTIONARY else {}
 	if typeof(d) == TYPE_DICTIONARY:
 		bar.load_dict(d)
+
+
+static func _bar_section(owner: String) -> String:
+	return "action_bar" if owner == "" else "action_bar." + CharacterStore.slug(owner)
+
+
+## Forgets a character's action bar (it was deleted).
+static func forget_action_bar(owner: String, path: String = DEFAULT_PATH) -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load(path) != OK or not cfg.has_section(_bar_section(owner)):
+		return
+	cfg.erase_section(_bar_section(owner))
+	cfg.save(path)
 
 
 ## A UI preference ([ui] section), or `default` if not saved yet.
@@ -29,10 +48,10 @@ static func save_ui(key: String, value: Variant, path: String = DEFAULT_PATH) ->
 	cfg.save(path)
 
 
-static func save_action_bar(bar: ActionBarModel, path: String = DEFAULT_PATH) -> void:
+static func save_action_bar(bar: ActionBarModel, path: String = DEFAULT_PATH, owner: String = "") -> void:
 	var cfg := ConfigFile.new()
 	cfg.load(path) # keep other sections if any
-	cfg.set_value("action_bar", "layout", bar.to_dict())
+	cfg.set_value(_bar_section(owner), "layout", bar.to_dict())
 	cfg.save(path)
 
 

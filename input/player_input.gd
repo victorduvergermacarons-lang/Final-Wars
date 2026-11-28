@@ -247,18 +247,11 @@ func _input(event: InputEvent) -> void:
 
 ## Fires whatever ability is in action bar slot i. `key` is the action that was
 ## pressed (aimed abilities fire when it's released); "" for a click on the bar.
-## The number of branch keys a stance has (keys 1-4 while one is held).
-const BRANCH_KEYS := 4
 
 
 func use_slot(i: int, key: StringName = &"") -> void:
 	var hero: Hero = session.local_hero()
 	if hero == null:
-		return
-	# In a stance, the first four keys cast its branches (the slots there are set
-	# aside until the stance is left); the others keep their slots.
-	if hero.stance > 0 and i < BRANCH_KEYS:
-		use_branch(hero, i + 1, key)
 		return
 	var id := client.action_bar.slots[i]
 	if id == &"":
@@ -274,7 +267,24 @@ func use_slot(i: int, key: StringName = &"") -> void:
 	if ability == null:
 		client.error("You can't use that right now")
 		return
+	# A bending ability of another stance (or out of any stance) enters that stance
+	# instead of casting; the next press casts (2026-11-28). A press during the
+	# ability's own timing bar still plays the bar.
+	if needs_stance(hero, ability) and not _bar_running_for(hero, ability):
+		enter_stance(ability.tree, ability.stance)
+		return
 	use_ability(ability, key)
+
+
+## Whether `ability` is cast from a stance the hero isn't in.
+static func needs_stance(hero: Hero, ability: AbilityDef) -> bool:
+	return ability.stance > 0 and WorldSim.BENDING_TREES.has(ability.tree) \
+			and (hero.stance_tree != ability.tree or hero.stance != ability.stance)
+
+
+func _bar_running_for(hero: Hero, ability: AbilityDef) -> bool:
+	return not hero.casting.is_empty() and hero.casting.get("kind", "") == "timing" \
+			and hero.casting.get("ability") == ability
 
 
 ## Enters (or switches to) a bending stance; its entry cast, if any, goes at the
@@ -287,31 +297,6 @@ func enter_stance(tree: String, n: int) -> void:
 		return
 	session.send_intent({"type": "stance", "tree": tree, "stance": n, "target": client.target_id,
 			"aim": mouse_point(null)})
-
-
-## Branch key `b` (1-4) in the stance held: casts that branch's ability, or says
-## what it is and why it can't be used. Pressed again during the ability's own
-## timing bar, it plays the bar (the second press).
-func use_branch(hero: Hero, b: int, key: StringName = &"") -> void:
-	var def := WorldSim.stance_ability(ContentDB.abilities, hero.stance_tree, hero.stance, b)
-	if def == null:
-		client.error("%s %d → %d: no ability" % [hero.stance_tree, hero.stance, b])
-		return
-	var ability := hero.find_ability(def.id)
-	if ability == null:
-		client.error("%s %d → %d: %s, %s" % [hero.stance_tree, hero.stance, b, def.display_name,
-				_why_not(hero, def)])
-		return
-	use_ability(ability, key)
-
-
-static func _why_not(hero: Hero, def: AbilityDef) -> String:
-	if not def.implemented:
-		return "not in the game yet"
-	var need := int(def.sheet.get("mastery_required", 0))
-	if Mastery.permanent(hero, def.tree) + 0.0001 < need:
-		return "needs %s Mastery %d" % [def.tree, need]
-	return "not learned yet"
 
 
 ## Uses one of the named consumable from the bag.

@@ -1520,7 +1520,22 @@ Checklist: `docs/playtest-checklist-stances-and-effects.md`.
   (`StartingElementDef.starting_mastery`).
 - **Act I gives tier 1 only;** beating the Silent Shaft (the Foreman) gives the first
   tier-2 scrolls (`tools/once/act1_tier1_rewards.py`).
-- **Controls** (`PlayerInput`, `ActionBarModel`):
+- **Since 2026-11-28 (water physics, phase 2) the controls below are replaced:** every
+  learned ability sits on the action bar again (stance entries are gone; old ones are
+  dropped on load and their abilities placed again). Pressing a bending ability while not
+  in its stance enters that stance instead of casting (`PlayerInput.needs_stance`); the
+  next press casts; one from another stance switches stance. A press during the ability's
+  own timing bar still plays the bar. A corner badge on each bending slot shows its stance
+  number in the element's colour, lit while that stance is held; the stance panel is
+  hidden. Unchanged: the hero stays in the stance after casting; Shift and crowd control
+  leave it; entering doesn't start the global cooldown; entry casts still fire when off
+  cooldown; stances are host-validated intents in each hero's snapshot (the host still
+  switches stance itself when a cast arrives from another one). **Each character keeps its
+  own action bar** (`SettingsStore` section `action_bar.<name>`; a new character starts
+  empty with the shared layout's keybinds), and the main menu's **Delete** removes a
+  character after a confirmation ("Delete <name>? This can't be undone."), with its bar.
+  Tests: `tests/unit/test_hotbar_stances.gd`; screenshots `tests/visual/hotbar_shots.tscn`.
+- **Controls as built 2026-11-23** (`PlayerInput`, `ActionBarModel`):
   - Out of a stance, 1–0 are the action bar. Stances are bar entries
     (`stance:<Tree>:<n>`); your element's 1–5 start in slots 1–5, other elements' in
     free slots; any stance can go in any slot. Bending abilities left the bar once.
@@ -2817,6 +2832,7 @@ F. 15 debug console · 16 docs + playtest checklist.
 ## Decisions log
 | Date | Decision | Notes |
 |------|----------|-------|
+| 2026-11-28 | Water physics phase 2: stances off the hotbar; a bar per character; deleting characters | User brief and requests. My choices: the second press of a timing bar is unchanged (same key, Space or right-click while that ability's bar runs; it never re-enters the stance); bending slots get a small stance badge (element colour, stance number, lit while held) and the stance panel is hidden; the host keeps switching stance on a cast from another stance (old clients, tests) while the client only switches; a new character's bar starts empty and takes the shared layout's keybinds; keybinds are saved with each character's bar; deleting a character also forgets its bar. Abilities whose stance can't be entered (stance 2 without water, phase 3) will show blue like "not enough mana" with "Not enough water". |
 | 2026-11-28 | Water physics pass (branch `feature/water-physics` from `feature/stance-rework`), phase 1: render fixes | User brief and screenshot. Shadow: black at 30% (`WaterRopeSettings.SHADOW_DARKEN`), which darkens what's under it by 30%, each screen pixel once a frame (`WaterRopes._shadow_seen`). The wall showing through in a box round the hero, and the flower bed's lower faces: the terrain cache redraws a covering tile (a wall, a prop) whole, including lower faces the cached picture hides under the bare ground in front; since 2026-11-25 that ground was never redrawn, so they showed (the rope's pieces filed behind the hero pulled the redraw box back to the house). Now the bare tiles in front of a redrawn tile are put back right after it, before anything in front is drawn (`WorldView._collect_cover` `patch`). The faint stance ring under Water stance 1 is gone (the rope is its look). User answers for later phases: the river stays a water source and stance water visibly flows from the nearest water tile when entering a stance; the pouch stays and refills fully in 10 s, interrupted by damage or moving; "Not enough water" counts the stance's water; stance 2's pose uses existing hero art; the whip's 1.5 s bar also decides when the water returns (no press by 0.5 s: the water stays on the ground until the press); Frost Shard's sprite scaled 50%; delete characters from the main menu with a confirmation; hotbars saved per character. |
 | 2026-11-25 | Playtest fixes: Water Shield built; bare ground no longer covers effects; unbuilt branches marked; a hand-point Aseprite file | User report and requests. My choices: Water Shield's shield size from the tier default and the sheet's Scales With (like Boulder Shield), its splash 10 + 0.6 Magic Attack to enemies within 1.5 tiles when the shield is used up (not when it times out), 10 mana; covering rule: only tiles higher than the ground an actor or effect stands on, or holding a prop, object or graveyard marker, are drawn again over it (the ground bucketing of ring halves removed); unbuilt stance branches crossed out with "not built" and a hover list; the Aseprite file has one empty layer per facing, a tag per facing, the palette set to #FF00FF. |
 | 2026-11-25 | Threat and tanking merged into the stance rework (`feature/threat-tanking` into `feature/stance-rework`; the art bot and Eloi's branch left out) | User request. My choices where the two designs differ: the stance sheet wins (it is the newer design): cooldowns from the sheet; Metalbending is the sheet's debuff (−20 Physical Defense, speed halved, 8 s) without the pull or the Stone Skin taunt; Seismic Stomp keeps the threat branch's light damage (it keeps threat after the taunt; the sheet's text only says taunt); Earth Armor's recast (Fortress) isn't built; Rock Throw keeps threat ×3. See **Threat and tanking**. |

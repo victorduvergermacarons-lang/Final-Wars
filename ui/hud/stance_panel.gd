@@ -11,6 +11,8 @@ const TITLE_W := 150.0
 
 var hud: Hud
 var _font: Font
+## Since 2026-11-28 every ability sits on the action bar, so the panel stays hidden.
+var hidden_for_good := false
 
 
 func _init(p_hud: Hud) -> void:
@@ -23,7 +25,7 @@ func _init(p_hud: Hud) -> void:
 
 func _process(_delta: float) -> void:
 	var hero: Hero = hud.session.local_hero() if hud.session != null else null
-	visible = hero != null and hero.stance > 0
+	visible = not hidden_for_good and hero != null and hero.stance > 0
 	if visible:
 		queue_redraw()
 		var lines: PackedStringArray = []

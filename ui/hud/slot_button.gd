@@ -36,15 +36,7 @@ func _process(_delta: float) -> void:
 	var ability := _ability()
 	var item := _item()
 	var entry := hud.client.action_bar.slots[index]
-	if ActionBarModel.is_stance_slot(entry):
-		var st := ActionBarModel.stance_of(entry)
-		var names: PackedStringArray = []
-		for b in range(1, 5):
-			var a := WorldSim.stance_ability(ContentDB.abilities, st[0], st[1], b)
-			names.append("%d: %s" % [b, a.display_name if a != null else "—"])
-		tooltip_text = "%s stance %d\n%s\nIn the stance, keys 1-4 cast these. Shift leaves it." % [st[0], st[1],
-				"\n".join(names)]
-	elif item != null:
+	if item != null:
 		tooltip_text = "%s\n%s" % [item.display_name, item.description]
 	else:
 		tooltip_text = _tooltip(ability) if ability != null else "Empty slot. Drag an ability from the Spellbook (P) or a potion from your bag."
@@ -89,11 +81,6 @@ func _draw_stance(rect: Rect2, entry: StringName, hero: Hero) -> void:
 func _draw() -> void:
 	var rect := Rect2(Vector2.ZERO, size)
 	var entry := hud.client.action_bar.slots[index]
-	var stance_hero: Hero = hud.session.local_hero()
-	if ActionBarModel.is_stance_slot(entry):
-		_draw_stance(rect, entry, stance_hero)
-		_dim_for_stance(rect, stance_hero)
-		return
 	var ability := _ability()
 	var hero: Hero = hud.session.local_hero()
 	var now: float = hud.session.now()
@@ -134,14 +121,20 @@ func _draw() -> void:
 			if cd > hero.cooldowns.gcd_remaining(now) and cd > 0.0:
 				_text("%d" % ceili(cd) if cd >= 1.0 else "%.1f" % cd, Vector2(size.x * 0.5 - 8, size.y * 0.5 + 6), 16, Color(1, 1, 0.6))
 	_text(hud.client.action_bar.key_label(index), Vector2(size.x - 14, 13), 11, Color(0.85, 0.85, 0.9))
-	_dim_for_stance(rect, hero)
+	if ability != null and ability.stance > 0 and STANCE_COLORS.has(ability.tree):
+		_draw_stance_badge(ability, hero)
 
 
-## While a stance is held, keys 1-4 cast its branches (see the stance panel), so
-## these slots are dimmed.
-func _dim_for_stance(rect: Rect2, hero: Hero) -> void:
-	if hero != null and hero.stance > 0 and index < PlayerInput.BRANCH_KEYS:
-		draw_rect(rect, Color(0, 0, 0, 0.55))
+## A bending ability's stance in the slot's corner (its element's colour and the
+## stance number), lit while that stance is held: pressing an ability of another
+## stance enters that stance first (2026-11-28).
+func _draw_stance_badge(ability: AbilityDef, hero: Hero) -> void:
+	var c: Color = STANCE_COLORS[ability.tree]
+	var held: bool = hero != null and hero.stance_tree == ability.tree and hero.stance == ability.stance
+	var box := Rect2(Vector2(2, size.y - 16), Vector2(14, 14))
+	draw_rect(box, c.darkened(0.1 if held else 0.6))
+	draw_rect(box, c.lightened(0.5) if held else c.darkened(0.2), false, 1.0)
+	_text(str(ability.stance), box.position + Vector2(4, 12), 11, Color.WHITE if held else Color(0.8, 0.8, 0.85))
 
 
 func _draw_sweep(rect: Rect2, fraction: float) -> void:
