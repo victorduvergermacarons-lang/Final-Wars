@@ -14,6 +14,8 @@ extends RefCounted
 ## the part behind the hero (smaller depth) goes before the hero.
 
 const STEP := 1.0 / 60.0
+## Healing Touch's effect: the rope winds round the target (WaterRope.heal).
+const HEAL_FX := &"water_heal_helix"
 ## Debug colours (the reference's): points, the front, the return path and entry mark.
 const PT := Color("D4537E")
 const TIPC := Color("EF9F27")
@@ -48,17 +50,22 @@ func tiles_of(g: Vector2) -> Vector2:
 func on_events(events: Array, effects: Dictionary) -> void:
 	for e in events:
 		if e.get("type", "") == "water_return":
-			# Water Whip's second press: that share of the thrown water comes home.
+			# Water Whip's second press, or what Healing Touch's heal didn't need:
+			# that share of the water out comes home.
 			var r := rope_of(int(e.get("source", -1)))
 			if r != null:
-				r.call_back(float(e.get("share", 0.0)))
+				if r.st == "heal":
+					r.heal_back(float(e.get("share", 0.0)))
+				else:
+					r.call_back(float(e.get("share", 0.0)))
 			continue
 		if e.get("type", "") != "fx":
 			continue
 		var fx: FxDef = effects.get(StringName(e.get("fx", "")))
 		if fx != null and fx.ribbon and fx.path == FxDef.Path.ROPE:
 			_pending.append({"source": int(e.get("source", -1)), "to": Vector2(e.get("to", Vector2.ZERO)),
-					"at": float(e.get("at", 0.0))})
+					"at": float(e.get("at", 0.0)), "fx": fx.id,
+					"self": int(e.get("target", -1)) == int(e.get("source", -1))})
 
 
 ## Moves every rope on by `dt` seconds of game time at `now` (host time).
@@ -115,6 +122,9 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 			e = _new_entry(h)
 			e.rope.fill_now(mini(h.stance_water, settings.NMAX))
 		var aim: Vector2 = ground_of(t.to) - e.ground
+		if t.get("fx", &"") == HEAL_FX:
+			e.rope.heal(aim, bool(t.get("self", false)))
+			continue
 		var dz := (float(grid.height_at(MoveState.tile_of(t.to))) - h.move.ground_h) * 8.0 / settings.WATER_SCALE \
 				if grid != null else 0.0
 		e.rope.cast(aim, dz)
@@ -184,22 +194,35 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 			groups[key] = {"rope": true, "pos": Vector2(tile), "behind": behind, "origin": origin, kind: []}
 		groups[key][kind].append(piece)
 	var n := r.M()
-	# Segments to draw: each linked pair, plus the hoop's closing link once it shows.
+	# The points to draw: the rope, then Healing Touch's front still climbing to its
+	# mist after the tail went home (WaterRope.heal_tail, always linked).
+	var P: Array[Vector3] = []
+	for pt in r.R:
+		P.append(pt.p)
+	for pt in r.heal_tail:
+		P.append(pt.p)
+	var tail_n := r.heal_tail.size()
+	# Segments to draw ([from, to, index in its chain, chain length]): each linked
+	# pair, the hoop's closing link once it shows, and the climbing front.
 	var b := WaterRope.ramp(r.sb, 1.0)
 	var closed := r.wrap and r.wrap_str >= 0.35 and n > 2
 	var segs := []
 	for i in n - 1:
 		if r.conn[i] and r.strength[i] >= 0.35:
-			segs.append([i, i + 1])
+			segs.append([i, i + 1, i, n])
 	if closed:
-		segs.append([n - 1, 0])
+		segs.append([n - 1, 0, n - 1, n])
+	for j in tail_n - 1:
+		segs.append([n + j, n + j + 1, j, tail_n])
 	var lit := func(i: int) -> bool:
+		if i >= n:
+			return tail_n > 1
 		return closed or (i > 0 and r.conn[i - 1] and r.strength[i - 1] >= 0.35) or (i < n - 1 and r.conn[i] and r.strength[i] >= 0.35)
 	# Shadows under airborne water (on the ground: before everything on its tile).
 	var shadow_w := 3 if b > 0.5 else 2 # the hoop's shadow is a pixel wider
 	for sg in segs:
-		var a: Vector3 = r.R[sg[0]].p
-		var c: Vector3 = r.R[sg[1]].p
+		var a: Vector3 = P[sg[0]]
+		var c: Vector3 = P[sg[1]]
 		if a.z < 1.5 and c.z < 1.5:
 			continue
 		var sa := _proj(Vector3(a.x, a.y, 0))
@@ -208,8 +231,8 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 		for k in k0 + 1:
 			var t := float(k) / k0
 			put.call("shadows", Vector2(lerpf(a.x, c.x, t), lerpf(a.y, c.y, t)), [sa.lerp(sc, t), shadow_w], true)
-	for i in n:
-		var p: Vector3 = r.R[i].p
+	for i in P.size():
+		var p: Vector3 = P[i]
 		if not lit.call(i) and p.z > 1.5:
 			put.call("shadows", Vector2(p.x, p.y), [_proj(Vector3(p.x, p.y, 0)) - Vector2(1, 0), 3], true)
 	for d in r.drops:
@@ -220,7 +243,7 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 	# The rope: rippled slices, lit.
 	var total := 0.0
 	for sg in segs:
-		total += _proj(r.R[sg[0]].p).distance_to(_proj(r.R[sg[1]].p))
+		total += _proj(P[sg[0]]).distance_to(_proj(P[sg[1]]))
 	var rl := lerpf(s.RIPPLE_LEN, s.HOOP_RIPPLE_LEN, b)
 	# A closed hoop fits a whole number of ripples round it, so they meet seamlessly.
 	var kw := TAU * maxf(1.0, roundf(total / rl)) / total if closed and total > 0.0 else TAU / rl
@@ -230,8 +253,8 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 	var sun := s.SUN.normalized()
 	for sg in segs:
 		var i: int = sg[0]
-		var a: Vector3 = r.R[i].p
-		var c: Vector3 = r.R[sg[1]].p
+		var a: Vector3 = P[i]
+		var c: Vector3 = P[sg[1]]
 		var sa := _proj(a)
 		var sc := _proj(c)
 		var L := sa.distance_to(sc)
@@ -240,7 +263,7 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 		var k0 := maxi(1, ceili(L))
 		for st in k0:
 			var k := float(st) / k0
-			var f := (i + k) / maxf(1.0, n - 1)
+			var f := (float(sg[2]) + k) / maxf(1.0, float(sg[3]) - 1.0)
 			var u := (arc + k * L) / (total if total > 0.0 else 1.0)
 			var ph := (arc + k * L) * kw - r.fr * r_speed
 			var amp := r_amp if closed else r_amp * (0.4 + 0.6 * sin(PI * f))
@@ -256,7 +279,7 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 		arc += L
 	for i in n:
 		if not lit.call(i):
-			var p: Vector3 = r.R[i].p
+			var p: Vector3 = P[i]
 			var rr := maxf(0.8, rad(float(i) / maxf(1, n - 1), r.fr) * 0.75 + s.BODY_GROW * 0.6)
 			put.call("blobs", Vector2(p.x, p.y), [_proj(p), rr, p.z < 1.5])
 	if (r.st == "fly" or r.st == "return") and n > 0:
@@ -264,6 +287,8 @@ func _rope_items(e: Dictionary, origin: Vector2) -> Array:
 		put.call("blobs", Vector2(tp.x, tp.y), [_proj(tp), 1.5, false])
 	for d in r.drops:
 		put.call("drops", Vector2(d.p.x, d.p.y), [_proj(d.p)])
+	for m in r.mists: # Healing Touch's mist: [screen, life left (0–1), its dither phase]
+		put.call("mists", Vector2(m.p.x, m.p.y), [_proj(m.p), m.l / m.L0, (int(m.k) + (r.fr >> 2)) & 1])
 	return groups.values()
 
 
@@ -342,13 +367,20 @@ func draw(canvas: CanvasItem, item: Dictionary) -> void:
 		for d in item.drops:
 			px.call(d[0].x + 1, d[0].y + 1, s.OUT)
 			px.call(d[0].x, d[0].y, s.DROP)
+	if item.has("mists"):
+		# Drifting mist pixels, dithering out in their last 30%.
+		for m in item.mists:
+			var q: float = m[1]
+			if q < 0.3 and int(m[2]) == 1:
+				continue
+			px.call(m[0].x, m[0].y, s.HI if q > 0.55 else s.DROP, 2 if q > 0.7 else 1, 1)
 
 
 ## The screen box an item can touch (world px), for the terrain cache.
 func rect_of(item: Dictionary) -> Rect2:
 	var o: Vector2 = item.origin
 	var r := Rect2(o * PixelCamera.ART_SCALE, Vector2.ZERO)
-	for kind in ["stamps", "blobs", "drops", "shadows", "puddles"]:
+	for kind in ["stamps", "blobs", "drops", "shadows", "puddles", "mists"]:
 		for piece in item.get(kind, []):
 			r = r.expand((o + piece[0]) * PixelCamera.ART_SCALE)
 	return r.grow(8.0 * PixelCamera.ART_SCALE)

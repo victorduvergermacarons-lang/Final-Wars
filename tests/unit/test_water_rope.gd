@@ -218,3 +218,44 @@ func test_off_screen_heroes_are_skipped() -> void:
 	assert_true(ropes.items(func(_h): return Vector2.ZERO).is_empty())
 	ropes.advance(0.1, 1.1, [h], null, null, func(_x): return true)
 	assert_eq(r.M(), settings.NMAX, "back on its orbit when it comes back")
+
+
+# --- Healing Touch (water physics phase 4) ------------------------------------------
+
+func test_heal_reaches_the_top_at_the_heal_time() -> void:
+	var r := _rope()
+	r.heal(Vector2(60, 20), false)
+	assert_eq(r.st, "heal")
+	var top: Vector3 = r.hpath.pts[r.hpath.pts.size() - 1]
+	assert_almost_eq(top.z, settings.HERO_H + settings.TOP_LIFT, 0.01, "above the head")
+	for i in settings.HEAL_T - 1:
+		r.step()
+	assert_true(r.mists.is_empty(), "not yet at the top")
+	r.step()
+	r.step()
+	assert_gt(r.mists.size(), 0, "the lead turned to mist at the top, on time")
+
+
+func test_the_heal_s_unused_share_goes_home_off_the_tail() -> void:
+	var r := _rope()
+	r.heal(Vector2(60, 20), false)
+	for i in settings.HEAL_T:
+		r.step()
+	var n := r.M()
+	r.heal_back(0.5)
+	assert_eq(r.st, "return", "the tail heads home")
+	assert_eq(r.M(), roundi(0.5 * settings.NMAX), "half the rope")
+	assert_eq(r.heal_tail.size(), n - r.M(), "the front climbs on")
+	for i in 400:
+		r.step()
+	assert_true(r.heal_tail.is_empty(), "all of the front turned to mist")
+
+
+func test_a_self_heal_unwinds_into_the_orbit() -> void:
+	var r := _rope()
+	r.heal(Vector2.ZERO, true)
+	for i in settings.HEAL_T:
+		r.step()
+	r.heal_back(1.0)
+	assert_eq(r.st, "idle", "straight back into the orbit")
+	assert_gt(r.M(), 0)

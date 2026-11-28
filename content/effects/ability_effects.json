@@ -33,7 +33,7 @@
 	"F18": {"land": "combustion_blast"},
 	"E21": {"projectile": "metal_shards"},
 	"E23": {"land": "boulder_crush"},
-	"W01": {"hands": "heal_ball", "cast": "heal_splash"},
+	"W01": {"cast": "water_heal_helix"},
 	"W12": {"held": "water_shield"},
 	"W04": {"projectile": "frost_shard"},
 	"W13": {"held": "ice_prison"},

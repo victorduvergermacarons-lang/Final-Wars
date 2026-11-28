@@ -216,6 +216,39 @@ extends Resource
 @export var CLOSE_AT: float = 0.95
 ## How hard each point follows its place on the hoop (the reference's FOLLOW_K).
 @export var HOOP_FOLLOW: float = 0.12
+@export_group("Healing Touch (healing_touch_demo.html)")
+## Frames from the cast to the heal (the lead reaches the top of the helix).
+@export var HEAL_T: int = 72
+@export var LOOPS_SELF: float = 2.0
+@export var LOOPS_FAR: float = 1.0
+## Loops scale from LOOPS_SELF at 0 to LOOPS_FAR at this distance (px).
+@export var FAR_REF: float = 140.0
+## Helix radius round the body, at its top, and where it starts narrowing (share).
+@export var WRAP_R: float = 10.0
+@export var TOP_R: float = 3.0
+@export var NARROW_AT: float = 0.55
+## Helix from WAIST × the target's height to its height + TOP_LIFT (px).
+@export var WAIST: float = 0.45
+@export var TOP_LIFT: float = 4.0
+## A hero's height (px), the helix's target.
+@export var HERO_H: float = 36.0
+@export var HEAL_FOLLOW: float = 0.35
+@export var HEAL_DRAG: float = 0.8
+## Lead speed: a Hermite curve from the orbit speed (at most M0_MAX) to END_SLOPE.
+@export var END_SLOPE: float = 0.6
+@export var M0_MAX: float = 2.5
+## The travel arc: leaving control 0.4 × distance (at most 20), arriving 0.35 ×
+## distance, lifted 4 + 0.05 × distance.
+@export var TRAVEL_CTRL: float = 0.4
+@export var TRAVEL_CTRL_MAX: float = 20.0
+@export var ARRIVE_CTRL: float = 0.35
+@export var LIFT_BASE: float = 4.0
+@export var LIFT_PER: float = 0.05
+## Mist: per point at the top; frames it lasts (+ up to MIST_LIFE_RND).
+@export var MIST_PER: int = 3
+@export var MIST_LIFE: int = 50
+@export var MIST_LIFE_RND: int = 40
+
 ## Frames between points joining the hoop (the reference's ADD_EVERY).
 @export var HOOP_ADD_EVERY: int = 4
 @export_group("Palette")

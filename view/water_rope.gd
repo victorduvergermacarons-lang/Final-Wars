@@ -76,6 +76,25 @@ var target_count := 0
 ## comes back (0–1), set by the player's second press (`call_back`); < 0: not yet, and
 ## the water waits on the ground ("ground") until it is.
 var return_share := -1.0
+## Healing Touch (water physics phase 4, healing_touch_demo.html): the path (orbit
+## arc, travel arc, helix), the lead's distance along it, the Hermite speed curve's
+## numbers, how many leading points have turned to mist, whether it was a self-cast,
+## the target (for the way home), and the points still climbing after the tail went
+## home (`heal_back`).
+var hpath := {}
+var heal_s := 0.0
+var heal_s0 := 0.0
+var heal_L := 0.0
+var heal_m0 := 0.0
+var heal_vend := 0.0
+var heal_gone := 0
+var heal_n0 := 0
+var heal_self := false
+var heal_to := Vector3.ZERO
+var heal_tail: Array[Pt] = []
+var heal_tail_base := 0
+var heal_tt := 0
+var mists: Array = []
 var goal := 1
 var sb := 0.0
 var wrap := false
@@ -167,7 +186,7 @@ func seg_len() -> float:
 	return lerpf(s.SEG, TAU * s.HR / hoop_n(), ramp(sb, 1.0))
 
 
-func orbit_t(id: int) -> Vector3:
+func orbit_t(id: float) -> Vector3:
 	var a := phase - id * s.ang()
 	return Vector3(cos(a) * s.ORB, sin(a) * s.ORB, s.ZW + sin(id * s.WAVE_LEN - fr * s.WAVE_SPEED) * s.WAVE_AMP)
 
@@ -298,7 +317,8 @@ func drain() -> void:
 
 ## A dead rope (drained) can be dropped by its owner.
 func done() -> bool:
-	return st == "drain" and R.is_empty() and drops.is_empty() and lost.is_empty()
+	return st == "drain" and R.is_empty() and drops.is_empty() and lost.is_empty() and mists.is_empty() \
+			and heal_tail.is_empty()
 
 
 ## The hero moved `delta` on the ground (reference px): what is out in the world
@@ -351,6 +371,156 @@ func cast(target: Vector2, z_offset := 0.0) -> void:
 	if st == "fly":
 		_release()
 	readout = {"pull_back": Bk, "spin_s": Ts / 60.0, "flight_s": Tf / 60.0, "recast": recast}
+
+
+## Healing Touch: the whole rope winds round `target` (ground px from the hero; the
+## hero itself for a self-cast): out along the orbit, a travel arc, then a helix from
+## the waist up past the head, turning to mist at the top. The heal lands as the lead
+## reaches the top, HEAL_T frames after the cast.
+func heal(target: Vector2, self_cast: bool) -> void:
+	if not can_cast() or M() < 2:
+		fill_now(maxi(M(), s.MIN_KEEP))
+	heal_self = self_cast
+	var C := Vector2.ZERO if self_cast else target
+	var n := M()
+	var pts := PackedVector3Array()
+	var k := (n - 1) * 4
+	while k >= 0:
+		pts.append(orbit_t(k / 4.0))
+		k -= 1
+	var P0 := pts[pts.size() - 1]
+	heal_s0 = poly_path(pts).L
+	var z0 := s.HERO_H * s.WAIST
+	var z1 := s.HERO_H + s.TOP_LIFT
+	var loops := lerpf(s.LOOPS_SELF, s.LOOPS_FAR, clampf(C.length() / s.FAR_REF, 0.0, 1.0))
+	if self_cast:
+		_helix(pts, C, phase, s.ORB, P0.z, z1, loops)
+	else:
+		var dv := (C - Vector2(P0.x, P0.y))
+		var d := dv.normalized() if dv.length() > 0.0 else Vector2.RIGHT
+		var a0 := atan2(d.y, d.x) - PI / 2.0
+		var H0 := Vector3(C.x + cos(a0) * s.WRAP_R, C.y + sin(a0) * s.WRAP_R, z0)
+		var vdir := Vector2(-sin(phase), cos(phase))
+		var D := Vector2(H0.x, H0.y).distance_to(Vector2(P0.x, P0.y))
+		var ca := minf(D * s.TRAVEL_CTRL, s.TRAVEL_CTRL_MAX)
+		var cb := D * s.ARRIVE_CTRL
+		var P1 := Vector2(P0.x, P0.y) + vdir * ca
+		var P2 := Vector2(H0.x, H0.y) - d * cb
+		var lift := s.LIFT_BASE + D * s.LIFT_PER
+		for i in range(1, 81):
+			var u := i / 80.0
+			var m := 1.0 - u
+			var xy := m * m * m * Vector2(P0.x, P0.y) + 3.0 * m * m * u * P1 + 3.0 * m * u * u * P2 + u * u * u * Vector2(H0.x, H0.y)
+			pts.append(Vector3(xy.x, xy.y, lerpf(P0.z, z0, u) + lift * sin(PI * u)))
+		_helix(pts, C, a0, s.WRAP_R, z0, z1, loops)
+	hpath = poly_path(pts)
+	heal_L = float(hpath.L) - heal_s0
+	heal_m0 = clampf(w * s.ORB * s.HEAL_T / maxf(heal_L, 1.0), 0.0, s.M0_MAX)
+	heal_vend = s.END_SLOPE * heal_L / s.HEAL_T
+	heal_s = heal_s0
+	heal_gone = 0
+	heal_n0 = n
+	heal_to = Vector3(C.x, C.y, s.TARGET_Z)
+	heal_tail.clear()
+	for i in conn.size():
+		conn[i] = true
+		strength[i] = 1.0
+	return_share = -1.0
+	forming = false
+	st = "heal"
+	tt = 0
+	heal_tt = 0
+	prev = R[0].p
+
+
+func _helix(pts: PackedVector3Array, C: Vector2, a0: float, r_start: float, z0: float, z1: float, loops: float) -> void:
+	var A := TAU * loops
+	var N := maxi(30, ceili(loops * 72.0))
+	for k in range(1, N + 1):
+		var u := float(k) / N
+		var rb := lerpf(r_start, s.WRAP_R, ramp(u, 0.3))
+		var r := lerpf(rb, s.TOP_R, ramp(u - s.NARROW_AT, 1.0 - s.NARROW_AT))
+		var a := a0 + A * u
+		pts.append(Vector3(C.x + cos(a) * r, C.y + sin(a) * r, lerpf(z0, z1, u)))
+
+
+func _herm(u: float) -> float:
+	var u2 := u * u
+	var u3 := u2 * u
+	return (u3 - 2.0 * u2 + u) * heal_m0 + (-2.0 * u3 + 3.0 * u2) + (u3 - u2) * s.END_SLOPE
+
+
+## The host's word on the heal: `share` of the water (what full health turned away)
+## comes home off the rope's tail (a self-cast unwinds straight into the orbit); the
+## rest climbs on and turns to mist.
+func heal_back(share: float) -> void:
+	if st != "heal":
+		return
+	var keep := mini(roundi(clampf(share, 0.0, 1.0) * heal_n0), M())
+	heal_tail = R.slice(0, M() - keep)
+	heal_tail_base = heal_gone
+	R = R.slice(M() - keep)
+	for i in R.size():
+		R[i].id = i
+	conn.resize(maxi(M() - 1, 0))
+	strength.resize(maxi(M() - 1, 0))
+	conn.fill(true)
+	strength.fill(1.0)
+	tt = 0
+	if M() == 0:
+		st = "idle"
+	elif heal_self:
+		st = "idle"
+		ib = 0.15
+	else:
+		aim = heal_to
+		st = "return"
+		_start_return()
+
+
+## Moves points along the heal path: the lead exactly, the others springing to
+## their place; those past the top turn to mist. `base`: how many went before.
+## Returns how many turned to mist.
+func _heal_follow(pts: Array[Pt], sv: float, base: int, lead_exact: bool) -> int:
+	var gone := 0
+	var L: float = hpath.L
+	while not pts.is_empty():
+		var sj := sv - (base + gone) * s.sp()
+		if sj < L - 0.01:
+			break
+		pts.pop_front()
+		_mist_at(hpath.pts[hpath.pts.size() - 1])
+		gone += 1
+	for j in pts.size():
+		var sj := sv - (base + gone + j) * s.sp()
+		var q := along(hpath, maxf(0.0, sj) / L)
+		if j == 0 and lead_exact and gone == 0:
+			pts[j].q = prev
+			pts[j].p = q
+			prev = q
+		else:
+			_spring(pts[j], q, s.HEAL_FOLLOW)
+	return gone
+
+
+func _mist_at(at: Vector3) -> void:
+	for k in s.MIST_PER:
+		var life := float(s.MIST_LIFE + rng.randi_range(0, s.MIST_LIFE_RND))
+		mists.append({"p": at, "v": Vector3(rng.randf_range(-0.35, 0.35), rng.randf_range(-0.35, 0.35),
+				rng.randf_range(0.15, 0.5)), "l": life, "L0": life, "k": rng.randi_range(0, 3)})
+
+
+func _step_mists() -> void:
+	var keep := []
+	for m in mists:
+		m.p += m.v
+		m.v = Vector3(m.v.x * 0.95, m.v.y * 0.95, m.v.z * 0.95 - 0.006)
+		if m.p.z < 1.0:
+			m.p.z = 1.0
+		m.l -= 1.0
+		if m.l > 0.0:
+			keep.append(m)
+	mists = keep
 
 
 ## The second press: `share` of the thrown water comes home, the rest soaks in.
@@ -664,6 +834,15 @@ func step() -> void:
 		wrap_str = minf(1.0, wrap_str + 1.0 / s.WRAP_FADE)
 	w += (tw - w) * (s.SPIN_EASE if st == "spin" else s.WRAP_EASE if st == "wrap" else s.IDLE_EASE)
 	phase += w
+	_step_mists()
+	if not heal_tail.is_empty() and st != "heal":
+		# Healing Touch's front, still climbing after the tail went home.
+		for p in heal_tail:
+			var v := (p.p - p.q) * s.HEAL_DRAG
+			p.q = p.p
+			p.p += v
+		heal_s += heal_vend
+		heal_tail_base += _heal_follow(heal_tail, heal_s, heal_tail_base, false)
 	if st == "drain":
 		_step_drain()
 		_step_drops()
@@ -673,7 +852,8 @@ func step() -> void:
 			_add_point(true)
 		_step_drops()
 		return
-	var damp := s.FLY_DAMP if st in ["fly", "fall", "pour"] else s.RET_DRAG if _reforming() else s.IDLE_DAMP
+	var damp := s.FLY_DAMP if st in ["fly", "fall", "pour"] else s.HEAL_DRAG if st == "heal" \
+			else s.RET_DRAG if _reforming() else s.IDLE_DAMP
 	var homing := st == "return" or st == "wrap"
 	var att0: Array[bool] = attached() if homing else ([] as Array[bool])
 	var chased := {}
@@ -772,6 +952,18 @@ func step() -> void:
 					_cut_and_rise()
 		"ground":
 			pass # regrouped on the ground, waiting for the second press (call_back)
+		"heal":
+			heal_tt += 1
+			var sv := heal_s0 + heal_L * _herm(float(heal_tt) / s.HEAL_T) if heal_tt <= s.HEAL_T \
+					else heal_s + heal_vend
+			heal_s = sv
+			heal_gone += _heal_follow(R, sv, heal_gone, true)
+			conn.resize(maxi(M() - 1, 0))
+			strength.resize(maxi(M() - 1, 0))
+			_constrain(1 if heal_gone == 0 else 0)
+			if R.is_empty():
+				st = "idle" # all of it went into the heal: the rope grows back from the source
+				tt = 0
 		"rise":
 			var k := s.RISE_K * ramp(tt, s.RISE_RAMP)
 			for i in M():

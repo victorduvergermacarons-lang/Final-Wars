@@ -1206,7 +1206,7 @@ func _emit_fx(caster: Actor, ability: AbilityDef, fx: StringName, target: Actor,
 	elif aim is Vector2 or aim is Vector2i:
 		to = Vector2(aim)
 	var e := {"type": "fx", "fx": fx, "source": caster.id, "ability": ability.id, "from": caster.move.pos, "to": to,
-			"at": now}
+			"at": now, "target": target.id if target != null else -1}
 	e.merge(shape_fx_data(caster, ability, fx, target, aim), true)
 	emit(e)
 
