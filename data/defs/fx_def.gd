@@ -31,6 +31,9 @@ enum Anchor { CASTER, POINT }
 @export var hit_frame: int = -1
 ## A still played once: how long it shows (0 = frames / fps).
 @export var hold_seconds: float = 0.0
+## A projectile's sprite shows only this long after its launch (Frost Shard: the
+## water flies and freezes into it first; WaterRopes draws the water).
+@export var appear_after: float = 0.0
 ## Fades out over the last 40% of its time (stills).
 @export var fade_out: bool = false
 

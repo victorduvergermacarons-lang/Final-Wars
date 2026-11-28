@@ -307,6 +307,16 @@ extends Resource
 @export var HOME_THICKEN: float = 0.08
 @export var MIN_HOME_PTS: int = 4
 
+@export_group("Frost Shard (frost_shard_demo.html)")
+## Points that break off (the user's piece size, 2026-11-28; the demo had 5).
+@export var SHARD_PIECE: int = 4
+## Bulge outward and lean toward the target over the first frames (visual only).
+@export var SHARD_BULGE: float = 6.0
+@export var SHARD_LEAN: float = 3.0
+@export var SHARD_WINDUP: int = 9
+## Frames for the water to pull together into the shard; drawn as water until 75%.
+@export var SHARD_FREEZE: int = 9
+
 ## Frames between points joining the hoop (the reference's ADD_EVERY).
 @export var HOOP_ADD_EVERY: int = 4
 @export_group("Palette")

@@ -531,6 +531,41 @@ func _step_mists() -> void:
 	mists = keep
 
 
+## Frost Shard: `n` points break off the orbit where it faces `dir` (ground px); if
+## the orbit's gap faces it, the nearer end breaks off. The two ends re-link (the link
+## fading in), and the orbit springs pull the tail forward. Returns the piece's
+## positions, front first.
+func break_piece(dir: Vector2, n: int) -> Array[Vector3]:
+	var out: Array[Vector3] = []
+	n = mini(n, M())
+	if n <= 0:
+		return out
+	var want := atan2(dir.y, dir.x)
+	var best := 0
+	var bd := INF
+	for i in M():
+		var d := absf(angle_difference(atan2(R[i].p.y, R[i].p.x), want))
+		if d < bd:
+			bd = d
+			best = i
+	var start := clampi(best - n / 2, 0, M() - n)
+	if bd > 2.0 * s.ang(): # the gap faces the cast: the nearer end goes
+		start = 0 if best < M() / 2 else M() - n
+	for i in n:
+		out.append(R[start + i].p)
+	for i in n:
+		R.remove_at(start)
+	for i in M():
+		R[i].id = i
+	conn.resize(maxi(M() - 1, 0))
+	strength.resize(maxi(M() - 1, 0))
+	conn.fill(true)
+	strength.fill(1.0)
+	if start > 0 and start - 1 < strength.size():
+		strength[start - 1] = 0.0 # the ends re-link, fading in
+	return out
+
+
 ## The second press: `share` of the thrown water comes home, the rest soaks in.
 ## Before the water has landed it is kept for the landing; on the ground it rises now.
 func call_back(share: float) -> void:

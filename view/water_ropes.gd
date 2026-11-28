@@ -28,6 +28,11 @@ var ropes := {}
 ## Water Shield ropes, by caster id: {"rope": WaterShieldRope, "ground", "off", "hero",
 ## "target": actor id} (the caster's own rope refills meanwhile).
 var shields := {}
+## Frost Shard pieces in flight, freezing: {"hero", "p": projectile dict, "off":
+## [Vector3] (each point from the piece's centre), "z0", "ground" (the caster's at
+## launch), "age" (frames), "dir" (ground px)}.
+var shards: Array = []
+var _new_shards: Array = []
 var _pending: Array = [] # throws not reached yet: {"source", "to", "at"}
 var _acc := 0.0
 ## Shadow pixels already darkened this frame (world px): overlapping shadows (two
@@ -54,6 +59,9 @@ func tiles_of(g: Vector2) -> Vector2:
 ## Takes the throws from an event batch (the Water Whip's effect events).
 func on_events(events: Array, effects: Dictionary) -> void:
 	for e in events:
+		if e.get("type", "") == "projectile" and e.get("projectile", {}).get("ability", &"") == &"W04":
+			_new_shards.append(e.projectile) # Frost Shard: a piece of the rope breaks off
+			continue
 		if e.get("type", "") == "water_return":
 			# Water Whip's second press, or what Healing Touch's heal didn't need:
 			# that share of the water out comes home.
@@ -144,6 +152,29 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 				if grid != null else 0.0
 		e.rope.cast(aim, dz)
 	_pending = keep
+	# Frost Shard: the piece breaks off its caster's rope as the shard is thrown.
+	for p in _new_shards:
+		var h: Hero = by_id.get(int(p.get("source", -1)))
+		var e: Dictionary = ropes.get(int(p.get("source", -1)), {})
+		if h == null or e.is_empty():
+			continue
+		var dir_t: Vector2 = FxPainter.projectile_dir(p)
+		var dir_px: Vector2 = ground_of(h.move.pos + dir_t) - ground_of(h.move.pos)
+		var pts: Array[Vector3] = e.rope.break_piece(dir_px, settings.SHARD_PIECE)
+		if pts.is_empty():
+			continue
+		var c := Vector3.ZERO
+		for q in pts:
+			c += q
+		c /= pts.size()
+		var off: Array = []
+		for q in pts:
+			off.append(q - c)
+		# The piece's centre relative to where the shard starts (the caster).
+		var start_px: Vector2 = ground_of(FxPainter.projectile_pos(p, float(p.start))) - e.ground
+		shards.append({"hero": h.id, "p": p, "off": off, "c0": c - Vector3(start_px.x, start_px.y, 0.0),
+				"ground": e.ground, "age": 0, "dir": dir_px.normalized()})
+	_new_shards.clear()
 	# Shields follow their target and the host's shield left.
 	for id in shields.keys():
 		var sh: Dictionary = shields[id]
@@ -176,6 +207,9 @@ func advance(dt: float, now: float, heroes: Array, grid: GridModel, zone: ZoneDe
 			sh.rope.step()
 			if sh.rope.done():
 				shields.erase(id)
+		for sd in shards:
+			sd.age += 1
+		shards = shards.filter(func(sd): return sd.age <= settings.SHARD_FREEZE + 2)
 
 
 ## Water Shield cast: the caster's rope leaves for the bubble round `target`; the
@@ -236,7 +270,48 @@ func items(feet: Callable) -> Array:
 		if e.off:
 			continue
 		out.append_array(_rope_items(e, feet.call(e.hero) / PixelCamera.ART_SCALE))
+	for sd in shards:
+		var e: Dictionary = ropes.get(int(sd.hero), {})
+		if e.is_empty() or e.off:
+			continue
+		var tmp := _shard_rope(sd, e.ground)
+		if tmp != null:
+			out.append_array(_rope_items({"rope": tmp, "hero": e.hero}, feet.call(e.hero) / PixelCamera.ART_SCALE))
 	return out
+
+
+## A Frost Shard piece as a short rope to draw: its points pull together toward the
+## shard's centre (flying along the shard's path) over SHARD_FREEZE frames, after
+## bulging outward and leaning toward the target; drawn as water until 75% of the
+## freeze, thinning to 55% width; then 3 sparkles (the shard sprite takes over).
+func _shard_rope(sd: Dictionary, ground_now: Vector2) -> WaterRope:
+	var s := settings
+	var a := float(sd.age)
+	var t: float = float(sd.p.start) + a / 60.0
+	var c_px: Vector2 = ground_of(FxPainter.projectile_pos(sd.p, t)) - ground_now
+	var k := WaterRope.ramp(a, float(s.SHARD_FREEZE))
+	var z: float = lerpf(float(sd.c0.z), s.TARGET_Z, k)
+	var start_px: Vector2 = ground_of(FxPainter.projectile_pos(sd.p, float(sd.p.start))) - ground_now
+	var c := Vector3(c_px.x, c_px.y, z) + Vector3(sd.c0.x, sd.c0.y, 0.0) * (1.0 - k)
+	var bulge := WaterRope.ramp(a, float(s.SHARD_WINDUP)) * (1.0 - k)
+	var out_dir := Vector3(start_px.x + sd.c0.x, start_px.y + sd.c0.y, 0.0)
+	out_dir = out_dir.normalized() if out_dir.length() > 0.0 else Vector3.ZERO
+	var lean := Vector3(sd.dir.x, sd.dir.y, 0.0)
+	var r := WaterRope.new(s, 1)
+	r.fr = int(a)
+	if a <= s.SHARD_FREEZE * 0.75:
+		for i in sd.off.size():
+			var q: Vector3 = c + sd.off[i] * (1.0 - k) + (out_dir * s.SHARD_BULGE + lean * s.SHARD_LEAN) * bulge
+			r.R.append(WaterRope.Pt.new(q, i))
+		for i in maxi(r.M() - 1, 0):
+			r.conn.append(true)
+			r.strength.append(1.0)
+		r.wscale = lerpf(1.0, 0.55, clampf(a / (s.SHARD_FREEZE * 0.75), 0.0, 1.0))
+	elif a >= s.SHARD_FREEZE:
+		for i in 3: # it freezes: sparkles
+			r.drops.append({"p": c + Vector3(randf_range(-3, 3), randf_range(-3, 3), randf_range(-2, 2)),
+					"v": Vector3.ZERO, "l": 4.0})
+	return r
 
 
 func _proj(p: Vector3) -> Vector2:

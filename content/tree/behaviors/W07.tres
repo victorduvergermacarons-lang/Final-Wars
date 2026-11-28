@@ -9,13 +9,16 @@ script = ExtResource("1_0j1f1")
 damage_type = 1
 base_amount = -1.0
 sheet_scaling = true
-lifesteal = 0.5
+power = 0.1667
 
 [resource]
 script = ExtResource("3_cfnut")
 id = &"W07"
 max_range = 5
 mana_cost = 12.0
+channel_seconds = 3.0
+channel_tick_seconds = 0.5
+water_per_tick = 4
 ranged = true
 effects = Array[ExtResource("1_0j1f1")]([SubResource("Resource_sktws")])
 targeting = 1

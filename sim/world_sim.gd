@@ -995,7 +995,9 @@ func _update_casts() -> void:
 			"channel":
 				while not a.casting.is_empty() and now + 0.0001 >= c.next_tick and c.next_tick <= c.end + 0.0001:
 					c.next_tick += ability.channel_tick_seconds
-					_finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
+					var tick_ok := _finish_cast(a, ability, target, c.aim, CastResolver.Pay.FREE, c.bonus)
+					if a is Hero and ability.water_per_tick > 0 and tick_ok == AbilityResolver.Result.OK:
+						_to_pouch(a as Hero, ability.water_per_tick) # Leeching Tide draws water home
 				if not a.casting.is_empty() and now + 0.0001 >= c.end:
 					a.casting = {}
 					emit({"type": "channel_end", "source": a.id, "ability": ability.id})

@@ -132,6 +132,10 @@ static func ability_lines(ability: AbilityDef, hero: Hero, rules: CombatRules, n
 		out.append("Water: %s%d / %d in stance %d, power %d%%" % [
 				"%d used · " % ability.water_cost if ability.water_cost > 0 else "", pts, full, ability.stance,
 				roundi(WaterBending.power(hero, ability) * 100.0)])
+	if ability.water_per_tick > 0 and ability.channel_seconds > 0.0 and ability.channel_tick_seconds > 0.0:
+		var ticks := floori(ability.channel_seconds / ability.channel_tick_seconds + 0.001)
+		out.append("Draws %d water into your pouch every %ss (%d over %ss)" % [ability.water_per_tick,
+				_num(ability.channel_tick_seconds), ability.water_per_tick * ticks, _num(ability.channel_seconds)])
 	for effect in ability.effects:
 		if effect != null:
 			var line := _effect_line(ability, effect, hero, rules, now)

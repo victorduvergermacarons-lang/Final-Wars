@@ -184,6 +184,8 @@ func items(t: float, actors: Array, telegraphs: Array, abilities: Dictionary, ef
 		var fx: FxDef = effects.get(ability.fx_projectile)
 		if fx == null:
 			continue
+		if t - float(p.start) < fx.appear_after:
+			continue # still water, freezing (WaterRopes)
 		var at := projectile_pos(p, t)
 		var dir := projectile_dir(p)
 		var item := apply_motion({"fx": fx, "frame": fx.frame_at(maxf(t - float(p.start), 0.0)), "pos": at,

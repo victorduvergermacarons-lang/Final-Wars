@@ -3,7 +3,7 @@
 	"F06": {"cast": "fire_whip_ribbon"},
 	"F12": {"cast": "fire_stream"},
 	"W11": {"cast": "water_jet"},
-	"W07": {"cast": "leeching_tide_ribbon"},
+
 	"E22": {"cast": "metal_cable_ribbon"},
 	"F17": {"cast": "lightning_bolt"},
 	"F19": {"cast": "lightning_redirect"},

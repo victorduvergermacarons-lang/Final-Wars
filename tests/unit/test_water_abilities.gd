@@ -136,3 +136,53 @@ func test_expired_what_is_left_comes_home() -> void:
 	assert_almost_eq(float(back[0].share), 0.75, 0.02, "three quarters left")
 	assert_eq(int(back[0].points), 18)
 	assert_eq(hero.stance_water + hero.water, water + 18, "18 points home (the rope or the pouch)")
+
+
+# --- Frost Shard -------------------------------------------------------------------
+
+func test_frost_shard_is_instant_costs_4_and_cools_down_in_1_5_s() -> void:
+	var w04: AbilityDef = ContentDB.abilities[&"W04"]
+	assert_null(w04.timing_bar, "instant")
+	assert_eq(w04.water_cost, 4)
+	assert_almost_eq(w04.cooldown_seconds, 1.5, 0.001)
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(3, 0))
+	world.submit(hero.id, {"type": "cast", "ability": &"W04", "target": wolf.id, "aim": wolf.move.pos})
+	var events := world.step()
+	assert_true(events.any(func(e): return e.type == "projectile"), "thrown at once")
+	assert_eq(hero.stance_water, 20, "4 points froze into it")
+	assert_eq(hero.cast_water[&"W04"], 24, "its power: a full rope")
+	var fx: FxDef = ContentDB.effects[&"frost_shard"]
+	assert_eq(fx.frame_size, Vector2i(16, 16), "the sprite at 50% (user request)")
+
+
+func test_frost_shard_needs_4_points() -> void:
+	hero.stance_water = 3
+	assert_false(AbilityResolver.has_water(hero, ContentDB.abilities[&"W04"]))
+
+
+# --- Leeching Tide -----------------------------------------------------------------
+
+func test_leeching_tide_drains_for_3_s_and_draws_24_water_home() -> void:
+	var w07: AbilityDef = ContentDB.abilities[&"W07"]
+	assert_null(w07.timing_bar)
+	assert_almost_eq(w07.channel_seconds, 3.0, 0.001)
+	assert_almost_eq(w07.channel_tick_seconds, 0.5, 0.001)
+	assert_eq(w07.effects[0].lifesteal, 0.0, "no heal any more")
+	hero.stance = 2
+	hero.stance_water = 33
+	hero.water = 100
+	hero.hp = 50.0
+	var wolf := sim.add_enemy(ContentDB.enemies[&"wolf"], hero.tile() + Vector2i(2, 0))
+	wolf.hp = 100000.0
+	world.submit(hero.id, {"type": "cast", "ability": &"W07", "target": wolf.id})
+	world.step()
+	var events := world.advance(3.2)
+	var hits := events.filter(func(e): return e.type == "damage" and e.get("ability", &"") == &"W07")
+	assert_eq(hits.size(), 6, "a tick every 0.5 s")
+	assert_eq(hero.water, 124, "24 water into the pouch")
+	assert_lte(hero.hp, 50.0, "no heal (the wolf bites back)")
+
+
+func test_leeching_tide_s_total_damage_is_unchanged() -> void:
+	var w07: AbilityDef = ContentDB.abilities[&"W07"]
+	assert_almost_eq(w07.effects[0].power * 6.0, 1.0, 0.01, "six ticks of a sixth")

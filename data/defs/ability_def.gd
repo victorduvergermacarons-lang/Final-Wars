@@ -57,6 +57,9 @@ enum WaterBack { LOST, SECOND_PRESS, UNUSED_HEAL, SHIELD_LEFT }
 ## A fixed time between the release and the hit (Healing Touch: the rope winds round
 ## the target for 1.2 s), instead of one from its art (`release_delay_from`).
 @export var release_delay_fixed: float = 0.0
+## Water drawn into the caster's pouch on each channel tick that lands (Leeching
+## Tide: 4 per 0.5 s tick, 24 over its 3 s; capped by the pouch).
+@export var water_per_tick: int = 0
 @export var cooldown_seconds: float = 0.0
 ## Whether using it triggers (and is blocked by) the global cooldown.
 @export var on_gcd: bool = true
