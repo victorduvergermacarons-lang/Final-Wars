@@ -354,3 +354,13 @@ func test_the_hoop_reaches_out_latches_drains_and_closes_again() -> void:
 	for i in 300:
 		r.step()
 	assert_true(r.wrap, "the hoop closes again")
+
+
+func test_the_code_drawn_shard_points_ahead() -> void:
+	# The demo's shardShape: 9 px long, 1.5 half-wide, pointed at the front.
+	var set := WaterRopes.shard_pixels(Vector2(0.5, 0.5), Vector2.RIGHT, 9.0, 1.5)
+	var xs := set.keys().map(func(k): return k.x)
+	assert_between(xs.max() - xs.min() + 1, 8, 10, "about 9 px long")
+	var front := set.keys().filter(func(k): return k.x == xs.max()).size()
+	var back_mid := set.keys().filter(func(k): return k.x == -2).size()
+	assert_lt(front, back_mid, "narrow at the point, fuller behind")

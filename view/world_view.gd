@@ -1377,6 +1377,8 @@ func _draw_projectiles(grid: GridModel) -> void:
 		var ability: AbilityDef = ContentDB.abilities.get(StringName(p.get("ability", "")))
 		if ability != null and ability.fx_projectile != &"" and ContentDB.effects.has(ability.fx_projectile):
 			continue # drawn with its sprite in the back-to-front pass (FxPainter)
+		if WaterRopes.draws_projectile(p):
+			continue # Frost Shard: drawn in code by WaterRopes
 		if p.has("from"):
 			# Free movement: from its start point along its direction.
 			var at: Vector2 = p.from + p.dirv * clampf((t - p.start) * p.speed, 0.0, p.length)

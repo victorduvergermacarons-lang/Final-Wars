@@ -316,6 +316,18 @@ extends Resource
 @export var SHARD_WINDUP: int = 9
 ## Frames for the water to pull together into the shard; drawn as water until 75%.
 @export var SHARD_FREEZE: int = 9
+## The shard drawn in code (the demo's shardShape, 2026-11-28, instead of the FX-13-4
+## sprite): its length and half-width at full size (art px), and its ice colours.
+@export var SHARD_LEN: float = 9.0
+@export var SHARD_W: float = 1.5
+@export var ICE_SHADE: Color = Color("7DB3E3")
+@export var ICE_BODY: Color = Color("C2E2F7")
+@export var ICE_HI: Color = Color("F5FAFE")
+## Sparkles as it freezes; fragments (and 2 drops) when it shatters on a hit or at
+## its range; fragments' gravity (px per frame²).
+@export var SPARK_N: int = 3
+@export var FRAG_N: int = 8
+@export var FRAG_GRAV: float = 0.12
 
 @export_group("Leeching Tide (leeching_tide_demo.html)")
 ## Frames to reach the target (the hoop opens and arcs out).

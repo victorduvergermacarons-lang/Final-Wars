@@ -205,7 +205,7 @@ func _run() -> void:
 		await _ready_again()
 		_cast(&"W04", dummy, dummy.move.pos)
 		var waited := 0.0
-		for when in [0.05, 0.12, 0.2, 0.4]:
+		for when in [0.05, 0.12, 0.2, 0.3, 0.45, 0.7]:
 			await _wait(when - waited)
 			waited = when
 			await _shot("w4_2%d_shard_%.2f" % [int(when * 100) % 10, when])

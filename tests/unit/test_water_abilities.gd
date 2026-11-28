@@ -152,8 +152,8 @@ func test_frost_shard_is_instant_costs_4_and_cools_down_in_0_5_s() -> void:
 	assert_true(events.any(func(e): return e.type == "projectile"), "thrown at once")
 	assert_eq(hero.stance_water, 20, "4 points froze into it")
 	assert_eq(hero.cast_water[&"W04"], 24, "its power: a full rope")
-	var fx: FxDef = ContentDB.effects[&"frost_shard"]
-	assert_eq(fx.frame_size, Vector2i(16, 16), "the sprite at 50% (user request)")
+	assert_eq(w04.fx_projectile, &"", "drawn in code like the demo, not the FX-13-4 sprite (2026-11-28)")
+	assert_true(WaterRopes.draws_projectile({"ability": &"W04"}))
 
 
 func test_frost_shard_needs_4_points() -> void:
