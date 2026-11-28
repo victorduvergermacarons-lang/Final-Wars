@@ -65,13 +65,14 @@ func _run() -> void:
 	await _frames(10)
 	var look: FireLookDef = load("res://content/effects/fire/%s.tres" % ability)
 	var stress := OS.get_environment("FIRE_STRESS") == "1"
-	var ms_idle := await _frame_ms(60)
+	var ms_idle := await _frame_ms(20)
 	print("frame time with no fire: %.2f ms" % ms_idle)
-	for dist in [look.near, look.far]:
+	var dists := [look.near, look.far] if OS.get_environment("FIRE_QUICK") != "1" else [look.near]
+	for dist in dists:
 		var at := Vector2(t) + DIR.normalized() * (float(dist) / 16.0)
 		dummy.move.place(at)
 		dummy.move.pos = at
-		for m in [0, 185, 1000]:
+		for m in ([0, 185, 1000] if OS.get_environment("FIRE_QUICK") != "1" else [1000]):
 			var casters := 4 if stress else 1
 			for c in casters:
 				var e := view.fire.start(look, hero.id, Vector2(t), float(sim.grid.height_at(t)), at, float(m))
@@ -81,13 +82,13 @@ func _run() -> void:
 				e.hold_steps = 190
 				e.done_after = 190
 				e.tail_steps = 60
-			await _frames(30)
-			var ms := await _frame_ms(60)
+			await _frames(40)
+			var ms := await _frame_ms(20)
 			await _shot("fire_%s_%s_m%d" % [String(ability), "near" if dist == look.near else "far", m], Vector2(t))
 			print("%s %s mastery %d: %.2f ms a frame (%d effects, %d GPU steps run)" % [ability, "near" if dist == look.near else "far", m, ms,
 					view.fire.effects.size(), view.fire.sim.frames_run])
-			while not view.fire.effects.is_empty():
-				await _frames(10)
+			view.fire.clear()
+			await _frames(2)
 	get_tree().quit()
 
 
@@ -100,6 +101,9 @@ func _frame_ms(n: int) -> float:
 func _shot(name: String, centre: Vector2) -> void:
 	await _frames(1)
 	var img := get_viewport().get_texture().get_image()
-	var c := get_viewport().get_canvas_transform() * Iso.to_screen(centre + DIR * 1.6, hero.move.ground_h)
-	var r := Rect2i(int(c.x) - 300, int(c.y) - 230, 600, 300).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
+	if OS.get_environment("FIRE_FULL") == "1":
+		img.save_png(out_dir + name + "_full.png")
+	# The camera follows the hero: the hero is at the screen's centre, the fire to its right.
+	var c := Vector2i(img.get_size() / 2) + Vector2i(140, -40)
+	var r := Rect2i(c.x - 300, c.y - 170, 600, 300).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
 	img.get_region(r).save_png(out_dir + name + ".png")

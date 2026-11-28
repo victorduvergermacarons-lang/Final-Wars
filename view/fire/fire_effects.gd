@@ -62,6 +62,13 @@ func set_walls(e: FireEffect, grid: GridModel) -> void:
 	sim.set_walls(e.slot, cells)
 
 
+## Ends every effect at once.
+func clear() -> void:
+	for e in effects:
+		sim.release(e.slot)
+	effects.clear()
+
+
 ## Steps every effect that is due (dt: game time) and renders the passes.
 ## `actors`: every unit, for the bodies fire flows around.
 func advance(dt: float, actors: Array) -> void:
@@ -101,7 +108,7 @@ func items(grid: GridModel) -> Array:
 			var i0 := clampi(b / 2, maxi(0, b - 7), mini(7, b))
 			for k in 8:
 				for sgn in [1, -1]:
-					var i := i0 + sgn * k
+					var i: int = i0 + int(sgn) * k
 					if i < maxi(0, b - 7) or i > mini(7, b):
 						continue
 					var t := e.origin + Vector2i(i, b - i)

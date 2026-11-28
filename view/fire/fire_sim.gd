@@ -31,8 +31,10 @@ const SHADER_PATH := "res://view/fire/shaders/fire_core.gdshaderinc"
 ## Rings of the velocity extension each step (the reference runs up to 18, as many as
 ## the fastest fire cell moves; 12 covers every approved setting).
 @export var extension_passes := 12
-## Jacobi passes of the air's pressure (the reference: 8 Gauss-Seidel sweeps).
-@export var pressure_passes := 8
+## Jacobi passes of the air's pressure: the reference runs 8 Gauss-Seidel sweeps, and Jacobi
+## needs about twice as many to match them (checked against the reference: 16 keeps
+## the flame within its run-to-run spread).
+@export var pressure_passes := 16
 @export var height_scale := 1.55
 var blue_ramp := false
 
